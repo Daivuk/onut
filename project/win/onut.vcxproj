@@ -10,6 +10,9 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\onut.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
