@@ -19,6 +19,15 @@
     <ClInclude Include="..\..\include\StringUtils.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\LodePNG.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Texture.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\SpriteBatch.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -37,6 +46,15 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\StringUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LodePNG.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteBatch.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

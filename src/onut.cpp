@@ -8,6 +8,7 @@ namespace onut {
 	std::shared_ptr<Window> g_pWindow;
 	std::shared_ptr<Renderer> g_pRenderer;
 	std::shared_ptr<Settings> g_pSettings;
+	std::shared_ptr<SpriteBatch> g_pSpriteBatch;
 
 	// Main loop
 	void run(std::function<void()> updateCallback, std::function<void()> renderCallback) {
@@ -24,6 +25,7 @@ namespace onut {
 		auto settings = getSettings();
 		g_pWindow = std::make_shared<Window>(settings->getResolution());
 		g_pRenderer = std::make_shared<Renderer>(*g_pWindow);
+		g_pSpriteBatch = std::make_shared<SpriteBatch>();
 
 		// Main loop
 		MSG msg = { 0 };
@@ -58,5 +60,10 @@ namespace onut {
 	std::shared_ptr<Renderer> getRenderer() {
 		assert(g_pRenderer); // You have to call onut::run before!
 		return g_pRenderer;
+	}
+
+	std::shared_ptr<SpriteBatch> getSpriteBatch() {
+		assert(g_pSpriteBatch); // You have to call onut::run before!
+		return g_pSpriteBatch;
 	}
 }

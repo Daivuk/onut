@@ -4,6 +4,7 @@
 
 #include "Renderer.h"
 #include "Settings.h"
+#include "SpriteBatch.h"
 
 namespace onut {
 	/**
@@ -23,4 +24,10 @@ namespace onut {
 		Get the DX11 renderer.
 	*/
 	std::shared_ptr<Renderer> getRenderer();
+
+	/**
+		Get a global SpriteBatch object to draw your 2D.
+		Note, you can create your own SpriteBatch objects if you like
+	*/
+	std::shared_ptr<SpriteBatch> getSpriteBatch();
 }

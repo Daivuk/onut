@@ -15,15 +15,21 @@
     <ClInclude Include="..\..\include\Renderer.h" />
     <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
+    <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\StringUtils.h" />
+    <ClInclude Include="..\..\include\Texture.h" />
+    <ClInclude Include="..\..\src\LodePNG.h" />
     <ClInclude Include="..\..\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
     <ClCompile Include="..\..\src\onut.cpp" />
     <ClCompile Include="..\..\src\Settings.cpp" />
     <ClCompile Include="..\..\src\SimpleMath.cpp" />
+    <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\StringUtils.cpp" />
+    <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
