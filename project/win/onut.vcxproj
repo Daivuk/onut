@@ -32,6 +32,20 @@
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\2dps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\..\src\2dvs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -77,7 +91,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -99,7 +113,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

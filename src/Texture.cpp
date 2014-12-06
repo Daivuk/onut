@@ -166,7 +166,6 @@ namespace onut {
 
 	Texture::~Texture() {
 		if (m_pTextureView) m_pTextureView->Release();
-		if (m_pTexture) m_pTexture->Release();
 		m_pTextureView = nullptr;
 		m_pTexture = nullptr;
 	}

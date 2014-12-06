@@ -11,8 +11,9 @@ namespace onut {
 	std::shared_ptr<SpriteBatch> g_pSpriteBatch;
 
 	// Main loop
-	void run(std::function<void()> updateCallback, std::function<void()> renderCallback) {
+	void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback) {
 		// Validate parameters
+		assert(initCallback);
 		assert(updateCallback);
 		assert(renderCallback);
 
@@ -26,6 +27,8 @@ namespace onut {
 		g_pWindow = std::make_shared<Window>(settings->getResolution());
 		g_pRenderer = std::make_shared<Renderer>(*g_pWindow);
 		g_pSpriteBatch = std::make_shared<SpriteBatch>();
+
+		initCallback();
 
 		// Main loop
 		MSG msg = { 0 };

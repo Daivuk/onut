@@ -65,5 +65,16 @@
     <Filter Include="src">
       <UniqueIdentifier>{f147408f-9c92-4c54-bcfd-bd3c26c0fc93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\shaders">
+      <UniqueIdentifier>{c06ade93-9118-49de-bba1-fb9abed7757a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\2dps.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\2dvs.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

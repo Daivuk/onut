@@ -316,14 +316,14 @@ static void lodepng_add32bitInt(ucvector* buffer, unsigned value) {
 #ifdef LODEPNG_COMPILE_DISK
 
 unsigned lodepng_load_file(unsigned char** out, size_t* outsize, const char* filename) {
-	FILE* file;
+	FILE* file = nullptr;
 	long size;
 
 	/*provide some proper output values if error will happen*/
 	*out = 0;
 	*outsize = 0;
 
-	file = fopen(filename, "rb");
+	fopen_s(&file, filename, "rb");
 	if (!file) return 78;
 
 	/*get filesize:*/
@@ -343,8 +343,8 @@ unsigned lodepng_load_file(unsigned char** out, size_t* outsize, const char* fil
 
 /*write given buffer to the file, overwriting the file, it doesn't append to it.*/
 unsigned lodepng_save_file(const unsigned char* buffer, size_t buffersize, const char* filename) {
-	FILE* file;
-	file = fopen(filename, "wb");
+	FILE* file = nullptr;
+	fopen_s(&file, filename, "wb");
 	if (!file) return 79;
 	fwrite((char*) buffer, 1, buffersize, file);
 	fclose(file);
