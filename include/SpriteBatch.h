@@ -1,28 +1,26 @@
 #pragma once
-#include "SimpleMath.h"
+#include "Typedefs.h"
 #include "Texture.h"
 
 #include <memory>
 
 namespace onut {
-	using namespace DirectX::SimpleMath;
-
 	class SpriteBatch {
 	public:
 		SpriteBatch();
 		virtual ~SpriteBatch();
 
 		void begin();
-		void drawRect(std::shared_ptr<Texture> pTexture, const Vector4& rect, const Vector4 colors[4]);
-		void drawRect(std::shared_ptr<Texture> pTexture, const Vector4& rect, const Vector4& color = Vector4::One);
-		void drawRect(std::shared_ptr<Texture> pTexture, const Vector4& rect, const Vector4& uvs, const Vector4& color = Vector4::One);
+		void drawRect(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color& color = Color::White);
+		void drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color colors[4]);
+		void drawRectWithUVs(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
 		void end();
 
 	private:
 		struct SVertexP2T2C4 {
 			Vector2 position;
 			Vector2 texCoord;
-			Vector4 color;
+			Color	color;
 		};
 
 		static const int MAX_SPRITE_COUNT = 300;

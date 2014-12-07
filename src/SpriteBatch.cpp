@@ -69,7 +69,7 @@ namespace onut {
 		pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
 	}
 
-	void SpriteBatch::drawRect(std::shared_ptr<Texture> pTexture, const Vector4& rect, const Vector4 colors[4]) {
+	void SpriteBatch::drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color colors[4]) {
 		assert(m_isDrawing); // Should call begin() before calling draw()
 
 		if (!pTexture) pTexture = m_pTexWhite;
@@ -98,7 +98,7 @@ namespace onut {
 		if (m_spriteCount == MAX_SPRITE_COUNT) flush();
 	}
 
-	void SpriteBatch::drawRect(std::shared_ptr<Texture> pTexture, const Vector4& rect, const Vector4& color) {
+	void SpriteBatch::drawRect(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color& color) {
 		assert(m_isDrawing); // Should call begin() before calling draw()
 
 		if (!pTexture) pTexture = m_pTexWhite;
@@ -127,7 +127,7 @@ namespace onut {
 		if (m_spriteCount == MAX_SPRITE_COUNT) flush();
 	}
 
-	void SpriteBatch::drawRect(std::shared_ptr<Texture> pTexture, const Vector4& rect, const Vector4& uvs, const Vector4& color) {
+	void SpriteBatch::drawRectWithUVs(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const Color& color) {
 		assert(m_isDrawing); // Should call begin() before calling draw()
 
 		if (!pTexture) pTexture = m_pTexWhite;

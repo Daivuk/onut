@@ -75,6 +75,10 @@ namespace SimpleMath
     const Vector4 Vector4::UnitZ = { 0.f, 0.f, 1.f, 0.f };
     const Vector4 Vector4::UnitW = { 0.f, 0.f, 0.f, 1.f };
 
+	const Color Color::Black = { 0.f, 0.f, 0.f, 1.f };
+	const Color Color::White = { 1.f, 1.f, 1.f, 1.f };
+	const Color Color::Transparent = { 0.f, 0.f, 0.f, 0.f };
+
     const Matrix Matrix::Identity = { 1.f, 0.f, 0.f, 0.f,
                                       0.f, 1.f, 0.f, 0.f,
                                       0.f, 0.f, 1.f, 0.f,

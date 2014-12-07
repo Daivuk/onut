@@ -28,6 +28,15 @@
     <ClInclude Include="..\..\include\SpriteBatch.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\DefineHelpers.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Typedefs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Random.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -55,6 +64,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteBatch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Random.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

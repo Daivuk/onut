@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include "onut.h"
+#include "Random.h"
 #include "Window.h"
 
 namespace onut {
@@ -23,6 +24,7 @@ namespace onut {
 		alreadyRan = true;
 
 		// Create our services
+		randomizeSeed();
 		auto settings = getSettings();
 		g_pWindow = std::make_shared<Window>(settings->getResolution());
 		g_pRenderer = std::make_shared<Renderer>(*g_pWindow);

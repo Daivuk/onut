@@ -2,18 +2,12 @@
 #include <functional>
 #include <memory>
 
+#include "DefineHelpers.h"
 #include "Renderer.h"
 #include "Settings.h"
 #include "SpriteBatch.h"
 
 namespace onut {
-	// Some shortcuts
-	#define ORun				onut::run
-	#define ORenderer			onut::getRenderer()
-	#define OSpriteBatch		onut::getSpriteBatch()
-	#define OSettings			onut::getSettings()
-	#define OTextureFromFile	onut::Texture::createFromFile
-
 	/**
 		This should only be called once
 		@param updateCallback Called at a fixed 60 times per seconds. Sometimes tho calls can be dropped and run slower if the game performs badly

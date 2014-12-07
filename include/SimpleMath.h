@@ -615,6 +615,24 @@ struct Color : public XMFLOAT4
     explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Color(FXMVECTOR V) { XMStoreFloat4( this, V ); }
 
+	static Color fromHexRGB(unsigned int hex) {
+		return{
+			static_cast<float>((hex & 0xff0000) >> 16) / 255.f,
+			static_cast<float>((hex & 0x00ff00) >> 8) / 255.f,
+			static_cast<float>((hex & 0x0000ff)) / 255.f,
+			1.f
+		};
+	}
+
+	static Color fromHexRGBA(unsigned int hex) {
+		return{
+			static_cast<float>((hex & 0xff000000) >> 24) / 255.f,
+			static_cast<float>((hex & 0x00ff0000) >> 16) / 255.f,
+			static_cast<float>((hex & 0x0000ff00) >> 8) / 255.f,
+			static_cast<float>((hex & 0x000000ff)) / 255.f,
+		};
+	}
+
     explicit Color( const DirectX::PackedVector::XMCOLOR& Packed );
         // BGRA Direct3D 9 D3DCOLOR packed color
     
@@ -681,6 +699,11 @@ struct Color : public XMFLOAT4
 
     static void Lerp( const Color& c1, const Color& c2, float t, Color& result );
     static Color Lerp( const Color& c1, const Color& c2, float t );
+
+	// Constants
+	static const Color Black;
+	static const Color White;
+	static const Color Transparent;
 };
 
 // Binary operators
