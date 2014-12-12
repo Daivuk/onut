@@ -69,8 +69,9 @@ namespace onut {
 		pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
 	}
 
-	void SpriteBatch::drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color colors[4]) {
+	void SpriteBatch::drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const std::vector<Color>& colors) {
 		assert(m_isDrawing); // Should call begin() before calling draw()
+		assert(colors.size() == 4); // Needs 4 colors
 
 		if (!pTexture) pTexture = m_pTexWhite;
 		if (pTexture != m_pTexture) flush();
@@ -164,7 +165,10 @@ namespace onut {
 	}
 
 	void SpriteBatch::flush() {
-		if (!m_spriteCount) return; // Nothing to flush
+		if (!m_spriteCount) {
+			m_pTexture = nullptr;
+			return; // Nothing to flush
+		}
 
 		auto pDeviceContext = getRenderer()->getDeviceContext();
 
@@ -177,9 +181,7 @@ namespace onut {
 		pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 		pDeviceContext->DrawIndexed(6 * m_spriteCount, 0, 0);
 
-		pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
-
 		m_spriteCount = 0;
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 }

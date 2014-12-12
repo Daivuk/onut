@@ -12,7 +12,7 @@ namespace onut {
 
 		void begin();
 		void drawRect(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color& color = Color::White);
-		void drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color colors[4]);
+		void drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const std::vector<Color>& colors);
 		void drawRectWithUVs(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
 		void end();
 

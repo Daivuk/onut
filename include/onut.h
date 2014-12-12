@@ -2,10 +2,16 @@
 #include <functional>
 #include <memory>
 
+#include "BMFont.h"
 #include "DefineHelpers.h"
+#include "Random.h"
 #include "Renderer.h"
 #include "Settings.h"
+#include "SimpleMath.h"
 #include "SpriteBatch.h"
+#include "Texture.h"
+
+using namespace DirectX::SimpleMath;
 
 namespace onut {
 	/**
@@ -31,4 +37,15 @@ namespace onut {
 		Note, you can create your own SpriteBatch objects if you like
 	*/
 	std::shared_ptr<SpriteBatch> getSpriteBatch();
+
+	/**
+		Get a global font. This is the default font set in the settings.
+		If file not found it will return nullptr
+	*/
+	std::shared_ptr<BMFont> getDefaultFont();
+
+	/**
+		This is the same as getDefaultFont but gets a bigger version
+	*/
+	std::shared_ptr<BMFont> getDefaultFontBig();
 }

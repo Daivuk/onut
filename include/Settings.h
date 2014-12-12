@@ -14,9 +14,13 @@ namespace onut  {
 		const std::string	getGameName() const { return m_gameName; }
 		void				setGameName(const std::string& gameName);
 
+		const std::string	getDefaultFont() const { return m_defaultFont; }
+		void				setDefaultFont(const std::string& defaultFont);
+
 	private:
 		POINT			m_resolution = POINT{ 800, 600 };
 		std::string		m_gameName = "Game Name";
+		std::string		m_defaultFont = "assets/fonts/Mainfnt.fnt";
 
 		bool			m_isDirty = false;
 	};

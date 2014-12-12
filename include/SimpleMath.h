@@ -9,6 +9,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248929
+//
+// Modified by David St-Louis daivuk@gmail.com 2014-12-11
 //-------------------------------------------------------------------------------------
 
 #pragma once
@@ -25,6 +27,9 @@ namespace DirectX
 
 namespace SimpleMath
 {
+	const float GOLDEN_RATIO = 1.6180339887498948482f;
+	const float GOLDEN_SECOND = 1.0f / 1.6180339887498948482f;
+	const float GOLDEN_FIRST = 1.0f - GOLDEN_SECOND;
     
 struct Vector4;
 struct Matrix;

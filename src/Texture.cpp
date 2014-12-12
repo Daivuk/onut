@@ -34,12 +34,12 @@ namespace onut {
 		return pRet;
 	}
 
-	std::shared_ptr<Texture> Texture::createFromFile(const char* in_filename, bool in_generateMipmaps) {
+	std::shared_ptr<Texture> Texture::createFromFile(const std::string& filename, bool generateMipmaps) {
 		Texture* pRet = NULL;
 
 		std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
 		unsigned int w, h;
-		assert(!lodepng::decode(image, w, h, in_filename));
+		assert(!lodepng::decode(image, w, h, filename));
 		POINT size{ w, h };
 		byte* pData = &(image[0]);
 		ULONG len = size.x * size.y;
@@ -51,7 +51,7 @@ namespace onut {
 			pData[2] = pData[2] * pData[3] / 255;
 		}
 
-		return createFromData(size, &(image[0]), in_generateMipmaps);
+		return createFromData(size, &(image[0]), generateMipmaps);
 	}
 
 	std::shared_ptr<Texture> Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps) {

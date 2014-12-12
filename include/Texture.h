@@ -6,7 +6,7 @@ namespace onut {
 	class Texture {
 	public:
 		static std::shared_ptr<Texture> createDynamic(const POINT& size);
-		static std::shared_ptr<Texture> createFromFile(const char* in_filename, bool in_generateMipmaps = false);
+		static std::shared_ptr<Texture> createFromFile(const std::string& filename, bool generateMipmaps = false);
 		static std::shared_ptr<Texture> createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps = false);
 
 		Texture() {}
