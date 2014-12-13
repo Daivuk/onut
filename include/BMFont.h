@@ -19,7 +19,7 @@ namespace onut {
 		virtual ~BMFont();
 
 		Vector2		measure(const std::string& text);
-		template<Align Talign = FontAlign::TOP_LEFT>
+		template<Align Talign = Align::TOP_LEFT>
 		void		draw(
 			const std::string& text,
 			const Vector2& pos,

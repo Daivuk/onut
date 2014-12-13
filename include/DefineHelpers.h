@@ -32,44 +32,102 @@
 // cx,cy = Sprite center position
 #define ORectCenteredOrigin(cx, cy, w, h)		{(cx) - (w) * .5f, (cy) - (h) * .5f, w, h}
 
-// Alignment with screen
-// px,py = Sprite x,y padding
+// Rectangle helpers
 #define ORectFullScreen							{0, 0, OScreenWf, OScreenHf}
-#define ORectAlignTopLeft(px, py, w, h)			{px, py, w, h}
-#define ORectAlignTop(px, py, w, h)				{(OScreenWf - (w)) * .5f + (px), py, w, h}
-#define ORectAlignTopRight(px, py, w, h)		{OScreenWf - (w) - (px), (py), w, h}
-#define ORectAlignLeft(px, py, w, h)			{px, (OScreenHf - (h)) * .5f + (py), w, h}
-#define ORectAlignCenter(px, py, w, h)			{(OScreenWf - (w)) * .5f + (px), (OScreenHf - (h)) * .5f + (py), w, h}
-#define ORectAlignRight(px, py, w, h)			{OScreenWf - (w) - (px), (OScreenHf - (h)) * .5f + (py), w, h}
-#define ORectAlignBottomLeft(px, py, w, h)		{px, OScreenHf - (h) - (py), w, h}
-#define ORectAlignBottom(px, py, w, h)			{(OScreenWf - (w)) * .5f + (px), OScreenHf - (h) - (py), w, h}
-#define ORectAlignBottomRight(px, py, w, h)		{OScreenWf - (w) - (px), OScreenHf - (h) - (py), w, h}
-
-// Grid alignment
 #define ORectGrid(cols, rows, ix, iy, px, py)	{OScreenWf/(cols)*(ix)+((ix>0)?px*.5f:px),OScreenHf/(rows)*(iy)+((iy>0)?py*.5f:py),OScreenWf/(cols)-((ix<=0||ix>=cols-1)?px*1.5f:px),OScreenHf/(rows)-((iy<=0||iy>=rows-1)?py*1.5f:py)}
+#define ORectLayout(left, top, right, bottom)	{(left), (top), (right) - (left), (bottom) - (top)}
+#define ORectAlign								onut::alignedRect
 
 // Color stuff
 #define OColorHex(hex)							Color::fromHexRGB(0x ## hex)
 
 // Gradient
+#define OGradientH(left, right)					{left, left, right, right}
 #define OGradientV(top, bottom)					{top, bottom, bottom, top}
 
-// Font alignment quicky
-#define OAlignTopLeft							onut::Align::TOP_LEFT
-#define OAlignTop								onut::Align::TOP
-#define OAlignTopRight							onut::Align::TOP_RIGHT
-#define OAlignLeft								onut::Align::LEFT
-#define OAlignCenter							onut::Align::CENTER
-#define OAlignRight								onut::Align::RIGHT
-#define OAlignBottomLeft						onut::Align::BOTTOM_LEFT
-#define OAlignBottom							onut::Align::BOTTOM
-#define OAlignBottomRight						onut::Align::BOTTOM_RIGHT
+// Alignment
+#define OTopLeft								onut::Align::TOP_LEFT
+#define OTop									onut::Align::TOP
+#define OTopRight								onut::Align::TOP_RIGHT
+#define OLeft									onut::Align::LEFT
+#define OCenter									onut::Align::CENTER
+#define ORight									onut::Align::RIGHT
+#define OBottomLeft								onut::Align::BOTTOM_LEFT
+#define OBottom									onut::Align::BOTTOM
+#define OBottomRight							onut::Align::BOTTOM_RIGHT
 
-// Palettes
+// Alignement of 1D position
+#define OPosAbsX(x, p)							((x) + (p))
+#define OPosAbsY(y, p)							((y) + (p))
+#define OPosRelX(x, p)							(OScreenWf - (x) - (p))
+#define OPosRelY(y, p)							(OScreenHf - (y) - (p))
+
 namespace onut {
+	// Palettes
 	extern std::vector<Color> palPinkLovers;
 	extern std::vector<Color> palPeonyJoy;
 	extern std::vector<Color> palWinterSun;
 	extern std::vector<Color> palHeartDesire;
 	extern std::vector<Color> palNatureWalk;
+
+	// Rect alignement helper templated class
+	template<Align Talign = Align::TOP_LEFT>
+	Rect alignedRect(float xOffset, float yOffset, float width, float height, float padding = 0, Align align = Talign) {
+		switch (align) {
+		case Align::TOP_LEFT:
+			xOffset += padding;
+			yOffset += padding;
+			width -= padding * 1.5f;
+			height -= padding * 1.5f;
+			return std::move(Rect{ xOffset, yOffset, width, height });
+		case Align::TOP:
+			yOffset += padding;
+			width -= padding;
+			height -= padding * 1.5f;
+			return std::move(Rect{ OScreenCenterXf - width * .5f + xOffset, yOffset, width, height });
+		case Align::TOP_RIGHT:
+			xOffset += padding;
+			yOffset += padding;
+			width -= padding * 1.5f;
+			height -= padding * 1.5f;
+			return std::move(Rect{ OScreenWf - xOffset - width, yOffset, width, height });
+		case Align::LEFT:
+			xOffset += padding;
+			width -= padding * 1.5f;
+			height -= padding;
+			return std::move(Rect{ xOffset, OScreenCenterYf - height * .5f + yOffset, width, height });
+		case Align::CENTER:
+			width -= padding;
+			height -= padding;
+			return std::move(Rect{ OScreenCenterXf - width * .5f + xOffset, OScreenCenterYf - height * .5f + yOffset, width, height });
+		case Align::RIGHT:
+			xOffset += padding;
+			width -= padding * 1.5f;
+			height -= padding;
+			return std::move(Rect{ OScreenWf - xOffset - width, OScreenCenterYf - height * .5f + yOffset, width, height });
+		case Align::BOTTOM_LEFT:
+			xOffset += padding;
+			yOffset += padding;
+			width -= padding * 1.5f;
+			height -= padding * 1.5f;
+			return std::move(Rect{ xOffset, OScreenHf - yOffset - height, width, height });
+		case Align::BOTTOM:
+			yOffset += padding;
+			width -= padding;
+			height -= padding * 1.5f;
+			return std::move(Rect{ OScreenCenterXf - width * .5f + xOffset, OScreenHf - yOffset - height, width, height });
+		case Align::BOTTOM_RIGHT:
+			xOffset += padding;
+			yOffset += padding;
+			width -= padding * 1.5f;
+			height -= padding * 1.5f;
+			return std::move(Rect{ OScreenWf - xOffset - width, OScreenHf - yOffset - height, width, height });
+		}
+		return std::move(Rect());
+	}
+
+	template<Align Talign = Align::TOP_LEFT>
+	Rect alignedRect(const Rect& rect, float padding = 0, Align align = Talign) {
+		alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
+	}
 }
