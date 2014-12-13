@@ -12,5 +12,5 @@ float4 main(PSInput input) : SV_TARGET
 {
 	float4 diffuse = texDiffuse.Sample(samplerState, input.texCoord);
 
-    return diffuse * input.color;
+	return diffuse * input.color;
 }

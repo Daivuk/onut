@@ -141,49 +141,59 @@ namespace onut {
 		return result;
 	}
 
-	void BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, std::shared_ptr<onut::SpriteBatch> pSpriteBatch, Align align) {
+	Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, std::shared_ptr<onut::SpriteBatch> pSpriteBatch, Align align) {
 		Vector2 pos = in_pos;
-		Vector2 dim;
-		if (align != Align::TOP_LEFT) {
-			dim = measure(text);
-			switch (align) {
-			case Align::TOP:
-				pos.x -= dim.x * .5f;
-				break;
-			case Align::TOP_RIGHT:
-				pos.x -= dim.x;
-				break;
-			case Align::LEFT:
-				pos.y -= dim.y * .5f;
-				break;
-			case Align::CENTER:
-				pos.x -= dim.x * .5f;
-				pos.y -= dim.y * .5f;
-				break;
-			case Align::RIGHT:
-				pos.x -= dim.x;
-				pos.y -= dim.y * .5f;
-				break;
-			case Align::BOTTOM_LEFT:
-				pos.y -= dim.y;
-				break;
-			case Align::BOTTOM:
-				pos.x -= dim.x * .5f;
-				pos.y -= dim.y;
-				break;
-			case Align::BOTTOM_RIGHT:
-				pos.x -= dim.x;
-				pos.y -= dim.y;
-				break;
-			}
+		Rect ret;
+		Vector2 dim = measure(text);
+		ret.z = dim.x;
+		ret.w = dim.y;
+		switch (align) {
+		case Align::TOP_LEFT:
+			pos.y -= m_common.lineHeight - m_common.base;
+			break;
+		case Align::TOP:
+			pos.x -= dim.x * .5f;
+			pos.y -= m_common.lineHeight - m_common.base;
+			break;
+		case Align::TOP_RIGHT:
+			pos.x -= dim.x;
+			pos.y -= m_common.lineHeight - m_common.base;
+			break;
+		case Align::LEFT:
+			pos.y -= dim.y * .5f;
+			break;
+		case Align::CENTER:
+			pos.x -= dim.x * .5f;
+			pos.y -= dim.y * .5f;
+			break;
+		case Align::RIGHT:
+			pos.x -= dim.x;
+			pos.y -= dim.y * .5f;
+			break;
+		case Align::BOTTOM_LEFT:
+			pos.y -= dim.y;
+			pos.y += m_common.lineHeight - m_common.base;
+			break;
+		case Align::BOTTOM:
+			pos.x -= dim.x * .5f;
+			pos.y -= dim.y;
+			pos.y += m_common.lineHeight - m_common.base;
+			break;
+		case Align::BOTTOM_RIGHT:
+			pos.x -= dim.x;
+			pos.y -= dim.y;
+			pos.y += m_common.lineHeight - m_common.base;
+			break;
 		}
+
 		Vector2 curPos = { static_cast<float>(static_cast<int>(pos.x)), static_cast<float>(static_cast<int>(pos.y)) };
+		ret.x = curPos.x;
+		ret.y = curPos.y;
 		unsigned int len = text.length();
 		int page = -1;
 		float r, g, b;
 		unsigned int i = 0;
 		Color curColor = color;
-		pSpriteBatch->begin();
 		for (const auto& charId : text) {
 			if (charId == '\n')	{
 				curPos.x = pos.x;
@@ -219,6 +229,7 @@ namespace onut {
 			curPos.x += static_cast<float>(pDatChar->xadvance);
 			++i;
 		}
-		pSpriteBatch->end();
+
+		return std::move(ret);
 	}
 }

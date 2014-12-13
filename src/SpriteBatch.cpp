@@ -74,7 +74,9 @@ namespace onut {
 		assert(colors.size() == 4); // Needs 4 colors
 
 		if (!pTexture) pTexture = m_pTexWhite;
-		if (pTexture != m_pTexture) flush();
+		if (pTexture != m_pTexture) {
+			flush();
+		}
 		m_pTexture = pTexture;
 
 		SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
@@ -96,14 +98,18 @@ namespace onut {
 
 		++m_spriteCount;
 
-		if (m_spriteCount == MAX_SPRITE_COUNT) flush();
+		if (m_spriteCount == MAX_SPRITE_COUNT) {
+			flush();
+		}
 	}
 
 	void SpriteBatch::drawRect(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color& color) {
 		assert(m_isDrawing); // Should call begin() before calling draw()
 
 		if (!pTexture) pTexture = m_pTexWhite;
-		if (pTexture != m_pTexture) flush();
+		if (pTexture != m_pTexture) {
+			flush();
+		}
 		m_pTexture = pTexture;
 
 		SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
@@ -125,14 +131,18 @@ namespace onut {
 
 		++m_spriteCount;
 
-		if (m_spriteCount == MAX_SPRITE_COUNT) flush();
+		if (m_spriteCount == MAX_SPRITE_COUNT) {
+			flush();
+		}
 	}
 
 	void SpriteBatch::drawRectWithUVs(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const Color& color) {
 		assert(m_isDrawing); // Should call begin() before calling draw()
 
 		if (!pTexture) pTexture = m_pTexWhite;
-		if (pTexture != m_pTexture) flush();
+		if (pTexture != m_pTexture) {
+			flush();
+		}
 		m_pTexture = pTexture;
 
 		SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
@@ -154,14 +164,16 @@ namespace onut {
 
 		++m_spriteCount;
 
-		if (m_spriteCount == MAX_SPRITE_COUNT) flush();
+		if (m_spriteCount == MAX_SPRITE_COUNT) {
+			flush();
+		}
 	}
 
 	void SpriteBatch::end() {
 		assert(m_isDrawing); // Should call begin() before calling end()
 
-		flush();
 		m_isDrawing = false;
+		flush();
 	}
 
 	void SpriteBatch::flush() {
@@ -183,5 +195,9 @@ namespace onut {
 
 		m_spriteCount = 0;
 		m_pTexture = nullptr;
+
+		if (m_isDrawing) {
+			pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+		}
 	}
 }

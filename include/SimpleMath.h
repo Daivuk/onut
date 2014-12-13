@@ -295,6 +295,31 @@ struct Vector4 : public XMFLOAT4
     void Clamp( const Vector4& vmin, const Vector4& vmax );
     void Clamp( const Vector4& vmin, const Vector4& vmax, Vector4& result ) const;
 
+	Vector2 TopLeft() const;
+	Vector2 Top() const;
+	Vector2 TopRight() const;
+	Vector2 Left() const;
+	Vector2 Center() const;
+	Vector2 Right() const;
+	Vector2 BottomLeft() const;
+	Vector2 Bottom() const;
+	Vector2 BottomRight() const;
+
+	Vector2 TopLeft(float offset) const;
+	Vector2 Top(float offset) const;
+	Vector2 TopRight(float offset) const;
+	Vector2 Left(float offset) const;
+	Vector2 Center(float offset) const;
+	Vector2 Right(float offset) const;
+	Vector2 BottomLeft(float offset) const;
+	Vector2 Bottom(float offset) const;
+	Vector2 BottomRight(float offset) const;
+
+	Vector2 TopLeft(const Vector2& offset) const;
+	Vector2 TopRight(const Vector2& offset) const;
+	Vector2 BottomLeft(const Vector2& offset) const;
+	Vector2 BottomRight(const Vector2& offset) const;
+
     // Static functions
     static float Distance( const Vector4& v1, const Vector4& v2 );
     static float DistanceSquared( const Vector4& v1, const Vector4& v2 );

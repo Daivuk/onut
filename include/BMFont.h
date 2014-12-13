@@ -20,17 +20,16 @@ namespace onut {
 
 		Vector2		measure(const std::string& text);
 		template<Align Talign = Align::TOP_LEFT>
-		void		draw(
-			const std::string& text,
-			const Vector2& pos,
-			const Color& color = Color::White,
-			std::shared_ptr<onut::SpriteBatch> pSpriteBatch = getSpriteBatch(),
-			Align align = Talign) {
-			drawInternal(text, pos, color, pSpriteBatch, align);
+		Rect		draw(	const std::string& text,
+							const Vector2& pos,
+							const Color& color = Color::White,
+							std::shared_ptr<onut::SpriteBatch> pSpriteBatch = getSpriteBatch(),
+							Align align = Talign) {
+			return drawInternal(text, pos, color, pSpriteBatch, align);
 		}
 
 	private:
-		void		drawInternal(
+		Rect		drawInternal(
 			const std::string& text, 
 			const Vector2& pos, 
 			const Color& color, 
