@@ -320,6 +320,8 @@ struct Vector4 : public XMFLOAT4
 	Vector2 BottomLeft(const Vector2& offset) const;
 	Vector2 BottomRight(const Vector2& offset) const;
 
+	Vector4 Grow(float by) const;
+
     // Static functions
     static float Distance( const Vector4& v1, const Vector4& v2 );
     static float DistanceSquared( const Vector4& v1, const Vector4& v2 );

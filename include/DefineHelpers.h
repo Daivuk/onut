@@ -17,13 +17,13 @@
 
 //--- Resolution helpers
 #define OScreen				onut::getRenderer()->getResolution()
-#define OScreenf			{static_cast<float>(onut::getRenderer()->getResolution().x), static_cast<float>(onut::getRenderer()->getResolution().y)}
+#define OScreenf			Vector2{static_cast<float>(onut::getRenderer()->getResolution().x), static_cast<float>(onut::getRenderer()->getResolution().y)}
 #define OScreenW			onut::getRenderer()->getResolution().x
 #define OScreenH			onut::getRenderer()->getResolution().y;
 #define OScreenWf			static_cast<float>(onut::getRenderer()->getResolution().x)
 #define OScreenHf			static_cast<float>(onut::getRenderer()->getResolution().y)
 #define OScreenCenter		(onut::getRenderer()->getResolution() / 2)
-#define OScreenCenterf		{static_cast<float>(onut::getRenderer()->getResolution().x / 2), static_cast<float>(onut::getRenderer()->getResolution().y / 2)}
+#define OScreenCenterf		Vector2{static_cast<float>(onut::getRenderer()->getResolution().x / 2), static_cast<float>(onut::getRenderer()->getResolution().y / 2)}
 #define OScreenCenterX		(onut::getRenderer()->getResolution().x / 2)
 #define OScreenCenterY		(onut::getRenderer()->getResolution().y / 2)
 #define OScreenCenterXf		static_cast<float>(onut::getRenderer()->getResolution().x / 2)
@@ -32,12 +32,12 @@
 //--- Rect helpers for drawing
 // Centered origin sprite
 // cx,cy = Sprite center position
-#define ORectCenteredOrigin(cx, cy, w, h)		{(cx) - (w) * .5f, (cy) - (h) * .5f, w, h}
+#define ORectCenteredOrigin(cx, cy, w, h)		Rect{(cx) - (w) * .5f, (cy) - (h) * .5f, w, h}
 
 // Rectangle helpers
-#define ORectFullScreen							{0, 0, OScreenWf, OScreenHf}
-#define ORectGrid(cols, rows, ix, iy, px, py)	{OScreenWf/(cols)*(ix)+((ix>0)?px*.5f:px),OScreenHf/(rows)*(iy)+((iy>0)?py*.5f:py),OScreenWf/(cols)-((ix<=0||ix>=cols-1)?px*1.5f:px),OScreenHf/(rows)-((iy<=0||iy>=rows-1)?py*1.5f:py)}
-#define ORectLayout(left, top, right, bottom)	{(left), (top), (right) - (left), (bottom) - (top)}
+#define ORectFullScreen							Rect{0, 0, OScreenWf, OScreenHf}
+#define ORectGrid(cols, rows, ix, iy, px, py)	Rect{OScreenWf/(cols)*(ix)+((ix>0)?px*.5f:px),OScreenHf/(rows)*(iy)+((iy>0)?py*.5f:py),OScreenWf/(cols)-((ix<=0||ix>=cols-1)?px*1.5f:px),OScreenHf/(rows)-((iy<=0||iy>=rows-1)?py*1.5f:py)}
+#define ORectLayout(left, top, right, bottom)	Rect{(left), (top), (right) - (left), (bottom) - (top)}
 #define ORectAlign								onut::alignedRect
 
 // Color stuff

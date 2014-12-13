@@ -1483,6 +1483,10 @@ inline Vector2 Vector4::BottomRight(const Vector2& offset) const {
 	return std::move(Vector2{ x + z - offset.x, y + w - offset.y });
 }
 
+inline Vector4 Vector4::Grow(float by) const {
+	return std::move(Vector4{ x - by, y - by, z + by * 2, w + by * 2 });
+}
+
 //------------------------------------------------------------------------------
 // Static functions
 //------------------------------------------------------------------------------
