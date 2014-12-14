@@ -13,6 +13,12 @@
 #define OGamePad(index)		onut::getGamePad(index)
 #define OEvent				onut::getEventManager()
 #define OTween				onut::TweenType
+#define OAnim				onut::Anim
+#define OAnimf				onut::Anim<float>
+#define OAnimi				onut::Anim<int>
+#define OAnim2				onut::Anim<Vector2>
+#define OAnim3				onut::Anim<Vector3>
+#define OAnim4				onut::Anim<Vector4>
 
 //--- Resource creation shortcuts
 #define OTextureFromFile	onut::Texture::createFromFile
@@ -64,6 +70,28 @@
 #define OBottomLeft								onut::Align::BOTTOM_LEFT
 #define OBottom									onut::Align::BOTTOM
 #define OBottomRight							onut::Align::BOTTOM_RIGHT
+
+// Loops
+#define ODontLoop								onut::LoopType::NONE
+#define OLoop									onut::LoopType::LOOP
+#define OPingPong								onut::LoopType::PINGPONG_ONCE
+#define OPingPongLoop							onut::LoopType::PINGPONG_LOOP
+
+// Tweens
+#define OTeleport								onut::TweenType::NONE
+#define OLinear									onut::TweenType::LINEAR
+#define OEaseIn									onut::TweenType::EASE_IN
+#define OEaseOut								onut::TweenType::EASE_OUT
+#define OEaseBoth								onut::TweenType::EASE_BOTH
+#define OBounceIn								onut::TweenType::BOUNCE_IN
+#define OBounceOut								onut::TweenType::BOUNCE_OUT
+#define OSpringIn								onut::TweenType::SPRING_IN
+#define OSpringOut								onut::TweenType::SPRING_OUT
+
+// Anim helpers
+#define OSequence(T, ...)						std::vector<onut::Anim<T>::AnimKeyFrame>(__VA_ARGS__)
+#define OAnimWait(val, t)						{val,t,OTeleport}
+#define OAnimAppleStyleBounce(from, to)			{from,0.f,OTeleport},{to,.25f,OEaseOut},{from,.5f,OBounceOut}
 
 // Alignement of 1D position
 #define OPosAbsX(x, p)							((x) + (p))

@@ -73,17 +73,13 @@ namespace onut {
 			}
 		}
 
-		const Ttype& get() {
+		const Ttype& get() const {
 			return m_retValue;
 		}
 
 	public:
-		const Ttype& operator=(const Ttype& rvalue) const {
-			Ttype = rvalue;
-			return m_value;
-		}
-		Ttype operator=(const Ttype& rvalue) {
-			Ttype = rvalue;
+		const Ttype& operator=(const Ttype& rvalue) {
+			m_retValue = m_value = rvalue;
 			return m_value;
 		}
 
