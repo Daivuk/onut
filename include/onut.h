@@ -13,6 +13,7 @@
 #include "Texture.h"
 #include "EventManager.h"
 #include "TimeInfo.h"
+#include "Anim.h"
 
 using namespace DirectX::SimpleMath;
 

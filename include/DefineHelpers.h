@@ -12,6 +12,7 @@
 #define OFontPtr			std::shared_ptr<onut::BMFont>
 #define OGamePad(index)		onut::getGamePad(index)
 #define OEvent				onut::getEventManager()
+#define OTween				onut::TweenType
 
 //--- Resource creation shortcuts
 #define OTextureFromFile	onut::Texture::createFromFile

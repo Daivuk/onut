@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\Anim.h" />
     <ClInclude Include="..\..\include\BMFont.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="..\..\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\BMFont.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
