@@ -40,6 +40,9 @@
     <ClInclude Include="..\..\include\BMFont.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\GamePad.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -73,6 +76,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\BMFont.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GamePad.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

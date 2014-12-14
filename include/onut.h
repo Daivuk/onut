@@ -2,6 +2,7 @@
 #include <functional>
 #include <memory>
 
+#include "GamePad.h"
 #include "BMFont.h"
 #include "DefineHelpers.h"
 #include "Random.h"
@@ -48,6 +49,11 @@ namespace onut {
 		This is the same as getDefaultFont but gets a bigger version
 	*/
 	std::shared_ptr<BMFont> getDefaultFontBig();
+
+	/**
+		Get a gamepad for index (0 to 3)
+	*/
+	std::shared_ptr<GamePad> getGamePad(int index);
 
 	/**
 		Rect alignement helper

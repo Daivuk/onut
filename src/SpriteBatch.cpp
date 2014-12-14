@@ -169,6 +169,40 @@ namespace onut {
 		}
 	}
 
+	void SpriteBatch::drawRectWithUVsColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors) {
+		assert(m_isDrawing); // Should call begin() before calling draw()
+		assert(colors.size() == 4); // Needs 4 colors
+
+		if (!pTexture) pTexture = m_pTexWhite;
+		if (pTexture != m_pTexture) {
+			flush();
+		}
+		m_pTexture = pTexture;
+
+		SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+		pVerts[0].position = { rect.x, rect.y };
+		pVerts[0].texCoord = { uvs.x, uvs.y };
+		pVerts[0].color = colors[0];
+
+		pVerts[1].position = { rect.x, rect.y + rect.w };
+		pVerts[1].texCoord = { uvs.x, uvs.w };
+		pVerts[1].color = colors[1];
+
+		pVerts[2].position = { rect.x + rect.z, rect.y + rect.w };
+		pVerts[2].texCoord = { uvs.z, uvs.w };
+		pVerts[2].color = colors[2];
+
+		pVerts[3].position = { rect.x + rect.z, rect.y };
+		pVerts[3].texCoord = { uvs.z, uvs.y };
+		pVerts[3].color = colors[3];
+
+		++m_spriteCount;
+
+		if (m_spriteCount == MAX_SPRITE_COUNT) {
+			flush();
+		}
+	}
+
 	void SpriteBatch::end() {
 		assert(m_isDrawing); // Should call begin() before calling end()
 

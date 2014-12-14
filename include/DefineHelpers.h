@@ -10,6 +10,7 @@
 #define OFontBig			onut::getDefaultFontBig()
 #define OTexturePtr			std::shared_ptr<onut::Texture>
 #define OFontPtr			std::shared_ptr<onut::BMFont>
+#define OGamePad(index)		onut::getGamePad(index)
 
 //--- Resource creation shortcuts
 #define OTextureFromFile	onut::Texture::createFromFile

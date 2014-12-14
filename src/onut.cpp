@@ -18,6 +18,7 @@ namespace onut {
 	std::shared_ptr<SpriteBatch> g_pSpriteBatch;
 	std::shared_ptr<BMFont> g_pDefaultFont;
 	std::shared_ptr<BMFont> g_pDefaultFont64;
+	std::shared_ptr<GamePad> g_gamePads[4] = { nullptr };
 
 	// Main loop
 	void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback) {
@@ -42,6 +43,9 @@ namespace onut {
 			g_pDefaultFont = BMFont::createFromFile(fntFilename);
 			g_pDefaultFont64 = BMFont::createFromFile(fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt");
 		}
+		for (int i = 0; i < 4; ++i) {
+			g_gamePads[i] = std::make_shared<GamePad>(i);
+		}
 
 		initCallback();
 
@@ -58,6 +62,9 @@ namespace onut {
 			}
 
 			// Update
+			for (auto& gamePad : g_gamePads) {
+				gamePad->update();
+			}
 			updateCallback();
 
 			// Render
@@ -91,5 +98,10 @@ namespace onut {
 
 	std::shared_ptr<BMFont> getDefaultFontBig() {
 		return g_pDefaultFont64;
+	}
+
+	std::shared_ptr<GamePad> getGamePad(int index) {
+		assert(index >= 0 && index <= 3);
+		return g_gamePads[index];
 	}
 }
