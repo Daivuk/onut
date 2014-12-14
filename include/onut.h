@@ -12,6 +12,7 @@
 #include "SpriteBatch.h"
 #include "Texture.h"
 #include "EventManager.h"
+#include "TimeInfo.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -21,7 +22,7 @@ namespace onut {
 		@param updateCallback Called at a fixed 60 times per seconds. Sometimes tho calls can be dropped and run slower if the game performs badly
 		@param renderCallback Called once per frame. Draw your stuff in there
 	*/
-	void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback);
+	void run(std::function<void()> initCallback, std::function<void(const TimeInfo&)> updateCallback, std::function<void()> renderCallback);
 
 	/**
 		Get Settings that allows you to set or get game settings like screen resolution, 

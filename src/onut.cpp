@@ -36,7 +36,7 @@ namespace onut {
 	std::shared_ptr<EventManager>		g_pEventManager;
 
 	// Main loop
-	void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback) {
+	void run(std::function<void()> initCallback, std::function<void(const TimeInfo&)> updateCallback, std::function<void()> renderCallback) {
 		// Validate parameters
 		assert(initCallback);
 		assert(updateCallback);
@@ -65,6 +65,8 @@ namespace onut {
 
 		initCallback();
 
+		TimeInfo timeInfo;
+
 		// Main loop
 		MSG msg = { 0 };
 		while (true) {
@@ -81,11 +83,14 @@ namespace onut {
 			synchronize();
 
 			// Update
-			for (auto& gamePad : g_gamePads) {
-				gamePad->update();
+			auto framesToUpdate = timeInfo.update();
+			while (framesToUpdate--) {
+				for (auto& gamePad : g_gamePads) {
+					gamePad->update();
+				}
+				g_pEventManager->update();
+				updateCallback(timeInfo);
 			}
-			g_pEventManager->update();
-			updateCallback();
 
 			// Render
 			g_pRenderer->beginFrame();

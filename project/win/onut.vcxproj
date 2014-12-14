@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\StringUtils.h" />
     <ClInclude Include="..\..\include\Texture.h" />
+    <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
     <ClInclude Include="..\..\src\LodePNG.h" />
     <ClInclude Include="..\..\src\Window.h" />
@@ -40,6 +41,7 @@
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\StringUtils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
+    <ClCompile Include="..\..\src\TimeInfo.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
