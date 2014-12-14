@@ -1,4 +1,6 @@
 #include <cassert>
+#include <queue>
+#include <mutex>
 
 #include "onut.h"
 #include "Random.h"
@@ -11,14 +13,27 @@ namespace onut {
 	std::vector<Color> palHeartDesire = { OColorHex(0C375B), OColorHex(456E86), OColorHex(6C9AA2), OColorHex(C35D61), OColorHex(FBF9AB) };
 	std::vector<Color> palNatureWalk = { OColorHex(CFB590), OColorHex(9E9A41), OColorHex(758918), OColorHex(564334), OColorHex(49281F) };
 
+	// For mainloop sync
+	std::queue<std::function<void()>>	g_syncToMainLoopCallbacks;
+	std::mutex							g_syncToMainLoopMutex;
+	void synchronize() {
+		std::lock_guard<std::mutex> lock(g_syncToMainLoopMutex);
+		while (!g_syncToMainLoopCallbacks.empty()) {
+			auto& callback = g_syncToMainLoopCallbacks.front();
+			if (callback) callback();
+			g_syncToMainLoopCallbacks.pop();
+		}
+	}
+
 	// Our engine services
-	std::shared_ptr<Window> g_pWindow;
-	std::shared_ptr<Renderer> g_pRenderer;
-	std::shared_ptr<Settings> g_pSettings;
-	std::shared_ptr<SpriteBatch> g_pSpriteBatch;
-	std::shared_ptr<BMFont> g_pDefaultFont;
-	std::shared_ptr<BMFont> g_pDefaultFont64;
-	std::shared_ptr<GamePad> g_gamePads[4] = { nullptr };
+	std::shared_ptr<Window>				g_pWindow;
+	std::shared_ptr<Renderer>			g_pRenderer;
+	std::shared_ptr<Settings>			g_pSettings;
+	std::shared_ptr<SpriteBatch>		g_pSpriteBatch;
+	std::shared_ptr<BMFont>				g_pDefaultFont;
+	std::shared_ptr<BMFont>				g_pDefaultFont64;
+	std::shared_ptr<GamePad>			g_gamePads[4] = { nullptr };
+	std::shared_ptr<EventManager>		g_pEventManager;
 
 	// Main loop
 	void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback) {
@@ -35,6 +50,7 @@ namespace onut {
 		// Create our services
 		randomizeSeed();
 		auto settings = getSettings();
+		g_pEventManager = std::make_shared<EventManager>();
 		g_pWindow = std::make_shared<Window>(settings->getResolution());
 		g_pRenderer = std::make_shared<Renderer>(*g_pWindow);
 		g_pSpriteBatch = std::make_shared<SpriteBatch>();
@@ -61,10 +77,14 @@ namespace onut {
 				}
 			}
 
+			// Sync to main callbacks
+			synchronize();
+
 			// Update
 			for (auto& gamePad : g_gamePads) {
 				gamePad->update();
 			}
+			g_pEventManager->update();
 			updateCallback();
 
 			// Render
@@ -74,7 +94,6 @@ namespace onut {
 		}
 	}
 
-	// Getters
 	std::shared_ptr<Settings> getSettings() {
 		if (g_pSettings == nullptr) {
 			g_pSettings = std::make_shared<Settings>();
@@ -103,5 +122,14 @@ namespace onut {
 	std::shared_ptr<GamePad> getGamePad(int index) {
 		assert(index >= 0 && index <= 3);
 		return g_gamePads[index];
+	}
+
+	std::shared_ptr<EventManager> getEventManager() {
+		return g_pEventManager;
+	}
+
+	void syncToMainLoop(const std::function<void()>& callback) {
+		std::lock_guard<std::mutex> lock(g_syncToMainLoopMutex);
+		g_syncToMainLoopCallbacks.push(callback);
 	}
 }

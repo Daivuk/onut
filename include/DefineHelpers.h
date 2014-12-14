@@ -11,10 +11,15 @@
 #define OTexturePtr			std::shared_ptr<onut::Texture>
 #define OFontPtr			std::shared_ptr<onut::BMFont>
 #define OGamePad(index)		onut::getGamePad(index)
+#define OEvent				onut::getEventManager()
 
 //--- Resource creation shortcuts
 #define OTextureFromFile	onut::Texture::createFromFile
 #define OFontFromFile		onut::BMFont::createFromFile
+
+//--- Synchronisation
+#define OAsync(callback)	std::async(std::launch::async, callback)
+#define OSync(callback)		onut::syncToMainLoop(callback)
 
 //--- Resolution helpers
 #define OScreen				onut::getRenderer()->getResolution()

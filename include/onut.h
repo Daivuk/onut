@@ -11,6 +11,7 @@
 #include "SimpleMath.h"
 #include "SpriteBatch.h"
 #include "Texture.h"
+#include "EventManager.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -54,6 +55,11 @@ namespace onut {
 		Get a gamepad for index (0 to 3)
 	*/
 	std::shared_ptr<GamePad> getGamePad(int index);
+
+	/**
+		Get a gamepad for index (0 to 3)
+	*/
+	std::shared_ptr<EventManager> getEventManager();
 
 	/**
 		Rect alignement helper
@@ -117,4 +123,10 @@ namespace onut {
 	Rect alignedRect(const Rect& rect, float padding = 0, Align align = Talign) {
 		alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
 	}
+
+	/**
+		Sync to the main loop. Call this from threads.
+		If called from main loop, it will be called the next frame.
+	*/
+	void syncToMainLoop(const std::function<void()>& callback);
 }
