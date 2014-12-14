@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <vector>
+#include <functional>
 
 namespace onut {
 	enum class TweenType {
@@ -29,14 +30,20 @@ namespace onut {
 	class Anim {
 	public:
 		struct AnimKeyFrame {
-			AnimKeyFrame(const Ttype& in_goal, float in_duration, TweenType in_tween = TweenType::NONE) :
+			AnimKeyFrame(
+				const Ttype& in_goal, 
+				float in_duration, 
+				TweenType in_tween = TweenType::NONE, 
+				const std::function<void()>& in_callback = nullptr) :
 				goal(in_goal), 
 				duration(in_duration), 
-				tween(in_tween) {
+				tween(in_tween),
+				callback(in_callback) {
 			}
-			Ttype		goal;
-			float		duration;
-			TweenType	tween = TweenType::LINEAR;
+			Ttype					goal;
+			float					duration;
+			TweenType				tween;
+			std::function<void()>	callback;
 		};
 
 		Anim() {}
@@ -48,6 +55,9 @@ namespace onut {
 				auto now = std::chrono::steady_clock::now();
 				auto& last = m_keyFrames.back();
 				if (now >= last.endAt) {
+					if (last.callback) {
+						last.callback();
+					}
 					switch (m_loop) {
 					case LoopType::NONE: {
 						stop(true);
@@ -67,6 +77,7 @@ namespace onut {
 						auto lastTime = last.endAt;
 						auto from = m_value;
 						auto oldGoal = last.goal;
+						auto callback = m_cachedCallback;
 						for (auto& keyFrame : m_keyFrames) {
 							// Reverse time
 							auto oldEnd = keyFrame.endAt;
@@ -79,7 +90,11 @@ namespace onut {
 
 							// Reverse goals
 							std::swap(keyFrame.goal, from);
+
+							// Invert callbacks
+							std::swap(keyFrame.callback, callback);
 						}
+						m_cachedCallback = callback;
 
 						// Reverse the keyframes
 						std::reverse(m_keyFrames.begin(), m_keyFrames.end());
@@ -112,9 +127,15 @@ namespace onut {
 
 						return std::move(ret);
 					}
+					if (m_oldTime <= keyFrame.endAt) {
+						if (keyFrame.callback) {
+							keyFrame.callback();
+						}
+					}
 					from = keyFrame.goal;
 					fromTime = keyFrame.endAt;
 				}
+				m_oldTime = now;
 			}
 			return m_value;
 		}
@@ -154,14 +175,14 @@ namespace onut {
 			m_keyFrames.clear();
 
 			// Convert to internal keyframes
-			m_startTime = std::chrono::steady_clock::now();
+			m_oldTime = m_startTime = std::chrono::steady_clock::now();
 			double timeIn = 0.0;
 			for (auto& keyFrame : keyFrames) {
 				timeIn += static_cast<double>(keyFrame.duration);
 				
 				auto timeInPrecise = m_startTime + 
 					std::chrono::microseconds(static_cast<long long>(timeIn * 1000000.0));
-				m_keyFrames.push_back(InternalKeyFrame{ keyFrame.goal, timeInPrecise, keyFrame.tween });
+				m_keyFrames.push_back(InternalKeyFrame{ keyFrame.goal, timeInPrecise, keyFrame.tween, keyFrame.callback });
 			}
 
 			// Start the animation
@@ -181,21 +202,29 @@ namespace onut {
 
 	private:
 		struct InternalKeyFrame {
-			InternalKeyFrame(const Ttype& in_goal, const std::chrono::system_clock::time_point& in_endAt, TweenType in_tween) :
+			InternalKeyFrame(
+				const Ttype& in_goal, 
+				const std::chrono::system_clock::time_point& in_endAt,
+				TweenType in_tween,
+				std::function<void()> in_callback) :
 				goal(in_goal),
 				endAt(in_endAt),
-				tween(in_tween) {
+				tween(in_tween),
+				callback(in_callback) {
 			}
 			Ttype									goal;
 			std::chrono::system_clock::time_point	endAt;
 			TweenType								tween;
+			std::function<void()>					callback;
 		};
 
 		bool									m_isPlaying = false;
 		Ttype									m_value;
 		std::chrono::system_clock::time_point	m_startTime;
+		std::chrono::system_clock::time_point	m_oldTime;
 		std::vector<InternalKeyFrame>			m_keyFrames;
 		LoopType								m_loop;
 		bool									m_isPingPonging = false;
+		std::function<void()>					m_cachedCallback = nullptr; // Used for pingpong
 	};
 }
