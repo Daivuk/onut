@@ -1,6 +1,35 @@
 #include "Anim.h"
 
 namespace onut {
+	std::vector<IAnim*> IAnim::s_anims;
+
+	void IAnim::update() {
+		for (auto it = s_anims.begin(); it != s_anims.end();) {
+			auto pAnim = *it;
+			if (pAnim->updateAnim()) {
+				it = s_anims.erase(it);
+				continue;
+			}
+			++it;
+		}
+	}
+
+	void IAnim::registerAnim(IAnim* pAnim) {
+		s_anims.push_back(pAnim);
+	}
+
+	void IAnim::unregisterAnim(IAnim* in_pAnim) {
+		if (!s_anims.empty()) {
+			for (auto it = s_anims.begin(); it != s_anims.end();) {
+				auto pAnim = *it;
+				if (pAnim == in_pAnim) {
+					s_anims.erase(it);
+					return;
+				}
+			}
+		}
+	}
+
 	float applyTween(const float t, TweenType tween)  {
 		switch (tween) {
 		case TweenType::NONE:

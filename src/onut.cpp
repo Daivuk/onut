@@ -88,6 +88,7 @@ namespace onut {
 				for (auto& gamePad : g_gamePads) {
 					gamePad->update();
 				}
+				IAnim::update();
 				g_pEventManager->update();
 				updateCallback(timeInfo);
 			}

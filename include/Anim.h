@@ -26,8 +26,25 @@ namespace onut {
 	float applyTween(const float t, TweenType tween);
 	TweenType invertTween(TweenType tween);
 
+	class IAnim {
+	public:
+		IAnim() {};
+		virtual ~IAnim() {}
+
+		static void update();
+
+	protected:
+		static void registerAnim(IAnim* pAnim);
+		static void unregisterAnim(IAnim* pAnim);
+
+		virtual bool updateAnim() = 0;
+
+	private:
+		static std::vector<IAnim*> s_anims;
+	};
+
 	template<typename Ttype>
-	class Anim {
+	class Anim : public IAnim {
 	public:
 		struct AnimKeyFrame {
 			AnimKeyFrame(
@@ -50,7 +67,102 @@ namespace onut {
 		Anim(const Ttype& rvalue) :
 			m_value(rvalue) {}
 
+		virtual ~Anim() {
+			if (m_isPlaying) {
+				stop(false);
+			}
+		}
+
 		const Ttype& get() {
+			return m_retValue;
+		}
+
+	public:
+		const Ttype& operator=(const Ttype& rvalue) const {
+			Ttype = rvalue;
+			return m_value;
+		}
+		Ttype operator=(const Ttype& rvalue) {
+			Ttype = rvalue;
+			return m_value;
+		}
+
+		void start(const Ttype& from, const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
+			start(from, m_value, { { goal, duration, tween } }, loop);
+		}
+
+		void start(const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
+			start(m_value, { { goal, duration, tween } }, loop);
+		}
+
+		void start(const AnimKeyFrame& keyFrames, LoopType loop = LoopType::NONE) {
+			start(m_value, { keyFrames }, loop);
+		}
+
+		void start(const std::vector<AnimKeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
+			start(m_value, keyFrames, loop);
+		}
+
+		void start(const Ttype& startValue, const std::vector<AnimKeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
+			assert(!keyFrames.empty());
+
+			// Update value to the start point if specified
+			m_retValue = m_value = startValue;
+
+			// Clear previous keyframes
+			m_keyFrames.clear();
+
+			// Convert to internal keyframes
+			m_oldTime = m_startTime = std::chrono::steady_clock::now();
+			double timeIn = 0.0;
+			for (auto& keyFrame : keyFrames) {
+				timeIn += static_cast<double>(keyFrame.duration);
+				
+				auto timeInPrecise = m_startTime + 
+					std::chrono::microseconds(static_cast<long long>(timeIn * 1000000.0));
+				m_keyFrames.push_back(InternalKeyFrame{ keyFrame.goal, timeInPrecise, keyFrame.tween, keyFrame.callback });
+			}
+
+			// Start the animation
+			m_isPlaying = true;
+			m_loop = loop;
+
+			registerAnim(this);
+		}
+
+		void stop(bool goToEnd) {
+			if (m_isPlaying) {
+				unregisterAnim(this);
+				m_isPlaying = false;
+				if (goToEnd) {
+					if (!m_keyFrames.empty()) {
+						m_retValue = m_value = m_keyFrames.back().goal;
+					}
+				}
+				m_keyFrames.clear();
+			}
+		}
+
+	protected:
+		virtual bool updateAnim() {
+			m_retValue = updateValue();
+			return !m_isPlaying;
+		}
+
+	private:
+		void stopButDontUnregister(bool goToEnd) {
+			if (m_isPlaying) {
+				m_isPlaying = false;
+				if (goToEnd) {
+					if (!m_keyFrames.empty()) {
+						m_retValue = m_value = m_keyFrames.back().goal;
+					}
+				}
+				m_keyFrames.clear();
+			}
+		}
+
+		Ttype updateValue() {
 			if (m_isPlaying) {
 				auto now = std::chrono::steady_clock::now();
 				auto& last = m_keyFrames.back();
@@ -60,12 +172,12 @@ namespace onut {
 					}
 					switch (m_loop) {
 					case LoopType::NONE: {
-						stop(true);
+						stopButDontUnregister(true);
 						return m_value;
 					}
 					case LoopType::PINGPONG_ONCE:
 						if (m_isPingPonging) {
-							stop(true);
+							stopButDontUnregister(true);
 							return m_value;
 						}
 					case LoopType::PINGPONG_LOOP: {
@@ -140,66 +252,6 @@ namespace onut {
 			return m_value;
 		}
 
-		const Ttype& operator=(const Ttype& rvalue) const {
-			Ttype = rvalue;
-			return m_value;
-		}
-		Ttype operator=(const Ttype& rvalue) {
-			Ttype = rvalue;
-			return m_value;
-		}
-
-		void start(const Ttype& from, const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
-			start(from, m_value, { { goal, duration, tween } }, loop);
-		}
-
-		void start(const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
-			start(m_value, { { goal, duration, tween } }, loop);
-		}
-
-		void start(const AnimKeyFrame& keyFrames, LoopType loop = LoopType::NONE) {
-			start(m_value, { keyFrames }, loop);
-		}
-
-		void start(const std::vector<AnimKeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
-			start(m_value, keyFrames, loop);
-		}
-
-		void start(const Ttype& startValue, const std::vector<AnimKeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
-			assert(!keyFrames.empty());
-
-			// Update value to the start point if specified
-			m_value = startValue;
-
-			// Clear previous keyframes
-			m_keyFrames.clear();
-
-			// Convert to internal keyframes
-			m_oldTime = m_startTime = std::chrono::steady_clock::now();
-			double timeIn = 0.0;
-			for (auto& keyFrame : keyFrames) {
-				timeIn += static_cast<double>(keyFrame.duration);
-				
-				auto timeInPrecise = m_startTime + 
-					std::chrono::microseconds(static_cast<long long>(timeIn * 1000000.0));
-				m_keyFrames.push_back(InternalKeyFrame{ keyFrame.goal, timeInPrecise, keyFrame.tween, keyFrame.callback });
-			}
-
-			// Start the animation
-			m_isPlaying = true;
-			m_loop = loop;
-		}
-
-		void stop(bool goToEnd) {
-			m_isPlaying = false;
-			if (goToEnd) {
-				if (!m_keyFrames.empty()) {
-					m_value = m_keyFrames.back().goal;
-				}
-			}
-			m_keyFrames.clear();
-		}
-
 	private:
 		struct InternalKeyFrame {
 			InternalKeyFrame(
@@ -220,6 +272,7 @@ namespace onut {
 
 		bool									m_isPlaying = false;
 		Ttype									m_value;
+		Ttype									m_retValue;
 		std::chrono::system_clock::time_point	m_startTime;
 		std::chrono::system_clock::time_point	m_oldTime;
 		std::vector<InternalKeyFrame>			m_keyFrames;
