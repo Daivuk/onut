@@ -4,102 +4,496 @@
 #include <functional>
 
 namespace onut {
+	/**
+		Tween type
+	*/
 	enum class TweenType {
+		/**
+			No Tween. It's going to jump to destination at the end of the anim
+		*/
 		NONE,
+
+		/**
+			Linear interpolation
+		*/
 		LINEAR,
+
+		/**
+			Animation will start slow and accelerate near the end
+		*/
 		EASE_IN,
+
+		/**
+			Animation will slow down at the end
+		*/
 		EASE_OUT,
+
+		/**
+			Animation will start slow, then accelerate and slow down at the end
+		*/
 		EASE_BOTH,
+
+		/**
+			Bounce effect at the beggining of the animation.
+			@see TweenType::BOUNCE_OUT
+		*/
 		BOUNCE_IN,
+
+		/**
+			Bounce effect at the end of the animation
+		*/
 		BOUNCE_OUT,
+
+		/**
+			Spring at the start of the animation. It will go between starting value at first, then swing fast to the destination
+		*/
 		SPRING_IN,
+
+		/**
+			Spring at the end of the animation. It will go past the destination, then swing back to it
+		*/
 		SPRING_OUT
 	};
 
+	/**
+		Loop type
+	*/
 	enum class LoopType {
+		/**
+			No loop. Play once
+		*/
 		NONE,
+
+		/**
+			Wrap back to the beggining of the animation then continue playing
+		*/
 		LOOP,
+
+		/**
+			At the end of the animation, it will play back in reverse.
+		*/
 		PINGPONG_ONCE,
+
+		/**
+			Same as PINGPONG_ONCE, but will start again after and loop indefinitally.
+		*/
 		PINGPONG_LOOP
 	};
 
-	float applyTween(const float t, TweenType tween);
+	/**
+		Apply a tween effect to a progression
+		@param t Time of the animation between 0 and 1
+		@param tween Tween to apply to t
+		@return The transformed time based on the templated tween.
+		@see TweenType
+	*/
+	template<typename Tprecision>
+	Tprecision applyTween(const Tprecision t, TweenType tween) {
+		static const Tprecision SPRING_DIS = static_cast<Tprecision>(.3);
+		static const Tprecision INV_SPRING_DIS = static_cast<Tprecision>(.7);
+
+		switch (tween) {
+		case TweenType::NONE:
+			return static_cast<Tprecision>(0);
+		case TweenType::LINEAR:
+			return t;
+		case TweenType::EASE_IN:
+			return t * t;
+		case TweenType::EASE_OUT: {
+			auto inv = static_cast<Tprecision>(1) - t;
+			return static_cast<Tprecision>(1) - inv * inv;
+		}
+		case TweenType::EASE_BOTH: {
+			if (t < static_cast<Tprecision>(.5)) {
+				return t * t * static_cast<Tprecision>(2);
+			}
+			else {
+				auto clamped = (t - static_cast<Tprecision>(.5)) * static_cast<Tprecision>(2);
+				auto inv = 1 - clamped;
+				clamped = 1 - inv * inv;
+				return clamped * static_cast<Tprecision>(.5) + static_cast<Tprecision>(.5);
+			}
+			return static_cast<Tprecision>(0);
+		}
+		case TweenType::BOUNCE_IN: {
+			auto inv = static_cast<Tprecision>(1) - t;
+			Tprecision ret;
+			if (inv < (static_cast<Tprecision>(1) / static_cast<Tprecision>(2.75)))
+			{
+				ret = (static_cast<Tprecision>(7.5625) * inv * inv);
+			}
+			else if (inv < (static_cast<Tprecision>(2) / static_cast<Tprecision>(2.75)))
+			{
+				auto postFix = inv - (static_cast<Tprecision>(1.5) / static_cast<Tprecision>(2.75));
+				ret = static_cast<Tprecision>(7.5625) * postFix * postFix + static_cast<Tprecision>(.75);
+			}
+			else if (inv < (static_cast<Tprecision>(2.5) / static_cast<Tprecision>(2.75)))
+			{
+				auto postFix = inv - (static_cast<Tprecision>(2.25) / static_cast<Tprecision>(2.75));
+				ret = static_cast<Tprecision>(7.5625) * postFix * postFix + static_cast<Tprecision>(.9375);
+			}
+			else
+			{
+				auto postFix = inv - (static_cast<Tprecision>(2.625) / static_cast<Tprecision>(2.75));
+				ret = static_cast<Tprecision>(7.5625) * postFix * postFix + static_cast<Tprecision>(.984375);
+			}
+			return 1 - ret;
+		}
+		case TweenType::BOUNCE_OUT:
+			if (t < (static_cast<Tprecision>(1) / static_cast<Tprecision>(2.75)))
+			{
+				return (static_cast<Tprecision>(7.5625) * t * t);
+			}
+			else if (t < (static_cast<Tprecision>(2) / static_cast<Tprecision>(2.75)))
+			{
+				auto postFix = t - (static_cast<Tprecision>(1.5) / static_cast<Tprecision>(2.75));
+				return (static_cast<Tprecision>(7.5625) * postFix * postFix + static_cast<Tprecision>(.75));
+			}
+			else if (t < (static_cast<Tprecision>(2.5) / static_cast<Tprecision>(2.75)))
+			{
+				auto postFix = t - (static_cast<Tprecision>(2.25) / static_cast<Tprecision>(2.75));
+				return (static_cast<Tprecision>(7.5625) * postFix * postFix + static_cast<Tprecision>(.9375));
+			}
+			else
+			{
+				auto postFix = t - (static_cast<Tprecision>(2.625) / static_cast<Tprecision>(2.75));
+				return (static_cast<Tprecision>(7.5625) * postFix * postFix + static_cast<Tprecision>(.984375));
+			}
+		case TweenType::SPRING_IN: {
+			Tprecision ret;
+			if (t < SPRING_DIS)
+			{
+				ret = t / SPRING_DIS;
+				ret = static_cast<Tprecision>(1) - (static_cast<Tprecision>(1) - ret) * (static_cast<Tprecision>(1) - ret);
+				ret = ret * -SPRING_DIS;
+			}
+			else
+			{
+				ret = (t - SPRING_DIS) / INV_SPRING_DIS;
+				ret *= ret;
+				ret = ret * (static_cast<Tprecision>(1) + SPRING_DIS) - SPRING_DIS;
+			}
+			return ret;
+		}
+		case TweenType::SPRING_OUT: {
+			auto inv = static_cast<Tprecision>(1) - t;
+			if (inv < SPRING_DIS)
+			{
+				inv = inv / SPRING_DIS;
+				inv = static_cast<Tprecision>(1) - (static_cast<Tprecision>(1) - inv) * (static_cast<Tprecision>(1) - inv);
+				inv = inv * -SPRING_DIS;
+			}
+			else
+			{
+				inv = (inv - SPRING_DIS) / INV_SPRING_DIS;
+				inv *= inv;
+				inv = inv * (static_cast<Tprecision>(1) + SPRING_DIS) - SPRING_DIS;
+			}
+			return static_cast<Tprecision>(1) - inv;
+		}
+		}
+		return t;
+	}
+
+	/**
+		Invert a tween enum.
+		@param tween The Tween to reverse
+		@return The reversed Tween
+		@note Here is the reversed values
+		Tween                 | Reversed Tween
+		--------------------- | ---------------------
+		TweenType::NONE       | TweenType::NONE
+		TweenType::LINEAR     | TweenType::LINEAR
+		TweenType::EASE_IN    | TweenType::EASE_OUT
+		TweenType::EASE_OUT   | TweenType::EASE_IN
+		TweenType::EASE_BOTH  | TweenType::EASE_BOTH
+		TweenType::BOUNCE_IN  | TweenType::BOUNCE_OUT
+		TweenType::BOUNCE_OUT | TweenType::BOUNCE_IN
+		TweenType::SPRING_IN  | TweenType::SPRING_OUT
+		TweenType::SPRING_OUT | TweenType::SPRING_IN
+	*/
 	TweenType invertTween(TweenType tween);
 
+	/**
+		Animation base class
+	*/
 	class IAnim {
 	public:
+		/**
+			Constructor
+		*/
 		IAnim() {};
+
+		/**
+			Virtual destructor
+		*/
 		virtual ~IAnim() {}
 
-		static void update();
+		/**
+			Pure virtual. You must implement this. It is called everytime it's AnimManager is updapted,
+			if the animation is currently playing.
+		*/
+		virtual void updateAnim() = 0;
+
+		/**
+			Returns wheter or not the animation is playing
+			@return true if playing
+		*/
+		virtual bool isPlaying() const = 0;
 
 	protected:
-		static void registerAnim(IAnim* pAnim);
-		static void unregisterAnim(IAnim* pAnim);
+		friend class AnimManager;
 
-		virtual bool updateAnim() = 0;
-
-	private:
-		static std::vector<IAnim*> s_anims;
+		virtual void stopButDontUnregister(bool goToEnd) = 0;
 	};
 
-	template<typename Ttype>
+	/**
+		Animation manager. Updates a set of animations.
+		This object is not thread safe. But can be used by any threads that update it regularly.
+		So you should have an instance per threads for animations instantiaced in those threads.
+	*/
+	class AnimManager {
+	public:
+		/**
+			Constructor
+		*/
+		AnimManager() {};
+
+		/**
+			Destructor
+		*/
+		virtual ~AnimManager() {}
+
+		/**
+			Call this once per frame. It updates all anims in the manager
+		*/
+		virtual void update();
+
+		/**
+			Stop all currently running anims
+			@param goToEnd If true, anims will go to their final destinations. Otherwise they will stop where they left.
+		*/
+		virtual void stopAllAnims(bool goToEnd = false);
+
+		/**
+			Register an anim.
+			@note This is done for you when animation starts. Don't call this
+		*/
+		virtual void registerAnim(IAnim* pAnim);
+
+		/**
+			Unregister an anim.
+			@note This is done for you when animation stops/destroy. Don't call this
+		*/
+		virtual void unregisterAnim(IAnim* pAnim);
+
+		/**
+			Get a global instance of the animation manager.
+			This is the default manager used if not specified by the animations.
+			@return Pointer to the global AnimManager.
+		*/
+		static AnimManager* getGlobalManager() { return &s_globalInstance; }
+
+	protected:
+		static AnimManager s_globalInstance;
+
+		std::vector<IAnim*>				m_anims;
+		std::vector<IAnim*>::size_type	m_updateIndex = 0;
+		bool							m_isUpdating = false;
+	};
+
+	/**
+		Default lerp function.
+		If you have special objects that need to be lerped different, like a string, you can redefine this.
+
+		Default implementations include:
+		- Integers
+		- Floating points
+		- Any classes that implenent math operators. Like Vector2, Vector3, etc
+		- std::string
+
+		Template arguments:
+		- Ttype: Type of the values to lerp
+		- Tprecision: Precision of the time period. Default float
+		- TtypePrecision: Precision of your internal type, if the case. In example, Vector2 store floats. Default float
+	*/
+	template<
+		typename Ttype, 
+		typename Tprecision = float,
+		typename TtypePrecision = float,
+		typename std::enable_if<!std::is_integral<Ttype>::value, Ttype>::type* = nullptr,
+		typename std::enable_if<!std::is_same<Ttype, std::string>::value && !std::is_same<Ttype, std::wstring>::value>::type* = nullptr>
+	Ttype animDefaultLerp(const Ttype& from, const Ttype& to, Tprecision t) {
+		auto ret = from + (to - from) * static_cast<TtypePrecision>(t);
+		return std::move(ret);
+	}
+	template<
+		typename Ttype, 
+		typename Tprecision = float, 
+		typename TtypePrecision = float,
+		typename std::enable_if<std::is_integral<Ttype>::value, Ttype>::type* = nullptr,
+		typename std::enable_if<!std::is_same<Ttype, std::string>::value && !std::is_same<Ttype, std::wstring>::value>::type* = nullptr>
+	Ttype animDefaultLerp(const Ttype& from, const Ttype& to, Tprecision t) {
+		auto ret = static_cast<TtypePrecision>(from) +
+			(static_cast<TtypePrecision>(to) - static_cast<TtypePrecision>(from)) * 
+			static_cast<TtypePrecision>(t);
+		ret = round(ret);
+		return std::move(static_cast<Ttype>(ret));
+	}
+	template<
+		typename Ttype, 
+		typename Tprecision = float,
+		typename TtypePrecision = float,
+		typename std::enable_if<!std::is_integral<Ttype>::value, Ttype>::type* = nullptr,
+		typename std::enable_if<std::is_same<Ttype, std::string>::value || std::is_same<Ttype, std::wstring>::value>::type* = nullptr>
+	Ttype animDefaultLerp(const Ttype& from, const Ttype& to, Tprecision t) {
+		const auto& fromLen = from.size();
+		const auto& toLen = to.size();
+		auto newLen = static_cast<Tprecision>(fromLen)+
+			(static_cast<Tprecision>(toLen)-static_cast<Tprecision>(fromLen)) *	t;
+		newLen = round(newLen);
+		if (toLen > fromLen) {
+			auto ret = to.substr(0, static_cast<std::string::size_type>(newLen));
+			return std::move(ret);
+		}
+		else {
+			auto ret = from.substr(0, static_cast<std::string::size_type>(newLen));
+			return std::move(ret);
+		}
+	}
+
+	/**
+		Anim class. This is what you should use
+
+		Template arguments:
+		- Ttype: Type of the internal value (float, int, Vector2, std::string, etc)
+		- Tprecision: Precision to be used on the tween. Default is float. If you have a very long animation with very slow tween across it, you might want to use double here
+		- Tlerp: Lerp fonction. Default is: from + (to - from) * t
+			You can implement your own if you use a special type that needs to be lerped differently, or you want to change it's default behaviour. Your function must respect this signature:
+			Ttype yourLerpFunction(const Ttype& from, const Ttype& to, Tprecision t);
+	*/
+	template<
+		typename Ttype, 
+		typename Tprecision = float,
+		Ttype(*Tlerp)(const Ttype&, const Ttype&, Tprecision) = animDefaultLerp>
 	class Anim : public IAnim {
 	public:
-		struct AnimKeyFrame {
-			AnimKeyFrame(
-				const Ttype& in_goal, 
-				float in_duration, 
-				TweenType in_tween = TweenType::NONE, 
-				const std::function<void()>& in_callback = nullptr) :
-				goal(in_goal), 
-				duration(in_duration), 
+		/**
+			User keyframe.
+		*/
+		struct KeyFrame {
+			KeyFrame(const Ttype& in_goal, float in_duration, TweenType in_tween = TweenType::NONE, const std::function<void()>& in_callback = nullptr) :
+				goal(in_goal),
+				duration(in_duration),
 				tween(in_tween),
-				callback(in_callback) {
-			}
+				callback(in_callback) {}
+			/**
+				Destination value
+			*/
 			Ttype					goal;
+
+			/**
+				Duration of the animation
+			*/
 			float					duration;
+
+			/**
+				Tween used to animate from previous position to goal
+			*/
 			TweenType				tween;
+
+			/**
+				Callback function when this keyframe is reached
+			*/
 			std::function<void()>	callback;
 		};
 
-		Anim() {}
-		Anim(const Ttype& rvalue) :
-			m_value(rvalue) {}
+		/**
+			Constructor
+			@param rvalue Initial value of the animation. Default is undefined behaviour
+			@param pAnimManager Pointer to the animation manager. Defaults to the global manager.
+		*/
+		Anim(AnimManager* pAnimManager = AnimManager::getGlobalManager()) :
+			m_pAnimManager(pAnimManager) {}
+		Anim(const Ttype& rvalue, AnimManager* pAnimManager = AnimManager::getGlobalManager()) :
+			m_value(rvalue),
+			m_pAnimManager(pAnimManager) {}
 
+		/**
+			Destructor. It will unregister itself from the AnimManager if it's currently playing
+		*/
 		virtual ~Anim() {
 			if (m_isPlaying) {
 				stop(false);
 			}
 		}
 
+		/**
+			Get the current value of the animation
+			@return Const reference on the current value
+		*/
 		const Ttype& get() const {
 			return m_retValue;
 		}
 
-	public:
+		/**
+			Assign a new value. This changes the start position. So it might affect the currently playing animation.
+			@param rvalue Value to set it
+			@return Const reference on the newly set value
+		*/
 		const Ttype& operator=(const Ttype& rvalue) {
 			m_retValue = m_value = rvalue;
 			return m_value;
 		}
 
+		/**
+			Start the animation
+			@param from Starting value of the animation
+			@param goal Destination value
+			@param duration Duration of the animation
+			@param tween Tween to use. Default TweenType::LINEAR
+			@param loop Looping state. Default LoopType::NONE
+		*/
 		void start(const Ttype& from, const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
-			start(from, m_value, { { goal, duration, tween } }, loop);
+			start(from, { { goal, duration, tween } }, loop);
 		}
 
+		/**
+			Start the animation
+			@param goal Destination value. It will start at current value
+			@param duration Duration of the animation
+			@param tween Tween to use. Default TweenType::LINEAR
+			@param loop Looping state. Default LoopType::NONE
+		*/
 		void start(const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
 			start(m_value, { { goal, duration, tween } }, loop);
 		}
 
-		void start(const AnimKeyFrame& keyFrames, LoopType loop = LoopType::NONE) {
-			start(m_value, { keyFrames }, loop);
+		/**
+			Start the animation
+			@param keyFrame Anim::KeyFrame defining the animation: goal, duration, tween
+			@param loop Looping state. Default LoopType::NONE
+		*/
+		void start(const KeyFrame& keyFrame, LoopType loop = LoopType::NONE) {
+			start(m_value, { keyFrame }, loop);
 		}
 
-		void start(const std::vector<AnimKeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
+		/**
+			Start the animation
+			@param keyFrames Sequences of Anim::KeyFrame 
+			@param loop Looping state. Default LoopType::NONE
+		*/
+		void start(const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
 			start(m_value, keyFrames, loop);
 		}
 
-		void start(const Ttype& startValue, const std::vector<AnimKeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
+		/**
+			Start the animation
+			@param startValue Starting value of the animation
+			@param keyFrames Sequences of Anim::KeyFrame
+			@param loop Looping state. Default LoopType::NONE
+		*/
+		void start(const Ttype& startValue, const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE) {
 			assert(!keyFrames.empty());
 
 			// Update value to the start point if specified
@@ -123,12 +517,16 @@ namespace onut {
 			m_isPlaying = true;
 			m_loop = loop;
 
-			registerAnim(this);
+			m_pAnimManager->registerAnim(this);
 		}
 
-		void stop(bool goToEnd) {
+		/**
+			Stop the animation if currently playing.
+			@param goToEnd Set the value to the final value in the animation sequences
+		*/
+		void stop(bool goToEnd = false) {
 			if (m_isPlaying) {
-				unregisterAnim(this);
+				m_pAnimManager->unregisterAnim(this);
 				m_isPlaying = false;
 				if (goToEnd) {
 					if (!m_keyFrames.empty()) {
@@ -139,25 +537,34 @@ namespace onut {
 			}
 		}
 
-	protected:
-		virtual bool updateAnim() {
+		/**
+			Update the animation, and store the new value.
+			@return true if done playing.
+		*/
+		virtual void updateAnim() {
 			m_retValue = updateValue();
-			return !m_isPlaying;
+		}
+
+		/**
+			Returns wheter or not the animation is playing
+			@return true if playing
+		*/
+		virtual bool isPlaying() const { return m_isPlaying; }
+
+	protected:
+		virtual void stopButDontUnregister(bool goToEnd) {
+			if (m_isPlaying) {
+				m_isPlaying = false;
+				if (goToEnd) {
+					if (!m_keyFrames.empty()) {
+						m_retValue = m_value = m_keyFrames.back().goal;
+					}
+				}
+				m_keyFrames.clear();
+			}
 		}
 
 	private:
-		void stopButDontUnregister(bool goToEnd) {
-			if (m_isPlaying) {
-				m_isPlaying = false;
-				if (goToEnd) {
-					if (!m_keyFrames.empty()) {
-						m_retValue = m_value = m_keyFrames.back().goal;
-					}
-				}
-				m_keyFrames.clear();
-			}
-		}
-
 		Ttype updateValue() {
 			if (m_isPlaying) {
 				auto now = std::chrono::steady_clock::now();
@@ -168,12 +575,12 @@ namespace onut {
 					}
 					switch (m_loop) {
 					case LoopType::NONE: {
-						stopButDontUnregister(true);
+						stop(true);
 						return m_value;
 					}
 					case LoopType::PINGPONG_ONCE:
 						if (m_isPingPonging) {
-							stopButDontUnregister(true);
+							stop(true);
 							return m_value;
 						}
 					case LoopType::PINGPONG_LOOP: {
@@ -227,13 +634,11 @@ namespace onut {
 					if (now < keyFrame.endAt) {
 						auto duration = std::chrono::duration<double>(keyFrame.endAt - fromTime);
 						auto timeIn = std::chrono::duration<double>(now - fromTime);
-						auto percent = static_cast<float>(timeIn.count() / duration.count());
-						percent = applyTween(percent, keyFrame.tween);
+						auto percent = static_cast<Tprecision>(timeIn.count() / duration.count());
+						percent = applyTween<Tprecision>(percent, keyFrame.tween);
 
 						// Lerp
-						auto ret = from + (keyFrame.goal - from) * percent;
-
-						return std::move(ret);
+						return Tlerp(from, keyFrame.goal, percent);
 					}
 					if (m_oldTime <= keyFrame.endAt) {
 						if (keyFrame.callback) {
@@ -275,5 +680,6 @@ namespace onut {
 		LoopType								m_loop;
 		bool									m_isPingPonging = false;
 		std::function<void()>					m_cachedCallback = nullptr; // Used for pingpong
+		AnimManager*							m_pAnimManager = nullptr;
 	};
 }

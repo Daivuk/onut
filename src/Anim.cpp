@@ -1,139 +1,49 @@
 #include "Anim.h"
 
 namespace onut {
-	std::vector<IAnim*> IAnim::s_anims;
+	AnimManager AnimManager::s_globalInstance;
 
-	void IAnim::update() {
-		for (auto it = s_anims.begin(); it != s_anims.end();) {
-			auto pAnim = *it;
-			if (pAnim->updateAnim()) {
-				it = s_anims.erase(it);
-				continue;
+	void AnimManager::update() {
+		m_isUpdating = true;
+		for (m_updateIndex = 0; m_updateIndex < m_anims.size();) {
+			auto pAnim = m_anims[m_updateIndex];
+			pAnim->updateAnim();
+			if (pAnim->isPlaying()) {
+				++m_updateIndex;
 			}
-			++it;
 		}
+		m_isUpdating = false;
 	}
 
-	void IAnim::registerAnim(IAnim* pAnim) {
-		s_anims.push_back(pAnim);
+	void AnimManager::registerAnim(IAnim* pAnim) {
+		m_anims.push_back(pAnim);
 	}
 
-	void IAnim::unregisterAnim(IAnim* in_pAnim) {
-		if (!s_anims.empty()) {
-			for (auto it = s_anims.begin(); it != s_anims.end();) {
-				auto pAnim = *it;
-				if (pAnim == in_pAnim) {
-					s_anims.erase(it);
-					return;
+	void AnimManager::unregisterAnim(IAnim* in_pAnim) {
+		for (std::vector<IAnim*>::size_type i = 0; i < m_anims.size(); ++i) {
+			auto pAnim = m_anims[i];
+			if (pAnim == in_pAnim) {
+				if (m_isUpdating) {
+					m_anims.erase(m_anims.begin() + i);
+					if (m_updateIndex > i) {
+						--m_updateIndex;
+					}
 				}
+				else {
+					m_anims.erase(m_anims.begin() + i);
+				}
+				return;
 			}
 		}
 	}
 
-	float applyTween(const float t, TweenType tween)  {
-		switch (tween) {
-		case TweenType::NONE:
-			return 0.f;
-		case TweenType::LINEAR:
-			return t;
-		case TweenType::EASE_IN:
-			return t * t;
-		case TweenType::EASE_OUT: {
-			auto inv = 1 - t;
-			return 1 - inv * inv;
+	void AnimManager::stopAllAnims(bool goToEnd) {
+		for (auto it = m_anims.begin(); it != m_anims.end(); ++it) {
+			auto pAnim = *it;
+			pAnim->stopButDontUnregister(goToEnd);
 		}
-		case TweenType::EASE_BOTH: {
-			if (t < .5f) {
-				return t * t * 2.f;
-			}
-			else {
-				auto clamped = (t - .5f) * 2.f;
-				auto inv = 1 - clamped;
-				clamped = 1 - inv * inv;
-				return clamped * .5f + .5f;
-			}
-			return 0.f;
-		}
-		case TweenType::BOUNCE_IN: {
-			auto inv = 1 - t;
-			float ret;
-			if (inv < (1 / 2.75f))
-			{
-				ret =(7.5625f * inv * inv);
-			}
-			else if (inv < (2 / 2.75f))
-			{
-				float postFix = inv - (1.5f / 2.75f);
-				ret = 7.5625f * postFix * postFix + .75f;
-			}
-			else if (inv < (2.5 / 2.75))
-			{
-				float postFix = inv - (2.25f / 2.75f);
-				ret = 7.5625f * postFix * postFix + .9375f;
-			}
-			else
-			{
-				float postFix = inv - (2.625f / 2.75f);
-				ret = 7.5625f * postFix * postFix + .984375f;
-			}
-			return 1 - ret;
-		}
-		case TweenType::BOUNCE_OUT:
-			if (t < (1 / 2.75f))
-			{
-				return (7.5625f * t * t);
-			}
-			else if (t < (2 / 2.75f))
-			{
-				float postFix = t - (1.5f / 2.75f);
-				return (7.5625f * postFix * postFix + .75f);
-			}
-			else if (t < (2.5 / 2.75))
-			{
-				float postFix = t - (2.25f / 2.75f);
-				return (7.5625f * postFix * postFix + .9375f);
-			}
-			else
-			{
-				float postFix = t - (2.625f / 2.75f);
-				return (7.5625f * postFix * postFix + .984375f);
-			}
-		case TweenType::SPRING_IN: {
-#define SPRING_DIS .3f
-#define INV_SPRING_DIS .7f
-			float ret;
-			if (t < SPRING_DIS)
-			{
-				ret = t / SPRING_DIS;
-				ret = 1 - (1 - ret) * (1 - ret);
-				ret = ret * -SPRING_DIS;
-			}
-			else
-			{
-				ret = (t - SPRING_DIS) / INV_SPRING_DIS;
-				ret *= ret;
-				ret = ret * (1 + SPRING_DIS) - SPRING_DIS;
-			}
-			return ret;
-		}
-		case TweenType::SPRING_OUT: {
-			auto inv = 1 - t;
-			if (inv < SPRING_DIS)
-			{
-				inv = inv / SPRING_DIS;
-				inv = 1 - (1 - inv) * (1 - inv);
-				inv = inv * -SPRING_DIS;
-			}
-			else
-			{
-				inv = (inv - SPRING_DIS) / INV_SPRING_DIS;
-				inv *= inv;
-				inv = inv * (1 + SPRING_DIS) - SPRING_DIS;
-			}
-			return 1 - inv;
-		}
-		}
-		return t;
+		m_anims.clear();
+		m_updateIndex = 0;
 	}
 
 	TweenType invertTween(TweenType tween) {

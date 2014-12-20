@@ -19,6 +19,7 @@
 #define OAnim2				onut::Anim<Vector2>
 #define OAnim3				onut::Anim<Vector3>
 #define OAnim4				onut::Anim<Vector4>
+#define OAnimStr			onut::Anim<std::string>
 
 //--- Resource creation shortcuts
 #define OTextureFromFile	onut::Texture::createFromFile
@@ -89,7 +90,7 @@
 #define OSpringOut								onut::TweenType::SPRING_OUT
 
 // Anim helpers
-#define OSequence(T, ...)						std::vector<onut::Anim<T>::AnimKeyFrame>(__VA_ARGS__)
+#define OSequence(T, ...)						std::vector<onut::Anim<T>::KeyFrame>(__VA_ARGS__)
 #define OAnimWait(val, t)						{val,t,OTeleport}
 #define OAnimAppleStyleBounce(from, to)			{from,0.f,OTeleport},{to,.25f,OEaseOut},{from,.5f,OBounceOut}
 
