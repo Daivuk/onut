@@ -350,7 +350,7 @@ namespace onut {
         const auto& fromLen = from.size();
         const auto& toLen = to.size();
         auto newLen = static_cast<Tprecision>(fromLen)+
-            (static_cast<Tprecision>(toLen)-static_cast<Tprecision>(fromLen)) *    t;
+            (static_cast<Tprecision>(toLen)-static_cast<Tprecision>(fromLen)) * t;
         newLen = round(newLen);
         if (toLen > fromLen) {
             auto ret = to.substr(0, static_cast<std::string::size_type>(newLen));
@@ -672,14 +672,14 @@ namespace onut {
         };
 
         bool                                    m_isPlaying = false;
-        Ttype                                    m_value;
-        Ttype                                    m_retValue;
-        std::chrono::system_clock::time_point    m_startTime;
-        std::chrono::system_clock::time_point    m_oldTime;
-        std::vector<InternalKeyFrame>            m_keyFrames;
+        Ttype                                   m_value;
+        Ttype                                   m_retValue;
+        std::chrono::system_clock::time_point   m_startTime;
+        std::chrono::system_clock::time_point   m_oldTime;
+        std::vector<InternalKeyFrame>           m_keyFrames;
         LoopType                                m_loop;
         bool                                    m_isPingPonging = false;
-        std::function<void()>                    m_cachedCallback = nullptr; // Used for pingpong
+        std::function<void()>                   m_cachedCallback = nullptr; // Used for pingpong
         AnimManager*                            m_pAnimManager = nullptr;
     };
 }
