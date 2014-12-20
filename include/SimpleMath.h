@@ -27,9 +27,9 @@ namespace DirectX
 
 namespace SimpleMath
 {
-	const float GOLDEN_RATIO = 1.6180339887498948482f;
-	const float GOLDEN_SECOND = 1.0f / 1.6180339887498948482f;
-	const float GOLDEN_FIRST = 1.0f - GOLDEN_SECOND;
+    const float GOLDEN_RATIO = 1.6180339887498948482f;
+    const float GOLDEN_SECOND = 1.0f / 1.6180339887498948482f;
+    const float GOLDEN_FIRST = 1.0f - GOLDEN_SECOND;
     
 struct Vector4;
 struct Matrix;
@@ -295,32 +295,32 @@ struct Vector4 : public XMFLOAT4
     void Clamp( const Vector4& vmin, const Vector4& vmax );
     void Clamp( const Vector4& vmin, const Vector4& vmax, Vector4& result ) const;
 
-	Vector2 TopLeft() const;
-	Vector2 Top() const;
-	Vector2 TopRight() const;
-	Vector2 Left() const;
-	Vector2 Center() const;
-	Vector2 Right() const;
-	Vector2 BottomLeft() const;
-	Vector2 Bottom() const;
-	Vector2 BottomRight() const;
+    Vector2 TopLeft() const;
+    Vector2 Top() const;
+    Vector2 TopRight() const;
+    Vector2 Left() const;
+    Vector2 Center() const;
+    Vector2 Right() const;
+    Vector2 BottomLeft() const;
+    Vector2 Bottom() const;
+    Vector2 BottomRight() const;
 
-	Vector2 TopLeft(float offset) const;
-	Vector2 Top(float offset) const;
-	Vector2 TopRight(float offset) const;
-	Vector2 Left(float offset) const;
-	Vector2 Center(float offset) const;
-	Vector2 Right(float offset) const;
-	Vector2 BottomLeft(float offset) const;
-	Vector2 Bottom(float offset) const;
-	Vector2 BottomRight(float offset) const;
+    Vector2 TopLeft(float offset) const;
+    Vector2 Top(float offset) const;
+    Vector2 TopRight(float offset) const;
+    Vector2 Left(float offset) const;
+    Vector2 Center(float offset) const;
+    Vector2 Right(float offset) const;
+    Vector2 BottomLeft(float offset) const;
+    Vector2 Bottom(float offset) const;
+    Vector2 BottomRight(float offset) const;
 
-	Vector2 TopLeft(const Vector2& offset) const;
-	Vector2 TopRight(const Vector2& offset) const;
-	Vector2 BottomLeft(const Vector2& offset) const;
-	Vector2 BottomRight(const Vector2& offset) const;
+    Vector2 TopLeft(const Vector2& offset) const;
+    Vector2 TopRight(const Vector2& offset) const;
+    Vector2 BottomLeft(const Vector2& offset) const;
+    Vector2 BottomRight(const Vector2& offset) const;
 
-	Vector4 Grow(float by) const;
+    Vector4 Grow(float by) const;
 
     // Static functions
     static float Distance( const Vector4& v1, const Vector4& v2 );
@@ -647,23 +647,23 @@ struct Color : public XMFLOAT4
     explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Color(FXMVECTOR V) { XMStoreFloat4( this, V ); }
 
-	static Color fromHexRGB(unsigned int hex) {
-		return{
-			static_cast<float>((hex & 0xff0000) >> 16) / 255.f,
-			static_cast<float>((hex & 0x00ff00) >> 8) / 255.f,
-			static_cast<float>((hex & 0x0000ff)) / 255.f,
-			1.f
-		};
-	}
+    static Color fromHexRGB(unsigned int hex) {
+        return{
+            static_cast<float>((hex & 0xff0000) >> 16) / 255.f,
+            static_cast<float>((hex & 0x00ff00) >> 8) / 255.f,
+            static_cast<float>((hex & 0x0000ff)) / 255.f,
+            1.f
+        };
+    }
 
-	static Color fromHexRGBA(unsigned int hex) {
-		return{
-			static_cast<float>((hex & 0xff000000) >> 24) / 255.f,
-			static_cast<float>((hex & 0x00ff0000) >> 16) / 255.f,
-			static_cast<float>((hex & 0x0000ff00) >> 8) / 255.f,
-			static_cast<float>((hex & 0x000000ff)) / 255.f,
-		};
-	}
+    static Color fromHexRGBA(unsigned int hex) {
+        return{
+            static_cast<float>((hex & 0xff000000) >> 24) / 255.f,
+            static_cast<float>((hex & 0x00ff0000) >> 16) / 255.f,
+            static_cast<float>((hex & 0x0000ff00) >> 8) / 255.f,
+            static_cast<float>((hex & 0x000000ff)) / 255.f,
+        };
+    }
 
     explicit Color( const DirectX::PackedVector::XMCOLOR& Packed );
         // BGRA Direct3D 9 D3DCOLOR packed color
@@ -732,10 +732,10 @@ struct Color : public XMFLOAT4
     static void Lerp( const Color& c1, const Color& c2, float t, Color& result );
     static Color Lerp( const Color& c1, const Color& c2, float t );
 
-	// Constants
-	static const Color Black;
-	static const Color White;
-	static const Color Transparent;
+    // Constants
+    static const Color Black;
+    static const Color White;
+    static const Color Transparent;
 };
 
 // Binary operators

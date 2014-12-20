@@ -5,24 +5,24 @@
 #include <vector>
 
 namespace onut {
-	class EventManager {
-	public:
-		void addEvent(const std::string& eventName, const std::function<bool()>& eventProcessor);
-		void removeEvent(const std::string& eventName);
+    class EventManager {
+    public:
+        void addEvent(const std::string& eventName, const std::function<bool()>& eventProcessor);
+        void removeEvent(const std::string& eventName);
 
-		void addObserver(const std::string& eventName, const std::function<void()>& callback);
-		void removeObserver(const std::string& eventName, const std::function<void()>& callback);
+        void addObserver(const std::string& eventName, const std::function<void()>& callback);
+        void removeObserver(const std::string& eventName, const std::function<void()>& callback);
 
-		void update();
-		void fireEvent(const std::string& eventName);
+        void update();
+        void fireEvent(const std::string& eventName);
 
-	private:
-		struct sEventProcessor {
-			std::string				name;
-			std::function<bool()>	eventProcessor;
-		};
+    private:
+        struct sEventProcessor {
+            std::string                name;
+            std::function<bool()>    eventProcessor;
+        };
 
-		std::vector<sEventProcessor>										m_processors;
-		std::unordered_map<std::string, std::vector<std::function<void()>>>	m_observers;
-	};
+        std::vector<sEventProcessor>                                        m_processors;
+        std::unordered_map<std::string, std::vector<std::function<void()>>>    m_observers;
+    };
 }

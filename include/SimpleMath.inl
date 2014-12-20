@@ -1415,76 +1415,76 @@ inline void Vector4::Clamp( const Vector4& vmin, const Vector4& vmax, Vector4& r
 }
 
 inline Vector2 Vector4::TopLeft() const {
-	return std::move(Vector2{ x, y });
+    return std::move(Vector2{ x, y });
 }
 inline Vector2 Vector4::Top() const {
-	return std::move(Vector2{ x + z * .5f, y });
+    return std::move(Vector2{ x + z * .5f, y });
 }
 inline Vector2 Vector4::TopRight() const {
-	return std::move(Vector2{ x + z, y });
+    return std::move(Vector2{ x + z, y });
 }
 inline Vector2 Vector4::Left() const {
-	return std::move(Vector2{ x, y + w * .5f });
+    return std::move(Vector2{ x, y + w * .5f });
 }
 inline Vector2 Vector4::Center() const {
-	return std::move(Vector2{ x + z * .5f, y + w * .5f });
+    return std::move(Vector2{ x + z * .5f, y + w * .5f });
 }
 inline Vector2 Vector4::Right() const {
-	return std::move(Vector2{ x + z, y + w * .5f });
+    return std::move(Vector2{ x + z, y + w * .5f });
 }
 inline Vector2 Vector4::BottomLeft() const {
-	return std::move(Vector2{ x, y + w });
+    return std::move(Vector2{ x, y + w });
 }
 inline Vector2 Vector4::Bottom() const {
-	return std::move(Vector2{ x + z * .5f, y + w });
+    return std::move(Vector2{ x + z * .5f, y + w });
 }
 inline Vector2 Vector4::BottomRight() const {
-	return std::move(Vector2{ x + z, y + w });
+    return std::move(Vector2{ x + z, y + w });
 }
 
 inline Vector2 Vector4::TopLeft(float offset) const {
-	return std::move(Vector2{ x + offset, y + offset });
+    return std::move(Vector2{ x + offset, y + offset });
 }
 inline Vector2 Vector4::Top(float offset) const {
-	return std::move(Vector2{ x + z * .5f, y + offset });
+    return std::move(Vector2{ x + z * .5f, y + offset });
 }
 inline Vector2 Vector4::TopRight(float offset) const {
-	return std::move(Vector2{ x + z - offset, y + offset });
+    return std::move(Vector2{ x + z - offset, y + offset });
 }
 inline Vector2 Vector4::Left(float offset) const {
-	return std::move(Vector2{ x + offset, y + w * .5f });
+    return std::move(Vector2{ x + offset, y + w * .5f });
 }
 inline Vector2 Vector4::Center(float offset) const {
-	return std::move(Vector2{ x + z * .5f, y + w * .5f });
+    return std::move(Vector2{ x + z * .5f, y + w * .5f });
 }
 inline Vector2 Vector4::Right(float offset) const {
-	return std::move(Vector2{ x + z - offset, y + w * .5f });
+    return std::move(Vector2{ x + z - offset, y + w * .5f });
 }
 inline Vector2 Vector4::BottomLeft(float offset) const {
-	return std::move(Vector2{ x + offset, y + w - offset });
+    return std::move(Vector2{ x + offset, y + w - offset });
 }
 inline Vector2 Vector4::Bottom(float offset) const {
-	return std::move(Vector2{ x + z * .5f, y + w - offset });
+    return std::move(Vector2{ x + z * .5f, y + w - offset });
 }
 inline Vector2 Vector4::BottomRight(float offset) const {
-	return std::move(Vector2{ x + z - offset, y + w - offset });
+    return std::move(Vector2{ x + z - offset, y + w - offset });
 }
 
 inline Vector2 Vector4::TopLeft(const Vector2& offset) const {
-	return std::move(Vector2{ x + offset.x, y + offset.y });
+    return std::move(Vector2{ x + offset.x, y + offset.y });
 }
 inline Vector2 Vector4::TopRight(const Vector2& offset) const {
-	return std::move(Vector2{ x + z - offset.x, y + offset.y });
+    return std::move(Vector2{ x + z - offset.x, y + offset.y });
 }
 inline Vector2 Vector4::BottomLeft(const Vector2& offset) const {
-	return std::move(Vector2{ x + offset.x, y + w - offset.y });
+    return std::move(Vector2{ x + offset.x, y + w - offset.y });
 }
 inline Vector2 Vector4::BottomRight(const Vector2& offset) const {
-	return std::move(Vector2{ x + z - offset.x, y + w - offset.y });
+    return std::move(Vector2{ x + z - offset.x, y + w - offset.y });
 }
 
 inline Vector4 Vector4::Grow(float by) const {
-	return std::move(Vector4{ x - by, y - by, z + by * 2, w + by * 2 });
+    return std::move(Vector4{ x - by, y - by, z + by * 2, w + by * 2 });
 }
 
 //------------------------------------------------------------------------------
