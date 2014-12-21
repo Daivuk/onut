@@ -14,8 +14,8 @@ namespace onut {
     std::vector<Color> palNatureWalk = { OColorHex(CFB590), OColorHex(9E9A41), OColorHex(758918), OColorHex(564334), OColorHex(49281F) };
 
     // For mainloop sync
-    std::queue<std::function<void()>>    g_syncToMainLoopCallbacks;
-    std::mutex                            g_syncToMainLoopMutex;
+    std::queue<std::function<void()>>   g_syncToMainLoopCallbacks;
+    std::mutex                          g_syncToMainLoopMutex;
     void synchronize() {
         std::lock_guard<std::mutex> lock(g_syncToMainLoopMutex);
         while (!g_syncToMainLoopCallbacks.empty()) {
@@ -26,14 +26,15 @@ namespace onut {
     }
 
     // Our engine services
-    std::shared_ptr<Window>                g_pWindow;
-    std::shared_ptr<Renderer>            g_pRenderer;
-    std::shared_ptr<Settings>            g_pSettings;
-    std::shared_ptr<SpriteBatch>        g_pSpriteBatch;
-    std::shared_ptr<BMFont>                g_pDefaultFont;
-    std::shared_ptr<BMFont>                g_pDefaultFont64;
-    std::shared_ptr<GamePad>            g_gamePads[4] = { nullptr };
-    std::shared_ptr<EventManager>        g_pEventManager;
+    Window*             g_pWindow = nullptr;
+    Renderer*           g_pRenderer = nullptr;
+    Settings*           g_pSettings = nullptr;
+    SpriteBatch*        g_pSpriteBatch = nullptr;
+    BMFont*             g_pDefaultFont = nullptr;
+    BMFont*             g_pDefaultFont64 = nullptr;
+    GamePad*            g_gamePads[4] = { nullptr };
+    EventManager*       g_pEventManager = nullptr;
+    ContentManager*     g_pContentManager = nullptr;
 
     // Main loop
     void run(std::function<void()> initCallback, std::function<void(const TimeInfo&)> updateCallback, std::function<void()> renderCallback) {
@@ -50,17 +51,18 @@ namespace onut {
         // Create our services
         randomizeSeed();
         auto settings = getSettings();
-        g_pEventManager = std::make_shared<EventManager>();
-        g_pWindow = std::make_shared<Window>(settings->getResolution());
-        g_pRenderer = std::make_shared<Renderer>(*g_pWindow);
-        g_pSpriteBatch = std::make_shared<SpriteBatch>();
+        g_pEventManager = new EventManager();
+        g_pWindow = new Window(settings->getResolution());
+        g_pRenderer = new Renderer(*g_pWindow);
+        g_pSpriteBatch = new SpriteBatch();
+        g_pContentManager = new ContentManager();
         if (!settings->getDefaultFont().empty()) {
             const auto& fntFilename = settings->getDefaultFont();
             g_pDefaultFont = BMFont::createFromFile(fntFilename);
             g_pDefaultFont64 = BMFont::createFromFile(fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt");
         }
         for (int i = 0; i < 4; ++i) {
-            g_gamePads[i] = std::make_shared<GamePad>(i);
+            g_gamePads[i] = new GamePad(i);
         }
 
         initCallback();
@@ -100,38 +102,42 @@ namespace onut {
         }
     }
 
-    std::shared_ptr<Settings> getSettings() {
+    Settings* getSettings() {
         if (g_pSettings == nullptr) {
-            g_pSettings = std::make_shared<Settings>();
+            g_pSettings = new Settings();
         }
         return g_pSettings;
     }
 
-    std::shared_ptr<Renderer> getRenderer() {
+    Renderer* getRenderer() {
         assert(g_pRenderer); // You have to call onut::run before!
         return g_pRenderer;
     }
 
-    std::shared_ptr<SpriteBatch> getSpriteBatch() {
+    SpriteBatch* getSpriteBatch() {
         assert(g_pSpriteBatch); // You have to call onut::run before!
         return g_pSpriteBatch;
     }
 
-    std::shared_ptr<BMFont> getDefaultFont() {
+    BMFont* getDefaultFont() {
         return g_pDefaultFont;
     }
 
-    std::shared_ptr<BMFont> getDefaultFontBig() {
+    BMFont* getDefaultFontBig() {
         return g_pDefaultFont64;
     }
 
-    std::shared_ptr<GamePad> getGamePad(int index) {
+    GamePad* getGamePad(int index) {
         assert(index >= 0 && index <= 3);
         return g_gamePads[index];
     }
 
-    std::shared_ptr<EventManager> getEventManager() {
+    EventManager* getEventManager() {
         return g_pEventManager;
+    }
+
+    ContentManager* getContentManager() {
+        return g_pContentManager;
     }
 
     void syncToMainLoop(const std::function<void()>& callback) {

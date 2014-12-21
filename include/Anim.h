@@ -650,6 +650,9 @@ namespace onut {
                 }
                 m_oldTime = now;
             }
+            else {
+                m_pAnimManager->unregisterAnim(this);
+            }
             return m_value;
         }
 

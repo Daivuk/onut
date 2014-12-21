@@ -9,31 +9,31 @@ using namespace DirectX::SimpleMath;
 namespace onut {
     class Texture;
     class SpriteBatch;
-    extern std::shared_ptr<SpriteBatch> getSpriteBatch();
+    extern SpriteBatch* getSpriteBatch();
 
     class BMFont {
     public:
-        static std::shared_ptr<BMFont> createFromFile(const std::string& filename);
+        static BMFont* createFromFile(const std::string& filename);
 
         BMFont();
         virtual ~BMFont();
 
-        Vector2        measure(const std::string& text);
+        Vector2 measure(const std::string& text);
         template<Align Talign = Align::TOP_LEFT>
-        Rect        draw(    const std::string& text,
+        Rect draw(   const std::string& text,
                             const Vector2& pos,
                             const Color& color = Color::White,
-                            std::shared_ptr<onut::SpriteBatch> pSpriteBatch = getSpriteBatch(),
+                            onut::SpriteBatch* pSpriteBatch = getSpriteBatch(),
                             Align align = Talign) {
             return drawInternal(text, pos, color, pSpriteBatch, align);
         }
 
     private:
-        Rect        drawInternal(
+        Rect drawInternal(
             const std::string& text, 
             const Vector2& pos, 
             const Color& color, 
-            std::shared_ptr<onut::SpriteBatch> pSpriteBatch,
+            onut::SpriteBatch* pSpriteBatch,
             Align align);
 
         struct fntCommon {
@@ -45,9 +45,9 @@ namespace onut {
             int packed = 0;
         };
         struct fntPage {
-            int                            id = 0;
-            std::string                    file;
-            std::shared_ptr<Texture>    pTexture;
+            int         id = 0;
+            std::string file;
+            Texture*    pTexture = nullptr;
         };
         struct fntChars {
             int count = 0;
@@ -69,9 +69,9 @@ namespace onut {
         static int                parseInt(const std::string& arg, const std::vector<std::string>& lineSplit);
         static std::string        parseString(const std::string& arg, const std::vector<std::string>& lineSplit);
 
-        fntCommon                            m_common;
-        fntPage**                            m_pages = nullptr;
-        int                                    m_charsCount = 0;
-        std::unordered_map<int, fntChar*>    m_chars;
+        fntCommon                           m_common;
+        fntPage**                           m_pages = nullptr;
+        int                                 m_charsCount = 0;
+        std::unordered_map<int, fntChar*>   m_chars;
     };
 }

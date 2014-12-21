@@ -14,6 +14,7 @@
 #include "EventManager.h"
 #include "TimeInfo.h"
 #include "Anim.h"
+#include "ContentManager.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -29,39 +30,44 @@ namespace onut {
         Get Settings that allows you to set or get game settings like screen resolution, 
         name of the game, etc.
     */
-    std::shared_ptr<Settings> getSettings();
+    Settings* getSettings();
 
     /**
         Get the DX11 renderer.
     */
-    std::shared_ptr<Renderer> getRenderer();
+    Renderer* getRenderer();
 
     /**
         Get a global SpriteBatch object to draw your 2D.
         Note, you can create your own SpriteBatch objects if you like
     */
-    std::shared_ptr<SpriteBatch> getSpriteBatch();
+    SpriteBatch* getSpriteBatch();
 
     /**
         Get a global font. This is the default font set in the settings.
         If file not found it will return nullptr
     */
-    std::shared_ptr<BMFont> getDefaultFont();
+    BMFont* getDefaultFont();
 
     /**
         This is the same as getDefaultFont but gets a bigger version
     */
-    std::shared_ptr<BMFont> getDefaultFontBig();
+    BMFont* getDefaultFontBig();
 
     /**
         Get a gamepad for index (0 to 3)
     */
-    std::shared_ptr<GamePad> getGamePad(int index);
+    GamePad* getGamePad(int index);
 
     /**
         Get a gamepad for index (0 to 3)
     */
-    std::shared_ptr<EventManager> getEventManager();
+    EventManager* getEventManager();
+
+    /**
+        Get a default content manager.
+    */
+    ContentManager* getContentManager();
 
     /**
         Rect alignement helper

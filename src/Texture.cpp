@@ -6,10 +6,10 @@
 #include <vector>
 
 namespace onut {
-    std::shared_ptr<Texture> Texture::createDynamic(const POINT& size) {
+    Texture* Texture::createDynamic(const POINT& size) {
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
-        auto pRet = std::make_shared<Texture>();
+        auto pRet = new Texture();
 
         D3D11_TEXTURE2D_DESC desc;
         desc.Width = size.x;
@@ -34,7 +34,7 @@ namespace onut {
         return pRet;
     }
 
-    std::shared_ptr<Texture> Texture::createFromFile(const std::string& filename, bool generateMipmaps) {
+    Texture* Texture::createFromFile(const std::string& filename, bool generateMipmaps) {
         Texture* pRet = NULL;
 
         std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
@@ -54,10 +54,10 @@ namespace onut {
         return createFromData(size, &(image[0]), generateMipmaps);
     }
 
-    std::shared_ptr<Texture> Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps) {
+    Texture* Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps) {
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
-        auto pRet = std::make_shared<Texture>();
+        auto pRet = new Texture();
 
         // Manually generate mip levels
         bool allowMipMaps = true;

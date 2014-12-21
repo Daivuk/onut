@@ -11,10 +11,10 @@ namespace onut {
         virtual ~SpriteBatch();
 
         void begin();
-        void drawRect(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color& color = Color::White);
-        void drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const std::vector<Color>& colors);
-        void drawRectWithUVs(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
-        void drawRectWithUVsColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors);
+        void drawRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
+        void drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors);
+        void drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
+        void drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors);
         void end();
 
     private:
@@ -28,15 +28,15 @@ namespace onut {
 
         void flush();
 
-        ID3D11Buffer*                m_pVertexBuffer = nullptr;
-        ID3D11Buffer*                m_pIndexBuffer = nullptr;
+        ID3D11Buffer*               m_pVertexBuffer = nullptr;
+        ID3D11Buffer*               m_pIndexBuffer = nullptr;
         D3D11_MAPPED_SUBRESOURCE    m_pMappedVertexBuffer;
 
-        std::shared_ptr<Texture>    m_pTexWhite = nullptr;
-        std::shared_ptr<Texture>    m_pTexture = nullptr;
+        Texture*                    m_pTexWhite = nullptr;
+        Texture*                    m_pTexture = nullptr;
 
-        static const unsigned int    m_stride = sizeof(SVertexP2T2C4);
-        static const unsigned int    m_offset = 0;
+        static const unsigned int   m_stride = sizeof(SVertexP2T2C4);
+        static const unsigned int   m_offset = 0;
         unsigned int                m_spriteCount = 0;
 
         bool                        m_isDrawing = false;

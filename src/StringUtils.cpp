@@ -1,4 +1,6 @@
 ﻿#include <codecvt>
+#include <cassert>
+#include "dirent.h"
 #include "StringUtils.h"
 
 namespace onut {
@@ -34,5 +36,50 @@ namespace onut {
             }
         }
         return elems;
+    }
+
+    int hash(const char* pStr) {
+        int hash = 0;
+        static const int offset = 'a' - 1;
+        while (pStr) {
+            hash = hash << 1 | (*pStr - offset);
+            ++pStr;
+        }
+        return hash;
+    }
+
+    std::string findFile(const std::string& name, const std::string& lookIn) {
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir(lookIn.c_str())) != NULL) {
+            while ((ent = readdir(dir)) != NULL) {
+                if (!strcmp(ent->d_name, ".")) {
+                    continue;
+                }
+                else if (!strcmp(ent->d_name, "..")) {
+                    continue;
+                }
+
+                if (name == ent->d_name) {
+                    auto ret = lookIn + "/" + ent->d_name;
+                    closedir(dir);
+                    return ret;
+                }
+
+                if (ent->d_type & DT_DIR) {
+                    auto ret = findFile(name, lookIn + "/" + ent->d_name);
+                    if (!ret.empty()) {
+                        closedir(dir);
+                        return ret;
+                    }
+                }
+            }
+            closedir(dir);
+        }
+        else {
+            assert(false);
+        }
+
+        return "";
     }
 }

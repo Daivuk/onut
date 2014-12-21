@@ -52,6 +52,12 @@
     <ClInclude Include="..\..\include\Anim.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\ContentManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dirent.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -97,6 +103,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Anim.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ContentManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\Anim.h" />
     <ClInclude Include="..\..\include\BMFont.h" />
+    <ClInclude Include="..\..\include\ContentManager.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
@@ -26,12 +27,14 @@
     <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
+    <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\LodePNG.h" />
     <ClInclude Include="..\..\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\BMFont.cpp" />
+    <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />

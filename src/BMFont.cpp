@@ -26,11 +26,11 @@ namespace onut {
         return "";
     }
 
-    std::shared_ptr<BMFont> BMFont::createFromFile(const std::string& filename) {
+    BMFont* BMFont::createFromFile(const std::string& filename) {
         std::ifstream in(filename);
         assert(!in.fail());
 
-        auto pFont = std::make_shared<BMFont>();
+        auto pFont = new BMFont();
 
         std::string path = filename.substr(0, filename.find_last_of('/') + 1);
         std::string line;
@@ -141,7 +141,7 @@ namespace onut {
         return result;
     }
 
-    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, std::shared_ptr<onut::SpriteBatch> pSpriteBatch, Align align) {
+    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align) {
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);

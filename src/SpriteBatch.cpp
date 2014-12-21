@@ -69,7 +69,7 @@ namespace onut {
         pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
     }
 
-    void SpriteBatch::drawRectWithColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const std::vector<Color>& colors) {
+    void SpriteBatch::drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors) {
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
@@ -103,7 +103,7 @@ namespace onut {
         }
     }
 
-    void SpriteBatch::drawRect(std::shared_ptr<Texture> pTexture, const Rect& rect, const Color& color) {
+    void SpriteBatch::drawRect(Texture* pTexture, const Rect& rect, const Color& color) {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -136,7 +136,7 @@ namespace onut {
         }
     }
 
-    void SpriteBatch::drawRectWithUVs(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const Color& color) {
+    void SpriteBatch::drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color) {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -169,7 +169,7 @@ namespace onut {
         }
     }
 
-    void SpriteBatch::drawRectWithUVsColors(std::shared_ptr<Texture> pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors) {
+    void SpriteBatch::drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors) {
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
