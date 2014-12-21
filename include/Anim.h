@@ -417,6 +417,7 @@ namespace onut {
             m_pAnimManager(pAnimManager) {}
         Anim(const Ttype& rvalue, AnimManager* pAnimManager = AnimManager::getGlobalManager()) :
             m_value(rvalue),
+            m_retValue(rvalue),
             m_pAnimManager(pAnimManager) {}
 
         /**

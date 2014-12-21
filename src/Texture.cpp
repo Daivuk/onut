@@ -23,7 +23,7 @@ namespace onut {
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
         desc.MiscFlags = 0;
 
-        auto pDevice = getRenderer()->getDevice();
+        auto pDevice = ORenderer->getDevice();
         assert(pDevice->CreateTexture2D(&desc, NULL, &pTexture) == S_OK);
         assert(pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView) == S_OK);
 
@@ -150,7 +150,7 @@ namespace onut {
         data.SysMemPitch = size.x * 4;
         data.SysMemSlicePitch = 0;
 
-        auto pDevice = getRenderer()->getDevice();
+        auto pDevice = ORenderer->getDevice();
         assert(pDevice->CreateTexture2D(&desc, (mipsData) ? mipsData : &data, &pTexture) == S_OK);
         assert(pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView) == S_OK);
 

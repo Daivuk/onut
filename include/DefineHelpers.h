@@ -1,52 +1,56 @@
 #pragma once
 #include "Typedefs.h"
 
-//--- Some shortcuts
-#define ORun                onut::run
-#define ORenderer           onut::getRenderer()
-#define OSpriteBatch        onut::getSpriteBatch()
-#define OSettings           onut::getSettings()
+#define OAnim               onut::Anim
+
+//--- Game pads
+#define OABtn               onut::GamePad::eGamePad::A
+#define OBBtn               onut::GamePad::eGamePad::B
+#define OXBtn               onut::GamePad::eGamePad::X
+#define OYBtn               onut::GamePad::eGamePad::Y
+#define OUpBtn              onut::GamePad::eGamePad::DPAD_UP
+#define ODownBtn            onut::GamePad::eGamePad::DPAD_DOWN
+#define OLeftBtn            onut::GamePad::eGamePad::DPAD_LEFT
+#define ORightBtn           onut::GamePad::eGamePad::DPAD_RIGHT
+#define OLTBtn              onut::GamePad::eGamePad::LT
+#define OLBBtn              onut::GamePad::eGamePad::LB
+#define ORTBtn              onut::GamePad::eGamePad::RT
+#define ORBBtn              onut::GamePad::eGamePad::RB
+#define OLThumbBtn          onut::GamePad::eGamePad::LTHUMB
+#define ORThumbBtn          onut::GamePad::eGamePad::RTHUMB
+#define OStartBtn           onut::GamePad::eGamePad::START
+#define OBackBtn            onut::GamePad::eGamePad::BACK
+#define OLLeftBtn           onut::GamePad::eGamePad::LTHUMB_LEFT
+#define OLRightBtn          onut::GamePad::eGamePad::LTHUMB_RIGHT
+#define OLUpBtn             onut::GamePad::eGamePad::LTHUMB_UP
+#define OLDownBtn           onut::GamePad::eGamePad::LTHUMB_DOWN
+#define ORLeftBtn           onut::GamePad::eGamePad::RTHUMB_LEFT
+#define ORRightBtn          onut::GamePad::eGamePad::RTHUMB_RIGHT
+#define ORUpBtn             onut::GamePad::eGamePad::RTHUMB_UP
+#define ORDownBtn           onut::GamePad::eGamePad::RTHUMB_DOWN
+
+//--- Resource shortcuts
 #define ODefaultFont        onut::getDefaultFont()
 #define ODefaultFontBig     onut::getDefaultFontBig()
-#define OTexture            onut::Texture
-#define OFont               onut::BMFont
-#define OGamePad(index)     onut::getGamePad(index)
-#define OEvent              onut::getEventManager()
-#define OTween              onut::TweenType
-#define OAnim               onut::Anim
-#define OAnimf              onut::Anim<float>
-#define OAnimi              onut::Anim<int>
-#define OAnim2              onut::Anim<Vector2>
-#define OAnim3              onut::Anim<Vector3>
-#define OAnim4              onut::Anim<Vector4>
-#define OAnimStr            onut::Anim<std::string>
-#define OContentManager     onut::getContentManager()
-#define OGetTexture(name)   onut::getContentManager()->getResource<onut::Texture>(name)
-#define OGetBMFont(name)    onut::getContentManager()->getResource<onut::BMFont>(name)
-#define OGetSound(name)     onut::getContentManager()->getResource<onut::Sound>(name)
-#define OPlaySound(name)    onut::getContentManager()->getResource<onut::Sound>(name)->play()
 
-//--- Resource creation shortcuts
-#define OTextureFromFile    onut::Texture::createFromFile
-#define OFontFromFile       onut::BMFont::createFromFile
+//--- Synchronisation and timing
+//#define OAsync(callback)    std::async(std::launch::async, callback)
+//#define OSync(callback)     onut::syncToMainLoop(callback)
 
-//--- Synchronisation
-#define OAsync(callback)    std::async(std::launch::async, callback)
-#define OSync(callback)     onut::syncToMainLoop(callback)
 
 //--- Resolution helpers
-#define OScreen             onut::getRenderer()->getResolution()
-#define OScreenf            Vector2{static_cast<float>(onut::getRenderer()->getResolution().x), static_cast<float>(onut::getRenderer()->getResolution().y)}
-#define OScreenW            onut::getRenderer()->getResolution().x
-#define OScreenH            onut::getRenderer()->getResolution().y;
-#define OScreenWf           static_cast<float>(onut::getRenderer()->getResolution().x)
-#define OScreenHf           static_cast<float>(onut::getRenderer()->getResolution().y)
-#define OScreenCenter       (onut::getRenderer()->getResolution() / 2)
-#define OScreenCenterf      Vector2{static_cast<float>(onut::getRenderer()->getResolution().x / 2), static_cast<float>(onut::getRenderer()->getResolution().y / 2)}
-#define OScreenCenterX      (onut::getRenderer()->getResolution().x / 2)
-#define OScreenCenterY      (onut::getRenderer()->getResolution().y / 2)
+#define OScreen             ORenderer->getResolution()
+#define OScreenf            Vector2{static_cast<float>(ORenderer->getResolution().x), static_cast<float>(ORenderer->getResolution().y)}
+#define OScreenW            ORenderer->getResolution().x
+#define OScreenH            ORenderer->getResolution().y;
+#define OScreenWf           static_cast<float>(ORenderer->getResolution().x)
+#define OScreenHf           static_cast<float>(ORenderer->getResolution().y)
+#define OScreenCenter       (ORenderer->getResolution() / 2)
+#define OScreenCenterf      Vector2{static_cast<float>(ORenderer->getResolution().x / 2), static_cast<float>(ORenderer->getResolution().y / 2)}
+#define OScreenCenterX      (ORenderer->getResolution().x / 2)
+#define OScreenCenterY      (ORenderer->getResolution().y / 2)
 #define OScreenCenterXf     static_cast<float>(onut::getRenderer()->getResolution().x / 2)
-#define OScreenCenterYf     static_cast<float>(onut::getRenderer()->getResolution().y / 2)
+#define OScreenCenterYf     static_cast<float>(ORenderer->getResolution().y / 2)
 
 //--- Rect helpers for drawing
 // Centered origin sprite
@@ -98,7 +102,7 @@
 #define OSequence(T, ...)                       std::vector<onut::Anim<T>::KeyFrame>(__VA_ARGS__)
 #define OAnimWait(val, t)                       {val,t,OTeleport}
 #define OAnimAppleStyleBounce(from, to)         {from,0.f,OTeleport},{to,.25f,OEaseOut},{from,.5f,OBounceOut}
-
+   
 // Alignement of 1D position
 #define OPosAbsX(x, p)                          ((x) + (p))
 #define OPosAbsY(y, p)                          ((y) + (p))

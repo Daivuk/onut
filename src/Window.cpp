@@ -30,7 +30,7 @@ namespace onut {
 
         // Create the window
         m_handle = CreateWindow(L"OakNutWindow", 
-            utf8ToUtf16(getSettings()->getGameName()).c_str(),
+            utf8ToUtf16(OSettings->getGameName()).c_str(),
             WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
             posX, posY, resolution.x, resolution.y,
             nullptr, nullptr, nullptr, nullptr);

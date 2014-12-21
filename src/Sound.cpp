@@ -3,9 +3,9 @@
 #include "StringUtils.h"
 using namespace DirectX;
 
-namespace onut {
-    extern AudioEngine* g_pAudioEngine;
+extern AudioEngine* g_pAudioEngine;
 
+namespace onut {
     Sound* Sound::createFromFile(const std::string& filename) {
         auto pRet = new Sound();
         pRet->m_pSound = new SoundEffect(g_pAudioEngine, utf8ToUtf16(filename).c_str());

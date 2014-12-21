@@ -12,6 +12,43 @@ namespace onut {
         memset(&m_currentState, 0, sizeof(m_currentState));
         auto result = XInputGetState(m_index, &m_currentState);
         m_isConnected = result == ERROR_SUCCESS;
+
+        // Update thumbs
+        {
+            static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / 32768.0);
+
+            m_cachedLeftThumb = {
+                static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbLX) / 32768.0),
+                static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbLY) / 32768.0) };
+
+            float len = m_cachedLeftThumb.Length();
+            if (len <= deadZone) {
+                m_cachedLeftThumb = {};
+            }
+            else {
+                float percent = (len - deadZone) / (1 - deadZone);
+                m_cachedLeftThumb.Normalize();
+                m_cachedLeftThumb *= percent;
+            }
+        }
+
+        {
+            static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) / 32768.0);
+
+            m_cachedRightThumb = {
+                static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbRX) / 32768.0),
+                static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbRY) / 32768.0) };
+
+            float len = m_cachedRightThumb.Length();
+            if (len <= deadZone) {
+                m_cachedRightThumb = {};
+            }
+            else {
+                float percent = (len - deadZone) / (1 - deadZone);
+                m_cachedRightThumb.Normalize();
+                m_cachedRightThumb *= percent;
+            }
+        }
     }
 
     bool GamePad::isConnected() const {
@@ -82,45 +119,5 @@ namespace onut {
 
     bool GamePad::isJustReleased(eGamePad button) const {
         return isPressed(button, m_previousState) && !isPressed(button, m_currentState);
-    }
-
-    Vector2 GamePad::getLeftThumb() const {
-        static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / 32768.0);
-
-        Vector2 ret{ 
-            static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbLX) / 32768.0),
-            static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbLY) / 32768.0) };
-
-        float len = ret.Length();
-        if (len <= deadZone) {
-            ret = {};
-        }
-        else {
-            float percent = (len - deadZone) / (1 - deadZone);
-            ret.Normalize();
-            ret *= percent;
-        }
-
-        return std::move(ret);
-    }
-
-    Vector2 GamePad::getRightThumb() const {
-        static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) / 32768.0);
-
-        Vector2 ret{
-            static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbRX) / 32768.0),
-            static_cast<float>(static_cast<double>(m_currentState.Gamepad.sThumbRY) / 32768.0) };
-
-        float len = ret.Length();
-        if (len <= deadZone) {
-            ret = {};
-        }
-        else {
-            float percent = (len - deadZone) / (1 - deadZone);
-            ret.Normalize();
-            ret *= percent;
-        }
-
-        return std::move(ret);
     }
 };

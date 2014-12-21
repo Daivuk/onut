@@ -9,6 +9,24 @@
 
 using namespace DirectX;
 
+// Our engine services
+onut::Window*               g_pWindow = nullptr;
+onut::Renderer*             ORenderer = nullptr;
+onut::Settings*             OSettings = new onut::Settings();
+onut::SpriteBatch*          OSpriteBatch = nullptr;
+onut::GamePad*              g_gamePads[4] = { nullptr };
+onut::EventManager*         OEvent = nullptr;
+onut::ContentManager*       OContentManager = nullptr;
+AudioEngine*                g_pAudioEngine = nullptr;
+onut::TimeInfo              g_timeInfo;
+
+// Default resources
+onut::BMFont*               g_pDefaultFont = nullptr;
+onut::BMFont*               g_pDefaultFont64 = nullptr;
+
+// So commonly used stuff
+float                       ODT = 0.f;
+
 namespace onut {
     std::vector<Color> palPinkLovers = { OColorHex(A59C98), OColorHex(F0C8D0), OColorHex(CC879C), OColorHex(D13162), OColorHex(322C2A) };
     std::vector<Color> palPeonyJoy = { OColorHex(002F43), OColorHex(0EACAB), OColorHex(A4BEBF), OColorHex(E27379), OColorHex(D3215D) };
@@ -17,31 +35,22 @@ namespace onut {
     std::vector<Color> palNatureWalk = { OColorHex(CFB590), OColorHex(9E9A41), OColorHex(758918), OColorHex(564334), OColorHex(49281F) };
 
     // For mainloop sync
-    std::queue<std::function<void()>>   g_syncToMainLoopCallbacks;
-    std::mutex                          g_syncToMainLoopMutex;
+    std::queue<ICallback*>   g_syncToMainLoopCallbacks;
+    std::mutex               g_syncToMainLoopMutex;
     void synchronize() {
         std::lock_guard<std::mutex> lock(g_syncToMainLoopMutex);
         while (!g_syncToMainLoopCallbacks.empty()) {
-            auto& callback = g_syncToMainLoopCallbacks.front();
-            if (callback) callback();
+            auto pCallback = g_syncToMainLoopCallbacks.front();
+            if (pCallback) {
+                pCallback->call();
+                delete pCallback;
+            }
             g_syncToMainLoopCallbacks.pop();
         }
     }
 
-    // Our engine services
-    Window*             g_pWindow = nullptr;
-    Renderer*           g_pRenderer = nullptr;
-    Settings*           g_pSettings = nullptr;
-    SpriteBatch*        g_pSpriteBatch = nullptr;
-    BMFont*             g_pDefaultFont = nullptr;
-    BMFont*             g_pDefaultFont64 = nullptr;
-    GamePad*            g_gamePads[4] = { nullptr };
-    EventManager*       g_pEventManager = nullptr;
-    ContentManager*     g_pContentManager = nullptr;
-    AudioEngine*        g_pAudioEngine = nullptr;
-
     // Main loop
-    void run(std::function<void()> initCallback, std::function<void(const TimeInfo&)> updateCallback, std::function<void()> renderCallback) {
+    void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback) {
         // Make sure we run just once
         static bool alreadyRan = false;
         assert(!alreadyRan);
@@ -52,27 +61,24 @@ namespace onut {
         // Random
         randomizeSeed();
 
-        // Settings
-        auto settings = getSettings();
-
         // Events
-        g_pEventManager = new EventManager();
+        OEvent = new EventManager();
 
         // Window
-        g_pWindow = new Window(settings->getResolution());
+        g_pWindow = new Window(OSettings->getResolution());
 
         // DirectX
-        g_pRenderer = new Renderer(*g_pWindow);
+        ORenderer = new Renderer(*g_pWindow);
 
         // SpriteBatch
-        g_pSpriteBatch = new SpriteBatch();
+        OSpriteBatch = new SpriteBatch();
 
         // Content
-        g_pContentManager = new ContentManager();
+        OContentManager = new ContentManager();
 
         // Fonts
-        if (!settings->getDefaultFont().empty()) {
-            const auto& fntFilename = settings->getDefaultFont();
+        if (!OSettings->getDefaultFont().empty()) {
+            const auto& fntFilename = OSettings->getDefaultFont();
             g_pDefaultFont = BMFont::createFromFile(fntFilename);
             g_pDefaultFont64 = BMFont::createFromFile(fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt");
         }
@@ -98,8 +104,6 @@ namespace onut {
             initCallback();
         }
 
-        TimeInfo timeInfo;
-
         // Main loop
         MSG msg = { 0 };
         while (true) {
@@ -117,42 +121,26 @@ namespace onut {
 
             // Update
             g_pAudioEngine->Update();
-            auto framesToUpdate = timeInfo.update();
+            auto framesToUpdate = g_timeInfo.update();
+            ODT = onut::getTimeInfo().getDeltaTime();
             while (framesToUpdate--) {
                 for (auto& gamePad : g_gamePads) {
                     gamePad->update();
                 }
                 AnimManager::getGlobalManager()->update();
-                g_pEventManager->update();
+                OEvent->update();
                 if (updateCallback) {
-                    updateCallback(timeInfo);
+                    updateCallback();
                 }
             }
 
             // Render
-            g_pRenderer->beginFrame();
+            ORenderer->beginFrame();
             if (renderCallback) {
                 renderCallback();
             }
-            g_pRenderer->endFrame();
+            ORenderer->endFrame();
         }
-    }
-
-    Settings* getSettings() {
-        if (g_pSettings == nullptr) {
-            g_pSettings = new Settings();
-        }
-        return g_pSettings;
-    }
-
-    Renderer* getRenderer() {
-        assert(g_pRenderer); // You have to call onut::run before!
-        return g_pRenderer;
-    }
-
-    SpriteBatch* getSpriteBatch() {
-        assert(g_pSpriteBatch); // You have to call onut::run before!
-        return g_pSpriteBatch;
     }
 
     BMFont* getDefaultFont() {
@@ -168,16 +156,11 @@ namespace onut {
         return g_gamePads[index];
     }
 
-    EventManager* getEventManager() {
-        return g_pEventManager;
+    const TimeInfo& getTimeInfo() {
+        return g_timeInfo;
     }
 
-    ContentManager* getContentManager() {
-        return g_pContentManager;
-    }
-
-    void syncToMainLoop(const std::function<void()>& callback) {
-        std::lock_guard<std::mutex> lock(g_syncToMainLoopMutex);
-        g_syncToMainLoopCallbacks.push(callback);
+    void syncCallbackToMainLoop(ICallback* pCallback) {
+        g_syncToMainLoopCallbacks.push(pCallback);
     }
 }

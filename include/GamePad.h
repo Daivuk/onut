@@ -36,20 +36,22 @@ namespace onut {
 
         GamePad(int index);
 
-        void    update();
-        bool    isConnected() const;
-        bool    isPressed(eGamePad button) const;
-        bool    isJustPressed(eGamePad button) const;
-        bool    isJustReleased(eGamePad button) const;
-        Vector2 getLeftThumb() const;
-        Vector2 getRightThumb() const;
+        void            update();
+        bool            isConnected() const;
+        bool            isPressed(eGamePad button) const;
+        bool            isJustPressed(eGamePad button) const;
+        bool            isJustReleased(eGamePad button) const;
+        const Vector2&  getLeftThumb() const { return m_cachedLeftThumb; }
+        const Vector2&  getRightThumb() const { return m_cachedRightThumb; }
 
     private:
         bool isPressed(eGamePad button, const XINPUT_STATE& state) const;
 
         XINPUT_STATE    m_currentState;
         XINPUT_STATE    m_previousState;
-        int                m_index = 0;
+        Vector2         m_cachedLeftThumb;
+        Vector2         m_cachedRightThumb;
+        int             m_index = 0;
         bool            m_isConnected = false;
     };
 };

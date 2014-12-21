@@ -76,6 +76,9 @@
     <ClInclude Include="..\..\src\Audio.h">
       <Filter>src\audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Callback.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -152,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp">
       <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DefineHelpers.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

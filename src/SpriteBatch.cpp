@@ -3,8 +3,8 @@
 
 namespace onut {
     SpriteBatch::SpriteBatch() {
-        auto pDevice = getRenderer()->getDevice();
-        auto pDeviceContext = getRenderer()->getDeviceContext();
+        auto pDevice = ORenderer->getDevice();
+        auto pDeviceContext = ORenderer->getDeviceContext();
 
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = { 255, 255, 255, 255 };
@@ -65,7 +65,7 @@ namespace onut {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
         m_isDrawing = true;
-        auto pDeviceContext = getRenderer()->getDeviceContext();
+        auto pDeviceContext = ORenderer->getDeviceContext();
         pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
     }
 
@@ -216,7 +216,7 @@ namespace onut {
             return; // Nothing to flush
         }
 
-        auto pDeviceContext = getRenderer()->getDeviceContext();
+        auto pDeviceContext = ORenderer->getDeviceContext();
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 

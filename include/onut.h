@@ -1,6 +1,8 @@
 #pragma once
 #include <functional>
 #include <memory>
+#include <future>
+#include <queue>
 
 #include "GamePad.h"
 #include "BMFont.h"
@@ -16,6 +18,7 @@
 #include "Anim.h"
 #include "ContentManager.h"
 #include "Sound.h"
+#include "Callback.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -25,24 +28,7 @@ namespace onut {
         @param updateCallback Called at a fixed 60 times per seconds. Sometimes tho calls can be dropped and run slower if the game performs badly
         @param renderCallback Called once per frame. Draw your stuff in there
     */
-    void run(std::function<void()> initCallback, std::function<void(const TimeInfo&)> updateCallback, std::function<void()> renderCallback);
-
-    /**
-        Get Settings that allows you to set or get game settings like screen resolution, 
-        name of the game, etc.
-    */
-    Settings* getSettings();
-
-    /**
-        Get the DX11 renderer.
-    */
-    Renderer* getRenderer();
-
-    /**
-        Get a global SpriteBatch object to draw your 2D.
-        Note, you can create your own SpriteBatch objects if you like
-    */
-    SpriteBatch* getSpriteBatch();
+    void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback);
 
     /**
         Get a global font. This is the default font set in the settings.
@@ -59,16 +45,11 @@ namespace onut {
         Get a gamepad for index (0 to 3)
     */
     GamePad* getGamePad(int index);
-
+    
     /**
-        Get a gamepad for index (0 to 3)
+        Get the time info for the current frame
     */
-    EventManager* getEventManager();
-
-    /**
-        Get a default content manager.
-    */
-    ContentManager* getContentManager();
+    const TimeInfo& getTimeInfo();
 
     /**
         Rect alignement helper
@@ -133,9 +114,95 @@ namespace onut {
         alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
     }
 
+
     /**
         Sync to the main loop. Call this from threads.
         If called from main loop, it will be called the next frame.
     */
-    void syncToMainLoop(const std::function<void()>& callback);
+    void syncCallbackToMainLoop(ICallback* pCallback);
+    template<typename Tfn, typename ... Targs>
+    void syncToMainLoop(Tfn callback, Targs... args) {
+        auto pCallback = new Callback<Tfn, Targs...>(callback, args...);
+        syncCallbackToMainLoop(pCallback);
+    }
+}
+
+// For quick stuff, we have shortcuts outside of the namespace
+extern onut::Renderer*      ORenderer;
+extern onut::SpriteBatch*   OSpriteBatch;
+extern onut::Settings*      OSettings;
+extern onut::EventManager*  OEvent;
+
+//--- Resource shortcuts
+extern onut::ContentManager* OContentManager;
+
+typedef onut::Texture   OTexture;
+typedef onut::BMFont    OFont;
+typedef onut::Sound     OSound;
+
+inline OTexture* OGetTexture(const char* pName) {
+    return OContentManager->getResource<OTexture>(pName);
+}
+
+inline OFont* OGetBMFont(const char* pName) {
+    return OContentManager->getResource<OFont>(pName);
+}
+
+inline OSound* OGetSound(const char* pName) {
+    return OContentManager->getResource<OSound>(pName);
+}
+
+inline void OPlaySound(const char* pName) {
+    OGetSound(pName)->play();
+}
+
+//--- Game pads
+inline onut::GamePad* OGamePad(int index) {
+    return onut::getGamePad(index);
+}
+
+inline bool OPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0) {
+    return OGamePad(gamePadIndex)->isPressed(button);
+}
+
+inline bool OJustPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0) {
+    return OGamePad(gamePadIndex)->isJustPressed(button);
+}
+
+inline bool OJustReleased(onut::GamePad::eGamePad button, int gamePadIndex = 0) {
+    return OGamePad(gamePadIndex)->isJustReleased(button);
+}
+
+inline const Vector2& OLThumb(int gamePadIndex = 0) {
+    return OGamePad(gamePadIndex)->getLeftThumb();
+}
+
+inline const Vector2& ORThumb(int gamePadIndex = 0) {
+    return OGamePad(gamePadIndex)->getRightThumb();
+}
+
+//--- Anims
+typedef onut::Anim<float> OAnimf;
+typedef onut::Anim<int> OAnimi;
+typedef onut::Anim<Vector2> OAnim2;
+typedef onut::Anim<Vector3> OAnim3;
+typedef onut::Anim<Vector4> OAnim4;
+typedef onut::Anim<std::string> OAnimStr;
+
+//--- Timing
+extern float ODT;
+
+template<typename TtimeType>
+inline void OSleep(const TtimeType& ms) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+template<typename Tfn, typename ... Targs>
+inline auto OAsync(Tfn callback, Targs... args) -> decltype(std::async(callback, args...)) {
+    return std::async(std::launch::async, callback, args...);
+}
+
+template<typename Tfn, typename ... Targs>
+inline auto OSync(Tfn callback, Targs... args) -> decltype(callback(args...)) {
+    onut::syncToMainLoop(callback, args...);
 }
