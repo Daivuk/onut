@@ -79,6 +79,12 @@
     <ClInclude Include="..\..\include\Callback.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\RectUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\TimingUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">

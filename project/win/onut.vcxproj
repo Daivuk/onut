@@ -20,6 +20,7 @@
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\onut.h" />
     <ClInclude Include="..\..\include\Random.h" />
+    <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\Renderer.h" />
     <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="..\..\include\StringUtils.h" />
     <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
+    <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />

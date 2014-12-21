@@ -49,7 +49,7 @@
 #define OScreenCenterf      Vector2{static_cast<float>(ORenderer->getResolution().x / 2), static_cast<float>(ORenderer->getResolution().y / 2)}
 #define OScreenCenterX      (ORenderer->getResolution().x / 2)
 #define OScreenCenterY      (ORenderer->getResolution().y / 2)
-#define OScreenCenterXf     static_cast<float>(onut::getRenderer()->getResolution().x / 2)
+#define OScreenCenterXf     static_cast<float>(ORenderer->getResolution().x / 2)
 #define OScreenCenterYf     static_cast<float>(ORenderer->getResolution().y / 2)
 
 //--- Rect helpers for drawing

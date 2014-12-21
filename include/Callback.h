@@ -7,11 +7,11 @@ namespace onut {
         virtual void call() = 0;
     };
 
-    template<typename Tfn, typename ... Targs>
+    template<typename ... Targs>
     class Callback : public ICallback {
     public:
-        Callback(Tfn callback, Targs... args) :
-            m_bind(callback, args...)  {
+        Callback(Targs... args) :
+            m_bind(args...)  {
         }
 
         void call() override {
@@ -19,6 +19,6 @@ namespace onut {
         }
 
     private:
-        decltype(std::bind(std::declval<Tfn>(), std::declval<Targs>()...))  m_bind;
+        decltype(std::bind(std::declval<Targs>()...))  m_bind;
     };
 }

@@ -13,7 +13,7 @@ using namespace DirectX;
 onut::Window*               g_pWindow = nullptr;
 onut::Renderer*             ORenderer = nullptr;
 onut::Settings*             OSettings = new onut::Settings();
-onut::SpriteBatch*          OSpriteBatch = nullptr;
+onut::SpriteBatch*          OSB = nullptr;
 onut::GamePad*              g_gamePads[4] = { nullptr };
 onut::EventManager*         OEvent = nullptr;
 onut::ContentManager*       OContentManager = nullptr;
@@ -71,7 +71,7 @@ namespace onut {
         ORenderer = new Renderer(*g_pWindow);
 
         // SpriteBatch
-        OSpriteBatch = new SpriteBatch();
+        OSB = new SpriteBatch();
 
         // Content
         OContentManager = new ContentManager();
