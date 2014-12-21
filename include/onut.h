@@ -15,6 +15,7 @@
 #include "TimeInfo.h"
 #include "Anim.h"
 #include "ContentManager.h"
+#include "Sound.h"
 
 using namespace DirectX::SimpleMath;
 

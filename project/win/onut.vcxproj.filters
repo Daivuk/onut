@@ -58,6 +58,24 @@
     <ClInclude Include="..\..\src\dirent.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Sound.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\pch.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SoundCommon.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\WaveBankReader.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\WAVFileReader.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Audio.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -108,6 +126,33 @@
     <ClCompile Include="..\..\src\ContentManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Sound.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SoundCommon.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SoundEffect.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SoundEffectInstance.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\WaveBank.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\WaveBankReader.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\WAVFileReader.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AudioEngine.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -118,6 +163,9 @@
     </Filter>
     <Filter Include="src\shaders">
       <UniqueIdentifier>{c06ade93-9118-49de-bba1-fb9abed7757a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\audio">
+      <UniqueIdentifier>{0fcd117a-dc6b-4505-b51e-c00eb77824fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

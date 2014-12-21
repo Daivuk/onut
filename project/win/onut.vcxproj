@@ -22,19 +22,27 @@
     <ClInclude Include="..\..\include\Renderer.h" />
     <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
+    <ClInclude Include="..\..\include\Sound.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\StringUtils.h" />
     <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
+    <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\LodePNG.h" />
+    <ClInclude Include="..\..\src\pch.h" />
+    <ClInclude Include="..\..\src\SoundCommon.h" />
+    <ClInclude Include="..\..\src\WaveBankReader.h" />
+    <ClInclude Include="..\..\src\WAVFileReader.h" />
     <ClInclude Include="..\..\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Anim.cpp" />
+    <ClCompile Include="..\..\src\AudioEngine.cpp" />
     <ClCompile Include="..\..\src\BMFont.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
+    <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
@@ -43,10 +51,17 @@
     <ClCompile Include="..\..\src\onut.cpp" />
     <ClCompile Include="..\..\src\Settings.cpp" />
     <ClCompile Include="..\..\src\SimpleMath.cpp" />
+    <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\SoundCommon.cpp" />
+    <ClCompile Include="..\..\src\SoundEffect.cpp" />
+    <ClCompile Include="..\..\src\SoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\StringUtils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\TimeInfo.cpp" />
+    <ClCompile Include="..\..\src\WaveBank.cpp" />
+    <ClCompile Include="..\..\src\WaveBankReader.cpp" />
+    <ClCompile Include="..\..\src\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>

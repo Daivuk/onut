@@ -5,6 +5,9 @@
 #include "onut.h"
 #include "Random.h"
 #include "Window.h"
+#include "Audio.h"
+
+using namespace DirectX;
 
 namespace onut {
     std::vector<Color> palPinkLovers = { OColorHex(A59C98), OColorHex(F0C8D0), OColorHex(CC879C), OColorHex(D13162), OColorHex(322C2A) };
@@ -35,37 +38,65 @@ namespace onut {
     GamePad*            g_gamePads[4] = { nullptr };
     EventManager*       g_pEventManager = nullptr;
     ContentManager*     g_pContentManager = nullptr;
+    AudioEngine*        g_pAudioEngine = nullptr;
 
     // Main loop
     void run(std::function<void()> initCallback, std::function<void(const TimeInfo&)> updateCallback, std::function<void()> renderCallback) {
-        // Validate parameters
-        assert(initCallback);
-        assert(updateCallback);
-        assert(renderCallback);
-
         // Make sure we run just once
         static bool alreadyRan = false;
         assert(!alreadyRan);
         alreadyRan = true;
 
-        // Create our services
+        //-------------------------- Create our services --------------------------------
+        // 
+        // Random
         randomizeSeed();
+
+        // Settings
         auto settings = getSettings();
+
+        // Events
         g_pEventManager = new EventManager();
+
+        // Window
         g_pWindow = new Window(settings->getResolution());
+
+        // DirectX
         g_pRenderer = new Renderer(*g_pWindow);
+
+        // SpriteBatch
         g_pSpriteBatch = new SpriteBatch();
+
+        // Content
         g_pContentManager = new ContentManager();
+
+        // Fonts
         if (!settings->getDefaultFont().empty()) {
             const auto& fntFilename = settings->getDefaultFont();
             g_pDefaultFont = BMFont::createFromFile(fntFilename);
             g_pDefaultFont64 = BMFont::createFromFile(fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt");
         }
+
+        // Gamepads
         for (int i = 0; i < 4; ++i) {
             g_gamePads[i] = new GamePad(i);
         }
 
-        initCallback();
+        // Audio
+#ifdef WIN32
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+#endif
+        AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
+#ifdef _DEBUG
+        eflags = eflags | AudioEngine_Debug;
+#endif
+        g_pAudioEngine = new AudioEngine(eflags);
+        //-------------------------------------------------------------------------------
+
+        // Call the user defined init
+        if (initCallback) {
+            initCallback();
+        }
 
         TimeInfo timeInfo;
 
@@ -85,6 +116,7 @@ namespace onut {
             synchronize();
 
             // Update
+            g_pAudioEngine->Update();
             auto framesToUpdate = timeInfo.update();
             while (framesToUpdate--) {
                 for (auto& gamePad : g_gamePads) {
@@ -92,12 +124,16 @@ namespace onut {
                 }
                 AnimManager::getGlobalManager()->update();
                 g_pEventManager->update();
-                updateCallback(timeInfo);
+                if (updateCallback) {
+                    updateCallback(timeInfo);
+                }
             }
 
             // Render
             g_pRenderer->beginFrame();
-            renderCallback();
+            if (renderCallback) {
+                renderCallback();
+            }
             g_pRenderer->endFrame();
         }
     }

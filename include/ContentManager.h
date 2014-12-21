@@ -57,11 +57,7 @@ namespace onut {
             Ttype* m_pResource = nullptr;
         };
 
-        template <
-            typename Ttype,
-            typename std::enable_if<
-                std::is_same<Ttype, Texture>::value ||
-                std::is_same<Ttype, BMFont>::value>::type* = nullptr>
+        template <typename Ttype>
         Ttype* load(const std::string& name) {
             auto filename = findFile(name);
             Ttype* pResource = Ttype::createFromFile(filename);

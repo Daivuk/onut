@@ -23,6 +23,8 @@
 #define OContentManager     onut::getContentManager()
 #define OGetTexture(name)   onut::getContentManager()->getResource<onut::Texture>(name)
 #define OGetBMFont(name)    onut::getContentManager()->getResource<onut::BMFont>(name)
+#define OGetSound(name)     onut::getContentManager()->getResource<onut::Sound>(name)
+#define OPlaySound(name)    onut::getContentManager()->getResource<onut::Sound>(name)->play()
 
 //--- Resource creation shortcuts
 #define OTextureFromFile    onut::Texture::createFromFile

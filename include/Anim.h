@@ -471,11 +471,21 @@ namespace onut {
 
         /**
             Start the animation
+            @param from Starting value of the animation
+            @param keyFrame Anim::KeyFrame defining the animation: goal, duration, tween
+            @param loop Looping state. Default LoopType::NONE
+        */
+        void start(const Ttype& from, const KeyFrame& keyFrame, LoopType loop = LoopType::NONE) {
+            start(from, std::vector<KeyFrame>{ keyFrame }, loop);
+        }
+
+        /**
+            Start the animation
             @param keyFrame Anim::KeyFrame defining the animation: goal, duration, tween
             @param loop Looping state. Default LoopType::NONE
         */
         void start(const KeyFrame& keyFrame, LoopType loop = LoopType::NONE) {
-            start(m_value, { keyFrame }, loop);
+            start(m_value, std::vector<KeyFrame>{ keyFrame }, loop);
         }
 
         /**
@@ -637,6 +647,7 @@ namespace onut {
                         auto percent = static_cast<Tprecision>(timeIn.count() / duration.count());
                         percent = applyTween<Tprecision>(percent, keyFrame.tween);
 
+                        m_oldTime = now;
                         // Lerp
                         return Tlerp(from, keyFrame.goal, percent);
                     }
@@ -658,11 +669,9 @@ namespace onut {
 
     private:
         struct InternalKeyFrame {
-            InternalKeyFrame(
-                const Ttype& in_goal, 
-                const std::chrono::system_clock::time_point& in_endAt,
-                TweenType in_tween,
-                std::function<void()> in_callback) :
+            InternalKeyFrame(const Ttype& in_goal, 
+                             const std::chrono::system_clock::time_point& in_endAt, 
+                             TweenType in_tween, std::function<void()> in_callback) :
                 goal(in_goal),
                 endAt(in_endAt),
                 tween(in_tween),
