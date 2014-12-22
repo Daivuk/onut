@@ -76,13 +76,19 @@
     <ClInclude Include="..\..\src\Audio.h">
       <Filter>src\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Callback.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\RectUtils.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\TimingUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Pool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Synchronous.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Asynchronous.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

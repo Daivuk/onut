@@ -5,12 +5,13 @@
 #include <queue>
 
 #include "Anim.h"
+#include "Asynchronous.h"
 #include "BMFont.h"
-#include "Callback.h"
 #include "ContentManager.h"
 #include "DefineHelpers.h"
 #include "EventManager.h"
 #include "GamePad.h"
+#include "Pool.h"
 #include "Random.h"
 #include "RectUtils.h"
 #include "Renderer.h"
@@ -18,6 +19,7 @@
 #include "SimpleMath.h"
 #include "Sound.h"
 #include "SpriteBatch.h"
+#include "Synchronous.h"
 #include "Texture.h"
 #include "TimeInfo.h"
 #include "TimingUtils.h"
@@ -112,3 +114,14 @@ typedef onut::Anim<Vector2> OAnim2;
 typedef onut::Anim<Vector3> OAnim3;
 typedef onut::Anim<Vector4> OAnim4;
 typedef onut::Anim<std::string> OAnimStr;
+
+/**
+    Synchronize back to main thread. This can also be called from the main thread. It will just be delayed until the next frame.
+    @param callback Function or your usual lambda
+    @param args arguments
+*/
+extern onut::Synchronous<onut::Pool<>> g_mainSync;
+template<typename Tfn, typename ... Targs>
+inline void OSync(Tfn callback, Targs... args) {
+    g_mainSync.sync(callback, args...);
+}

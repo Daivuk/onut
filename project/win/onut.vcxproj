@@ -12,13 +12,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Anim.h" />
+    <ClInclude Include="..\..\include\Asynchronous.h" />
     <ClInclude Include="..\..\include\BMFont.h" />
-    <ClInclude Include="..\..\include\Callback.h" />
     <ClInclude Include="..\..\include\ContentManager.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\onut.h" />
+    <ClInclude Include="..\..\include\Pool.h" />
     <ClInclude Include="..\..\include\Random.h" />
     <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\Renderer.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="..\..\include\Sound.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\StringUtils.h" />
+    <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
