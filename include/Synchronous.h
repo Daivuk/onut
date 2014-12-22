@@ -1,5 +1,6 @@
 #pragma once
 #include <mutex>
+#include <queue>
 
 namespace onut {
     /**
@@ -8,11 +9,11 @@ namespace onut {
     class SynchronousDefaultAllocator {
     public:
         template<typename Ttype, typename ... Targs>
-        Ttype* alloc(Targs... args) {
+        Ttype* alloc(Targs... args) const {
             return new Ttype(args...);
         }
 
-        void dealloc(void* pObj) {
+        void dealloc(void* pObj) const {
             delete pObj;
         }
     };
@@ -21,8 +22,11 @@ namespace onut {
         Helper class to run function callbacks back to the calling thread. This also can use a custom allocator
         template arguments:
         - Tallocator: Allocator used for callbacks. Each time a callback is set, it's allocated. And destroyed after called. It could be beneficial for a game to use a pool. As long as your custom allocator defines alloc<T>() and dealloc() method, you should be good.
+        - TmutexType: Mutex type to be used. Default std::mutex.
     */
-    template<typename Tallocator = SynchronousDefaultAllocator>
+    template<
+        typename Tallocator = SynchronousDefaultAllocator,
+        typename TmutexType = std::mutex>
     class Synchronous {
     public:
         /**
@@ -40,7 +44,7 @@ namespace onut {
         /**
             Call all currently queued callbacks set using sync() calls.
         */
-        void invokeQueue() {
+        void processQueue() {
             m_mutex.lock();
             while (!m_callbackQueue.empty()) {
                 auto pCallback = m_callbackQueue.front();
@@ -83,7 +87,7 @@ namespace onut {
         }
 
         std::queue<ICallback*>  m_callbackQueue;
-        std::mutex              m_mutex;
+        TmutexType              m_mutex;
         Tallocator              m_allocator;
     };
 }

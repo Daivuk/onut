@@ -60,6 +60,15 @@ namespace onut {
         */
         template<typename Ttype, typename ... Targs>
         Ttype* alloc(Targs... args) {
+            // Make sure we are not trying to allocate an object too big
+            auto objSize = sizeof(Ttype);
+            if (objSize > TobjSize) {
+                if (TuseAsserts) {
+                    assert(false); // Trying to allocate an object too big
+                }
+                return nullptr;
+            }
+
             // Loop the pool from the last time.
             auto startPoint = m_currentObj;
             do {
@@ -84,8 +93,14 @@ namespace onut {
             return nullptr;
         }
 
-        void dealloc(void* pObj) {
-            auto ptr = static_cast<uint8_t*>(pObj);
+        /**
+            Dealloc an object
+            @param pObj Pointer to the object to free
+        */
+        template<typename Ttype>
+        void dealloc(Ttype* pObj) {
+            pObj->~Ttype();
+            auto ptr = reinterpret_cast<uint8_t*>(pObj);
             auto used = ptr + TobjSize;
             if (!*used) {
                 if (TuseAsserts) {
@@ -94,6 +109,15 @@ namespace onut {
                 return;
             }
             *used = 0;
+        }
+
+        /**
+            Dealloc everything.
+            Resets the pool, kills all objects initialized with it. Destructors won't be called!
+        */
+        void clear() {
+            memset(m_pMemory, 0, TmemorySize);
+            m_currentObj = m_pFirstObj;
         }
 
     protected:

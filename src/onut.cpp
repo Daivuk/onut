@@ -101,7 +101,7 @@ namespace onut {
             }
 
             // Sync to main callbacks
-            g_mainSync.invokeQueue();
+            g_mainSync.processQueue();
 
             // Update
             g_pAudioEngine->Update();
