@@ -20,7 +20,7 @@ namespace onut {
     /**
         Helper class to run function callbacks back to the calling thread. This also can use a custom allocator
         template arguments:
-        - Tallocator: Allocator used for callbacks. Each time a callback is set, it's allocated. And destroyed after called. It could be beneficial for a game to use a pool. As long as your custom allocator define alloc<T>() and dealloc() method, you should be good.
+        - Tallocator: Allocator used for callbacks. Each time a callback is set, it's allocated. And destroyed after called. It could be beneficial for a game to use a pool. As long as your custom allocator defines alloc<T>() and dealloc() method, you should be good.
     */
     template<typename Tallocator = SynchronousDefaultAllocator>
     class Synchronous {

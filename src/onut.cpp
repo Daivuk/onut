@@ -20,11 +20,11 @@ onut::TimeInfo                  g_timeInfo;
 onut::Synchronous<onut::Pool<>> g_mainSync;
 
 // Default resources
-onut::BMFont*               g_pDefaultFont = nullptr;
-onut::BMFont*               g_pDefaultFont64 = nullptr;
+onut::BMFont*                   g_pDefaultFont = nullptr;
+onut::BMFont*                   g_pDefaultFont64 = nullptr;
 
 // So commonly used stuff
-float                       ODT = 0.f;
+float                           ODT = 0.f;
 
 namespace onut {
     std::vector<Color> palPinkLovers = { OColorHex(A59C98), OColorHex(F0C8D0), OColorHex(CC879C), OColorHex(D13162), OColorHex(322C2A) };

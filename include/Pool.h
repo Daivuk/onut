@@ -44,7 +44,7 @@ namespace onut {
                     m_pFirstObj = m_pMemory;
                 }
             }
-            m_nextFree = m_pFirstObj;
+            m_currentObj = m_pFirstObj;
         }
 
         /**
@@ -61,35 +61,27 @@ namespace onut {
         template<typename Ttype, typename ... Targs>
         Ttype* alloc(Targs... args) {
             // Loop the pool from the last time.
-            auto startPoint = m_nextFree;
-            while (true) {
-                auto used = m_nextFree + TobjSize;
-                if (*used) {
-                    m_nextFree += TobjTotalSize;
-                    if (m_nextFree > m_pMemory + TmemorySize) {
-                        // Wrap
-                        m_nextFree = m_pFirstObj;
-                    }
-                    if (startPoint == m_nextFree) {
-                        if (TuseAsserts) {
-                            assert(false); // No more memory available in the pool. Use bigger pool
-                        }
-                        return nullptr;
-                    }
-                    continue;
+            auto startPoint = m_currentObj;
+            do {
+                m_currentObj += TobjTotalSize;
+                // Wrap
+                if (m_currentObj > m_pMemory + TmemorySize) {
+                    m_currentObj = m_pFirstObj;
                 }
-                else {
+                auto used = m_currentObj + TobjSize;
+
+                if (!*used) {
                     // Found one!
                     *used = 1;
-                    Ttype* pRet = new(m_nextFree)Ttype(args...);
-                    m_nextFree += TobjTotalSize;
-                    if (m_nextFree > m_pMemory + TmemorySize) {
-                        // Wrap
-                        m_nextFree = m_pFirstObj;
-                    }
+                    Ttype* pRet = new(m_currentObj)Ttype(args...);
                     return pRet;
                 }
+            } while (startPoint != m_currentObj);
+
+            if (TuseAsserts) {
+                assert(false); // No more memory available in the pool. Use bigger pool
             }
+            return nullptr;
         }
 
         void dealloc(void* pObj) {
@@ -107,6 +99,6 @@ namespace onut {
     protected:
         uint8_t*    m_pMemory;
         uint8_t*    m_pFirstObj;
-        uint8_t*    m_nextFree;
+        uint8_t*    m_currentObj;
     };
 }
