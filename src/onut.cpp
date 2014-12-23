@@ -1,5 +1,6 @@
 #include <cassert>
 #include <mutex>
+#include <sstream>
 
 #include "Audio.h"
 #include "onut.h"
@@ -81,6 +82,20 @@ namespace onut {
         eflags = eflags | AudioEngine_Debug;
 #endif
         g_pAudioEngine = new AudioEngine(eflags);
+
+        // Register a bunch of default callbacks
+        OEvent->addEvent("NavigateLeft", []{
+            return OJustPressed(OLeftBtn) || OJustPressed(OLLeftBtn);
+        });
+        OEvent->addEvent("NavigateRight", []{
+            return OJustPressed(ORightBtn) || OJustPressed(OLRightBtn);
+        });
+        OEvent->addEvent("NavigateUp", []{
+            return OJustPressed(OUpBtn) || OJustPressed(OLUpBtn);
+        });
+        OEvent->addEvent("NavigateDown", []{
+            return OJustPressed(ODownBtn) || OJustPressed(OLDownBtn);
+        });
         //-------------------------------------------------------------------------------
 
         // Call the user defined init
@@ -142,5 +157,26 @@ namespace onut {
 
     const TimeInfo& getTimeInfo() {
         return g_timeInfo;
+    }
+
+    void drawPal(const OPal& pal) {
+        static const float H = 32.f;
+        float i = 0;
+        OSB->begin();
+        for (auto& color : pal) {
+            OSB->drawRect(nullptr, { 0, i, H * GOLDEN_RATIO, H }, color);
+            i += H;
+        }
+        i = 0;
+        int index = 0;
+        auto pFont = getDefaultFont();
+        for (auto& color : pal) {
+            std::stringstream ss;
+            ss << index;
+            pFont->draw<OCenter>(ss.str(), Rect{ 0, i, H * GOLDEN_RATIO, H }.Center(), Color::Black);
+            i += H;
+            ++index;
+        }
+        OSB->end();
     }
 }

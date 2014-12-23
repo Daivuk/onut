@@ -171,11 +171,14 @@ namespace onut {
         return{ m_backBufferDesc.Width, m_backBufferDesc.Height };
     }
 
-    void Renderer::clear(const Vector4& color) {
+    void Renderer::clear(const Color& color) {
         m_deviceContext->ClearRenderTargetView(m_renderTargetView, &color.x);
     }
 
     void Renderer::setupFor2D() {
+        if (m_renderSetup == eRenderSetup::SETUP_2D) return;
+        m_renderSetup = eRenderSetup::SETUP_2D;
+
         // Set 2d render states
         m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
         m_deviceContext->RSSetState(m_pSr2D);
@@ -193,5 +196,8 @@ namespace onut {
 
     void Renderer::setupFor3D() {
         assert(false); // 3D not implemented
+
+        if (m_renderSetup == eRenderSetup::SETUP_3D) return;
+        m_renderSetup = eRenderSetup::SETUP_3D;
     }
 }

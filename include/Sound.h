@@ -18,3 +18,5 @@ namespace onut {
         DirectX::SoundEffect* m_pSound = nullptr;
     };
 }
+
+typedef onut::Sound OSound;

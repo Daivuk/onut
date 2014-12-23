@@ -91,6 +91,9 @@
     <ClInclude Include="..\..\include\Asynchronous.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\State.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">

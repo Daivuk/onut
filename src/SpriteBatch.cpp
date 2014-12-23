@@ -64,6 +64,7 @@ namespace onut {
     void SpriteBatch::begin() {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
+        ORenderer->setupFor2D();
         m_isDrawing = true;
         auto pDeviceContext = ORenderer->getDeviceContext();
         pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
@@ -106,6 +107,8 @@ namespace onut {
     void SpriteBatch::drawRect(Texture* pTexture, const Rect& rect, const Color& color) {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
+        if (color.x == 0 && color.y == 0 && color.z == 0 && color.w == 0) return;
+
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture) {
             flush();
@@ -138,6 +141,8 @@ namespace onut {
 
     void SpriteBatch::drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color) {
         assert(m_isDrawing); // Should call begin() before calling draw()
+
+        if (color.x == 0 && color.y == 0 && color.z == 0 && color.w == 0) return;
 
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture) {

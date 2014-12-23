@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\include\SimpleMath.h" />
     <ClInclude Include="..\..\include\Sound.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
+    <ClInclude Include="..\..\include\State.h" />
     <ClInclude Include="..\..\include\StringUtils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\Texture.h" />

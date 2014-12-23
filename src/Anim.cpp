@@ -7,12 +7,15 @@ namespace onut {
         m_isUpdating = true;
         for (m_updateIndex = 0; m_updateIndex < m_anims.size();) {
             auto pAnim = m_anims[m_updateIndex];
+            ++m_updateIndex;
             pAnim->updateAnim();
-            if (pAnim->isPlaying()) {
-                ++m_updateIndex;
-            }
         }
         m_isUpdating = false;
+
+        for (auto index : m_scheduledForRemoval) {
+            m_anims.erase(m_anims.begin() + index);
+        }
+        m_scheduledForRemoval.clear();
     }
 
     void AnimManager::registerAnim(IAnim* pAnim) {
@@ -24,10 +27,7 @@ namespace onut {
             auto pAnim = m_anims[i];
             if (pAnim == in_pAnim) {
                 if (m_isUpdating) {
-                    m_anims.erase(m_anims.begin() + i);
-                    if (m_updateIndex > i) {
-                        --m_updateIndex;
-                    }
+                    m_scheduledForRemoval.insert(i);
                 }
                 else {
                     m_anims.erase(m_anims.begin() + i);

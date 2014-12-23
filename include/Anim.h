@@ -2,6 +2,7 @@
 #include <chrono>
 #include <vector>
 #include <functional>
+#include <set>
 
 namespace onut {
     /**
@@ -297,9 +298,10 @@ namespace onut {
     protected:
         static AnimManager s_globalInstance;
 
-        std::vector<IAnim*>                m_anims;
-        std::vector<IAnim*>::size_type    m_updateIndex = 0;
-        bool                            m_isUpdating = false;
+        std::vector<IAnim*>                                                                     m_anims;
+        std::set<std::vector<IAnim*>::size_type, std::greater<std::vector<IAnim*>::size_type>>  m_scheduledForRemoval;
+        std::vector<IAnim*>::size_type                                                          m_updateIndex = 0;
+        bool                                                                                    m_isUpdating = false;
     };
 
     /**
@@ -456,7 +458,7 @@ namespace onut {
             @param loop Looping state. Default LoopType::NONE
         */
         void start(const Ttype& from, const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
-            start(from, { { goal, duration, tween } }, loop);
+            start(from, { goal, duration, tween }, loop);
         }
 
         /**
@@ -467,7 +469,7 @@ namespace onut {
             @param loop Looping state. Default LoopType::NONE
         */
         void start(const Ttype& goal, float duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE) {
-            start(m_value, { { goal, duration, tween } }, loop);
+            start(m_value, { goal, duration, tween }, loop);
         }
 
         /**
@@ -549,14 +551,6 @@ namespace onut {
         }
 
         /**
-            Update the animation, and store the new value.
-            @return true if done playing.
-        */
-        virtual void updateAnim() {
-            m_retValue = updateValue();
-        }
-
-        /**
             Returns wheter or not the animation is playing
             @return true if playing
         */
@@ -575,24 +569,32 @@ namespace onut {
             }
         }
 
-    private:
-        Ttype updateValue() {
+    public:
+        /**
+            Update the animation, and store the new value.
+            @return true if done playing.
+        */
+        void updateAnim() {
             if (m_isPlaying) {
                 auto now = std::chrono::steady_clock::now();
                 auto& last = m_keyFrames.back();
                 if (now >= last.endAt) {
-                    if (last.callback) {
-                        last.callback();
-                    }
+                    auto lastCallback = last.callback;
                     switch (m_loop) {
                     case LoopType::NONE: {
                         stop(true);
-                        return m_value;
+                        if (lastCallback) {
+                            lastCallback();
+                        }
+                        return;
                     }
                     case LoopType::PINGPONG_ONCE:
                         if (m_isPingPonging) {
                             stop(true);
-                            return m_value;
+                            if (lastCallback) {
+                                lastCallback();
+                            }
+                            return;
                         }
                     case LoopType::PINGPONG_LOOP: {
                         m_isPingPonging = true;
@@ -638,9 +640,13 @@ namespace onut {
                         m_startTime = newStart;
                     }
                     }
+                    if (lastCallback) {
+                        lastCallback();
+                    }
                 }
                 auto from = m_value;
                 auto fromTime = m_startTime;
+                std::vector<std::function<void()>> callbacks; // Not the fastest shit in town
                 for (auto& keyFrame : m_keyFrames) {
                     if (now < keyFrame.endAt) {
                         auto duration = std::chrono::duration<double>(keyFrame.endAt - fromTime);
@@ -650,22 +656,33 @@ namespace onut {
 
                         m_oldTime = now;
                         // Lerp
-                        return Tlerp(from, keyFrame.goal, percent);
+                        m_retValue = Tlerp(from, keyFrame.goal, percent);
+                        for (auto& callback : callbacks) {
+                            callback();
+                        }
+                        return;
                     }
                     if (m_oldTime <= keyFrame.endAt) {
                         if (keyFrame.callback) {
-                            keyFrame.callback();
+                            callbacks.push_back(keyFrame.callback);
                         }
                     }
                     from = keyFrame.goal;
                     fromTime = keyFrame.endAt;
                 }
                 m_oldTime = now;
+
+                // We have to call that at the end, because we might have been destroyed
+                for (auto& callback : callbacks) {
+                    callback();
+                }
+                m_retValue = m_value;
+                return;
             }
             else {
+                m_retValue = m_value;
                 m_pAnimManager->unregisterAnim(this);
             }
-            return m_value;
         }
 
     private:

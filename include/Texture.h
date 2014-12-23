@@ -22,3 +22,5 @@ namespace onut {
         POINT                       m_size;
     };
 }
+
+typedef onut::Texture OTexture;

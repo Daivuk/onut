@@ -18,11 +18,11 @@ namespace onut {
 
     private:
         struct sEventProcessor {
-            std::string                name;
-            std::function<bool()>    eventProcessor;
+            std::string             name;
+            std::function<bool()>   eventProcessor;
         };
 
         std::vector<sEventProcessor>                                        m_processors;
-        std::unordered_map<std::string, std::vector<std::function<void()>>>    m_observers;
+        std::unordered_map<std::string, std::vector<std::function<void()>>> m_observers;
     };
 }

@@ -63,6 +63,16 @@ namespace onut {
 
     template<Align Talign = Align::TOP_LEFT>
     Rect alignedRect(const Rect& rect, float padding = 0, Align align = Talign) {
-        alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
+        return alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
+    }
+
+    template<Align Talign = Align::TOP_LEFT>
+    Rect alignedRect(float width, float height, float padding = 0, Align align = Talign) {
+        return alignedRect(0, 0, width, height, padding, align);
+    }
+
+    template<Align Talign = Align::TOP_LEFT>
+    Rect alignedRect(float size, float padding = 0, Align align = Talign) {
+        return alignedRect(0, 0, size, size, padding, align);
     }
 }

@@ -3,7 +3,6 @@
 #include <future>
 #include <memory>
 #include <queue>
-
 #include "Anim.h"
 #include "Asynchronous.h"
 #include "BMFont.h"
@@ -19,12 +18,22 @@
 #include "SimpleMath.h"
 #include "Sound.h"
 #include "SpriteBatch.h"
+#include "State.h"
 #include "Synchronous.h"
 #include "Texture.h"
 #include "TimeInfo.h"
 #include "TimingUtils.h"
-
 using namespace DirectX::SimpleMath;
+
+typedef onut::Anim<float>       OAnimf;
+typedef onut::Anim<int>         OAnimi;
+typedef onut::Anim<Vector2>     OAnim2;
+typedef onut::Anim<Vector3>     OAnim3;
+typedef onut::Anim<Vector4>     OAnim4;
+typedef onut::Anim<std::string> OAnimStr;
+typedef onut::Anim<Color>       OAnimc;
+
+typedef std::vector<Color>      OPal;
 
 namespace onut {
     /**
@@ -51,6 +60,11 @@ namespace onut {
         Get a gamepad for index (0 to 3)
     */
     GamePad* getGamePad(int index);
+
+    /**
+        Debug tool to draw a palette and show it's index in it
+    */
+    void drawPal(const OPal& pal);
 }
 
 // For quick stuff, we have shortcuts outside of the namespace
@@ -61,10 +75,6 @@ extern onut::EventManager*  OEvent;
 
 //--- Resource shortcuts
 extern onut::ContentManager* OContentManager;
-
-typedef onut::Texture   OTexture;
-typedef onut::BMFont    OFont;
-typedef onut::Sound     OSound;
 
 inline OTexture* OGetTexture(const char* pName) {
     return OContentManager->getResource<OTexture>(pName);
@@ -106,14 +116,6 @@ inline const Vector2& OLThumb(int gamePadIndex = 0) {
 inline const Vector2& ORThumb(int gamePadIndex = 0) {
     return OGamePad(gamePadIndex)->getRightThumb();
 }
-
-//--- Anims
-typedef onut::Anim<float> OAnimf;
-typedef onut::Anim<int> OAnimi;
-typedef onut::Anim<Vector2> OAnim2;
-typedef onut::Anim<Vector3> OAnim3;
-typedef onut::Anim<Vector4> OAnim4;
-typedef onut::Anim<std::string> OAnimStr;
 
 /**
     Synchronize back to main thread. This can also be called from the main thread. It will just be delayed until the next frame.
