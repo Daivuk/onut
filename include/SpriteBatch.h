@@ -15,6 +15,7 @@ namespace onut {
         void drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors);
         void drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
         void drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors);
+        void draw4Corner(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void end();
 
     private:

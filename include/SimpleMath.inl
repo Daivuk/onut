@@ -1442,6 +1442,34 @@ inline Vector2 Vector4::BottomRight() const {
     return std::move(Vector2{ x + z, y + w });
 }
 
+inline Vector4 Vector4::TopLeft(const Vector4& rect) const {
+    return std::move(Vector4{ x, y, rect.z, rect.w });
+}
+inline Vector4 Vector4::Top(const Vector4& rect) const {
+    return std::move(Vector4{ x + z * .5f - rect.z * .5f, y, rect.z, rect.w });
+}
+inline Vector4 Vector4::TopRight(const Vector4& rect) const {
+    return std::move(Vector4{ x + z - rect.z, y, rect.z, rect.w });
+}
+inline Vector4 Vector4::Left(const Vector4& rect) const {
+    return std::move(Vector4{ x, y + w * .5f - rect.w * .5f, rect.z, rect.w });
+}
+inline Vector4 Vector4::Center(const Vector4& rect) const {
+    return std::move(Vector4{ x + z * .5f - rect.z * .5f, y + w * .5f - rect.w * .5f, rect.z, rect.w });
+}
+inline Vector4 Vector4::Right(const Vector4& rect) const {
+    return std::move(Vector4{ x + z - rect.z, y + w * .5f - rect.w * .5f, rect.z, rect.w });
+}
+inline Vector4 Vector4::BottomLeft(const Vector4& rect) const {
+    return std::move(Vector4{ x, y + w - rect.w, rect.z, rect.w });
+}
+inline Vector4 Vector4::Bottom(const Vector4& rect) const {
+    return std::move(Vector4{ x + z * .5f - rect.z * .5f, y + w - rect.w, rect.z, rect.w });
+}
+inline Vector4 Vector4::BottomRight(const Vector4& rect) const {
+    return std::move(Vector4{ x + z - rect.z, y + w - rect.w, rect.z, rect.w });
+}
+
 inline Vector2 Vector4::TopLeft(float offset) const {
     return std::move(Vector2{ x + offset, y + offset });
 }

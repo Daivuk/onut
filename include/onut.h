@@ -127,3 +127,25 @@ template<typename Tfn, typename ... Targs>
 inline void OSync(Tfn callback, Targs... args) {
     g_mainSync.sync(callback, args...);
 }
+
+inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent) {
+    auto ret = local;
+    ret.x *= parent.z;
+    ret.y *= parent.w;
+    ret.x += parent.x;
+    ret.y += parent.y;
+    ret.z *= parent.z;
+    ret.w *= parent.w;
+    return std::move(ret);
+}
+
+inline Vector4 ORectWorldToLocal(const Vector4& world, const Vector4& parent) {
+    auto ret = world;
+    ret.x -= parent.x;
+    ret.y -= parent.y;
+    ret.x /= parent.z;
+    ret.y /= parent.w;
+    ret.z /= parent.z;
+    ret.w /= parent.w;
+    return std::move(ret);
+}

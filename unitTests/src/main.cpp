@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <sstream>
 #include <future>
+#include <direct.h>
 #include "onut.h"
 using namespace std;
 
@@ -53,7 +54,7 @@ void checkTest(bool cond, TtextType testName) {
     stringstream ss;
     ss << majorTestCount << "." << subTestCount << "." << testCount;
     if (cond) {
-        cout << setColor(7) << setw(10) << ss.str() << " - " << setColor(10) << "PASSED " << setColor(7) << testName << endl;
+        cout << setColor(7) << setw(10) << ss.str() << " - " << setColor(10) << "Ok     " << setColor(7) << testName << endl;
     }
     else {
         ++errCount;
@@ -252,14 +253,14 @@ void runSynchronousTests() {
 
         auto ret = std::async(std::launch::async, [&synchronous]{
             synchronous.sync(foo1);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(20));
             synchronous.sync(foo2);
             synchronous.sync(foo3);
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(200));
             synchronous.sync(foo4);
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(50));
             synchronous.sync(foo5);
-            std::this_thread::sleep_for(std::chrono::milliseconds(450));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(450));
         });
 
         auto startTime = std::chrono::steady_clock::now();
@@ -294,10 +295,14 @@ public:
     float b = 10.75f;
 };
 
-int main() {
+int main(int argc, char** args) {
 #ifdef WIN32
     hcon = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
+
+    if (argc > 1) {
+        _chdir(args[1]);
+    }
 
     majorTest("onut::Pool");
     {
@@ -541,7 +546,7 @@ int main() {
         subTest("Async tests");
         {
             onut::ContentManager<false> contentManager;
-
+            
             bool testRet[6] = { false };
 
             auto future1 = std::async(std::launch::async, [&contentManager, &testRet]{
@@ -571,7 +576,7 @@ int main() {
 
         cout << setColor(7) << endl;
     }
-
+    
     system("pause");
     return errCount;
 }

@@ -208,6 +208,22 @@ namespace onut {
         }
     }
 
+    void SpriteBatch::draw4Corner(Texture* pTexture, const Rect& rect, const Color& color) {
+        assert(pTexture); // This call requires a texture to be bound
+
+        if (pTexture != m_pTexture) {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        auto& textureSize = pTexture->getSize();
+        Rect cornerRect{ 0, 0, static_cast<float>(textureSize.x) * .5f, static_cast<float>(textureSize.y) * .5f };
+        drawRectWithUVs(pTexture, rect.TopLeft(cornerRect), { 0, 0, .5f, .5f }, color);
+        drawRectWithUVs(pTexture, rect.TopRight(cornerRect), { .5f, 0, 1, .5f }, color);
+        drawRectWithUVs(pTexture, rect.BottomLeft(cornerRect), { 0, .5f, .5f, 1 }, color);
+        drawRectWithUVs(pTexture, rect.BottomRight(cornerRect), { .5f, .5f, 1, 1 }, color);
+    }
+
     void SpriteBatch::end() {
         assert(m_isDrawing); // Should call begin() before calling end()
 

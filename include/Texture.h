@@ -14,7 +14,10 @@ namespace onut {
 
         void                        bind();
         ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
-        POINT                       getSize() const { return m_size; }
+        const POINT&                getSize() const { return m_size; }
+        Vector4                     getRect() const {
+            return std::move(Vector4{ 0, 0, static_cast<float>(m_size.x), static_cast<float>(m_size.y) });
+        }
 
     private:
         ID3D11Texture2D*            m_pTexture = nullptr;

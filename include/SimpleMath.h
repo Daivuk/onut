@@ -258,6 +258,9 @@ struct Vector4 : public XMFLOAT4
     Vector4() : XMFLOAT4(0.f, 0.f, 0.f, 0.f) {}
     explicit Vector4(float x) : XMFLOAT4( x, x, x, x ) {}
     Vector4(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+    Vector4(const Vector2& pos, float _z, float _w) : XMFLOAT4(pos.x, pos.y, _z, _w) {}
+    Vector4(const Vector2& pos, const Vector2& size) : XMFLOAT4(pos.x, pos.y, size.x, size.y) {}
+    Vector4(float _x, float _y, const Vector2& size) : XMFLOAT4(_x, _y, size.x, size.y) {}
     explicit Vector4(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Vector4(FXMVECTOR V) { XMStoreFloat4( this, V ); }
 
@@ -319,6 +322,16 @@ struct Vector4 : public XMFLOAT4
     Vector2 TopRight(const Vector2& offset) const;
     Vector2 BottomLeft(const Vector2& offset) const;
     Vector2 BottomRight(const Vector2& offset) const;
+
+    Vector4 TopLeft(const Vector4& rect) const;
+    Vector4 Top(const Vector4& rect) const;
+    Vector4 TopRight(const Vector4& rect) const;
+    Vector4 Left(const Vector4& rect) const;
+    Vector4 Center(const Vector4& rect) const;
+    Vector4 Right(const Vector4& rect) const;
+    Vector4 BottomLeft(const Vector4& rect) const;
+    Vector4 Bottom(const Vector4& rect) const;
+    Vector4 BottomRight(const Vector4& rect) const;
 
     Vector4 Grow(float by) const;
 
