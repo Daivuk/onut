@@ -80,13 +80,23 @@ namespace onut {
             decltype(std::bind(std::declval<Targs>()...))  m_callback;
         };
 
+        std::queue<ICallback*>  m_callbackQueue;
+
+    public:
+        /**
+            Get the count of callbacks currently in the queue
+        */
+        auto size() -> decltype(m_callbackQueue.size()) const {
+            return m_callbackQueue.size();
+        }
+
+    private:
         void syncCallback(ICallback* pCallback) {
             m_mutex.lock();
             m_callbackQueue.push(pCallback);
             m_mutex.unlock();
         }
 
-        std::queue<ICallback*>  m_callbackQueue;
         TmutexType              m_mutex;
         Tallocator              m_allocator;
     };

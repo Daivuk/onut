@@ -60,6 +60,14 @@ namespace onut {
         */
         template<typename Ttype, typename ... Targs>
         Ttype* alloc(Targs... args) {
+            // Are there still room?
+            if (m_allocCount == TobjCount) {
+                if (TuseAsserts) {
+                    assert(false); // No more memory available in the pool. Use bigger pool
+                }
+                return nullptr;
+            }
+
             // Make sure we are not trying to allocate an object too big
             auto objSize = sizeof(Ttype);
             if (objSize > TobjSize) {
@@ -83,6 +91,7 @@ namespace onut {
                     // Found one!
                     *used = 1;
                     Ttype* pRet = new(m_currentObj)Ttype(args...);
+                    ++m_allocCount;
                     return pRet;
                 }
             } while (startPoint != m_currentObj);
@@ -96,9 +105,16 @@ namespace onut {
         /**
             Dealloc an object
             @param pObj Pointer to the object to free
+            @return True if dealloced
         */
         template<typename Ttype>
-        void dealloc(Ttype* pObj) {
+        bool dealloc(Ttype* pObj) {
+            if (pObj == nullptr) {
+                if (TuseAsserts) {
+                    assert(false); // Can not dealloc nullptr
+                }
+                return false;
+            }
             pObj->~Ttype();
             auto ptr = reinterpret_cast<uint8_t*>(pObj);
             auto used = ptr + TobjSize;
@@ -106,9 +122,11 @@ namespace onut {
                 if (TuseAsserts) {
                     assert(false); // Memory was already deallocated. Double deletion!
                 }
-                return;
+                return false;
             }
             *used = 0;
+            --m_allocCount;
+            return true;
         }
 
         /**
@@ -118,11 +136,19 @@ namespace onut {
         void clear() {
             memset(m_pMemory, 0, TmemorySize);
             m_currentObj = m_pFirstObj;
+            m_allocCount = 0;
         }
 
+        /**
+            Get current allocation count
+            @return Number of allocated objects
+        */
+        uintptr_t getAllocCount() const { return m_allocCount; }
+
     protected:
-        uint8_t*    m_pMemory;
-        uint8_t*    m_pFirstObj;
-        uint8_t*    m_currentObj;
+        uint8_t*    m_pMemory = nullptr;
+        uint8_t*    m_pFirstObj = nullptr;
+        uint8_t*    m_currentObj = nullptr;
+        uintptr_t   m_allocCount = 0;
     };
 }

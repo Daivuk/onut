@@ -17,7 +17,7 @@ onut::GamePad*                  g_gamePads[4] = { nullptr };
 onut::EventManager*             OEvent = nullptr;
 onut::ContentManager*           OContentManager = nullptr;
 AudioEngine*                    g_pAudioEngine = nullptr;
-onut::TimeInfo                  g_timeInfo;
+onut::TimeInfo<>                g_timeInfo;
 onut::Synchronous<onut::Pool<>> g_mainSync;
 
 // Default resources
@@ -121,7 +121,7 @@ namespace onut {
             // Update
             g_pAudioEngine->Update();
             auto framesToUpdate = g_timeInfo.update();
-            ODT = onut::getTimeInfo().getDeltaTime();
+            ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--) {
                 for (auto& gamePad : g_gamePads) {
                     gamePad->update();
@@ -155,7 +155,7 @@ namespace onut {
         return g_gamePads[index];
     }
 
-    const TimeInfo& getTimeInfo() {
+    const TimeInfo<>& getTimeInfo() {
         return g_timeInfo;
     }
 

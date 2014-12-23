@@ -135,9 +135,6 @@
     <ClCompile Include="..\..\src\EventManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\TimeInfo.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Anim.cpp">
       <Filter>src</Filter>
     </ClCompile>

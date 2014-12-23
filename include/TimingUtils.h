@@ -5,7 +5,7 @@ namespace onut {
     /**
         Get the time info for the current frame
     */
-    const TimeInfo& getTimeInfo();
+    const TimeInfo<>& getTimeInfo();
 }
 
 /**

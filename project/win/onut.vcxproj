@@ -65,7 +65,6 @@
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\StringUtils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
-    <ClCompile Include="..\..\src\TimeInfo.cpp" />
     <ClCompile Include="..\..\src\WaveBank.cpp" />
     <ClCompile Include="..\..\src\WaveBankReader.cpp" />
     <ClCompile Include="..\..\src\WAVFileReader.cpp" />

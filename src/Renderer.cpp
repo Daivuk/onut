@@ -99,7 +99,7 @@ namespace onut {
 
         // 2D Sampler state
         assert(m_device->CreateSamplerState(&(D3D11_SAMPLER_DESC{
-            D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            D3D11_FILTER_MIN_MAG_MIP_LINEAR,
             D3D11_TEXTURE_ADDRESS_CLAMP,
             D3D11_TEXTURE_ADDRESS_CLAMP,
             D3D11_TEXTURE_ADDRESS_CLAMP,
