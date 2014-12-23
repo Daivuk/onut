@@ -47,7 +47,6 @@
     <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\AudioEngine.cpp" />
     <ClCompile Include="..\..\src\BMFont.cpp" />
-    <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\DefineHelpers.cpp" />
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />

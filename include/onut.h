@@ -74,7 +74,7 @@ extern onut::Settings*      OSettings;
 extern onut::EventManager*  OEvent;
 
 //--- Resource shortcuts
-extern onut::ContentManager* OContentManager;
+extern onut::ContentManager<>* OContentManager;
 
 inline OTexture* OGetTexture(const char* pName) {
     return OContentManager->getResource<OTexture>(pName);

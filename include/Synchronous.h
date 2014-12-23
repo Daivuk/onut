@@ -37,8 +37,10 @@ namespace onut {
         */
         template<typename Tfn, typename ... Targs>
         void sync(Tfn callback, Targs... args) {
+            m_mutex.lock();
             auto pCallback = m_allocator.alloc<Callback<Tfn, Targs...>>(callback, args...);
             syncCallback(pCallback);
+            m_mutex.unlock();
         }
 
         /**
@@ -53,8 +55,8 @@ namespace onut {
                 // We unlock during the call. Because the call might add new callbacks!
                 m_mutex.unlock();
                 pCallback->call();
-                m_allocator.dealloc(pCallback);
                 m_mutex.lock();
+                m_allocator.dealloc(pCallback);
             }
             m_mutex.unlock();
         }
@@ -87,14 +89,15 @@ namespace onut {
             Get the count of callbacks currently in the queue
         */
         auto size() -> decltype(m_callbackQueue.size()) const {
-            return m_callbackQueue.size();
+            m_mutex.lock();
+            auto ret = m_callbackQueue.size();
+            m_mutex.unlock();
+            return ret;
         }
 
     private:
         void syncCallback(ICallback* pCallback) {
-            m_mutex.lock();
             m_callbackQueue.push(pCallback);
-            m_mutex.unlock();
         }
 
         TmutexType              m_mutex;

@@ -8,7 +8,8 @@ namespace onut {
 
     std::vector<std::string>    splitString(const std::string& in_string, char in_delimiter);
 
-    std::string                 findFile(const std::string& name, const std::string& lookIn = "assets");
+    template<bool TuseAssert = true>
+    std::string                 findFile(const std::string& name, const std::string& lookIn = ".");
 
     // Once supported, use constexpr here
     int                         hash(const char* pStr);

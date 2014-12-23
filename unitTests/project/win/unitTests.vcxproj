@@ -13,6 +13,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\project\win\onut.vcxproj">
+      <Project>{5a0e49d2-55f1-4ab5-94f6-d19f308ecc46}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{58663FC6-933F-413A-B8BB-1461801019F3}</ProjectGuid>
     <RootNamespace>unitTests</RootNamespace>

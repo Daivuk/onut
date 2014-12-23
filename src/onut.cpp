@@ -15,7 +15,7 @@ onut::Settings*                 OSettings = new onut::Settings();
 onut::SpriteBatch*              OSB = nullptr;
 onut::GamePad*                  g_gamePads[4] = { nullptr };
 onut::EventManager*             OEvent = nullptr;
-onut::ContentManager*           OContentManager = nullptr;
+onut::ContentManager<>*         OContentManager = nullptr;
 AudioEngine*                    g_pAudioEngine = nullptr;
 onut::TimeInfo<>                g_timeInfo;
 onut::Synchronous<onut::Pool<>> g_mainSync;
@@ -59,7 +59,7 @@ namespace onut {
         OSB = new SpriteBatch();
 
         // Content
-        OContentManager = new ContentManager();
+        OContentManager = new ContentManager<>();
 
         // Fonts
         if (!OSettings->getDefaultFont().empty()) {

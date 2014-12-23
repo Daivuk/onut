@@ -138,9 +138,6 @@
     <ClCompile Include="..\..\src\Anim.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ContentManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>src</Filter>
     </ClCompile>

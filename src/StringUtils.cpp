@@ -48,7 +48,8 @@ namespace onut {
         return hash;
     }
 
-    std::string findFile(const std::string& name, const std::string& lookIn) {
+    template<>
+    std::string findFile<true>(const std::string& name, const std::string& lookIn) {
         DIR *dir;
         struct dirent *ent;
         if ((dir = opendir(lookIn.c_str())) != NULL) {
@@ -67,7 +68,7 @@ namespace onut {
                 }
 
                 if (ent->d_type & DT_DIR) {
-                    auto ret = findFile(name, lookIn + "/" + ent->d_name);
+                    auto ret = findFile<true>(name, lookIn + "/" + ent->d_name);
                     if (!ret.empty()) {
                         closedir(dir);
                         return ret;
@@ -78,6 +79,39 @@ namespace onut {
         }
         else {
             assert(false);
+        }
+
+        return "";
+    }
+
+    template<>
+    std::string findFile<false>(const std::string& name, const std::string& lookIn) {
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir(lookIn.c_str())) != NULL) {
+            while ((ent = readdir(dir)) != NULL) {
+                if (!strcmp(ent->d_name, ".")) {
+                    continue;
+                }
+                else if (!strcmp(ent->d_name, "..")) {
+                    continue;
+                }
+
+                if (!_stricmp(name.c_str(), ent->d_name)) {
+                    auto ret = lookIn + "/" + ent->d_name;
+                    closedir(dir);
+                    return ret;
+                }
+
+                if (ent->d_type & DT_DIR) {
+                    auto ret = findFile<false>(name, lookIn + "/" + ent->d_name);
+                    if (!ret.empty()) {
+                        closedir(dir);
+                        return ret;
+                    }
+                }
+            }
+            closedir(dir);
         }
 
         return "";
