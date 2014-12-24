@@ -32,7 +32,7 @@ typedef onut::Anim<Vector3>     OAnim3;
 typedef onut::Anim<Vector4>     OAnim4;
 typedef onut::Anim<std::string> OAnimStr;
 typedef onut::Anim<Color>       OAnimc;
-
+typedef onut::Timer<float>      OTimer;
 typedef std::vector<Color>      OPal;
 
 namespace onut {

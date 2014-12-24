@@ -36,7 +36,8 @@ namespace onut {
         vertexData.SysMemPitch = 0;
         vertexData.SysMemSlicePitch = 0;
 
-        assert(pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer) == S_OK);
+        auto ret = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer);
+        assert(ret == S_OK);
 
         // Set up the description of the static index buffer.
         D3D11_BUFFER_DESC indexBufferDesc;
@@ -53,7 +54,8 @@ namespace onut {
         indexData.SysMemPitch = 0;
         indexData.SysMemSlicePitch = 0;
 
-        assert(pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer) == S_OK);
+        ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
+        assert(ret == S_OK);
     }
 
     SpriteBatch::~SpriteBatch() {

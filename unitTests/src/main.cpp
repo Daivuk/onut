@@ -79,9 +79,20 @@ bool testRandomPool() {
     decltype(TloopCount) i = 0;
     CObj* objs[7] = { nullptr };
     for (; i < TloopCount; ++i) {
-        auto rnd = rand() % 2;
-        if (rnd == 0) {
+        auto rnd = rand() % 101;
+        if (rnd < 50) {
             auto index = rand() % 7;
+            if (objs[index]) {
+                // Dealloc should succeed
+                if (!pool.dealloc(objs[index])) {
+                    stringstream ss;
+                    ss << "Dealloc objs[" << index << "]";
+                    checkTest(false, ss.str());
+                    return false;
+                }
+                objs[index] = nullptr;
+                --allocCount;
+            }
             objs[index] = pool.alloc<CObj>();
             if (allocCount < 7) {
                 if (objs[index] == nullptr) {
@@ -102,7 +113,7 @@ bool testRandomPool() {
                 }
             }
         }
-        else if (rnd == 1) {
+        else if (rnd < 100) {
             auto index = rand() % 7;
             if (objs[index] == nullptr) {
                 // Dealloc should fail
@@ -122,6 +133,13 @@ bool testRandomPool() {
                 objs[index] = nullptr;
                 --allocCount;
             }
+        }
+        else {
+            for (int j = 0; j < 7; ++j) {
+                objs[j] = nullptr;
+            }
+            pool.clear();
+            allocCount = 0;
         }
         if (pool.getAllocCount() != allocCount) {
             stringstream ss;
@@ -387,7 +405,7 @@ int main(int argc, char** args) {
             cout << setColor(7) << endl;
         }
 
-        subTest("Stress test with onut::Pool<9, 7, 10, false> and random alloc/dealloc");
+        subTest("Stress test with onut::Pool<9, 7, 11, false> and random alloc/dealloc");
         {
             srand(static_cast<unsigned int>(time(0)));
 

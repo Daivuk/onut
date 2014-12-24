@@ -24,8 +24,10 @@ namespace onut {
         desc.MiscFlags = 0;
 
         auto pDevice = ORenderer->getDevice();
-        assert(pDevice->CreateTexture2D(&desc, NULL, &pTexture) == S_OK);
-        assert(pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView) == S_OK);
+        auto ret = pDevice->CreateTexture2D(&desc, NULL, &pTexture);
+        assert(ret == S_OK);
+        ret = pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView);
+        assert(ret == S_OK);
 
         pRet->m_size = size;
         pRet->m_pTextureView = pTextureView;
@@ -39,7 +41,8 @@ namespace onut {
 
         std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
         unsigned int w, h;
-        assert(!lodepng::decode(image, w, h, filename));
+        auto ret = lodepng::decode(image, w, h, filename);
+        assert(!ret);
         POINT size{ w, h };
         byte* pData = &(image[0]);
         ULONG len = size.x * size.y;
@@ -151,8 +154,10 @@ namespace onut {
         data.SysMemSlicePitch = 0;
 
         auto pDevice = ORenderer->getDevice();
-        assert(pDevice->CreateTexture2D(&desc, (mipsData) ? mipsData : &data, &pTexture) == S_OK);
-        assert(pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView) == S_OK);
+        auto ret = pDevice->CreateTexture2D(&desc, (mipsData) ? mipsData : &data, &pTexture);
+        assert(ret == S_OK);
+        ret = pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView);
+        assert(ret == S_OK);
 
         pTexture->Release();
         if (pMipMaps) delete[] pMipMaps;

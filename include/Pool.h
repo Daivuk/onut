@@ -44,7 +44,7 @@ namespace onut {
                     m_pFirstObj = m_pMemory;
                 }
             }
-            m_currentObj = m_pFirstObj;
+            m_currentObjIndex = 0;
         }
 
         /**
@@ -78,23 +78,24 @@ namespace onut {
             }
 
             // Loop the pool from the last time.
-            auto startPoint = m_currentObj;
+            auto startPoint = m_currentObjIndex;
             do {
-                m_currentObj += TobjTotalSize;
+                ++m_currentObjIndex;
                 // Wrap
-                if (m_currentObj > m_pMemory + TmemorySize) {
-                    m_currentObj = m_pFirstObj;
+                if (m_currentObjIndex >= TobjCount) {
+                    m_currentObjIndex = 0;
                 }
-                auto used = m_currentObj + TobjSize;
+                auto pObj = m_pFirstObj + m_currentObjIndex * TobjTotalSize;
+                auto used = pObj + TobjSize;
 
                 if (!*used) {
                     // Found one!
                     *used = 1;
-                    Ttype* pRet = new(m_currentObj)Ttype(args...);
+                    Ttype* pRet = new(pObj)Ttype(args...);
                     ++m_allocCount;
                     return pRet;
                 }
-            } while (startPoint != m_currentObj);
+            } while (startPoint != m_currentObjIndex);
 
             if (TuseAsserts) {
                 assert(false); // No more memory available in the pool. Use bigger pool
@@ -135,7 +136,7 @@ namespace onut {
         */
         void clear() {
             memset(m_pMemory, 0, TmemorySize);
-            m_currentObj = m_pFirstObj;
+            m_currentObjIndex = 0;
             m_allocCount = 0;
         }
 
@@ -148,7 +149,7 @@ namespace onut {
     protected:
         uint8_t*    m_pMemory = nullptr;
         uint8_t*    m_pFirstObj = nullptr;
-        uint8_t*    m_currentObj = nullptr;
+        uintptr_t   m_currentObjIndex = 0;
         uintptr_t   m_allocCount = 0;
     };
 }

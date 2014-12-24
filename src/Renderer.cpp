@@ -56,7 +56,7 @@ namespace onut {
 
     void Renderer::createRenderStates() {
         // 2D Depth state
-        assert(m_device->CreateDepthStencilState(&(D3D11_DEPTH_STENCIL_DESC{
+        auto ret = m_device->CreateDepthStencilState(&(D3D11_DEPTH_STENCIL_DESC{
             false,
             D3D11_DEPTH_WRITE_MASK_ZERO,
             D3D11_COMPARISON_LESS,
@@ -65,10 +65,11 @@ namespace onut {
             0xFF,
             { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_INCR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS },
             { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_DECR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS }
-        }), &m_pDs2D) == S_OK);
+        }), &m_pDs2D);
+        assert(ret == S_OK);
 
         // 2D Rasterizer state
-        assert(m_device->CreateRasterizerState(&(D3D11_RASTERIZER_DESC{
+        ret = m_device->CreateRasterizerState(&(D3D11_RASTERIZER_DESC{
             D3D11_FILL_SOLID,
             D3D11_CULL_NONE,
             false,
@@ -79,10 +80,11 @@ namespace onut {
             false,
             false,
             false
-        }), &m_pSr2D) == S_OK);
+        }), &m_pSr2D);
+        assert(ret == S_OK);
 
         // 2D Blend state
-        assert(m_device->CreateBlendState(&(D3D11_BLEND_DESC{
+        ret = m_device->CreateBlendState(&(D3D11_BLEND_DESC{
             FALSE,
             FALSE,
             { {
@@ -95,10 +97,11 @@ namespace onut {
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, { 0 }, { 0 }, { 0 }, { 0 }, { 0 }, { 0 }, { 0 } }
-        }), &m_pBs2D) == S_OK);
+        }), &m_pBs2D);
+        assert(ret == S_OK);
 
         // 2D Sampler state
-        assert(m_device->CreateSamplerState(&(D3D11_SAMPLER_DESC{
+        ret = m_device->CreateSamplerState(&(D3D11_SAMPLER_DESC{
             D3D11_FILTER_MIN_MAG_MIP_LINEAR,
             D3D11_TEXTURE_ADDRESS_CLAMP,
             D3D11_TEXTURE_ADDRESS_CLAMP,
@@ -109,7 +112,8 @@ namespace onut {
             { 0, 0, 0, 0 },
             0,
             D3D11_FLOAT32_MAX
-        }), &m_pSs2D) == S_OK);
+        }), &m_pSs2D);
+        assert(ret == S_OK);
     }
 
     void Renderer::loadShaders() {
@@ -121,8 +125,10 @@ namespace onut {
             std::ifstream psFile("assets/shaders/2dps.cso", std::ios::binary);
             std::vector<char> psData = { std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>() };
 
-            assert(m_device->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &m_p2DVertexShader) == S_OK);
-            assert(m_device->CreatePixelShader(psData.data(), psData.size(), nullptr, &m_p2DPixelShader) == S_OK);
+            auto ret = m_device->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &m_p2DVertexShader);
+            assert(ret == S_OK);
+            ret = m_device->CreatePixelShader(psData.data(), psData.size(), nullptr, &m_p2DPixelShader);
+            assert(ret == S_OK);
 
             // Create input layout
             D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -130,7 +136,8 @@ namespace onut {
                 { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
                 { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             };
-            assert(m_device->CreateInputLayout(layout, 3, vsData.data(), vsData.size(), &m_p2DInputLayout) == S_OK);
+            ret = m_device->CreateInputLayout(layout, 3, vsData.data(), vsData.size(), &m_p2DInputLayout);
+            assert(ret == S_OK);
         }
     }
 
@@ -141,7 +148,8 @@ namespace onut {
             viewProj = viewProj.Transpose();
             D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Matrix), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
             D3D11_SUBRESOURCE_DATA initData{ &viewProj, 0, 0 };
-            assert(m_device->CreateBuffer(&cbDesc, &initData, &m_pViewProj2dBuffer) == S_OK);
+            auto ret = m_device->CreateBuffer(&cbDesc, &initData, &m_pViewProj2dBuffer);
+            assert(ret == S_OK);
         }
     }
 
