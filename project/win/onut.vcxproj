@@ -34,6 +34,7 @@
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
+    <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\LodePNG.h" />

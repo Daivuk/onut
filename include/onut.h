@@ -23,6 +23,7 @@
 #include "Texture.h"
 #include "TimeInfo.h"
 #include "TimingUtils.h"
+#include "UINodeNav.h"
 using namespace DirectX::SimpleMath;
 
 typedef onut::Anim<float>       OAnimf;

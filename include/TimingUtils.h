@@ -45,6 +45,13 @@ namespace onut {
             return m_anim.get();
         }
 
+        /**
+            Check if the timer is running
+        */
+        bool isRunning() const {
+            return m_anim.isPlaying();
+        }
+
     private:
         Anim<Tprecision> m_anim;
     };

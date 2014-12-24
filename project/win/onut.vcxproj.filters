@@ -94,6 +94,9 @@
     <ClInclude Include="..\..\include\State.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\UINodeNav.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
