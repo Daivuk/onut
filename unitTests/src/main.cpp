@@ -88,7 +88,7 @@ bool testRandomPool() {
                     checkTest(false, "allocCount < 7, so alloc should not be nullptr");
                     return false;
                 }
-                auto aligned = (reinterpret_cast<uintptr_t>(objs[2]) % 11) == 0;
+                auto aligned = (reinterpret_cast<uintptr_t>(objs[index]) % 11) == 0;
                 if (!aligned) {
                     checkTest(aligned, "Alloc is not aligned to 11 bytes");
                     return false;
