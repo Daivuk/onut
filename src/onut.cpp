@@ -96,6 +96,12 @@ namespace onut {
         OEvent->addEvent("NavigateDown", []{
             return OJustPressed(ODownBtn) || OJustPressed(OLDownBtn);
         });
+        OEvent->addEvent("Accept", []{
+            return OJustPressed(OABtn);
+        });
+        OEvent->addEvent("Cancel", []{
+            return OJustPressed(OBBtn);
+        });
         //-------------------------------------------------------------------------------
 
         // Call the user defined init
