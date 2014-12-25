@@ -1,9 +1,8 @@
 #pragma once
+#include <unordered_map>
+#include <vector>
 #include "SimpleMath.h"
 #include "Typedefs.h"
-#include <memory>
-#include <vector>
-#include <unordered_map>
 using namespace DirectX::SimpleMath;
 
 namespace onut {

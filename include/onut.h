@@ -1,8 +1,4 @@
 #pragma once
-#include <functional>
-#include <future>
-#include <memory>
-#include <queue>
 #include "Anim.h"
 #include "Asynchronous.h"
 #include "BMFont.h"
@@ -15,13 +11,10 @@
 #include "RectUtils.h"
 #include "Renderer.h"
 #include "Settings.h"
-#include "SimpleMath.h"
 #include "Sound.h"
 #include "SpriteBatch.h"
 #include "State.h"
 #include "Synchronous.h"
-#include "Texture.h"
-#include "TimeInfo.h"
 #include "TimingUtils.h"
 #include "UINodeNav.h"
 using namespace DirectX::SimpleMath;

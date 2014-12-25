@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 
 namespace onut {
     /**

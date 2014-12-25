@@ -1,8 +1,7 @@
 #pragma once
-#include "Typedefs.h"
+#include "SimpleMath.h"
 #include "Texture.h"
-
-#include <memory>
+using namespace DirectX::SimpleMath;
 
 namespace onut {
     class SpriteBatch {

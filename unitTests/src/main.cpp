@@ -1,8 +1,8 @@
-﻿#include <iostream>
-#include <iomanip>
-#include <sstream>
+﻿#include <direct.h>
 #include <future>
-#include <direct.h>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 #include "onut.h"
 using namespace std;
 
@@ -592,6 +592,150 @@ int main(int argc, char** args) {
             cout << setColor(7) << endl;
         }
 
+        cout << setColor(7) << endl;
+    }
+
+    majorTest("onut::UINodeNav");
+    {
+        subTest("Simple directional tests");
+        {
+            struct V2f {
+                float x;
+                float y;
+            };
+            onut::UINodeNav<V2f> nav({ { 0, 0 }, { 0, -10 }, { 10, 0 }, { 0, 10 }, { -10, 0 } }, .3f, std::chrono::milliseconds(0));
+
+            checkTest(nav.size() == 5, "Has 5 nodes");
+
+            checkTest(nav.getSelectedIndex() == 0, "Default selected index = 0");
+
+            nav.navigate<V2f>({ 0, -1 });
+            checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
+
+            nav.navigate<V2f>({ 1.41f, 1.41f });
+            checkTest(nav.getSelectedIndex() == 2, "Nav down right. Selected = 2");
+
+            nav.navigate<V2f>({ -1.41f, 1.41f });
+            checkTest(nav.getSelectedIndex() == 3, "Nav down left. Selected = 3");
+
+            nav.navigate<V2f>({ -1.41f, -1.41f });
+            checkTest(nav.getSelectedIndex() == 4, "Nav up left. Selected = 4");
+
+            nav.navigate<V2f>({ 1, 0 });
+            checkTest(nav.getSelectedIndex() == 0, "Nav right. Selected = 0");
+
+            nav.navigate<V2f>({ 1, 0 });
+            checkTest(nav.getSelectedIndex() == 2, "Nav right again. Selected = 2");
+
+            cout << setColor(7) << endl;
+        }
+        subTest("Test best pick for angle");
+        {
+            struct V2f {
+                float x;
+                float y;
+            };
+            onut::UINodeNav<V2f> nav({ { 0, 0 }, { 0, -10 }, { 2, -10 }, { -1, -10 } }, .3f, std::chrono::milliseconds(0));
+
+            checkTest(nav.size() == 4, "Has 4 nodes");
+
+            nav.navigate<V2f>({ 1, 0 });
+            checkTest(nav.getSelectedIndex() == 0, "Nav right. Selected unchanged");
+
+            nav.navigate<V2f>({ -1, 0 });
+            checkTest(nav.getSelectedIndex() == 0, "Nav left. Selected unchanged");
+
+            nav.navigate<V2f>({ 0, 1 });
+            checkTest(nav.getSelectedIndex() == 0, "Nav down. Selected unchanged");
+
+            nav.navigate<V2f>({ 0, -1 });
+            checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
+
+            nav.setSelected(0);
+            checkTest(nav.getSelectedIndex() == 0, "Select 0. Selected = 0");
+
+            nav.navigate<V2f>({ 1.41f, -1.41f });
+            checkTest(nav.getSelectedIndex() == 2, "Nav up right. Selected = 2");
+
+            nav.setSelected(0);
+            checkTest(nav.getSelectedIndex() == 0, "Select 0. Selected = 0");
+
+            nav.navigate<V2f>({ -1.41f, -1.41f });
+            checkTest(nav.getSelectedIndex() == 3, "Nav up left. Selected = 3");
+
+            cout << setColor(7) << endl;
+        }
+        subTest("Test insertion and removal of nodes");
+        {
+            struct V2f {
+                float x;
+                float y;
+
+                bool operator==(const V2f& other) const {
+                    return x == other.x && y == other.y;
+                }
+            };
+            onut::UINodeNav<V2f> nav({ { 0, 0 }, { 0, -30 }, { 20, 0 }, { 0, 10 }, { -40, 0 } }, .3f, std::chrono::milliseconds(0));
+
+            checkTest(nav.size() == 5, "Has 5 nodes");
+
+            nav.removeNode(0);
+            checkTest(nav.getSelectedIndex() == 2, "Remove index 0. Selected = 2");
+
+            nav.setSelected({20, 0});
+            checkTest(nav.getSelectedIndex() == 1, "Select by value. Selected = 1");
+
+            nav.removeNode({-40, 0});
+            checkTest(nav.getSelectedIndex() == 1, "Removed by value. Selected = 1");
+
+            nav.removeNode(0);
+            checkTest(nav.getSelectedIndex() == 0, "Remove index 0. Selected = 0");
+
+            checkTest(nav.size() == 2, "Has 2 nodes");
+
+            nav.removeNode(0);
+            checkTest(nav.getSelectedIndex() == 0, "Remove index 0. Selected = 0");
+
+            nav.addNode({ 0, 0 });
+            checkTest(nav.size() == 2, "Node added. Has 2 nodes");
+
+            nav.navigate<V2f>({ 0, -1 });
+            checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
+
+            nav.clear();
+            checkTest(nav.size() == 0, "Nodes cleared. Has 0 nodes");
+
+            nav.setNodes({ { 0, 0 }, { -10, 0 } });
+            checkTest(nav.size() == 2, "Set nodes. Has 2 nodes");
+
+            nav.setSelected(1);
+            checkTest(nav.getSelectedIndex() == 1, "Select 1. Selected = 0");
+
+            nav.setNodes({ { 0, 0 }, { 0, -10 }, { 10, 0 }, { 0, 10 }, { -10, 0 } });
+            checkTest(nav.size() == 5, "Set nodes. Has 5 nodes");
+
+            checkTest(nav.getSelectedIndex() == 0, "Default selected index = 0");
+
+            nav.navigate<V2f>({ 0, -1 });
+            checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
+
+            nav.navigate<V2f>({ 1.41f, 1.41f });
+            checkTest(nav.getSelected() == V2f{10, 0}, "Nav down right. Selected = {10, 0}");
+
+            nav.navigate<V2f>({ -1.41f, 1.41f });
+            checkTest(nav.getSelectedIndex() == 3, "Nav down left. Selected = 3");
+
+            nav.navigate<V2f>({ -1.41f, -1.41f });
+            checkTest(nav.getSelectedIndex() == 4, "Nav up left. Selected = 4");
+
+            nav.navigate<V2f>({ 1, 0 });
+            checkTest(nav.getSelectedIndex() == 0, "Nav right. Selected = 0");
+
+            nav.navigate<V2f>({ 1, 0 });
+            checkTest(nav.getSelectedIndex() == 2, "Nav right again. Selected = 2");
+
+            cout << setColor(7) << endl;
+        }
         cout << setColor(7) << endl;
     }
     

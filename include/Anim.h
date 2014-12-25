@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 #include <chrono>
 #include <vector>
 #include <functional>

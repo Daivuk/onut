@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <vector>
 
 namespace onut {
@@ -27,7 +28,7 @@ namespace onut {
     private:
         typedef decltype(TnodeAccessor::getX(TnodeType()))  Tprecision;
         typedef decltype(std::vector<TnodeType>().size())   TindexType;
-        typedef decltype(std::chrono::milliseconds(200))    TdurationType;
+        typedef decltype(std::chrono::milliseconds(1))      TdurationType;
         typedef decltype(std::chrono::steady_clock::now())  TtimePoint;
 
         std::vector<TnodeType>      m_nodes;
@@ -42,32 +43,20 @@ namespace onut {
     public:
         /**
             Constructor
-            @param deadZone Specify the dead zone for the movement. Default is 0.3
-            @param travelAngle Specify the acceptable radius angle to go to another node. Default is 45 deg
-            @param repeatTime Time to wait before repeating if the dir is held down.
-        */
-        UINodeNav(Tprecision deadZone = static_cast<Tprecision>(0.3), 
-                  Tprecision travelAngle = static_cast<Tprecision>(0.70710678118654752440084436210485), // sin(pi/4)
-                  const TdurationType& repeatTime = std::chrono::milliseconds(200)) :
-        m_deadZone(deadZone),
-        m_travelAngle(travelAngle),
-        m_repeatTime(repeatTime) {
-        }
-        /**
-            Constructor
             @param nodes Vector of nodes
             @param deadZone Specify the dead zone for the movement. Default is 0.3
             @param travelAngle Specify the acceptable radius angle to go to another node. Default is 45 deg
             @param repeatTime Time to wait before repeating if the dir is held down.
         */
-        UINodeNav(const std::vector<TnodeType>& nodes,
+        UINodeNav(const std::vector<TnodeType>& nodes = {},
                   Tprecision deadZone = static_cast<Tprecision>(0.3),
-                  Tprecision travelAngle = static_cast<Tprecision>(0.70710678118654752440084436210485), // sin(pi/4)
-                  const TdurationType& repeatTime = std::chrono::milliseconds(200)) :
-        m_nodes(nodes),
-        m_deadZone(deadZone),
-        m_travelAngle(travelAngle),
-        m_repeatTime(repeatTime) {
+                  TdurationType repeatTime = std::chrono::milliseconds(200),
+                  Tprecision travelAngle = static_cast<Tprecision>(0.70710678118654752440084436210485)) :// sin(pi/4)        
+            m_nodes(nodes),
+            m_deadZone(deadZone),
+            m_travelAngle(travelAngle),
+            m_repeatTime(repeatTime),
+            m_selectedIndex(0) {
         }
 
         /**
@@ -76,6 +65,7 @@ namespace onut {
             @param nodes Vector of nodes
         */
         void setNodes(const std::vector<TnodeType>& nodes) {
+            clear();
             m_nodes = nodes;
         }
 
@@ -85,14 +75,6 @@ namespace onut {
         */
         void addNode(const TnodeType& node) {
             m_nodes.push_back(node);
-        }
-
-        /**
-            Remove a node at specified index
-            @param index Index of the node to remove.
-        */
-        void removeNode(TindexType index) {
-            m_nodes.erase(m_nodes.begin() + index);
         }
 
         /**
@@ -134,15 +116,46 @@ namespace onut {
         }
 
         /**
+            Remove a node at specified index
+            @param index Index of the node to remove.
+        */
+        void removeNode(TindexType index) {
+            if (index == m_selectedIndex) {
+                // Pick the next closest one to this node
+                Tprecision posX = TnodeAccessor::getX(m_nodes[m_selectedIndex]);
+                Tprecision posY = TnodeAccessor::getY(m_nodes[m_selectedIndex]);
+                Tprecision closestDis = static_cast<Tprecision>(1000000.0);
+                TindexType i = 0;
+                for (auto& node : m_nodes) {
+                    if (m_selectedIndex != i) {
+                        Tprecision otherPosX = TnodeAccessor::getX(m_nodes[i]);
+                        Tprecision otherPosY = TnodeAccessor::getY(m_nodes[i]);
+                        auto disSq = (otherPosX - posX) * (otherPosX - posX) + (otherPosY - posY) * (otherPosY - posY);
+                        if (disSq < closestDis) {
+                            m_selectedIndex = i;
+                            closestDis = disSq;
+                        }
+                    }
+                    ++i;
+                }
+            }
+            if (m_selectedIndex > index) {
+                --m_selectedIndex;
+            }
+            m_nodes.erase(m_nodes.begin() + index);
+        }
+
+        /**
             Remove a node by value
             @param node Node to be compared against. Only first found one will be removed.
         */
         void removeNode(const TnodeType& node) {
             auto begin = m_nodes.begin();
             auto end = m_nodes.end();
-            for (auto it = begin; it != end; ++it) {
+            TindexType i = 0;
+            for (auto it = begin; it != end; ++it, ++i) {
                 if (*it == node) {
-                    m_nodes.erase(it);
+                    removeNode(i);
                     return;
                 }
             }
@@ -153,6 +166,7 @@ namespace onut {
         */
         void clear() {
             m_nodes.clear();
+            m_selectedIndex = 0;
         }
 
         /**
@@ -164,7 +178,7 @@ namespace onut {
         }
 
         /**
-            Update. Call this frequently to know which nodes to travel to next.
+            Navigate. Call this frequently to know which nodes to travel to next.
             @param dir Direction of the control. This can be your controller thumbstick axis. Ranged from -1 to 1 in both X and Y axis
             @param currentIndex Index of the currently selected node.
             @return The index of the newly selected node. Or the same as previous.
@@ -172,7 +186,7 @@ namespace onut {
         template<
             typename TaxisType,
             typename TaxisAccessor = UINodeNavAccessor<TaxisType>>
-        void update(const TaxisType& dir) {
+        void navigate(const TaxisType& dir) {
             auto lenSq = (TaxisAccessor::getX(dir) * TaxisAccessor::getX(dir) + TaxisAccessor::getY(dir) * TaxisAccessor::getY(dir));
             if (lenSq >= m_deadZone * m_deadZone) {
                 auto len = sqrt(lenSq);

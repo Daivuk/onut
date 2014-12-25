@@ -1,7 +1,7 @@
 #pragma once
-#include "Typedefs.h"
-
+#include "SimpleMath.h"
 #include <vector>
+using namespace DirectX::SimpleMath;
 
 namespace onut {
     /**
