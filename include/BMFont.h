@@ -25,6 +25,33 @@ namespace onut {
                   Align align = Talign) {
             return drawInternal(text, pos, color, pSpriteBatch, align);
         }
+        template<
+            Align Talign = Align::TOP_LEFT,
+            bool Tcheap = true>
+        Rect drawOutlined(const std::string& text,
+            Vector2 pos,
+            const Color& color = Color::White,
+            Color outlineColor = { 0, 0, 0, .75f},
+            float outlineSize = 2.f,
+            onut::SpriteBatch* pSpriteBatch = OSB,
+            Align align = Talign) {
+            outlineColor.w *= color.w;
+            pos = { std::round(pos.x), std::round(pos.y) };
+            if (Tcheap) {
+                drawInternal(text, pos + Vector2{ -outlineSize *0.86602540378443864676372317075294f, -outlineSize *0.5f }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ outlineSize * 0.86602540378443864676372317075294f, -outlineSize *0.5f }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ 0, outlineSize }, outlineColor, pSpriteBatch, align, false);
+            }
+            else {
+                drawInternal(text, pos + Vector2{ -outlineSize *0.5f, -outlineSize *0.86602540378443864676372317075294f }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ outlineSize * 0.5f, -outlineSize *0.86602540378443864676372317075294f }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ -outlineSize, 0 }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ outlineSize, 0 }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ -outlineSize *0.5f, outlineSize *0.86602540378443864676372317075294f }, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{ outlineSize * 0.5f, outlineSize *0.86602540378443864676372317075294f }, outlineColor, pSpriteBatch, align, false);
+            }
+            return drawInternal(text, pos, color, pSpriteBatch, align, false);
+        }
 
     private:
         struct fntCommon {
@@ -61,11 +88,12 @@ namespace onut {
         static std::string        parseString(const std::string& arg, const std::vector<std::string>& lineSplit);
 
         Rect drawInternal(
-            const std::string& text, 
-            const Vector2& pos, 
-            const Color& color, 
+            const std::string& text,
+            const Vector2& pos,
+            const Color& color,
             onut::SpriteBatch* pSpriteBatch,
-            Align align);
+            Align align,
+            bool snapPixels = true);
 
         fntCommon                           m_common;
         fntPage**                           m_pages = nullptr;

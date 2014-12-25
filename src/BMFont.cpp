@@ -141,7 +141,7 @@ namespace onut {
         return result;
     }
 
-    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align) {
+    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align, bool snapPixels) {
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);
@@ -186,7 +186,10 @@ namespace onut {
             break;
         }
 
-        Vector2 curPos = { static_cast<float>(static_cast<int>(pos.x)), static_cast<float>(static_cast<int>(pos.y)) };
+        if (snapPixels) {
+            pos = { std::round(pos.x), std::round(pos.y) };
+        }
+        Vector2 curPos = pos;
         ret.x = curPos.x;
         ret.y = curPos.y;
         unsigned int len = text.length();
