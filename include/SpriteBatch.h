@@ -3,8 +3,10 @@
 #include "Texture.h"
 using namespace DirectX::SimpleMath;
 
-namespace onut {
-    class SpriteBatch {
+namespace onut
+{
+    class SpriteBatch
+    {
     public:
         SpriteBatch();
         virtual ~SpriteBatch();
@@ -18,7 +20,8 @@ namespace onut {
         void end();
 
     private:
-        struct SVertexP2T2C4 {
+        struct SVertexP2T2C4
+        {
             Vector2 position;
             Vector2 texCoord;
             Color    color;

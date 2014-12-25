@@ -1,8 +1,10 @@
 #pragma once
 #include <Windows.h>
 
-namespace onut {
-    class Window {
+namespace onut
+{
+    class Window
+    {
     public:
         Window(const POINT& resolution);
         HWND getHandle();

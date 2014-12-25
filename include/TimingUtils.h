@@ -2,53 +2,59 @@
 #include "Anim.h"
 #include "TimeInfo.h"
 
-namespace onut {
+namespace onut
+{
     /**
-        Get the time info for the current frame
-        @return Reference on the TimeInfo for the game
+    Get the time info for the current frame
+    @return Reference on the TimeInfo for the game
     */
     const TimeInfo<>& getTimeInfo();
 
     /**
-        Timer class so you can start timed events. This class uses a Anim<> internally
-        Template arguments:
-        - Tprecision: Precision unit. default float
+    Timer class so you can start timed events. This class uses a Anim<> internally
+    Template arguments:
+    - Tprecision: Precision unit. default float
     */
     template<typename Tprecision = float>
-    class Timer {
+    class Timer
+    {
     public:
         /**
-            Constructor. This will set the start value to 0
+        Constructor. This will set the start value to 0
         */
         Timer() :
-            m_anim(static_cast<Tprecision>(0.0)) {
+            m_anim(static_cast<Tprecision>(0.0))
+        {}
+
+        /**
+        Start timed event
+        */
+        void start(Tprecision duration, const std::function<void()>& callback = nullptr)
+        {
+            m_anim.start(static_cast<Tprecision>(0.0), {duration, duration, TweenType::LINEAR, callback});
         }
 
         /**
-            Start timed event
+        Stop. Value will stay where it is. So you can get the time it was stopped by calling: getProgress
         */
-        void start(Tprecision duration, const std::function<void()>& callback = nullptr) {
-            m_anim.start(static_cast<Tprecision>(0.0), { duration, duration, TweenType::LINEAR, callback });
-        }
-
-        /**
-            Stop. Value will stay where it is. So you can get the time it was stopped by calling: getProgress
-        */
-        void stop() {
+        void stop()
+        {
             m_anim.stop(false);
         }
 
         /**
-            Get the current time in the timer's progress. In seconds.
+        Get the current time in the timer's progress. In seconds.
         */
-        Tprecision getProgress() const {
+        Tprecision getProgress() const
+        {
             return m_anim.get();
         }
 
         /**
-            Check if the timer is running
+        Check if the timer is running
         */
-        bool isRunning() const {
+        bool isRunning() const
+        {
             return m_anim.isPlaying();
         }
 
@@ -58,17 +64,17 @@ namespace onut {
 }
 
 /**
-    Delta time between current update frame and the previous one
+Delta time between current update frame and the previous one
 */
 extern float ODT;
 
 /**
-    Sleep the current thread for an amount of miliseconds
-    @param ms Miliseconds count
+Sleep the current thread for an amount of miliseconds
+@param ms Miliseconds count
 */
-template<
-    typename TtimeType,
-    typename std::enable_if<std::is_integral<TtimeType>::value, TtimeType>::type* = nullptr>
-inline void OSleep(const TtimeType& ms) {
+template<typename TtimeType,
+         typename std::enable_if<std::is_integral<TtimeType>::value, TtimeType>::type* = nullptr>
+         inline void OSleep(const TtimeType& ms)
+{
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }

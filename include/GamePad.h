@@ -4,10 +4,13 @@
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
-namespace onut {
-    class GamePad {
+namespace onut
+{
+    class GamePad
+    {
     public:
-        enum eGamePad {
+        enum eGamePad
+        {
             A,
             B,
             X,

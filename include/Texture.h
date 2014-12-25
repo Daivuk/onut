@@ -2,8 +2,10 @@
 #include <d3d11.h>
 #include <memory>
 
-namespace onut {
-    class Texture {
+namespace onut
+{
+    class Texture
+    {
     public:
         static Texture* createDynamic(const POINT& size);
         static Texture* createFromFile(const std::string& filename, bool generateMipmaps = true);
@@ -15,8 +17,9 @@ namespace onut {
         void                        bind();
         ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
         const POINT&                getSize() const { return m_size; }
-        Vector4                     getRect() const {
-            return std::move(Vector4{ 0, 0, static_cast<float>(m_size.x), static_cast<float>(m_size.y) });
+        Vector4                     getRect() const
+        {
+            return std::move(Vector4{0, 0, static_cast<float>(m_size.x), static_cast<float>(m_size.y)});
         }
 
     private:

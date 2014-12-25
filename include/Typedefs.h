@@ -1,7 +1,9 @@
 #pragma once
 
-namespace onut {
-    enum class Align {
+namespace onut
+{
+    enum class Align
+    {
         TOP_LEFT,
         TOP,
         TOP_RIGHT,

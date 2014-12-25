@@ -3,51 +3,62 @@
 #include <mutex>
 #include "StringUtils.h"
 
-namespace onut {
+namespace onut
+{
     class Texture;
     class BMFont;
 
-    template<
-        bool TuseAssert = true,
+    template<bool TuseAssert = true,
         typename TmutexType = std::mutex>
-    class ContentManager {
+    class ContentManager
+    {
     public:
-        virtual ~ContentManager() {
+        virtual ~ContentManager()
+        {
             clear();
         }
 
         /**
-            Get a resource by name
+        Get a resource by name
         */
         template <typename Ttype>
-        Ttype* getResource(const std::string& name) {
-            if (m_threadId == std::this_thread::get_id()) {
+        Ttype* getResource(const std::string& name)
+        {
+            if (m_threadId == std::this_thread::get_id())
+            {
                 auto it = m_resources.find(name);
-                if (it == m_resources.end()) {
+                if (it == m_resources.end())
+                {
                     // Load it
                     return load<Ttype>(name);
                 }
                 auto pResourceHolder = dynamic_cast<ResourceHolder<Ttype>*>(it->second);
-                if (!pResourceHolder) {
-                    if (TuseAssert) {
+                if (!pResourceHolder)
+                {
+                    if (TuseAssert)
+                    {
                         assert(false); // Resource not found
                     }
                     return nullptr;
                 }
                 return pResourceHolder->getResource();
             }
-            else {
+            else
+            {
                 m_mutex.lock();
                 auto it = m_resources.find(name);
-                if (it == m_resources.end()) {
+                if (it == m_resources.end())
+                {
                     m_mutex.unlock();
                     // Load it
                     return load<Ttype>(name);
                 }
                 auto pResourceHolder = dynamic_cast<ResourceHolder<Ttype>*>(it->second);
                 m_mutex.unlock();
-                if (!pResourceHolder) {
-                    if (TuseAssert) {
+                if (!pResourceHolder)
+                {
+                    if (TuseAssert)
+                    {
                         assert(false); // Resource not found
                     }
                     return nullptr;
@@ -57,17 +68,20 @@ namespace onut {
         }
 
         /**
-            Delete all content loaded by this ContentManager
+        Delete all content loaded by this ContentManager
         */
-        void clear() {
-            for (auto& kv : m_resources) {
+        void clear()
+        {
+            for (auto& kv : m_resources)
+            {
                 delete kv.second;
             }
             m_resources.clear();
         }
 
     private:
-        class IResourceHolder {
+        class IResourceHolder
+        {
         public:
             virtual ~IResourceHolder() {}
         };
@@ -76,19 +90,23 @@ namespace onut {
 
     public:
         /**
-            Get the count of all loaded assets
+        Get the count of all loaded assets
         */
-        auto size() -> decltype(m_resources.size()) const {
+        auto size() -> decltype(m_resources.size()) const
+        {
             return m_resources.size();
         }
 
     private:
-        template <typename Ttype>
-        class ResourceHolder : public IResourceHolder {
+        template<typename Ttype>
+        class ResourceHolder : public IResourceHolder
+        {
         public:
             ResourceHolder(Ttype* pResource) : m_pResource(pResource) {}
-            virtual ~ResourceHolder() {
-                if (m_pResource) {
+            virtual ~ResourceHolder()
+            {
+                if (m_pResource)
+                {
                     delete m_pResource;
                     m_pResource = nullptr;
                 }
@@ -100,8 +118,9 @@ namespace onut {
             Ttype* m_pResource = nullptr;
         };
 
-        template <typename Ttype>
-        Ttype* load(const std::string& name) {
+        template<typename Ttype>
+        Ttype* load(const std::string& name)
+        {
             auto filename = findFile<TuseAssert>(name, "assets");
             if (filename == "") return nullptr;
             Ttype* pResource = Ttype::createFromFile(filename);
@@ -115,4 +134,4 @@ namespace onut {
         TmutexType                              m_mutex;
         decltype(std::this_thread::get_id())    m_threadId = std::this_thread::get_id();
     };
-};
+}

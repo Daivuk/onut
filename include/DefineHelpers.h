@@ -109,7 +109,8 @@
 #define OPosRelX(x, p)                          (OScreenWf - (x) - (p))
 #define OPosRelY(y, p)                          (OScreenHf - (y) - (p))
 
-namespace onut {
+namespace onut
+{
     // Palettes
     extern std::vector<Color> palPinkLovers;
     extern std::vector<Color> palPeonyJoy;

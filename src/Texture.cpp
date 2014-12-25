@@ -5,8 +5,10 @@
 #include <cassert>
 #include <vector>
 
-namespace onut {
-    Texture* Texture::createDynamic(const POINT& size) {
+namespace onut
+{
+    Texture* Texture::createDynamic(const POINT& size)
+    {
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
         auto pRet = new Texture();
@@ -36,19 +38,21 @@ namespace onut {
         return pRet;
     }
 
-    Texture* Texture::createFromFile(const std::string& filename, bool generateMipmaps) {
+    Texture* Texture::createFromFile(const std::string& filename, bool generateMipmaps)
+    {
         Texture* pRet = NULL;
 
         std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
         unsigned int w, h;
         auto ret = lodepng::decode(image, w, h, filename);
         assert(!ret);
-        POINT size{ w, h };
+        POINT size{w, h};
         byte* pData = &(image[0]);
         ULONG len = size.x * size.y;
 
         // Pre multiplied
-        for (ULONG i = 0; i < len; ++i, pData += 4) {
+        for (ULONG i = 0; i < len; ++i, pData += 4)
+        {
             pData[0] = pData[0] * pData[3] / 255;
             pData[1] = pData[1] * pData[3] / 255;
             pData[2] = pData[2] * pData[3] / 255;
@@ -57,7 +61,8 @@ namespace onut {
         return createFromData(size, &(image[0]), generateMipmaps);
     }
 
-    Texture* Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps) {
+    Texture* Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps)
+    {
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
         auto pRet = new Texture();
@@ -74,12 +79,14 @@ namespace onut {
         int mipLevels = 1;
         D3D11_SUBRESOURCE_DATA* mipsData = NULL;
         allowMipMaps = allowMipMaps && in_generateMipmaps;
-        if (allowMipMaps) {
+        if (allowMipMaps)
+        {
             UINT biggest = max(w2, h2);
             UINT w2t = w2;
             UINT h2t = h2;
             UINT totalSize = w2t * h2t * 4;
-            while (!(w2t == 1 && h2t == 1)) {
+            while (!(w2t == 1 && h2t == 1))
+            {
                 ++mipLevels;
                 w2t /= 2;
                 if (w2t < 1) w2t = 1;
@@ -99,7 +106,8 @@ namespace onut {
             mipLevels = 0;
             byte* prev;
             byte* cur;
-            while (mipLevels != mipTarget) {
+            while (mipLevels != mipTarget)
+            {
                 prev = pMipMaps + totalSize;
                 mipsData[mipLevels].pSysMem = prev;
                 mipsData[mipLevels].SysMemPitch = w2t * 4;
@@ -117,9 +125,12 @@ namespace onut {
                 // Generate the mips
                 int multX = w2 / w2t;
                 int multY = h2 / h2t;
-                for (UINT y = 0; y < h2t; ++y) {
-                    for (UINT x = 0; x < w2t; ++x) {
-                        for (UINT k = 0; k < 4; ++k) {
+                for (UINT y = 0; y < h2t; ++y)
+                {
+                    for (UINT x = 0; x < w2t; ++x)
+                    {
+                        for (UINT k = 0; k < 4; ++k)
+                        {
                             accum = 0;
                             accum += prev[(y * multY * w2 + x * multX) * 4 + k];
                             accum += prev[(y * multY * w2 + (x + multX / 2) * multX) * 4 + k];
@@ -169,12 +180,13 @@ namespace onut {
         return pRet;
     }
 
-    Texture::~Texture() {
+    Texture::~Texture()
+    {
         if (m_pTextureView) m_pTextureView->Release();
         m_pTextureView = nullptr;
         m_pTexture = nullptr;
     }
 
-    void Texture::bind() {
-    }
+    void Texture::bind()
+    {}
 }

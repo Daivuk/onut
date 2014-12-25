@@ -10,19 +10,21 @@ using namespace std;
 HANDLE hcon;
 #endif
 
-struct IOSetColor {
+struct IOSetColor
+{
     int color;
 };
 ostream& operator <<(ostream& os, const IOSetColor& color)
 {
-    #ifdef WIN32
-        SetConsoleTextAttribute(hcon, color.color);
-    #endif
+#ifdef WIN32
+    SetConsoleTextAttribute(hcon, color.color);
+#endif
     return os;
 }
 
-IOSetColor setColor(int color) { 
-    return{ color };
+IOSetColor setColor(int color)
+{
+    return{color};
 }
 
 int errCount = 0;
@@ -32,7 +34,8 @@ int subTestCount = 0;
 int testCount = 0;
 
 template<typename TtextType>
-void majorTest(TtextType testName) {
+void majorTest(TtextType testName)
+{
     ++majorTestCount;
     subTestCount = 0;
     testCount = 0;
@@ -40,7 +43,8 @@ void majorTest(TtextType testName) {
 }
 
 template<typename TtextType>
-void subTest(TtextType testName) {
+void subTest(TtextType testName)
+{
     ++subTestCount;
     testCount = 0;
     stringstream ss;
@@ -49,24 +53,29 @@ void subTest(TtextType testName) {
 }
 
 template<typename TtextType>
-void checkTest(bool cond, TtextType testName) {
+void checkTest(bool cond, TtextType testName)
+{
     ++testCount;
     stringstream ss;
     ss << majorTestCount << "." << subTestCount << "." << testCount;
-    if (cond) {
+    if (cond)
+    {
         cout << setColor(7) << setw(10) << ss.str() << " - " << setColor(10) << "Ok     " << setColor(7) << testName << endl;
     }
-    else {
+    else
+    {
         ++errCount;
         cout << setColor(7) << setw(10) << ss.str() << " - " << setColor(12) << "FAILED " << setColor(7) << testName << endl;
     }
 }
 
 template<uintptr_t TloopCount>
-bool testRandomPool() {
+bool testRandomPool()
+{
     onut::Pool<9, 7, 11, false> pool;
 
-    class CObj {
+    class CObj
+    {
     public:
         CObj() : a(1), b(2.5f) {}
         CObj(int _a) : a(_a), b(2.5f) {}
@@ -77,14 +86,18 @@ bool testRandomPool() {
 
     int allocCount = 0;
     decltype(TloopCount) i = 0;
-    CObj* objs[7] = { nullptr };
-    for (; i < TloopCount; ++i) {
+    CObj* objs[7] = {nullptr};
+    for (; i < TloopCount; ++i)
+    {
         auto rnd = rand() % 101;
-        if (rnd < 50) {
+        if (rnd < 50)
+        {
             auto index = rand() % 7;
-            if (objs[index]) {
+            if (objs[index])
+            {
                 // Dealloc should succeed
-                if (!pool.dealloc(objs[index])) {
+                if (!pool.dealloc(objs[index]))
+                {
                     stringstream ss;
                     ss << "Dealloc objs[" << index << "]";
                     checkTest(false, ss.str());
@@ -94,37 +107,47 @@ bool testRandomPool() {
                 --allocCount;
             }
             objs[index] = pool.alloc<CObj>();
-            if (allocCount < 7) {
-                if (objs[index] == nullptr) {
+            if (allocCount < 7)
+            {
+                if (objs[index] == nullptr)
+                {
                     checkTest(false, "allocCount < 7, so alloc should not be nullptr");
                     return false;
                 }
                 auto aligned = (reinterpret_cast<uintptr_t>(objs[index]) % 11) == 0;
-                if (!aligned) {
+                if (!aligned)
+                {
                     checkTest(aligned, "Alloc is not aligned to 11 bytes");
                     return false;
                 }
                 ++allocCount;
             }
-            else {
-                if (objs[index] != nullptr) {
+            else
+            {
+                if (objs[index] != nullptr)
+                {
                     checkTest(false, "allocCount is max, so alloc should be nullptr");
                     return false;
                 }
             }
         }
-        else if (rnd < 100) {
+        else if (rnd < 100)
+        {
             auto index = rand() % 7;
-            if (objs[index] == nullptr) {
+            if (objs[index] == nullptr)
+            {
                 // Dealloc should fail
-                if (pool.dealloc(objs[index])) {
+                if (pool.dealloc(objs[index]))
+                {
                     checkTest(false, "Dealloc nullptr");
                     return false;
                 }
             }
-            else {
+            else
+            {
                 // Dealloc should succeed
-                if (!pool.dealloc(objs[index])) {
+                if (!pool.dealloc(objs[index]))
+                {
                     stringstream ss;
                     ss << "Dealloc objs[" << index << "]";
                     checkTest(false, ss.str());
@@ -134,14 +157,17 @@ bool testRandomPool() {
                 --allocCount;
             }
         }
-        else {
-            for (int j = 0; j < 7; ++j) {
+        else
+        {
+            for (int j = 0; j < 7; ++j)
+            {
                 objs[j] = nullptr;
             }
             pool.clear();
             allocCount = 0;
         }
-        if (pool.getAllocCount() != allocCount) {
+        if (pool.getAllocCount() != allocCount)
+        {
             stringstream ss;
             ss << "allocCount " << allocCount << " == pool.getAllocCount() " << pool.getAllocCount();
             checkTest(false, ss.str());
@@ -157,14 +183,15 @@ bool testRandomPool() {
     return i == TloopCount;
 }
 
-void foo() {
-}
+void foo() {}
 
-bool foob() {
+bool foob()
+{
     return true;
 }
 
-void fooab(int* pA, float b) {
+void fooab(int* pA, float b)
+{
     *pA = 5;
     b = 12.75f;
 }
@@ -175,38 +202,44 @@ bool foo3Called = false;
 bool foo4Called = false;
 bool foo5Called = false;
 
-void foo1() {
+void foo1()
+{
     checkTest(!foo1Called && !foo2Called && !foo3Called && !foo4Called && !foo5Called,
-        "foo1 called in order");
+              "foo1 called in order");
     foo1Called = true;
 }
 
-void foo2() {
+void foo2()
+{
     checkTest(foo1Called && !foo2Called && !foo3Called && !foo4Called && !foo5Called,
-        "foo2 called in order");
+              "foo2 called in order");
     foo2Called = true;
 }
 
-void foo3() {
+void foo3()
+{
     checkTest(foo1Called && foo2Called && !foo3Called && !foo4Called && !foo5Called,
-        "foo3 called in order");
+              "foo3 called in order");
     foo3Called = true;
 }
 
-void foo4() {
+void foo4()
+{
     checkTest(foo1Called && foo2Called && foo3Called && !foo4Called && !foo5Called,
-        "foo4 called in order");
+              "foo4 called in order");
     foo4Called = true;
 }
 
-void foo5() {
+void foo5()
+{
     checkTest(foo1Called && foo2Called && foo3Called && foo4Called && !foo5Called,
-        "foo5 called in order");
+              "foo5 called in order");
     foo5Called = true;
 }
 
 template <typename TsynchronousType>
-void runSynchronousTests() {
+void runSynchronousTests()
+{
     subTest("Basic Tests");
     {
         TsynchronousType synchronous;
@@ -214,7 +247,8 @@ void runSynchronousTests() {
         int a = 1;
         float b = 2.5f;
 
-        synchronous.sync([&a, &b](){
+        synchronous.sync([&a, &b]()
+        {
             a = 3;
             b = 4.25f;
         });
@@ -269,7 +303,8 @@ void runSynchronousTests() {
         foo4Called = false;
         foo5Called = false;
 
-        auto ret = std::async(std::launch::async, [&synchronous]{
+        auto ret = std::async(std::launch::async, [&synchronous]
+        {
             synchronous.sync(foo1);
             //std::this_thread::sleep_for(std::chrono::milliseconds(20));
             synchronous.sync(foo2);
@@ -283,7 +318,8 @@ void runSynchronousTests() {
 
         auto startTime = std::chrono::steady_clock::now();
         while (ret.wait_for(std::chrono::seconds(0)) != std::future_status::ready &&
-            std::chrono::steady_clock::now() - startTime < std::chrono::seconds(5)) {
+               std::chrono::steady_clock::now() - startTime < std::chrono::seconds(5))
+        {
             synchronous.processQueue();
         }
         synchronous.processQueue();
@@ -294,18 +330,22 @@ void runSynchronousTests() {
     }
 }
 
-class TestResource1 {
+class TestResource1
+{
 public:
-    static TestResource1* createFromFile(const std::string& filename) {
+    static TestResource1* createFromFile(const std::string& filename)
+    {
         if (filename == "not found") return nullptr;
         return new TestResource1();
     }
     int a = 5;
     float b = 3.25f;
 };
-class TestResource2 {
+class TestResource2
+{
 public:
-    static TestResource2* createFromFile(const std::string& filename) {
+    static TestResource2* createFromFile(const std::string& filename)
+    {
         if (filename == "not found") return nullptr;
         return new TestResource2();
     }
@@ -313,12 +353,14 @@ public:
     float b = 10.75f;
 };
 
-int main(int argc, char** args) {
+int main(int argc, char** args)
+{
 #ifdef WIN32
     hcon = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 
-    if (argc > 1) {
+    if (argc > 1)
+    {
         _chdir(args[1]);
     }
 
@@ -328,7 +370,8 @@ int main(int argc, char** args) {
         {
             onut::Pool<16, 10, 5, false> pool;
 
-            class CObj {
+            class CObj
+            {
             public:
                 CObj() : a(1), b(2.5f) {}
                 CObj(int _a) : a(_a), b(2.5f) {}
@@ -349,15 +392,17 @@ int main(int argc, char** args) {
 
             checkTest(pool.getAllocCount() == 0, "Alloc count is 0");
 
-            class CTooBigObj {
+            class CTooBigObj
+            {
             public:
                 float tooBigMember[5];
             };
             auto pObjToBig = pool.alloc<CTooBigObj>();
             checkTest(pObjToBig == nullptr, "Trying alloc obj too big");
 
-            CObj* objs[10] = { nullptr };
-            for (int i = 0; i < 10; ++i) {
+            CObj* objs[10] = {nullptr};
+            for (int i = 0; i < 10; ++i)
+            {
                 objs[i] = pool.alloc<CObj>();
             }
             checkTest(
@@ -415,7 +460,8 @@ int main(int argc, char** args) {
             srand(5632);
             checkTest(testRandomPool<10000>(), "seed = 5632");
 
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < 5; ++i)
+            {
                 srand(static_cast<unsigned int>(time(0)));
                 checkTest(testRandomPool<10000>(), "seed = random");
             }
@@ -564,15 +610,17 @@ int main(int argc, char** args) {
         subTest("Async tests");
         {
             onut::ContentManager<false> contentManager;
-            
-            bool testRet[6] = { false };
 
-            auto future1 = std::async(std::launch::async, [&contentManager, &testRet]{
+            bool testRet[6] = {false};
+
+            auto future1 = std::async(std::launch::async, [&contentManager, &testRet]
+            {
                 testRet[0] = contentManager.getResource<TestResource1>("res1.txt") != nullptr;
                 testRet[1] = contentManager.getResource<TestResource2>("someFileThatDoesntExist.txt") == nullptr;
                 testRet[2] = contentManager.getResource<TestResource2>("res2.txt") != nullptr;
             });
-            auto future2 = std::async(std::launch::async, [&contentManager, &testRet]{
+            auto future2 = std::async(std::launch::async, [&contentManager, &testRet]
+            {
                 testRet[3] = contentManager.getResource<TestResource1>("res1.txt") != nullptr;
                 testRet[4] = contentManager.getResource<TestResource2>("res2.txt") != nullptr;
                 testRet[5] = contentManager.getResource<TestResource2>("someFileThatDoesntExist.txt") == nullptr;
@@ -599,83 +647,87 @@ int main(int argc, char** args) {
     {
         subTest("Simple directional tests");
         {
-            struct V2f {
+            struct V2f
+            {
                 float x;
                 float y;
             };
-            onut::UINodeNav<V2f> nav({ { 0, 0 }, { 0, -10 }, { 10, 0 }, { 0, 10 }, { -10, 0 } }, .3f, std::chrono::milliseconds(0));
+            onut::UINodeNav<V2f> nav({{0, 0}, {0, -10}, {10, 0}, {0, 10}, {-10, 0}}, .3f, std::chrono::milliseconds(0));
 
             checkTest(nav.size() == 5, "Has 5 nodes");
 
             checkTest(nav.getSelectedIndex() == 0, "Default selected index = 0");
 
-            nav.navigate<V2f>({ 0, -1 });
+            nav.navigate<V2f>({0, -1});
             checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
 
-            nav.navigate<V2f>({ 1.41f, 1.41f });
+            nav.navigate<V2f>({1.41f, 1.41f});
             checkTest(nav.getSelectedIndex() == 2, "Nav down right. Selected = 2");
 
-            nav.navigate<V2f>({ -1.41f, 1.41f });
+            nav.navigate<V2f>({-1.41f, 1.41f});
             checkTest(nav.getSelectedIndex() == 3, "Nav down left. Selected = 3");
 
-            nav.navigate<V2f>({ -1.41f, -1.41f });
+            nav.navigate<V2f>({-1.41f, -1.41f});
             checkTest(nav.getSelectedIndex() == 4, "Nav up left. Selected = 4");
 
-            nav.navigate<V2f>({ 1, 0 });
+            nav.navigate<V2f>({1, 0});
             checkTest(nav.getSelectedIndex() == 0, "Nav right. Selected = 0");
 
-            nav.navigate<V2f>({ 1, 0 });
+            nav.navigate<V2f>({1, 0});
             checkTest(nav.getSelectedIndex() == 2, "Nav right again. Selected = 2");
 
             cout << setColor(7) << endl;
         }
         subTest("Test best pick for angle");
         {
-            struct V2f {
+            struct V2f
+            {
                 float x;
                 float y;
             };
-            onut::UINodeNav<V2f> nav({ { 0, 0 }, { 0, -10 }, { 2, -10 }, { -1, -10 } }, .3f, std::chrono::milliseconds(0));
+            onut::UINodeNav<V2f> nav({{0, 0}, {0, -10}, {2, -10}, {-1, -10}}, .3f, std::chrono::milliseconds(0));
 
             checkTest(nav.size() == 4, "Has 4 nodes");
 
-            nav.navigate<V2f>({ 1, 0 });
+            nav.navigate<V2f>({1, 0});
             checkTest(nav.getSelectedIndex() == 0, "Nav right. Selected unchanged");
 
-            nav.navigate<V2f>({ -1, 0 });
+            nav.navigate<V2f>({-1, 0});
             checkTest(nav.getSelectedIndex() == 0, "Nav left. Selected unchanged");
 
-            nav.navigate<V2f>({ 0, 1 });
+            nav.navigate<V2f>({0, 1});
             checkTest(nav.getSelectedIndex() == 0, "Nav down. Selected unchanged");
 
-            nav.navigate<V2f>({ 0, -1 });
+            nav.navigate<V2f>({0, -1});
             checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
 
             nav.setSelected(0);
             checkTest(nav.getSelectedIndex() == 0, "Select 0. Selected = 0");
 
-            nav.navigate<V2f>({ 1.41f, -1.41f });
+            nav.navigate<V2f>({1.41f, -1.41f});
             checkTest(nav.getSelectedIndex() == 2, "Nav up right. Selected = 2");
 
             nav.setSelected(0);
             checkTest(nav.getSelectedIndex() == 0, "Select 0. Selected = 0");
 
-            nav.navigate<V2f>({ -1.41f, -1.41f });
+            nav.navigate<V2f>({-1.41f, -1.41f});
             checkTest(nav.getSelectedIndex() == 3, "Nav up left. Selected = 3");
 
             cout << setColor(7) << endl;
         }
         subTest("Test insertion and removal of nodes");
         {
-            struct V2f {
+            struct V2f
+            {
                 float x;
                 float y;
 
-                bool operator==(const V2f& other) const {
+                bool operator==(const V2f& other) const
+                {
                     return x == other.x && y == other.y;
                 }
             };
-            onut::UINodeNav<V2f> nav({ { 0, 0 }, { 0, -30 }, { 20, 0 }, { 0, 10 }, { -40, 0 } }, .3f, std::chrono::milliseconds(0));
+            onut::UINodeNav<V2f> nav({{0, 0}, {0, -30}, {20, 0}, {0, 10}, {-40, 0}}, .3f, std::chrono::milliseconds(0));
 
             checkTest(nav.size() == 5, "Has 5 nodes");
 
@@ -696,42 +748,42 @@ int main(int argc, char** args) {
             nav.removeNode(0);
             checkTest(nav.getSelectedIndex() == 0, "Remove index 0. Selected = 0");
 
-            nav.addNode({ 0, 0 });
+            nav.addNode({0, 0});
             checkTest(nav.size() == 2, "Node added. Has 2 nodes");
 
-            nav.navigate<V2f>({ 0, -1 });
+            nav.navigate<V2f>({0, -1});
             checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
 
             nav.clear();
             checkTest(nav.size() == 0, "Nodes cleared. Has 0 nodes");
 
-            nav.setNodes({ { 0, 0 }, { -10, 0 } });
+            nav.setNodes({{0, 0}, {-10, 0}});
             checkTest(nav.size() == 2, "Set nodes. Has 2 nodes");
 
             nav.setSelected(1);
             checkTest(nav.getSelectedIndex() == 1, "Select 1. Selected = 0");
 
-            nav.setNodes({ { 0, 0 }, { 0, -10 }, { 10, 0 }, { 0, 10 }, { -10, 0 } });
+            nav.setNodes({{0, 0}, {0, -10}, {10, 0}, {0, 10}, {-10, 0}});
             checkTest(nav.size() == 5, "Set nodes. Has 5 nodes");
 
             checkTest(nav.getSelectedIndex() == 0, "Default selected index = 0");
 
-            nav.navigate<V2f>({ 0, -1 });
+            nav.navigate<V2f>({0, -1});
             checkTest(nav.getSelectedIndex() == 1, "Nav up. Selected = 1");
 
-            nav.navigate<V2f>({ 1.41f, 1.41f });
+            nav.navigate<V2f>({1.41f, 1.41f});
             checkTest(nav.getSelected() == V2f{10, 0}, "Nav down right. Selected = {10, 0}");
 
-            nav.navigate<V2f>({ -1.41f, 1.41f });
+            nav.navigate<V2f>({-1.41f, 1.41f});
             checkTest(nav.getSelectedIndex() == 3, "Nav down left. Selected = 3");
 
-            nav.navigate<V2f>({ -1.41f, -1.41f });
+            nav.navigate<V2f>({-1.41f, -1.41f});
             checkTest(nav.getSelectedIndex() == 4, "Nav up left. Selected = 4");
 
-            nav.navigate<V2f>({ 1, 0 });
+            nav.navigate<V2f>({1, 0});
             checkTest(nav.getSelectedIndex() == 0, "Nav right. Selected = 0");
 
-            nav.navigate<V2f>({ 1, 0 });
+            nav.navigate<V2f>({1, 0});
             checkTest(nav.getSelectedIndex() == 2, "Nav right again. Selected = 2");
 
             cout << setColor(7) << endl;
@@ -749,10 +801,10 @@ int main(int argc, char** args) {
             bool condition1 = true;
             bool condition2 = true;
 
-            evMgr.addEvent("Event1", [&condition1, &event1_called]{event1_called = true; return condition1; });
+            evMgr.addEvent("Event1", [&condition1, &event1_called] { event1_called = true; return condition1; });
             checkTest(evMgr.size() == 1, "Event1 added. size = 1");
 
-            evMgr.addEvent("Event2", [&condition2, &event2_called]{event2_called = true; return condition2; });
+            evMgr.addEvent("Event2", [&condition2, &event2_called] { event2_called = true; return condition2; });
             checkTest(evMgr.size() == 2, "Event2 added. size = 2");
 
             evMgr.removeEvent("Event1");
@@ -777,18 +829,18 @@ int main(int argc, char** args) {
             {
                 onut::EventObserver observer(&evMgr);
 
-                evMgr.addEvent("Event1", [&condition1]{ return condition1; });
+                evMgr.addEvent("Event1", [&condition1] { return condition1; });
                 checkTest(evMgr.size() == 1, "Event1 added. size = 1");
 
-                observer.observe("Event1", [&event1_callback]{event1_callback = true; });
+                observer.observe("Event1", [&event1_callback] { event1_callback = true; });
                 evMgr.processEvents();
                 checkTest(event1_callback, "Observing Event1. processEvents. Observer called.");
                 event1_callback = false;
 
-                evMgr.addEvent("Event2", [&condition2]{ return condition2; });
+                evMgr.addEvent("Event2", [&condition2] { return condition2; });
                 checkTest(evMgr.size() == 2, "false Event2 added. size = 2");
 
-                observer.observe("Event2", [&event2_callback]{event2_callback = true; });
+                observer.observe("Event2", [&event2_callback] { event2_callback = true; });
                 evMgr.processEvents();
                 checkTest(event1_callback && !event2_callback, "Observing Event2. Event1 called, Event2 not called");
                 event1_callback = false;
@@ -808,7 +860,7 @@ int main(int argc, char** args) {
                 event1_callback = false;
                 event2_callback = false;
 
-                evMgr.addEvent("Event1", [&condition1]{ return condition1; });
+                evMgr.addEvent("Event1", [&condition1] { return condition1; });
                 checkTest(evMgr.size() == 2, "Event1 added. size = 2");
 
                 evMgr.processEvents();
@@ -836,15 +888,15 @@ int main(int argc, char** args) {
                 onut::EventObserver observer1(&evMgr);
                 onut::EventObserver observer2(&evMgr);
 
-                evMgr.addEvent("Event1", [&condition1]{ return condition1; });
-                evMgr.addEvent("Event2", [&condition2]{ return condition2; });
-                evMgr.addEvent("Event3", [&condition3]{ return condition3; });
+                evMgr.addEvent("Event1", [&condition1] { return condition1; });
+                evMgr.addEvent("Event2", [&condition2] { return condition2; });
+                evMgr.addEvent("Event3", [&condition3] { return condition3; });
                 checkTest(evMgr.size() == 3, "3 events added. size = 3");
 
-                observer1.observe("Event1", [&event1_callback]{++event1_callback; });
-                observer1.observe("Event2", [&event2_callback]{++event2_callback; });
-                observer2.observe("Event2", [&event2_callback]{++event2_callback; });
-                observer2.observe("Event3", [&event3_callback]{++event3_callback; });
+                observer1.observe("Event1", [&event1_callback] { ++event1_callback; });
+                observer1.observe("Event2", [&event2_callback] { ++event2_callback; });
+                observer2.observe("Event2", [&event2_callback] { ++event2_callback; });
+                observer2.observe("Event3", [&event3_callback] { ++event3_callback; });
 
                 evMgr.processEvents();
                 checkTest(event1_callback == 1 && event2_callback == 2 && event3_callback == 1, "processEvents. Counts: 1, 2, 1");
@@ -855,7 +907,7 @@ int main(int argc, char** args) {
                 checkTest(event1_callback == 1 && event2_callback == 1 && event3_callback == 1, "observer2 stopObserving \"Event2\". Counts: 1, 1, 1");
                 event1_callback = event2_callback = event3_callback = 0;
 
-                observer2.observe("Event3", [&event3_callback]{++event3_callback; });
+                observer2.observe("Event3", [&event3_callback] { ++event3_callback; });
                 evMgr.processEvents();
                 checkTest(event1_callback == 1 && event2_callback == 1 && event3_callback == 2, "observer2 observe \"Event3\". Counts: 1, 1, 2");
                 event1_callback = event2_callback = event3_callback = 0;
@@ -865,8 +917,8 @@ int main(int argc, char** args) {
                 checkTest(event1_callback == 1 && event2_callback == 1 && event3_callback == 0, "observer2 stopObserving \"Event3\". Counts: 1, 1, 0");
                 event1_callback = event2_callback = event3_callback = 0;
 
-                observer2.observe("Event2", [&event2_callback]{++event2_callback; });
-                observer2.observe("Event3", [&event3_callback]{++event3_callback; });
+                observer2.observe("Event2", [&event2_callback] { ++event2_callback; });
+                observer2.observe("Event3", [&event3_callback] { ++event3_callback; });
                 evMgr.processEvents();
                 checkTest(event1_callback == 1 && event2_callback == 2 && event3_callback == 1, "Added back \"Event2-3\". Counts: 1, 2, 1");
                 event1_callback = event2_callback = event3_callback = 0;
@@ -894,7 +946,7 @@ int main(int argc, char** args) {
         }
         cout << setColor(7) << endl;
     }
-    
+
     system("pause");
     return errCount;
 }

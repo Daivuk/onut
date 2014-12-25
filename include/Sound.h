@@ -1,11 +1,14 @@
 #pragma once
 #include <string>
-namespace DirectX {
+namespace DirectX
+{
     class SoundEffect;
 }
 
-namespace onut {
-    class Sound {
+namespace onut
+{
+    class Sound
+    {
     public:
         static Sound* createFromFile(const std::string& filename);
 

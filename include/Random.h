@@ -3,31 +3,32 @@
 #include <vector>
 using namespace DirectX::SimpleMath;
 
-namespace onut {
+namespace onut
+{
     /**
-        Seed
+    Seed
     */
     void randomizeSeed();
 
     /**
-        Get a random int
-        @param max Inclusive maximum
-        @param min Inclusive minimum
+    Get a random int
+    @param max Inclusive maximum
+    @param min Inclusive minimum
     */
     int randi();
     int randi(int max);
     int randi(int min, int max);
 
     /**
-        Get a random float
-        @param max Inclusive maximum
-        @param min Inclusive minimum
+    Get a random float
+    @param max Inclusive maximum
+    @param min Inclusive minimum
     */
     float randf(float max);
     float randf(float min, float max);
 
     /**
-        Random on vector maths
+    Random on vector maths
     */
     Vector2 rand2f(const Vector2& max);
     Vector2 rand2f(const Vector2& min, const Vector2& max);
@@ -37,7 +38,7 @@ namespace onut {
     Vector4 rand4f(const Vector4& min, const Vector4& max);
 
     /**
-        Random coloring
+    Random coloring
     */
     Color randc(float alpha = 1.f);
     Color randc(const Color& max);
@@ -46,17 +47,22 @@ namespace onut {
     Color randc(const std::vector<Color>& palette, float variation = 0.f);
 
     /**
-        Random pick in an array
+    Random pick in an array
     */
-    template<typename T, int N> const T& randa(const T (&arr)[N]) {
+    template<typename T,
+        int N>
+        const T& randa(const T(&arr)[N])
+    {
         auto rnd = randi(N - 1);
         return arr[rnd];
     }
 
     /**
-        Random pick in an iteratable (Vector, list, etc)
+    Random pick in an iteratable (Vector, list, etc)
     */
-    template<typename T> const T& randv(const std::vector<T>& vec) {
+    template<typename T>
+    const T& randv(const std::vector<T>& vec)
+    {
         auto rnd = randi(vec.size() - 1);
         return vec[rnd];
     }

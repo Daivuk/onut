@@ -5,8 +5,10 @@
 #include <sstream>
 #include <fstream>
 
-namespace onut {
-    int BMFont::parseInt(const std::string& arg, const std::vector<std::string>& lineSplit)    {
+namespace onut
+{
+    int BMFont::parseInt(const std::string& arg, const std::vector<std::string>& lineSplit)
+    {
         std::stringstream ss;
         ss << BMFont::parseString(arg, lineSplit);
         int theInt = 0;
@@ -14,10 +16,13 @@ namespace onut {
         return theInt;
     }
 
-    std::string BMFont::parseString(const std::string& arg, const std::vector<std::string>& lineSplit){
-        for (unsigned int i = 1; i < lineSplit.size(); ++i) {
+    std::string BMFont::parseString(const std::string& arg, const std::vector<std::string>& lineSplit)
+    {
+        for (unsigned int i = 1; i < lineSplit.size(); ++i)
+        {
             std::vector<std::string> argSplit = splitString(lineSplit[i], '=');
-            if (argSplit[0] == arg) {
+            if (argSplit[0] == arg)
+            {
                 std::string result = argSplit[1];
                 if (result[0] == '\"') result = result.substr(1, result.size() - 2);
                 return result;
@@ -26,7 +31,8 @@ namespace onut {
         return "";
     }
 
-    BMFont* BMFont::createFromFile(const std::string& filename) {
+    BMFont* BMFont::createFromFile(const std::string& filename)
+    {
         std::ifstream in(filename);
         assert(!in.fail());
 
@@ -36,11 +42,13 @@ namespace onut {
         std::string line;
         std::getline(in, line);
         std::vector<std::string> split;
-        while (!in.eof()) {
+        while (!in.eof())
+        {
             split = splitString(line, ' ');
             std::string command = split[0];
             if (command == "info") {}
-            else if (command == "common") {
+            else if (command == "common")
+            {
                 pFont->m_common.lineHeight = parseInt("lineHeight", split);
                 pFont->m_common.base = parseInt("base", split);
                 pFont->m_common.scaleW = parseInt("scaleW", split);
@@ -50,7 +58,8 @@ namespace onut {
 
                 pFont->m_pages = new fntPage*[pFont->m_common.pages];
             }
-            else if (command == "page") {
+            else if (command == "page")
+            {
                 auto pNewPage = new fntPage();
 
                 pNewPage->id = parseInt("id", split);
@@ -62,10 +71,12 @@ namespace onut {
                 const auto& texFilename = path + pNewPage->file;
                 pNewPage->pTexture = Texture::createFromFile(texFilename);
             }
-            else if (command == "chars") {
+            else if (command == "chars")
+            {
                 pFont->m_charsCount = parseInt("count", split);
             }
-            else if (command == "char") {
+            else if (command == "char")
+            {
                 fntChar* pNewChar = new fntChar();
 
                 pNewChar->id = parseInt("id", split);
@@ -89,105 +100,118 @@ namespace onut {
         return pFont;
     }
 
-    BMFont::BMFont() {
-    }
+    BMFont::BMFont()
+    {}
 
-    BMFont::~BMFont() {
-        for (int i = 0; i < m_common.pages; ++i) {
+    BMFont::~BMFont()
+    {
+        for (int i = 0; i < m_common.pages; ++i)
+        {
             delete m_pages[i];
         }
         delete[] m_pages;
         m_pages = nullptr;
 
-        for (auto& kv : m_chars) {
+        for (auto& kv : m_chars)
+        {
             delete kv.second;
         }
     }
 
-    Vector2 BMFont::measure(const std::string& in_text)    {
+    Vector2 BMFont::measure(const std::string& in_text)
+    {
         Vector2 result;
 
         result.y += (float)m_common.lineHeight;
         float curX = 0;
         unsigned int len = in_text.length();
         int charId;
-        for (unsigned int i = 0; i < len; ++i) {
+        for (unsigned int i = 0; i < len; ++i)
+        {
             charId = in_text[i];
-            if (charId == '\n') {
+            if (charId == '\n')
+            {
                 result.y += (float)m_common.lineHeight;
                 if (curX > result.x) result.x = curX;
                 curX = 0;
                 continue;
             }
-            if (charId == '^' && i + 3 < len) {
+            if (charId == '^' && i + 3 < len)
+            {
                 i += 3;
                 continue;
             }
             const auto& it = m_chars.find(charId);
             if (it == m_chars.end()) continue;
             auto pDatChar = it->second;
-            if (i == len - 1) {
+            if (i == len - 1)
+            {
                 curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
             }
-            else if (in_text[i + 1] == '\n') {
+            else if (in_text[i + 1] == '\n')
+            {
                 curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
             }
-            else {
+            else
+            {
                 curX += static_cast<float>(pDatChar->xadvance);
             }
         }
         if (curX > result.x) result.x = curX;
-        
+
         return result;
     }
 
-    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align, bool snapPixels) {
+    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align, bool snapPixels)
+    {
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);
         ret.z = dim.x;
         ret.w = dim.y;
-        switch (align) {
-        case Align::TOP_LEFT:
-            pos.y -= m_common.lineHeight - m_common.base;
-            break;
-        case Align::TOP:
-            pos.x -= dim.x * .5f;
-            pos.y -= m_common.lineHeight - m_common.base;
-            break;
-        case Align::TOP_RIGHT:
-            pos.x -= dim.x;
-            pos.y -= m_common.lineHeight - m_common.base;
-            break;
-        case Align::LEFT:
-            pos.y -= dim.y * .5f;
-            break;
-        case Align::CENTER:
-            pos.x -= dim.x * .5f;
-            pos.y -= dim.y * .5f;
-            break;
-        case Align::RIGHT:
-            pos.x -= dim.x;
-            pos.y -= dim.y * .5f;
-            break;
-        case Align::BOTTOM_LEFT:
-            pos.y -= dim.y;
-            pos.y += m_common.lineHeight - m_common.base;
-            break;
-        case Align::BOTTOM:
-            pos.x -= dim.x * .5f;
-            pos.y -= dim.y;
-            pos.y += m_common.lineHeight - m_common.base;
-            break;
-        case Align::BOTTOM_RIGHT:
-            pos.x -= dim.x;
-            pos.y -= dim.y;
-            pos.y += m_common.lineHeight - m_common.base;
-            break;
+        switch (align)
+        {
+            case Align::TOP_LEFT:
+                pos.y -= m_common.lineHeight - m_common.base;
+                break;
+            case Align::TOP:
+                pos.x -= dim.x * .5f;
+                pos.y -= m_common.lineHeight - m_common.base;
+                break;
+            case Align::TOP_RIGHT:
+                pos.x -= dim.x;
+                pos.y -= m_common.lineHeight - m_common.base;
+                break;
+            case Align::LEFT:
+                pos.y -= dim.y * .5f;
+                break;
+            case Align::CENTER:
+                pos.x -= dim.x * .5f;
+                pos.y -= dim.y * .5f;
+                break;
+            case Align::RIGHT:
+                pos.x -= dim.x;
+                pos.y -= dim.y * .5f;
+                break;
+            case Align::BOTTOM_LEFT:
+                pos.y -= dim.y;
+                pos.y += m_common.lineHeight - m_common.base;
+                break;
+            case Align::BOTTOM:
+                pos.x -= dim.x * .5f;
+                pos.y -= dim.y;
+                pos.y += m_common.lineHeight - m_common.base;
+                break;
+            case Align::BOTTOM_RIGHT:
+                pos.x -= dim.x;
+                pos.y -= dim.y;
+                pos.y += m_common.lineHeight - m_common.base;
+                break;
         }
 
-        if (snapPixels) {
-            pos = { std::round(pos.x), std::round(pos.y) };
+        if (snapPixels)
+        {
+            pos = {std::round(pos.x), std::round(pos.y)};
         }
         Vector2 curPos = pos;
         ret.x = curPos.x;
@@ -197,19 +221,22 @@ namespace onut {
         float r, g, b;
         unsigned int i = 0;
         Color curColor = color;
-        for (const auto& charId : text) {
-            if (charId == '\n')    {
+        for (const auto& charId : text)
+        {
+            if (charId == '\n')
+            {
                 curPos.x = pos.x;
                 curPos.y += static_cast<float>(m_common.lineHeight);
                 ++i;
                 continue;
             }
-            if (charId == '^' && i + 3 < len){
+            if (charId == '^' && i + 3 < len)
+            {
                 // Colored text!
                 r = (static_cast<float>(text[i + 1]) - static_cast<float>('0')) / 9.0f;
                 g = (static_cast<float>(text[i + 2]) - static_cast<float>('0')) / 9.0f;
                 b = (static_cast<float>(text[i + 3]) - static_cast<float>('0')) / 9.0f;
-                curColor = { r, g, b, color.w };
+                curColor = {r, g, b, color.w};
                 i += 4;
                 continue;
             }

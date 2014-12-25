@@ -2,8 +2,10 @@
 #include <string>
 #include <Windows.h>
 
-namespace onut  {
-    class Settings {
+namespace onut
+{
+    class Settings
+    {
     public:
         void                load(const std::string& filename = "settings.cfg");
         void                save(const std::string& filename = "settings.cfg");
@@ -18,7 +20,7 @@ namespace onut  {
         void                setDefaultFont(const std::string& defaultFont);
 
     private:
-        POINT               m_resolution = POINT{ 800, 600 };
+        POINT               m_resolution = POINT{800, 600};
         std::string         m_gameName = "Game Name";
         std::string         m_defaultFont = "assets/fonts/Mainfnt.fnt";
 

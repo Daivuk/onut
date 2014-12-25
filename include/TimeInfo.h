@@ -1,14 +1,16 @@
 #pragma once
 #include <chrono>
 
-namespace onut {
-    template<
-        uint32_t TframePerSecond = 120,
+namespace onut
+{
+    template<uint32_t TframePerSecond = 120,
         uint32_t TmaxUpdatePerFrame = 4,
         typename Tprecision = double>
-    class TimeInfo {
+    class TimeInfo
+    {
     public:
-        int update() {
+        int update()
+        {
             int framesToUpdate = 0;
 
             // Get cur time
@@ -23,9 +25,11 @@ namespace onut {
 
             // Progress current frame
             m_currentFrameProgress += updateElapsed;
-            while (m_currentFrameProgress > m_timePerFrame) {
+            while (m_currentFrameProgress > m_timePerFrame)
+            {
                 ++framesToUpdate;
-                if (framesToUpdate > TmaxUpdatePerFrame) {
+                if (framesToUpdate > TmaxUpdatePerFrame)
+                {
                     framesToUpdate = TmaxUpdatePerFrame;
                     m_currentFrameProgress = std::chrono::seconds(0);
                     break;
@@ -37,19 +41,21 @@ namespace onut {
         }
 
         /**
-            @return the time elapsed between this frame and the last one, in seconds.
-            Perfect for performing animations
+        @return the time elapsed between this frame and the last one, in seconds.
+        Perfect for performing animations
         */
         template<typename TrequestedPrecision = float>
-        TrequestedPrecision getDeltaTime() const {
+        TrequestedPrecision getDeltaTime() const
+        {
             return static_cast<TrequestedPrecision>(m_deltaTime);
         }
 
         /**
-            @return the total time elapsed since the start of the game, in seconds.
+        @return the total time elapsed since the start of the game, in seconds.
         */
         template<typename TrequestedPrecision = float>
-        TrequestedPrecision getTotalElapsed() const {
+        TrequestedPrecision getTotalElapsed() const
+        {
             return static_cast<TrequestedPrecision>(m_totalElapsed);
         }
 

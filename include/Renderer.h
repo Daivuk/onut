@@ -3,14 +3,16 @@
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
-namespace onut {
+namespace onut
+{
     class Window;
 
-    class Renderer {
+    class Renderer
+    {
     public:
         Renderer(Window& window);
 
-        void                    clear(const Color& color = { .25f, .5f, 1, 1 });
+        void                    clear(const Color& color = {.25f, .5f, 1, 1});
 
         void                    beginFrame();
         void                    endFrame();
@@ -23,7 +25,8 @@ namespace onut {
         POINT                   getResolution() const;
 
     private:
-        enum class eRenderSetup {
+        enum class eRenderSetup
+        {
             SETUP_NONE,
             SETUP_2D,
             SETUP_3D

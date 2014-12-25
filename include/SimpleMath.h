@@ -794,36 +794,36 @@ public:
 namespace std
 {
 
-    template<> struct less<DirectX::SimpleMath::Vector2>
+    template<> struct less < DirectX::SimpleMath::Vector2 >
     {
         bool operator()(const DirectX::SimpleMath::Vector2& V1, const DirectX::SimpleMath::Vector2& V2) const
         {
-            return ( (V1.x < V2.x) || ((V1.x == V2.x) && (V1.y < V2.y)) );
+            return ((V1.x < V2.x) || ((V1.x == V2.x) && (V1.y < V2.y)));
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Vector3>
+    template<> struct less < DirectX::SimpleMath::Vector3 >
     {
         bool operator()(const DirectX::SimpleMath::Vector3& V1, const DirectX::SimpleMath::Vector3& V2) const
         {
-            return ( (V1.x < V2.x)
-                     || ((V1.x == V2.x) && (V1.y < V2.y))
-                     || ((V1.x == V2.x) && (V1.y == V2.y) && (V1.z < V2.z)) );
+            return ((V1.x < V2.x)
+                    || ((V1.x == V2.x) && (V1.y < V2.y))
+                    || ((V1.x == V2.x) && (V1.y == V2.y) && (V1.z < V2.z)));
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Vector4>
+    template<> struct less < DirectX::SimpleMath::Vector4 >
     {
         bool operator()(const DirectX::SimpleMath::Vector4& V1, const DirectX::SimpleMath::Vector4& V2) const
         {
-            return ( (V1.x < V2.x)
-                     || ((V1.x == V2.x) && (V1.y < V2.y))
-                     || ((V1.x == V2.x) && (V1.y == V2.y) && (V1.z < V2.z))
-                     || ((V1.x == V2.x) && (V1.y == V2.y) && (V1.z == V2.z) && (V1.w < V2.w)) );
+            return ((V1.x < V2.x)
+                    || ((V1.x == V2.x) && (V1.y < V2.y))
+                    || ((V1.x == V2.x) && (V1.y == V2.y) && (V1.z < V2.z))
+                    || ((V1.x == V2.x) && (V1.y == V2.y) && (V1.z == V2.z) && (V1.w < V2.w)));
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Matrix>
+    template<> struct less < DirectX::SimpleMath::Matrix >
     {
         bool operator()(const DirectX::SimpleMath::Matrix& M1, const DirectX::SimpleMath::Matrix& M2) const
         {
@@ -848,40 +848,40 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Plane>
+    template<> struct less < DirectX::SimpleMath::Plane >
     {
         bool operator()(const DirectX::SimpleMath::Plane& P1, const DirectX::SimpleMath::Plane& P2) const
         {
-            return ( (P1.x < P2.x)
-                     || ((P1.x == P2.x) && (P1.y < P2.y))
-                     || ((P1.x == P2.x) && (P1.y == P2.y) && (P1.z < P2.z))
-                     || ((P1.x == P2.x) && (P1.y == P2.y) && (P1.z == P2.z) && (P1.w < P2.w)) );
+            return ((P1.x < P2.x)
+                    || ((P1.x == P2.x) && (P1.y < P2.y))
+                    || ((P1.x == P2.x) && (P1.y == P2.y) && (P1.z < P2.z))
+                    || ((P1.x == P2.x) && (P1.y == P2.y) && (P1.z == P2.z) && (P1.w < P2.w)));
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Quaternion>
+    template<> struct less < DirectX::SimpleMath::Quaternion >
     {
         bool operator()(const DirectX::SimpleMath::Quaternion& Q1, const DirectX::SimpleMath::Quaternion& Q2) const
         {
-            return ( (Q1.x < Q2.x)
-                     || ((Q1.x == Q2.x) && (Q1.y < Q2.y))
-                     || ((Q1.x == Q2.x) && (Q1.y == Q2.y) && (Q1.z < Q2.z))
-                     || ((Q1.x == Q2.x) && (Q1.y == Q2.y) && (Q1.z == Q2.z) && (Q1.w < Q2.w)) );
+            return ((Q1.x < Q2.x)
+                    || ((Q1.x == Q2.x) && (Q1.y < Q2.y))
+                    || ((Q1.x == Q2.x) && (Q1.y == Q2.y) && (Q1.z < Q2.z))
+                    || ((Q1.x == Q2.x) && (Q1.y == Q2.y) && (Q1.z == Q2.z) && (Q1.w < Q2.w)));
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Color>
+    template<> struct less < DirectX::SimpleMath::Color >
     {
         bool operator()(const DirectX::SimpleMath::Color& C1, const DirectX::SimpleMath::Color& C2) const
         {
-            return ( (C1.x < C2.x)
-                     || ((C1.x == C2.x) && (C1.y < C2.y))
-                     || ((C1.x == C2.x) && (C1.y == C2.y) && (C1.z < C2.z))
-                     || ((C1.x == C2.x) && (C1.y == C2.y) && (C1.z == C2.z) && (C1.w < C2.w)) );
+            return ((C1.x < C2.x)
+                    || ((C1.x == C2.x) && (C1.y < C2.y))
+                    || ((C1.x == C2.x) && (C1.y == C2.y) && (C1.z < C2.z))
+                    || ((C1.x == C2.x) && (C1.y == C2.y) && (C1.z == C2.z) && (C1.w < C2.w)));
         }
     };
 
-    template<> struct less<DirectX::SimpleMath::Ray>
+    template<> struct less < DirectX::SimpleMath::Ray >
     {
         bool operator()(const DirectX::SimpleMath::Ray& R1, const DirectX::SimpleMath::Ray& R2) const
         {

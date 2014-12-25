@@ -1,21 +1,27 @@
 #pragma once
 
-namespace onut {
+namespace onut
+{
     template<typename TstateEnum>
-    class State {
+    class State
+    {
     public:
-        State(TstateEnum startingState) {
+        State(TstateEnum startingState)
+        {
             m_state = startingState;
         }
         virtual ~State() {}
 
         TstateEnum getState() const { return m_state; }
-        void changeState(TstateEnum newState) {
-            if (newState == m_state) {
+        void changeState(TstateEnum newState)
+        {
+            if (newState == m_state)
+            {
                 return;
             }
 
-            if (onLeaveState(m_state, newState)) {
+            if (onLeaveState(m_state, newState))
+            {
                 m_state = newState;
                 onEnterState(m_state);
             }
