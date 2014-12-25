@@ -738,6 +738,162 @@ int main(int argc, char** args) {
         }
         cout << setColor(7) << endl;
     }
+
+    majorTest("onut::EventManager");
+    {
+        subTest("Basic add/remove of events");
+        {
+            onut::EventManager evMgr;
+            bool event1_called = false;
+            bool event2_called = false;
+            bool condition1 = true;
+            bool condition2 = true;
+
+            evMgr.addEvent("Event1", [&condition1, &event1_called]{event1_called = true; return condition1; });
+            checkTest(evMgr.size() == 1, "Event1 added. size = 1");
+
+            evMgr.addEvent("Event2", [&condition2, &event2_called]{event2_called = true; return condition2; });
+            checkTest(evMgr.size() == 2, "Event2 added. size = 2");
+
+            evMgr.removeEvent("Event1");
+            checkTest(evMgr.size() == 1, "Event1 removed. size = 1");
+
+            evMgr.processEvents();
+            checkTest(!event1_called && event2_called, "processEvents(). Event1 not called, Event2 called");
+
+            evMgr.clear();
+            checkTest(evMgr.size() == 0, "Clearted. size = 0");
+
+            cout << setColor(7) << endl;
+        }
+
+        subTest("Single observer");
+        {
+            onut::EventManager evMgr;
+            bool event1_callback = false;
+            bool event2_callback = false;
+            bool condition1 = true;
+            bool condition2 = false;
+            {
+                onut::EventObserver observer(&evMgr);
+
+                evMgr.addEvent("Event1", [&condition1]{ return condition1; });
+                checkTest(evMgr.size() == 1, "Event1 added. size = 1");
+
+                observer.observe("Event1", [&event1_callback]{event1_callback = true; });
+                evMgr.processEvents();
+                checkTest(event1_callback, "Observing Event1. processEvents. Observer called.");
+                event1_callback = false;
+
+                evMgr.addEvent("Event2", [&condition2]{ return condition2; });
+                checkTest(evMgr.size() == 2, "false Event2 added. size = 2");
+
+                observer.observe("Event2", [&event2_callback]{event2_callback = true; });
+                evMgr.processEvents();
+                checkTest(event1_callback && !event2_callback, "Observing Event2. Event1 called, Event2 not called");
+                event1_callback = false;
+                event2_callback = false;
+
+                condition2 = true;
+                evMgr.processEvents();
+                checkTest(event1_callback && event2_callback, "Event2 now true. Both called");
+                event1_callback = false;
+                event2_callback = false;
+
+                evMgr.removeEvent("Event1");
+                checkTest(evMgr.size() == 1, "Event1 removed. size = 1");
+
+                evMgr.processEvents();
+                checkTest(!event1_callback && event2_callback, "processEvents. Event1 not called, Event2 called");
+                event1_callback = false;
+                event2_callback = false;
+
+                evMgr.addEvent("Event1", [&condition1]{ return condition1; });
+                checkTest(evMgr.size() == 2, "Event1 added. size = 2");
+
+                evMgr.processEvents();
+                checkTest(event1_callback && event2_callback, "processEvents. Both called");
+                event1_callback = false;
+                event2_callback = false;
+            }
+
+            evMgr.processEvents();
+            checkTest(!event1_callback && !event2_callback, "Observer out of scope. processEvents. None called");
+
+            cout << setColor(7) << endl;
+        }
+
+        subTest("Multiple observer");
+        {
+            onut::EventManager evMgr;
+            int event1_callback = 0;
+            int event2_callback = 0;
+            int event3_callback = 0;
+            bool condition1 = true;
+            bool condition2 = true;
+            bool condition3 = true;
+            {
+                onut::EventObserver observer1(&evMgr);
+                onut::EventObserver observer2(&evMgr);
+
+                evMgr.addEvent("Event1", [&condition1]{ return condition1; });
+                evMgr.addEvent("Event2", [&condition2]{ return condition2; });
+                evMgr.addEvent("Event3", [&condition3]{ return condition3; });
+                checkTest(evMgr.size() == 3, "3 events added. size = 3");
+
+                observer1.observe("Event1", [&event1_callback]{++event1_callback; });
+                observer1.observe("Event2", [&event2_callback]{++event2_callback; });
+                observer2.observe("Event2", [&event2_callback]{++event2_callback; });
+                observer2.observe("Event3", [&event3_callback]{++event3_callback; });
+
+                evMgr.processEvents();
+                checkTest(event1_callback == 1 && event2_callback == 2 && event3_callback == 1, "processEvents. Counts: 1, 2, 1");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                observer2.stopObserving("Event2");
+                evMgr.processEvents();
+                checkTest(event1_callback == 1 && event2_callback == 1 && event3_callback == 1, "observer2 stopObserving \"Event2\". Counts: 1, 1, 1");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                observer2.observe("Event3", [&event3_callback]{++event3_callback; });
+                evMgr.processEvents();
+                checkTest(event1_callback == 1 && event2_callback == 1 && event3_callback == 2, "observer2 observe \"Event3\". Counts: 1, 1, 2");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                observer2.stopObserving("Event3");
+                evMgr.processEvents();
+                checkTest(event1_callback == 1 && event2_callback == 1 && event3_callback == 0, "observer2 stopObserving \"Event3\". Counts: 1, 1, 0");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                observer2.observe("Event2", [&event2_callback]{++event2_callback; });
+                observer2.observe("Event3", [&event3_callback]{++event3_callback; });
+                evMgr.processEvents();
+                checkTest(event1_callback == 1 && event2_callback == 2 && event3_callback == 1, "Added back \"Event2-3\". Counts: 1, 2, 1");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                condition2 = false;
+                evMgr.processEvents();
+                checkTest(event1_callback == 1 && event2_callback == 0 && event3_callback == 1, "Event2 is false: Counts: 1, 0, 1");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                observer1.stopObservingAll();
+                evMgr.processEvents();
+                checkTest(event1_callback == 0 && event2_callback == 0 && event3_callback == 1, "Event1 stop all: Counts: 0, 0, 1");
+                event1_callback = event2_callback = event3_callback = 0;
+
+                condition2 = true;
+                evMgr.processEvents();
+                checkTest(event1_callback == 0 && event2_callback == 1 && event3_callback == 1, "Event2 is true again: Counts: 0, 1, 1");
+                event1_callback = event2_callback = event3_callback = 0;
+            }
+
+            evMgr.processEvents();
+            checkTest(!event1_callback && !event2_callback && !event3_callback, "Observers out of scope. processEvents. None called");
+
+            cout << setColor(7) << endl;
+        }
+        cout << setColor(7) << endl;
+    }
     
     system("pause");
     return errCount;

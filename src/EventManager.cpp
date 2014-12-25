@@ -34,6 +34,10 @@ namespace onut {
         }
     }
 
+    void EventManager::clear() {
+        m_processors.clear();
+    }
+
     void EventManager::addObserver(const std::string& eventName, EventObserver* pObserver, const std::function<void()>& callback) {
         m_observers[eventName].push_back({ pObserver, callback });
     }
@@ -62,11 +66,6 @@ namespace onut {
                 auto& observer = *it;
                 if (observer.pObserver == pObserver) {
                     it = observers.erase(it);
-                    if (observers.empty()) {
-                        it = observers.erase(it);
-                        end = observers.end();
-                        break;
-                    }
                     end = observers.end();
                     continue;
                 }
@@ -75,7 +74,7 @@ namespace onut {
         }
     }
 
-    void EventManager::update() {
+    void EventManager::processEvents() {
         for (auto& processor : m_processors) {
             if (processor.eventProcessor()) {
                 fireEvent(processor.name);

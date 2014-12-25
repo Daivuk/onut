@@ -97,10 +97,16 @@ namespace onut {
             return OJustPressed(ODownBtn) || OJustPressed(OLDownBtn);
         });
         OEvent->addEvent("Accept", []{
-            return OJustPressed(OABtn);
+            return OJustPressed(OABtn) || OJustPressed(OStartBtn);
         });
         OEvent->addEvent("Cancel", []{
             return OJustPressed(OBBtn);
+        });
+        OEvent->addEvent("Start", []{
+            return OJustPressed(OStartBtn);
+        });
+        OEvent->addEvent("Back", []{
+            return OJustPressed(OBackBtn) || OJustPressed(OBBtn);
         });
         //-------------------------------------------------------------------------------
 
@@ -133,7 +139,7 @@ namespace onut {
                     gamePad->update();
                 }
                 AnimManager::getGlobalManager()->update();
-                OEvent->update();
+                OEvent->processEvents();
                 if (updateCallback) {
                     updateCallback();
                 }

@@ -21,17 +21,6 @@ namespace onut {
     };
 
     class EventManager {
-    public:
-        void addEvent(const std::string& eventName, const std::function<bool()>& eventProcessor);
-        void removeEvent(const std::string& eventName);
-
-        void addObserver(const std::string& eventName, EventObserver* pObserver, const std::function<void()>& callback);
-        void removeObserver(const std::string& eventName, EventObserver* pObserver);
-        void removeObserver(EventObserver* pObserver);
-
-        void update();
-        void fireEvent(const std::string& eventName);
-
     private:
         struct sEventProcessor {
             std::string             name;
@@ -45,6 +34,19 @@ namespace onut {
 
         std::vector<sEventProcessor>                            m_processors;
         std::unordered_map<std::string, std::vector<sObserver>> m_observers;
+
+    public:
+        void addEvent(const std::string& eventName, const std::function<bool()>& eventProcessor);
+        void removeEvent(const std::string& eventName);
+        void clear();
+        auto size() -> decltype(m_processors.size()) const { return m_processors.size(); }
+
+        void addObserver(const std::string& eventName, EventObserver* pObserver, const std::function<void()>& callback);
+        void removeObserver(const std::string& eventName, EventObserver* pObserver);
+        void removeObserver(EventObserver* pObserver);
+
+        void processEvents();
+        void fireEvent(const std::string& eventName);
     };
 }
 
