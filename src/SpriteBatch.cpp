@@ -1,3 +1,4 @@
+#include <cmath>
 #include "onut.h"
 #include "SpriteBatch.h"
 
@@ -243,6 +244,71 @@ namespace onut
         drawRectWithUVs(pTexture, rect.TopRight(cornerRect), {.5f, 0, 1, .5f}, color);
         drawRectWithUVs(pTexture, rect.BottomLeft(cornerRect), {0, .5f, .5f, 1}, color);
         drawRectWithUVs(pTexture, rect.BottomRight(cornerRect), {.5f, .5f, 1, 1}, color);
+    }
+
+    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color)
+    {
+        assert(pTexture); // This call requires a texture to be bound
+
+        if (pTexture != m_pTexture)
+        {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        auto& textureSize = pTexture->getSizef();
+        drawRect(pTexture, {position.x - textureSize.x * .5f, position.y - textureSize.y * .5f, textureSize.x, textureSize.y}, color);
+    }
+
+    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale)
+    {
+        assert(pTexture); // This call requires a texture to be bound
+
+        if (pTexture != m_pTexture)
+        {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        auto hSize = pTexture->getSizef() * .5f * scale;
+        auto radTheta = DirectX::XMConvertToRadians(rotation);
+        auto sinTheta = std::sin(radTheta);
+        auto cosTheta = std::cos(radTheta);
+
+        Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
+        Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
+
+        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        pVerts[0].position = position;
+        pVerts[0].position -= right;
+        pVerts[0].position -= down;
+        pVerts[0].texCoord = {0, 0};
+        pVerts[0].color = color;
+
+        pVerts[1].position = position;
+        pVerts[1].position -= right;
+        pVerts[1].position += down;
+        pVerts[1].texCoord = {0, 1};
+        pVerts[1].color = color;
+
+        pVerts[2].position = position;
+        pVerts[2].position += right;
+        pVerts[2].position += down;
+        pVerts[2].texCoord = {1, 1};
+        pVerts[2].color = color;
+
+        pVerts[3].position = position;
+        pVerts[3].position += right;
+        pVerts[3].position -= down;
+        pVerts[3].texCoord = {1, 0};
+        pVerts[3].color = color;
+
+        ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
     }
 
     void SpriteBatch::end()

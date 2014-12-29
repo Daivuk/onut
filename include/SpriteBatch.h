@@ -17,6 +17,8 @@ namespace onut
         void drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
         void drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors);
         void draw4Corner(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
+        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color = Color::White);
+        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 0.f);
         void end();
 
     private:
@@ -24,7 +26,7 @@ namespace onut
         {
             Vector2 position;
             Vector2 texCoord;
-            Color    color;
+            Color   color;
         };
 
         static const int MAX_SPRITE_COUNT = 300;
