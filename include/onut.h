@@ -1,13 +1,11 @@
 #pragma once
-#include "Anim.h"
 #include "Asynchronous.h"
 #include "BMFont.h"
 #include "ContentManager.h"
 #include "DefineHelpers.h"
 #include "EventManager.h"
 #include "GamePad.h"
-#include "Pool.h"
-#include "Random.h"
+#include "ParticleSystemManager.h"
 #include "RectUtils.h"
 #include "Renderer.h"
 #include "Settings.h"
@@ -17,7 +15,6 @@
 #include "Synchronous.h"
 #include "TimingUtils.h"
 #include "UINodeNav.h"
-using namespace DirectX::SimpleMath;
 
 typedef onut::Anim<float>       OAnimf;
 typedef onut::Anim<int>         OAnimi;
@@ -63,10 +60,11 @@ namespace onut
 }
 
 // For quick stuff, we have shortcuts outside of the namespace
-extern onut::Renderer*      ORenderer;
-extern onut::SpriteBatch*   OSB;
-extern onut::Settings*      OSettings;
-extern onut::EventManager*  OEvent;
+extern onut::Renderer*                  ORenderer;
+extern onut::SpriteBatch*               OSB;
+extern onut::Settings*                  OSettings;
+extern onut::EventManager*              OEvent;
+extern onut::ParticleSystemManager<>*   OParticles;
 
 //--- Resource shortcuts
 extern onut::ContentManager<>* OContentManager;
@@ -84,6 +82,11 @@ inline OFont* OGetBMFont(const char* pName)
 inline OSound* OGetSound(const char* pName)
 {
     return OContentManager->getResource<OSound>(pName);
+}
+
+inline OPfx* OGetPFX(const char* pName)
+{
+    return OContentManager->getResource<OPfx>(pName);
 }
 
 inline void OPlaySound(const char* pName)

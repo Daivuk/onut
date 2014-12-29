@@ -19,6 +19,10 @@
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\onut.h" />
+    <ClInclude Include="..\..\include\Particle.h" />
+    <ClInclude Include="..\..\include\ParticleEmitter.h" />
+    <ClInclude Include="..\..\include\ParticleSystem.h" />
+    <ClInclude Include="..\..\include\ParticleSystemManager.h" />
     <ClInclude Include="..\..\include\Pool.h" />
     <ClInclude Include="..\..\include\Random.h" />
     <ClInclude Include="..\..\include\RectUtils.h" />
@@ -53,6 +57,10 @@
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
+    <ClCompile Include="..\..\src\Particle.cpp" />
+    <ClCompile Include="..\..\src\ParticleEmitter.cpp" />
+    <ClCompile Include="..\..\src\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\src\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
     <ClCompile Include="..\..\src\onut.cpp" />
@@ -121,7 +129,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../include;../../src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -143,7 +151,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../include;../../src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

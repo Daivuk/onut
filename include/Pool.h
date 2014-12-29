@@ -16,12 +16,12 @@ namespace onut
     - TmemorySize: Total required memory. Default is TobjTotalSize * TobjCount + Talignment. It accounts for alignment.
     */
     template<uintptr_t TobjSize = 256,
-        uintptr_t TobjCount = 256,
-        uintptr_t Talignment = sizeof(uintptr_t),
-        bool TuseAsserts = true,
-        uintptr_t TheaderSize = 1,
-        uintptr_t TobjTotalSize = ((TobjSize + TheaderSize) % Talignment) ? (TobjSize + TheaderSize) + (Talignment - ((TobjSize + TheaderSize) % Talignment)) : (TobjSize + TheaderSize),
-        uintptr_t TmemorySize = TobjTotalSize * TobjCount + Talignment>
+             uintptr_t TobjCount = 256,
+             uintptr_t Talignment = sizeof(uintptr_t),
+             bool TuseAsserts = true,
+             uintptr_t TheaderSize = 1,
+             uintptr_t TobjTotalSize = ((TobjSize + TheaderSize) % Talignment) ? (TobjSize + TheaderSize) + (Talignment - ((TobjSize + TheaderSize) % Talignment)) : (TobjSize + TheaderSize),
+             uintptr_t TmemorySize = TobjTotalSize * TobjCount + Talignment>
     class Pool
     {
     public:
@@ -163,6 +163,49 @@ namespace onut
         @return Number of allocated objects
         */
         uintptr_t getAllocCount() const { return m_allocCount; }
+
+        /**
+        Get raw pointer to the first object
+        @return Pointer to the first object in the array. Used or not
+        */
+        void* getRawPointer() const { return m_pFirstObj; }
+
+        /**
+        Check wether an object is used or not. By passing the object raw pointer
+        @param pObject Raw pointer to the object
+        @return Wether the object is used or not in the pool
+        */
+        bool isUsed(void* pObject) const
+        {
+            auto ptr = static_cast<uint8_t*>(pObject);
+            auto used = ptr + TobjSize;
+            return (*used) ? true : false;
+        }
+
+        /**
+        Get the maximum number of allowed objects in the pool
+        @return size of the pool.
+        */
+        uintptr_t size() const { return TobjCount; }
+
+        /**
+        Get raw pointer on the object at index
+        @return raw pointer at index
+        */
+        void* operator[](uintptr_t index) const
+        {
+            return m_pFirstObj + index * TobjTotalSize;
+        }
+
+        /**
+        Get object pointer at index
+        @return pointer to object at index
+        */
+        template<typename Ttype>
+        Ttype* at(uintptr_t index) const
+        {
+            return reinterpret_cast<Ttype*>(m_pFirstObj + index * TobjTotalSize);
+        }
 
     protected:
         uint8_t*    m_pMemory = nullptr;

@@ -9,23 +9,24 @@
 using namespace DirectX;
 
 // Our engine services
-onut::Window*                   g_pWindow = nullptr;
-onut::Renderer*                 ORenderer = nullptr;
-onut::Settings*                 OSettings = new onut::Settings();
-onut::SpriteBatch*              OSB = nullptr;
-onut::GamePad*                  g_gamePads[4] = { nullptr };
-onut::EventManager*             OEvent = nullptr;
-onut::ContentManager<>*         OContentManager = nullptr;
-AudioEngine*                    g_pAudioEngine = nullptr;
-onut::TimeInfo<>                g_timeInfo;
-onut::Synchronous<onut::Pool<>> g_mainSync;
+onut::Window*                       g_pWindow = nullptr;
+onut::Renderer*                     ORenderer = nullptr;
+onut::Settings*                     OSettings = new onut::Settings();
+onut::SpriteBatch*                  OSB = nullptr;
+onut::GamePad*                      g_gamePads[4] = { nullptr };
+onut::EventManager*                 OEvent = nullptr;
+onut::ContentManager<>*             OContentManager = nullptr;
+AudioEngine*                        g_pAudioEngine = nullptr;
+onut::TimeInfo<>                    g_timeInfo;
+onut::Synchronous<onut::Pool<>>     g_mainSync;
+onut::ParticleSystemManager<>*      OParticles = nullptr;
 
 // Default resources
-onut::BMFont*                   g_pDefaultFont = nullptr;
-onut::BMFont*                   g_pDefaultFont64 = nullptr;
+onut::BMFont*                       g_pDefaultFont = nullptr;
+onut::BMFont*                       g_pDefaultFont64 = nullptr;
 
 // So commonly used stuff
-float                           ODT = 0.f;
+float                               ODT = 0.f;
 
 namespace onut
 {
@@ -63,14 +64,6 @@ namespace onut
         // Content
         OContentManager = new ContentManager<>();
 
-        // Fonts
-        if (!OSettings->getDefaultFont().empty())
-        {
-            const auto& fntFilename = OSettings->getDefaultFont();
-            g_pDefaultFont = BMFont::createFromFile(fntFilename);
-            g_pDefaultFont64 = BMFont::createFromFile(fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt");
-        }
-
         // Gamepads
         for (int i = 0; i < 4; ++i)
         {
@@ -86,6 +79,17 @@ namespace onut
         eflags = eflags | AudioEngine_Debug;
 #endif
         g_pAudioEngine = new AudioEngine(eflags);
+
+        // Particles
+        OParticles = new ParticleSystemManager<>();
+
+        // Fonts
+        if (!OSettings->getDefaultFont().empty())
+        {
+            const auto& fntFilename = OSettings->getDefaultFont();
+            g_pDefaultFont = BMFont::createFromFile(fntFilename);
+            g_pDefaultFont64 = BMFont::createFromFile(fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt");
+        }
 
         // Register a bunch of default callbacks
         OEvent->addEvent("NavigateLeft", []
@@ -158,6 +162,7 @@ namespace onut
                 }
                 AnimManager::getGlobalManager()->update();
                 OEvent->processEvents();
+                OParticles->update();
                 if (updateCallback)
                 {
                     updateCallback();
@@ -170,6 +175,7 @@ namespace onut
             {
                 renderCallback();
             }
+            OParticles->render();
             ORenderer->endFrame();
         }
     }

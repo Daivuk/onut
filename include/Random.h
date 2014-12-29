@@ -66,4 +66,12 @@ namespace onut
         auto rnd = randi(vec.size() - 1);
         return vec[rnd];
     }
+
+    /**
+    Templated random function
+    */
+    template<typename Ttype>
+    Ttype randt(const Ttype& min, const Ttype& max);
+    template<typename Ttype>
+    Ttype randt(const Ttype& max);
 }

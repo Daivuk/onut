@@ -147,6 +147,8 @@ struct Vector3 : public XMFLOAT3
     Vector3() : XMFLOAT3(0.f, 0.f, 0.f) {}
     explicit Vector3(float x) : XMFLOAT3( x, x, x ) {}
     Vector3(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
+    Vector3(const Vector2& v2, float _z) : XMFLOAT3(v2.x, v2.y, _z) {}
+    Vector3(const Vector2& v2) : XMFLOAT3(v2.x, v2.y, 0) {}
     explicit Vector3(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
     Vector3(FXMVECTOR V) { XMStoreFloat3( this, V ); }
 
@@ -261,6 +263,8 @@ struct Vector4 : public XMFLOAT4
     Vector4(const Vector2& pos, float _z, float _w) : XMFLOAT4(pos.x, pos.y, _z, _w) {}
     Vector4(const Vector2& pos, const Vector2& size) : XMFLOAT4(pos.x, pos.y, size.x, size.y) {}
     Vector4(float _x, float _y, const Vector2& size) : XMFLOAT4(_x, _y, size.x, size.y) {}
+    Vector4(const Vector3& pos, float _w) : XMFLOAT4(pos.x, pos.y, pos.z, _w) {}
+    Vector4(const Vector3& pos) : XMFLOAT4(pos.x, pos.y, pos.z, 1) {}
     explicit Vector4(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Vector4(FXMVECTOR V) { XMStoreFloat4( this, V ); }
 

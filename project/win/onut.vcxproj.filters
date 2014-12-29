@@ -97,6 +97,18 @@
     <ClInclude Include="..\..\include\UINodeNav.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Particle.h">
+      <Filter>include\pfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ParticleEmitter.h">
+      <Filter>include\pfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ParticleSystem.h">
+      <Filter>include\pfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ParticleSystemManager.h">
+      <Filter>include\pfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -171,6 +183,18 @@
     <ClCompile Include="..\..\src\DefineHelpers.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ParticleSystemManager.cpp">
+      <Filter>src\pfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Particle.cpp">
+      <Filter>src\pfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ParticleEmitter.cpp">
+      <Filter>src\pfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ParticleSystem.cpp">
+      <Filter>src\pfx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -184,6 +208,12 @@
     </Filter>
     <Filter Include="src\audio">
       <UniqueIdentifier>{0fcd117a-dc6b-4505-b51e-c00eb77824fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\pfx">
+      <UniqueIdentifier>{585ba85f-7496-4400-83bb-311318829c75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\pfx">
+      <UniqueIdentifier>{72eb4524-2055-4bee-9ce6-02a211075131}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
