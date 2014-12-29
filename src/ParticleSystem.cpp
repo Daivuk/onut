@@ -104,14 +104,14 @@ namespace onut
         rapidjson::Document doc;
         doc.ParseStream<0>(is);
 
-        pfxReadUint(pRet->m_desc.capacity, doc["capacity"]);
+        pfxReadUint(pRet->desc.capacity, doc["capacity"]);
 
         const auto& jonsEmitters = doc["emitters"];
-        pRet->m_emitters.resize(static_cast<decltype(pRet->m_emitters.size())>(jonsEmitters.Size()));
+        pRet->emitters.resize(static_cast<decltype(pRet->emitters.size())>(jonsEmitters.Size()));
         for (decltype(jonsEmitters.Size()) i = 0; i < jonsEmitters.Size(); ++i)
         {
             const auto& jsonEmitter = jonsEmitters[i];
-            auto& emitter = pRet->m_emitters[static_cast<decltype(pRet->m_emitters.size())>(i)];
+            auto& emitter = pRet->emitters[static_cast<decltype(pRet->emitters.size())>(i)];
 
             pfxReadEnum<eEmitterType>(emitter.type, jsonEmitter["type"], {
                 {"BURST", eEmitterType::BURST},

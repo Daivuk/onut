@@ -3,6 +3,7 @@
 #include "ParticleEmitter.h"
 #include "ParticleSystem.h"
 #include "Pool.h"
+#include "Texture.h"
 
 namespace onut
 {
@@ -11,16 +12,24 @@ namespace onut
     public:
         virtual Particle* allocParticle() = 0;
         virtual Particle* deallocParticle(Particle* pParticle) = 0;
+        virtual void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) = 0;
     };
 
-    template<uintptr_t TmaxPFX = 100, 
+    template<bool TsortEmitters = false,
+             uintptr_t TmaxPFX = 100,
              uintptr_t TmaxParticles = 2000>
     class ParticleSystemManager : public IParticleSystemManager
     {
     public:
-        ParticleEmitter* emit(ParticleSystem* pParticleSystem, const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
+        void emit(ParticleSystem* pParticleSystem, const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
         {
-            return m_emitterPool.alloc<ParticleEmitter>(pParticleSystem, this);
+            Matrix transform = Matrix::CreateBillboard(pos, pos + dir, Vector3::UnitY);
+            for (auto& emitter : pParticleSystem->emitters)
+            {
+                auto pEmitter = m_emitterPool.alloc<ParticleEmitter>(&emitter, this, transform);
+                // Update the first frame right away
+                pEmitter->update();
+            }
         }
 
         void clear()
@@ -37,13 +46,19 @@ namespace onut
 
         void render()
         {
-            auto len = m_emitterPool.size();
-            for (decltype(len) i = 0; i < len; ++i)
+            if (TsortEmitters)
             {
-                auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
-                if (m_emitterPool.isUsed(pEmitter))
+            }
+            else
+            {
+                auto len = m_emitterPool.size();
+                for (decltype(len) i = 0; i < len; ++i)
                 {
-                    pEmitter->render();
+                    auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
+                    if (m_emitterPool.isUsed(pEmitter))
+                    {
+                        pEmitter->render();
+                    }
                 }
             }
         }
@@ -58,6 +73,10 @@ namespace onut
             auto pRet = pParticle->pNext;
             m_particlePool.dealloc(pParticle);
             return pRet;
+        }
+
+        void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override
+        {
         }
 
     private:
@@ -100,5 +119,12 @@ namespace onut
 
         Pool<sizeof(ParticleEmitter), TmaxPFX, sizeof(uintptr_t), false>    m_emitterPool;
         Pool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false>     m_particlePool;
+        Vector3                                                             m_camRight;
+        Vector3                                                             m_camUp;
+        
+        // Sprite batch stuff
+        ID3D11Buffer*               m_pVertexBuffer = nullptr;
+        ID3D11Buffer*               m_pIndexBuffer = nullptr;
+        D3D11_MAPPED_SUBRESOURCE    m_pMappedVertexBuffer;
     };
 }

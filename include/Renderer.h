@@ -18,6 +18,9 @@ namespace onut
         void                    endFrame();
         void                    setupFor2D();
         void                    setupFor3D();
+        Vector3                 getCameraPos() const { return m_cameraPos; }
+        Vector3                 getCameraDir() const { return m_cameraDir; }
+        Vector3                 getCameraUp() const { return m_cameraUp; }
 
         ID3D11Device*           getDevice();
         ID3D11DeviceContext*    getDeviceContext();
@@ -63,5 +66,10 @@ namespace onut
         ID3D11Buffer*               m_pWorldMatrixBuffer;
 
         eRenderSetup                m_renderSetup = eRenderSetup::SETUP_NONE;
+
+        // Camera
+        Vector3                     m_cameraPos;
+        Vector3                     m_cameraDir;
+        Vector3                     m_cameraUp;
     };
 }

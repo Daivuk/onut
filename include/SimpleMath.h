@@ -450,26 +450,35 @@ struct Matrix : public XMFLOAT4X4
     Matrix operator- () const;
 
     // Properties
-    Vector3 Up() const { return Vector3( _21, _22, _23); }
-    void Up( const Vector3& v ) { _21 = v.x; _22 = v.y; _23 = v.z; }
+    Vector3 Up() const { return Vector3(_21, _22, _23); }
+    void Up(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
 
-    Vector3 Down() const { return Vector3( -_21, -_22, -_23); }
-    void Down( const Vector3& v ) { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
+    Vector3 Down() const { return Vector3(-_21, -_22, -_23); }
+    void Down(const Vector3& v) { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
 
-    Vector3 Right() const { return Vector3( _11, _12, _13 ); }
-    void Right( const Vector3& v ) { _11 = v.x; _12 = v.y; _13 = v.z; }
+    Vector3 Right() const { return Vector3(_11, _12, _13); }
+    void Right(const Vector3& v) { _11 = v.x; _12 = v.y; _13 = v.z; }
 
-    Vector3 Left() const { return Vector3( -_11, -_12, -_13 ); }
-    void Left( const Vector3& v ) { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
+    Vector3 Left() const { return Vector3(-_11, -_12, -_13); }
+    void Left(const Vector3& v) { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
 
-    Vector3 Forward() const  { return Vector3( -_31, -_32, -_33 ); }
-    void Forward( const Vector3& v ) { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
+    Vector3 Forward() const { return Vector3(-_31, -_32, -_33); }
+    void Forward(const Vector3& v) { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
 
-    Vector3 Backward() const { return Vector3( _31, _32, _33 ); }
-    void Backward( const Vector3& v ) { _31 = v.x; _32 = v.y; _33 = v.z; }
+    Vector3 Backward() const { return Vector3(_31, _32, _33); }
+    void Backward(const Vector3& v) { _31 = v.x; _32 = v.y; _33 = v.z; }
 
-    Vector3 Translation() const { return Vector3( _41, _42, _43 ); }
-    void Translation( const Vector3& v ) { _41 = v.x; _42 = v.y; _43 = v.z; }
+    Vector3 AxisY() const { return Vector3(_21, _22, _23); }
+    void AxisY(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
+
+    Vector3 AxisX() const { return Vector3(_11, _12, _13); }
+    void AxisX(const Vector3& v) { _11 = v.x; _12 = v.y; _13 = v.z; }
+
+    Vector3 AxisZ() const { return Vector3(_31, _32, _33); }
+    void AxisZ(const Vector3& v) { _31 = v.x; _32 = v.y; _33 = v.z; }
+
+    Vector3 Translation() const { return Vector3(_41, _42, _43); }
+    void Translation(const Vector3& v) { _41 = v.x; _42 = v.y; _43 = v.z; }
 
     // Matrix operations
     bool Decompose( Vector3& scale, Quaternion& rotation, Vector3& translation );

@@ -217,6 +217,9 @@ namespace onut
 
         // Bind the matrix
         m_deviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
+        m_cameraPos = Vector3::UnitZ;
+        m_cameraDir = -Vector3::UnitZ;
+        m_cameraUp = -Vector3::UnitY;
     }
 
     void Renderer::setupFor3D()

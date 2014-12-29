@@ -102,6 +102,11 @@ namespace onut
             }
             return *this;
         }
+
+        Ttype generate() const
+        {
+            return randt<Ttype>(from, to);
+        }
     };
 
     template<typename Ttype>
@@ -124,32 +129,28 @@ namespace onut
             return *this;
         }
 
-        static Ttype generateWithRange(const sPfxRange<Ttype>& range)
-        {
-            return randt<Ttype>(range.from, range.to);
-        }
-
         Ttype generateFrom() const
         {
-            return generateWithRange(value);
+            return value.generate();
         }
 
         Ttype generateTo() const
         {
-            return generateWithRange(finalValue);
+            return finalValue.generate();
         }
 
         Ttype generateTo(const Ttype& from) const
         {
-            switch (finaleValueType)
+            switch (finalValueType)
             {
                 case ePfxFinalValueType::MULT:
                     return from * generateTo();
                 case ePfxFinalValueType::ADD:
                     return from + generateTo();
-                case ePfxFinalValueType::REPLACE:
-                    return generateTo;
+                case ePfxFinalValueType::NORMAL:
+                    return generateTo();
             }
+            return Ttype();
         }
 
         sPfxValue<Ttype>& operator=(const rapidjson::Value& node)
@@ -198,14 +199,14 @@ namespace onut
             unsigned int count = 1;
             unsigned int rate;
         };
-        std::vector<Texture*> textures;
-        sPfxValue<float> spread = 0;
-        sPfxValue<float> speed = 0;
-        sPfxValue<Color> color = Color::White;
-        sPfxValue<float> angle = 0;
-        sPfxValue<float> size = 1;
+        std::vector<Texture*>   textures;
+        sPfxValue<float>        spread = 0;
+        sPfxRange<float>        speed = 0;
+        sPfxValue<Color>        color = Color::White;
+        sPfxValue<float>        angle = 0;
+        sPfxValue<float>        size = 1;
         sPfxValue<unsigned int> image_index = 0;
-        sPfxRange<float> life = 1;
+        sPfxRange<float>        life = 1;
     };
 
     struct sParticleSystemDesc
@@ -221,9 +222,9 @@ namespace onut
         ParticleSystem();
         virtual ~ParticleSystem();
 
-    private:
-        sParticleSystemDesc         m_desc;
-        std::vector<sEmitterDesc>   m_emitters;
+    public:
+        sParticleSystemDesc         desc;
+        std::vector<sEmitterDesc>   emitters;
     };
 }
 
