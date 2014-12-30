@@ -41,11 +41,11 @@ namespace onut
         void update()
         {
             updateEmitters();
-            updateParticles();
         }
 
         void render()
         {
+            OSB->begin();
             if (TsortEmitters)
             {
             }
@@ -61,6 +61,7 @@ namespace onut
                     }
                 }
             }
+            OSB->end();
         }
 
         Particle* allocParticle() override
@@ -77,6 +78,8 @@ namespace onut
 
         void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override
         {
+            float dim = static_cast<float>(std::max<decltype(pParticle->pTexture->getSize().x)>(pParticle->pTexture->getSize().x, pParticle->pTexture->getSize().y));
+            OSB->drawSprite(pParticle->pTexture, pParticle->position, pParticle->color.value, pParticle->angle.value, pParticle->size.value / dim);
         }
 
     private:
@@ -100,19 +103,6 @@ namespace onut
                     {
                         m_emitterPool.dealloc(pEmitter);
                     }
-                }
-            }
-        }
-
-        void updateParticles()
-        {
-            auto len = m_particlePool.size();
-            for (decltype(len) i = 0; i < len; ++i)
-            {
-                auto pParticle = m_particlePool.at<Particle>(i);
-                if (m_particlePool.isUsed(pParticle))
-                {
-                    pParticle->update();
                 }
             }
         }

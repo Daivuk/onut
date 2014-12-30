@@ -176,7 +176,7 @@ namespace onut
     void Renderer::endFrame()
     {
         // Swap the buffer!
-        m_swapChain->Present(0, 0);
+        m_swapChain->Present(1, 0);
     }
 
     ID3D11Device* Renderer::getDevice()

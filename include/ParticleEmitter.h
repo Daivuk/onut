@@ -27,7 +27,6 @@ namespace onut
         IParticleSystemManager* m_pParticleSystemManager;
         bool                    m_isAlive = false;
         Matrix                  m_transform;
-        float                   m_duration;
         sEmitterDesc*           m_pDesc;
     };
 }

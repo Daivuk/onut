@@ -66,6 +66,7 @@ namespace onut
     {
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
+        delete m_pTexWhite;
     }
 
     void SpriteBatch::begin()
@@ -73,9 +74,9 @@ namespace onut
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
         ORenderer->setupFor2D();
+        m_pTexture = nullptr;
         m_isDrawing = true;
-        auto pDeviceContext = ORenderer->getDeviceContext();
-        pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+        ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
     }
 
     void SpriteBatch::drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors)
@@ -119,8 +120,6 @@ namespace onut
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
-        if (color.x == 0 && color.y == 0 && color.z == 0 && color.w == 0) return;
-
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
         {
@@ -156,8 +155,6 @@ namespace onut
     void SpriteBatch::drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
-
-        if (color.x == 0 && color.y == 0 && color.z == 0 && color.w == 0) return;
 
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
@@ -230,16 +227,10 @@ namespace onut
 
     void SpriteBatch::draw4Corner(Texture* pTexture, const Rect& rect, const Color& color)
     {
-        assert(pTexture); // This call requires a texture to be bound
+        if (!pTexture) pTexture = m_pTexWhite;
 
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
-
-        auto& textureSize = pTexture->getSize();
-        Rect cornerRect{0, 0, static_cast<float>(textureSize.x) * .5f, static_cast<float>(textureSize.y) * .5f};
+        const auto& textureSize = pTexture->getSizef();
+        Rect cornerRect{0, 0, textureSize.x * .5f, textureSize.y * .5f};
         drawRectWithUVs(pTexture, rect.TopLeft(cornerRect), {0, 0, .5f, .5f}, color);
         drawRectWithUVs(pTexture, rect.TopRight(cornerRect), {.5f, 0, 1, .5f}, color);
         drawRectWithUVs(pTexture, rect.BottomLeft(cornerRect), {0, .5f, .5f, 1}, color);
@@ -248,22 +239,15 @@ namespace onut
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color)
     {
-        assert(pTexture); // This call requires a texture to be bound
+        if (!pTexture) pTexture = m_pTexWhite;
 
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
-
-        auto& textureSize = pTexture->getSizef();
+        const auto& textureSize = pTexture->getSizef();
         drawRect(pTexture, {position.x - textureSize.x * .5f, position.y - textureSize.y * .5f, textureSize.x, textureSize.y}, color);
     }
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale)
     {
-        assert(pTexture); // This call requires a texture to be bound
-
+        if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
         {
             flush();
@@ -316,17 +300,20 @@ namespace onut
         assert(m_isDrawing); // Should call begin() before calling end()
 
         m_isDrawing = false;
-        flush();
+        if (m_spriteCount)
+        {
+            flush();
+        }
+        ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
     }
 
     void SpriteBatch::flush()
     {
         if (!m_spriteCount)
         {
-            m_pTexture = nullptr;
             return; // Nothing to flush
         }
-
+            
         auto pDeviceContext = ORenderer->getDeviceContext();
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
@@ -338,12 +325,9 @@ namespace onut
         pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
         pDeviceContext->DrawIndexed(6 * m_spriteCount, 0, 0);
 
+        pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+
         m_spriteCount = 0;
         m_pTexture = nullptr;
-
-        if (m_isDrawing)
-        {
-            pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
-        }
     }
 }

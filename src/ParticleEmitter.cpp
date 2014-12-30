@@ -9,9 +9,16 @@ namespace onut
         m_pDesc(pEmitterDesc),
         m_pParticleSystemManager(pParticleSystemManager),
         m_transform(transform),
-        m_isAlive(true),
-        m_duration(0)
+        m_isAlive(true)
     {
+        if (m_pDesc->type == eEmitterType::BURST)
+        {
+            // Spawn them all!
+            for (decltype(m_pDesc->count) i = 0; i < m_pDesc->count; ++i)
+            {
+                spawnParticle();
+            }
+        }
     }
 
     ParticleEmitter::~ParticleEmitter()
@@ -31,26 +38,18 @@ namespace onut
             pParticle->update();
             if (!pParticle->isAlive())
             {
-                pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
+                if (m_pParticles == pParticle)
+                {
+                    pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
+                }
+                else
+                {
+                    m_pParticles = pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
+                }
                 continue;
             }
             pParticle = pParticle->pNext;
         }
-
-        // Update emiter stuff, and append new particles at the end
-        if (m_duration == 0.f && m_pDesc->type == eEmitterType::BURST)
-        {
-            // Spawn them all!
-            for (decltype(m_pDesc->count) i = 0; i < m_pDesc->count; ++i)
-            {
-                spawnParticle();
-            }
-        }
-        else if (m_pDesc->type != eEmitterType::BURST)
-        {
-            assert(false); // Not implemented
-        }
-        m_duration += ODT;
 
         // Kill self if done
         if (m_pDesc->type == eEmitterType::BURST && !m_pParticles)

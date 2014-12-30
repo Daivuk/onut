@@ -31,6 +31,7 @@ namespace SimpleMath
     const float GOLDEN_SECOND = 1.0f / 1.6180339887498948482f;
     const float GOLDEN_FIRST = 1.0f - GOLDEN_SECOND;
     
+struct Vector3;
 struct Vector4;
 struct Matrix;
 struct Quaternion;
@@ -43,6 +44,7 @@ struct Vector2 : public XMFLOAT2
     Vector2() : XMFLOAT2(0.f, 0.f) {}
     explicit Vector2(float x) : XMFLOAT2( x, x ) {}
     Vector2(float _x, float _y) : XMFLOAT2(_x, _y) {}
+    Vector2(const Vector3& v3);
     explicit Vector2(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
     Vector2(FXMVECTOR V) { XMStoreFloat2( this, V ); }
 
@@ -244,6 +246,11 @@ struct Vector3 : public XMFLOAT3
     static const Vector3 Forward;
     static const Vector3 Backward;
 };
+
+inline Vector2::Vector2(const Vector3& v3) :
+    XMFLOAT2(v3.x, v3.y)
+{
+}
 
 // Binary operators
 Vector3 operator+ (const Vector3& V1, const Vector3& V2);

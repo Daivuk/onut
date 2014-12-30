@@ -1,3 +1,4 @@
+#include "onut.h"
 #include "ParticleSystem.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filestream.h"
@@ -117,7 +118,7 @@ namespace onut
                 {"BURST", eEmitterType::BURST},
                 {"FINITE", eEmitterType::FINITE},
                 {"CONTINOUS", eEmitterType::CONTINOUS}});
-            pfxReadUint(emitter.count, jsonEmitter["capacity"]);
+            pfxReadUint(emitter.count, jsonEmitter["count"]);
             pfxReadUint(emitter.rate, jsonEmitter["rate"]);
             emitter.spread = jsonEmitter["spread"];
             emitter.speed = jsonEmitter["speed"];
@@ -126,6 +127,13 @@ namespace onut
             emitter.size = jsonEmitter["size"];
             emitter.image_index = jsonEmitter["image_index"];
             emitter.life = jsonEmitter["life"];
+            const auto& images = jsonEmitter["images"];
+            for (decltype(images.Size()) j = 0; j < images.Size(); ++j)
+            {
+                const auto& jsonImage = images[j];
+                assert(jsonImage.IsString());
+                emitter.textures.push_back(OGetTexture(jsonImage.GetString()));
+            }
         }
 
         fclose(pFile);

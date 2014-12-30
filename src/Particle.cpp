@@ -8,6 +8,7 @@ namespace onut
     {
         float t = 1 - life;
         life -= delta * ODT;
+        if (life < 0.f) life = 0.f;
 
         // Animate position with velocity
         position += velocity * ODT;

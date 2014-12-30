@@ -114,6 +114,7 @@ namespace onut
     {
         sPfxRange<Ttype>    value;
         sPfxRange<Ttype>    finalValue;
+        bool                finalSpecified = false;
         TweenType           tween = TweenType::LINEAR;
         ePfxFinalValueType  finalValueType = ePfxFinalValueType::NORMAL;
 
@@ -141,16 +142,23 @@ namespace onut
 
         Ttype generateTo(const Ttype& from) const
         {
-            switch (finalValueType)
+            if (finalSpecified)
             {
-                case ePfxFinalValueType::MULT:
-                    return from * generateTo();
-                case ePfxFinalValueType::ADD:
-                    return from + generateTo();
-                case ePfxFinalValueType::NORMAL:
-                    return generateTo();
+                switch (finalValueType)
+                {
+                    case ePfxFinalValueType::MULT:
+                        return from * generateTo();
+                    case ePfxFinalValueType::ADD:
+                        return from + generateTo();
+                    case ePfxFinalValueType::NORMAL:
+                        return generateTo();
+                }
+                return Ttype();
             }
-            return Ttype();
+            else
+            {
+                return from;
+            }
         }
 
         sPfxValue<Ttype>& operator=(const rapidjson::Value& node)
@@ -163,6 +171,7 @@ namespace onut
                 {
                     if (node.HasMember("finalValue"))
                     {
+                        finalSpecified = true;
                         const auto& finalNode = node["finalValue"];
                         finalValue = finalNode;
                         if (finalNode.IsObject())

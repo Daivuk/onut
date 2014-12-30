@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <Windows.h>
 
 namespace onut
 {
@@ -31,7 +32,7 @@ namespace onut
                 if (framesToUpdate > TmaxUpdatePerFrame)
                 {
                     framesToUpdate = TmaxUpdatePerFrame;
-                    m_currentFrameProgress = std::chrono::seconds(0);
+                    m_currentFrameProgress = std::chrono::microseconds(0);
                     break;
                 }
                 m_currentFrameProgress -= m_timePerFrame;
@@ -65,6 +66,6 @@ namespace onut
         decltype(std::chrono::steady_clock::now())  m_startTime = std::chrono::steady_clock::now();
         decltype(std::chrono::steady_clock::now())  m_lastUpdateTime = std::chrono::steady_clock::now();
         std::chrono::steady_clock::duration         m_currentFrameProgress = std::chrono::seconds(0);
-        std::chrono::steady_clock::duration         m_timePerFrame = std::chrono::seconds(1) / TframePerSecond;
+        std::chrono::steady_clock::duration         m_timePerFrame = std::chrono::microseconds(1000000) / TframePerSecond;
     };
 }
