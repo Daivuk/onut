@@ -31,6 +31,7 @@ Default Shaders will be placed correctly into your `assets\shaders\` once compil
 * Visual Studio 2013 for windows Desktop (Express or Community)
 * DirectX SDK Jun 2010. **_Must_** install it in default directory: 
   * `C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\`
+* DirectX End-User Runtimes (June 2010). Your users will have to install this also. Run this during installation of your game.
 * For windows 7 only: You must have Windows 7 SP1. Check in Windows update
 
 
