@@ -400,7 +400,8 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
     {
         if ( !mDLL )
         {
-            mDLL = LoadLibraryEx( L"XAudioD2_7.DLL", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */ );
+            mDLL = LoadLibrary(L"XAudioD2_7.DLL");
+            //mDLL = LoadLibraryEx( L"XAudioD2_7.DLL", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */ );
             if ( !mDLL )
             {
                 DebugTrace( "ERROR: XAudio 2.7 debug version not installed on system (install the DirectX SDK Developer Runtime)\n" );
@@ -413,7 +414,8 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
     }
     else if ( !mDLL )
     {
-        mDLL = LoadLibraryEx( L"XAudio2_7.DLL", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */ );
+        mDLL = LoadLibrary(L"XAudio2_7.dll");
+        //mDLL = LoadLibraryEx(L"XAudio2_7.dll", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */);
         if ( !mDLL )
         {
             DebugTrace( "ERROR: XAudio 2.7 not installed on system (install the DirectX End-user Runtimes (June 2010))\n" );
