@@ -28,7 +28,12 @@ namespace onut
 
         // Create the swap chain, device and device context
         auto result = D3D11CreateDeviceAndSwapChain(
-            nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+            nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 
+#if _DEBUG
+            D3D11_CREATE_DEVICE_DEBUG,
+#else
+            0,
+#endif
             nullptr, 0, D3D11_SDK_VERSION,
             &swapChainDesc, &m_swapChain,
             &m_device, nullptr, &m_deviceContext);
@@ -209,6 +214,7 @@ namespace onut
         m_deviceContext->RSSetState(m_pSr2D);
         m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
         m_deviceContext->PSSetSamplers(0, 1, &m_pSs2D);
+        m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         // Bind the shaders
         m_deviceContext->IASetInputLayout(m_p2DInputLayout);
