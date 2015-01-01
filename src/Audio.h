@@ -47,8 +47,6 @@
 #pragma warning( disable : 4005 )
 #include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\x3daudio.h>
 #pragma warning(pop)
-#pragma comment(lib,"x3daudio.lib")
-#pragma comment(lib,"xapofx.lib")
 #endif
 
 #include <DirectXMath.h>
