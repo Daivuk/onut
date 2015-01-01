@@ -22,7 +22,7 @@ namespace onut
     private:
         POINT               m_resolution = POINT{800, 600};
         std::string         m_gameName = "Game Name";
-        std::string         m_defaultFont = "assets/fonts/Mainfnt.fnt";
+        std::string         m_defaultFont = "Mainfnt.fnt";
 
         bool                m_isDirty = false;
     };

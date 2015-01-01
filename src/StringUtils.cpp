@@ -56,7 +56,7 @@ namespace onut
     }
 
     template<>
-    std::string findFile<true>(const std::string& name, const std::string& lookIn)
+    std::string findFile<true>(const std::string& name, const std::string& lookIn, bool deepSearch)
     {
         DIR *dir;
         struct dirent *ent;
@@ -80,7 +80,7 @@ namespace onut
                     return ret;
                 }
 
-                if (ent->d_type & DT_DIR)
+                if (ent->d_type & DT_DIR && deepSearch)
                 {
                     auto ret = findFile<true>(name, lookIn + "/" + ent->d_name);
                     if (!ret.empty())
@@ -101,7 +101,7 @@ namespace onut
     }
 
     template<>
-    std::string findFile<false>(const std::string& name, const std::string& lookIn)
+    std::string findFile<false>(const std::string& name, const std::string& lookIn, bool deepSearch)
     {
         DIR *dir;
         struct dirent *ent;
@@ -125,7 +125,7 @@ namespace onut
                     return ret;
                 }
 
-                if (ent->d_type & DT_DIR)
+                if (ent->d_type & DT_DIR && deepSearch)
                 {
                     auto ret = findFile<false>(name, lookIn + "/" + ent->d_name);
                     if (!ret.empty())

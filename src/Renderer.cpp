@@ -128,10 +128,10 @@ namespace onut
     {
         // Create 2D shaders
         {
-            std::ifstream vsFile("assets/shaders/2dvs.cso", std::ios::binary);
+            std::ifstream vsFile("../../assets/shaders/2dvs.cso", std::ios::binary);
             std::vector<char> vsData = {std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>()};
 
-            std::ifstream psFile("assets/shaders/2dps.cso", std::ios::binary);
+            std::ifstream psFile("../../assets/shaders/2dps.cso", std::ios::binary);
             std::vector<char> psData = {std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>()};
 
             auto ret = m_device->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &m_p2DVertexShader);

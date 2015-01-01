@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <mutex>
+#include <string>
 #include "StringUtils.h"
 
 namespace onut
@@ -13,6 +14,17 @@ namespace onut
     class ContentManager
     {
     public:
+        ContentManager()
+        {
+            addSearchPath("../../assets");
+            addSearchPath("../../assets/fonts");
+            addSearchPath("../../assets/pfx");
+            addSearchPath("../../assets/shaders");
+            addSearchPath("../../assets/sounds");
+            addSearchPath("../../assets/textures");
+            addSearchPath("../../assets/musics");
+        }
+
         virtual ~ContentManager()
         {
             clear();
@@ -79,6 +91,22 @@ namespace onut
             m_resources.clear();
         }
 
+        /**
+        * Add a search path to this content manager. Considering the executable is placed under bin/platform/, those are the default added:
+        * - ../../assets
+        * - ../../assets/fonts
+        * - ../../assets/pfx
+        * - ../../assets/shaders
+        * - ../../assets/sounds
+        * - ../../assets/textures
+        * - ../../assets/musics
+        * You have to add subfolders, they won't be searched.
+        */
+        void addSearchPath(const std::string& path)
+        {
+            m_searchPaths.push_back(path);
+        }
+
     private:
         class IResourceHolder
         {
@@ -121,17 +149,32 @@ namespace onut
         template<typename Ttype>
         Ttype* load(const std::string& name)
         {
-            auto filename = findFile<TuseAssert>(name, "assets");
+            // Find the file
+            std::string filename;
+            for (auto& path : m_searchPaths)
+            {
+                filename = findFile<TuseAssert>(name, path, false);
+                if (!filename.empty())
+                {
+                    break;
+                }
+            }
             if (filename == "") return nullptr;
+
+            // Create it
             Ttype* pResource = Ttype::createFromFile(filename);
+
+            // Put it in our map
             ResourceHolder<Ttype>* pResourceHolder = new ResourceHolder<Ttype>(pResource);
             m_mutex.lock();
             m_resources[name] = pResourceHolder;
             m_mutex.unlock();
+
             return pResource;
         }
 
         TmutexType                              m_mutex;
         decltype(std::this_thread::get_id())    m_threadId = std::this_thread::get_id();
+        std::vector<std::string>                m_searchPaths;
     };
 }

@@ -10,7 +10,7 @@ namespace onut
     std::vector<std::string>    splitString(const std::string& in_string, char in_delimiter);
 
     template<bool TuseAssert = true>
-    std::string                 findFile(const std::string& name, const std::string& lookIn = ".");
+    std::string                 findFile(const std::string& name, const std::string& lookIn = ".", bool deepSearch = true);
 
     // Once supported, use constexpr here
     int                         hash(const char* pStr);

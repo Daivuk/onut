@@ -556,16 +556,20 @@ int main(int argc, char** args)
     {
         subTest("Basic seaches");
         {
-            auto ret = onut::findFile<false>("res1.txt");
-            checkTest(ret == "./assets/res1.txt", "Search existing file res1.txt");
+            auto ret = onut::findFile<false>("res1.txt", "../..");
+            checkTest(ret == "../../assets/textures/res1.txt", "Search existing file res1.txt");
         }
         {
-            auto ret = onut::findFile<false>("someFileThatDoesntExist.txt");
+            auto ret = onut::findFile<false>("someFileThatDoesntExist.txt", "../..");
             checkTest(ret == "", "Search missing file someFileThatDoesntExist.txt");
         }
         {
-            auto ret = onut::findFile<false>("res1.txt");
-            checkTest(ret == "./assets/res1.txt", "Search existing from withing res1.txt folder");
+            auto ret = onut::findFile<false>("res1.txt", "../../assets/textures");
+            checkTest(ret == "../../assets/textures/res1.txt", "Search existing from withing res1.txt folder");
+        }
+        {
+            auto ret = onut::findFile<false>("res1.txt", "../..", false);
+            checkTest(ret == "", "Search res1.txt without deep search");
         }
         cout << setColor(7) << endl;
     }
