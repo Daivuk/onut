@@ -30,16 +30,8 @@ float                               ODT = 0.f;
 
 namespace onut
 {
-    // Main loop
-    void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback)
+    void createServices()
     {
-        // Make sure we run just once
-        static bool alreadyRan = false;
-        assert(!alreadyRan);
-        alreadyRan = true;
-
-        //-------------------------- Create our services --------------------------------
-        // 
         // Random
         randomizeSeed();
 
@@ -85,7 +77,7 @@ namespace onut
             g_pDefaultFont64 = OGetBMFont((fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt").c_str());
         }
 
-        // Register a bunch of default callbacks
+        // Register a bunch of default events
         OEvent->addEvent("NavigateLeft", []
         {
             return OJustPressed(OLeftBtn) || OJustPressed(OLLeftBtn);
@@ -118,7 +110,17 @@ namespace onut
         {
             return OJustPressed(OBackBtn) || OJustPressed(OBBtn);
         });
-        //-------------------------------------------------------------------------------
+    }
+
+    // Start the engine
+    void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback)
+    {
+        // Make sure we run just once
+        static bool alreadyRan = false;
+        assert(!alreadyRan);
+        alreadyRan = true;
+
+        createServices();
 
         // Call the user defined init
         if (initCallback)
