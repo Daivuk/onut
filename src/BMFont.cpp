@@ -1,7 +1,4 @@
-#include "BMFont.h"
-#include "SpriteBatch.h"
-#include "StringUtils.h"
-#include "Texture.h"
+#include "onut.h"
 #include <sstream>
 #include <fstream>
 
@@ -31,14 +28,13 @@ namespace onut
         return "";
     }
 
-    BMFont* BMFont::createFromFile(const std::string& filename)
+    BMFont* BMFont::createFromFile(const std::string& filename, std::function<OTexture*(const char*)> loadTextureFn)
     {
         std::ifstream in(filename);
         assert(!in.fail());
 
         auto pFont = new BMFont();
 
-        std::string path = filename.substr(0, filename.find_last_of('/') + 1);
         std::string line;
         std::getline(in, line);
         std::vector<std::string> split;
@@ -68,8 +64,7 @@ namespace onut
                 pFont->m_pages[pNewPage->id] = pNewPage;
 
                 // Load its texture
-                const auto& texFilename = path + pNewPage->file;
-                pNewPage->pTexture = Texture::createFromFile(texFilename);
+                pNewPage->pTexture = loadTextureFn(pNewPage->file.c_str());
             }
             else if (command == "chars")
             {

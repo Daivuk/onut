@@ -15,6 +15,27 @@ namespace onut
         createUniforms();
     }
 
+    Renderer::~Renderer()
+    {
+        if (m_pWorldMatrixBuffer) m_pWorldMatrixBuffer->Release();
+        if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
+
+        if (m_p2DInputLayout) m_p2DInputLayout->Release();
+        if (m_p2DPixelShader) m_p2DPixelShader->Release();
+        if (m_p2DVertexShader) m_p2DVertexShader->Release();
+
+        if (m_pSs2D) m_pSs2D->Release();
+        if (m_pBs2D) m_pBs2D->Release();
+        if (m_pSr2D) m_pSr2D->Release();
+        if (m_pDs2D) m_pDs2D->Release();
+
+        if (m_renderTargetView) m_renderTargetView->Release();
+
+        if (m_deviceContext) m_deviceContext->Release();
+        if (m_device) m_device->Release();
+        if (m_swapChain) m_swapChain->Release();
+    }
+
     void Renderer::createDevice(Window& window)
     {
         // Define our swap chain

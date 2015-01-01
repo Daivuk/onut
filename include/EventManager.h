@@ -46,6 +46,8 @@ namespace onut
         void stopObservingAll();
 
     private:
+        friend EventManager;
+
         EventManager* m_pEventManager;
     };
 
@@ -72,6 +74,11 @@ namespace onut
         std::unordered_map<std::string, std::vector<sObserver>> m_observers;
 
     public:
+        /**
+        * Will remove all observers
+        */
+        virtual ~EventManager();
+
         /**
         Add an event to be processed when processEvents() is called.
         @param eventName Name of the event. If the name is already present, previous one will be overriden

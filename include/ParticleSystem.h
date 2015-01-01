@@ -226,7 +226,15 @@ namespace onut
     class ParticleSystem
     {
     public:
-        static ParticleSystem* createFromFile(const std::string& filename);
+        template<typename TcontentManagerType>
+        static ParticleSystem* createFromFile(const std::string& filename, TcontentManagerType* pContentManager)
+        {
+            return ParticleSystem::createFromFile(filename, [pContentManager](const char* pFilename)
+            {
+                return pContentManager->getResource<Texture>(pFilename);
+            });
+        }
+        static ParticleSystem* createFromFile(const std::string& filename, std::function<Texture*(const char*)> loadTextureFn);
 
         ParticleSystem();
         virtual ~ParticleSystem();

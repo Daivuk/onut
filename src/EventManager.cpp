@@ -13,17 +13,37 @@ namespace onut
 
     void EventObserver::observe(const std::string& eventName, const std::function<void()>& callback)
     {
-        m_pEventManager->addObserver(eventName, this, callback);
+        if (m_pEventManager)
+        {
+            m_pEventManager->addObserver(eventName, this, callback);
+        }
     }
 
     void EventObserver::stopObserving(const std::string& eventName)
     {
-        m_pEventManager->removeObserver(eventName, this);
+        if (m_pEventManager)
+        {
+            m_pEventManager->removeObserver(eventName, this);
+        }
     }
 
     void EventObserver::stopObservingAll()
     {
-        m_pEventManager->removeObserver(this);
+        if (m_pEventManager)
+        {
+            m_pEventManager->removeObserver(this);
+        }
+    }
+
+    EventManager::~EventManager()
+    {
+        for (auto& kv : m_observers)
+        {
+            for (auto& observer : kv.second)
+            {
+                observer.pObserver->m_pEventManager = nullptr;
+            }
+        }
     }
 
     void EventManager::addEvent(const std::string& eventName, const std::function<bool()>& eventProcessor)

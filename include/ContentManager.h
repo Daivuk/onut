@@ -162,7 +162,7 @@ namespace onut
             if (filename == "") return nullptr;
 
             // Create it
-            Ttype* pResource = Ttype::createFromFile(filename);
+            Ttype* pResource = Ttype::createFromFile(filename, this);
 
             // Put it in our map
             ResourceHolder<Ttype>* pResourceHolder = new ResourceHolder<Ttype>(pResource);

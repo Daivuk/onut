@@ -11,6 +11,7 @@ namespace onut
     {
     public:
         Renderer(Window& window);
+        virtual ~Renderer();
 
         void                    clear(const Color& color = {.25f, .5f, 1, 1});
 
@@ -51,10 +52,10 @@ namespace onut
         D3D11_TEXTURE2D_DESC        m_backBufferDesc;
 
         // Render states
-        ID3D11DepthStencilState*    m_pDs2D;
-        ID3D11RasterizerState*      m_pSr2D;
-        ID3D11BlendState*           m_pBs2D;
-        ID3D11SamplerState*         m_pSs2D;
+        ID3D11DepthStencilState*    m_pDs2D = nullptr;
+        ID3D11RasterizerState*      m_pSr2D = nullptr;
+        ID3D11BlendState*           m_pBs2D = nullptr;
+        ID3D11SamplerState*         m_pSs2D = nullptr;
 
         // Shaders
         ID3D11VertexShader*         m_p2DVertexShader = nullptr;
@@ -62,8 +63,8 @@ namespace onut
         ID3D11InputLayout*          m_p2DInputLayout = nullptr;
 
         // Constant buffers
-        ID3D11Buffer*               m_pViewProj2dBuffer;
-        ID3D11Buffer*               m_pWorldMatrixBuffer;
+        ID3D11Buffer*               m_pViewProj2dBuffer = nullptr;
+        ID3D11Buffer*               m_pWorldMatrixBuffer = nullptr;
 
         eRenderSetup                m_renderSetup = eRenderSetup::SETUP_NONE;
 

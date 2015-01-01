@@ -1,5 +1,7 @@
 #pragma once
 #include <d3d11.h>
+#include "SimpleMath.h"
+using namespace DirectX::SimpleMath;
 
 namespace onut
 {
@@ -7,6 +9,11 @@ namespace onut
     {
     public:
         static Texture* createDynamic(const POINT& size);
+        template<typename TcontentManagerType>
+        static Texture* createFromFile(const std::string& filename, TcontentManagerType* pContentManager, bool generateMipmaps = true)
+        {
+            return Texture::createFromFile(filename, generateMipmaps);
+        }
         static Texture* createFromFile(const std::string& filename, bool generateMipmaps = true);
         static Texture* createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps = true);
 

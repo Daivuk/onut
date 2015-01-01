@@ -1,7 +1,10 @@
 #pragma once
+#include <fstream>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 #include "SimpleMath.h"
+#include "Texture.h"
 #include "Typedefs.h"
 using namespace DirectX::SimpleMath;
 
@@ -13,7 +16,15 @@ namespace onut
     class BMFont
     {
     public:
-        static BMFont* createFromFile(const std::string& filename);
+        template<typename TcontentManagerType>
+        static BMFont* createFromFile(const std::string& filename, TcontentManagerType* pContentManager)
+        {
+            return BMFont::createFromFile(filename, [pContentManager](const char* pFilename)
+            {
+                return pContentManager->getResource<Texture>(pFilename);
+            });
+        }
+        static BMFont* createFromFile(const std::string& filename, std::function<Texture*(const char*)> loadTextureFn);
 
         BMFont();
         virtual ~BMFont();

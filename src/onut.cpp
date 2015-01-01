@@ -112,6 +112,21 @@ namespace onut
         });
     }
 
+    void cleanup()
+    {
+        delete OParticles;
+        delete g_pAudioEngine;
+        for (int i = 0; i < 4; ++i)
+        {
+            delete g_gamePads[i];
+        }
+        delete OContentManager;
+        delete OSB;
+        delete ORenderer;
+        delete g_pWindow;
+        delete OEvent;
+    }
+
     // Start the engine
     void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback)
     {
@@ -174,6 +189,8 @@ namespace onut
             OParticles->render();
             ORenderer->endFrame();
         }
+
+        cleanup();
     }
 
     BMFont* getDefaultFont()

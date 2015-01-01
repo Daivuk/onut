@@ -333,7 +333,8 @@ void runSynchronousTests()
 class TestResource1
 {
 public:
-    static TestResource1* createFromFile(const std::string& filename)
+    template<typename TcontentManagerType>
+    static TestResource1* createFromFile(const std::string& filename, TcontentManagerType* pContentManager = nullptr)
     {
         if (filename == "not found") return nullptr;
         return new TestResource1();
@@ -344,7 +345,8 @@ public:
 class TestResource2
 {
 public:
-    static TestResource2* createFromFile(const std::string& filename)
+    template<typename TcontentManagerType>
+    static TestResource2* createFromFile(const std::string& filename, TcontentManagerType* pContentManager = nullptr)
     {
         if (filename == "not found") return nullptr;
         return new TestResource2();

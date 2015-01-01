@@ -111,10 +111,5 @@ namespace onut
         Pool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false>     m_particlePool;
         Vector3                                                             m_camRight;
         Vector3                                                             m_camUp;
-        
-        // Sprite batch stuff
-        ID3D11Buffer*               m_pVertexBuffer = nullptr;
-        ID3D11Buffer*               m_pIndexBuffer = nullptr;
-        D3D11_MAPPED_SUBRESOURCE    m_pMappedVertexBuffer;
     };
 }

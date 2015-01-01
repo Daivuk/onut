@@ -94,7 +94,7 @@ namespace onut
         };
     }
 
-    ParticleSystem* ParticleSystem::createFromFile(const std::string& filename)
+    ParticleSystem* ParticleSystem::createFromFile(const std::string& filename, std::function<Texture*(const char*)> loadTextureFn)
     {
         ParticleSystem* pRet = new ParticleSystem();
 
@@ -132,7 +132,7 @@ namespace onut
             {
                 const auto& jsonImage = images[j];
                 assert(jsonImage.IsString());
-                emitter.textures.push_back(OGetTexture(jsonImage.GetString()));
+                emitter.textures.push_back(loadTextureFn(jsonImage.GetString()));
             }
         }
 
