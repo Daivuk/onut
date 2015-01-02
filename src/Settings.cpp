@@ -21,10 +21,4 @@ namespace onut
         m_gameName = gameName;
         m_isDirty = true;
     }
-
-    void Settings::setDefaultFont(const std::string& defaultFont)
-    {
-        m_defaultFont = defaultFont;
-        m_isDirty = true;
-    }
 }

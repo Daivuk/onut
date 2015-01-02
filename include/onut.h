@@ -38,17 +38,6 @@ namespace onut
     void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback);
 
     /**
-    Get a global font. This is the default font set in the settings.
-    If file not found it will return nullptr
-    */
-    BMFont* getDefaultFont();
-
-    /**
-    This is the same as getDefaultFont but gets a bigger version
-    */
-    BMFont* getDefaultFontBig();
-
-    /**
     Get a gamepad for index (0 to 3)
     */
     GamePad* getGamePad(int index);
@@ -56,7 +45,7 @@ namespace onut
     /**
     Debug tool to draw a palette and show it's index in it
     */
-    void drawPal(const OPal& pal);
+    void drawPal(const OPal& pal, OFont* pFont);
 }
 
 // For quick stuff, we have shortcuts outside of the namespace

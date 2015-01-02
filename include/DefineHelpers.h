@@ -29,15 +29,6 @@
 #define ORUpBtn             onut::GamePad::eGamePad::RTHUMB_UP
 #define ORDownBtn           onut::GamePad::eGamePad::RTHUMB_DOWN
 
-//--- Resource shortcuts
-#define ODefaultFont        onut::getDefaultFont()
-#define ODefaultFontBig     onut::getDefaultFontBig()
-
-//--- Synchronisation and timing
-//#define OAsync(callback)    std::async(std::launch::async, callback)
-//#define OSync(callback)     onut::syncToMainLoop(callback)
-
-
 //--- Resolution helpers
 #define OScreen             ORenderer->getResolution()
 #define OScreenf            Vector2{static_cast<float>(ORenderer->getResolution().x), static_cast<float>(ORenderer->getResolution().y)}

@@ -21,10 +21,6 @@ onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous<onut::Pool<>>     g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
 
-// Default resources
-onut::BMFont*                       g_pDefaultFont = nullptr;
-onut::BMFont*                       g_pDefaultFont64 = nullptr;
-
 // So commonly used stuff
 float                               ODT = 0.f;
 
@@ -68,14 +64,6 @@ namespace onut
 
         // Particles
         OParticles = new ParticleSystemManager<>();
-
-        // Fonts
-        if (!OSettings->getDefaultFont().empty())
-        {
-            const auto& fntFilename = OSettings->getDefaultFont();
-            g_pDefaultFont = OGetBMFont(fntFilename.c_str());
-            g_pDefaultFont64 = OGetBMFont((fntFilename.substr(0, fntFilename.find_last_of('.')) + "64.fnt").c_str());
-        }
 
         // Register a bunch of default events
         OEvent->addEvent("NavigateLeft", []
@@ -193,16 +181,6 @@ namespace onut
         cleanup();
     }
 
-    BMFont* getDefaultFont()
-    {
-        return g_pDefaultFont;
-    }
-
-    BMFont* getDefaultFontBig()
-    {
-        return g_pDefaultFont64;
-    }
-
     GamePad* getGamePad(int index)
     {
         assert(index >= 0 && index <= 3);
@@ -214,7 +192,7 @@ namespace onut
         return g_timeInfo;
     }
 
-    void drawPal(const OPal& pal)
+    void drawPal(const OPal& pal, OFont* pFont)
     {
         static const float H = 32.f;
         float i = 0;
@@ -226,7 +204,6 @@ namespace onut
         }
         i = 0;
         int index = 0;
-        auto pFont = getDefaultFont();
         for (auto& color : pal)
         {
             std::stringstream ss;
