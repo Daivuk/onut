@@ -153,7 +153,7 @@ namespace onut
             std::string filename;
             for (auto& path : m_searchPaths)
             {
-                filename = findFile<TuseAssert>(name, path, false);
+                filename = findFile<false>(name, path, false);
                 if (!filename.empty())
                 {
                     break;

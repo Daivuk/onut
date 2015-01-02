@@ -8,8 +8,9 @@
 namespace onut
 {
     /**
-        Tween type
-        */
+    @enum
+    Tween type
+    */
     enum class TweenType
     {
         /**
@@ -60,8 +61,9 @@ namespace onut
     };
 
     /**
-        Loop type
-        */
+    @enum
+    Loop type
+    */
     enum class LoopType
     {
         /**
@@ -86,6 +88,7 @@ namespace onut
     };
 
     /**
+    @fn
     Apply a tween effect to a progression
     @param t Time of the animation between 0 and 1
     @param tween Tween to apply to t
@@ -210,6 +213,7 @@ namespace onut
     }
 
     /**
+    @fn
     Invert a tween enum.
     @param tween The Tween to reverse
     @return The reversed Tween
@@ -229,6 +233,7 @@ namespace onut
     TweenType invertTween(TweenType tween);
 
     /**
+    @class
     Animation base class
     */
     class IAnim
@@ -263,6 +268,7 @@ namespace onut
     };
 
     /**
+    @class
     Animation manager. Updates a set of animations.
     This object is not thread safe. But can be used by any threads that update it regularly.
     So you should have an instance per threads for animations instantiaced in those threads.
@@ -320,6 +326,7 @@ namespace onut
     };
 
     /**
+    @fn
     Default lerp function.
     If you have special objects that need to be lerped different, like a string, you can redefine this.
 
@@ -382,6 +389,7 @@ namespace onut
     }
 
     /**
+    @class
     Anim class. This is what you should use
 
     Template arguments:

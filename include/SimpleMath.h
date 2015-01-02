@@ -771,6 +771,7 @@ struct Color : public XMFLOAT4
     static const Color Black;
     static const Color White;
     static const Color Transparent;
+    static const Color TransparentWhite;
 };
 
 // Binary operators

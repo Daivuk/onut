@@ -1,5 +1,20 @@
 #pragma once
 #include <future>
+#include "Synchronous.h"
+
+/**
+Synchronize back to main thread. This can also be called from the main thread. It will just be delayed until the next frame.
+@param callback Function or your usual lambda
+@param args arguments
+*/
+template<typename Tfn,
+    typename ... Targs>
+    inline void OSync(Tfn callback, Targs... args)
+{
+    extern onut::Synchronous<onut::Pool<>> g_mainSync;
+    g_mainSync.sync(callback, args...);
+}
+
 
 /**
     Run a task asynchronously from the current thread.
@@ -11,4 +26,45 @@ template<typename ... Targs>
 inline auto OAsync(Targs... args) -> decltype(std::async(args...))
 {
     return std::async(std::launch::async, args...);
+}
+
+template<typename TasyncWork, typename TsyncWork>
+inline void OSequencialWork(TasyncWork asyncWork, TsyncWork syncWork)
+{
+    OAsync([=]
+    {
+        asyncWork();
+        OSync([=]
+        {
+            syncWork();
+        });
+    });
+}
+
+template<typename TasyncWork>
+inline void OSequencialWork(TasyncWork asyncWork)
+{
+    OAsync([=]
+    {
+        asyncWork();
+    });
+}
+
+/**
+* @fn So async/sync/async/sync calls sequentially
+* Sometimes while loading you need to sync back to main loop. Then continue loading more stuff asynchronously.
+* First argument is a function or lambda to async work. Then the work is done, it will call the second call synchronously. Then the second one is done, it will call the third one asynchronously, etc.
+*/
+template<typename TasyncWork, typename TsyncWork, typename ... Targs>
+inline void OSequencialWork(TasyncWork asyncWork, TsyncWork syncWork, Targs... args)
+{
+    OAsync([=]
+    {
+        asyncWork();
+        OSync([=]
+        {
+            syncWork();
+            OSequencialWork(args...);
+        });
+    });
 }

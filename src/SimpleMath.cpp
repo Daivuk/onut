@@ -78,6 +78,7 @@ namespace DirectX
         const Color Color::Black = {0.f, 0.f, 0.f, 1.f};
         const Color Color::White = {1.f, 1.f, 1.f, 1.f};
         const Color Color::Transparent = {0.f, 0.f, 0.f, 0.f};
+        const Color Color::TransparentWhite = {1.f, 1.f, 1.f, 0.f};
 
         const Matrix Matrix::Identity = {1.f, 0.f, 0.f, 0.f,
             0.f, 1.f, 0.f, 0.f,

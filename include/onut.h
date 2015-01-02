@@ -126,19 +126,6 @@ inline const Vector2& ORThumb(int gamePadIndex = 0)
     return OGamePad(gamePadIndex)->getRightThumb();
 }
 
-/**
-Synchronize back to main thread. This can also be called from the main thread. It will just be delayed until the next frame.
-@param callback Function or your usual lambda
-@param args arguments
-*/
-template<typename Tfn, 
-         typename ... Targs>
-         inline void OSync(Tfn callback, Targs... args)
-{
-    extern onut::Synchronous<onut::Pool<>> g_mainSync;
-    g_mainSync.sync(callback, args...);
-}
-
 inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent)
 {
     auto ret = local;
