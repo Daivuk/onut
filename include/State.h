@@ -2,8 +2,18 @@
 
 namespace onut
 {
+    class IState
+    {
+    public:
+        virtual ~IState() {}
+
+        virtual void init() {}
+        virtual void update() {}
+        virtual void render() {}
+    };
+
     template<typename TstateEnum>
-    class State
+    class State : public IState
     {
     public:
         State(TstateEnum startingState)
@@ -26,6 +36,8 @@ namespace onut
                 onEnterState(m_state);
             }
         }
+
+        IState* pParentState = nullptr;
 
     protected:
         virtual bool onLeaveState(TstateEnum oldState, TstateEnum newState) { return true; }

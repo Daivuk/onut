@@ -11,7 +11,7 @@
 #include "Settings.h"
 #include "Sound.h"
 #include "SpriteBatch.h"
-#include "State.h"
+#include "StateManager.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
 #include "UINodeNav.h"
@@ -26,6 +26,13 @@ typedef onut::Anim<Color>       OAnimc;
 typedef onut::Timer<float>      OTimer;
 typedef std::vector<Color>      OPal;
 
+// For quick stuff, we have shortcuts outside of the namespace
+extern onut::Renderer*                  ORenderer;
+extern onut::SpriteBatch*               OSB;
+extern onut::Settings*                  OSettings;
+extern onut::EventManager*              OEvent;
+extern onut::ParticleSystemManager<>*   OParticles;
+
 namespace onut
 {
     /**
@@ -38,6 +45,18 @@ namespace onut
     void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback);
 
     /**
+    * Call run with a State object
+    * Any object that defines an init, update and render call will work also
+    */
+    template<typename TstateType>
+    void run(TstateType& stateManager)
+    {
+        run(std::bind(&TstateType::init, &stateManager),
+            std::bind(&TstateType::update, &stateManager),
+            std::bind(&TstateType::render, &stateManager));
+    }
+
+    /**
     Get a gamepad for index (0 to 3)
     */
     GamePad* getGamePad(int index);
@@ -47,13 +66,6 @@ namespace onut
     */
     void drawPal(const OPal& pal, OFont* pFont);
 }
-
-// For quick stuff, we have shortcuts outside of the namespace
-extern onut::Renderer*                  ORenderer;
-extern onut::SpriteBatch*               OSB;
-extern onut::Settings*                  OSettings;
-extern onut::EventManager*              OEvent;
-extern onut::ParticleSystemManager<>*   OParticles;
 
 //--- Resource shortcuts
 extern onut::ContentManager<>* OContentManager;
