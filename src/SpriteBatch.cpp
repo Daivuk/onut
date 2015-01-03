@@ -356,7 +356,7 @@ namespace onut
 
         auto textureView = m_pTexture->getResource();
         pDeviceContext->PSSetShaderResources(0, 1, &textureView);
-
+        pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);
         pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
         pDeviceContext->DrawIndexed(6 * m_spriteCount, 0, 0);

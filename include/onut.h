@@ -6,6 +6,7 @@
 #include "EventManager.h"
 #include "GamePad.h"
 #include "ParticleSystemManager.h"
+#include "PrimitiveBatch.h"
 #include "RectUtils.h"
 #include "Renderer.h"
 #include "Settings.h"
@@ -29,6 +30,7 @@ typedef std::vector<Color>      OPal;
 // For quick stuff, we have shortcuts outside of the namespace
 extern onut::Renderer*                  ORenderer;
 extern onut::SpriteBatch*               OSB;
+extern onut::PrimitiveBatch*            OPB;
 extern onut::Settings*                  OSettings;
 extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;

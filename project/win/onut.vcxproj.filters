@@ -112,6 +112,9 @@
     <ClInclude Include="..\..\include\StateManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\PrimitiveBatch.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -197,6 +200,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ParticleSystem.cpp">
       <Filter>src\pfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

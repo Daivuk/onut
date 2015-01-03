@@ -235,7 +235,6 @@ namespace onut
         m_deviceContext->RSSetState(m_pSr2D);
         m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
         m_deviceContext->PSSetSamplers(0, 1, &m_pSs2D);
-        m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         // Bind the shaders
         m_deviceContext->IASetInputLayout(m_p2DInputLayout);
