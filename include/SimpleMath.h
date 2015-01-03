@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <functional>
 #include <memory.h>
 
@@ -343,6 +344,9 @@ struct Vector4 : public XMFLOAT4
     Vector4 BottomLeft(const Vector4& rect) const;
     Vector4 Bottom(const Vector4& rect) const;
     Vector4 BottomRight(const Vector4& rect) const;
+
+    Vector4 Fit(const Vector2& size) const;
+    Vector4 Fit(const Vector4& rect) const;
 
     Vector4 Grow(float by) const;
 
@@ -756,10 +760,12 @@ struct Color : public XMFLOAT4
 
     void AdjustSaturation( float sat );
     void AdjustSaturation( float sat, Color& result ) const;
+    Color AdjustedSaturation(float sat) const;
 
     void AdjustContrast( float contrast );
-    void AdjustContrast( float contrast, Color& result ) const;
-    
+    void AdjustContrast(float contrast, Color& result) const;
+    Color AdjustedContrast(float contrast) const;
+
     // Static functions
     static void Modulate( const Color& c1, const Color& c2, Color& result ); 
     static Color Modulate( const Color& c1, const Color& c2 ); 

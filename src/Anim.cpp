@@ -11,7 +11,10 @@ namespace onut
         {
             auto pAnim = m_anims[m_updateIndex];
             ++m_updateIndex;
-            pAnim->updateAnim();
+            if (pAnim)
+            {
+                pAnim->updateAnim();
+            }
         }
         m_isUpdating = false;
 
@@ -36,6 +39,7 @@ namespace onut
             {
                 if (m_isUpdating)
                 {
+                    m_anims[i] = nullptr;
                     m_scheduledForRemoval.insert(i);
                 }
                 else

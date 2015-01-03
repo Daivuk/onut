@@ -202,15 +202,18 @@ namespace onut
             OSB->drawRect(nullptr, {0, i, H * GOLDEN_RATIO, H}, color);
             i += H;
         }
-        i = 0;
-        int index = 0;
-        for (auto& color : pal)
+        if (pFont)
         {
-            std::stringstream ss;
-            ss << index;
-            pFont->draw<OCenter>(ss.str(), Rect{0, i, H * GOLDEN_RATIO, H}.Center(), Color::Black);
-            i += H;
-            ++index;
+            i = 0;
+            int index = 0;
+            for (auto& color : pal)
+            {
+                std::stringstream ss;
+                ss << index;
+                pFont->draw<OCenter>(ss.str(), Rect{0, i, H * GOLDEN_RATIO, H}.Center(), Color::Black);
+                i += H;
+                ++index;
+            }
         }
         OSB->end();
     }

@@ -18,7 +18,7 @@ namespace onut
 
         void update(float t)
         {
-            value = animDefaultLerp(from, to, t);
+            value = lerp(from, to, t);
         }
     };
 

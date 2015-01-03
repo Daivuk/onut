@@ -64,7 +64,7 @@ namespace onut
     /**
     Debug tool to draw a palette and show it's index in it
     */
-    void drawPal(const OPal& pal, OFont* pFont);
+    void drawPal(const OPal& pal, OFont* pFont = nullptr);
 }
 
 //--- Resource shortcuts

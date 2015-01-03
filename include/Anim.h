@@ -346,7 +346,7 @@ namespace onut
         typename TtypePrecision = float,
         typename std::enable_if<!std::is_integral<Ttype>::value, Ttype>::type* = nullptr,
         typename std::enable_if<!std::is_same<Ttype, std::string>::value && !std::is_same<Ttype, std::wstring>::value>::type* = nullptr>
-        Ttype animDefaultLerp(const Ttype& from, const Ttype& to, Tprecision t)
+        Ttype lerp(const Ttype& from, const Ttype& to, Tprecision t)
     {
         auto ret = from + (to - from) * static_cast<TtypePrecision>(t);
         return std::move(ret);
@@ -356,7 +356,7 @@ namespace onut
         typename TtypePrecision = float,
         typename std::enable_if<std::is_integral<Ttype>::value, Ttype>::type* = nullptr,
         typename std::enable_if<!std::is_same<Ttype, std::string>::value && !std::is_same<Ttype, std::wstring>::value>::type* = nullptr>
-        Ttype animDefaultLerp(const Ttype& from, const Ttype& to, Tprecision t)
+        Ttype lerp(const Ttype& from, const Ttype& to, Tprecision t)
     {
         auto ret = static_cast<TtypePrecision>(from)+
             (static_cast<TtypePrecision>(to)-static_cast<TtypePrecision>(from)) *
@@ -369,7 +369,7 @@ namespace onut
         typename TtypePrecision = float,
         typename std::enable_if<!std::is_integral<Ttype>::value, Ttype>::type* = nullptr,
         typename std::enable_if<std::is_same<Ttype, std::string>::value || std::is_same<Ttype, std::wstring>::value>::type* = nullptr>
-        Ttype animDefaultLerp(const Ttype& from, const Ttype& to, Tprecision t)
+        Ttype lerp(const Ttype& from, const Ttype& to, Tprecision t)
     {
         const auto& fromLen = from.size();
         const auto& toLen = to.size();
@@ -401,7 +401,7 @@ namespace onut
     */
     template<typename Ttype,
         typename Tprecision = float,
-        Ttype(*Tlerp)(const Ttype&, const Ttype&, Tprecision) = animDefaultLerp>
+        Ttype(*Tlerp)(const Ttype&, const Ttype&, Tprecision) = lerp>
     class Anim : public IAnim
     {
     public:
@@ -547,6 +547,8 @@ namespace onut
         void start(const Ttype& startValue, const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE)
         {
             assert(!keyFrames.empty());
+
+            stop(false);
 
             // Update value to the start point if specified
             m_retValue = m_value = startValue;

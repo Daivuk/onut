@@ -1511,6 +1511,18 @@ inline Vector2 Vector4::BottomRight(const Vector2& offset) const {
     return std::move(Vector2{ x + z - offset.x, y + w - offset.y });
 }
 
+inline Vector4 Vector4::Fit(const Vector2& size) const
+{
+    float maxScale = std::max<float>(z / size.x, w / size.y);
+    return std::move(Center({0, 0, size * maxScale}));
+}
+
+inline Vector4 Vector4::Fit(const Vector4& rect) const
+{
+    float maxScale = std::max<float>(z / rect.z, w / rect.w);
+    return std::move(Center({0, 0, rect.z * maxScale, rect.w * maxScale}));
+}
+
 inline Vector4 Vector4::Grow(float by) const {
     return std::move(Vector4{ x - by, y - by, z + by * 2, w + by * 2 });
 }
@@ -3369,11 +3381,29 @@ inline void Color::AdjustSaturation( float sat, Color& result ) const
     XMStoreFloat4( &result, XMColorAdjustSaturation( c, sat ) );
 }
 
+inline Color Color::AdjustedSaturation(float sat) const
+{
+    using namespace DirectX;
+    XMVECTOR c = XMLoadFloat4( this );
+    Color result;
+    XMStoreFloat4( &result, XMColorAdjustSaturation( c, sat ) );
+    return std::move(result);
+}
+
 inline void Color::AdjustContrast( float contrast )
 {
     using namespace DirectX;
     XMVECTOR c = XMLoadFloat4( this );
     XMStoreFloat4( this, XMColorAdjustContrast( c, contrast ) );
+}
+
+inline Color Color::AdjustedContrast(float contrast) const
+{
+    using namespace DirectX;
+    XMVECTOR c = XMLoadFloat4( this );
+    Color result;
+    XMStoreFloat4( &result, XMColorAdjustContrast( c, contrast ) );
+    return std::move(result);
 }
 
 inline void Color::AdjustContrast( float contrast, Color& result ) const
@@ -3474,16 +3504,16 @@ inline bool Ray::Intersects( const Vector3& tri0, const Vector3& tri1, const Vec
     return DirectX::TriangleTests::Intersects( position, direction, tri0, tri1, tri2, Dist );
 }
 
-inline bool Ray::Intersects( const Plane& plane, _Out_ float& Dist ) const
+inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const
 {
     using namespace DirectX;
 
-    XMVECTOR p = XMLoadFloat4( &plane );
-    XMVECTOR dir = XMLoadFloat3( &direction );
+    XMVECTOR p = XMLoadFloat4(&plane);
+    XMVECTOR dir = XMLoadFloat3(&direction);
 
-    XMVECTOR nd = XMPlaneDotNormal( p, dir );
+    XMVECTOR nd = XMPlaneDotNormal(p, dir);
 
-    if ( XMVector3LessOrEqual( XMVectorAbs( nd ), g_RayEpsilon ) )
+    if (XMVector3LessOrEqual(XMVectorAbs(nd), g_RayEpsilon))
     {
         Dist = 0.f;
         return false;
@@ -3491,11 +3521,11 @@ inline bool Ray::Intersects( const Plane& plane, _Out_ float& Dist ) const
     else
     {
         // t = -(dot(n,origin) + D) / dot(n,dir)
-        XMVECTOR pos = XMLoadFloat3( &position );
-        XMVECTOR v = XMPlaneDotNormal( p, pos );
-        v = XMVectorAdd( v, XMVectorSplatW(p) );
-        v = XMVectorDivide( v, nd );
-        float dist = - XMVectorGetX( v );
+        XMVECTOR pos = XMLoadFloat3(&position);
+        XMVECTOR v = XMPlaneDotNormal(p, pos);
+        v = XMVectorAdd(v, XMVectorSplatW(p));
+        v = XMVectorDivide(v, nd);
+        float dist = -XMVectorGetX(v);
         if (dist < 0)
         {
             Dist = 0.f;
