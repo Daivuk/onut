@@ -152,6 +152,42 @@ namespace onut
         }
     }
 
+    void SpriteBatch::drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio, const Color& color)
+    {
+        assert(m_isDrawing); // Should call begin() before calling draw()
+
+        if (!pTexture) pTexture = m_pTexWhite;
+        if (pTexture != m_pTexture)
+        {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        pVerts[0].position = {rect.x, rect.y};
+        pVerts[0].texCoord = {0, 0};
+        pVerts[0].color = color;
+
+        pVerts[1].position = {rect.x + inclinedRatio * rect.w, rect.y + rect.w};
+        pVerts[1].texCoord = {0, 1};
+        pVerts[1].color = color;
+
+        pVerts[2].position = {rect.x + rect.z + inclinedRatio * rect.w, rect.y + rect.w};
+        pVerts[2].texCoord = {1, 1};
+        pVerts[2].color = color;
+
+        pVerts[3].position = {rect.x + rect.z, rect.y};
+        pVerts[3].texCoord = {1, 0};
+        pVerts[3].color = color;
+
+        ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
+    }
+
     void SpriteBatch::drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()

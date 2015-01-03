@@ -13,6 +13,7 @@ namespace onut
 
         void begin();
         void drawRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
+        void drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);
         void drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors);
         void drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
         void drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors);

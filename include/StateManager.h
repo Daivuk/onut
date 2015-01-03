@@ -89,6 +89,7 @@ namespace onut
         void onEnterState(TstateEnum newState)
         {
             m_pCurrentState = m_states[newState]->createState();
+            m_pCurrentState->init();
         }
     };
 }
