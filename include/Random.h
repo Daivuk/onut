@@ -20,6 +20,13 @@ namespace onut
     int randi(int min, int max);
 
     /**
+    * @fn Returns random bool. True or false
+    * @param chances Percentage (0-1) of changes to return true
+    */
+    bool randb();
+    bool randb(float chances);
+
+    /**
     Get a random float
     @param max Inclusive maximum
     @param min Inclusive minimum

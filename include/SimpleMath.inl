@@ -1527,6 +1527,15 @@ inline Vector4 Vector4::Grow(float by) const {
     return std::move(Vector4{ x - by, y - by, z + by * 2, w + by * 2 });
 }
 
+inline bool Vector4::Contains(const Vector2& point) const
+{
+    return
+        point.x >= x &&
+        point.x <= x + z &&
+        point.y >= y &&
+        point.y <= y + w;
+}
+
 //------------------------------------------------------------------------------
 // Static functions
 //------------------------------------------------------------------------------

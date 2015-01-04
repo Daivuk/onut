@@ -34,6 +34,7 @@ extern onut::PrimitiveBatch*            OPB;
 extern onut::Settings*                  OSettings;
 extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;
+extern Vector2                          OMousePos;
 
 namespace onut
 {

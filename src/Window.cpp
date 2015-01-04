@@ -1,6 +1,7 @@
 ﻿#include "onut.h"
 #include "StringUtils.h"
 #include "Window.h"
+#include <windowsx.h>
 
 namespace onut
 {
@@ -11,6 +12,11 @@ namespace onut
         {
             PostQuitMessage(0);
             return 0;
+        }
+        else if (msg == WM_MOUSEMOVE)
+        {
+            OMousePos.x = static_cast<float>(GET_X_LPARAM(lparam));
+            OMousePos.y = static_cast<float>(GET_Y_LPARAM(lparam));
         }
 
         return DefWindowProc(handle, msg, wparam, lparam);

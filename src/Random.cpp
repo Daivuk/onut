@@ -26,6 +26,16 @@ namespace onut
         return rand() % range + min;
     }
 
+    bool randb()
+    {
+        return randi(0, 1) ? true : false;
+    }
+
+    bool randb(float chances)
+    {
+        return (randf(0.f, 1.f) <= chances);
+    }
+
     float randf(float max)
     {
         auto rnd = rand();

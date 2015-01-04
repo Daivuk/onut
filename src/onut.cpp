@@ -21,6 +21,8 @@ AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous<onut::Pool<>>     g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
+Vector2                             OMousePos;
+
 
 // So commonly used stuff
 float                               ODT = 0.f;
