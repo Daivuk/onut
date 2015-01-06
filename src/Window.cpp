@@ -15,8 +15,14 @@ namespace onut
         }
         else if (msg == WM_MOUSEMOVE)
         {
-            OMousePos.x = static_cast<float>(GET_X_LPARAM(lparam));
-            OMousePos.y = static_cast<float>(GET_Y_LPARAM(lparam));
+            auto xPos = GET_X_LPARAM(lparam);
+            auto yPos = GET_Y_LPARAM(lparam);
+            OInput->mousePos.x = static_cast<decltype(POINT().x)>(xPos);
+            OInput->mousePos.y = static_cast<decltype(POINT().x)>(yPos);
+            OInput->mousePosf.x = static_cast<float>(xPos);
+            OInput->mousePosf.y = static_cast<float>(yPos);
+            OMousePos = OInput->mousePosf;
+            return 0;
         }
 
         return DefWindowProc(handle, msg, wparam, lparam);

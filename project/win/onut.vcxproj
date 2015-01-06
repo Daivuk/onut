@@ -18,6 +18,7 @@
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
+    <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\onut.h" />
     <ClInclude Include="..\..\include\Particle.h" />
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
+    <ClInclude Include="..\..\src\InputDevice.h" />
     <ClInclude Include="..\..\src\LodePNG.h" />
     <ClInclude Include="..\..\src\pch.h" />
     <ClInclude Include="..\..\src\SoundCommon.h" />
@@ -58,6 +60,8 @@
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
+    <ClCompile Include="..\..\src\input.cpp" />
+    <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Particle.cpp" />
     <ClCompile Include="..\..\src\ParticleEmitter.cpp" />

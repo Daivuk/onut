@@ -4,6 +4,7 @@
 #include "ContentManager.h"
 #include "DefineHelpers.h"
 #include "EventManager.h"
+#include "Input.h"
 #include "GamePad.h"
 #include "ParticleSystemManager.h"
 #include "PrimitiveBatch.h"
@@ -35,6 +36,7 @@ extern onut::Settings*                  OSettings;
 extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;
+extern onut::Input*                     OInput;
 
 namespace onut
 {

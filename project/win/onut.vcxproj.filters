@@ -115,6 +115,12 @@
     <ClInclude Include="..\..\include\PrimitiveBatch.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\InputDevice.h">
+      <Filter>src\inputs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Input.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -204,6 +210,12 @@
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\InputDevice.cpp">
+      <Filter>src\inputs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\input.cpp">
+      <Filter>src\inputs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -223,6 +235,9 @@
     </Filter>
     <Filter Include="include\pfx">
       <UniqueIdentifier>{72eb4524-2055-4bee-9ce6-02a211075131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\inputs">
+      <UniqueIdentifier>{81486c28-1ce5-416d-b670-dd865837256d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

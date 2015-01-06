@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "Audio.h"
+#include "InputDevice.h"
 #include "onut.h"
 #include "Window.h"
 
@@ -22,6 +23,8 @@ onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous<onut::Pool<>>     g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
 Vector2                             OMousePos;
+onut::InputDevice*                  g_inputDevice = nullptr;
+onut::Input*                        OInput = nullptr;
 
 
 // So commonly used stuff
@@ -49,6 +52,10 @@ namespace onut
 
         // Content
         OContentManager = new ContentManager<>();
+
+        // Mouse/Keyboard
+        g_inputDevice = new InputDevice(g_pWindow);
+        OInput = new onut::Input(DIK_MOUSEZ + 1);
 
         // Gamepads
         for (int i = 0; i < 4; ++i)
@@ -112,6 +119,8 @@ namespace onut
         {
             delete g_gamePads[i];
         }
+        delete OInput;
+        delete g_inputDevice;
         delete OContentManager;
         delete OPB;
         delete OSB;
@@ -160,6 +169,8 @@ namespace onut
             ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--)
             {
+                OInput->update();
+                g_inputDevice->update();
                 for (auto& gamePad : g_gamePads)
                 {
                     gamePad->update();
