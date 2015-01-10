@@ -17,8 +17,15 @@ namespace onut
 
         void                    beginFrame();
         void                    endFrame();
+
         void                    setupFor2D();
         void                    setupFor3D();
+        void                    set2DCamera(const Matrix& viewProj);
+        Matrix                  set2DCamera(const Vector2& position, float zoom = 1.f);
+        Matrix                  set2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
+        Matrix                  build2DCamera(const Vector2& position, float zoom = 1.f);
+        Matrix                  build2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
+
         Vector3                 getCameraPos() const { return m_cameraPos; }
         Vector3                 getCameraDir() const { return m_cameraDir; }
         Vector3                 getCameraUp() const { return m_cameraUp; }

@@ -1,3 +1,4 @@
+#include "onut.h"
 #include "Renderer.h"
 #include "Window.h"
 
@@ -197,6 +198,9 @@ namespace onut
         // Set viewport
         auto viewport = CD3D11_VIEWPORT(0.f, 0.f, (float)m_backBufferDesc.Width, (float)m_backBufferDesc.Height);
         m_deviceContext->RSSetViewports(1, &viewport);
+
+        // Reset 2d view
+        set2DCamera(Vector2::Zero);
     }
 
     void Renderer::endFrame()
@@ -246,6 +250,52 @@ namespace onut
         m_cameraPos = Vector3::UnitZ;
         m_cameraDir = -Vector3::UnitZ;
         m_cameraUp = -Vector3::UnitY;
+    }
+
+    Matrix Renderer::build2DCamera(const Vector2& position, float zoom)
+    {
+        auto proj = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
+        auto view = Matrix::CreateTranslation(-position) * Matrix::CreateScale(zoom);
+        view.Invert();
+        auto viewProj = view * proj;
+        viewProj = viewProj.Transpose();
+
+        return viewProj;
+    }
+
+    Matrix Renderer::build2DCameraOffCenter(const Vector2& position, float zoom)
+    {
+        auto proj = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
+        auto view = Matrix::CreateTranslation(-position) *
+            Matrix::CreateScale(zoom) * 
+            Matrix::CreateTranslation({static_cast<float>(getResolution().x) * .5f, static_cast<float>(getResolution().y) * .5f, 0.f});
+        view.Invert();
+        auto viewProj = view * proj;
+        viewProj = viewProj.Transpose();
+
+        return viewProj;
+    }
+
+    void Renderer::set2DCamera(const Matrix& viewProj)
+    {
+        D3D11_MAPPED_SUBRESOURCE map;
+        m_deviceContext->Map(m_pViewProj2dBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, &viewProj._11, sizeof(viewProj));
+        m_deviceContext->Unmap(m_pViewProj2dBuffer, 0);
+    }
+
+    Matrix Renderer::set2DCamera(const Vector2& position, float zoom)
+    {
+        auto viewProj = build2DCamera(position, zoom);
+        set2DCamera(viewProj);
+        return viewProj;
+    }
+
+    Matrix Renderer::set2DCameraOffCenter(const Vector2& position, float zoom)
+    {
+        auto viewProj = build2DCameraOffCenter(position, zoom);
+        set2DCamera(viewProj);
+        return viewProj;
     }
 
     void Renderer::setupFor3D()
