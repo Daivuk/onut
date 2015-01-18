@@ -20,6 +20,7 @@
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\onut.h" />
+    <ClInclude Include="..\..\include\onutUI.h" />
     <ClInclude Include="..\..\include\Particle.h" />
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystem.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
+    <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
@@ -80,6 +82,7 @@
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\StringUtils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
+    <ClCompile Include="..\..\src\UI.cpp" />
     <ClCompile Include="..\..\src\WaveBank.cpp" />
     <ClCompile Include="..\..\src\WaveBankReader.cpp" />
     <ClCompile Include="..\..\src\WAVFileReader.cpp" />
@@ -135,7 +138,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ONUT;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson;$(DXSDK_DIR)Include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -161,11 +164,12 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ONUT;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson;$(DXSDK_DIR)Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/D_WIN32_WINNT=0x0601 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

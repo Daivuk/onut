@@ -121,6 +121,12 @@
     <ClInclude Include="..\..\include\Input.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\UI.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onutUI.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -215,6 +221,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\input.cpp">
       <Filter>src\inputs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UI.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

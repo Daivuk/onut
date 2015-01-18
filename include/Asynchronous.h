@@ -68,3 +68,57 @@ inline void OSequencialWork(TasyncWork asyncWork, TsyncWork syncWork, Targs... a
         });
     });
 }
+
+namespace onut
+{
+    class TasksRunner
+    {
+    private:
+        std::vector<std::function<void()>>              m_tasks;
+        std::vector<std::function<void()>>::size_type   m_index = 0;
+        std::mutex                                      m_mutex;
+
+        static void runTasks(TasksRunner& taskRunner)
+        {
+            decltype(taskRunner.m_index) size = taskRunner.m_tasks.size();
+            taskRunner.m_mutex.lock();
+            while (taskRunner.m_index < size)
+            {
+                auto fn = taskRunner.m_tasks[taskRunner.m_index++];
+                taskRunner.m_mutex.unlock();
+                fn();
+                taskRunner.m_mutex.lock();
+            }
+            taskRunner.m_mutex.unlock();
+        }
+
+    public:
+        TasksRunner(const decltype(m_tasks)& tasks) :
+            m_tasks(tasks)
+        {
+        }
+
+        void run()
+        {
+            std::vector<std::future<void>> threads;
+            auto threadCount = std::thread::hardware_concurrency() - 1;
+            for (decltype(threadCount) i = 0; i < threadCount; ++i)
+            {
+                threads.push_back(std::async(std::launch::async, [this]{
+                    runTasks(*this);
+                }));
+            }
+            runTasks(*this);
+            for (auto& thread : threads)
+            {
+                thread.wait();
+            }
+        }
+    };
+}
+
+inline void ORunTasks(const std::vector<std::function<void()>>& tasks)
+{
+    onut::TasksRunner taskRunner(tasks);
+    taskRunner.run();
+}

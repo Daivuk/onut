@@ -16,7 +16,6 @@
 
 namespace onut
 {
-
     inline bool sPfxValueUtils<bool>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetBool();

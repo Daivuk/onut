@@ -16,6 +16,7 @@
 #include "StateManager.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
+#include "onutUI.h"
 #include "UINodeNav.h"
 
 typedef onut::Anim<float>       OAnimf;
