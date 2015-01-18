@@ -24,11 +24,19 @@ namespace onut
             OMousePos = OInput->mousePosf;
             return 0;
         }
+        else if (msg == WM_SIZE)
+        {
+            if (ORenderer)
+            {
+                ORenderer->onResize();
+            }
+            return 0;
+        }
 
         return DefWindowProc(handle, msg, wparam, lparam);
     }
 
-    Window::Window(const POINT& resolution)
+    Window::Window(const POINT& resolution, bool isResizable)
     {
         // Define window style
         WNDCLASS wc = {0};
@@ -45,11 +53,22 @@ namespace onut
         auto posY = (screenH - resolution.y) / 2;
 
         // Create the window
-        m_handle = CreateWindow(L"OakNutWindow",
-                                utf8ToUtf16(OSettings->getGameName()).c_str(),
-                                WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
-                                posX, posY, resolution.x, resolution.y,
-                                nullptr, nullptr, nullptr, nullptr);
+        if (isResizable)
+        {
+            m_handle = CreateWindow(L"OakNutWindow",
+                                    utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                    WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
+                                    posX, posY, resolution.x, resolution.y,
+                                    nullptr, nullptr, nullptr, nullptr);
+        }
+        else
+        {
+            m_handle = CreateWindow(L"OakNutWindow",
+                                    utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                    WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                    posX, posY, resolution.x, resolution.y,
+                                    nullptr, nullptr, nullptr, nullptr);
+        }
     }
 
     HWND Window::getHandle()

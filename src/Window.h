@@ -6,7 +6,7 @@ namespace onut
     class Window
     {
     public:
-        Window(const POINT& resolution);
+        Window(const POINT& resolution, bool isResizable = false);
         HWND getHandle();
 
     private:

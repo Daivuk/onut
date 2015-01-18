@@ -88,6 +88,13 @@ namespace onut
         backBuffer->Release();
     }
 
+    void Renderer::onResize()
+    {
+        m_renderTargetView->Release();
+        m_swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        createRenderTarget();
+    }
+
     void Renderer::createRenderStates()
     {
         // 2D Depth state

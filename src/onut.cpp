@@ -41,7 +41,7 @@ namespace onut
         OEvent = new EventManager();
 
         // Window
-        g_pWindow = new Window(OSettings->getResolution());
+        g_pWindow = new Window(OSettings->getResolution(), OSettings->getIsResizableWindow());
 
         // DirectX
         ORenderer = new Renderer(*g_pWindow);

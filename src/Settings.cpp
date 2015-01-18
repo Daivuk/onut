@@ -21,4 +21,8 @@ namespace onut
         m_gameName = gameName;
         m_isDirty = true;
     }
+
+    void Settings::setIsResizableWindow(bool isResizableWindow)
+    {
+    }
 }

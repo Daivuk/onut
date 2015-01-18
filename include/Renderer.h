@@ -35,6 +35,8 @@ namespace onut
 
         POINT                   getResolution() const;
 
+        void                    onResize();
+
     private:
         enum class eRenderSetup
         {

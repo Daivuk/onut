@@ -1,0 +1,32 @@
+{
+    "widthType": "RELATIVE",
+    "heightType": "RELATIVE",
+    "children": [
+        {
+            "type": "UIPanel",
+            "name": "toolBar",
+            "style": "panel",
+            "widthType": "RELATIVE",
+            "height": 32
+        },
+        {
+            "type": "UIPanel",
+            "name": "pnlLeft",
+            "style": "panel",
+            "width": 286,
+            "y": 32,
+            "heightType": "RELATIVE"
+        },
+        {
+            "type": "UIPanel",
+            "name": "pnlRight",
+            "style": "panel",
+            "xType": "PERCENTAGE",
+            "x": 1,
+            "y": 32,
+            "width": 286,
+            "heightType": "RELATIVE",
+            "align": "TOP_RIGHT"
+        }
+    ]
+}

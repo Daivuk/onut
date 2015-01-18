@@ -171,8 +171,8 @@ namespace onut
     {
         m_rect.position.x = getJsonFloat(jsonNode["x"]);
         m_rect.position.y = getJsonFloat(jsonNode["y"]);
-        m_rect.size.x = getJsonFloat(jsonNode["width"], 100.f);
-        m_rect.size.y = getJsonFloat(jsonNode["height"], 40.f);
+        m_rect.size.x = getJsonFloat(jsonNode["width"], 0.f);
+        m_rect.size.y = getJsonFloat(jsonNode["height"], 0.f);
 
         m_align = getAlignFromString(getJsonString(jsonNode["align"]));
         m_posType[0] = getPosTypeFromString(getJsonString(jsonNode["xType"]));
@@ -204,6 +204,10 @@ namespace onut
                 {
                     pChild = new UIButton();
                 }
+                else if (!strcmp(jsonChildType, "UIPanel"))
+                {
+                    pChild = new UIPanel();
+                }
                 if (!pChild) continue;
                 add(pChild);
                 pChild->load(jsonChild);
@@ -231,6 +235,9 @@ namespace onut
                     break;
                 case eUIType::UI_BUTTON:
                     add(new UIButton(*(UIButton*)pChild));
+                    break;
+                case eUIType::UI_PANEL:
+                    add(new UIPanel(*(UIPanel*)pChild));
                     break;
             }
         }
@@ -632,6 +639,20 @@ namespace onut
     }
 
     void UIButton::renderControl(const UIContext& context, const sUIRect& rect) const
+    {
+        const auto& callback = context.getStyle(getStyle());
+        if (callback)
+        {
+            callback(this, rect);
+        }
+    }
+
+    UIPanel::UIPanel(const UIPanel& other) :
+        UIControl(other)
+    {
+    }
+
+    void UIPanel::renderControl(const UIContext& context, const sUIRect& rect) const
     {
         const auto& callback = context.getStyle(getStyle());
         if (callback)

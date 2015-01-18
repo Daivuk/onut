@@ -29,6 +29,8 @@
 
 # Other project stuff
 *.user
+*.suo
+*.sdf
 
 #folders
 Debug

@@ -52,6 +52,7 @@ namespace onut
     {
         UI_CONTROL,
         UI_BUTTON,
+        UI_PANEL
     };
 
     enum class eUIState : uint8_t
@@ -213,5 +214,20 @@ namespace onut
 
     private:
         std::string m_caption;
+    };
+
+    class UIPanel : public UIControl
+    {
+        friend UIControl;
+
+    public:
+        UIPanel(const UIPanel& other);
+
+        virtual eUIType getType() const override { return eUIType::UI_PANEL; }
+
+    protected:
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+
+        UIPanel() {}
     };
 }
