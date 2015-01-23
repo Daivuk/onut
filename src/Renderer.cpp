@@ -145,9 +145,9 @@ namespace onut
         // 2D Sampler state
         ret = m_device->CreateSamplerState(&(D3D11_SAMPLER_DESC{
             D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-            D3D11_TEXTURE_ADDRESS_CLAMP,
-            D3D11_TEXTURE_ADDRESS_CLAMP,
-            D3D11_TEXTURE_ADDRESS_CLAMP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
             0.f,
             1,
             D3D11_COMPARISON_ALWAYS,

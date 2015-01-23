@@ -4,9 +4,6 @@
     <ClInclude Include="..\..\include\onut.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Window.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Settings.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -125,6 +122,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onutUI.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Window.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

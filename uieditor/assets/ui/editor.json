@@ -10,23 +10,353 @@
             "height": 32
         },
         {
-            "type": "UIPanel",
-            "name": "pnlLeft",
-            "style": "panel",
-            "width": 286,
+            "type": "UIControl",
             "y": 32,
-            "heightType": "RELATIVE"
-        },
-        {
-            "type": "UIPanel",
-            "name": "pnlRight",
-            "style": "panel",
-            "xType": "PERCENTAGE",
-            "x": 1,
-            "y": 32,
-            "width": 286,
+            "widthType": "RELATIVE",
             "heightType": "RELATIVE",
-            "align": "TOP_RIGHT"
+            "height": -32,
+            "children": [
+                {
+                    "type": "UIPanel",
+                    "name": "pnlLeft",
+                    "style": "panel",
+                    "width": 286,
+                    "heightType": "RELATIVE",
+                    "children": [
+                        {
+                            "type": "UILabel",
+                            "style": "panelTitle",
+                            "text": "Toolbox",
+                            "widthType": "RELATIVE",
+                            "height": 20
+                        },
+                        {
+                            "type": "UIControl",
+                            "align": "TOP",
+                            "name": "toolBoxCont",
+                            "width": 260,
+                            "height": 52,
+                            "y": 24,
+                            "children": [
+                                {
+                                    "type": "UIButton",
+                                    "name": "btnCreateControl",
+                                    "style": "imgButton",
+                                    "x": 0,
+                                    "width": 84,
+                                    "height": 24,
+                                    "caption": "Control",
+                                    "allowDrag": true,
+                                    "children": [
+                                        {
+                                            "type": "UIImage",
+                                            "style": "icon",
+                                            "x": 4,
+                                            "width": 16,
+                                            "height": 16,
+                                            "image": "icoControl.png",
+                                            "align": "LEFT",
+                                            "clickThrough": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "name": "btnCreatePanel",
+                                    "style": "imgButton",
+                                    "x": 88,
+                                    "width": 84,
+                                    "height": 24,
+                                    "caption": "Panel",
+                                    "allowDrag": true,
+                                    "children": [
+                                        {
+                                            "type": "UIImage",
+                                            "style": "icon",
+                                            "x": 4,
+                                            "width": 16,
+                                            "height": 16,
+                                            "image": "icoPanel.png",
+                                            "align": "LEFT",
+                                            "clickThrough": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "name": "btnCreateButton",
+                                    "style": "imgButton",
+                                    "x": 176,
+                                    "width": 84,
+                                    "height": 24,
+                                    "caption": "Button",
+                                    "allowDrag": true,
+                                    "children": [
+                                        {
+                                            "type": "UIImage",
+                                            "style": "icon",
+                                            "x": 4,
+                                            "width": 16,
+                                            "height": 16,
+                                            "image": "icoButton.png",
+                                            "align": "LEFT",
+                                            "clickThrough": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "name": "btnCreateLabel",
+                                    "style": "imgButton",
+                                    "x": 0,
+                                    "y": 28,
+                                    "width": 84,
+                                    "height": 24,
+                                    "caption": "Label",
+                                    "allowDrag": true,
+                                    "children": [
+                                        {
+                                            "type": "UIImage",
+                                            "style": "icon",
+                                            "x": 4,
+                                            "width": 16,
+                                            "height": 16,
+                                            "image": "icoLabel.png",
+                                            "align": "LEFT",
+                                            "clickThrough": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "name": "btnCreateImage",
+                                    "style": "imgButton",
+                                    "x": 88,
+                                    "y": 28,
+                                    "width": 84,
+                                    "height": 24,
+                                    "caption": "Image",
+                                    "allowDrag": true,
+                                    "children": [
+                                        {
+                                            "type": "UIImage",
+                                            "style": "icon",
+                                            "x": 4,
+                                            "width": 16,
+                                            "height": 16,
+                                            "image": "icoImage.png",
+                                            "align": "LEFT",
+                                            "clickThrough": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UILabel",
+                            "style": "panelTitle",
+                            "text": "Scene Graph",
+                            "widthType": "RELATIVE",
+                            "y": 88,
+                            "height": 20
+                        }
+                    ]
+                },
+                {
+                    "type": "UIPanel",
+                    "name": "pnlRight",
+                    "style": "panel",
+                    "width": 286,
+                    "heightType": "RELATIVE",
+                    "align": "TOP_RIGHT",
+                    "children": [
+                        {
+                            "type": "UILabel",
+                            "style": "panelTitle",
+                            "text": "Inspector",
+                            "widthType": "RELATIVE",
+                            "height": 20
+                        }
+                    ]
+                },
+                {
+                    "type": "UIPanel",
+                    "name": "pnlView",
+                    "style": "view",
+                    "x": 286,
+                    "heightType": "RELATIVE",
+                    "widthType": "RELATIVE",
+                    "width": -572,
+                    "clipChildren": true,
+                    "children": [
+                        {
+                            "type": "UIPanel",
+                            "style": "sizableRegion",
+                            "name": "pnlRegion",
+                            "width": 640,
+                            "height": 480,
+                            "align": "CENTER",
+                            "children": [
+                                {
+                                    "type": "UIPanel",
+                                    "name": "gizmo",
+                                    "style": "gizmo",
+                                    "visible": false,
+                                    "children": [
+                                        {
+                                            "type": "UIControl",
+                                            "name": "topLeftHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "x": -12,
+                                            "y": -12,
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "topHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "y": -12,
+                                            "align": "TOP",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "topRightHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "x": -12,
+                                            "y": -12,
+                                            "align": "TOP_RIGHT",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "leftHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "x": -12,
+                                            "align": "LEFT",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "rightHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "x": -12,
+                                            "align": "RIGHT",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "bottomLeftHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "x": -12,
+                                            "y": -12,
+                                            "align": "BOTTOM_LEFT",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "bottomHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "y": -12,
+                                            "align": "BOTTOM",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "UIControl",
+                                            "name": "bottomRightHandle",
+                                            "width": 12,
+                                            "height": 12,
+                                            "x": -12,
+                                            "y": -12,
+                                            "align": "BOTTOM_RIGHT",
+                                            "children": [
+                                                {
+                                                    "type": "UIPanel",
+                                                    "style": "sizeHandle",
+                                                    "width": 6,
+                                                    "height": 6,
+                                                    "align": "CENTER",
+                                                    "clickThrough": true
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

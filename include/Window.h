@@ -8,8 +8,12 @@ namespace onut
     public:
         Window(const POINT& resolution, bool isResizable = false);
         HWND getHandle();
+        void setCursor(HCURSOR cursor);
 
     private:
-        HWND m_handle;
+        friend LRESULT CALLBACK WinProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
+
+        HWND    m_handle;
+        HCURSOR m_cursor;
     };
 }

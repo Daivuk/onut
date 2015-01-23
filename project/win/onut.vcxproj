@@ -44,6 +44,7 @@
     <ClInclude Include="..\..\include\Typedefs.h" />
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
+    <ClInclude Include="..\..\include\Window.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
@@ -52,7 +53,6 @@
     <ClInclude Include="..\..\src\SoundCommon.h" />
     <ClInclude Include="..\..\src\WaveBankReader.h" />
     <ClInclude Include="..\..\src\WAVFileReader.h" />
-    <ClInclude Include="..\..\src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Anim.cpp" />

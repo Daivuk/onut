@@ -18,6 +18,7 @@
 #include "TimingUtils.h"
 #include "onutUI.h"
 #include "UINodeNav.h"
+#include "Window.h"
 
 typedef onut::Anim<float>       OAnimf;
 typedef onut::Anim<int>         OAnimi;
@@ -38,6 +39,7 @@ extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;
 extern onut::Input*                     OInput;
+extern onut::Window*                    OWindow;
 
 namespace onut
 {

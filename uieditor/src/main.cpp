@@ -1,12 +1,15 @@
 #include <Windows.h>
+#include "DocumentView.h"
+#include "events.h"
 #include "styles.h"
 
 void init();
 void update();
 void render();
 
-onut::UIContext* g_pUIContext = nullptr;
-onut::UIControl* g_pUIScreen = nullptr;
+DocumentView*       g_pDocument = nullptr;
+onut::UIContext*    g_pUIContext = nullptr;
+onut::UIControl*    g_pUIScreen = nullptr;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
@@ -22,15 +25,22 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 void init()
 {
     g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
-    g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
-
     createUIStyles(g_pUIContext);
+
+    g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
+    hookUIEvents(g_pUIScreen);
+
+    g_pDocument = new DocumentView();
 }
 
 void update()
 {
+    // Adjust size
     g_pUIContext->resize({OScreenWf, OScreenHf});
+
+    // Update.
     g_pUIScreen->update(*g_pUIContext, {OMousePos.x, OMousePos.y}, OInput->isStateDown(DIK_MOUSEB1));
+    g_pDocument->update();
 }
 
 void render()

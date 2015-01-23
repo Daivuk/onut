@@ -5,6 +5,8 @@
 
 namespace onut
 {
+    Window* pWindow = nullptr;
+
     LRESULT CALLBACK WinProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         if (msg == WM_DESTROY ||
@@ -32,12 +34,23 @@ namespace onut
             }
             return 0;
         }
+        else if (msg == WM_SETCURSOR)
+        {
+            if (pWindow->m_cursor)
+            {
+                SetCursor(pWindow->m_cursor);
+                return 0;
+            }
+        }
 
         return DefWindowProc(handle, msg, wparam, lparam);
     }
 
-    Window::Window(const POINT& resolution, bool isResizable)
+    Window::Window(const POINT& resolution, bool isResizable) :
+        m_cursor(0)
     {
+        pWindow = this;
+
         // Define window style
         WNDCLASS wc = {0};
         wc.style = CS_OWNDC;
@@ -74,5 +87,10 @@ namespace onut
     HWND Window::getHandle()
     {
         return m_handle;
+    }
+
+    void Window::setCursor(HCURSOR cursor)
+    {
+        m_cursor = cursor;
     }
 }

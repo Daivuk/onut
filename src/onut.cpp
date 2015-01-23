@@ -10,7 +10,7 @@
 using namespace DirectX;
 
 // Our engine services
-onut::Window*                       g_pWindow = nullptr;
+onut::Window*                       OWindow = nullptr;
 onut::Renderer*                     ORenderer = nullptr;
 onut::Settings*                     OSettings = new onut::Settings();
 onut::SpriteBatch*                  OSB = nullptr;
@@ -41,10 +41,10 @@ namespace onut
         OEvent = new EventManager();
 
         // Window
-        g_pWindow = new Window(OSettings->getResolution(), OSettings->getIsResizableWindow());
+        OWindow = new Window(OSettings->getResolution(), OSettings->getIsResizableWindow());
 
         // DirectX
-        ORenderer = new Renderer(*g_pWindow);
+        ORenderer = new Renderer(*OWindow);
 
         // SpriteBatch
         OSB = new SpriteBatch();
@@ -54,7 +54,7 @@ namespace onut
         OContentManager = new ContentManager<>();
 
         // Mouse/Keyboard
-        g_inputDevice = new InputDevice(g_pWindow);
+        g_inputDevice = new InputDevice(OWindow);
         OInput = new onut::Input(DIK_MOUSEZ + 1);
 
         // Gamepads
@@ -125,7 +125,7 @@ namespace onut
         delete OPB;
         delete OSB;
         delete ORenderer;
-        delete g_pWindow;
+        delete OWindow;
         delete OEvent;
     }
 
