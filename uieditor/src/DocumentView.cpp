@@ -5,10 +5,12 @@ extern onut::UIControl* g_pUIScreen;
 
 DocumentView::DocumentView()
 {
-    pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
+    pUIContext = new onut::UIContext(onut::sUIVector2{640, 480});
     createViewUIStyles(pUIContext);
 
     pUIScreen = new onut::UIControl();
+    pUIScreen->setWidthType(onut::eUIDimType::DIM_RELATIVE);
+    pUIScreen->setHeightType(onut::eUIDimType::DIM_RELATIVE);
 
     // Dotted line gizmo for selection
     m_pGizmo = g_pUIScreen->getChild<onut::UIPanel>("gizmo");
@@ -26,6 +28,11 @@ DocumentView::DocumentView()
     static HCURSOR curSIZENESW = LoadCursor(nullptr, IDC_SIZENESW);
     static HCURSOR curSIZEWE = LoadCursor(nullptr, IDC_SIZEWE);
     static HCURSOR curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
+    static HCURSOR curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
+    m_pGizmo->onMouseDown = std::bind(&DocumentView::onGizmoStart, this, std::placeholders::_1, std::placeholders::_2);
+    m_pGizmo->onMouseUp = std::bind(&DocumentView::onGizmoEnd, this, std::placeholders::_1, std::placeholders::_2);
+    m_pGizmo->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curSIZEALL); };
+    m_pGizmo->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     for (auto& pGizmoHandle : m_gizmoHandles)
     {
         pGizmoHandle->onMouseDown = std::bind(&DocumentView::onGizmoHandleStart, this, std::placeholders::_1, std::placeholders::_2);
@@ -41,6 +48,9 @@ DocumentView::DocumentView()
     m_gizmoHandles[6]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curSIZENS); };
     m_gizmoHandles[7]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curSIZENWSE); };
 
+    // Add some dummy nodes in the scene graph for show
+    m_pSceneGraph = g_pUIScreen->getChild<onut::UITreeView>("sceneGraph");
+
     // Transform handles
     const float HANDLE_SIZE = 6.f;
     const float HANDLE_PADDING = 3.f;
@@ -53,10 +63,47 @@ DocumentView::~DocumentView()
     delete pUIContext;
 }
 
-void DocumentView::setSelected(onut::UIControl* in_pSelected)
+void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pParent)
 {
-    pSelected = in_pSelected;
+    auto pItem = new onut::UITreeViewItem();
+    pItem->setUserData(pControl);
+    pControl->setUserData(pItem);
+    auto pParentItem = static_cast<onut::UITreeViewItem*>(pParent->getUserData());
+    if (pParentItem)
+    {
+        pParentItem->addItem(pItem);
+    }
+    else
+    {
+        m_pSceneGraph->addItem(pItem);
+    }
+}
+
+void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneGraph)
+{ 
+    if (bUpdateSceneGraph)
+    {
+        m_pSceneGraph->unselectAll();
+    }
+    if (in_pSelected == pUIScreen)
+    {
+        pSelected = nullptr;
+    }
+    else
+    {
+        pSelected = in_pSelected;
+    }
     m_pGizmo->setIsVisible(pSelected != nullptr);
+    if (pSelected)
+    {
+        if (bUpdateSceneGraph)
+        {
+            auto pItem = static_cast<onut::UITreeViewItem*>(pSelected->getUserData());
+            m_pSceneGraph->addSelectedItem(pItem);
+        }
+        m_pGizmo->setRect(pSelected->getWorldRect(*pUIContext));
+    }
+    updateInspector();
 }
 
 void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
@@ -64,10 +111,24 @@ void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIM
     m_state = eDocumentState::MOVING_HANDLE;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_pCurrentHandle = pControl;
-    m_gizmoRectOnDown = pSelected->getWorldRect();
+    m_gizmoRectOnDown = pSelected->getWorldRect(*pUIContext);
 }
 
 void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+{
+    m_state = eDocumentState::IDLE;
+}
+
+void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+{
+    static HCURSOR curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
+    OWindow->setCursor(curSIZEALL);
+    m_state = eDocumentState::MOVING_GIZO;
+    m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
+    m_gizmoRectOnDown = pSelected->getWorldRect(*pUIContext);
+}
+
+void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
 {
     m_state = eDocumentState::IDLE;
 }
@@ -82,13 +143,26 @@ void DocumentView::update()
         case eDocumentState::MOVING_HANDLE:
             updateMovingHandle();
             break;
-        default:
-            if (pSelected)
-            {
-                m_pGizmo->setRect(pSelected->getWorldRect());
-            }
+        case eDocumentState::MOVING_GIZO:
+            updateMovingGizmo();
             break;
     }
+}
+
+void DocumentView::updateSelectionWithRect(const onut::sUIRect& rect)
+{
+    if (!pSelected) return;
+    pSelected->setWorldRect(*pUIContext, rect);
+}
+
+void DocumentView::updateMovingGizmo()
+{
+    auto mouseDiff = OMousePos - m_mousePosOnDown;
+    auto newRect = m_gizmoRectOnDown;
+    newRect.position.x += mouseDiff.x;
+    newRect.position.y += mouseDiff.y;
+    m_pGizmo->setRect(newRect);
+    updateSelectionWithRect(newRect);
 }
 
 void DocumentView::updateMovingHandle()
@@ -109,6 +183,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.y < 0) newRect.size.y = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[1])
     {
@@ -120,6 +195,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.y < 0) newRect.size.y = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[2])
     {
@@ -134,6 +210,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.y < 0) newRect.size.y = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[3])
     {
@@ -145,6 +222,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.x < 0) newRect.size.x = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[4])
     {
@@ -154,6 +232,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.x < 0) newRect.size.x = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[5])
     {
@@ -168,6 +247,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.y < 0) newRect.size.y = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[6])
     {
@@ -177,6 +257,7 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.y < 0) newRect.size.y = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
     else if (m_pCurrentHandle == m_gizmoHandles[7])
     {
@@ -189,10 +270,15 @@ void DocumentView::updateMovingHandle()
         if (newRect.size.y < 0) newRect.size.y = 0;
 
         m_pGizmo->setRect(newRect);
+        updateSelectionWithRect(newRect);
     }
 }
 
 void DocumentView::render()
 {
     pUIScreen->render(*pUIContext);
+}
+
+void DocumentView::updateInspector()
+{
 }

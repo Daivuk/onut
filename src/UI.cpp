@@ -170,6 +170,164 @@ namespace onut
         m_screenSize = screenSize;
     }
 
+    UIProperty::UIProperty()
+    {
+        m_szString = nullptr;
+        m_bool = false;
+        m_int = 0;
+        m_float = 0.f;
+        m_type = eUIPropertyType::P_INT;
+    }
+
+    UIProperty::UIProperty(const rapidjson::Value& jsonNode)
+    {
+        m_szString = nullptr;
+        m_bool = false;
+        m_int = 0;
+        m_float = 0.f;
+        if (jsonNode.IsNumber())
+        {
+            if (jsonNode.IsDouble())
+            {
+                m_type = eUIPropertyType::P_FLOAT;
+                m_float = static_cast<float>(jsonNode.GetDouble());
+            }
+            else if (jsonNode.IsInt())
+            {
+                m_type = eUIPropertyType::P_INT;
+                m_int = jsonNode.GetInt();
+            }
+            else
+            {
+                assert(false);
+            }
+        }
+        else if (jsonNode.IsBool())
+        {
+            m_type = eUIPropertyType::P_BOOL;
+            m_bool = jsonNode.GetBool();
+        }
+        else if (jsonNode.IsString())
+        {
+            m_type = eUIPropertyType::P_STRING;
+            auto len = jsonNode.GetStringLength();
+            auto szString = jsonNode.GetString();
+            m_szString = new char[len + 1];
+            memcpy(m_szString, szString, len + 1);
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+
+    UIProperty::UIProperty(const UIProperty& other)
+    {
+        m_szString = nullptr;
+        m_bool = false;
+        m_int = 0;
+        m_float = 0.f;
+        m_type = other.m_type;
+        switch (m_type)
+        {
+            case eUIPropertyType::P_BOOL:
+                m_bool = other.m_bool;
+                break;
+            case eUIPropertyType::P_INT:
+                m_int = other.m_int;
+                break;
+            case eUIPropertyType::P_FLOAT:
+                m_float = other.m_float;
+                break;
+            case eUIPropertyType::P_STRING:
+            {
+                auto len = strlen(other.m_szString);
+                m_szString = new char[len + 1];
+                memcpy(m_szString, other.m_szString, len + 1);
+                break;
+            }
+        }
+    }
+
+    UIProperty& UIProperty::operator=(const UIProperty& other)
+    {
+        if (m_type == eUIPropertyType::P_STRING)
+        {
+            delete[] m_szString;
+        }
+        m_szString = nullptr;
+        m_bool = false;
+        m_int = 0;
+        m_float = 0.f;
+        m_type = other.m_type;
+        switch (m_type)
+        {
+            case eUIPropertyType::P_BOOL:
+                m_bool = other.m_bool;
+                break;
+            case eUIPropertyType::P_INT:
+                m_int = other.m_int;
+                break;
+            case eUIPropertyType::P_FLOAT:
+                m_float = other.m_float;
+                break;
+            case eUIPropertyType::P_STRING:
+            {
+                auto len = strlen(other.m_szString);
+                m_szString = new char[len + 1];
+                memcpy(m_szString, other.m_szString, len + 1);
+                break;
+            }
+        }
+        return *this;
+    }
+
+    UIProperty::~UIProperty()
+    {
+        if (m_type == eUIPropertyType::P_STRING)
+        {
+            delete[] m_szString;
+        }
+    }
+
+    const char* UIProperty::getString() const
+    {
+        assert(m_type == eUIPropertyType::P_STRING);
+        return m_szString;
+    }
+
+    int UIProperty::getInt() const
+    {
+        assert(m_type == eUIPropertyType::P_INT);
+        return m_int;
+    }
+
+    float UIProperty::getFloat() const
+    {
+        assert(m_type == eUIPropertyType::P_FLOAT || m_type == eUIPropertyType::P_INT);
+        if (m_type == eUIPropertyType::P_FLOAT)
+        {
+            return m_float;
+        }
+        else
+        {
+            return static_cast<float>(m_int);
+        }
+    }
+
+    bool UIProperty::getBool() const
+    {
+        assert(m_type == eUIPropertyType::P_BOOL || m_type == eUIPropertyType::P_INT);
+        if (m_type == eUIPropertyType::P_BOOL)
+        {
+            return m_bool;
+        }
+        else
+        {
+            return m_int ? true : false;
+        }
+    }
+
     UIControl::UIControl()
     {
         m_posType[0] = eUIPosType::POS_RELATIVE;
@@ -214,6 +372,16 @@ namespace onut
         m_isVisible = getJsonBool(jsonNode["visible"], true);
         m_isClickThrough = getJsonBool(jsonNode["clickThrough"], false);
 
+        // Properties
+        auto& properties = jsonNode["properties"];
+        if (!properties.IsNull())
+        {
+            for (auto it = properties.MemberBegin(); it != properties.MemberEnd(); ++it)
+            {
+                m_properties[it->name.GetString()] = UIProperty(it->value);
+            }
+        }
+
         // Load children
         auto& jsonChildren = jsonNode["children"];
         if (jsonChildren.IsArray())
@@ -244,6 +412,14 @@ namespace onut
                 {
                     pChild = new UIImage();
                 }
+                else if (!strcmp(jsonChildType, "UICheckBox"))
+                {
+                    pChild = new UICheckBox();
+                }
+                else if (!strcmp(jsonChildType, "UITreeView"))
+                {
+                    pChild = new UITreeView();
+                }
                 if (!pChild) continue;
                 add(pChild);
                 pChild->load(jsonChild);
@@ -253,6 +429,9 @@ namespace onut
 
     UIControl::UIControl(const UIControl& other)
     {
+        m_isEnabled = other.m_isEnabled;
+        m_isClickThrough = other.m_isClickThrough;
+        m_isVisible = other.m_isVisible;
         m_rect = other.m_rect;
         m_align = other.m_align;
         m_posType[0] = other.m_posType[0];
@@ -260,7 +439,8 @@ namespace onut
         m_dimType[0] = other.m_dimType[0];
         m_dimType[1] = other.m_dimType[1];
         m_name = other.m_name;
-        m_pParent = nullptr;
+        m_pUserData = other.m_pUserData;
+        m_properties = other.m_properties;
 
         for (auto pChild : m_children)
         {
@@ -280,6 +460,12 @@ namespace onut
                     break;
                 case eUIType::UI_IMAGE:
                     add(new UIImage(*(UIImage*)pChild));
+                    break;
+                case eUIType::UI_CHECKBOX:
+                    add(new UICheckBox(*(UICheckBox*)pChild));
+                    break;
+                case eUIType::UI_TREEVIEW:
+                    add(new UITreeView(*(UITreeView*)pChild));
                     break;
             }
         }
@@ -324,7 +510,7 @@ namespace onut
         in_pChild->release();
     }
 
-    UIControl* UIControl::getChild(const std::string& name, bool bSearchSubChildren)
+    UIControl* UIControl::getChild(const std::string& name, bool bSearchSubChildren) const
     {
         for (auto pChild : m_children)
         {
@@ -347,6 +533,54 @@ namespace onut
         }
 
         return nullptr;
+    }
+
+    void UIControl::getChild(const UIContext& context, 
+                             const sUIVector2& mousePos, 
+                             bool bSearchSubChildren, 
+                             const sUIRect& parentRect, 
+                             const UIControl** ppHoverControl) const
+    {
+        if (!isVisible() || isClickThrough()) return;
+
+        sUIRect worldRect = getWorldRect(parentRect);
+        auto itend = m_children.rend();
+        for (auto it = m_children.rbegin(); it != itend; ++it)
+        {
+            auto pChild = *it;
+            pChild->getChild(context, mousePos, bSearchSubChildren, worldRect, ppHoverControl);
+        }
+
+        if (!*ppHoverControl)
+        {
+            if (mousePos.x >= worldRect.position.x &&
+                mousePos.y >= worldRect.position.y &&
+                mousePos.x <= worldRect.position.x + worldRect.size.x &&
+                mousePos.y <= worldRect.position.y + worldRect.size.y)
+            {
+                *ppHoverControl = this;
+            }
+        }
+    }
+
+    UIControl* UIControl::getChild(const UIContext& context, const sUIVector2& mousePos, bool bSearchSubChildren) const
+    {
+        sUIRect parentWorldRect;
+        if (getParent())
+        {
+            parentWorldRect = getParent()->getWorldRect(context);
+        }
+        else
+        {
+            parentWorldRect = {{0, 0}, context.getScreenSize()};
+        }
+        const UIControl* pHoverControl = nullptr;
+        getChild(context, mousePos, bSearchSubChildren, parentWorldRect, &pHoverControl);
+        if (pHoverControl == this)
+        {
+            pHoverControl = nullptr;
+        }
+        return (UIControl*)pHoverControl; // cast from const to not const. Chuuut don't tell anyone
     }
 
     void UIControl::setStyle(const char* szStyle)
@@ -374,6 +608,7 @@ namespace onut
         sUIRect parentRect = {{0, 0}, context.getScreenSize()};
         context.m_mouseEvent.mousePos = mousePos;
         context.m_mouseEvent.isMouseDown = bMouseDown;
+        context.m_mouseEvent.pContext = &context;
         context.m_pHoverControl = nullptr;
 
         // Update UIs
@@ -458,6 +693,7 @@ namespace onut
                     {
                         m_pLastDownControl->onClick(m_pLastDownControl, m_mouseEvent);
                     }
+                    m_pLastDownControl->onClickInternal(m_mouseEvent);
                 }
             }
             if (m_pDownControl)
@@ -466,6 +702,7 @@ namespace onut
                 {
                     m_pDownControl->onMouseDown(m_pDownControl, m_mouseEvent);
                 }
+                m_pDownControl->onMouseDownInternal(m_mouseEvent);
             }
         }
     }
@@ -483,13 +720,17 @@ namespace onut
         renderInternal(context, parentRect);
     }
 
-    sUIRect UIControl::getWorldRect() const
+    sUIRect UIControl::getWorldRect(const UIContext& context) const
     {
         if (m_pParent)
         {
-            return std::move(getWorldRect(m_pParent->getWorldRect()));
+            return std::move(getWorldRect(m_pParent->getWorldRect(context)));
         }
-        return m_rect;
+        else
+        {        
+            sUIRect parentRect = {{0, 0}, context.getScreenSize()};
+            return std::move(getWorldRect(parentRect));
+        }
     }
 
     sUIRect UIControl::getWorldRect(const sUIRect& parentRect) const
@@ -584,12 +825,20 @@ namespace onut
         return std::move(worldRect);
     }
 
-    void UIControl::updateInternal(UIContext& context, const sUIRect& parentRect, bool bIsParentHover)
+    void UIControl::updateInternal(UIContext& context, const sUIRect& parentRect)
     {
         if (!isEnabled() || isClickThrough()) return;
-
         sUIRect worldRect = getWorldRect(parentRect);
-        if (!context.m_pHoverControl || bIsParentHover)
+
+        // Do children first, inverted
+        auto itend = m_children.rend();
+        for (auto it = m_children.rbegin(); it != itend; ++it)
+        {
+            auto pChild = *it;
+            pChild->updateInternal(context, worldRect);
+        }
+
+        if (!context.m_pHoverControl)
         {
             if (context.m_mouseEvent.mousePos.x >= worldRect.position.x &&
                 context.m_mouseEvent.mousePos.y >= worldRect.position.y &&
@@ -600,10 +849,6 @@ namespace onut
                 context.m_mouseEvent.localMousePos.y = context.m_mouseEvent.mousePos.y - worldRect.position.y;
                 context.m_pHoverControl = this;
             }
-        }
-        for (auto pChild : m_children)
-        {
-            pChild->updateInternal(context, worldRect, bIsParentHover || context.m_pHoverControl == this);
         }
     }
 
@@ -622,6 +867,22 @@ namespace onut
     void UIControl::setRect(const sUIRect& rect)
     {
         m_rect = rect;
+    }
+
+    void UIControl::setWorldRect(const UIContext& context, const sUIRect& rect)
+    {
+        if (!m_pParent)
+        {
+            m_rect = rect;
+        }
+        else
+        {
+            auto worldRect = m_pParent->getWorldRect(context);
+            m_rect.position.x = rect.position.x - worldRect.position.x;
+            m_rect.position.y = rect.position.y - worldRect.position.y;
+        }
+        //m_rect.size.x = rect.size.x - worldRect.size.x;
+        //m_rect.size.y = rect.size.y - worldRect.size.y;
     }
 
     void UIControl::setName(const std::string& name)
@@ -679,6 +940,174 @@ namespace onut
         m_pUserData = pUserData;
     }
 
+    void UIControl::setAlign(eUIAlign align)
+    {
+        m_align = align;
+    }
+
+    void UIControl::setWidthType(eUIDimType widthType)
+    {
+        m_dimType[0] = widthType;
+    }
+
+    void UIControl::setHeightType(eUIDimType heightType)
+    {
+        m_dimType[1] = heightType;
+    }
+
+    void UIControl::setXType(eUIPosType xType)
+    {
+        m_posType[0] = xType;
+    }
+
+    void UIControl::setYType(eUIPosType yType)
+    {
+        m_posType[1] = yType;
+    }
+
+    const UIProperty& UIControl::getProperty(const std::string& name) const
+    {
+        auto& it = m_properties.find(name);
+        return it->second;
+    }
+
+    void UITreeView::addItem(UITreeViewItem* pItem)
+    {
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->m_pTreeView = this;
+        m_items.push_back(pItem);
+    }
+
+    void UITreeView::removeItem(UITreeViewItem* pItem)
+    {
+        auto size = m_items.size();
+        for (decltype(size) i = 0; i < size; ++i)
+        {
+            if (m_items[i] == pItem)
+            {
+                m_items.erase(m_items.begin() + i);
+                delete pItem;
+                return;
+            }
+        }
+    }
+
+    UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton) const
+    {
+        // Render it's items
+        sUIRect itemRect = {rect.position, {rect.size.x, m_itemHeight}};
+        for (auto pItem : m_items)
+        {
+            auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton);
+            if (pRet)
+            {
+                return pRet;
+            }
+        }
+        return nullptr;
+    }
+
+    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton) const
+    {
+        if (pos.y >= rect.position.y &&
+            pos.y <= rect.position.y + rect.size.y)
+        {
+            if (pos.x >= rect.position.x + getExpandClickWidth() ||
+                pos.x <= rect.position.x)
+            {
+                return pItem;
+            }
+            else if (pPickedExpandButton)
+            {
+                *pPickedExpandButton = true;
+                return pItem;
+            }
+        }
+        rect.position.y += getItemHeight();
+        if (pItem->m_isExpanded)
+        {
+            if (!pItem->m_items.empty())
+            {
+                auto xOffset = getExpandedXOffset();
+                rect.position.x += xOffset;
+                rect.size.x -= xOffset;
+                for (auto pHisItem : pItem->m_items)
+                {
+                    auto pRet = getItemAtPosition(pHisItem, pos, rect, pPickedExpandButton);
+                    if (pRet)
+                    {
+                        return pRet;
+                    }
+                }
+                rect.size.x += xOffset;
+                rect.position.x -= xOffset;
+            }
+        }
+        return nullptr;
+    }
+
+    void UITreeView::unselectAll()
+    {
+        m_selectedItems.clear();
+        for (auto pItem : m_items)
+        {
+            unselectItem(pItem);
+        }
+    }
+
+    void UITreeView::unselectItem(UITreeViewItem* pItem)
+    {
+        pItem->m_isSelected = false;
+        for (auto pHisItem : pItem->m_items)
+        {
+            unselectItem(pHisItem);
+        }
+    }
+
+    void UITreeView::addSelectedItem(UITreeViewItem* pItem)
+    {
+        m_selectedItems.push_back(pItem);
+        pItem->m_isSelected = true;
+        expandTo(pItem);
+    }
+
+    void UITreeView::expandTo(UITreeViewItem* pItem)
+    {
+        pItem->m_isExpanded = true;
+        if (pItem->m_pParent)
+        {
+            expandTo(pItem->m_pParent);
+        }
+    }
+
+    void UITreeViewItem::addItem(UITreeViewItem* pItem)
+    {
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->m_pParent = this;
+        pItem->m_pTreeView = m_pTreeView;
+        m_items.push_back(pItem);
+    }
+
+    void UITreeViewItem::removeItem(UITreeViewItem* pItem)
+    {
+        auto size = m_items.size();
+        for (decltype(size) i = 0; i < size; ++i)
+        {
+            if (m_items[i] == pItem)
+            {
+                m_items.erase(m_items.begin() + i);
+                delete pItem;
+                return;
+            }
+        }
+    }
+
     //--- Copy
     UIButton::UIButton(const UIButton& other) :
         UIControl(other)
@@ -703,6 +1132,37 @@ namespace onut
         m_image = other.m_image;
     }
 
+    UICheckBox::UICheckBox(const UICheckBox& other) :
+        UIControl(other)
+    {
+        m_caption = other.m_caption;
+        m_isChecked = other.m_isChecked;
+    }
+
+    UITreeView::UITreeView(const UITreeView& other) :
+        UIControl(other)
+    {
+        for (auto pOtherItem : other.m_items)
+        {
+            m_items.push_back(new UITreeViewItem(*pOtherItem));
+        }
+    }
+
+    UITreeViewItem::UITreeViewItem(const std::string& text) :
+        m_text(text)
+    {
+    }
+
+    UITreeViewItem::UITreeViewItem(const UITreeViewItem& other)
+    {
+        for (auto pOtherItem : other.m_items)
+        {
+            m_items.push_back(new UITreeViewItem(*pOtherItem));
+        }
+        m_isExpanded = other.m_isExpanded;
+        m_text = other.m_text;
+    }
+
     //--- Properties
     void UIButton::setCaption(const std::string& caption)
     {
@@ -722,6 +1182,41 @@ namespace onut
     void UIImage::setImage(const std::string& image)
     {
         m_image = image;
+    }
+
+    void UICheckBox::setIsChecked(bool in_isChecked)
+    {
+        m_isChecked = in_isChecked;
+    }
+
+    void UITreeView::setExpandedXOffset(float expandedXOffset)
+    {
+        m_expandedXOffset = expandedXOffset;
+    }
+
+    void UITreeView::setExpandClickWidth(float expandClickWidth)
+    {
+        m_expandClickWidth = expandClickWidth;
+    }
+
+    void UITreeView::setItemHeight(float itemHeight)
+    {
+        m_itemHeight = itemHeight;
+    }
+
+    void UITreeViewItem::setIsExpanded(bool isExpanded)
+    {
+        m_isExpanded = isExpanded;
+    }
+
+    void UITreeViewItem::setText(const std::string& text)
+    {
+        m_text = text;
+    }
+
+    void UITreeViewItem::setUserData(void* pUserData)
+    {
+        m_pUserData = pUserData;
     }
 
     //--- Loads
@@ -747,6 +1242,21 @@ namespace onut
     {
         UIControl::load(jsonNode);
         m_image = getJsonString(jsonNode["image"]);
+    }
+
+    void UICheckBox::load(const rapidjson::Value& jsonNode)
+    {
+        UIControl::load(jsonNode);
+        m_caption = getJsonString(jsonNode["caption"]);
+        m_isChecked = getJsonBool(jsonNode["checked"], false);
+    }
+
+    void UITreeView::load(const rapidjson::Value& jsonNode)
+    {
+        UIControl::load(jsonNode);
+        m_expandedXOffset = getJsonFloat(jsonNode["expandedXOffset"], 18.f);
+        m_expandClickWidth = getJsonFloat(jsonNode["expandClickWidth"], 18.f);
+        m_itemHeight = getJsonFloat(jsonNode["itemHeight"], 18.f);
     }
 
     //--- Renders
@@ -783,6 +1293,74 @@ namespace onut
         if (callback)
         {
             callback->render(this, rect);
+        }
+    }
+
+    void UICheckBox::renderControl(const UIContext& context, const sUIRect& rect) const
+    {
+        const auto& callback = context.getStyle<UICheckBox>(getStyle());
+        if (callback)
+        {
+            callback->render(this, rect);
+        }
+    }
+
+    void UITreeView::renderControl(const UIContext& context, const sUIRect& rect) const
+    {
+        const auto& callback = context.getStyle<UITreeView>(getStyle());
+        if (callback)
+        {
+            callback->render(this, rect);
+        }
+
+        // Render it's items
+        sUIRect itemRect = {rect.position, {rect.size.x, m_itemHeight}};
+        const auto& itemCallback = context.getStyle<UITreeViewItem>(getStyle());
+        if (itemCallback)
+        {
+            for (auto pItem : m_items)
+            {
+                pItem->render(itemCallback, this, rect, itemRect);
+            }
+        }
+    }
+
+    //--- Internal events
+    void UICheckBox::onClickInternal(const UIMouseEvent& evt)
+    {
+        m_isChecked = !m_isChecked;
+        if (onCheckChanged)
+        {
+            UICheckEvent checkEvt;
+            checkEvt.isChecked = m_isChecked;
+            checkEvt.pContext = evt.pContext;
+            onCheckChanged(this, checkEvt);
+        }
+    }
+
+    void UITreeView::onMouseDownInternal(const UIMouseEvent& evt)
+    {
+        auto worldRect = getWorldRect(*evt.pContext);
+        bool pickedExpandButton = false;
+        auto pPicked = getItemAtPosition(evt.mousePos, worldRect, &pickedExpandButton);
+        if (pPicked)
+        {
+            if (pickedExpandButton)
+            {
+                pPicked->m_isExpanded = !pPicked->m_isExpanded;
+            }
+            else
+            {
+                unselectAll();
+                addSelectedItem(pPicked);
+                if (onSelectionChanged)
+                {
+                    UITreeViewSelectEvent myEvt;
+                    myEvt.pContext = evt.pContext;
+                    myEvt.pSelectedItems = &m_selectedItems;
+                    onSelectionChanged(this, myEvt);
+                }
+            }
         }
     }
 };

@@ -7,7 +7,161 @@
             "name": "toolBar",
             "style": "panel",
             "widthType": "RELATIVE",
-            "height": 32
+            "height": 32,
+            "children": [
+                {
+                    "type": "UIImage",
+                    "name": "toolNew",
+                    "style": "toolBtn",
+                    "x": 12,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "page_white.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolOpen",
+                    "style": "toolBtn",
+                    "x": 34,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "folder.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolSave",
+                    "style": "toolBtn",
+                    "x": 56,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "disk.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolSaveAs",
+                    "style": "toolBtn",
+                    "x": 78,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "disk_multiple.png"
+                },
+                {
+                    "type": "UIPanel",
+                    "style": "toolSeparator",
+                    "x": 100,
+                    "align": "LEFT",
+                    "width": 10,
+                    "height": 20
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolCut",
+                    "style": "toolBtn",
+                    "x": 110,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "cut.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolCopy",
+                    "style": "toolBtn",
+                    "x": 132,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "page_copy.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolPaste",
+                    "style": "toolBtn",
+                    "x": 154,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "page_paste.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolDelete",
+                    "style": "toolBtn",
+                    "x": 176,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "delete.png"
+                },
+                {
+                    "type": "UIPanel",
+                    "style": "toolSeparator",
+                    "x": 198,
+                    "align": "LEFT",
+                    "width": 10,
+                    "height": 20
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolUndo",
+                    "style": "toolBtn",
+                    "x": 208,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "arrow_undo.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolRedo",
+                    "style": "toolBtn",
+                    "x": 230,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "arrow_redo.png"
+                },
+                {
+                    "type": "UIPanel",
+                    "style": "toolSeparator",
+                    "x": 252,
+                    "align": "LEFT",
+                    "width": 10,
+                    "height": 20
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolPlay",
+                    "style": "toolBtn",
+                    "x": 264,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "resultset_next.png"
+                },
+                {
+                    "type": "UIImage",
+                    "name": "toolPlaySettings",
+                    "style": "toolBtn",
+                    "x": 286,
+                    "align": "LEFT",
+                    "width": 22,
+                    "height": 20,
+                    "image": "cog.png"
+                },
+                {
+                    "type": "UIPanel",
+                    "style": "toolSeparator",
+                    "x": 308,
+                    "align": "LEFT",
+                    "width": 10,
+                    "height": 20
+                }
+            ]
         },
         {
             "type": "UIControl",
@@ -54,7 +208,7 @@
                                             "x": 4,
                                             "width": 16,
                                             "height": 16,
-                                            "image": "icoControl.png",
+                                            "image": "shape_handles.png",
                                             "align": "LEFT",
                                             "clickThrough": true
                                         }
@@ -76,7 +230,7 @@
                                             "x": 4,
                                             "width": 16,
                                             "height": 16,
-                                            "image": "icoPanel.png",
+                                            "image": "shape_square.png",
                                             "align": "LEFT",
                                             "clickThrough": true
                                         }
@@ -121,7 +275,7 @@
                                             "x": 4,
                                             "width": 16,
                                             "height": 16,
-                                            "image": "icoLabel.png",
+                                            "image": "text_dropcaps.png",
                                             "align": "LEFT",
                                             "clickThrough": true
                                         }
@@ -144,7 +298,7 @@
                                             "x": 4,
                                             "width": 16,
                                             "height": 16,
-                                            "image": "icoImage.png",
+                                            "image": "picture.png",
                                             "align": "LEFT",
                                             "clickThrough": true
                                         }
@@ -159,6 +313,16 @@
                             "widthType": "RELATIVE",
                             "y": 88,
                             "height": 20
+                        },
+                        {
+                            "type": "UITreeView",
+                            "name": "sceneGraph",
+                            "widthType": "RELATIVE",
+                            "width": -8,
+                            "heightType": "RELATIVE",
+                            "height": -116,
+                            "x": 4,
+                            "y": 112
                         }
                     ]
                 },
@@ -173,9 +337,314 @@
                         {
                             "type": "UILabel",
                             "style": "panelTitle",
-                            "text": "Inspector",
+                            "text": "UIControl",
                             "widthType": "RELATIVE",
                             "height": 20
+                        },
+                        {
+                            "type": "UICheckBox",
+                            "caption": "Enabled",
+                            "width": 135,
+                            "height": 24,
+                            "x": 4,
+                            "y": 24,
+                            "checked": true
+                        },
+                        {
+                            "type": "UICheckBox",
+                            "caption": "Visible",
+                            "width": 135,
+                            "height": 24,
+                            "x": 147,
+                            "y": 24,
+                            "checked": true
+                        },
+                        {
+                            "type": "UICheckBox",
+                            "caption": "Click through",
+                            "width": 135,
+                            "height": 24,
+                            "x": 4,
+                            "y": 52
+                        },
+                        {
+                            "type": "UILabel",
+                            "text": "Name",
+                            "widthType": "PERCENTAGE",
+                            "width": 0.382,
+                            "height": 24,
+                            "x": 4,
+                            "y": 80
+                        },
+                        {
+                            "type": "UIButton",
+                            "caption": "Button",
+                            "widthType": "PERCENTAGE",
+                            "width": 0.618,
+                            "height": 24,
+                            "align": "TOP_RIGHT",
+                            "x": 4,
+                            "y": 80
+                        },
+                        {
+                            "type": "UILabel",
+                            "text": "Style",
+                            "widthType": "PERCENTAGE",
+                            "width": 0.382,
+                            "height": 24,
+                            "x": 4,
+                            "y": 108
+                        },
+                        {
+                            "type": "UIButton",
+                            "caption": "Button",
+                            "widthType": "PERCENTAGE",
+                            "width": 0.618,
+                            "height": 24,
+                            "align": "TOP_RIGHT",
+                            "x": 4,
+                            "y": 108
+                        },
+                        {
+                            "type": "UIPanel",
+                            "style": "group",
+                            "x": 4,
+                            "y": 136,
+                            "widthType": "RELATIVE",
+                            "width": -8,
+                            "height": 60,
+                            "children": [
+                                {
+                                    "type": "UILabel",
+                                    "text": "X",
+                                    "x": 10,
+                                    "y": 4,
+                                    "width": 50,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UILabel",
+                                    "text": "Y",
+                                    "x": 10,
+                                    "y": 32,
+                                    "width": 50,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "caption": "Button",
+                                    "x": 55,
+                                    "y": 4,
+                                    "width": 58,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "caption": "Button",
+                                    "x": 55,
+                                    "y": 32,
+                                    "width": 58,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UICheckBox",
+                                    "caption": "%",
+                                    "x": 134,
+                                    "y": 4,
+                                    "width": 36,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UICheckBox",
+                                    "caption": "%",
+                                    "x": 134,
+                                    "y": 32,
+                                    "width": 36,
+                                    "height": 24
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UIPanel",
+                            "style": "group",
+                            "x": 4,
+                            "y": 200,
+                            "widthType": "RELATIVE",
+                            "width": -8,
+                            "height": 60,
+                            "children": [
+                                {
+                                    "type": "UILabel",
+                                    "text": "Width",
+                                    "x": 10,
+                                    "y": 4,
+                                    "width": 50,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UILabel",
+                                    "text": "Height",
+                                    "x": 10,
+                                    "y": 32,
+                                    "width": 50,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "caption": "Button",
+                                    "x": 55,
+                                    "y": 4,
+                                    "width": 58,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "caption": "Button",
+                                    "x": 55,
+                                    "y": 32,
+                                    "width": 58,
+                                    "height": 24
+                                },
+                                {
+                                    "type": "UIPanel",
+                                    "style": "group",
+                                    "x": 130,
+                                    "y": 4,
+                                    "width": 112,
+                                    "height": 24,
+                                    "children": [
+                                        {
+                                            "type": "UICheckBox",
+                                            "caption": "%",
+                                            "x": 4,
+                                            "width": 36,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "caption": "Relative",
+                                            "x": 44,
+                                            "width": 70,
+                                            "height": 24
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "UIPanel",
+                                    "style": "group",
+                                    "x": 130,
+                                    "y": 32,
+                                    "width": 112,
+                                    "height": 24,
+                                    "children": [
+                                        {
+                                            "type": "UICheckBox",
+                                            "caption": "%",
+                                            "x": 4,
+                                            "width": 36,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "caption": "Relative",
+                                            "x": 44,
+                                            "width": 70,
+                                            "height": 24
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UILabel",
+                            "x": 4,
+                            "y": 264,
+                            "width": 62,
+                            "height": 49,
+                            "text": "Align"
+                        },
+                        {
+                            "type": "UIPanel",
+                            "style": "group",
+                            "x": 4,
+                            "y": 264,
+                            "widthType": "RELATIVE",
+                            "width": -70,
+                            "height": 49,
+                            "align": "TOP_RIGHT",
+                            "children": [
+                                {
+                                    "type": "UIControl",
+                                    "width": 41,
+                                    "height": 41,
+                                    "align": "CENTER",
+                                    "children": [
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "TOP_LEFT"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "TOP"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "TOP_RIGHT"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "LEFT"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "CENTER"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "RIGHT"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "BOTTOM_LEFT"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "BOTTOM"
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "style": "align",
+                                            "width": 13,
+                                            "height": 13,
+                                            "align": "BOTTOM_RIGHT"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },

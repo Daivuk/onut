@@ -1,4 +1,6 @@
 #pragma once
+#define DIRECTINPUT_VERSION 0x0800
+#include "dinput.h"
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 

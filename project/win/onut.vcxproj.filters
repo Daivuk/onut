@@ -73,13 +73,7 @@
     <ClInclude Include="..\..\src\Audio.h">
       <Filter>src\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\RectUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\TimingUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Pool.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Synchronous.h">
@@ -115,9 +109,6 @@
     <ClInclude Include="..\..\src\InputDevice.h">
       <Filter>src\inputs</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Input.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\UI.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -125,6 +116,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Window.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Input.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Pool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\RectUtils.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -31,6 +31,8 @@
 *.user
 *.suo
 *.sdf
+*.opensdf
+Thumbs.db
 
 #folders
 Debug

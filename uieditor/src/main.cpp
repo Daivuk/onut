@@ -24,6 +24,8 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
+    OContentManager->addSearchPath("../../assets/textures/icons");
+
     g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
     createUIStyles(g_pUIContext);
 
