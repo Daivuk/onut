@@ -33,9 +33,11 @@ private:
     void onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
 
     void updateSelectionWithRect(const onut::sUIRect& rect);
+    void updateGizmoRect(const onut::sUIRect& rect);
     void updateMovingHandle();
     void updateMovingGizmo();
     void updateInspector();
+    void deleteSelection();
 
     onut::UIPanel*      m_pGizmo = nullptr;
     onut::UIControl*    m_gizmoHandles[8];

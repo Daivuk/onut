@@ -89,6 +89,20 @@ namespace onut
         return eUIPosType::POS_RELATIVE;
     }
 
+    eUICheckBehavior getJsonCheckBehavior(const char* szAlign)
+    {
+        if (!strcmp(szAlign, "OPTIONAL"))
+        {
+            return eUICheckBehavior::OPTIONAL;
+        }
+        else if (!strcmp(szAlign, "EXCLUSIVE"))
+        {
+            return eUICheckBehavior::EXCLUSIVE;
+        }
+
+        return eUICheckBehavior::NORMAL;
+    }
+
     static const char* getJsonString(const rapidjson::Value& jsonNode, const char* szDefault = "")
     {
         if (jsonNode.IsString())
@@ -366,7 +380,8 @@ namespace onut
         m_dimType[1] = getDimTypeFromString(getJsonString(jsonNode["heightType"]));
 
         m_name = getJsonString(jsonNode["name"]);
-        m_style = uiHash(getJsonString(jsonNode["style"]));
+        m_styleName = getJsonString(jsonNode["style"]);
+        m_style = uiHash(m_styleName.c_str());
 
         m_isEnabled = getJsonBool(jsonNode["enabled"], true);
         m_isVisible = getJsonBool(jsonNode["visible"], true);
@@ -585,6 +600,7 @@ namespace onut
 
     void UIControl::setStyle(const char* szStyle)
     {
+        m_styleName = szStyle;
         m_style = uiHash(szStyle);
     }
 
@@ -821,6 +837,10 @@ namespace onut
                 worldRect.position.y = parentRect.position.y + parentRect.size.y - worldRect.size.y - worldRect.position.y;
                 break;
         }
+
+        // Snap to pixels
+        worldRect.position.x = std::roundf(worldRect.position.x);
+        worldRect.position.y = std::roundf(worldRect.position.y);
             
         return std::move(worldRect);
     }
@@ -1076,9 +1096,9 @@ namespace onut
 
     void UITreeView::expandTo(UITreeViewItem* pItem)
     {
-        pItem->m_isExpanded = true;
         if (pItem->m_pParent)
         {
+            pItem->m_pParent->m_isExpanded = true;
             expandTo(pItem->m_pParent);
         }
     }
@@ -1137,6 +1157,7 @@ namespace onut
     {
         m_caption = other.m_caption;
         m_isChecked = other.m_isChecked;
+        m_behavior = other.m_behavior;
     }
 
     UITreeView::UITreeView(const UITreeView& other) :
@@ -1186,7 +1207,75 @@ namespace onut
 
     void UICheckBox::setIsChecked(bool in_isChecked)
     {
-        m_isChecked = in_isChecked;
+        switch (m_behavior)
+        {
+            case eUICheckBehavior::NORMAL:
+            {
+                m_isChecked = in_isChecked;
+                break;
+            }
+            case eUICheckBehavior::OPTIONAL:
+            {
+                if (!m_isChecked && in_isChecked)
+                {
+                    if (getParent())
+                    {
+                        auto& sibblings = getParent()->getChildren();
+                        for (auto pSibbling : sibblings)
+                        {
+                            if (pSibbling == this) continue;
+                            if (pSibbling->getType() == eUIType::UI_CHECKBOX)
+                            {
+                                auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
+                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                {
+                                    if (pSibblingCheckBox->m_isChecked)
+                                    {
+                                        pSibblingCheckBox->m_isChecked = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                m_isChecked = in_isChecked;
+                break;
+            }
+            case eUICheckBehavior::EXCLUSIVE:
+            {
+                if (!m_isChecked && in_isChecked)
+                {
+                    if (getParent())
+                    {
+                        auto& sibblings = getParent()->getChildren();
+                        for (auto pSibbling : sibblings)
+                        {
+                            if (pSibbling == this) continue;
+                            if (pSibbling->getType() == eUIType::UI_CHECKBOX)
+                            {
+                                auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
+                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                {
+                                    if (pSibblingCheckBox->m_isChecked)
+                                    {
+                                        pSibblingCheckBox->m_isChecked = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    m_isChecked = in_isChecked;
+                }
+                break;
+            }
+        }
+    }
+
+    void UICheckBox::setBehavior(eUICheckBehavior behavior)
+    {
+        m_behavior = behavior;
     }
 
     void UITreeView::setExpandedXOffset(float expandedXOffset)
@@ -1249,6 +1338,7 @@ namespace onut
         UIControl::load(jsonNode);
         m_caption = getJsonString(jsonNode["caption"]);
         m_isChecked = getJsonBool(jsonNode["checked"], false);
+        m_behavior = getJsonCheckBehavior(getJsonString(jsonNode["behavior"]));
     }
 
     void UITreeView::load(const rapidjson::Value& jsonNode)
@@ -1328,13 +1418,104 @@ namespace onut
     //--- Internal events
     void UICheckBox::onClickInternal(const UIMouseEvent& evt)
     {
-        m_isChecked = !m_isChecked;
-        if (onCheckChanged)
+        switch (m_behavior)
         {
-            UICheckEvent checkEvt;
-            checkEvt.isChecked = m_isChecked;
-            checkEvt.pContext = evt.pContext;
-            onCheckChanged(this, checkEvt);
+            case eUICheckBehavior::NORMAL:
+            {
+                m_isChecked = !m_isChecked;
+                if (onCheckChanged)
+                {
+                    UICheckEvent checkEvt;
+                    checkEvt.isChecked = m_isChecked;
+                    checkEvt.pContext = evt.pContext;
+                    onCheckChanged(this, checkEvt);
+                }
+                break;
+            }
+            case eUICheckBehavior::OPTIONAL:
+            {
+                if (!m_isChecked)
+                {
+                    if (getParent())
+                    {
+                        auto& sibblings = getParent()->getChildren();
+                        for (auto pSibbling : sibblings)
+                        {
+                            if (pSibbling == this) continue;
+                            if (pSibbling->getType() == eUIType::UI_CHECKBOX)
+                            {
+                                auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
+                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                {
+                                    if (pSibblingCheckBox->m_isChecked)
+                                    {
+                                        pSibblingCheckBox->m_isChecked = false;
+                                        if (pSibblingCheckBox->onCheckChanged)
+                                        {
+                                            UICheckEvent checkEvt;
+                                            checkEvt.isChecked = pSibblingCheckBox->m_isChecked;
+                                            checkEvt.pContext = evt.pContext;
+                                            pSibblingCheckBox->onCheckChanged(this, checkEvt);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                m_isChecked = !m_isChecked;
+                if (onCheckChanged)
+                {
+                    UICheckEvent checkEvt;
+                    checkEvt.isChecked = m_isChecked;
+                    checkEvt.pContext = evt.pContext;
+                    onCheckChanged(this, checkEvt);
+                }
+                break;
+            }
+            case eUICheckBehavior::EXCLUSIVE:
+            {
+                if (!m_isChecked)
+                {
+                    if (getParent())
+                    {
+                        auto& sibblings = getParent()->getChildren();
+                        for (auto pSibbling : sibblings)
+                        {
+                            if (pSibbling == this) continue;
+                            if (pSibbling->getType() == eUIType::UI_CHECKBOX)
+                            {
+                                auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
+                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                {
+                                    if (pSibblingCheckBox->m_isChecked)
+                                    {
+                                        pSibblingCheckBox->m_isChecked = false;
+                                        if (pSibblingCheckBox->onCheckChanged)
+                                        {
+                                            UICheckEvent checkEvt;
+                                            checkEvt.isChecked = pSibblingCheckBox->m_isChecked;
+                                            checkEvt.pContext = evt.pContext;
+                                            pSibblingCheckBox->onCheckChanged(this, checkEvt);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    m_isChecked = true;
+                    if (onCheckChanged)
+                    {
+                        UICheckEvent checkEvt;
+                        checkEvt.isChecked = m_isChecked;
+                        checkEvt.pContext = evt.pContext;
+                        onCheckChanged(this, checkEvt);
+                    }
+                }
+                break;
+            }
         }
     }
 

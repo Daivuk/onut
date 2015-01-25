@@ -5,6 +5,31 @@ extern DocumentView*    g_pDocument;
 extern onut::UIContext* g_pUIContext;
 extern onut::UIControl* g_pUIScreen;
 
+onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
+onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
+onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
+onut::UIButton*      g_pInspector_UIControl_txtName;
+onut::UIButton*      g_pInspector_UIControl_txtStyle;
+onut::UIButton*      g_pInspector_UIControl_txtX;
+onut::UIButton*      g_pInspector_UIControl_txtY;
+onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
+onut::UICheckBox*    g_pInspector_UIControl_chkYPercent;
+onut::UIButton*      g_pInspector_UIControl_txtWidth;
+onut::UIButton*      g_pInspector_UIControl_txtHeight;
+onut::UICheckBox*    g_pInspector_UIControl_chkWidthPercent;
+onut::UICheckBox*    g_pInspector_UIControl_chkHeightPercent;
+onut::UICheckBox*    g_pInspector_UIControl_chkWidthRelative;
+onut::UICheckBox*    g_pInspector_UIControl_chkHeightRelative;
+onut::UICheckBox*    g_pInspector_UIControl_chkTOP_LEFT;
+onut::UICheckBox*    g_pInspector_UIControl_chkTOP;
+onut::UICheckBox*    g_pInspector_UIControl_chkTOP_RIGHT;
+onut::UICheckBox*    g_pInspector_UIControl_chkLEFT;
+onut::UICheckBox*    g_pInspector_UIControl_chkCENTER;
+onut::UICheckBox*    g_pInspector_UIControl_chkRIGHT;
+onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_LEFT;
+onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM;
+onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_RIGHT;
+
 onut::UIControl* getCreateParent()
 {
     auto pSelected = g_pDocument->pSelected;
@@ -134,6 +159,30 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
     }
 }
 
+void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!evt.isChecked) return; // Don't care
+    if (!g_pDocument->pSelected) return; // Wuuuut?
+    if (pCheckBox == g_pInspector_UIControl_chkTOP_LEFT)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::TOP_LEFT);
+    else if (pCheckBox == g_pInspector_UIControl_chkTOP)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::TOP);
+    else if (pCheckBox == g_pInspector_UIControl_chkTOP_RIGHT)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::TOP_RIGHT);
+    else if (pCheckBox == g_pInspector_UIControl_chkLEFT)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::LEFT);
+    else if (pCheckBox == g_pInspector_UIControl_chkCENTER)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::CENTER);
+    else if (pCheckBox == g_pInspector_UIControl_chkRIGHT)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::RIGHT);
+    else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_LEFT)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::BOTTOM_LEFT);
+    else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::BOTTOM);
+    else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_RIGHT)
+        g_pDocument->pSelected->setAlign(onut::eUIAlign::BOTTOM_RIGHT);
+}
+
 void hookUIEvents(onut::UIControl* pUIScreen)
 {
     // Tool box
@@ -151,4 +200,41 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     // Scene Graph
     dynamic_cast<onut::UITreeView*>(pUIScreen->getChild("sceneGraph"))->onSelectionChanged = onSceneGraphSelectionChanged;
+
+    // Inspector
+    g_pInspector_UIControl_chkEnabled = pUIScreen->getChild<onut::UICheckBox>("chkEnabled");
+    g_pInspector_UIControl_chkVisible = pUIScreen->getChild<onut::UICheckBox>("chkVisible");
+    g_pInspector_UIControl_chkClickThrough = pUIScreen->getChild<onut::UICheckBox>("chkClickThrough");
+    g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UIButton>("txtName");
+    g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UIButton>("txtStyle");
+    g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UIButton>("txtX");
+    g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UIButton>("txtY");
+    g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
+    g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
+    g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UIButton>("txtWidth");
+    g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UIButton>("txtHeight");
+    g_pInspector_UIControl_chkWidthPercent = pUIScreen->getChild<onut::UICheckBox>("chkWidthPercent");
+    g_pInspector_UIControl_chkHeightPercent = pUIScreen->getChild<onut::UICheckBox>("chkHeightPercent");
+    g_pInspector_UIControl_chkWidthRelative = pUIScreen->getChild<onut::UICheckBox>("chkWidthRelative");
+    g_pInspector_UIControl_chkHeightRelative = pUIScreen->getChild<onut::UICheckBox>("chkHeightRelative");
+    g_pInspector_UIControl_chkEnabled = pUIScreen->getChild<onut::UICheckBox>("chkEnabled");
+    g_pInspector_UIControl_chkTOP_LEFT = pUIScreen->getChild<onut::UICheckBox>("chkTOP_LEFT");
+    g_pInspector_UIControl_chkTOP = pUIScreen->getChild<onut::UICheckBox>("chkTOP");
+    g_pInspector_UIControl_chkTOP_RIGHT = pUIScreen->getChild<onut::UICheckBox>("chkTOP_RIGHT");
+    g_pInspector_UIControl_chkLEFT = pUIScreen->getChild<onut::UICheckBox>("chkLEFT");
+    g_pInspector_UIControl_chkCENTER = pUIScreen->getChild<onut::UICheckBox>("chkCENTER");
+    g_pInspector_UIControl_chkRIGHT = pUIScreen->getChild<onut::UICheckBox>("chkRIGHT");
+    g_pInspector_UIControl_chkBOTTOM_LEFT = pUIScreen->getChild<onut::UICheckBox>("chkBOTTOM_LEFT");
+    g_pInspector_UIControl_chkBOTTOM = pUIScreen->getChild<onut::UICheckBox>("chkBOTTOM");
+    g_pInspector_UIControl_chkBOTTOM_RIGHT = pUIScreen->getChild<onut::UICheckBox>("chkBOTTOM_RIGHT");
+
+    g_pInspector_UIControl_chkTOP_LEFT->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkTOP->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkTOP_RIGHT->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkLEFT->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkCENTER->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkRIGHT->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkBOTTOM_LEFT->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkBOTTOM->onCheckChanged = onAlignChkChanged;
+    g_pInspector_UIControl_chkBOTTOM_RIGHT->onCheckChanged = onAlignChkChanged;
 }

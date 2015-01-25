@@ -159,7 +159,8 @@ void createUIStyles(onut::UIContext* pContext)
         OSB->end();
 
         // Render edited UIs
-        ORenderer->set2DCamera({std::roundf(-rect.position.x), std::roundf(-rect.position.y)});
+      //  ORenderer->set2DCamera({std::roundf(-rect.position.x), std::roundf(-rect.position.y)});
+        ORenderer->set2DCamera({-rect.position.x, -rect.position.y});
         OSB->begin();
         g_pDocument->render();
         OSB->end();

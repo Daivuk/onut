@@ -74,6 +74,16 @@ namespace onut
         DOWN
     };
 
+    enum class eUICheckBehavior : uint8_t
+    {
+        /** Normal checkbox. Can toggle it on and off regardless of sibblings */
+        NORMAL,
+        /** Behaves like a radio button. Only one sibblings can be checked. And one HAS to be checked */
+        EXCLUSIVE,
+        /** Like exclusive, but all sibblings can be toggled off */
+        OPTIONAL
+    };
+
     struct sUIVector2
     {
         float x;
@@ -269,6 +279,7 @@ namespace onut
 
         void setStyle(const char* szStyle);
         int getStyle() const { return m_style; }
+        const std::string& getStyleName() const { return m_styleName; }
 
         void retain();
         void release();
@@ -323,6 +334,8 @@ namespace onut
         void setXType(eUIPosType xType);
         void setYType(eUIPosType yType);
 
+        const std::vector<UIControl*>& getChildren() const { return m_children; };
+
     protected:
         friend UIContext;
 
@@ -353,6 +366,7 @@ namespace onut
         eUIDimType              m_dimType[2];
         int                     m_style = 0;
         std::string             m_name;
+        std::string             m_styleName;
         int32_t                 m_refCount = 0;
         UIControl*              m_pParent = nullptr;
         void*                   m_pUserData = nullptr;
@@ -459,6 +473,9 @@ namespace onut
         bool getIsChecked() const { return m_isChecked; }
         void setIsChecked(bool in_isChecked);
 
+        eUICheckBehavior getBehavior() const { return m_behavior; }
+        void setBehavior(eUICheckBehavior behavior);
+
         using TfnCheckEvent = std::function<void(UICheckBox*, const UICheckEvent&)>;
         TfnCheckEvent onCheckChanged;
 
@@ -468,8 +485,9 @@ namespace onut
         virtual void onClickInternal(const UIMouseEvent& evt) override;
 
     private:
-        std::string m_caption;
-        bool        m_isChecked = false;
+        std::string         m_caption;
+        bool                m_isChecked = false;
+        eUICheckBehavior    m_behavior = eUICheckBehavior::NORMAL;
     };
 
     class UITreeViewItem;
@@ -532,6 +550,8 @@ namespace onut
 
         bool getIsExpanded() const { return m_isExpanded; }
         void setIsExpanded(bool isExpanded);
+
+        UITreeViewItem* getParent() const { return m_pParent; }
 
         void addItem(UITreeViewItem* pItem);
         void removeItem(UITreeViewItem* pItem);
