@@ -57,17 +57,17 @@ namespace onut
         return eUIAlign::TOP_LEFT;
     }
 
-    eUIDimType getDimTypeFromString(const char* szAlign)
+    eUIDimType getDimTypeFromString(const char* szDimType)
     {
-        if (!strcmp(szAlign, "ABSOLUTE"))
+        if (!strcmp(szDimType, "ABSOLUTE"))
         {
             return eUIDimType::DIM_ABSOLUTE;
         }
-        else if (!strcmp(szAlign, "RELATIVE"))
+        else if (!strcmp(szDimType, "RELATIVE"))
         {
             return eUIDimType::DIM_RELATIVE;
         }
-        else if (!strcmp(szAlign, "PERCENTAGE"))
+        else if (!strcmp(szDimType, "PERCENTAGE"))
         {
             return eUIDimType::DIM_PERCENTAGE;
         }
@@ -75,13 +75,13 @@ namespace onut
         return eUIDimType::DIM_ABSOLUTE;
     }
 
-    eUIPosType getPosTypeFromString(const char* szAlign)
+    eUIPosType getPosTypeFromString(const char* szPosType)
     {
-        if (!strcmp(szAlign, "RELATIVE"))
+        if (!strcmp(szPosType, "RELATIVE"))
         {
             return eUIPosType::POS_RELATIVE;
         }
-        else if (!strcmp(szAlign, "PERCENTAGE"))
+        else if (!strcmp(szPosType, "PERCENTAGE"))
         {
             return eUIPosType::POS_PERCENTAGE;
         }
@@ -89,13 +89,27 @@ namespace onut
         return eUIPosType::POS_RELATIVE;
     }
 
-    eUICheckBehavior getJsonCheckBehavior(const char* szAlign)
+    eUIAnchorType getAnchorTypeFromString(const char* szAnchorType)
     {
-        if (!strcmp(szAlign, "OPTIONAL"))
+        if (!strcmp(szAnchorType, "PIXEL"))
+        {
+            return eUIAnchorType::ANCHOR_PIXEL;
+        }
+        else if (!strcmp(szAnchorType, "PERCENTAGE"))
+        {
+            return eUIAnchorType::ANCHOR_PERCENTAGE;
+        }
+
+        return eUIAnchorType::ANCHOR_PERCENTAGE;
+    }
+
+    eUICheckBehavior getJsonCheckBehavior(const char* szCheckBehavior)
+    {
+        if (!strcmp(szCheckBehavior, "OPTIONAL"))
         {
             return eUICheckBehavior::OPTIONAL;
         }
-        else if (!strcmp(szAlign, "EXCLUSIVE"))
+        else if (!strcmp(szCheckBehavior, "EXCLUSIVE"))
         {
             return eUICheckBehavior::EXCLUSIVE;
         }
@@ -348,6 +362,8 @@ namespace onut
         m_posType[1] = eUIPosType::POS_RELATIVE;
         m_dimType[0] = eUIDimType::DIM_ABSOLUTE;
         m_dimType[1] = eUIDimType::DIM_ABSOLUTE;
+        m_anchorType[0] = eUIAnchorType::ANCHOR_PERCENTAGE;
+        m_anchorType[1] = eUIAnchorType::ANCHOR_PERCENTAGE;
     }
 
     UIControl::UIControl(const char* szFilename)
@@ -372,12 +388,16 @@ namespace onut
         m_rect.position.y = getJsonFloat(jsonNode["y"]);
         m_rect.size.x = getJsonFloat(jsonNode["width"], 0.f);
         m_rect.size.y = getJsonFloat(jsonNode["height"], 0.f);
+        m_anchor.x = getJsonFloat(jsonNode["xAnchor"]);
+        m_anchor.y = getJsonFloat(jsonNode["yAnchor"]);
 
         m_align = getAlignFromString(getJsonString(jsonNode["align"]));
         m_posType[0] = getPosTypeFromString(getJsonString(jsonNode["xType"]));
         m_posType[1] = getPosTypeFromString(getJsonString(jsonNode["yType"]));
         m_dimType[0] = getDimTypeFromString(getJsonString(jsonNode["widthType"]));
         m_dimType[1] = getDimTypeFromString(getJsonString(jsonNode["heightType"]));
+        m_anchorType[0] = getAnchorTypeFromString(getJsonString(jsonNode["anchorType"]));
+        m_anchorType[1] = getAnchorTypeFromString(getJsonString(jsonNode["anchorType"]));
 
         m_name = getJsonString(jsonNode["name"]);
         m_styleName = getJsonString(jsonNode["style"]);
@@ -805,36 +825,56 @@ namespace onut
                 worldRect.position.y = parentRect.position.y + worldRect.position.y;
                 break;
             case eUIAlign::TOP:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f - worldRect.size.x * .5f + worldRect.position.x;
+                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f + worldRect.position.x;
                 worldRect.position.y = parentRect.position.y + worldRect.position.y;
                 break;
             case eUIAlign::TOP_RIGHT:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x - worldRect.size.x - worldRect.position.x;
+                worldRect.position.x = parentRect.position.x + parentRect.size.x + worldRect.position.x;
                 worldRect.position.y = parentRect.position.y + worldRect.position.y;
                 break;
             case eUIAlign::LEFT:
                 worldRect.position.x = parentRect.position.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f - worldRect.size.y * .5f + worldRect.position.y;
+                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f + worldRect.position.y;
                 break;
             case eUIAlign::CENTER:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f - worldRect.size.x * .5f + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f - worldRect.size.y * .5f + worldRect.position.y;
+                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f + worldRect.position.x;
+                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f + worldRect.position.y;
                 break;
             case eUIAlign::RIGHT:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x - worldRect.size.x - worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f - worldRect.size.y * .5f + worldRect.position.y;
+                worldRect.position.x = parentRect.position.x + parentRect.size.x + worldRect.position.x;
+                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f + worldRect.position.y;
                 break;
             case eUIAlign::BOTTOM_LEFT:
                 worldRect.position.x = parentRect.position.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y - worldRect.size.y - worldRect.position.y;
+                worldRect.position.y = parentRect.position.y + parentRect.size.y + worldRect.position.y;
                 break;
             case eUIAlign::BOTTOM:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f - worldRect.size.x * .5f + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y - worldRect.size.y - worldRect.position.y;
+                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f + worldRect.position.x;
+                worldRect.position.y = parentRect.position.y + parentRect.size.y + worldRect.position.y;
                 break;
             case eUIAlign::BOTTOM_RIGHT:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x - worldRect.size.x - worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y - worldRect.size.y - worldRect.position.y;
+                worldRect.position.x = parentRect.position.x + parentRect.size.x + worldRect.position.x;
+                worldRect.position.y = parentRect.position.y + parentRect.size.y + worldRect.position.y;
+                break;
+        }
+
+        // Finally anchoring
+        switch (m_anchorType[0])
+        {
+            case eUIAnchorType::ANCHOR_PIXEL:
+                worldRect.position.x -= m_anchor.x;
+                break;
+            case eUIAnchorType::ANCHOR_PERCENTAGE:
+                worldRect.position.x -= worldRect.size.x * m_anchor.x;
+                break;
+        }
+        switch (m_anchorType[1])
+        {
+            case eUIAnchorType::ANCHOR_PIXEL:
+                worldRect.position.y -= m_anchor.y;
+                break;
+            case eUIAnchorType::ANCHOR_PERCENTAGE:
+                worldRect.position.y -= worldRect.size.y * m_anchor.y;
                 break;
         }
 
@@ -891,18 +931,51 @@ namespace onut
 
     void UIControl::setWorldRect(const UIContext& context, const sUIRect& rect)
     {
-        if (!m_pParent)
-        {
-            m_rect = rect;
-        }
-        else
-        {
-            auto worldRect = m_pParent->getWorldRect(context);
-            m_rect.position.x = rect.position.x - worldRect.position.x;
-            m_rect.position.y = rect.position.y - worldRect.position.y;
-        }
+        //if (!m_pParent)
+        //{
+        //    m_rect = rect;
+        //}
+        //else
+        //{
+        //    auto worldRect = m_pParent->getWorldRect(context);
+        //    m_rect.position.x = rect.position.x - worldRect.position.x;
+        //    m_rect.position.y = rect.position.y - worldRect.position.y;
+        //}
         //m_rect.size.x = rect.size.x - worldRect.size.x;
         //m_rect.size.y = rect.size.y - worldRect.size.y;
+    }
+
+    sUIVector2 UIControl::getAnchorInPixel() const
+    {
+        sUIVector2 ret = m_anchor;
+        if (m_anchorType[0] == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        {
+            ret.x = ret.x * m_rect.size.x;
+        }
+        if (m_anchorType[1] == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        {
+            ret.y = ret.y * m_rect.size.y;
+        }
+        return std::move(ret);
+    }
+
+    sUIVector2 UIControl::getAnchorInPercentage() const
+    {
+        sUIVector2 ret = m_anchor;
+        if (m_anchorType[0] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        {
+            ret.x = ret.x / m_rect.size.x;
+        }
+        if (m_anchorType[1] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        {
+            ret.y = ret.y / m_rect.size.y;
+        }
+        return std::move(ret);
+    }
+
+    void UIControl::setAnchor(const sUIVector2& anchor)
+    {
+        m_anchor = anchor;
     }
 
     void UIControl::setName(const std::string& name)
@@ -983,6 +1056,16 @@ namespace onut
     void UIControl::setYType(eUIPosType yType)
     {
         m_posType[1] = yType;
+    }
+
+    void UIControl::setXAnchorType(eUIAnchorType xAnchorType)
+    {
+        m_anchorType[0] = xAnchorType;
+    }
+
+    void UIControl::setYAnchorType(eUIAnchorType yAnchorType)
+    {
+        m_anchorType[1] = yAnchorType;
     }
 
     const UIProperty& UIControl::getProperty(const std::string& name) const

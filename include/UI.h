@@ -51,6 +51,14 @@ namespace onut
         POS_PERCENTAGE
     };
 
+    enum class eUIAnchorType : uint8_t
+    {
+        /** Position is relative to parent's position. E.g.: fx = parent.x + x */
+        ANCHOR_PIXEL,
+        /** Position is percentage of parent's dimensions. fx = parent.x + parent.width * x */
+        ANCHOR_PERCENTAGE
+    };
+
     enum class eUIType : uint8_t
     {
         UI_CONTROL,
@@ -292,6 +300,11 @@ namespace onut
         sUIRect getWorldRect(const UIContext& context) const;
         void setWorldRect(const UIContext& context, const sUIRect& rect);
 
+        const sUIVector2& getAnchor() const { return m_anchor; }
+        sUIVector2 getAnchorInPixel() const;
+        sUIVector2 getAnchorInPercentage() const;
+        void setAnchor(const sUIVector2& anchor);
+
         const std::string& getName() const { return m_name; }
         void setName(const std::string& name);
 
@@ -334,6 +347,11 @@ namespace onut
         void setXType(eUIPosType xType);
         void setYType(eUIPosType yType);
 
+        eUIAnchorType getXAnchorType() const { return m_anchorType[0]; }
+        eUIAnchorType getYAnchorType() const { return m_anchorType[1]; }
+        void setXAnchorType(eUIAnchorType xAnchorType);
+        void setYAnchorType(eUIAnchorType yAnchorType);
+
         const std::vector<UIControl*>& getChildren() const { return m_children; };
 
     protected:
@@ -360,10 +378,12 @@ namespace onut
         bool                    m_isClickThrough = false;
         bool                    m_isVisible = true;
         sUIRect                 m_rect = sUIRect{{0, 0}, {0, 0}};
+        sUIVector2              m_anchor = sUIVector2{0, 0};
         std::vector<UIControl*> m_children;
         eUIAlign                m_align = eUIAlign::TOP_LEFT;
         eUIPosType              m_posType[2];
         eUIDimType              m_dimType[2];
+        eUIAnchorType           m_anchorType[2];
         int                     m_style = 0;
         std::string             m_name;
         std::string             m_styleName;

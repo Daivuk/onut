@@ -27,6 +27,19 @@ extern onut::UICheckBox*    g_pInspector_UIControl_chkRIGHT;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_LEFT;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_RIGHT;
+extern onut::UIButton*      g_pInspector_UIControl_txtAnchorX;
+extern onut::UIButton*      g_pInspector_UIControl_txtAnchorY;
+extern onut::UICheckBox*    g_pInspector_UIControl_chkXAnchorPercent;
+extern onut::UICheckBox*    g_pInspector_UIControl_chkYAnchorPercent;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_LEFT;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_RIGHT;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorLEFT;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorCENTER;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorRIGHT;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM;
+extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
 
 DocumentView::DocumentView()
 {
@@ -106,6 +119,15 @@ void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pP
     }
 }
 
+void DocumentView::updateSelectedGizmoRect()
+{
+    m_pGizmo->setIsVisible(pSelected != nullptr);
+    if (pSelected)
+    {
+        m_pGizmo->setRect(pSelected->getWorldRect(*pUIContext));
+    }
+}
+
 void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneGraph)
 { 
     if (bUpdateSceneGraph)
@@ -120,7 +142,7 @@ void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneG
     {
         pSelected = in_pSelected;
     }
-    m_pGizmo->setIsVisible(pSelected != nullptr);
+    updateSelectedGizmoRect();
     if (pSelected)
     {
         if (bUpdateSceneGraph)
@@ -128,7 +150,6 @@ void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneG
             auto pItem = static_cast<onut::UITreeViewItem*>(pSelected->getUserData());
             m_pSceneGraph->addSelectedItem(pItem);
         }
-        m_pGizmo->setRect(pSelected->getWorldRect(*pUIContext));
     }
     updateInspector();
 }
@@ -138,7 +159,7 @@ void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIM
     m_state = eDocumentState::MOVING_HANDLE;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_pCurrentHandle = pControl;
-    m_gizmoRectOnDown = pSelected->getWorldRect(*pUIContext);
+    m_controlRectOnDown = pSelected->getRect();
 }
 
 void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
@@ -152,7 +173,7 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
     OWindow->setCursor(curSIZEALL);
     m_state = eDocumentState::MOVING_GIZO;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
-    m_gizmoRectOnDown = pSelected->getWorldRect(*pUIContext);
+    m_controlRectOnDown = pSelected->getRect();
 }
 
 void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
@@ -162,9 +183,6 @@ void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEven
 
 void DocumentView::update()
 {
-    // We resize, but we don't update the screen. It's render only
-    pUIContext->resize({OScreenWf, OScreenHf});
-
     switch (m_state)
     {
         case eDocumentState::MOVING_HANDLE:
@@ -204,134 +222,74 @@ void DocumentView::deleteSelection()
 void DocumentView::updateSelectionWithRect(const onut::sUIRect& rect)
 {
     if (!pSelected) return;
-    pSelected->setWorldRect(*pUIContext, rect);
+    pSelected->setRect(rect);
+    updateGizmoRect();
 }
 
-void DocumentView::updateGizmoRect(const onut::sUIRect& rect)
+void DocumentView::updateGizmoRect()
 {
-    auto rct = rect;
-    rct.position.x = std::roundf(rect.position.x);
-    rct.position.y = std::roundf(rect.position.y);
+    auto rct = pSelected->getWorldRect(*pUIContext);
+    rct.position.x = std::roundf(rct.position.x);
+    rct.position.y = std::roundf(rct.position.y);
     m_pGizmo->setRect(rct);
 }
 
 void DocumentView::updateMovingGizmo()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
-    auto newRect = m_gizmoRectOnDown;
+    auto newRect = m_controlRectOnDown;
     newRect.position.x += mouseDiff.x;
     newRect.position.y += mouseDiff.y;
-    updateGizmoRect(newRect);
     updateSelectionWithRect(newRect);
+    updateInspector();
 }
 
 void DocumentView::updateMovingHandle()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
-    if (m_pCurrentHandle == m_gizmoHandles[0])
-    {
-        auto newRect = m_gizmoRectOnDown;
+    auto anchor = pSelected->getAnchorInPercentage();
+    auto invAnchor = anchor;
+    invAnchor.x = 1 - anchor.x;
+    invAnchor.y = 1 - anchor.y;
+    auto newRect = m_controlRectOnDown;
 
-        newRect.position.x += mouseDiff.x;
-        newRect.position.x = std::min<float>(newRect.position.x, m_gizmoRectOnDown.position.x + m_gizmoRectOnDown.size.x);
+    if (m_pCurrentHandle == m_gizmoHandles[0] ||
+        m_pCurrentHandle == m_gizmoHandles[3] ||
+        m_pCurrentHandle == m_gizmoHandles[5])
+    {
+        newRect.position.x += mouseDiff.x * invAnchor.x;
+        newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
         newRect.size.x -= mouseDiff.x;
         if (newRect.size.x < 0) newRect.size.x = 0;
-
-        newRect.position.y += mouseDiff.y;
-        newRect.position.y = std::min<float>(newRect.position.y, m_gizmoRectOnDown.position.y + m_gizmoRectOnDown.size.y);
-        newRect.size.y -= mouseDiff.y;
-        if (newRect.size.y < 0) newRect.size.y = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
     }
-    else if (m_pCurrentHandle == m_gizmoHandles[1])
+    else if (m_pCurrentHandle == m_gizmoHandles[2] ||
+             m_pCurrentHandle == m_gizmoHandles[4] ||
+             m_pCurrentHandle == m_gizmoHandles[7])
     {
-        auto newRect = m_gizmoRectOnDown;
-
-        newRect.position.y += mouseDiff.y;
-        newRect.position.y = std::min<float>(newRect.position.y, m_gizmoRectOnDown.position.y + m_gizmoRectOnDown.size.y);
-        newRect.size.y -= mouseDiff.y;
-        if (newRect.size.y < 0) newRect.size.y = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
-    }
-    else if (m_pCurrentHandle == m_gizmoHandles[2])
-    {
-        auto newRect = m_gizmoRectOnDown;
-
+        newRect.position.x += mouseDiff.x * anchor.x;
         newRect.size.x += mouseDiff.x;
         if (newRect.size.x < 0) newRect.size.x = 0;
-
-        newRect.position.y += mouseDiff.y;
-        newRect.position.y = std::min<float>(newRect.position.y, m_gizmoRectOnDown.position.y + m_gizmoRectOnDown.size.y);
+    }
+    if (m_pCurrentHandle == m_gizmoHandles[0] ||
+        m_pCurrentHandle == m_gizmoHandles[1] ||
+        m_pCurrentHandle == m_gizmoHandles[2])
+    {
+        newRect.position.y += mouseDiff.y * invAnchor.y;
+        newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
         newRect.size.y -= mouseDiff.y;
         if (newRect.size.y < 0) newRect.size.y = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
     }
-    else if (m_pCurrentHandle == m_gizmoHandles[3])
+    else if (m_pCurrentHandle == m_gizmoHandles[5] ||
+             m_pCurrentHandle == m_gizmoHandles[6] ||
+             m_pCurrentHandle == m_gizmoHandles[7])
     {
-        auto newRect = m_gizmoRectOnDown;
-
-        newRect.position.x += mouseDiff.x;
-        newRect.position.x = std::min<float>(newRect.position.x, m_gizmoRectOnDown.position.x + m_gizmoRectOnDown.size.x);
-        newRect.size.x -= mouseDiff.x;
-        if (newRect.size.x < 0) newRect.size.x = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
-    }
-    else if (m_pCurrentHandle == m_gizmoHandles[4])
-    {
-        auto newRect = m_gizmoRectOnDown;
-
-        newRect.size.x += mouseDiff.x;
-        if (newRect.size.x < 0) newRect.size.x = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
-    }
-    else if (m_pCurrentHandle == m_gizmoHandles[5])
-    {
-        auto newRect = m_gizmoRectOnDown;
-
-        newRect.position.x += mouseDiff.x;
-        newRect.position.x = std::min<float>(newRect.position.x, m_gizmoRectOnDown.position.x + m_gizmoRectOnDown.size.x);
-        newRect.size.x -= mouseDiff.x;
-        if (newRect.size.x < 0) newRect.size.x = 0;
-
+        newRect.position.y += mouseDiff.y * anchor.y;
         newRect.size.y += mouseDiff.y;
         if (newRect.size.y < 0) newRect.size.y = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
     }
-    else if (m_pCurrentHandle == m_gizmoHandles[6])
-    {
-        auto newRect = m_gizmoRectOnDown;
 
-        newRect.size.y += mouseDiff.y;
-        if (newRect.size.y < 0) newRect.size.y = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
-    }
-    else if (m_pCurrentHandle == m_gizmoHandles[7])
-    {
-        auto newRect = m_gizmoRectOnDown;
-
-        newRect.size.x += mouseDiff.x;
-        if (newRect.size.x < 0) newRect.size.x = 0;
-
-        newRect.size.y += mouseDiff.y;
-        if (newRect.size.y < 0) newRect.size.y = 0;
-
-        updateGizmoRect(newRect);
-        updateSelectionWithRect(newRect);
-    }
+    updateSelectionWithRect(newRect);
+    updateInspector();
 }
 
 void DocumentView::render()
@@ -368,6 +326,19 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkBOTTOM_LEFT->setIsEnabled(true);
         g_pInspector_UIControl_chkBOTTOM->setIsEnabled(true);
         g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsEnabled(true);
+        g_pInspector_UIControl_txtAnchorX->setIsEnabled(true);
+        g_pInspector_UIControl_txtAnchorY->setIsEnabled(true);
+        g_pInspector_UIControl_chkXAnchorPercent->setIsEnabled(true);
+        g_pInspector_UIControl_chkYAnchorPercent->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorTOP_LEFT->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorTOP->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorTOP_RIGHT->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorLEFT->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorCENTER->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorRIGHT->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorBOTTOM->setIsEnabled(true);
+        g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->setIsEnabled(true);
 
         // Set their values
         g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled());
@@ -415,6 +386,10 @@ void DocumentView::updateInspector()
                 g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsChecked(true);
                 break;
         }
+        g_pInspector_UIControl_txtAnchorX->setCaption(std::to_string(pSelected->getAnchor().x));
+        g_pInspector_UIControl_txtAnchorY->setCaption(std::to_string(pSelected->getAnchor().y));
+        g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
+        g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
     }
     else
     {
@@ -443,5 +418,18 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkBOTTOM_LEFT->setIsEnabled(false);
         g_pInspector_UIControl_chkBOTTOM->setIsEnabled(false);
         g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsEnabled(false);
+        g_pInspector_UIControl_txtAnchorX->setIsEnabled(false);
+        g_pInspector_UIControl_txtAnchorY->setIsEnabled(false);
+        g_pInspector_UIControl_chkXAnchorPercent->setIsEnabled(false);
+        g_pInspector_UIControl_chkYAnchorPercent->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorTOP_LEFT->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorTOP->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorTOP_RIGHT->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorLEFT->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorCENTER->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorRIGHT->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorBOTTOM->setIsEnabled(false);
+        g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->setIsEnabled(false);
     }
 }

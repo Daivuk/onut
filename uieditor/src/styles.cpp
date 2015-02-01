@@ -447,4 +447,81 @@ void createUIStyles(onut::UIContext* pContext)
         }
         OSB->drawRectWithUVs(texture, orect, UVs);
     });
+
+    pContext->addStyle<onut::UIButton>("align", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)
+    {
+        const auto orect = onut::UI2Onut(rect);
+        auto texture = OGetTexture("align.png");
+        Vector4 UVs;
+        switch (pButton->getAlign())
+        {
+            case onut::eUIAlign::TOP_LEFT:
+                UVs.x = 0.f;
+                UVs.z = 13.f / texture->getSizef().x;
+                UVs.y = 0.f;
+                UVs.w = 13.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::TOP:
+                UVs.x = 13.f / texture->getSizef().x;
+                UVs.z = 26.f / texture->getSizef().x;
+                UVs.y = 0.f;
+                UVs.w = 13.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::TOP_RIGHT:
+                UVs.x = 26.f / texture->getSizef().x;
+                UVs.z = 39.f / texture->getSizef().x;
+                UVs.y = 0.f;
+                UVs.w = 13.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::LEFT:
+                UVs.x = 0.f;
+                UVs.z = 13.f / texture->getSizef().x;
+                UVs.y = 13.f / texture->getSizef().y;
+                UVs.w = 26.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::CENTER:    
+                UVs.x = 13.f / texture->getSizef().x;
+                UVs.z = 26.f / texture->getSizef().x;
+                UVs.y = 13.f / texture->getSizef().y;
+                UVs.w = 26.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::RIGHT:
+                UVs.x = 26.f / texture->getSizef().x;
+                UVs.z = 39.f / texture->getSizef().x;
+                UVs.y = 13.f / texture->getSizef().y;
+                UVs.w = 26.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::BOTTOM_LEFT:
+                UVs.x = 0.f;
+                UVs.z = 13.f / texture->getSizef().x;
+                UVs.y = 26.f / texture->getSizef().y;
+                UVs.w = 39.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::BOTTOM:
+                UVs.x = 13.f / texture->getSizef().x;
+                UVs.z = 26.f / texture->getSizef().x;
+                UVs.y = 26.f / texture->getSizef().y;
+                UVs.w = 39.f / texture->getSizef().y;
+                break;
+            case onut::eUIAlign::BOTTOM_RIGHT:
+                UVs.x = 26.f / texture->getSizef().x;
+                UVs.z = 39.f / texture->getSizef().x;
+                UVs.y = 26.f / texture->getSizef().y;
+                UVs.w = 39.f / texture->getSizef().y;
+                break;
+        }
+        auto state = pButton->getState(*pContext);
+        switch (state)
+        {
+            case onut::eUIState::HOVER:
+                UVs.x += 39.f / texture->getSizef().x;
+                UVs.z += 39.f / texture->getSizef().x;
+                break;
+            case onut::eUIState::DOWN:
+                UVs.y += 39.f / texture->getSizef().y;
+                UVs.w += 39.f / texture->getSizef().y;
+                break;
+        }
+        OSB->drawRectWithUVs(texture, orect, UVs);
+    });
 }

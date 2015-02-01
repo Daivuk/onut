@@ -27,16 +27,17 @@ public:
     void onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
 
     void controlCreated(onut::UIControl* pControl, onut::UIControl* pParent);
+    void updateSelectedGizmoRect();
+    void updateInspector();
 
 private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
 
     void updateSelectionWithRect(const onut::sUIRect& rect);
-    void updateGizmoRect(const onut::sUIRect& rect);
+    void updateGizmoRect();
     void updateMovingHandle();
     void updateMovingGizmo();
-    void updateInspector();
     void deleteSelection();
 
     onut::UIPanel*      m_pGizmo = nullptr;
@@ -44,6 +45,6 @@ private:
     onut::UIControl*    m_pCurrentHandle = nullptr;
     onut::UITreeView*   m_pSceneGraph = nullptr;
     Vector2             m_mousePosOnDown;
-    onut::sUIRect       m_gizmoRectOnDown;
+    onut::sUIRect       m_controlRectOnDown;
     eDocumentState      m_state = eDocumentState::IDLE;
 };

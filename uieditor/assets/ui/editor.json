@@ -15,6 +15,7 @@
                     "style": "toolBtn",
                     "x": 12,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "page_white.png"
@@ -25,6 +26,7 @@
                     "style": "toolBtn",
                     "x": 34,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "folder.png"
@@ -35,6 +37,7 @@
                     "style": "toolBtn",
                     "x": 56,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "disk.png"
@@ -45,6 +48,7 @@
                     "style": "toolBtn",
                     "x": 78,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "disk_multiple.png"
@@ -54,6 +58,7 @@
                     "style": "toolSeparator",
                     "x": 100,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 10,
                     "height": 20
                 },
@@ -63,6 +68,7 @@
                     "style": "toolBtn",
                     "x": 110,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "cut.png"
@@ -73,6 +79,7 @@
                     "style": "toolBtn",
                     "x": 132,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "page_copy.png"
@@ -83,6 +90,7 @@
                     "style": "toolBtn",
                     "x": 154,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "page_paste.png"
@@ -93,6 +101,7 @@
                     "style": "toolBtn",
                     "x": 176,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "delete.png"
@@ -102,6 +111,7 @@
                     "style": "toolSeparator",
                     "x": 198,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 10,
                     "height": 20
                 },
@@ -111,6 +121,7 @@
                     "style": "toolBtn",
                     "x": 208,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "arrow_undo.png"
@@ -121,6 +132,7 @@
                     "style": "toolBtn",
                     "x": 230,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "arrow_redo.png"
@@ -130,6 +142,7 @@
                     "style": "toolSeparator",
                     "x": 252,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 10,
                     "height": 20
                 },
@@ -139,6 +152,7 @@
                     "style": "toolBtn",
                     "x": 264,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "resultset_next.png"
@@ -149,6 +163,7 @@
                     "style": "toolBtn",
                     "x": 286,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 22,
                     "height": 20,
                     "image": "cog.png"
@@ -158,6 +173,7 @@
                     "style": "toolSeparator",
                     "x": 308,
                     "align": "LEFT",
+                    "yAnchor": 0.5,
                     "width": 10,
                     "height": 20
                 }
@@ -184,8 +200,8 @@
                             "type": "UIPanel",
                             "style": "sizableRegion",
                             "name": "pnlRegion",
-                            "width": 1024,
-                            "height": 768,
+                            "width": 640,
+                            "height": 480,
                             "x": 32,
                             "y": 32,
                             "align": "TOP_LEFT",
@@ -210,6 +226,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -221,6 +239,7 @@
                                             "height": 12,
                                             "y": -12,
                                             "align": "TOP",
+                                            "xAnchor": 0.5,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -228,6 +247,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -237,9 +258,10 @@
                                             "name": "topRightHandle",
                                             "width": 12,
                                             "height": 12,
-                                            "x": -12,
+                                            "x": 12,
                                             "y": -12,
                                             "align": "TOP_RIGHT",
+                                            "xAnchor": 1,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -247,6 +269,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -258,6 +282,7 @@
                                             "height": 12,
                                             "x": -12,
                                             "align": "LEFT",
+                                            "yAnchor": 0.5,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -265,6 +290,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -274,8 +301,10 @@
                                             "name": "rightHandle",
                                             "width": 12,
                                             "height": 12,
-                                            "x": -12,
+                                            "x": 12,
                                             "align": "RIGHT",
+                                            "xAnchor": 1,
+                                            "yAnchor": 0.5,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -283,6 +312,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -293,8 +324,9 @@
                                             "width": 12,
                                             "height": 12,
                                             "x": -12,
-                                            "y": -12,
+                                            "y": 12,
                                             "align": "BOTTOM_LEFT",
+                                            "yAnchor": 1,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -302,6 +334,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -311,8 +345,10 @@
                                             "name": "bottomHandle",
                                             "width": 12,
                                             "height": 12,
-                                            "y": -12,
+                                            "y": 12,
                                             "align": "BOTTOM",
+                                            "xAnchor": 0.5,
+                                            "yAnchor": 1,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -320,6 +356,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -329,9 +367,11 @@
                                             "name": "bottomRightHandle",
                                             "width": 12,
                                             "height": 12,
-                                            "x": -12,
-                                            "y": -12,
+                                            "x": 12,
+                                            "y": 12,
                                             "align": "BOTTOM_RIGHT",
+                                            "xAnchor": 1,
+                                            "yAnchor": 1,
                                             "children": [
                                                 {
                                                     "type": "UIPanel",
@@ -339,6 +379,8 @@
                                                     "width": 6,
                                                     "height": 6,
                                                     "align": "CENTER",
+                                                    "xAnchor": 0.5,
+                                                    "yAnchor": 0.5,
                                                     "clickThrough": true
                                                 }
                                             ]
@@ -370,6 +412,7 @@
                             "width": 260,
                             "height": 52,
                             "y": 24,
+                            "xAnchor": 0.5,
                             "children": [
                                 {
                                     "type": "UIButton",
@@ -389,6 +432,7 @@
                                             "height": 16,
                                             "image": "shape_handles.png",
                                             "align": "LEFT",
+                                            "yAnchor": 0.5,
                                             "clickThrough": true
                                         }
                                     ]
@@ -411,6 +455,7 @@
                                             "height": 16,
                                             "image": "shape_square.png",
                                             "align": "LEFT",
+                                            "yAnchor": 0.5,
                                             "clickThrough": true
                                         }
                                     ]
@@ -433,6 +478,7 @@
                                             "height": 16,
                                             "image": "icoButton.png",
                                             "align": "LEFT",
+                                            "yAnchor": 0.5,
                                             "clickThrough": true
                                         }
                                     ]
@@ -456,6 +502,7 @@
                                             "height": 16,
                                             "image": "text_dropcaps.png",
                                             "align": "LEFT",
+                                            "yAnchor": 0.5,
                                             "clickThrough": true
                                         }
                                     ]
@@ -479,6 +526,7 @@
                                             "height": 16,
                                             "image": "picture.png",
                                             "align": "LEFT",
+                                            "yAnchor": 0.5,
                                             "clickThrough": true
                                         }
                                     ]
@@ -511,6 +559,7 @@
                     "name": "pnlRight",
                     "style": "panel",
                     "width": 286,
+                    "xAnchor": 1,
                     "heightType": "RELATIVE",
                     "align": "TOP_RIGHT",
                     "children": [
@@ -567,7 +616,8 @@
                             "width": 0.618,
                             "height": 24,
                             "align": "TOP_RIGHT",
-                            "x": 4,
+                            "xAnchor": 1,
+                            "x": -4,
                             "y": 80
                         },
                         {
@@ -587,7 +637,8 @@
                             "width": 0.618,
                             "height": 24,
                             "align": "TOP_RIGHT",
-                            "x": 4,
+                            "xAnchor": 1,
+                            "x": -4,
                             "y": 108
                         },
                         {
@@ -759,23 +810,26 @@
                             "x": 4,
                             "y": 264,
                             "width": 62,
-                            "height": 49,
+                            "height": 68,
                             "text": "Align"
                         },
                         {
                             "type": "UIPanel",
                             "style": "group",
-                            "x": 4,
+                            "x": -4,
                             "y": 264,
                             "widthType": "RELATIVE",
                             "width": -70,
-                            "height": 49,
+                            "height": 68,
                             "align": "TOP_RIGHT",
+                            "xAnchor": 1,
                             "children": [
                                 {
                                     "type": "UIControl",
-                                    "width": 41,
-                                    "height": 41,
+                                    "width": 60,
+                                    "height": 60,
+                                    "xAnchor": 0.5,
+                                    "yAnchor": 0.5,
                                     "align": "CENTER",
                                     "children": [
                                         {
@@ -783,8 +837,8 @@
                                             "style": "align",
                                             "name": "chkTOP_LEFT",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
                                             "align": "TOP_LEFT"
                                         },
                                         {
@@ -792,8 +846,9 @@
                                             "style": "align",
                                             "name": "chkTOP",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 0.5,
                                             "align": "TOP"
                                         },
                                         {
@@ -801,8 +856,9 @@
                                             "style": "align",
                                             "name": "chkTOP_RIGHT",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 1,
                                             "align": "TOP_RIGHT"
                                         },
                                         {
@@ -810,8 +866,9 @@
                                             "style": "align",
                                             "name": "chkLEFT",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "yAnchor": 0.5,
                                             "align": "LEFT"
                                         },
                                         {
@@ -819,8 +876,10 @@
                                             "style": "align",
                                             "name": "chkCENTER",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 0.5,
+                                            "yAnchor": 0.5,
                                             "align": "CENTER"
                                         },
                                         {
@@ -828,8 +887,10 @@
                                             "style": "align",
                                             "name": "chkRIGHT",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 1,
+                                            "yAnchor": 0.5,
                                             "align": "RIGHT"
                                         },
                                         {
@@ -837,8 +898,9 @@
                                             "style": "align",
                                             "name": "chkBOTTOM_LEFT",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "yAnchor": 1,
                                             "align": "BOTTOM_LEFT"
                                         },
                                         {
@@ -846,8 +908,10 @@
                                             "style": "align",
                                             "name": "chkBOTTOM",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 0.5,
+                                            "yAnchor": 1,
                                             "align": "BOTTOM"
                                         },
                                         {
@@ -855,8 +919,186 @@
                                             "style": "align",
                                             "name": "chkBOTTOM_RIGHT",
                                             "behavior": "EXCLUSIVE",
-                                            "width": 13,
-                                            "height": 13,
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 1,
+                                            "yAnchor": 1,
+                                            "align": "BOTTOM_RIGHT"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UILabel",
+                            "x": 4,
+                            "y": 336,
+                            "width": 62,
+                            "height": 68,
+                            "text": "Anchor"
+                        },
+                        {
+                            "type": "UIPanel",
+                            "style": "group",
+                            "x": -4,
+                            "y": 336,
+                            "widthType": "RELATIVE",
+                            "width": -70,
+                            "height": 68,
+                            "align": "TOP_RIGHT",
+                            "xAnchor": 1,
+                            "children": [
+                                {
+                                    "type": "UIControl",
+                                    "height": 60,
+                                    "align": "LEFT",
+                                    "yAnchor": 0.5,
+                                    "children": [
+                                        {
+                                            "type": "UILabel",
+                                            "text": "X",
+                                            "x": 10,
+                                            "y": 4,
+                                            "width": 50,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UILabel",
+                                            "text": "Y",
+                                            "x": 10,
+                                            "y": 32,
+                                            "width": 50,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "caption": "Button",
+                                            "name": "txtAnchorX",
+                                            "x": 35,
+                                            "y": 4,
+                                            "width": 58,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "caption": "Button",
+                                            "name": "txtAnchorY",
+                                            "x": 35,
+                                            "y": 32,
+                                            "width": 58,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "name": "chkXAnchorPercent",
+                                            "caption": "%",
+                                            "x": 104,
+                                            "y": 4,
+                                            "width": 36,
+                                            "height": 24
+                                        },
+                                        {
+                                            "type": "UICheckBox",
+                                            "name": "chkYAnchorPercent",
+                                            "caption": "%",
+                                            "x": 104,
+                                            "y": 32,
+                                            "width": 36,
+                                            "height": 24
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "UIControl",
+                                    "width": 60,
+                                    "height": 60,
+                                    "x": -4,
+                                    "xAnchor": 1,
+                                    "yAnchor": 0.5,
+                                    "align": "RIGHT",
+                                    "children": [
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorTOP_LEFT",
+                                            "width": 20,
+                                            "height": 20,
+                                            "align": "TOP_LEFT"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorTOP",
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 0.5,
+                                            "align": "TOP"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorTOP_RIGHT",
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 1,
+                                            "align": "TOP_RIGHT"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorLEFT",
+                                            "width": 20,
+                                            "height": 20,
+                                            "yAnchor": 0.5,
+                                            "align": "LEFT"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorCENTER",
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 0.5,
+                                            "yAnchor": 0.5,
+                                            "align": "CENTER"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorRIGHT",
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 1,
+                                            "yAnchor": 0.5,
+                                            "align": "RIGHT"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorBOTTOM_LEFT",
+                                            "width": 20,
+                                            "height": 20,
+                                            "yAnchor": 1,
+                                            "align": "BOTTOM_LEFT"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorBOTTOM",
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 0.5,
+                                            "yAnchor": 1,
+                                            "align": "BOTTOM"
+                                        },
+                                        {
+                                            "type": "UIButton",
+                                            "style": "align",
+                                            "name": "chkAnchorBOTTOM_RIGHT",
+                                            "width": 20,
+                                            "height": 20,
+                                            "xAnchor": 1,
+                                            "yAnchor": 1,
                                             "align": "BOTTOM_RIGHT"
                                         }
                                     ]
