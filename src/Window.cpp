@@ -42,6 +42,30 @@ namespace onut
                 return 0;
             }
         }
+        else if (msg == WM_SYSCOMMAND)
+        {
+            if (wparam == SC_KEYMENU && (lparam >> 16) <= 0)
+            {
+                return 0;
+            }
+        }
+        else if (msg == WM_CHAR)
+        {
+            auto c = (char)wparam;
+            if (OWindow->onWrite)
+            {
+                OWindow->onWrite(c);
+            }
+            return 0;
+        }
+        else if (msg == WM_KEYDOWN)
+        {
+            if (OWindow->onKey)
+            {
+                OWindow->onKey(static_cast<uintptr_t>(wparam));
+            }
+            return 0;
+        }
 
         return DefWindowProc(handle, msg, wparam, lparam);
     }

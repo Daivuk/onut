@@ -19,6 +19,9 @@ static const Color g_toolBtnDisabledColor = {.4f, .4f, .4f, .4f};
 static const Color g_deepViewFill = OColorHex(252526);
 static const Color g_deepViewOutline = OColorHex(3f3f46);
 static const Color g_treeItemSelectedBGColor = OColorHex(3399ff);
+static const Color g_selectedTextColor = OColorHex(ffffff);
+static const Color g_cursorColor = OColorHex(dadad9);
+static const Color g_cursorSelectionColor = OColorHex(cc6600);
 
 static onut::BMFont* g_pFont;
 static onut::Texture* g_pTexTreeOpen;
@@ -523,5 +526,95 @@ void createUIStyles(onut::UIContext* pContext)
                 break;
         }
         OSB->drawRectWithUVs(texture, orect, UVs);
+    });
+
+    pContext->addTextCaretSolver<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const onut::sUIVector2& localPos) -> decltype(std::string().size())
+    {
+        auto& text = pTextBox->getText();
+        return g_pFont->caretPos(text, localPos.x - 4);
+    });
+
+    pContext->addStyle<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const onut::sUIRect& rect)
+    {
+        auto state = pTextBox->getState(*pContext);
+        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectInnuer = rectOutter.Grow(-1);
+        auto hasFocus = pTextBox->hasFocus(*pContext);
+        switch (state)
+        {
+            case onut::eUIState::DISABLED:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
+                OSB->drawRect(nullptr, rectInnuer, hasFocus ? g_btnStatesColors[3][1] : g_btnStatesColors[0][1]);
+                break;
+            case onut::eUIState::NORMAL:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
+                OSB->drawRect(nullptr, rectInnuer, hasFocus ? g_btnStatesColors[3][1] : g_btnStatesColors[1][1]);
+                break;
+            case onut::eUIState::HOVER:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[2][0]);
+                OSB->drawRect(nullptr, rectInnuer, hasFocus ? g_btnStatesColors[3][1] : g_btnStatesColors[2][1]);
+                break;
+            case onut::eUIState::DOWN:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[3][0]);
+                OSB->drawRect(nullptr, rectInnuer, hasFocus ? g_btnStatesColors[3][1] : g_btnStatesColors[3][1]);
+                break;
+        }
+        if (hasFocus)
+        {
+            auto selectedRegion = pTextBox->getSelectedTextRegion();
+
+            auto& text = pTextBox->getText();
+            auto textBefore = text.substr(0, selectedRegion[0]);
+            auto regionLen = selectedRegion[1] - selectedRegion[0];
+            auto regionText = text.substr(selectedRegion[0], regionLen);
+            auto textAfter = text.substr(selectedRegion[1]);
+
+            auto beforeSize = g_pFont->measure(textBefore);
+            auto afterSize = g_pFont->measure(textAfter);
+            
+            auto regionSize = g_pFont->measure(regionText);
+            auto regionPos = g_pFont->measure(textBefore);
+            Rect regionRect{rectOutter.Left(4), regionSize};
+            regionRect.x += regionPos.x;
+            regionRect.y -= regionSize.y * .5f;
+            ++regionRect.z;
+
+            if (regionLen)
+            {
+                OSB->drawRect(nullptr, regionRect, g_treeItemSelectedBGColor);
+
+                g_pFont->draw<OLeft>(textBefore, rectInnuer.Left(4), g_fontColor);
+                g_pFont->draw<OLeft>(regionText, rectInnuer.Left(4 + beforeSize.x), g_selectedTextColor);
+                g_pFont->draw<OLeft>(textAfter, rectInnuer.Left(4 + beforeSize.x + regionSize.x), g_fontColor);
+            }
+            else
+            {
+                g_pFont->draw<OLeft>(text, rectInnuer.Left(4), g_fontColor);
+            }
+
+            // Draw cursor
+            if (pTextBox->isCursorVisible())
+            {
+                auto color = g_cursorColor;
+                if (selectedRegion[1] - selectedRegion[0] > 0) color = g_cursorSelectionColor;
+
+                auto textToCursor = text.substr(0, pTextBox->getCursorPos());
+                auto cursorPos = g_pFont->measure(textToCursor);
+                auto left = rectInnuer.Left(4);
+
+                OSB->drawRect(nullptr, {left.x + cursorPos.x, regionRect.y, 1, cursorPos.y}, color);
+            }
+        }
+        else
+        {
+            if (state == onut::eUIState::DISABLED)
+            {
+                g_pFont->draw<OLeft>(pTextBox->getText(), rectInnuer.Left(4), g_fontColor * .5f);
+            }
+            else
+            {
+                g_pFont->draw<OLeft>(pTextBox->getText(), rectInnuer.Left(4), g_fontColor);
+            }
+        }
     });
 }

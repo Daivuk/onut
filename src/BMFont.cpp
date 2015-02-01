@@ -157,6 +157,39 @@ namespace onut
         return result;
     }
 
+    decltype(std::string().size()) BMFont::caretPos(const std::string& in_text, float at)
+    {
+        decltype(std::string().size()) pos = 0;
+
+        float curX = 0;
+        unsigned int len = in_text.length();
+        int charId;
+        for (; pos < len; ++pos)
+        {
+            charId = in_text[pos];
+            if (charId == '\n')
+            {
+                return pos;
+            }
+            if (charId == '^' && pos + 3 < len)
+            {
+                pos += 3;
+                continue;
+            }
+            const auto& it = m_chars.find(charId);
+            if (it == m_chars.end()) continue;
+            auto pDatChar = it->second;
+            auto advance = static_cast<float>(pDatChar->xadvance);
+            if (curX + advance * .75f >= at)
+            {
+                return pos;
+            }
+            curX += advance;
+        }
+
+        return pos;
+    }
+
     Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align, bool snapPixels)
     {
         Vector2 pos = in_pos;

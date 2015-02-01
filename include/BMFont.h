@@ -30,6 +30,8 @@ namespace onut
         virtual ~BMFont();
 
         Vector2 measure(const std::string& text);
+        decltype(std::string().size()) caretPos(const std::string& text, float at);
+
         template<Align Talign = Align::TOP_LEFT>
         Rect draw(const std::string& text,
                   const Vector2& pos,

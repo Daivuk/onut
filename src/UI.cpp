@@ -1,7 +1,9 @@
 #include "UI.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filestream.h"
+#include <algorithm>
 #include <functional>
+#include <sstream>
 
 namespace onut
 {
@@ -455,6 +457,10 @@ namespace onut
                 {
                     pChild = new UITreeView();
                 }
+                else if (!strcmp(jsonChildType, "UITextBox"))
+                {
+                    pChild = new UITextBox();
+                }
                 if (!pChild) continue;
                 add(pChild);
                 pChild->load(jsonChild);
@@ -501,6 +507,9 @@ namespace onut
                     break;
                 case eUIType::UI_TREEVIEW:
                     add(new UITreeView(*(UITreeView*)pChild));
+                    break;
+                case eUIType::UI_TEXTBOX:
+                    add(new UITextBox(*(UITextBox*)pChild));
                     break;
             }
         }
@@ -682,6 +691,11 @@ namespace onut
         {
             m_pHoverControl = nullptr;
         }
+
+        if (m_pDownControl)
+        {
+            m_pFocus = m_pDownControl;
+        }
     }
 
     void UIContext::dispatchEvents()
@@ -708,6 +722,7 @@ namespace onut
             if (m_lastMouseEvent.mousePos.x != m_mouseEvent.mousePos.x ||
                 m_lastMouseEvent.mousePos.y != m_mouseEvent.mousePos.y)
             {
+                m_pHoverControl->onMouseMoveInternal(m_mouseEvent);
                 if (m_pHoverControl->onMouseMove)
                 {
                     m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvent);
@@ -718,6 +733,7 @@ namespace onut
         {
             if (m_pLastDownControl)
             {
+                m_pLastDownControl->onMouseUpInternal(m_mouseEvent);
                 if (m_pLastDownControl->onMouseUp)
                 {
                     m_pLastDownControl->onMouseUp(m_pLastDownControl, m_mouseEvent);
@@ -725,22 +741,68 @@ namespace onut
                 if (m_pHoverControl == m_pLastDownControl &&
                     !m_mouseEvent.isMouseDown)
                 {
+                    m_pLastDownControl->onClickInternal(m_mouseEvent);
                     if (m_pLastDownControl->onClick)
                     {
                         m_pLastDownControl->onClick(m_pLastDownControl, m_mouseEvent);
                     }
-                    m_pLastDownControl->onClickInternal(m_mouseEvent);
                 }
             }
             if (m_pDownControl)
             {
+                m_pDownControl->onMouseDownInternal(m_mouseEvent);
                 if (m_pDownControl->onMouseDown)
                 {
                     m_pDownControl->onMouseDown(m_pDownControl, m_mouseEvent);
                 }
-                m_pDownControl->onMouseDownInternal(m_mouseEvent);
             }
         }
+        if (m_pFocus != m_pLastFocus)
+        {
+            if (m_pLastFocus)
+            {
+                m_pLastFocus->onLoseFocusInternal();
+                if (m_pLastFocus->onLoseFocus)
+                {
+                    m_pLastFocus->onLoseFocus(m_pLastFocus);
+                }
+            }
+            if (m_pFocus)
+            {
+                m_pFocus->onGainFocusInternal();
+                if (m_pFocus->onGainFocus)
+                {
+                    m_pFocus->onGainFocus(m_pFocus);
+                }
+            }
+        }
+
+        // Do writes
+        if (m_pFocus)
+        {
+            for (auto c : m_writes)
+            {
+                m_pFocus->onWriteInternal(c, *this);
+            }
+        }
+        m_writes.clear();
+
+        // Do key events
+        if (m_pFocus)
+        {
+            UIKeyEvent evt;
+            evt.pContext = this;
+            for (auto key : m_keyDowns)
+            {
+                evt.key = key;
+                m_pFocus->onKeyDownInternal(evt);
+                if (m_pFocus->onKeyDown)
+                {
+                    m_pFocus->onKeyDown(m_pFocus, evt);
+                }
+            }
+        }
+        m_keyDowns.clear();
     }
 
     void UIContext::reset()
@@ -748,6 +810,22 @@ namespace onut
         m_lastMouseEvent = m_mouseEvent;
         m_pLastHoverControl = m_pHoverControl;
         m_pLastDownControl = m_pDownControl;
+        m_pLastFocus = m_pFocus;
+    }
+
+    void UIContext::write(char c)
+    {
+        m_writes.push_back(c);
+    }
+
+    void UIContext::keyDown(uintptr_t key)
+    {
+        m_keyDowns.push_back(key);
+    }
+
+    void UIContext::focus(UIControl* pFocus)
+    {
+        m_pFocus = pFocus;
     }
 
     void UIControl::render(const UIContext& context) const
@@ -929,22 +1007,6 @@ namespace onut
         m_rect = rect;
     }
 
-    void UIControl::setWorldRect(const UIContext& context, const sUIRect& rect)
-    {
-        //if (!m_pParent)
-        //{
-        //    m_rect = rect;
-        //}
-        //else
-        //{
-        //    auto worldRect = m_pParent->getWorldRect(context);
-        //    m_rect.position.x = rect.position.x - worldRect.position.x;
-        //    m_rect.position.y = rect.position.y - worldRect.position.y;
-        //}
-        //m_rect.size.x = rect.size.x - worldRect.size.x;
-        //m_rect.size.y = rect.size.y - worldRect.size.y;
-    }
-
     sUIVector2 UIControl::getAnchorInPixel() const
     {
         sUIVector2 ret = m_anchor;
@@ -1026,6 +1088,11 @@ namespace onut
         {
             return eUIState::DISABLED;
         }
+    }
+
+    bool UIControl::hasFocus(const UIContext& context) const
+    {
+        return (context.m_pFocus == this);
     }
 
     void UIControl::setUserData(void* pUserData)
@@ -1211,6 +1278,14 @@ namespace onut
         }
     }
 
+    bool UITextBox::isCursorVisible() const
+    {
+        auto now = std::chrono::steady_clock::now();
+        auto diff = now - m_cursorTime;
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(diff);
+        return (ms.count() % 1000) < 500;
+    }
+
     //--- Copy
     UIButton::UIButton(const UIButton& other) :
         UIControl(other)
@@ -1264,6 +1339,12 @@ namespace onut
             m_items.push_back(new UITreeViewItem(*pOtherItem));
         }
         m_isExpanded = other.m_isExpanded;
+        m_text = other.m_text;
+    }
+
+    UITextBox::UITextBox(const UITextBox& other) :
+        UIControl(other)
+    {
         m_text = other.m_text;
     }
 
@@ -1391,6 +1472,11 @@ namespace onut
         m_pUserData = pUserData;
     }
 
+    void UITextBox::setText(const std::string& text)
+    {
+        m_text = text;
+    }
+
     //--- Loads
     void UIButton::load(const rapidjson::Value& jsonNode)
     {
@@ -1430,6 +1516,12 @@ namespace onut
         m_expandedXOffset = getJsonFloat(jsonNode["expandedXOffset"], 18.f);
         m_expandClickWidth = getJsonFloat(jsonNode["expandClickWidth"], 18.f);
         m_itemHeight = getJsonFloat(jsonNode["itemHeight"], 18.f);
+    }
+
+    void UITextBox::load(const rapidjson::Value& jsonNode)
+    {
+        UIControl::load(jsonNode);
+        m_text = getJsonString(jsonNode["text"]);
     }
 
     //--- Renders
@@ -1495,6 +1587,15 @@ namespace onut
             {
                 pItem->render(itemCallback, this, rect, itemRect);
             }
+        }
+    }
+
+    void UITextBox::renderControl(const UIContext& context, const sUIRect& rect) const
+    {
+        const auto& callback = context.getStyle<UITextBox>(getStyle());
+        if (callback)
+        {
+            callback->render(this, rect);
         }
     }
 
@@ -1625,6 +1726,130 @@ namespace onut
                     onSelectionChanged(this, myEvt);
                 }
             }
+        }
+    }
+
+    void UITextBox::onGainFocusInternal()
+    {
+        // Select all on focus
+        selectAll();
+        m_cursorTime = std::chrono::steady_clock::now();
+    }
+
+    void UITextBox::onLoseFocusInternal()
+    {
+        // Deselect all
+        m_selectedTextRegion[0] = 0;
+        m_selectedTextRegion[1] = 0;
+    }
+
+    void UITextBox::onMouseDownInternal(const UIMouseEvent& evt)
+    {
+        m_isSelecting = true;
+        const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
+        if (callback)
+        {
+            auto caretPos = callback->getCaretPos(this, evt.localMousePos);
+            m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = caretPos;
+        }
+    }
+
+    void UITextBox::onMouseMoveInternal(const UIMouseEvent& evt)
+    {
+        if (!m_isSelecting) return; // Don't care
+        const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
+        if (callback)
+        {
+            auto caretPos = callback->getCaretPos(this, evt.localMousePos);
+            m_cursorPos = caretPos;
+            m_selectedTextRegion[0] = std::min<>(m_cursorPos, m_selectedTextRegion[0]);
+            m_selectedTextRegion[1] = std::max<>(m_cursorPos, m_selectedTextRegion[1]);
+        }
+    }
+
+    void UITextBox::onMouseUpInternal(const UIMouseEvent& evt)
+    {
+        m_isSelecting = false;
+    }
+
+    void UITextBox::selectAll()
+    {
+        m_selectedTextRegion[0] = 0;
+        m_selectedTextRegion[1] = m_text.size();
+        m_cursorPos = m_selectedTextRegion[1];
+    }
+
+    void UITextBox::onWriteInternal(char c, UIContext& context)
+    {
+        m_cursorTime = std::chrono::steady_clock::now();
+        if (c == '\b') // Backspace
+        {
+            if (m_selectedTextRegion[1] - m_selectedTextRegion[0])
+            {
+                m_text = m_text.substr(0, m_selectedTextRegion[0]) + m_text.substr(m_selectedTextRegion[1]);
+                m_cursorPos = m_selectedTextRegion[1] = m_selectedTextRegion[0];
+            }
+            else if (m_cursorPos)
+            {
+                m_text = m_text.substr(0, m_cursorPos - 1) + m_text.substr(m_cursorPos);
+                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos - 1;
+            }
+        }
+        else if (c == '\r') // Return
+        {
+            selectAll();
+            // Accept
+            if (onTextChanged)
+            {
+                UITextBoxEvent evt;
+                evt.pContext = &context;
+                onTextChanged(this, evt);
+            }
+        }
+        else if (c == '\x1b') // Escape
+        {
+            context.focus(nullptr);
+        }
+        else if (c == '\t')
+        {
+            // We go to the next textfield. Ignored feature for now
+            context.focus(nullptr);
+        }
+        else // Normal character
+        {
+            std::stringstream ss;
+            ss << m_text.substr(0, m_selectedTextRegion[0]);
+            ss << c;
+            ss << m_text.substr(m_selectedTextRegion[1]);
+            m_text = ss.str();
+            m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_selectedTextRegion[0] + 1;
+        }
+    }
+
+    static const uintptr_t KEY_END = 0x23;
+    static const uintptr_t KEY_HOME = 0x24;
+    static const uintptr_t KEY_LEFT = 0x25;
+    static const uintptr_t KEY_UP = 0x26;
+    static const uintptr_t KEY_RIGHT = 0x27;
+    static const uintptr_t KEY_DOWN = 0x28;
+    static const uintptr_t KEY_DELETE = 0x2E;      
+
+    void UITextBox::onKeyDownInternal(const UIKeyEvent& evt)
+    {
+        switch (evt.key)
+        {
+            case KEY_END:
+                break;
+            case KEY_HOME:
+                break;
+            case KEY_LEFT:
+            case KEY_UP:
+                break;
+            case KEY_RIGHT:
+            case KEY_DOWN:
+                break;
+            case KEY_DELETE:
+                break;
         }
     }
 };

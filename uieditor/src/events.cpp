@@ -8,7 +8,7 @@ extern onut::UIControl* g_pUIScreen;
 onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
-onut::UIButton*      g_pInspector_UIControl_txtName;
+onut::UITextBox*     g_pInspector_UIControl_txtName;
 onut::UIButton*      g_pInspector_UIControl_txtStyle;
 onut::UIButton*      g_pInspector_UIControl_txtX;
 onut::UIButton*      g_pInspector_UIControl_txtY;
@@ -303,7 +303,7 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_chkEnabled = pUIScreen->getChild<onut::UICheckBox>("chkEnabled");
     g_pInspector_UIControl_chkVisible = pUIScreen->getChild<onut::UICheckBox>("chkVisible");
     g_pInspector_UIControl_chkClickThrough = pUIScreen->getChild<onut::UICheckBox>("chkClickThrough");
-    g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UIButton>("txtName");
+    g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UITextBox>("txtName");
     g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UIButton>("txtStyle");
     g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UIButton>("txtX");
     g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UIButton>("txtY");
@@ -358,4 +358,10 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->onClick = onAnchorClicked;
     g_pInspector_UIControl_chkAnchorBOTTOM->onClick = onAnchorClicked;
     g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->onClick = onAnchorClicked;
+
+    // Turn textbox into text cursor
+    static HCURSOR curARROW = LoadCursor(nullptr, IDC_ARROW);
+    static HCURSOR curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
+    g_pInspector_UIControl_txtName->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtName->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
 }

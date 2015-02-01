@@ -6,7 +6,7 @@ extern onut::UIControl* g_pUIScreen;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
-extern onut::UIButton*      g_pInspector_UIControl_txtName;
+extern onut::UITextBox*     g_pInspector_UIControl_txtName;
 extern onut::UIButton*      g_pInspector_UIControl_txtStyle;
 extern onut::UIButton*      g_pInspector_UIControl_txtX;
 extern onut::UIButton*      g_pInspector_UIControl_txtY;
@@ -253,39 +253,82 @@ void DocumentView::updateMovingHandle()
     invAnchor.y = 1 - anchor.y;
     auto newRect = m_controlRectOnDown;
 
-    if (m_pCurrentHandle == m_gizmoHandles[0] ||
-        m_pCurrentHandle == m_gizmoHandles[3] ||
-        m_pCurrentHandle == m_gizmoHandles[5])
+    // Grow/Shrink on both side equally
+    if (OInput->isStateDown(DIK_LALT))
     {
-        newRect.position.x += mouseDiff.x * invAnchor.x;
-        newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
-        newRect.size.x -= mouseDiff.x;
-        if (newRect.size.x < 0) newRect.size.x = 0;
+        if (m_pCurrentHandle == m_gizmoHandles[0] ||
+            m_pCurrentHandle == m_gizmoHandles[3] ||
+            m_pCurrentHandle == m_gizmoHandles[5])
+        {
+            newRect.position.x += mouseDiff.x * invAnchor.x - mouseDiff.x * anchor.x;
+            newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+            newRect.size.x -= mouseDiff.x * 2;
+            if (newRect.size.x < 0) newRect.size.x = 0;
+        }
+        else if (m_pCurrentHandle == m_gizmoHandles[2] ||
+                    m_pCurrentHandle == m_gizmoHandles[4] ||
+                    m_pCurrentHandle == m_gizmoHandles[7])
+        {
+            newRect.position.x += mouseDiff.x * anchor.x - mouseDiff.x * invAnchor.x;
+            newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+            newRect.size.x += mouseDiff.x * 2;
+            if (newRect.size.x < 0) newRect.size.x = 0;
+        }
+        if (m_pCurrentHandle == m_gizmoHandles[0] ||
+            m_pCurrentHandle == m_gizmoHandles[1] ||
+            m_pCurrentHandle == m_gizmoHandles[2])
+        {
+            newRect.position.y += mouseDiff.y * invAnchor.y - mouseDiff.y * anchor.y;
+            newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+            newRect.size.y -= mouseDiff.y * 2;
+            if (newRect.size.y < 0) newRect.size.y = 0;
+        }
+        else if (m_pCurrentHandle == m_gizmoHandles[5] ||
+                    m_pCurrentHandle == m_gizmoHandles[6] ||
+                    m_pCurrentHandle == m_gizmoHandles[7])
+        {
+            newRect.position.y += mouseDiff.y * anchor.y - mouseDiff.y * invAnchor.y;
+            newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+            newRect.size.y += mouseDiff.y * 2;
+            if (newRect.size.y < 0) newRect.size.y = 0;
+        }
     }
-    else if (m_pCurrentHandle == m_gizmoHandles[2] ||
-             m_pCurrentHandle == m_gizmoHandles[4] ||
-             m_pCurrentHandle == m_gizmoHandles[7])
+    else // Normal sizing
     {
-        newRect.position.x += mouseDiff.x * anchor.x;
-        newRect.size.x += mouseDiff.x;
-        if (newRect.size.x < 0) newRect.size.x = 0;
-    }
-    if (m_pCurrentHandle == m_gizmoHandles[0] ||
-        m_pCurrentHandle == m_gizmoHandles[1] ||
-        m_pCurrentHandle == m_gizmoHandles[2])
-    {
-        newRect.position.y += mouseDiff.y * invAnchor.y;
-        newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
-        newRect.size.y -= mouseDiff.y;
-        if (newRect.size.y < 0) newRect.size.y = 0;
-    }
-    else if (m_pCurrentHandle == m_gizmoHandles[5] ||
-             m_pCurrentHandle == m_gizmoHandles[6] ||
-             m_pCurrentHandle == m_gizmoHandles[7])
-    {
-        newRect.position.y += mouseDiff.y * anchor.y;
-        newRect.size.y += mouseDiff.y;
-        if (newRect.size.y < 0) newRect.size.y = 0;
+        if (m_pCurrentHandle == m_gizmoHandles[0] ||
+            m_pCurrentHandle == m_gizmoHandles[3] ||
+            m_pCurrentHandle == m_gizmoHandles[5])
+        {
+            newRect.position.x += mouseDiff.x * invAnchor.x;
+            newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
+            newRect.size.x -= mouseDiff.x;
+            if (newRect.size.x < 0) newRect.size.x = 0;
+        }
+        else if (m_pCurrentHandle == m_gizmoHandles[2] ||
+                    m_pCurrentHandle == m_gizmoHandles[4] ||
+                    m_pCurrentHandle == m_gizmoHandles[7])
+        {
+            newRect.position.x += mouseDiff.x * anchor.x;
+            newRect.size.x += mouseDiff.x;
+            if (newRect.size.x < 0) newRect.size.x = 0;
+        }
+        if (m_pCurrentHandle == m_gizmoHandles[0] ||
+            m_pCurrentHandle == m_gizmoHandles[1] ||
+            m_pCurrentHandle == m_gizmoHandles[2])
+        {
+            newRect.position.y += mouseDiff.y * invAnchor.y;
+            newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
+            newRect.size.y -= mouseDiff.y;
+            if (newRect.size.y < 0) newRect.size.y = 0;
+        }
+        else if (m_pCurrentHandle == m_gizmoHandles[5] ||
+                    m_pCurrentHandle == m_gizmoHandles[6] ||
+                    m_pCurrentHandle == m_gizmoHandles[7])
+        {
+            newRect.position.y += mouseDiff.y * anchor.y;
+            newRect.size.y += mouseDiff.y;
+            if (newRect.size.y < 0) newRect.size.y = 0;
+        }
     }
 
     updateSelectionWithRect(newRect);
@@ -344,7 +387,8 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled());
         g_pInspector_UIControl_chkVisible->setIsChecked(pSelected->isVisible());
         g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough());
-        g_pInspector_UIControl_txtName->setCaption(pSelected->getName());
+        //g_pInspector_UIControl_txtName->setText(pSelected->getName());
+        g_pInspector_UIControl_txtName->setText("Hello World");
         g_pInspector_UIControl_txtStyle->setCaption(pSelected->getStyleName());
         g_pInspector_UIControl_txtX->setCaption(std::to_string(pSelected->getRect().position.x));
         g_pInspector_UIControl_txtY->setCaption(std::to_string(pSelected->getRect().position.y));

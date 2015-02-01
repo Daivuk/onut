@@ -33,6 +33,9 @@ void init()
     hookUIEvents(g_pUIScreen);
 
     g_pDocument = new DocumentView();
+
+    OWindow->onWrite = [](char c){g_pUIContext->write(c); };
+    OWindow->onKey = [](uintptr_t key){g_pUIContext->keyDown(key); };
 }
 
 void update()

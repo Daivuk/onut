@@ -1,10 +1,11 @@
 #pragma once
+#include <chrono>
 #include <cinttypes>
 #include <functional>
 #include <string>
+#include <typeindex>
 #include <unordered_map>
 #include <vector>
-#include <typeindex>
 
 // Forward delcare needed rapidjson classes.
 namespace rapidjson
@@ -67,7 +68,8 @@ namespace onut
         UI_LABEL,
         UI_IMAGE,
         UI_CHECKBOX,
-        UI_TREEVIEW
+        UI_TREEVIEW,
+        UI_TEXTBOX
     };
 
     enum class eUIState : uint8_t
@@ -125,6 +127,13 @@ namespace onut
         UIContext*  pContext;
     };
 
+    class UIKeyEvent
+    {
+    public:
+        uintptr_t   key;
+        UIContext*  pContext;
+    };
+
     class UICheckEvent
     {
     public:
@@ -137,6 +146,12 @@ namespace onut
     public:
         std::vector<UITreeViewItem*>*   pSelectedItems;
         UIContext*                      pContext;
+    };
+
+    class UITextBoxEvent
+    {
+    public:
+        UIContext*  pContext;
     };
 
     class UIControl;
@@ -156,6 +171,27 @@ namespace onut
         void render(const void* pControl, const sUIRect& rect) const
         {
             m_callback(static_cast<const TobjType*>(pControl), rect);
+        }
+
+    private:
+        TcallbackType m_callback;
+    };
+
+    class IUITextCaretCallback
+    {
+    public:
+        virtual decltype(std::string().size()) getCaretPos(const void* pControl, const sUIVector2& localPos) const = 0;
+    };
+
+    template<typename TobjType, typename TcallbackType>
+    class UITextCaretCallback : public IUITextCaretCallback
+    {
+    public:
+        UITextCaretCallback(const TcallbackType& callback) : m_callback(callback) {}
+
+        decltype(std::string().size()) getCaretPos(const void* pControl, const sUIVector2& localPos) const
+        {
+            return m_callback(static_cast<const TobjType*>(pControl), localPos);
         }
 
     private:
@@ -187,6 +223,19 @@ namespace onut
             m[styleId] = new UIRenderCallback<TobjType, TcallbackType>(renderCallback);
         }
 
+        template<typename TobjType, typename TcallbackType>
+        void addTextCaretSolver(const char* szStyle, const TcallbackType& callback)
+        {
+            auto styleId = uiHash(szStyle);
+            auto& m = m_textCaretSolvers[std::type_index(typeid(TobjType))];
+            auto& it = m.find(styleId);
+            if (it != m.end())
+            {
+                delete it->second;
+            }
+            m[styleId] = new UITextCaretCallback<TobjType, TcallbackType>(callback);
+        }
+
         template<typename TobjType>
         const IUIRenderCallback* getStyle(unsigned int styleId) const
         {
@@ -211,20 +260,61 @@ namespace onut
             return nullptr;
         }
 
+        template<typename TobjType>
+        const IUITextCaretCallback* getTextCaretSolver(unsigned int styleId) const
+        {
+            auto& mIt = m_textCaretSolvers.find(std::type_index(typeid(TobjType)));
+            if (mIt == m_textCaretSolvers.end())
+            {
+                return nullptr;
+            }
+            auto& it = mIt->second.find(styleId);
+            if (it != mIt->second.end())
+            {
+                return it->second;
+            }
+            else if (styleId != 0)
+            {
+                it = mIt->second.find(0);
+                if (it != mIt->second.end())
+                {
+                    return it->second;
+                }
+            }
+            return nullptr;
+        }
+
+        void write(char c);
+        void keyDown(uintptr_t key);
+        void focus(UIControl* pFocus);
+
+        UIControl* getHoverControl() const { return m_pHoverControl; }
+        UIControl* getDownControl() const { return m_pDownControl; }
+        UIControl* getFocusControl() const { return m_pFocus; }
+
     private:
         void resolve();
         void dispatchEvents();
         void reset();
 
-        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUIRenderCallback*>> m_callbacks;
+        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUIRenderCallback*>>       m_callbacks;
+        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUITextCaretCallback*>>    m_textCaretSolvers;
+
         UIMouseEvent    m_mouseEvent;
         UIMouseEvent    m_lastMouseEvent;
         sUIVector2      m_hoverLocalMousePos;
         sUIVector2      m_screenSize;
+
         UIControl*      m_pHoverControl = nullptr;
         UIControl*      m_pDownControl = nullptr;
+        UIControl*      m_pFocus = nullptr;
+
         UIControl*      m_pLastHoverControl = nullptr;
         UIControl*      m_pLastDownControl = nullptr;
+        UIControl*      m_pLastFocus = nullptr;
+
+        std::vector<char>       m_writes;
+        std::vector<uintptr_t>  m_keyDowns;
     };
 
     enum class eUIPropertyType : uint8_t
@@ -298,7 +388,6 @@ namespace onut
         const sUIRect& getRect() const { return m_rect; }
         void setRect(const sUIRect& rect);
         sUIRect getWorldRect(const UIContext& context) const;
-        void setWorldRect(const UIContext& context, const sUIRect& rect);
 
         const sUIVector2& getAnchor() const { return m_anchor; }
         sUIVector2 getAnchorInPixel() const;
@@ -318,6 +407,7 @@ namespace onut
         void setIsClickThrough(bool bIsClickThrough);
 
         eUIState getState(const UIContext& context) const;
+        bool hasFocus(const UIContext& context) const;
 
         UIControl* getParent() const { return m_pParent; }
 
@@ -331,6 +421,13 @@ namespace onut
         TfnMouseEvent onMouseUp;
         TfnMouseEvent onMouseEnter;
         TfnMouseEvent onMouseLeave;
+
+        using TfnFocusEvent = std::function < void(UIControl*) > ;
+        TfnFocusEvent onGainFocus;
+        TfnFocusEvent onLoseFocus;
+
+        using TfnKeyEvent = std::function < void(UIControl*, const UIKeyEvent&) >;
+        TfnKeyEvent onKeyDown;
 
         const UIProperty&   getProperty(const std::string& name) const;
 
@@ -365,6 +462,12 @@ namespace onut
 
         virtual void onClickInternal(const UIMouseEvent& evt) {}
         virtual void onMouseDownInternal(const UIMouseEvent& evt) {}
+        virtual void onMouseMoveInternal(const UIMouseEvent& evt) {}
+        virtual void onMouseUpInternal(const UIMouseEvent& evt) {}
+        virtual void onGainFocusInternal() {}
+        virtual void onLoseFocusInternal() {}
+        virtual void onWriteInternal(char c, UIContext& context) {}
+        virtual void onKeyDownInternal(const UIKeyEvent& evt) {}
 
     private:
         sUIRect getWorldRect(const sUIRect& parentRect) const;
@@ -618,5 +721,47 @@ namespace onut
         UITreeView*                     m_pTreeView = nullptr;
         bool                            m_isSelected = false;
         UITreeViewItem*                 m_pParent = nullptr;
+    };
+
+    class UITextBox : public UIControl
+    {
+        friend UIControl;
+
+    public:
+        UITextBox() {}
+        UITextBox(const UITextBox& other);
+
+        virtual eUIType getType() const override { return eUIType::UI_TEXTBOX; }
+
+        const std::string& getText() const { return m_text; }
+        void setText(const std::string& text);
+
+        const decltype(std::string().size())* getSelectedTextRegion() const { return m_selectedTextRegion; }
+        decltype(std::string().size()) getCursorPos() const { return m_cursorPos; }
+        bool isCursorVisible() const;
+
+        using TfnOnTextChangedEvent = std::function<void(UITextBox*, const UITextBoxEvent&)>;
+        TfnOnTextChangedEvent onTextChanged;
+
+        void selectAll();
+
+    protected:
+        virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+
+        virtual void onGainFocusInternal() override;
+        virtual void onLoseFocusInternal() override;
+        virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseMoveInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseUpInternal(const UIMouseEvent& evt) override;
+        virtual void onWriteInternal(char c, UIContext& context) override;
+        virtual void onKeyDownInternal(const UIKeyEvent& evt) override;
+
+    private:
+        std::string                                 m_text;
+        decltype(std::string().size())              m_selectedTextRegion[2];
+        bool                                        m_isSelecting = false;
+        decltype(std::string().size())              m_cursorPos = 0;
+        decltype(std::chrono::steady_clock::now())  m_cursorTime;
     };
 }

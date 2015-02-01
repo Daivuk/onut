@@ -609,8 +609,8 @@
                             "y": 80
                         },
                         {
-                            "type": "UIButton",
-                            "caption": "Button",
+                            "type": "UITextBox",
+                            "text": "Button",
                             "widthType": "PERCENTAGE",
                             "name": "txtName",
                             "width": 0.618,
