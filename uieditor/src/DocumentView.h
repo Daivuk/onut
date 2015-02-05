@@ -44,6 +44,8 @@ private:
     bool getYAutoGuide(const onut::sUIRect& rect, float& y, bool& side);
     void xAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& x, bool& side, float& closest);
     void yAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& y, bool& side, float& closest);
+    onut::sUIRect applyAnchorsToRect(onut::UIControl* pControl, onut::sUIRect& rect);
+    onut::sUIRect revertAnchorsFromRect(onut::UIControl* pControl, onut::sUIRect& rect);
 
     onut::UIPanel*      m_pGizmo = nullptr;
     onut::UIControl*    m_gizmoHandles[8];

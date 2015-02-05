@@ -385,6 +385,98 @@ bool DocumentView::getYAutoGuide(const onut::sUIRect& rect, float& y, bool& side
     return found;
 }
 
+onut::sUIRect DocumentView::applyAnchorsToRect(onut::UIControl* pControl, onut::sUIRect& rect)
+{
+    auto& parentRect = pControl->getParent()->getRect();
+    onut::sUIRect ret = rect;
+    auto anchors = pControl->getAnchorInPixel();
+    ret.position.x -= anchors.x;
+    ret.position.y -= anchors.y;
+
+    auto align = pControl->getAlign();
+    switch (align)
+    {
+        case onut::eUIAlign::TOP_LEFT:
+            break;
+        case onut::eUIAlign::TOP:
+            ret.position.x = parentRect.size.x * .5f + ret.position.x;
+            break;
+        case onut::eUIAlign::TOP_RIGHT:
+            ret.position.x = parentRect.size.x + ret.position.x;
+            break;
+        case onut::eUIAlign::LEFT:
+            ret.position.y = parentRect.size.y * .5f + ret.position.y;
+            break;
+        case onut::eUIAlign::CENTER:
+            ret.position.x = parentRect.size.x * .5f + ret.position.x;
+            ret.position.y = parentRect.size.y * .5f + ret.position.y;
+            break;
+        case onut::eUIAlign::RIGHT:
+            ret.position.x = parentRect.size.x + ret.position.x;
+            ret.position.y = parentRect.size.y * .5f + ret.position.y;
+            break;
+        case onut::eUIAlign::BOTTOM_LEFT:
+            ret.position.y = parentRect.size.y + ret.position.y;
+            break;
+        case onut::eUIAlign::BOTTOM:
+            ret.position.x = parentRect.size.x * .5f + ret.position.x;
+            ret.position.y = parentRect.size.y + ret.position.y;
+            break;
+        case onut::eUIAlign::BOTTOM_RIGHT:
+            ret.position.x = parentRect.size.x + ret.position.x;
+            ret.position.y = parentRect.size.y + ret.position.y;
+            break;
+    }
+
+    return std::move(ret);
+}
+
+onut::sUIRect DocumentView::revertAnchorsFromRect(onut::UIControl* pControl, onut::sUIRect& rect)
+{
+    auto& parentRect = pControl->getParent()->getRect();
+    onut::sUIRect ret = rect;
+    auto anchors = pControl->getAnchorInPixel();
+    ret.position.x += anchors.x;
+    ret.position.y += anchors.y;
+
+    auto align = pControl->getAlign();
+    switch (align)
+    {
+        case onut::eUIAlign::TOP_LEFT:
+            break;
+        case onut::eUIAlign::TOP:
+            ret.position.x = ret.position.x - parentRect.size.x * .5f;
+            break;
+        case onut::eUIAlign::TOP_RIGHT:
+            ret.position.x = ret.position.x - parentRect.size.x;
+            break;
+        case onut::eUIAlign::LEFT:
+            ret.position.y = ret.position.y - parentRect.size.y * .5f;
+            break;
+        case onut::eUIAlign::CENTER:
+            ret.position.x = ret.position.x - parentRect.size.x * .5f;
+            ret.position.y = ret.position.y - parentRect.size.y * .5f;
+            break;
+        case onut::eUIAlign::RIGHT:
+            ret.position.x = ret.position.x - parentRect.size.x;
+            ret.position.y = ret.position.y - parentRect.size.y * .5f;
+            break;
+        case onut::eUIAlign::BOTTOM_LEFT:
+            ret.position.y = ret.position.y - parentRect.size.y;
+            break;
+        case onut::eUIAlign::BOTTOM:
+            ret.position.x = ret.position.x - parentRect.size.x * .5f;
+            ret.position.y = ret.position.y - parentRect.size.y;
+            break;
+        case onut::eUIAlign::BOTTOM_RIGHT:
+            ret.position.x = ret.position.x - parentRect.size.x;
+            ret.position.y = ret.position.y - parentRect.size.y;
+            break;
+    }
+
+    return std::move(ret);
+}
+
 void DocumentView::updateMovingGizmo()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
@@ -392,21 +484,23 @@ void DocumentView::updateMovingGizmo()
     newRect.position.x += mouseDiff.x;
     newRect.position.y += mouseDiff.y;
 
-    if (m_autoGuide)
+    if (m_autoGuide && pSelected->getParent())
     {
         // Auto snap the rect to it's brothers
         float x, y;
         bool side;
-        if (getXAutoGuide(newRect, x, side))
+        auto guideRect = applyAnchorsToRect(pSelected, newRect);
+        if (getXAutoGuide(guideRect, x, side))
         {
             if (!side)
             {
-                newRect.position.x = x;
+                guideRect.position.x = x;
             }
             else
             {
-                newRect.position.x = x - newRect.size.x;
+                guideRect.position.x = x - guideRect.size.x;
             }
+            newRect = revertAnchorsFromRect(pSelected, guideRect);
             auto& rect = m_guides[1]->getRect();
             auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
             m_guides[1]->setRect({{parentWorldRect.position.x + x, rect.position.y}, rect.size});
@@ -416,16 +510,17 @@ void DocumentView::updateMovingGizmo()
         {
             m_guides[1]->setIsVisible(false);
         }
-        if (getYAutoGuide(newRect, y, side))
+        if (getYAutoGuide(guideRect, y, side))
         {
             if (!side)
             {
-                newRect.position.y = y;
+                guideRect.position.y = y;
             }
             else
             {
-                newRect.position.y = y - newRect.size.y;
+                guideRect.position.y = y - guideRect.size.y;
             }
+            newRect = revertAnchorsFromRect(pSelected, guideRect);
             auto& rect = m_guides[0]->getRect();
             auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
             m_guides[0]->setRect({{rect.position.x, parentWorldRect.position.y + y}, rect.size});
@@ -451,7 +546,20 @@ void DocumentView::updateMovingHandle()
     auto newRect = m_controlRectOnDown;
 
     // Grow/Shrink on both side equally
-    if (OInput->isStateDown(DIK_LALT))
+    if (OInput->isStateDown(DIK_LSHIFT) && (
+            m_pCurrentHandle == m_gizmoHandles[0] ||
+            m_pCurrentHandle == m_gizmoHandles[2] || 
+            m_pCurrentHandle == m_gizmoHandles[5] || 
+            m_pCurrentHandle == m_gizmoHandles[7]))
+    {
+        if (OInput->isStateDown(DIK_LALT))
+        {
+        }
+        else
+        {
+        }
+    }
+    else if (OInput->isStateDown(DIK_LALT))
     {
         if (m_pCurrentHandle == m_gizmoHandles[0] ||
             m_pCurrentHandle == m_gizmoHandles[3] ||
