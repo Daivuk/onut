@@ -30,10 +30,18 @@ void createViewUIStyles(onut::UIContext* pContext)
         const auto rectOutter = onut::UI2Onut(rect);
         const auto rectInnuer = rectOutter.Grow(-1);
 
-        OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
-        OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
-
-        g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor);
+        if (pButton->getState(*pContext) == onut::eUIState::DISABLED)
+        {
+            OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
+            OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
+            g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor * .5f);
+        }
+        else
+        {
+            OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
+            OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
+            g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor);
+        }
     });
 
     pContext->addStyle<onut::UILabel>("", [pContext](const onut::UILabel* pLabel, const onut::sUIRect& rect)

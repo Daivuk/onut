@@ -582,17 +582,18 @@ namespace onut
     void UIControl::getChild(const UIContext& context, 
                              const sUIVector2& mousePos, 
                              bool bSearchSubChildren, 
+                             bool bIgnoreClickThrough,
                              const sUIRect& parentRect, 
                              const UIControl** ppHoverControl) const
     {
-        if (!isVisible() || isClickThrough()) return;
+        if (!isVisible() || isClickThrough() && bIgnoreClickThrough) return;
 
         sUIRect worldRect = getWorldRect(parentRect);
         auto itend = m_children.rend();
         for (auto it = m_children.rbegin(); it != itend; ++it)
         {
             auto pChild = *it;
-            pChild->getChild(context, mousePos, bSearchSubChildren, worldRect, ppHoverControl);
+            pChild->getChild(context, mousePos, bSearchSubChildren, bIgnoreClickThrough, worldRect, ppHoverControl);
         }
 
         if (!*ppHoverControl)
@@ -607,7 +608,10 @@ namespace onut
         }
     }
 
-    UIControl* UIControl::getChild(const UIContext& context, const sUIVector2& mousePos, bool bSearchSubChildren) const
+    UIControl* UIControl::getChild(const UIContext& context, 
+                                   const sUIVector2& mousePos, 
+                                   bool bSearchSubChildren,
+                                   bool bIgnoreClickThrough) const
     {
         sUIRect parentWorldRect;
         if (getParent())
@@ -619,7 +623,7 @@ namespace onut
             parentWorldRect = {{0, 0}, context.getScreenSize()};
         }
         const UIControl* pHoverControl = nullptr;
-        getChild(context, mousePos, bSearchSubChildren, parentWorldRect, &pHoverControl);
+        getChild(context, mousePos, bSearchSubChildren, bIgnoreClickThrough, parentWorldRect, &pHoverControl);
         if (pHoverControl == this)
         {
             pHoverControl = nullptr;
@@ -700,6 +704,58 @@ namespace onut
 
     void UIContext::dispatchEvents()
     {
+        // Do writes
+        if (m_pFocus)
+        {
+            for (auto c : m_writes)
+            {
+                m_pFocus->onWriteInternal(c, *this);
+            }
+        }
+        m_writes.clear();
+
+        // Do key events
+        if (m_pFocus)
+        {
+            UIKeyEvent evt;
+            evt.pContext = this;
+            for (auto key : m_keyDowns)
+            {
+                evt.key = key;
+                m_pFocus->onKeyDownInternal(evt);
+                if (m_pFocus->onKeyDown)
+                {
+                    m_pFocus->onKeyDown(m_pFocus, evt);
+                }
+            }
+        }
+        m_keyDowns.clear();
+
+        // Focus gain/lost
+        if (m_pFocus != m_pLastFocus)
+        {
+            if (m_pLastFocus)
+            {
+                UIFocusEvent evt;
+                evt.pContext = this;
+                m_pLastFocus->onLoseFocusInternal(evt);
+                if (m_pLastFocus->onLoseFocus)
+                {
+                    m_pLastFocus->onLoseFocus(m_pLastFocus);
+                }
+            }
+            if (m_pFocus)
+            {
+                UIFocusEvent evt;
+                evt.pContext = this;
+                m_pFocus->onGainFocusInternal(evt);
+                if (m_pFocus->onGainFocus)
+                {
+                    m_pFocus->onGainFocus(m_pFocus);
+                }
+            }
+        }
+
         if (m_pHoverControl != m_pLastHoverControl)
         {
             if (m_pLastHoverControl)
@@ -757,52 +813,6 @@ namespace onut
                 }
             }
         }
-        if (m_pFocus != m_pLastFocus)
-        {
-            if (m_pLastFocus)
-            {
-                m_pLastFocus->onLoseFocusInternal();
-                if (m_pLastFocus->onLoseFocus)
-                {
-                    m_pLastFocus->onLoseFocus(m_pLastFocus);
-                }
-            }
-            if (m_pFocus)
-            {
-                m_pFocus->onGainFocusInternal();
-                if (m_pFocus->onGainFocus)
-                {
-                    m_pFocus->onGainFocus(m_pFocus);
-                }
-            }
-        }
-
-        // Do writes
-        if (m_pFocus)
-        {
-            for (auto c : m_writes)
-            {
-                m_pFocus->onWriteInternal(c, *this);
-            }
-        }
-        m_writes.clear();
-
-        // Do key events
-        if (m_pFocus)
-        {
-            UIKeyEvent evt;
-            evt.pContext = this;
-            for (auto key : m_keyDowns)
-            {
-                evt.key = key;
-                m_pFocus->onKeyDownInternal(evt);
-                if (m_pFocus->onKeyDown)
-                {
-                    m_pFocus->onKeyDown(m_pFocus, evt);
-                }
-            }
-        }
-        m_keyDowns.clear();
     }
 
     void UIContext::reset()
@@ -1729,18 +1739,28 @@ namespace onut
         }
     }
 
-    void UITextBox::onGainFocusInternal()
+    void UITextBox::onGainFocusInternal(const UIFocusEvent& evt)
     {
         // Select all on focus
         selectAll();
         m_cursorTime = std::chrono::steady_clock::now();
+        m_isTextChanged = false;
     }
 
-    void UITextBox::onLoseFocusInternal()
+    void UITextBox::onLoseFocusInternal(const UIFocusEvent& evt)
     {
         // Deselect all
         m_selectedTextRegion[0] = 0;
         m_selectedTextRegion[1] = 0;
+
+        // Accept
+        if (onTextChanged && m_isTextChanged)
+        {
+            m_isTextChanged = false;
+            UITextBoxEvent evt2;
+            evt2.pContext = evt.pContext;
+            onTextChanged(this, evt2);
+        }
     }
 
     void UITextBox::onMouseDownInternal(const UIMouseEvent& evt)
@@ -1782,6 +1802,7 @@ namespace onut
     void UITextBox::onWriteInternal(char c, UIContext& context)
     {
         m_cursorTime = std::chrono::steady_clock::now();
+        m_isTextChanged = true;
         if (c == '\b') // Backspace
         {
             if (m_selectedTextRegion[1] - m_selectedTextRegion[0])
@@ -1797,14 +1818,8 @@ namespace onut
         }
         else if (c == '\r') // Return
         {
-            selectAll();
-            // Accept
-            if (onTextChanged)
-            {
-                UITextBoxEvent evt;
-                evt.pContext = &context;
-                onTextChanged(this, evt);
-            }
+            //selectAll();
+            context.focus(nullptr);
         }
         else if (c == '\x1b') // Escape
         {
@@ -1826,29 +1841,44 @@ namespace onut
         }
     }
 
-    static const uintptr_t KEY_END = 0x23;
-    static const uintptr_t KEY_HOME = 0x24;
-    static const uintptr_t KEY_LEFT = 0x25;
-    static const uintptr_t KEY_UP = 0x26;
-    static const uintptr_t KEY_RIGHT = 0x27;
-    static const uintptr_t KEY_DOWN = 0x28;
-    static const uintptr_t KEY_DELETE = 0x2E;      
-
     void UITextBox::onKeyDownInternal(const UIKeyEvent& evt)
     {
+        m_cursorTime = std::chrono::steady_clock::now();
         switch (evt.key)
         {
             case KEY_END:
+                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_text.size();
                 break;
             case KEY_HOME:
+                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = 0;
                 break;
             case KEY_LEFT:
             case KEY_UP:
+                if (m_cursorPos > 0)
+                {
+                    --m_cursorPos;
+                    m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
+                }
                 break;
             case KEY_RIGHT:
             case KEY_DOWN:
+                if (m_cursorPos < m_text.size())
+                {
+                    ++m_cursorPos;
+                    m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
+                }
                 break;
             case KEY_DELETE:
+                m_isTextChanged = true;
+                if (m_selectedTextRegion[0] != m_selectedTextRegion[1])
+                {
+                    m_text = m_text.substr(0, m_selectedTextRegion[0]) + m_text.substr(m_selectedTextRegion[1]);
+                    m_cursorPos = m_selectedTextRegion[1] = m_selectedTextRegion[0];
+                }
+                else if (m_cursorPos < m_text.size())
+                {
+                    m_text = m_text.substr(0, m_cursorPos) + m_text.substr(m_cursorPos + 1);
+                }
                 break;
         }
     }

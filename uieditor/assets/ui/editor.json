@@ -630,7 +630,7 @@
                             "y": 108
                         },
                         {
-                            "type": "UIButton",
+                            "type": "UITextBox",
                             "caption": "Button",
                             "widthType": "PERCENTAGE",
                             "name": "txtStyle",

@@ -127,6 +127,14 @@ namespace onut
         UIContext*  pContext;
     };
 
+    static const uintptr_t KEY_END = 0x23;
+    static const uintptr_t KEY_HOME = 0x24;
+    static const uintptr_t KEY_LEFT = 0x25;
+    static const uintptr_t KEY_UP = 0x26;
+    static const uintptr_t KEY_RIGHT = 0x27;
+    static const uintptr_t KEY_DOWN = 0x28;
+    static const uintptr_t KEY_DELETE = 0x2E;
+
     class UIKeyEvent
     {
     public:
@@ -138,6 +146,12 @@ namespace onut
     {
     public:
         bool        isChecked;
+        UIContext*  pContext;
+    };
+
+    class UIFocusEvent
+    {
+    public:
         UIContext*  pContext;
     };
 
@@ -368,11 +382,11 @@ namespace onut
         {
             return dynamic_cast<TuiType*>(getChild(name, bSearchSubChildren));
         }
-        UIControl* getChild(const UIContext& context, const sUIVector2& mousePos, bool bSearchSubChildren = true) const;
+        UIControl* getChild(const UIContext& context, const sUIVector2& mousePos, bool bSearchSubChildren = true, bool bIgnoreClickThrough = true) const;
         template<typename TuiType>
-        TuiType* getChild(const UIContext& context, const sUIVector2& mousePos, bool bSearchSubChildren = true) const
+        TuiType* getChild(const UIContext& context, const sUIVector2& mousePos, bool bSearchSubChildren = true, bool bIgnoreClickThrough = true) const
         {
-            return dynamic_cast<TuiType*>(getChild(context, mousePos, bSearchSubChildren));
+            return dynamic_cast<TuiType*>(getChild(context, mousePos, bSearchSubChildren, bIgnoreClickThrough));
         }
 
         void setStyle(const char* szStyle);
@@ -464,8 +478,8 @@ namespace onut
         virtual void onMouseDownInternal(const UIMouseEvent& evt) {}
         virtual void onMouseMoveInternal(const UIMouseEvent& evt) {}
         virtual void onMouseUpInternal(const UIMouseEvent& evt) {}
-        virtual void onGainFocusInternal() {}
-        virtual void onLoseFocusInternal() {}
+        virtual void onGainFocusInternal(const UIFocusEvent& evt) {}
+        virtual void onLoseFocusInternal(const UIFocusEvent& evt) {}
         virtual void onWriteInternal(char c, UIContext& context) {}
         virtual void onKeyDownInternal(const UIKeyEvent& evt) {}
 
@@ -474,6 +488,7 @@ namespace onut
         void getChild(const UIContext& context, 
                       const sUIVector2& mousePos, 
                       bool bSearchSubChildren, 
+                      bool bIgnoreClickThrough,
                       const sUIRect& parentRect, 
                       const UIControl** ppHoverControl) const;
 
@@ -749,8 +764,8 @@ namespace onut
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
 
-        virtual void onGainFocusInternal() override;
-        virtual void onLoseFocusInternal() override;
+        virtual void onGainFocusInternal(const UIFocusEvent& evt) override;
+        virtual void onLoseFocusInternal(const UIFocusEvent& evt) override;
         virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
         virtual void onMouseMoveInternal(const UIMouseEvent& evt) override;
         virtual void onMouseUpInternal(const UIMouseEvent& evt) override;
@@ -763,5 +778,6 @@ namespace onut
         bool                                        m_isSelecting = false;
         decltype(std::string().size())              m_cursorPos = 0;
         decltype(std::chrono::steady_clock::now())  m_cursorTime;
+        bool                                        m_isTextChanged = false;
     };
 }

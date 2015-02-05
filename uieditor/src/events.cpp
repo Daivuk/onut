@@ -9,7 +9,7 @@ onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
 onut::UITextBox*     g_pInspector_UIControl_txtName;
-onut::UIButton*      g_pInspector_UIControl_txtStyle;
+onut::UITextBox*     g_pInspector_UIControl_txtStyle;
 onut::UIButton*      g_pInspector_UIControl_txtX;
 onut::UIButton*      g_pInspector_UIControl_txtY;
 onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
@@ -137,7 +137,7 @@ void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto rect = g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext);
     mousePos.x -= rect.position.x;
     mousePos.y -= rect.position.y;
-    auto pPickedControl = g_pDocument->pUIScreen->getChild(*g_pDocument->pUIContext, mousePos);
+    auto pPickedControl = g_pDocument->pUIScreen->getChild(*g_pDocument->pUIContext, mousePos, true, false);
     g_pDocument->setSelected(pPickedControl);
     if (pPickedControl)
     {
@@ -170,6 +170,42 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
         auto pSelected = static_cast<onut::UIControl*>(pViewItem->getUserData());
         g_pDocument->setSelected(pSelected, false);
     }
+}
+
+void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto& text = pTextBox->getText();
+    g_pDocument->pSelected->setName(pTextBox->getText());
+    auto pViewItem = static_cast<onut::UITreeViewItem*>(g_pDocument->pSelected->getUserData());
+    if (pViewItem)
+    {
+        pViewItem->setText(text);
+    }
+}
+
+void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    g_pDocument->pSelected->setStyle(pTextBox->getText().c_str());
+}
+
+void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    g_pDocument->pSelected->setIsEnabled(pCheckBox->getIsChecked());
+}
+
+void onUIControlVisibleChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    g_pDocument->pSelected->setIsVisible(pCheckBox->getIsChecked());
+}
+
+void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    g_pDocument->pSelected->setIsClickThrough(pCheckBox->getIsChecked());
 }
 
 void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -301,10 +337,20 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     // Inspector
     g_pInspector_UIControl_chkEnabled = pUIScreen->getChild<onut::UICheckBox>("chkEnabled");
+    g_pInspector_UIControl_chkEnabled->onCheckChanged = onUIControlEnableChanged;
+
     g_pInspector_UIControl_chkVisible = pUIScreen->getChild<onut::UICheckBox>("chkVisible");
+    g_pInspector_UIControl_chkVisible->onCheckChanged = onUIControlVisibleChanged;
+
     g_pInspector_UIControl_chkClickThrough = pUIScreen->getChild<onut::UICheckBox>("chkClickThrough");
+    g_pInspector_UIControl_chkClickThrough->onCheckChanged = onUIControlClickThroughChanged;
+
     g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UITextBox>("txtName");
-    g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UIButton>("txtStyle");
+    g_pInspector_UIControl_txtName->onTextChanged = onUIControlNameChanged;
+
+    g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UITextBox>("txtStyle");
+    g_pInspector_UIControl_txtStyle->onTextChanged = onUIControlStyleChanged;
+
     g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UIButton>("txtX");
     g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UIButton>("txtY");
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");

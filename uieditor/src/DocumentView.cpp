@@ -2,12 +2,13 @@
 #include "viewStyles.h"
 
 extern onut::UIControl* g_pUIScreen;
+extern onut::UIContext* g_pUIContext;
 
 extern onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
 extern onut::UITextBox*     g_pInspector_UIControl_txtName;
-extern onut::UIButton*      g_pInspector_UIControl_txtStyle;
+extern onut::UITextBox*     g_pInspector_UIControl_txtStyle;
 extern onut::UIButton*      g_pInspector_UIControl_txtX;
 extern onut::UIButton*      g_pInspector_UIControl_txtY;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
@@ -194,7 +195,10 @@ void DocumentView::update()
         case eDocumentState::IDLE:
             if (OInput->isStateJustDown(DIK_DELETE))
             {
-                deleteSelection();
+                if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+                {
+                    deleteSelection();
+                }
             }
             break;
     }
@@ -387,9 +391,8 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled());
         g_pInspector_UIControl_chkVisible->setIsChecked(pSelected->isVisible());
         g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough());
-        //g_pInspector_UIControl_txtName->setText(pSelected->getName());
-        g_pInspector_UIControl_txtName->setText("Hello World");
-        g_pInspector_UIControl_txtStyle->setCaption(pSelected->getStyleName());
+        g_pInspector_UIControl_txtName->setText(pSelected->getName());
+        g_pInspector_UIControl_txtStyle->setText(pSelected->getStyleName());
         g_pInspector_UIControl_txtX->setCaption(std::to_string(pSelected->getRect().position.x));
         g_pInspector_UIControl_txtY->setCaption(std::to_string(pSelected->getRect().position.y));
         g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE);
