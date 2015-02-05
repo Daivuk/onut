@@ -51,9 +51,11 @@ DocumentView::DocumentView()
     pUIScreen->setWidthType(onut::eUIDimType::DIM_RELATIVE);
     pUIScreen->setHeightType(onut::eUIDimType::DIM_RELATIVE);
 
+    m_guides[0] = g_pUIScreen->getChild("hGuide");
+    m_guides[1] = g_pUIScreen->getChild("vGuide");
+
     // Dotted line gizmo for selection
     m_pGizmo = g_pUIScreen->getChild<onut::UIPanel>("gizmo");
-    m_pGizmo->retain();
     m_gizmoHandles[0] = m_pGizmo->getChild("topLeftHandle");
     m_gizmoHandles[1] = m_pGizmo->getChild("topHandle");
     m_gizmoHandles[2] = m_pGizmo->getChild("topRightHandle");
@@ -99,7 +101,6 @@ DocumentView::DocumentView()
 
 DocumentView::~DocumentView()
 {
-    m_pGizmo->release();
     delete pUIScreen;
     delete pUIContext;
 }
@@ -179,6 +180,9 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
 
 void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
 {
+    m_guides[0]->setIsVisible(false);
+    m_guides[1]->setIsVisible(false);
+
     m_state = eDocumentState::IDLE;
 }
 
@@ -238,12 +242,201 @@ void DocumentView::updateGizmoRect()
     m_pGizmo->setRect(rct);
 }
 
+void DocumentView::xAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& x, bool& side, float& closest)
+{
+    // Direct align guides
+    if (rect.position.x > otherRect.position.x - closest &&
+        rect.position.x < otherRect.position.x + closest)
+    {
+        found = true;
+        x = otherRect.position.x;
+        closest = std::abs(otherRect.position.x - rect.position.x);
+        side = false;
+    }
+    if (rect.position.x > otherRect.position.x + otherRect.size.x - closest &&
+        rect.position.x < otherRect.position.x + otherRect.size.x + closest)
+    {
+        found = true;
+        x = otherRect.position.x + otherRect.size.x;
+        closest = std::abs(otherRect.position.x + otherRect.size.x - rect.position.x);
+        side = false;
+    }
+    if (rect.position.x + rect.size.x > otherRect.position.x - closest &&
+        rect.position.x + rect.size.x < otherRect.position.x + closest)
+    {
+        found = true;
+        x = otherRect.position.x;
+        closest = std::abs(otherRect.position.x - (rect.position.x + rect.size.x));
+        side = true;
+    }
+    if (rect.position.x + rect.size.x > otherRect.position.x + otherRect.size.x - closest &&
+        rect.position.x + rect.size.x < otherRect.position.x + otherRect.size.x + closest)
+    {
+        found = true;
+        x = otherRect.position.x + otherRect.size.x;
+        closest = std::abs(otherRect.position.x + otherRect.size.x - (rect.position.x + rect.size.x));
+        side = true;
+    }
+
+    // Padding guides
+    if (rect.position.x > otherRect.position.x + otherRect.size.x + m_autoPadding - closest &&
+        rect.position.x < otherRect.position.x + otherRect.size.x + m_autoPadding + closest)
+    {
+        found = true;
+        x = otherRect.position.x + otherRect.size.x + m_autoPadding;
+        closest = std::abs(otherRect.position.x + otherRect.size.x + m_autoPadding - rect.position.x);
+        side = false;
+    }
+    if (rect.position.x + rect.size.x > otherRect.position.x - m_autoPadding - closest &&
+        rect.position.x + rect.size.x < otherRect.position.x - m_autoPadding + closest)
+    {
+        found = true;
+        x = otherRect.position.x - m_autoPadding;
+        closest = std::abs((otherRect.position.x - m_autoPadding) - (rect.position.x + rect.size.x));
+        side = true;
+    }
+}
+
+void DocumentView::yAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& y, bool& side, float& closest)
+{
+    if (rect.position.y > otherRect.position.y - closest &&
+        rect.position.y < otherRect.position.y + closest)
+    {
+        found = true;
+        y = otherRect.position.y;
+        closest = std::abs(otherRect.position.y - rect.position.y);
+        side = false;
+    }
+    if (rect.position.y > otherRect.position.y + otherRect.size.y - closest &&
+        rect.position.y < otherRect.position.y + otherRect.size.y + closest)
+    {
+        found = true;
+        y = otherRect.position.y + otherRect.size.y;
+        closest = std::abs(otherRect.position.y + otherRect.size.y - rect.position.y);
+        side = false;
+    }
+    if (rect.position.y + rect.size.y > otherRect.position.y - closest &&
+        rect.position.y + rect.size.y < otherRect.position.y + closest)
+    {
+        found = true;
+        y = otherRect.position.y;
+        closest = std::abs(otherRect.position.y - (rect.position.y + rect.size.y));
+        side = true;
+    }
+    if (rect.position.y + rect.size.y > otherRect.position.y + otherRect.size.y - closest &&
+        rect.position.y + rect.size.y < otherRect.position.y + otherRect.size.y + closest)
+    {
+        found = true;
+        y = otherRect.position.y + otherRect.size.y;
+        closest = std::abs(otherRect.position.y + otherRect.size.y - (rect.position.y + rect.size.y));
+        side = true;
+    }
+
+    // Padding guides
+    if (rect.position.y > otherRect.position.y + otherRect.size.y + m_autoPadding - closest &&
+        rect.position.y < otherRect.position.y + otherRect.size.y + m_autoPadding + closest)
+    {
+        found = true;
+        y = otherRect.position.y + otherRect.size.y + m_autoPadding;
+        closest = std::abs(otherRect.position.y + otherRect.size.y + m_autoPadding - rect.position.y);
+        side = false;
+    }
+    if (rect.position.y + rect.size.y > otherRect.position.y - m_autoPadding - closest &&
+        rect.position.y + rect.size.y < otherRect.position.y - m_autoPadding + closest)
+    {
+        found = true;
+        y = otherRect.position.y - m_autoPadding;
+        closest = std::abs((otherRect.position.y - m_autoPadding) - (rect.position.y + rect.size.y));
+        side = true;
+    }
+}
+
+bool DocumentView::getXAutoGuide(const onut::sUIRect& rect, float& x, bool& side)
+{
+    auto pParent = pSelected->getParent();
+    if (!pParent) return false;
+    float closest = 8;
+    bool found = false;
+    for (auto pChild : pParent->getChildren())
+    {
+        if (pChild == pSelected) continue;
+        xAutoGuideAgainst(pChild->getRect(), found, rect, x, side, closest);
+    }
+    auto& parentRect = pParent->getRect();
+    xAutoGuideAgainst({{0, 0}, {0, parentRect.size.y}}, found, rect, x, side, closest);
+    xAutoGuideAgainst({{parentRect.size.x, 0}, {0, parentRect.size.y}}, found, rect, x, side, closest);
+    return found;
+}
+
+bool DocumentView::getYAutoGuide(const onut::sUIRect& rect, float& y, bool& side)
+{
+    auto pParent = pSelected->getParent();
+    if (!pParent) return false;
+    float closest = 8;
+    bool found = false;
+    for (auto pChild : pParent->getChildren())
+    {
+        if (pChild == pSelected) continue;
+        yAutoGuideAgainst(pChild->getRect(), found, rect, y, side, closest);
+    }
+    auto& parentRect = pParent->getRect();
+    yAutoGuideAgainst({{0, 0}, {parentRect.size.x, 0}}, found, rect, y, side, closest);
+    yAutoGuideAgainst({{0, parentRect.size.y}, {parentRect.size.x, 0}}, found, rect, y, side, closest);
+    return found;
+}
+
 void DocumentView::updateMovingGizmo()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
     auto newRect = m_controlRectOnDown;
     newRect.position.x += mouseDiff.x;
     newRect.position.y += mouseDiff.y;
+
+    if (m_autoGuide)
+    {
+        // Auto snap the rect to it's brothers
+        float x, y;
+        bool side;
+        if (getXAutoGuide(newRect, x, side))
+        {
+            if (!side)
+            {
+                newRect.position.x = x;
+            }
+            else
+            {
+                newRect.position.x = x - newRect.size.x;
+            }
+            auto& rect = m_guides[1]->getRect();
+            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
+            m_guides[1]->setRect({{parentWorldRect.position.x + x, rect.position.y}, rect.size});
+            m_guides[1]->setIsVisible(true);
+        }
+        else
+        {
+            m_guides[1]->setIsVisible(false);
+        }
+        if (getYAutoGuide(newRect, y, side))
+        {
+            if (!side)
+            {
+                newRect.position.y = y;
+            }
+            else
+            {
+                newRect.position.y = y - newRect.size.y;
+            }
+            auto& rect = m_guides[0]->getRect();
+            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
+            m_guides[0]->setRect({{rect.position.x, parentWorldRect.position.y + y}, rect.size});
+            m_guides[0]->setIsVisible(true);
+        }
+        else
+        {
+            m_guides[0]->setIsVisible(false);
+        }
+    }
+
     updateSelectionWithRect(newRect);
     updateInspector();
 }

@@ -386,6 +386,22 @@
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    "type": "UIPanel",
+                                    "style": "guide",
+                                    "width": 1,
+                                    "heightType": "RELATIVE",
+                                    "name": "vGuide",
+                                    "visible": false
+                                },
+                                {
+                                    "type": "UIPanel",
+                                    "style": "guide",
+                                    "height": 1,
+                                    "widthType": "RELATIVE",
+                                    "name": "hGuide",
+                                    "visible": false
                                 }
                             ]
                         }

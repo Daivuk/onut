@@ -22,6 +22,7 @@ static const Color g_treeItemSelectedBGColor = OColorHex(3399ff);
 static const Color g_selectedTextColor = OColorHex(ffffff);
 static const Color g_cursorColor = OColorHex(dadad9);
 static const Color g_cursorSelectionColor = OColorHex(cc6600);
+static const Color g_guideColor = OColorHex(3399ff);
 
 static onut::BMFont* g_pFont;
 static onut::Texture* g_pTexTreeOpen;
@@ -51,6 +52,11 @@ void createUIStyles(onut::UIContext* pContext)
     pContext->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
         OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
+    });
+
+    pContext->addStyle<onut::UIPanel>("guide", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    {
+        OSB->drawRect(nullptr, onut::UI2Onut(rect), g_guideColor);
     });
 
     pContext->addStyle<onut::UIPanel>("group", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
