@@ -48,6 +48,7 @@ DocumentView::DocumentView()
     createViewUIStyles(pUIContext);
 
     pUIScreen = new onut::UIControl(/*"../../assets/ui/editor.json"*/);
+    pUIScreen->setName("Root");
     pUIScreen->setWidthType(onut::eUIDimType::DIM_RELATIVE);
     pUIScreen->setHeightType(onut::eUIDimType::DIM_RELATIVE);
 
@@ -536,25 +537,28 @@ void DocumentView::onKeyDown(uintptr_t key)
     {
         if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN)
         {
-            auto newRect = pSelected->getRect();
-            float speed = OInput->isStateDown(DIK_LSHIFT) ? 10.f : 1.f;
-            switch (key)
+            if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
             {
-                case VK_LEFT:
-                    newRect.position.x -= speed;
-                    break;
-                case VK_RIGHT:
-                    newRect.position.x += speed;
-                    break;
-                case VK_UP:
-                    newRect.position.y -= speed;
-                    break;
-                case VK_DOWN:
-                    newRect.position.y += speed;
-                    break;
+                auto newRect = pSelected->getRect();
+                float speed = OInput->isStateDown(DIK_LSHIFT) ? 10.f : 1.f;
+                switch (key)
+                {
+                    case VK_LEFT:
+                        newRect.position.x -= speed;
+                        break;
+                    case VK_RIGHT:
+                        newRect.position.x += speed;
+                        break;
+                    case VK_UP:
+                        newRect.position.y -= speed;
+                        break;
+                    case VK_DOWN:
+                        newRect.position.y += speed;
+                        break;
+                }
+                updateSelectionWithRect(newRect);
+                updateInspector();
             }
-            updateSelectionWithRect(newRect);
-            updateInspector();
         }
     }
 }
@@ -940,6 +944,7 @@ void DocumentView::repopulateTreeView(onut::UIControl* pControl)
 {
     auto pItem = new onut::UITreeViewItem();
     pItem->setUserData(pControl);
+    pItem->setText(pControl->getName());
     pControl->setUserData(pItem);
     auto pParentItem = static_cast<onut::UITreeViewItem*>(pControl->getParent() ? pControl->getParent()->getUserData() : nullptr);
     if (pParentItem)

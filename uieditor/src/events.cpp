@@ -244,6 +244,56 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
     g_pDocument->pSelected->setIsClickThrough(pCheckBox->getIsChecked());
 }
 
+void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    if (pCheckBox->getIsChecked() && g_pDocument->pSelected->getXType() != onut::eUIPosType::POS_PERCENTAGE)
+    {
+        g_pDocument->pSelected->setXType(onut::eUIPosType::POS_PERCENTAGE);
+        auto rect = g_pDocument->pSelected->getRect();
+        auto& parentRect = g_pDocument->pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        rect.position.x = rect.position.x / parentRect.size.x;
+        g_pInspector_UIControl_txtX->setText(std::to_string(rect.position.x));
+        g_pDocument->pSelected->setRect(rect);
+        g_pDocument->updateSelectedGizmoRect();
+    }
+    else if (!pCheckBox->getIsChecked() && g_pDocument->pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
+    {
+        g_pDocument->pSelected->setXType(onut::eUIPosType::POS_RELATIVE);
+        auto rect = g_pDocument->pSelected->getRect();
+        auto& parentRect = g_pDocument->pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        rect.position.x = rect.position.x * parentRect.size.x;
+        g_pInspector_UIControl_txtX->setText(std::to_string(rect.position.x));
+        g_pDocument->pSelected->setRect(rect);
+        g_pDocument->updateSelectedGizmoRect();
+    }
+}
+
+void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    if (pCheckBox->getIsChecked() && g_pDocument->pSelected->getYType() != onut::eUIPosType::POS_PERCENTAGE)
+    {
+        g_pDocument->pSelected->setYType(onut::eUIPosType::POS_PERCENTAGE);
+        auto rect = g_pDocument->pSelected->getRect();
+        auto& parentRect = g_pDocument->pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        rect.position.y = rect.position.y / parentRect.size.y;
+        g_pInspector_UIControl_txtY->setText(std::to_string(rect.position.y));
+        g_pDocument->pSelected->setRect(rect);
+        g_pDocument->updateSelectedGizmoRect();
+    }
+    else if (!pCheckBox->getIsChecked() && g_pDocument->pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
+    {
+        g_pDocument->pSelected->setYType(onut::eUIPosType::POS_RELATIVE);
+        auto rect = g_pDocument->pSelected->getRect();
+        auto& parentRect = g_pDocument->pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        rect.position.y = rect.position.y * parentRect.size.y;
+        g_pInspector_UIControl_txtY->setText(std::to_string(rect.position.y));
+        g_pDocument->pSelected->setRect(rect);
+        g_pDocument->updateSelectedGizmoRect();
+    }
+}
+
 void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 {
     if (!g_pDocument->pSelected) return; // Wuuuut?
@@ -393,7 +443,9 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_txtY->onTextChanged = onUIControlYChanged;
 
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
+    g_pInspector_UIControl_chkXPercent->onCheckChanged = onUIControlXPercentChanged;
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
+    g_pInspector_UIControl_chkYPercent->onCheckChanged = onUIControlYPercentChanged;
 
     g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UITextBox>("txtWidth");
     g_pInspector_UIControl_txtWidth->onTextChanged = onUIControlWidthChanged;
