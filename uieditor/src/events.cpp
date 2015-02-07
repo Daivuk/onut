@@ -10,8 +10,8 @@ onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
 onut::UITextBox*     g_pInspector_UIControl_txtName;
 onut::UITextBox*     g_pInspector_UIControl_txtStyle;
-onut::UIButton*      g_pInspector_UIControl_txtX;
-onut::UIButton*      g_pInspector_UIControl_txtY;
+onut::UITextBox*     g_pInspector_UIControl_txtX;
+onut::UITextBox*     g_pInspector_UIControl_txtY;
 onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
 onut::UICheckBox*    g_pInspector_UIControl_chkYPercent;
 onut::UIButton*      g_pInspector_UIControl_txtWidth;
@@ -184,6 +184,24 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     }
 }
 
+void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto rect = g_pDocument->pSelected->getRect();
+    rect.position.x = pTextBox->getFloat();
+    g_pDocument->pSelected->setRect(rect);
+    g_pDocument->updateSelectedGizmoRect();
+}
+
+void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto rect = g_pDocument->pSelected->getRect();
+    rect.position.y = pTextBox->getFloat();
+    g_pDocument->pSelected->setRect(rect);
+    g_pDocument->updateSelectedGizmoRect();
+}
+
 void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
@@ -351,8 +369,11 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UITextBox>("txtStyle");
     g_pInspector_UIControl_txtStyle->onTextChanged = onUIControlStyleChanged;
 
-    g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UIButton>("txtX");
-    g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UIButton>("txtY");
+    g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UITextBox>("txtX");
+    g_pInspector_UIControl_txtX->onTextChanged = onUIControlXChanged;
+    g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UITextBox>("txtY");
+    g_pInspector_UIControl_txtY->onTextChanged = onUIControlYChanged;
+
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
     g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UIButton>("txtWidth");

@@ -683,22 +683,26 @@
                                     "height": 24
                                 },
                                 {
-                                    "type": "UIButton",
-                                    "caption": "Button",
+                                    "type": "UITextBox",
+                                    "caption": "0.00",
                                     "name": "txtX",
                                     "x": 55,
                                     "y": 4,
                                     "width": 58,
-                                    "height": 24
+                                    "height": 24,
+                                    "numerical": true,
+                                    "precision": 2
                                 },
                                 {
-                                    "type": "UIButton",
-                                    "caption": "Button",
+                                    "type": "UITextBox",
+                                    "caption": "0.00",
                                     "name": "txtY",
                                     "x": 55,
                                     "y": 32,
                                     "width": 58,
-                                    "height": 24
+                                    "height": 24,
+                                    "numerical": true,
+                                    "precision": 2
                                 },
                                 {
                                     "type": "UICheckBox",

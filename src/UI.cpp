@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
+#include <iomanip>
 
 namespace onut
 {
@@ -136,6 +137,18 @@ namespace onut
         if (jsonNode.IsNumber())
         {
             return static_cast<float>(jsonNode.GetDouble());
+        }
+        else
+        {
+            return default;
+        }
+    }
+    
+    static int getJsonInt(const rapidjson::Value& jsonNode, const int default = 0)
+    {
+        if (jsonNode.IsInt())
+        {
+            return jsonNode.GetInt();
         }
         else
         {
@@ -731,31 +744,6 @@ namespace onut
         }
         m_keyDowns.clear();
 
-        // Focus gain/lost
-        if (m_pFocus != m_pLastFocus)
-        {
-            if (m_pLastFocus)
-            {
-                UIFocusEvent evt;
-                evt.pContext = this;
-                m_pLastFocus->onLoseFocusInternal(evt);
-                if (m_pLastFocus->onLoseFocus)
-                {
-                    m_pLastFocus->onLoseFocus(m_pLastFocus);
-                }
-            }
-            if (m_pFocus)
-            {
-                UIFocusEvent evt;
-                evt.pContext = this;
-                m_pFocus->onGainFocusInternal(evt);
-                if (m_pFocus->onGainFocus)
-                {
-                    m_pFocus->onGainFocus(m_pFocus);
-                }
-            }
-        }
-
         if (m_pHoverControl != m_pLastHoverControl)
         {
             if (m_pLastHoverControl)
@@ -810,6 +798,31 @@ namespace onut
                 if (m_pDownControl->onMouseDown)
                 {
                     m_pDownControl->onMouseDown(m_pDownControl, m_mouseEvent);
+                }
+            }
+        }
+
+        // Focus gain/lost
+        if (m_pFocus != m_pLastFocus)
+        {
+            if (m_pLastFocus)
+            {
+                UIFocusEvent evt;
+                evt.pContext = this;
+                m_pLastFocus->onLoseFocusInternal(evt);
+                if (m_pLastFocus->onLoseFocus)
+                {
+                    m_pLastFocus->onLoseFocus(m_pLastFocus);
+                }
+            }
+            if (m_pFocus)
+            {
+                UIFocusEvent evt;
+                evt.pContext = this;
+                m_pFocus->onGainFocusInternal(evt);
+                if (m_pFocus->onGainFocus)
+                {
+                    m_pFocus->onGainFocus(m_pFocus);
                 }
             }
         }
@@ -1313,6 +1326,52 @@ namespace onut
         return (ms.count() % 1000) < 500;
     }
 
+    void UITextBox::numerifyText()
+    {
+        if (m_isNumerical)
+        {
+            std::stringstream ss(m_text);
+            float value;
+            if (!(ss >> value))
+            {
+                value = 0.f;
+            }
+            std::stringstream ssOut;
+            ssOut << std::fixed << std::setprecision(static_cast<std::streamsize>(m_decimalPrecision)) << value;
+            m_text = ssOut.str();
+        }
+    }
+
+    float UITextBox::getFloat() const
+    {
+        if (m_isNumerical)
+        {
+            std::stringstream ss(m_text);
+            float value;
+            if (!(ss >> value))
+            {
+                value = 0.f;
+            }
+            return value;
+        }
+        return 0.f;
+    }
+
+    int UITextBox::getInt() const
+    {
+        if (m_isNumerical)
+        {
+            std::stringstream ss(m_text);
+            int value;
+            if (!(ss >> value))
+            {
+                value = 0;
+            }
+            return value;
+        }
+        return 0;
+    }
+
     //--- Copy
     UIButton::UIButton(const UIButton& other) :
         UIControl(other)
@@ -1373,6 +1432,8 @@ namespace onut
         UIControl(other)
     {
         m_text = other.m_text;
+        m_isNumerical = other.m_isNumerical;
+        m_decimalPrecision = other.m_decimalPrecision;
     }
 
     //--- Properties
@@ -1502,6 +1563,19 @@ namespace onut
     void UITextBox::setText(const std::string& text)
     {
         m_text = text;
+        numerifyText();
+    }
+
+    void UITextBox::setIsNumerical(bool isNumerical)
+    {
+        m_isNumerical = isNumerical;
+        numerifyText();
+    }
+
+    void UITextBox::setIsDecimalPrecision(int decimalPrecision)
+    {
+        m_decimalPrecision = decimalPrecision;
+        numerifyText();
     }
 
     //--- Loads
@@ -1549,6 +1623,9 @@ namespace onut
     {
         UIControl::load(jsonNode);
         m_text = getJsonString(jsonNode["text"]);
+        m_isNumerical = getJsonBool(jsonNode["numerical"]);
+        m_decimalPrecision = getJsonInt(jsonNode["precision"]);
+        numerifyText();
     }
 
     //--- Renders
@@ -1771,12 +1848,16 @@ namespace onut
         m_selectedTextRegion[1] = 0;
 
         // Accept
-        if (onTextChanged && m_isTextChanged)
+        if (m_isTextChanged)
         {
             m_isTextChanged = false;
-            UITextBoxEvent evt2;
-            evt2.pContext = evt.pContext;
-            onTextChanged(this, evt2);
+            numerifyText();
+            if (onTextChanged)
+            {
+                UITextBoxEvent evt2;
+                evt2.pContext = evt.pContext;
+                onTextChanged(this, evt2);
+            }
         }
     }
 

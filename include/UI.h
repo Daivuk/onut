@@ -762,6 +762,14 @@ namespace onut
 
         void selectAll();
 
+        bool getIsNumerical() const { return m_isNumerical; }
+        void setIsNumerical(bool isNumerical);
+        int getDecimalPrecision() const { return m_decimalPrecision; }
+        void setIsDecimalPrecision(int decimalPrecision);
+
+        float getFloat() const;
+        int getInt() const;
+
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
@@ -775,11 +783,15 @@ namespace onut
         virtual void onKeyDownInternal(const UIKeyEvent& evt) override;
 
     private:
+        void numerifyText();
+
         std::string                                 m_text;
         decltype(std::string().size())              m_selectedTextRegion[2];
         bool                                        m_isSelecting = false;
         decltype(std::string().size())              m_cursorPos = 0;
         decltype(std::chrono::steady_clock::now())  m_cursorTime;
         bool                                        m_isTextChanged = false;
+        bool                                        m_isNumerical = false;
+        int                                         m_decimalPrecision = 0;
     };
 }
