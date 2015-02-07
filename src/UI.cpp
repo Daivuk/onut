@@ -1175,6 +1175,23 @@ namespace onut
         }
     }
 
+    UITreeView::~UITreeView()
+    {
+        for (auto pItem : m_items)
+        {
+            delete pItem;
+        }
+    }
+
+    void UITreeView::clear()
+    {
+        for (auto pItem : m_items)
+        {
+            delete pItem;
+        }
+        m_items.clear();
+    }
+
     UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton) const
     {
         // Render it's items

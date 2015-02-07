@@ -637,11 +637,13 @@ namespace onut
     public:
         UITreeView() {}
         UITreeView(const UITreeView& other);
+        virtual ~UITreeView();
 
         virtual eUIType getType() const override { return eUIType::UI_TREEVIEW; }
 
         void addItem(UITreeViewItem* pItem);
         void removeItem(UITreeViewItem* pItem);
+        void clear();
 
         float getExpandedXOffset() const { return m_expandedXOffset; }
         void setExpandedXOffset(float expandedXOffset);

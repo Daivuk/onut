@@ -29,6 +29,7 @@ public:
     void controlCreated(onut::UIControl* pControl, onut::UIControl* pParent);
     void updateSelectedGizmoRect();
     void updateInspector();
+    void repopulateTreeView(onut::UIControl* pControl);
 
 private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
