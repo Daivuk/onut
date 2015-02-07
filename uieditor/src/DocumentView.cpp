@@ -162,10 +162,14 @@ void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIM
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_pCurrentHandle = pControl;
     m_controlRectOnDown = pSelected->getRect();
+    m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
 }
 
 void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
 {
+    m_guides[0]->setIsVisible(false);
+    m_guides[1]->setIsVisible(false);
+
     m_state = eDocumentState::IDLE;
 }
 
@@ -352,6 +356,144 @@ void DocumentView::yAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found
     }
 }
 
+void DocumentView::snapX(float x, float &ret, const onut::sUIRect& rect, float &closest, bool& found)
+{
+    // Direct align guides
+    if (x > rect.position.x - closest &&
+        x < rect.position.x + closest)
+    {
+        found = true;
+        ret = rect.position.x;
+        closest = std::abs(rect.position.x - x);
+    }
+    if (x > rect.position.x + rect.size.x - closest &&
+        x < rect.position.x + rect.size.x + closest)
+    {
+        found = true;
+        ret = rect.position.x + rect.size.x;
+        closest = std::abs(rect.position.x + rect.size.x - x);
+    }
+
+    // Padding guides
+    if (x > rect.position.x + rect.size.x + m_autoPadding - closest &&
+        x < rect.position.x + rect.size.x + m_autoPadding + closest)
+    {
+        found = true;
+        ret = rect.position.x + rect.size.x + m_autoPadding;
+        closest = std::abs(rect.position.x + rect.size.x + m_autoPadding - x);
+    }
+    if (x > rect.position.x - m_autoPadding - closest &&
+        x < rect.position.x - m_autoPadding + closest)
+    {
+        found = true;
+        ret = rect.position.x - m_autoPadding;
+        closest = std::abs((rect.position.x - m_autoPadding) - x);
+    }
+}
+
+float DocumentView::snapX(onut::UIControl* pControl, float x)
+{
+    if (!m_autoGuide)
+    {
+        return x;
+    }
+    auto pParent = pControl->getParent();
+    if (!pParent) return false;
+    float closest = 8;
+    bool found = false;
+    float ret = x;
+    for (auto pChild : pParent->getChildren())
+    {
+        if (pChild == pControl) continue;
+        snapX(x, ret, pChild->getWorldRect(*pUIContext), closest, found);
+    }
+    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    snapX(x, ret, {parentRect.position, {0, parentRect.size.y}}, closest, found);
+    snapX(x, ret, {{parentRect.position.x + parentRect.size.x, parentRect.position.y}, {0, parentRect.size.y}}, closest, found);
+
+    if (found)
+    {
+        auto& rect = m_guides[1]->getRect();
+        m_guides[1]->setRect({{ret, rect.position.y}, rect.size});
+        m_guides[1]->setIsVisible(true);
+    }
+    else
+    {
+        m_guides[1]->setIsVisible(false);
+    }
+
+    return ret;
+}
+
+void DocumentView::snapY(float y, float &ret, const onut::sUIRect& rect, float &closest, bool& found)
+{
+    // Direct align guides
+    if (y > rect.position.y - closest &&
+        y < rect.position.y + closest)
+    {
+        found = true;
+        ret = rect.position.y;
+        closest = std::abs(rect.position.y - y);
+    }
+    if (y > rect.position.y + rect.size.y - closest &&
+        y < rect.position.y + rect.size.y + closest)
+    {
+        found = true;
+        ret = rect.position.y + rect.size.y;
+        closest = std::abs(rect.position.y + rect.size.y - y);
+    }
+
+    // Padding guides
+    if (y > rect.position.y + rect.size.y + m_autoPadding - closest &&
+        y < rect.position.y + rect.size.y + m_autoPadding + closest)
+    {
+        found = true;
+        ret = rect.position.y + rect.size.y + m_autoPadding;
+        closest = std::abs(rect.position.y + rect.size.y + m_autoPadding - y);
+    }
+    if (y > rect.position.y - m_autoPadding - closest &&
+        y < rect.position.y - m_autoPadding + closest)
+    {
+        found = true;
+        ret = rect.position.y - m_autoPadding;
+        closest = std::abs((rect.position.y - m_autoPadding) - y);
+    }
+}
+
+float DocumentView::snapY(onut::UIControl* pControl, float y)
+{
+    if (!m_autoGuide)
+    {
+        return y;
+    }
+    auto pParent = pControl->getParent();
+    if (!pParent) return false;
+    float closest = 8;
+    bool found = false;
+    float ret = y;
+    for (auto pChild : pParent->getChildren())
+    {
+        if (pChild == pControl) continue;
+        snapY(y, ret, pChild->getWorldRect(*pUIContext), closest, found);
+    }
+    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    snapY(y, ret, {parentRect.position, {parentRect.size.x, 0}}, closest, found);
+    snapY(y, ret, {{parentRect.position.x, parentRect.position.y + parentRect.size.y}, {parentRect.size.x, 0}}, closest, found);
+
+    if (found)
+    {
+        auto& rect = m_guides[0]->getRect();
+        m_guides[0]->setRect({{rect.position.x, ret}, rect.size});
+        m_guides[0]->setIsVisible(true);
+    }
+    else
+    {
+        m_guides[0]->setIsVisible(false);
+    }
+
+    return ret;
+}
+
 bool DocumentView::getXAutoGuide(const onut::sUIRect& rect, float& x, bool& side)
 {
     auto pParent = pSelected->getParent();
@@ -476,36 +618,40 @@ void DocumentView::updateMovingHandle()
             m_pCurrentHandle == m_gizmoHandles[3] ||
             m_pCurrentHandle == m_gizmoHandles[5])
         {
-            newRect.position.x += mouseDiff.x * invAnchor.x - mouseDiff.x * anchor.x;
+            auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x;
+            newRect.position.x += newMouseDiff * invAnchor.x - newMouseDiff * anchor.x;
             newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
-            newRect.size.x -= mouseDiff.x * 2;
+            newRect.size.x -= newMouseDiff * 2;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
         else if (m_pCurrentHandle == m_gizmoHandles[2] ||
                     m_pCurrentHandle == m_gizmoHandles[4] ||
                     m_pCurrentHandle == m_gizmoHandles[7])
         {
-            newRect.position.x += mouseDiff.x * anchor.x - mouseDiff.x * invAnchor.x;
+            auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x - m_controlWorldRectOnDown.size.x;
+            newRect.position.x += newMouseDiff * anchor.x - newMouseDiff * invAnchor.x;
             newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
-            newRect.size.x += mouseDiff.x * 2;
+            newRect.size.x += newMouseDiff * 2;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
         if (m_pCurrentHandle == m_gizmoHandles[0] ||
             m_pCurrentHandle == m_gizmoHandles[1] ||
             m_pCurrentHandle == m_gizmoHandles[2])
         {
-            newRect.position.y += mouseDiff.y * invAnchor.y - mouseDiff.y * anchor.y;
+            auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y;
+            newRect.position.y += newMouseDiff * invAnchor.y - newMouseDiff * anchor.y;
             newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
-            newRect.size.y -= mouseDiff.y * 2;
+            newRect.size.y -= newMouseDiff * 2;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
         else if (m_pCurrentHandle == m_gizmoHandles[5] ||
                     m_pCurrentHandle == m_gizmoHandles[6] ||
                     m_pCurrentHandle == m_gizmoHandles[7])
         {
-            newRect.position.y += mouseDiff.y * anchor.y - mouseDiff.y * invAnchor.y;
+            auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y - m_controlWorldRectOnDown.size.y;
+            newRect.position.y += newMouseDiff * anchor.y - newMouseDiff * invAnchor.y;
             newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
-            newRect.size.y += mouseDiff.y * 2;
+            newRect.size.y += newMouseDiff * 2;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
     }
@@ -515,34 +661,38 @@ void DocumentView::updateMovingHandle()
             m_pCurrentHandle == m_gizmoHandles[3] ||
             m_pCurrentHandle == m_gizmoHandles[5])
         {
-            newRect.position.x += mouseDiff.x * invAnchor.x;
+            auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x;
+            newRect.position.x += newMouseDiff * invAnchor.x;
             newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
-            newRect.size.x -= mouseDiff.x;
+            newRect.size.x -= newMouseDiff;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
         else if (m_pCurrentHandle == m_gizmoHandles[2] ||
                     m_pCurrentHandle == m_gizmoHandles[4] ||
                     m_pCurrentHandle == m_gizmoHandles[7])
         {
-            newRect.position.x += mouseDiff.x * anchor.x;
-            newRect.size.x += mouseDiff.x;
+            auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x - m_controlWorldRectOnDown.size.x;
+            newRect.position.x += newMouseDiff * anchor.x;
+            newRect.size.x += newMouseDiff;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
         if (m_pCurrentHandle == m_gizmoHandles[0] ||
             m_pCurrentHandle == m_gizmoHandles[1] ||
             m_pCurrentHandle == m_gizmoHandles[2])
         {
-            newRect.position.y += mouseDiff.y * invAnchor.y;
+            auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y;
+            newRect.position.y += newMouseDiff * invAnchor.y;
             newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
-            newRect.size.y -= mouseDiff.y;
+            newRect.size.y -= newMouseDiff;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
         else if (m_pCurrentHandle == m_gizmoHandles[5] ||
                     m_pCurrentHandle == m_gizmoHandles[6] ||
                     m_pCurrentHandle == m_gizmoHandles[7])
         {
-            newRect.position.y += mouseDiff.y * anchor.y;
-            newRect.size.y += mouseDiff.y;
+            auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y - m_controlWorldRectOnDown.size.y;
+            newRect.position.y += newMouseDiff * anchor.y;
+            newRect.size.y += newMouseDiff;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
     }
