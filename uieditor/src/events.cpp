@@ -14,8 +14,8 @@ onut::UITextBox*     g_pInspector_UIControl_txtX;
 onut::UITextBox*     g_pInspector_UIControl_txtY;
 onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
 onut::UICheckBox*    g_pInspector_UIControl_chkYPercent;
-onut::UIButton*      g_pInspector_UIControl_txtWidth;
-onut::UIButton*      g_pInspector_UIControl_txtHeight;
+onut::UITextBox*     g_pInspector_UIControl_txtWidth;
+onut::UITextBox*     g_pInspector_UIControl_txtHeight;
 onut::UICheckBox*    g_pInspector_UIControl_chkWidthPercent;
 onut::UICheckBox*    g_pInspector_UIControl_chkHeightPercent;
 onut::UICheckBox*    g_pInspector_UIControl_chkWidthRelative;
@@ -202,6 +202,24 @@ void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
     g_pDocument->updateSelectedGizmoRect();
 }
 
+void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto rect = g_pDocument->pSelected->getRect();
+    rect.size.x = pTextBox->getFloat();
+    g_pDocument->pSelected->setRect(rect);
+    g_pDocument->updateSelectedGizmoRect();
+}
+
+void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto rect = g_pDocument->pSelected->getRect();
+    rect.size.y = pTextBox->getFloat();
+    g_pDocument->pSelected->setRect(rect);
+    g_pDocument->updateSelectedGizmoRect();
+}
+
 void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
@@ -376,8 +394,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
-    g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UIButton>("txtWidth");
-    g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UIButton>("txtHeight");
+
+    g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UITextBox>("txtWidth");
+    g_pInspector_UIControl_txtWidth->onTextChanged = onUIControlWidthChanged;
+    g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UITextBox>("txtHeight");
+    g_pInspector_UIControl_txtHeight->onTextChanged = onUIControlHeightChanged;
+
     g_pInspector_UIControl_chkWidthPercent = pUIScreen->getChild<onut::UICheckBox>("chkWidthPercent");
     g_pInspector_UIControl_chkHeightPercent = pUIScreen->getChild<onut::UICheckBox>("chkHeightPercent");
     g_pInspector_UIControl_chkWidthRelative = pUIScreen->getChild<onut::UICheckBox>("chkWidthRelative");
