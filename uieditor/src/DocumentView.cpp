@@ -176,6 +176,7 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
     m_state = eDocumentState::MOVING_GIZO;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_controlRectOnDown = pSelected->getRect();
+    m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
 }
 
 void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
@@ -360,11 +361,11 @@ bool DocumentView::getXAutoGuide(const onut::sUIRect& rect, float& x, bool& side
     for (auto pChild : pParent->getChildren())
     {
         if (pChild == pSelected) continue;
-        xAutoGuideAgainst(pChild->getRect(), found, rect, x, side, closest);
+        xAutoGuideAgainst(pChild->getWorldRect(*pUIContext), found, rect, x, side, closest);
     }
-    auto& parentRect = pParent->getRect();
-    xAutoGuideAgainst({{0, 0}, {0, parentRect.size.y}}, found, rect, x, side, closest);
-    xAutoGuideAgainst({{parentRect.size.x, 0}, {0, parentRect.size.y}}, found, rect, x, side, closest);
+    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    xAutoGuideAgainst({parentRect.position, {0, parentRect.size.y}}, found, rect, x, side, closest);
+    xAutoGuideAgainst({{parentRect.position.x + parentRect.size.x, parentRect.position.y}, {0, parentRect.size.y}}, found, rect, x, side, closest);
     return found;
 }
 
@@ -377,104 +378,12 @@ bool DocumentView::getYAutoGuide(const onut::sUIRect& rect, float& y, bool& side
     for (auto pChild : pParent->getChildren())
     {
         if (pChild == pSelected) continue;
-        yAutoGuideAgainst(pChild->getRect(), found, rect, y, side, closest);
+        yAutoGuideAgainst(pChild->getWorldRect(*pUIContext), found, rect, y, side, closest);
     }
-    auto& parentRect = pParent->getRect();
-    yAutoGuideAgainst({{0, 0}, {parentRect.size.x, 0}}, found, rect, y, side, closest);
-    yAutoGuideAgainst({{0, parentRect.size.y}, {parentRect.size.x, 0}}, found, rect, y, side, closest);
+    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    yAutoGuideAgainst({parentRect.position, {parentRect.size.x, 0}}, found, rect, y, side, closest);
+    yAutoGuideAgainst({{parentRect.position.x, parentRect.position.y + parentRect.size.y}, {parentRect.size.x, 0}}, found, rect, y, side, closest);
     return found;
-}
-
-onut::sUIRect DocumentView::applyAnchorsToRect(onut::UIControl* pControl, onut::sUIRect& rect)
-{
-    auto& parentRect = pControl->getParent()->getRect();
-    onut::sUIRect ret = rect;
-    auto anchors = pControl->getAnchorInPixel();
-    ret.position.x -= anchors.x;
-    ret.position.y -= anchors.y;
-
-    auto align = pControl->getAlign();
-    switch (align)
-    {
-        case onut::eUIAlign::TOP_LEFT:
-            break;
-        case onut::eUIAlign::TOP:
-            ret.position.x = parentRect.size.x * .5f + ret.position.x;
-            break;
-        case onut::eUIAlign::TOP_RIGHT:
-            ret.position.x = parentRect.size.x + ret.position.x;
-            break;
-        case onut::eUIAlign::LEFT:
-            ret.position.y = parentRect.size.y * .5f + ret.position.y;
-            break;
-        case onut::eUIAlign::CENTER:
-            ret.position.x = parentRect.size.x * .5f + ret.position.x;
-            ret.position.y = parentRect.size.y * .5f + ret.position.y;
-            break;
-        case onut::eUIAlign::RIGHT:
-            ret.position.x = parentRect.size.x + ret.position.x;
-            ret.position.y = parentRect.size.y * .5f + ret.position.y;
-            break;
-        case onut::eUIAlign::BOTTOM_LEFT:
-            ret.position.y = parentRect.size.y + ret.position.y;
-            break;
-        case onut::eUIAlign::BOTTOM:
-            ret.position.x = parentRect.size.x * .5f + ret.position.x;
-            ret.position.y = parentRect.size.y + ret.position.y;
-            break;
-        case onut::eUIAlign::BOTTOM_RIGHT:
-            ret.position.x = parentRect.size.x + ret.position.x;
-            ret.position.y = parentRect.size.y + ret.position.y;
-            break;
-    }
-
-    return std::move(ret);
-}
-
-onut::sUIRect DocumentView::revertAnchorsFromRect(onut::UIControl* pControl, onut::sUIRect& rect)
-{
-    auto& parentRect = pControl->getParent()->getRect();
-    onut::sUIRect ret = rect;
-    auto anchors = pControl->getAnchorInPixel();
-    ret.position.x += anchors.x;
-    ret.position.y += anchors.y;
-
-    auto align = pControl->getAlign();
-    switch (align)
-    {
-        case onut::eUIAlign::TOP_LEFT:
-            break;
-        case onut::eUIAlign::TOP:
-            ret.position.x = ret.position.x - parentRect.size.x * .5f;
-            break;
-        case onut::eUIAlign::TOP_RIGHT:
-            ret.position.x = ret.position.x - parentRect.size.x;
-            break;
-        case onut::eUIAlign::LEFT:
-            ret.position.y = ret.position.y - parentRect.size.y * .5f;
-            break;
-        case onut::eUIAlign::CENTER:
-            ret.position.x = ret.position.x - parentRect.size.x * .5f;
-            ret.position.y = ret.position.y - parentRect.size.y * .5f;
-            break;
-        case onut::eUIAlign::RIGHT:
-            ret.position.x = ret.position.x - parentRect.size.x;
-            ret.position.y = ret.position.y - parentRect.size.y * .5f;
-            break;
-        case onut::eUIAlign::BOTTOM_LEFT:
-            ret.position.y = ret.position.y - parentRect.size.y;
-            break;
-        case onut::eUIAlign::BOTTOM:
-            ret.position.x = ret.position.x - parentRect.size.x * .5f;
-            ret.position.y = ret.position.y - parentRect.size.y;
-            break;
-        case onut::eUIAlign::BOTTOM_RIGHT:
-            ret.position.x = ret.position.x - parentRect.size.x;
-            ret.position.y = ret.position.y - parentRect.size.y;
-            break;
-    }
-
-    return std::move(ret);
 }
 
 void DocumentView::updateMovingGizmo()
@@ -489,21 +398,23 @@ void DocumentView::updateMovingGizmo()
         // Auto snap the rect to it's brothers
         float x, y;
         bool side;
-        auto guideRect = applyAnchorsToRect(pSelected, newRect);
+        auto guideRect = m_controlWorldRectOnDown;
+        guideRect.position.x += mouseDiff.x;
+        guideRect.position.y += mouseDiff.y;
         if (getXAutoGuide(guideRect, x, side))
         {
+            float finalOffset;
             if (!side)
             {
-                guideRect.position.x = x;
+                finalOffset = x - m_controlWorldRectOnDown.position.x;
             }
             else
             {
-                guideRect.position.x = x - guideRect.size.x;
+                finalOffset = (x - m_controlWorldRectOnDown.size.x) - m_controlWorldRectOnDown.position.x;
             }
-            newRect = revertAnchorsFromRect(pSelected, guideRect);
+            newRect.position.x = m_controlRectOnDown.position.x + finalOffset;
             auto& rect = m_guides[1]->getRect();
-            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
-            m_guides[1]->setRect({{parentWorldRect.position.x + x, rect.position.y}, rect.size});
+            m_guides[1]->setRect({{x, rect.position.y}, rect.size});
             m_guides[1]->setIsVisible(true);
         }
         else
@@ -512,18 +423,18 @@ void DocumentView::updateMovingGizmo()
         }
         if (getYAutoGuide(guideRect, y, side))
         {
+            float finalOffset;
             if (!side)
             {
-                guideRect.position.y = y;
+                finalOffset = y - m_controlWorldRectOnDown.position.y;
             }
             else
             {
-                guideRect.position.y = y - guideRect.size.y;
+                finalOffset = (y - m_controlWorldRectOnDown.size.y) - m_controlWorldRectOnDown.position.y;
             }
-            newRect = revertAnchorsFromRect(pSelected, guideRect);
+            newRect.position.y = m_controlRectOnDown.position.y + finalOffset;
             auto& rect = m_guides[0]->getRect();
-            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
-            m_guides[0]->setRect({{rect.position.x, parentWorldRect.position.y + y}, rect.size});
+            m_guides[0]->setRect({{rect.position.x, y}, rect.size});
             m_guides[0]->setIsVisible(true);
         }
         else
