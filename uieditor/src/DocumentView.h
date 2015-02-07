@@ -30,6 +30,7 @@ public:
     void updateSelectedGizmoRect();
     void updateInspector();
     void repopulateTreeView(onut::UIControl* pControl);
+    void onKeyDown(uintptr_t key);
 
 private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);

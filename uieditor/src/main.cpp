@@ -35,7 +35,11 @@ void init()
     g_pDocument = new DocumentView();
 
     OWindow->onWrite = [](char c){g_pUIContext->write(c); };
-    OWindow->onKey = [](uintptr_t key){g_pUIContext->keyDown(key); };
+    OWindow->onKey = [](uintptr_t key)
+    {
+        g_pUIContext->keyDown(key);
+        g_pDocument->onKeyDown(key);
+    };
 }
 
 void update()

@@ -47,7 +47,7 @@ DocumentView::DocumentView()
     pUIContext = new onut::UIContext(onut::sUIVector2{640, 480});
     createViewUIStyles(pUIContext);
 
-    pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
+    pUIScreen = new onut::UIControl(/*"../../assets/ui/editor.json"*/);
     pUIScreen->setWidthType(onut::eUIDimType::DIM_RELATIVE);
     pUIScreen->setHeightType(onut::eUIDimType::DIM_RELATIVE);
 
@@ -528,6 +528,35 @@ bool DocumentView::getYAutoGuide(const onut::sUIRect& rect, float& y, bool& side
     yAutoGuideAgainst({parentRect.position, {parentRect.size.x, 0}}, found, rect, y, side, closest);
     yAutoGuideAgainst({{parentRect.position.x, parentRect.position.y + parentRect.size.y}, {parentRect.size.x, 0}}, found, rect, y, side, closest);
     return found;
+}
+
+void DocumentView::onKeyDown(uintptr_t key)
+{
+    if (pSelected)
+    {
+        if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN)
+        {
+            auto newRect = pSelected->getRect();
+            float speed = OInput->isStateDown(DIK_LSHIFT) ? 10.f : 1.f;
+            switch (key)
+            {
+                case VK_LEFT:
+                    newRect.position.x -= speed;
+                    break;
+                case VK_RIGHT:
+                    newRect.position.x += speed;
+                    break;
+                case VK_UP:
+                    newRect.position.y -= speed;
+                    break;
+                case VK_DOWN:
+                    newRect.position.y += speed;
+                    break;
+            }
+            updateSelectionWithRect(newRect);
+            updateInspector();
+        }
+    }
 }
 
 void DocumentView::updateMovingGizmo()
