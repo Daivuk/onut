@@ -42,26 +42,35 @@ extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
 extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM;
 extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
 
-static HCURSOR curARROW;
-static HCURSOR curSIZENWSE;
-static HCURSOR curSIZENESW;
-static HCURSOR curSIZEWE;
-static HCURSOR curSIZENS;
-static HCURSOR curSIZEALL;
+static HCURSOR curARROW = nullptr;
+static HCURSOR curSIZENWSE = nullptr;
+static HCURSOR curSIZENESW = nullptr;
+static HCURSOR curSIZEWE = nullptr;
+static HCURSOR curSIZENS = nullptr;
+static HCURSOR curSIZEALL = nullptr;
 
-DocumentView::DocumentView()
+DocumentView::DocumentView(const std::string& filename)
 {
-    curARROW = LoadCursor(nullptr, IDC_ARROW);
-    curSIZENWSE = LoadCursor(nullptr, IDC_SIZENWSE);
-    curSIZENESW = LoadCursor(nullptr, IDC_SIZENESW);
-    curSIZEWE = LoadCursor(nullptr, IDC_SIZEWE);
-    curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
-    curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
+    m_filename = filename;
+
+    if (!curARROW) curARROW = LoadCursor(nullptr, IDC_ARROW);
+    if (!curSIZENWSE) curSIZENWSE = LoadCursor(nullptr, IDC_SIZENWSE);
+    if (!curSIZENESW) curSIZENESW = LoadCursor(nullptr, IDC_SIZENESW);
+    if (!curSIZEWE) curSIZEWE = LoadCursor(nullptr, IDC_SIZEWE);
+    if (!curSIZENS) curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
+    if (!curSIZEALL) curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
 
     pUIContext = new onut::UIContext(onut::sUIVector2{640, 480});
     createViewUIStyles(pUIContext);
 
-    pUIScreen = new onut::UIControl(/*"../../assets/ui/editor.json"*/);
+    if (m_filename.empty())
+    {
+        pUIScreen = new onut::UIControl(/*"../../assets/ui/editor.json"*/);
+    }
+    else
+    {
+        pUIScreen = new onut::UIControl(m_filename.c_str());
+    }
     pUIScreen->setName("Root");
     pUIScreen->setWidthType(onut::eUIDimType::DIM_RELATIVE);
     pUIScreen->setHeightType(onut::eUIDimType::DIM_RELATIVE);
@@ -71,6 +80,7 @@ DocumentView::DocumentView()
 
     // Dotted line gizmo for selection
     m_pGizmo = g_pUIScreen->getChild<onut::UIPanel>("gizmo");
+    m_pGizmo->setIsVisible(false);
     m_gizmoHandles[0] = m_pGizmo->getChild("topLeftHandle");
     m_gizmoHandles[1] = m_pGizmo->getChild("topHandle");
     m_gizmoHandles[2] = m_pGizmo->getChild("topRightHandle");
@@ -108,6 +118,8 @@ DocumentView::DocumentView()
     const float HANDLE_PADDING = 3.f;
 
     updateInspector();
+
+    setDirty(true);
 }
 
 DocumentView::~DocumentView()
@@ -1154,5 +1166,33 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->setIsEnabled(false);
         g_pInspector_UIControl_chkAnchorBOTTOM->setIsEnabled(false);
         g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->setIsEnabled(false);
+    }
+}
+
+void DocumentView::setDirty(bool isDirty)
+{
+    m_isDirty = isDirty;
+    auto window = OWindow->getHandle();
+    if (m_isDirty)
+    {
+        if (m_filename.empty())
+        {
+            SetWindowText(window, (OSettings->getGameName() + " - Untitle*").c_str());
+        }
+        else
+        {
+            SetWindowText(window, (OSettings->getGameName() + " - " + m_filename + "*").c_str());
+        }
+    }
+    else
+    {
+        if (m_filename.empty())
+        {
+            SetWindowText(window, (OSettings->getGameName() + " - Untitle").c_str()); // That shouldn't be possible
+        }
+        else
+        {
+            SetWindowText(window, (OSettings->getGameName() + " - " + m_filename).c_str());
+        }
     }
 }

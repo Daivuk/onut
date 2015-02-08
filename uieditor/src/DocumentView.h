@@ -11,7 +11,7 @@ enum class eDocumentState : uint8_t
 class DocumentView
 {
 public:
-    DocumentView();
+    DocumentView(const std::string& filename);
     virtual ~DocumentView();
 
     void setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneGraph = true);
@@ -32,6 +32,8 @@ public:
     void repopulateTreeView(onut::UIControl* pControl);
     void onKeyDown(uintptr_t key);
 
+    bool isBusy() const { return m_state != eDocumentState::IDLE; }
+
 private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
@@ -41,6 +43,7 @@ private:
     void updateMovingHandle();
     void updateMovingGizmo();
     void deleteSelection();
+    void setDirty(bool isDirty);
 
     void snapX(float x, float &ret, const onut::sUIRect& rect, float &closest, bool& found);
     float snapX(onut::UIControl* pControl, float x);
@@ -62,4 +65,6 @@ private:
     eDocumentState      m_state = eDocumentState::IDLE;
     bool                m_autoGuide = true;
     float               m_autoPadding = 8.f;
+    bool                m_isDirty = false;
+    std::string         m_filename;
 };

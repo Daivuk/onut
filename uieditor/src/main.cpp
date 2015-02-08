@@ -33,7 +33,7 @@ void init()
     g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
     hookUIEvents(g_pUIScreen);
 
-    g_pDocument = new DocumentView();
+    g_pDocument = new DocumentView("");
 
     buildMenu();
 
@@ -41,8 +41,15 @@ void init()
     OWindow->onWrite = [](char c){g_pUIContext->write(c); };
     OWindow->onKey = [](uintptr_t key)
     {
-        g_pUIContext->keyDown(key);
-        g_pDocument->onKeyDown(key);
+        if (!g_pDocument->isBusy())
+        {
+            g_pUIContext->keyDown(key);
+            if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
+            {
+                checkShortCut(key);
+                g_pDocument->onKeyDown(key);
+            }
+        }
     };
 }
 
