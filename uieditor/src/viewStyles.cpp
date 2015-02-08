@@ -2,6 +2,7 @@
 #include "viewStyles.h"
 
 static const Color g_panelBGColor = OColorHex(2d2d30);
+static const Color g_outlineColor = Color::Lerp(OColorHex(ff9933), g_panelBGColor, .75f);
 static const Color g_panelTitleBGColor = OColorHex(3f3f46);
 static const Color g_fontColor = OColorHex(f1f1f1);
 static const Color g_sizeHandleColor = OColorHex(999999);
@@ -22,7 +23,11 @@ void createViewUIStyles(onut::UIContext* pContext)
 
     pContext->addStyle<onut::UIPanel>("", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
-        OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
+        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectInnuer = rectOutter.Grow(-1);
+
+        OSB->drawRect(nullptr, rectOutter, g_outlineColor);
+        OSB->drawRect(nullptr, rectInnuer, g_panelBGColor);
     });
 
     pContext->addStyle<onut::UIButton>("", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)

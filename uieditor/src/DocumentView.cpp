@@ -540,20 +540,60 @@ void DocumentView::onKeyDown(uintptr_t key)
             if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
             {
                 auto newRect = pSelected->getRect();
-                float speed = OInput->isStateDown(DIK_LSHIFT) ? 10.f : 1.f;
+                float speed = (OInput->isStateDown(DIK_LSHIFT) || OInput->isStateDown(DIK_RSHIFT)) ? 10.f : 1.f;
                 switch (key)
                 {
                     case VK_LEFT:
-                        newRect.position.x -= speed;
+                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
+                        {
+                            newRect.position.x -= speed;
+                        }
+                        else if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
+                        {
+                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
+                            newRect.position.x = newRect.position.x * parentWorldRect.size.x;
+                            newRect.position.x -= speed;
+                            newRect.position.x = newRect.position.x / parentWorldRect.size.x;
+                        }
                         break;
                     case VK_RIGHT:
-                        newRect.position.x += speed;
+                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
+                        {
+                            newRect.position.x += speed;
+                        }
+                        else if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
+                        {
+                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
+                            newRect.position.x = newRect.position.x * parentWorldRect.size.x;
+                            newRect.position.x += speed;
+                            newRect.position.x = newRect.position.x / parentWorldRect.size.x;
+                        }
                         break;
                     case VK_UP:
-                        newRect.position.y -= speed;
+                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
+                        {
+                            newRect.position.y -= speed;
+                        }
+                        else if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
+                        {
+                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
+                            newRect.position.y = newRect.position.y * parentWorldRect.size.y;
+                            newRect.position.y -= speed;
+                            newRect.position.y = newRect.position.y / parentWorldRect.size.y;
+                        }
                         break;
                     case VK_DOWN:
-                        newRect.position.y += speed;
+                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
+                        {
+                            newRect.position.y += speed;
+                        }
+                        else if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
+                        {
+                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
+                            newRect.position.y = newRect.position.y * parentWorldRect.size.y;
+                            newRect.position.y += speed;
+                            newRect.position.y = newRect.position.y / parentWorldRect.size.y;
+                        }
                         break;
                 }
                 updateSelectionWithRect(newRect);
@@ -566,6 +606,17 @@ void DocumentView::onKeyDown(uintptr_t key)
 void DocumentView::updateMovingGizmo()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
+    if (OInput->isStateDown(DIK_LSHIFT))
+    {
+        if (std::abs(mouseDiff.x) >= std::abs(mouseDiff.y))
+        {
+            mouseDiff.y = 0;
+        }
+        else
+        {
+            mouseDiff.x = 0;
+        }
+    }
     auto newRect = m_controlRectOnDown;
     newRect.position.x += mouseDiff.x;
     newRect.position.y += mouseDiff.y;

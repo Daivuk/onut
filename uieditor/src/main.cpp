@@ -58,5 +58,6 @@ void render()
 
     OSB->begin();
     g_pUIScreen->render(*g_pUIContext);
+    //OSB->drawRect(nullptr, {OMousePos, {10, 10}});
     OSB->end();
 }

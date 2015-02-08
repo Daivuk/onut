@@ -169,8 +169,16 @@ namespace onut
             ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--)
             {
-                OInput->update();
                 g_inputDevice->update();
+                OInput->update();
+                POINT cur;
+                GetCursorPos(&cur);
+                ScreenToClient(OWindow->getHandle(), &cur);
+                OInput->mousePos.x = cur.x;
+                OInput->mousePos.y = cur.y;
+                OInput->mousePosf.x = static_cast<float>(cur.x);
+                OInput->mousePosf.y = static_cast<float>(cur.y);
+                OMousePos = OInput->mousePosf;
                 for (auto& gamePad : g_gamePads)
                 {
                     gamePad->update();
