@@ -28,8 +28,8 @@ extern onut::UICheckBox*    g_pInspector_UIControl_chkRIGHT;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_LEFT;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_RIGHT;
-extern onut::UIButton*      g_pInspector_UIControl_txtAnchorX;
-extern onut::UIButton*      g_pInspector_UIControl_txtAnchorY;
+extern onut::UITextBox*     g_pInspector_UIControl_txtAnchorX;
+extern onut::UITextBox*     g_pInspector_UIControl_txtAnchorY;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkXAnchorPercent;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkYAnchorPercent;
 extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_LEFT;
@@ -42,8 +42,22 @@ extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
 extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM;
 extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
 
+static HCURSOR curARROW;
+static HCURSOR curSIZENWSE;
+static HCURSOR curSIZENESW;
+static HCURSOR curSIZEWE;
+static HCURSOR curSIZENS;
+static HCURSOR curSIZEALL;
+
 DocumentView::DocumentView()
 {
+    curARROW = LoadCursor(nullptr, IDC_ARROW);
+    curSIZENWSE = LoadCursor(nullptr, IDC_SIZENWSE);
+    curSIZENESW = LoadCursor(nullptr, IDC_SIZENESW);
+    curSIZEWE = LoadCursor(nullptr, IDC_SIZEWE);
+    curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
+    curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
+
     pUIContext = new onut::UIContext(onut::sUIVector2{640, 480});
     createViewUIStyles(pUIContext);
 
@@ -65,12 +79,6 @@ DocumentView::DocumentView()
     m_gizmoHandles[5] = m_pGizmo->getChild("bottomLeftHandle");
     m_gizmoHandles[6] = m_pGizmo->getChild("bottomHandle");
     m_gizmoHandles[7] = m_pGizmo->getChild("bottomRightHandle");
-    static HCURSOR curARROW = LoadCursor(nullptr, IDC_ARROW);
-    static HCURSOR curSIZENWSE = LoadCursor(nullptr, IDC_SIZENWSE);
-    static HCURSOR curSIZENESW = LoadCursor(nullptr, IDC_SIZENESW);
-    static HCURSOR curSIZEWE = LoadCursor(nullptr, IDC_SIZEWE);
-    static HCURSOR curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
-    static HCURSOR curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
     m_pGizmo->onMouseDown = std::bind(&DocumentView::onGizmoStart, this, std::placeholders::_1, std::placeholders::_2);
     m_pGizmo->onMouseUp = std::bind(&DocumentView::onGizmoEnd, this, std::placeholders::_1, std::placeholders::_2);
     m_pGizmo->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curSIZEALL); };
@@ -1087,8 +1095,22 @@ void DocumentView::updateInspector()
                 g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsChecked(true);
                 break;
         }
-        g_pInspector_UIControl_txtAnchorX->setCaption(std::to_string(pSelected->getAnchor().x));
-        g_pInspector_UIControl_txtAnchorY->setCaption(std::to_string(pSelected->getAnchor().y));
+        if (pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        {
+            g_pInspector_UIControl_txtAnchorX->setText(std::to_string(pSelected->getAnchor().x * 100.f));
+        }
+        else
+        {
+            g_pInspector_UIControl_txtAnchorX->setText(std::to_string(pSelected->getAnchor().x));
+        }
+        if (pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        {
+            g_pInspector_UIControl_txtAnchorY->setText(std::to_string(pSelected->getAnchor().y * 100.f));
+        }
+        else
+        {
+            g_pInspector_UIControl_txtAnchorY->setText(std::to_string(pSelected->getAnchor().y));
+        }
         g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
         g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
     }

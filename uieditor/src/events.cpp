@@ -29,8 +29,8 @@ onut::UICheckBox*    g_pInspector_UIControl_chkRIGHT;
 onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_LEFT;
 onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM;
 onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_RIGHT;
-onut::UIButton*      g_pInspector_UIControl_txtAnchorX;
-onut::UIButton*      g_pInspector_UIControl_txtAnchorY;
+onut::UITextBox*     g_pInspector_UIControl_txtAnchorX;
+onut::UITextBox*     g_pInspector_UIControl_txtAnchorY;
 onut::UICheckBox*    g_pInspector_UIControl_chkXAnchorPercent;
 onut::UICheckBox*    g_pInspector_UIControl_chkYAnchorPercent;
 onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_LEFT;
@@ -196,7 +196,6 @@ void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
     g_pDocument->pSelected->setRect(rect);
     g_pDocument->updateSelectedGizmoRect();
 }
-
 void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
@@ -207,6 +206,32 @@ void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
         rect.position.y /= 100.f;
     }
     g_pDocument->pSelected->setRect(rect);
+    g_pDocument->updateSelectedGizmoRect();
+}
+
+void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto anchor = g_pDocument->pSelected->getAnchor();
+    anchor.x = pTextBox->getFloat();
+    if (g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    {
+        anchor.x /= 100.f;
+    }
+    g_pDocument->pSelected->setAnchor(anchor);
+    g_pDocument->updateSelectedGizmoRect();
+}
+
+void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto anchor = g_pDocument->pSelected->getAnchor();
+    anchor.y = pTextBox->getFloat();
+    if (g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    {
+        anchor.y /= 100.f;
+    }
+    g_pDocument->pSelected->setAnchor(anchor);
     g_pDocument->updateSelectedGizmoRect();
 }
 
@@ -258,6 +283,48 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
 {
     if (!g_pDocument->pSelected) return;
     g_pDocument->pSelected->setIsClickThrough(pCheckBox->getIsChecked());
+}
+
+void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    if (pCheckBox->getIsChecked() && g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PIXEL)
+    {
+        auto anchor = g_pDocument->pSelected->getAnchor();
+        anchor.x = g_pDocument->pSelected->getAnchorInPercentage().x;
+        g_pDocument->pSelected->setXAnchorType(onut::eUIAnchorType::ANCHOR_PERCENTAGE);
+        g_pDocument->pSelected->setAnchor(anchor);
+        g_pInspector_UIControl_txtAnchorX->setText(std::to_string(anchor.x * 100.f));
+    }
+    else if (!pCheckBox->getIsChecked() && g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    {
+        auto anchor = g_pDocument->pSelected->getAnchor();
+        anchor.x = g_pDocument->pSelected->getAnchorInPixel().x;
+        g_pDocument->pSelected->setXAnchorType(onut::eUIAnchorType::ANCHOR_PIXEL);
+        g_pDocument->pSelected->setAnchor(anchor);
+        g_pInspector_UIControl_txtAnchorX->setText(std::to_string(anchor.x));
+    }
+}
+
+void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    if (pCheckBox->getIsChecked() && g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PIXEL)
+    {
+        auto anchor = g_pDocument->pSelected->getAnchor();
+        anchor.y = g_pDocument->pSelected->getAnchorInPercentage().y;
+        g_pDocument->pSelected->setYAnchorType(onut::eUIAnchorType::ANCHOR_PERCENTAGE);
+        g_pDocument->pSelected->setAnchor(anchor);
+        g_pInspector_UIControl_txtAnchorY->setText(std::to_string(anchor.y * 100.f));
+    }
+    else if (!pCheckBox->getIsChecked() && g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    {
+        auto anchor = g_pDocument->pSelected->getAnchor();
+        anchor.y = g_pDocument->pSelected->getAnchorInPixel().y;
+        g_pDocument->pSelected->setYAnchorType(onut::eUIAnchorType::ANCHOR_PIXEL);
+        g_pDocument->pSelected->setAnchor(anchor);
+        g_pInspector_UIControl_txtAnchorY->setText(std::to_string(anchor.y));
+    }
 }
 
 void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
@@ -564,7 +631,6 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_txtX->onTextChanged = onUIControlXChanged;
     g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UITextBox>("txtY");
     g_pInspector_UIControl_txtY->onTextChanged = onUIControlYChanged;
-
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
     g_pInspector_UIControl_chkXPercent->onCheckChanged = onUIControlXPercentChanged;
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
@@ -574,7 +640,6 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_txtWidth->onTextChanged = onUIControlWidthChanged;
     g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UITextBox>("txtHeight");
     g_pInspector_UIControl_txtHeight->onTextChanged = onUIControlHeightChanged;
-
     g_pInspector_UIControl_chkWidthPercent = pUIScreen->getChild<onut::UICheckBox>("chkWidthPercent");
     g_pInspector_UIControl_chkWidthPercent->onCheckChanged = onUIControlWidthPercentChanged;
     g_pInspector_UIControl_chkHeightPercent = pUIScreen->getChild<onut::UICheckBox>("chkHeightPercent");
@@ -594,10 +659,15 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_chkBOTTOM_LEFT = pUIScreen->getChild<onut::UICheckBox>("chkBOTTOM_LEFT");
     g_pInspector_UIControl_chkBOTTOM = pUIScreen->getChild<onut::UICheckBox>("chkBOTTOM");
     g_pInspector_UIControl_chkBOTTOM_RIGHT = pUIScreen->getChild<onut::UICheckBox>("chkBOTTOM_RIGHT");
-    g_pInspector_UIControl_txtAnchorX = pUIScreen->getChild<onut::UIButton>("txtAnchorX");
-    g_pInspector_UIControl_txtAnchorY = pUIScreen->getChild<onut::UIButton>("txtAnchorY");
+
+    g_pInspector_UIControl_txtAnchorX = pUIScreen->getChild<onut::UITextBox>("txtAnchorX");
+    g_pInspector_UIControl_txtAnchorX->onTextChanged = onUIControlAnchorXChanged;
+    g_pInspector_UIControl_txtAnchorY = pUIScreen->getChild<onut::UITextBox>("txtAnchorY");
+    g_pInspector_UIControl_txtAnchorY->onTextChanged = onUIControlAnchorYChanged;
     g_pInspector_UIControl_chkXAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkXAnchorPercent");
+    g_pInspector_UIControl_chkXAnchorPercent->onCheckChanged = onUIControlXAnchorPercentChanged;
     g_pInspector_UIControl_chkYAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkYAnchorPercent");
+    g_pInspector_UIControl_chkYAnchorPercent->onCheckChanged = onUIControlYAnchorPercentChanged;
     g_pInspector_UIControl_chkAnchorTOP_LEFT = pUIScreen->getChild<onut::UIButton>("chkAnchorTOP_LEFT");
     g_pInspector_UIControl_chkAnchorTOP = pUIScreen->getChild<onut::UIButton>("chkAnchorTOP");
     g_pInspector_UIControl_chkAnchorTOP_RIGHT = pUIScreen->getChild<onut::UIButton>("chkAnchorTOP_RIGHT");
