@@ -402,6 +402,7 @@ namespace onut
         const sUIRect& getRect() const { return m_rect; }
         void setRect(const sUIRect& rect);
         sUIRect getWorldRect(const UIContext& context) const;
+        void setWorldRect(const sUIRect& rect, const UIContext& context);
 
         const sUIVector2& getAnchor() const { return m_anchor; }
         sUIVector2 getAnchorInPixel() const;

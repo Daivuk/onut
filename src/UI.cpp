@@ -1030,6 +1030,127 @@ namespace onut
         m_rect = rect;
     }
 
+    void UIControl::setWorldRect(const sUIRect& rect, const UIContext& context)
+    {
+        if (getParent())
+        {
+            auto parentRect = getParent()->getWorldRect(context);
+
+            sUIRect localRect = rect;
+
+            // Undo anchoring
+            switch (m_anchorType[0])
+            {
+                case eUIAnchorType::ANCHOR_PIXEL:
+                    localRect.position.x += m_anchor.x;
+                    break;
+                case eUIAnchorType::ANCHOR_PERCENTAGE:
+                    localRect.position.x += localRect.size.x * m_anchor.x;
+                    break;
+            }
+            switch (m_anchorType[1])
+            {
+                case eUIAnchorType::ANCHOR_PIXEL:
+                    localRect.position.y += m_anchor.y;
+                    break;
+                case eUIAnchorType::ANCHOR_PERCENTAGE:
+                    localRect.position.y += localRect.size.y * m_anchor.y;
+                    break;
+            }
+
+            // Undo alignement
+            switch (m_align)
+            {
+                case eUIAlign::TOP_LEFT:
+                    localRect.position.x = localRect.position.x - parentRect.position.x;
+                    localRect.position.y = localRect.position.y - parentRect.position.y;
+                    break;
+                case eUIAlign::TOP:
+                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x * .5f;
+                    localRect.position.y = localRect.position.y - parentRect.position.y;
+                    break;
+                case eUIAlign::TOP_RIGHT:
+                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x;
+                    localRect.position.y = localRect.position.y - parentRect.position.y;
+                    break;
+                case eUIAlign::LEFT:
+                    localRect.position.x = localRect.position.x - parentRect.position.x;
+                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y * .5f;
+                    break;
+                case eUIAlign::CENTER:
+                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x * .5f;
+                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y * .5f;
+                    break;
+                case eUIAlign::RIGHT:
+                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x;
+                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y * .5f;
+                    break;
+                case eUIAlign::BOTTOM_LEFT:
+                    localRect.position.x = localRect.position.x - parentRect.position.x;
+                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y;
+                    break;
+                case eUIAlign::BOTTOM:
+                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x * .5f;
+                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y;
+                    break;
+                case eUIAlign::BOTTOM_RIGHT:
+                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x;
+                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y;
+                    break;
+            }
+
+            // Undo position and width values
+            switch (m_posType[0])
+            {
+                case eUIPosType::POS_RELATIVE:
+                    localRect.position.x = localRect.position.x;
+                    break;
+                case eUIPosType::POS_PERCENTAGE:
+                    localRect.position.x = localRect.position.x / parentRect.size.x;
+                    break;
+            }
+            switch (m_posType[1])
+            {
+                case eUIPosType::POS_RELATIVE:
+                    localRect.position.y = localRect.position.y;
+                    break;
+                case eUIPosType::POS_PERCENTAGE:
+                    localRect.position.y = localRect.position.y / parentRect.size.y;
+                    break;
+            }
+            switch (m_dimType[0])
+            {
+                case eUIDimType::DIM_ABSOLUTE:
+                    localRect.size.x = localRect.size.x;
+                    break;
+                case eUIDimType::DIM_RELATIVE:
+                    localRect.size.x = localRect.size.x - parentRect.size.x;
+                    break;
+                case eUIDimType::DIM_PERCENTAGE:
+                    localRect.size.x = localRect.size.x / parentRect.size.x;
+                    break;
+            }
+            switch (m_dimType[1])
+            {
+                case eUIDimType::DIM_ABSOLUTE:
+                    localRect.size.y = localRect.size.y;
+                    break;
+                case eUIDimType::DIM_RELATIVE:
+                    localRect.size.y = localRect.size.y - parentRect.size.y;
+                    break;
+                case eUIDimType::DIM_PERCENTAGE:
+                    localRect.size.y = localRect.size.y / parentRect.size.y;
+                    break;
+            }
+
+            m_rect = std::move(localRect);
+        }
+        else
+        {
+            m_rect = rect;
+        }
+    }
+
     sUIVector2 UIControl::getAnchorInPixel() const
     {
         sUIVector2 ret = m_anchor;

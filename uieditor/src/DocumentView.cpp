@@ -238,7 +238,7 @@ void DocumentView::deleteSelection()
 void DocumentView::updateSelectionWithRect(const onut::sUIRect& rect)
 {
     if (!pSelected) return;
-    pSelected->setRect(rect);
+    pSelected->setWorldRect(rect, *pUIContext);
     updateGizmoRect();
 }
 
@@ -539,61 +539,21 @@ void DocumentView::onKeyDown(uintptr_t key)
         {
             if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
             {
-                auto newRect = pSelected->getRect();
+                auto newRect = pSelected->getWorldRect(*pUIContext);
                 float speed = (OInput->isStateDown(DIK_LSHIFT) || OInput->isStateDown(DIK_RSHIFT)) ? 10.f : 1.f;
                 switch (key)
                 {
                     case VK_LEFT:
-                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
-                        {
-                            newRect.position.x -= speed;
-                        }
-                        else if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
-                        {
-                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
-                            newRect.position.x = newRect.position.x * parentWorldRect.size.x;
-                            newRect.position.x -= speed;
-                            newRect.position.x = newRect.position.x / parentWorldRect.size.x;
-                        }
+                        newRect.position.x -= speed;
                         break;
                     case VK_RIGHT:
-                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
-                        {
-                            newRect.position.x += speed;
-                        }
-                        else if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
-                        {
-                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
-                            newRect.position.x = newRect.position.x * parentWorldRect.size.x;
-                            newRect.position.x += speed;
-                            newRect.position.x = newRect.position.x / parentWorldRect.size.x;
-                        }
+                        newRect.position.x += speed;
                         break;
                     case VK_UP:
-                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
-                        {
-                            newRect.position.y -= speed;
-                        }
-                        else if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
-                        {
-                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
-                            newRect.position.y = newRect.position.y * parentWorldRect.size.y;
-                            newRect.position.y -= speed;
-                            newRect.position.y = newRect.position.y / parentWorldRect.size.y;
-                        }
+                        newRect.position.y -= speed;
                         break;
                     case VK_DOWN:
-                        if (pSelected->getXType() == onut::eUIPosType::POS_RELATIVE)
-                        {
-                            newRect.position.y += speed;
-                        }
-                        else if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
-                        {
-                            auto parentWorldRect = pSelected->getParent()->getWorldRect(*pUIContext);
-                            newRect.position.y = newRect.position.y * parentWorldRect.size.y;
-                            newRect.position.y += speed;
-                            newRect.position.y = newRect.position.y / parentWorldRect.size.y;
-                        }
+                        newRect.position.y += speed;
                         break;
                 }
                 updateSelectionWithRect(newRect);
@@ -617,7 +577,7 @@ void DocumentView::updateMovingGizmo()
             mouseDiff.x = 0;
         }
     }
-    auto newRect = m_controlRectOnDown;
+    auto newRect = m_controlWorldRectOnDown;
     newRect.position.x += mouseDiff.x;
     newRect.position.y += mouseDiff.y;
 
@@ -640,7 +600,7 @@ void DocumentView::updateMovingGizmo()
             {
                 finalOffset = (x - m_controlWorldRectOnDown.size.x) - m_controlWorldRectOnDown.position.x;
             }
-            newRect.position.x = m_controlRectOnDown.position.x + finalOffset;
+            newRect.position.x = m_controlWorldRectOnDown.position.x + finalOffset;
             auto& rect = m_guides[1]->getRect();
             m_guides[1]->setRect({{x, rect.position.y}, rect.size});
             m_guides[1]->setIsVisible(true);
@@ -660,7 +620,7 @@ void DocumentView::updateMovingGizmo()
             {
                 finalOffset = (y - m_controlWorldRectOnDown.size.y) - m_controlWorldRectOnDown.position.y;
             }
-            newRect.position.y = m_controlRectOnDown.position.y + finalOffset;
+            newRect.position.y = m_controlWorldRectOnDown.position.y + finalOffset;
             auto& rect = m_guides[0]->getRect();
             m_guides[0]->setRect({{rect.position.x, y}, rect.size});
             m_guides[0]->setIsVisible(true);
@@ -678,11 +638,9 @@ void DocumentView::updateMovingGizmo()
 void DocumentView::updateMovingHandle()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
-    auto anchor = pSelected->getAnchorInPercentage();
-    auto invAnchor = anchor;
-    invAnchor.x = 1 - anchor.x;
-    invAnchor.y = 1 - anchor.y;
-    auto newRect = m_controlRectOnDown;
+    auto newRect = m_controlWorldRectOnDown;
+    Vector2 anchor{0, 0};
+    Vector2 invAnchor{1, 1};
 
     // Grow/Shrink on both side equally
     if (OInput->isStateDown(DIK_LSHIFT) && (
@@ -728,22 +686,22 @@ void DocumentView::updateMovingHandle()
             if (OInput->isStateDown(DIK_LALT))
             {
                 newRect.position.x += newMouseDiffX * invAnchor.x - newMouseDiffX * anchor.x;
-                newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+                newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
                 newRect.size.x -= newMouseDiffX * 2;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * invAnchor.y - newMouseDiffY * anchor.y;
-                newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+                newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y * .5f);
                 newRect.size.y -= newMouseDiffY * 2;
                 if (newRect.size.y < 0) newRect.size.y = 0;
             }
             else
             {
                 newRect.position.x += newMouseDiffX * invAnchor.x;
-                newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
+                newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x);
                 newRect.size.x -= newMouseDiffX;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * invAnchor.y;
-                newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
+                newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y);
                 newRect.size.y -= newMouseDiffY;
                 if (newRect.size.y < 0) newRect.size.y = 0;
             }
@@ -779,11 +737,11 @@ void DocumentView::updateMovingHandle()
             if (OInput->isStateDown(DIK_LALT))
             {
                 newRect.position.x += newMouseDiffX * anchor.x - newMouseDiffX * invAnchor.x;
-                newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+                newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
                 newRect.size.x += newMouseDiffX * 2;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * invAnchor.y - newMouseDiffY * anchor.y;
-                newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+                newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y * .5f);
                 newRect.size.y -= newMouseDiffY * 2;
                 if (newRect.size.y < 0) newRect.size.y = 0;
             }
@@ -793,7 +751,7 @@ void DocumentView::updateMovingHandle()
                 newRect.size.x += newMouseDiffX;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * invAnchor.y;
-                newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
+                newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y);
                 newRect.size.y -= newMouseDiffY;
                 if (newRect.size.y < 0) newRect.size.y = 0;
             }
@@ -829,18 +787,18 @@ void DocumentView::updateMovingHandle()
             if (OInput->isStateDown(DIK_LALT))
             {
                 newRect.position.x += newMouseDiffX * invAnchor.x - newMouseDiffX * anchor.x;
-                newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+                newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
                 newRect.size.x -= newMouseDiffX * 2;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * anchor.y - newMouseDiffY * invAnchor.y;
-                newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+                newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y * .5f);
                 newRect.size.y += newMouseDiffY * 2;
                 if (newRect.size.y < 0) newRect.size.y = 0;
             }
             else
             {
                 newRect.position.x += newMouseDiffX * invAnchor.x;
-                newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
+                newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x);
                 newRect.size.x -= newMouseDiffX;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * anchor.y;
@@ -878,11 +836,11 @@ void DocumentView::updateMovingHandle()
             if (OInput->isStateDown(DIK_LALT))
             {
                 newRect.position.x += newMouseDiffX * anchor.x - newMouseDiffX * invAnchor.x;
-                newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+                newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
                 newRect.size.x += newMouseDiffX * 2;
                 if (newRect.size.x < 0) newRect.size.x = 0;
                 newRect.position.y += newMouseDiffY * anchor.y - newMouseDiffY * invAnchor.y;
-                newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+                newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y * .5f);
                 newRect.size.y += newMouseDiffY * 2;
                 if (newRect.size.y < 0) newRect.size.y = 0;
             }
@@ -905,7 +863,7 @@ void DocumentView::updateMovingHandle()
         {
             auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x;
             newRect.position.x += newMouseDiff * invAnchor.x - newMouseDiff * anchor.x;
-            newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+            newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
             newRect.size.x -= newMouseDiff * 2;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
@@ -915,7 +873,7 @@ void DocumentView::updateMovingHandle()
         {
             auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x - m_controlWorldRectOnDown.size.x;
             newRect.position.x += newMouseDiff * anchor.x - newMouseDiff * invAnchor.x;
-            newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x * .5f);
+            newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
             newRect.size.x += newMouseDiff * 2;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
@@ -925,7 +883,7 @@ void DocumentView::updateMovingHandle()
         {
             auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y;
             newRect.position.y += newMouseDiff * invAnchor.y - newMouseDiff * anchor.y;
-            newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+            newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y * .5f);
             newRect.size.y -= newMouseDiff * 2;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
@@ -935,7 +893,7 @@ void DocumentView::updateMovingHandle()
         {
             auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y - m_controlWorldRectOnDown.size.y;
             newRect.position.y += newMouseDiff * anchor.y - newMouseDiff * invAnchor.y;
-            newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y * .5f);
+            newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y * .5f);
             newRect.size.y += newMouseDiff * 2;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
@@ -948,7 +906,7 @@ void DocumentView::updateMovingHandle()
         {
             auto newMouseDiff = snapX(pSelected, m_controlWorldRectOnDown.position.x + mouseDiff.x) - m_controlWorldRectOnDown.position.x;
             newRect.position.x += newMouseDiff * invAnchor.x;
-            newRect.position.x = std::min<float>(newRect.position.x, m_controlRectOnDown.position.x + m_controlRectOnDown.size.x);
+            newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x);
             newRect.size.x -= newMouseDiff;
             if (newRect.size.x < 0) newRect.size.x = 0;
         }
@@ -967,7 +925,7 @@ void DocumentView::updateMovingHandle()
         {
             auto newMouseDiff = snapY(pSelected, m_controlWorldRectOnDown.position.y + mouseDiff.y) - m_controlWorldRectOnDown.position.y;
             newRect.position.y += newMouseDiff * invAnchor.y;
-            newRect.position.y = std::min<float>(newRect.position.y, m_controlRectOnDown.position.y + m_controlRectOnDown.size.y);
+            newRect.position.y = std::min<float>(newRect.position.y, m_controlWorldRectOnDown.position.y + m_controlWorldRectOnDown.size.y);
             newRect.size.y -= newMouseDiff;
             if (newRect.size.y < 0) newRect.size.y = 0;
         }
@@ -1061,12 +1019,40 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough());
         g_pInspector_UIControl_txtName->setText(pSelected->getName());
         g_pInspector_UIControl_txtStyle->setText(pSelected->getStyleName());
-        g_pInspector_UIControl_txtX->setText(std::to_string(pSelected->getRect().position.x));
-        g_pInspector_UIControl_txtY->setText(std::to_string(pSelected->getRect().position.y));
+        if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
+        {
+            g_pInspector_UIControl_txtX->setText(std::to_string(pSelected->getRect().position.x * 100.f));
+        }
+        else
+        {
+            g_pInspector_UIControl_txtX->setText(std::to_string(pSelected->getRect().position.x));
+        }
+        if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
+        {
+            g_pInspector_UIControl_txtY->setText(std::to_string(pSelected->getRect().position.y * 100.f));
+        }
+        else
+        {
+            g_pInspector_UIControl_txtY->setText(std::to_string(pSelected->getRect().position.y));
+        }
         g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE);
         g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE);
-        g_pInspector_UIControl_txtWidth->setText(std::to_string(pSelected->getRect().size.x));
-        g_pInspector_UIControl_txtHeight->setText(std::to_string(pSelected->getRect().size.y));
+        if (pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE)
+        {
+            g_pInspector_UIControl_txtWidth->setText(std::to_string(pSelected->getRect().size.x * 100.f));
+        }
+        else
+        {
+            g_pInspector_UIControl_txtWidth->setText(std::to_string(pSelected->getRect().size.x));
+        }
+        if (pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE)
+        {
+            g_pInspector_UIControl_txtHeight->setText(std::to_string(pSelected->getRect().size.y * 100.f));
+        }
+        else
+        {
+            g_pInspector_UIControl_txtHeight->setText(std::to_string(pSelected->getRect().size.y));
+        }
         g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE);
         g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE);
         g_pInspector_UIControl_chkWidthRelative->setIsChecked(pSelected->getWidthType() == onut::eUIDimType::DIM_RELATIVE);
