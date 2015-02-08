@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include "DocumentView.h"
 #include "events.h"
+#include "menu.h"
 #include "styles.h"
 
 void init();
@@ -34,6 +35,9 @@ void init()
 
     g_pDocument = new DocumentView();
 
+    buildMenu();
+
+    OWindow->onMenu = onMenu;
     OWindow->onWrite = [](char c){g_pUIContext->write(c); };
     OWindow->onKey = [](uintptr_t key)
     {

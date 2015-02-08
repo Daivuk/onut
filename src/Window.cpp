@@ -55,6 +55,14 @@ namespace onut
             }
             return 0;
         }
+        else if (msg == WM_COMMAND)
+        {
+            if (OWindow->onMenu)
+            {
+                OWindow->onMenu(LOWORD(wparam));
+            }
+            return 0;
+        }
 
         return DefWindowProc(handle, msg, wparam, lparam);
     }
