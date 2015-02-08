@@ -2,6 +2,7 @@
 #include "styles.h"
 
 static const Color g_panelBGColor = OColorHex(2d2d30);
+static const Color g_panelDarkenBGColor = Color::fromHexRGBA(0x2d2d30ff);
 static const Color g_groupOutlineColor = OColorHex(3f3f46);
 static const Color g_panelTitleBGColor = OColorHex(3f3f46);
 static const Color g_fontColor = OColorHex(f1f1f1);
@@ -50,6 +51,11 @@ void createUIStyles(onut::UIContext* pContext)
     g_dottedLineAnim.start(0.f, -1.f, .5f, OLinear, OLoop);
 
     pContext->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    {
+        OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
+    });
+
+    pContext->addStyle<onut::UIPanel>("darken", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
         OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
     });

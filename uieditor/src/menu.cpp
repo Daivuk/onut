@@ -9,6 +9,8 @@ const UINT MENU_FILE_SAVE = 103;
 const UINT MENU_FILE_SAVE_AS = 104;
 const UINT MENU_FILE_EXIT = 105;
 
+onut::UIControl*    g_pMessageBox = nullptr;
+
 void buildMenu()
 {
     auto window = OWindow->getHandle();
@@ -28,6 +30,9 @@ void buildMenu()
     
     SetMenu(window, menu);
     UpdateWindow(window);
+
+    g_pMessageBox = new onut::UIControl("../../assets/ui/messageBox.json");
+    g_pMessageBox->retain();
 }
 
 std::string fileOpen()
@@ -76,10 +81,17 @@ std::string fileOpen()
 
 void onMenu(UINT menuId)
 {
+    if (g_pMessageBox->getParent()) return;
+
     switch (menuId)
     {
         case MENU_FILE_NEW: // New
+        {
+//            showMessageBox("New Document", "Save changes?", 
+            delete g_pDocument;
+            g_pDocument = new DocumentView("");
             break;
+        }
         case MENU_FILE_OPEN: // Open
         {
             auto filename = fileOpen();
@@ -102,13 +114,10 @@ void onMenu(UINT menuId)
 
 void checkShortCut(uintptr_t key)
 {
+    if (g_pMessageBox->getParent()) return;
+
     if (OInput->isStateDown(DIK_LCONTROL))
     {
-        if (key != 17)
-        {
-            int tmp;
-            tmp = 6;
-        }
         if (key == static_cast<uintptr_t>('N'))
         {
             onMenu(MENU_FILE_NEW);
