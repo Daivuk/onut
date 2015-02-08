@@ -1,0 +1,22 @@
+{
+    "widthType": "RELATIVE",
+    "heightType": "RELATIVE",
+    "children": [
+        {
+            "type": "UIPanel",
+            "style": "darken",
+            "widthType": "RELATIVE",
+            "heightType": "RELATIVE",
+            "children": [
+                {
+                    "type": "UIPanel",
+                    "width": 400,
+                    "height": 300,
+                    "ALIGN": "CENTER",
+                    "xAnchor": 0.5,
+                    "yAnchor": 0.5
+                }
+            ]
+        }
+    ]
+}
