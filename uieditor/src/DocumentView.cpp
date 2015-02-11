@@ -1196,3 +1196,12 @@ void DocumentView::setDirty(bool isDirty)
         }
     }
 }
+
+void DocumentView::save()
+{
+    if (!m_filename.empty())
+    {
+        pUIScreen->save(m_filename);
+        setDirty(false);
+    }
+}

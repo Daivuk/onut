@@ -15,6 +15,7 @@ namespace rapidjson
     template <typename Encoding, typename Allocator> class GenericValue;
     template<typename CharType> struct UTF8;
     typedef GenericValue<UTF8<char>, MemoryPoolAllocator<CrtAllocator>> Value;
+    typedef MemoryPoolAllocator<CrtAllocator> Allocator;
 }
 
 namespace onut
@@ -348,6 +349,8 @@ namespace onut
         UIProperty& operator=(const UIProperty& other);
         ~UIProperty();
 
+        eUIPropertyType getType() const { return m_type; };
+
         const char* getString() const;
         int         getInt() const;
         float       getFloat() const;
@@ -371,6 +374,8 @@ namespace onut
         UIControl(const char* szFilename);
         UIControl(const UIControl& other);
         virtual ~UIControl();
+
+        void save(const std::string& filename) const;
 
         virtual eUIType getType() const { return eUIType::UI_CONTROL; }
 
@@ -470,6 +475,7 @@ namespace onut
         friend UIContext;
 
         virtual void load(const rapidjson::Value& jsonNode);
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
 
         void updateInternal(UIContext& context, const sUIRect& parentRect);
         void renderInternal(const UIContext& context, const sUIRect& parentRect) const;

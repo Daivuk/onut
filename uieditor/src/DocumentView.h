@@ -18,6 +18,7 @@ public:
 
     void update();
     void render();
+    void save();
 
     onut::UIContext* pUIContext = nullptr;
     onut::UIControl* pUIScreen = nullptr;

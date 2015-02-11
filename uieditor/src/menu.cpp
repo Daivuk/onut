@@ -103,6 +103,7 @@ void onMenu(UINT menuId)
             break;
         }
         case MENU_FILE_SAVE: // Save
+            g_pDocument->save();
             break;
         case MENU_FILE_SAVE_AS: // Save As
             break;

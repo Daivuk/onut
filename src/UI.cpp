@@ -1,6 +1,117 @@
 #include "UI.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filestream.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+
+// Copyright (C) 2011 Milo Yip
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+#ifndef RAPIDJSON_FILEWRITESTREAM_H_
+#define RAPIDJSON_FILEWRITESTREAM_H_
+
+#include "rapidjson.h"
+#include <cstdio>
+
+namespace rapidjson
+{
+
+    //! Wrapper of C file stream for input using fread().
+    /*!
+    \note implements Stream concept
+    */
+    class FileWriteStream
+    {
+    public:
+        typedef char Ch;    //!< Character type. Only support char.
+
+        FileWriteStream(FILE* fp, char* buffer, size_t bufferSize) : fp_(fp), buffer_(buffer), bufferEnd_(buffer + bufferSize), current_(buffer_)
+        {
+            RAPIDJSON_ASSERT(fp_ != 0);
+        }
+
+        void Put(char c)
+        {
+            if (current_ >= bufferEnd_)
+                Flush();
+
+            *current_++ = c;
+        }
+
+        void PutN(char c, size_t n)
+        {
+            size_t avail = static_cast<size_t>(bufferEnd_ - current_);
+            while (n > avail)
+            {
+                std::memset(current_, c, avail);
+                current_ += avail;
+                Flush();
+                n -= avail;
+                avail = static_cast<size_t>(bufferEnd_ - current_);
+            }
+
+            if (n > 0)
+            {
+                std::memset(current_, c, n);
+                current_ += n;
+            }
+        }
+
+        void Flush()
+        {
+            if (current_ != buffer_)
+            {
+                fwrite(buffer_, 1, static_cast<size_t>(current_ - buffer_), fp_);
+                current_ = buffer_;
+            }
+        }
+
+        // Not implemented
+        char Peek() const { RAPIDJSON_ASSERT(false); return 0; }
+        char Take() { RAPIDJSON_ASSERT(false); return 0; }
+        size_t Tell() const { RAPIDJSON_ASSERT(false); return 0; }
+        char* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
+        size_t PutEnd(char*) { RAPIDJSON_ASSERT(false); return 0; }
+
+    private:
+        // Prohibit copy constructor & assignment operator.
+        FileWriteStream(const FileWriteStream&);
+        FileWriteStream& operator=(const FileWriteStream&);
+
+        FILE* fp_;
+        char *buffer_;
+        char *bufferEnd_;
+        char *current_;
+    };
+
+    //! Implement specialized version of PutN() with memset() for better performance.
+    template<>
+    inline void PutN(FileWriteStream& stream, char c, size_t n)
+    {
+        stream.PutN(c, n);
+    }
+
+} // namespace rapidjson
+
+#endif // RAPIDJSON_FILESTREAM_H_
+
 #include <algorithm>
 #include <functional>
 #include <sstream>
@@ -16,6 +127,22 @@ namespace onut
             hash = hash * 101 + *s++;
         }
         return hash;
+    }
+
+    const char* getStringFromType(eUIType type)
+    {
+        switch (type)
+        {
+            case eUIType::UI_CONTROL: return "UIControl";
+            case eUIType::UI_BUTTON: return "UIButton";
+            case eUIType::UI_PANEL: return "UIPanel";
+            case eUIType::UI_LABEL: return "UILabel";
+            case eUIType::UI_IMAGE: return "UIImage";
+            case eUIType::UI_CHECKBOX: return "UICheckBox";
+            case eUIType::UI_TREEVIEW: return "UITreeView";
+            case eUIType::UI_TEXTBOX: return "UITextBox";
+        }
+        return "";
     }
 
     eUIAlign getAlignFromString(const char* szAlign)
@@ -60,6 +187,23 @@ namespace onut
         return eUIAlign::TOP_LEFT;
     }
 
+    const char* getStringFromAlign(eUIAlign align)
+    {
+        switch (align)
+        {
+            case eUIAlign::TOP_LEFT: return "TOP_LEFT";
+            case eUIAlign::TOP: return "TOP";
+            case eUIAlign::TOP_RIGHT: return "TOP_RIGHT";
+            case eUIAlign::LEFT: return "LEFT";
+            case eUIAlign::CENTER: return "CENTER";
+            case eUIAlign::RIGHT: return "RIGHT";
+            case eUIAlign::BOTTOM_LEFT: return "BOTTOM_LEFT";
+            case eUIAlign::BOTTOM: return "BOTTOM";
+            case eUIAlign::BOTTOM_RIGHT: return "BOTTOM_RIGHT";
+        }
+        return "";
+    }
+
     eUIDimType getDimTypeFromString(const char* szDimType)
     {
         if (!strcmp(szDimType, "ABSOLUTE"))
@@ -78,6 +222,17 @@ namespace onut
         return eUIDimType::DIM_ABSOLUTE;
     }
 
+    const char* getStringFromDimType(eUIDimType dimType)
+    {
+        switch (dimType)
+        {
+            case eUIDimType::DIM_ABSOLUTE: return "ABSOLUTE";
+            case eUIDimType::DIM_RELATIVE: return "RELATIVE";
+            case eUIDimType::DIM_PERCENTAGE: return "PERCENTAGE";
+        }
+        return "";
+    }
+
     eUIPosType getPosTypeFromString(const char* szPosType)
     {
         if (!strcmp(szPosType, "RELATIVE"))
@@ -90,6 +245,16 @@ namespace onut
         }
 
         return eUIPosType::POS_RELATIVE;
+    }
+
+    const char* getStringFromPosType(eUIPosType posType)
+    {
+        switch (posType)
+        {
+            case eUIPosType::POS_RELATIVE: return "RELATIVE";
+            case eUIPosType::POS_PERCENTAGE: return "PERCENTAGE";
+        }
+        return "";
     }
 
     eUIAnchorType getAnchorTypeFromString(const char* szAnchorType)
@@ -106,6 +271,16 @@ namespace onut
         return eUIAnchorType::ANCHOR_PERCENTAGE;
     }
 
+    const char* getStringFromAnchorType(eUIAnchorType anchorType)
+    {
+        switch (anchorType)
+        {
+            case eUIAnchorType::ANCHOR_PIXEL: return "PIXEL";
+            case eUIAnchorType::ANCHOR_PERCENTAGE: return "PERCENTAGE";
+        }
+        return "";
+    }
+
     eUICheckBehavior getJsonCheckBehavior(const char* szCheckBehavior)
     {
         if (!strcmp(szCheckBehavior, "OPTIONAL"))
@@ -118,6 +293,16 @@ namespace onut
         }
 
         return eUICheckBehavior::NORMAL;
+    }
+
+    const char* getStringFromCheckBehavior(eUICheckBehavior checkBehavior)
+    {
+        switch (checkBehavior)
+        {
+            case eUICheckBehavior::OPTIONAL: return "OPTIONAL";
+            case eUICheckBehavior::EXCLUSIVE: return "EXCLUSIVE";
+        }
+        return "";
     }
 
     static const char* getJsonString(const rapidjson::Value& jsonNode, const char* szDefault = "")
@@ -166,6 +351,30 @@ namespace onut
         {
             return default;
         }
+    }
+
+    static void setJsonFloat(rapidjson::Value& jsonNode, const char* szName, float value, rapidjson::Allocator& allocator, float default = 0.f)
+    {
+        if (value == default) return;
+        jsonNode.AddMember(szName, value, allocator);
+    }
+
+    static void setJsonInt(rapidjson::Value& jsonNode, const char* szName, int value, rapidjson::Allocator& allocator, int default = 0)
+    {
+        if (value == default) return;
+        jsonNode.AddMember(szName, value, allocator);
+    }
+
+    static void setJsonString(rapidjson::Value& jsonNode, const char* szName, const char* szValue, rapidjson::Allocator& allocator, const char* default = "")
+    {
+        if (!strcmp(szValue, default)) return;
+        jsonNode.AddMember(szName, szValue, allocator);
+    }
+
+    static void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool default = false)
+    {
+        if (value == default) return;
+        jsonNode.AddMember(szName, value, allocator);
     }
 
     static sUIColor getJsonColor(const rapidjson::Value& jsonNode, const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
@@ -478,6 +687,86 @@ namespace onut
                 add(pChild);
                 pChild->load(jsonChild);
             }
+        }
+    }
+
+    void UIControl::save(const std::string& filename) const
+    {
+        rapidjson::Document doc;
+        doc.SetObject();
+        auto& allocator = doc.GetAllocator();
+        save(doc, allocator);
+
+        // Open json file
+        FILE* pFile = nullptr;
+        auto fopenRet = fopen_s(&pFile, filename.c_str(), "wb");
+        assert(!fopenRet);
+
+        rapidjson::StringBuffer s;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(s);
+        doc.Accept(writer);
+
+        auto str = s.GetString();
+        fwrite(str, 1, strlen(str), pFile);
+
+        fclose(pFile);
+    }
+
+    void UIControl::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        setJsonString(jsonNode, "type", getStringFromType(getType()), allocator);
+
+        setJsonFloat(jsonNode, "x", m_rect.position.x, allocator);
+        setJsonFloat(jsonNode, "y", m_rect.position.y, allocator);
+        setJsonFloat(jsonNode, "width", m_rect.size.x, allocator);
+        setJsonFloat(jsonNode, "height", m_rect.size.y, allocator);
+        setJsonFloat(jsonNode, "xAnchor", m_anchor.x, allocator);
+        setJsonFloat(jsonNode, "yAnchor", m_anchor.y, allocator);
+
+        setJsonString(jsonNode, "align", getStringFromAlign(m_align), allocator, "TOP_LEFT");
+        setJsonString(jsonNode, "xType", getStringFromPosType(m_posType[0]), allocator, "RELATIVE");
+        setJsonString(jsonNode, "yType", getStringFromPosType(m_posType[1]), allocator, "RELATIVE");
+        setJsonString(jsonNode, "widthType", getStringFromDimType(m_dimType[0]), allocator, "ABSOLUTE");
+        setJsonString(jsonNode, "heightType", getStringFromDimType(m_dimType[1]), allocator, "ABSOLUTE");
+        setJsonString(jsonNode, "xAnchorType", getStringFromAnchorType(m_anchorType[0]), allocator, "PERCENTAGE");
+        setJsonString(jsonNode, "yAnchorType", getStringFromAnchorType(m_anchorType[1]), allocator, "PERCENTAGE");
+
+        setJsonString(jsonNode, "name", m_name.c_str(), allocator);
+        setJsonString(jsonNode, "style", m_styleName.c_str(), allocator);
+
+        setJsonBool(jsonNode, "enabled", m_isEnabled, allocator, true);
+        setJsonBool(jsonNode, "visible", m_isVisible, allocator, true);
+        setJsonBool(jsonNode, "clickThrough", m_isClickThrough, allocator, false);
+
+        for (auto& kv : m_properties)
+        {
+            switch (kv.second.getType())
+            {
+                case eUIPropertyType::P_BOOL:
+                    jsonNode[kv.first.c_str()] = kv.second.getBool();
+                    break;
+                case eUIPropertyType::P_FLOAT:
+                    jsonNode[kv.first.c_str()] = kv.second.getFloat();
+                    break;
+                case eUIPropertyType::P_INT:
+                    jsonNode[kv.first.c_str()] = kv.second.getInt();
+                    break;
+                case eUIPropertyType::P_STRING:
+                    jsonNode[kv.first.c_str()] = kv.second.getString();
+                    break;
+            }
+        }
+
+        if (!m_children.empty())
+        {
+            rapidjson::Value jsonChildren(rapidjson::kArrayType);
+            for (auto pChild : m_children)
+            {
+                rapidjson::Value jsonChild(rapidjson::kObjectType);
+                pChild->save(jsonChild, allocator);
+                jsonChildren.PushBack(jsonChild, allocator);
+            }
+            jsonNode.AddMember("children", jsonChildren, allocator);
         }
     }
 
