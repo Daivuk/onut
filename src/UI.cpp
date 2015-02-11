@@ -377,6 +377,12 @@ namespace onut
         jsonNode.AddMember(szName, value, allocator);
     }
 
+    static void setJsonColor(rapidjson::Value& jsonNode, const char* szName, const sUIColor& value, rapidjson::Allocator& allocator, const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
+    {
+        if (value.packed == default.packed) return;
+        //jsonNode.AddMember(szName, value, allocator);
+    }
+
     static sUIColor getJsonColor(const rapidjson::Value& jsonNode, const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
     {
         if (jsonNode.IsString())
@@ -1988,11 +1994,17 @@ namespace onut
         numerifyText();
     }
 
-    //--- Loads
+    //--- Loads / Saves
     void UIButton::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
         m_caption = getJsonString(jsonNode["caption"]);
+    }
+
+    void UIButton::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
     }
 
     void UIPanel::load(const rapidjson::Value& jsonNode)
@@ -2001,16 +2013,34 @@ namespace onut
         m_color = getJsonColor(jsonNode["color"]);
     }
 
+    void UIPanel::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonColor(jsonNode, "color", m_color, allocator);
+    }
+
     void UILabel::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
         m_text = getJsonString(jsonNode["text"]);
     }
 
+    void UILabel::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonString(jsonNode, "text", m_text.c_str(), allocator);
+    }
+
     void UIImage::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
         m_image = getJsonString(jsonNode["image"]);
+    }
+
+    void UIImage::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonString(jsonNode, "image", m_image.c_str(), allocator);
     }
 
     void UICheckBox::load(const rapidjson::Value& jsonNode)
@@ -2021,12 +2051,28 @@ namespace onut
         m_behavior = getJsonCheckBehavior(getJsonString(jsonNode["behavior"]));
     }
 
+    void UICheckBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
+        setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
+        setJsonString(jsonNode, "behavior", getStringFromCheckBehavior(m_behavior), allocator);
+    }
+
     void UITreeView::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
         m_expandedXOffset = getJsonFloat(jsonNode["expandedXOffset"], 18.f);
         m_expandClickWidth = getJsonFloat(jsonNode["expandClickWidth"], 18.f);
         m_itemHeight = getJsonFloat(jsonNode["itemHeight"], 18.f);
+    }
+
+    void UITreeView::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonFloat(jsonNode, "expandedXOffset", m_expandedXOffset, allocator, 18.f);
+        setJsonFloat(jsonNode, "expandClickWidth", m_expandClickWidth, allocator, 18.f);
+        setJsonFloat(jsonNode, "itemHeight", m_itemHeight, allocator, 18.f);
     }
 
     void UITextBox::load(const rapidjson::Value& jsonNode)
@@ -2036,6 +2082,14 @@ namespace onut
         m_isNumerical = getJsonBool(jsonNode["numerical"]);
         m_decimalPrecision = getJsonInt(jsonNode["precision"]);
         numerifyText();
+    }
+
+    void UITextBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
+    {
+        UIControl::save(jsonNode, allocator);
+        setJsonString(jsonNode, "text", m_text.c_str(), allocator);
+        setJsonBool(jsonNode, "numerical", m_isNumerical, allocator);
+        setJsonInt(jsonNode, "precision", m_decimalPrecision, allocator);
     }
 
     //--- Renders

@@ -533,6 +533,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
 
     private:
@@ -554,6 +555,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
 
     private:
@@ -575,6 +577,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
 
     private:
@@ -596,6 +599,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
 
     private:
@@ -626,6 +630,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
         virtual void onClickInternal(const UIMouseEvent& evt) override;
 
@@ -672,6 +677,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
         virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
 
@@ -779,6 +785,7 @@ namespace onut
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
+        virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
 
         virtual void onGainFocusInternal(const UIFocusEvent& evt) override;
