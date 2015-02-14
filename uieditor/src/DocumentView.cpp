@@ -1,8 +1,10 @@
+#include "ActionManager.h"
 #include "DocumentView.h"
 #include "viewStyles.h"
 
-extern onut::UIControl* g_pUIScreen;
-extern onut::UIContext* g_pUIContext;
+extern onut::UIControl*     g_pUIScreen;
+extern onut::UIContext*     g_pUIContext;
+extern onut::ActionManager  g_actionManager;
 
 extern onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
@@ -144,6 +146,19 @@ void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pP
     }
 }
 
+void DocumentView::controlDeleted(onut::UIControl* pControl)
+{
+    auto pItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
+    if (pItem->getParent())
+    {
+        pItem->getParent()->removeItem(pItem);
+    }
+    else
+    {
+        m_pSceneGraph->removeItem(pItem);
+    }
+}
+
 void DocumentView::updateSelectedGizmoRect()
 {
     m_pGizmo->setIsVisible(pSelected != nullptr);
@@ -240,19 +255,30 @@ void DocumentView::deleteSelection()
 {
     if (!pSelected) return;
     if (!pSelected->getParent()) return; // huh?
-    auto pItem = static_cast<onut::UITreeViewItem*>(pSelected->getUserData());
-    if (pItem->getParent())
-    {
-        pItem->getParent()->removeItem(pItem);
-    }
-    else
-    {
-        m_pSceneGraph->removeItem(pItem);
-    }
-    pSelected->getParent()->remove(pSelected);
-    pSelected = nullptr;
 
-    setSelected(nullptr);
+    auto pParent = pSelected->getParent();
+    auto pControl = pSelected;
+
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pParent->remove(pControl);
+        controlDeleted(pControl);
+        pSelected = nullptr;
+        setSelected(nullptr);
+    },
+        [=]{
+        pParent->add(pControl);
+        controlCreated(pControl, pParent);
+        setSelected(pControl);
+    },
+        [=]{
+        pParent->retain();
+        pControl->retain();
+    },
+        [=]{
+        pParent->release();
+        pControl->release();
+    }));
 }
 
 void DocumentView::updateSelectionWithRect(const onut::sUIRect& rect)

@@ -1,9 +1,11 @@
+#include "ActionManager.h"
 #include "DocumentView.h"
 #include "events.h"
 
-extern DocumentView*    g_pDocument;
-extern onut::UIContext* g_pUIContext;
-extern onut::UIControl* g_pUIScreen;
+extern DocumentView*        g_pDocument;
+extern onut::UIContext*     g_pUIContext;
+extern onut::UIControl*     g_pUIScreen;
+extern onut::ActionManager  g_actionManager;
 
 onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
@@ -67,16 +69,39 @@ onut::UIControl* getCreateParent()
     }
 }
 
+void createControlAction(onut::UIControl* pControl, onut::UIControl* pParent)
+{
+    auto pSelected = g_pDocument->pSelected;
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pParent->add(pControl);
+        g_pDocument->controlCreated(pControl, pParent);
+        g_pDocument->setSelected(pControl);
+    },
+        [=]{
+        g_pDocument->setSelected(pSelected);
+        pParent->remove(pControl);
+        g_pDocument->controlDeleted(pControl);
+    },
+        [=]{
+        if (pSelected) pSelected->retain();
+        pParent->retain();
+        pControl->retain();
+    },
+        [=]{
+        if (pSelected) pSelected->release();
+        pParent->release();
+        pControl->release();
+    }));
+}
+
 void onCreateControl(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
     auto pCtrl = new onut::UIControl();
 
     pCtrl->setRect({{0, 0}, {100, 100}});
-
-    pParent->add(pCtrl);
-    g_pDocument->controlCreated(pCtrl, pParent);
-    g_pDocument->setSelected(pCtrl);
+    createControlAction(pCtrl, pParent);
 }
 
 void onCreatePanel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -85,10 +110,7 @@ void onCreatePanel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pPanel = new onut::UIPanel();
 
     pPanel->setRect({{0, 0}, {100, 100}});
-
-    pParent->add(pPanel);
-    g_pDocument->controlCreated(pPanel, pParent);
-    g_pDocument->setSelected(pPanel);
+    createControlAction(pPanel, pParent);
 }
 
 void onCreateButton(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -98,10 +120,7 @@ void onCreateButton(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 
     pBtn->setCaption("Button");
     pBtn->setRect({{0, 0}, {64, 24}});
-
-    pParent->add(pBtn);
-    g_pDocument->controlCreated(pBtn, pParent);
-    g_pDocument->setSelected(pBtn);
+    createControlAction(pBtn, pParent);
 }
 
 void onCreateLabel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -111,10 +130,7 @@ void onCreateLabel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 
     pLbl->setText("Label");
     pLbl->setRect({{0, 0}, {64, 20}});
-
-    pParent->add(pLbl);
-    g_pDocument->controlCreated(pLbl, pParent);
-    g_pDocument->setSelected(pLbl);
+    createControlAction(pLbl, pParent);
 }
 
 void onCreateImage(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -123,10 +139,7 @@ void onCreateImage(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pImg = new onut::UIImage();
 
     pImg->setRect({{0, 0}, {32, 32}});
-
-    pParent->add(pImg);
-    g_pDocument->controlCreated(pImg, pParent);
-    g_pDocument->setSelected(pImg);
+    createControlAction(pImg, pParent);
 }
 
 bool g_bSelected = false;
@@ -138,7 +151,25 @@ void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     mousePos.x -= rect.position.x;
     mousePos.y -= rect.position.y;
     auto pPickedControl = g_pDocument->pUIScreen->getChild(*g_pDocument->pUIContext, mousePos, true, false);
-    g_pDocument->setSelected(pPickedControl);
+    auto pPreviousSelected = g_pDocument->pSelected;
+
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        g_pDocument->setSelected(pPickedControl);
+    },
+        [=]{
+        g_pDocument->setSelected(pPreviousSelected);
+    },
+        [=]{
+        if (pPreviousSelected) pPreviousSelected->retain();
+        if (pPickedControl) pPickedControl->retain();
+    },
+        [=]{
+        if (pPreviousSelected) pPreviousSelected->release();
+        if (pPickedControl) pPickedControl->release();
+    }
+    ));
+
     if (pPickedControl)
     {
         g_bSelected = true;

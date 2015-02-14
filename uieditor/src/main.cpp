@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "ActionManager.h"
 #include "DocumentView.h"
 #include "events.h"
 #include "menu.h"
@@ -11,6 +12,7 @@ void render();
 DocumentView*       g_pDocument = nullptr;
 onut::UIContext*    g_pUIContext = nullptr;
 onut::UIControl*    g_pUIScreen = nullptr;
+onut::ActionManager g_actionManager;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {

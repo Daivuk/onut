@@ -1,13 +1,18 @@
+#include "ActionManager.h"
 #include "DocumentView.h"
 #include "menu.h"
 
-extern DocumentView* g_pDocument;
+extern DocumentView*        g_pDocument;
+extern onut::ActionManager  g_actionManager;
 
 const UINT MENU_FILE_NEW = 101;
 const UINT MENU_FILE_OPEN = 102;
 const UINT MENU_FILE_SAVE = 103;
 const UINT MENU_FILE_SAVE_AS = 104;
 const UINT MENU_FILE_EXIT = 105;
+
+const UINT MENU_EDIT_UNDO = 201;
+const UINT MENU_EDIT_REDO = 202;
 
 onut::UIControl*    g_pMessageBox = nullptr;
 
@@ -27,7 +32,14 @@ void buildMenu()
         InsertMenu(subMenu, 6, MF_BYPOSITION | MF_STRING, MENU_FILE_EXIT, TEXT("E&xit\tAlt+F4"));
         InsertMenu(menu, 0, MF_BYPOSITION | MF_POPUP, (UINT)subMenu, TEXT("&File"));
     }
-    
+
+    {
+        auto subMenu = CreatePopupMenu();
+        InsertMenu(subMenu, 0, MF_BYPOSITION | MF_STRING, MENU_EDIT_UNDO, TEXT("&Undo\tCtrl+Z"));
+        InsertMenu(subMenu, 1, MF_BYPOSITION | MF_STRING, MENU_EDIT_REDO, TEXT("&Redo\tCtrl+Shift+Z"));
+        InsertMenu(menu, 1, MF_BYPOSITION | MF_POPUP, (UINT)subMenu, TEXT("&Edit"));
+    }
+
     SetMenu(window, menu);
     UpdateWindow(window);
 
@@ -110,6 +122,12 @@ void onMenu(UINT menuId)
         case MENU_FILE_EXIT: // Exit
             PostQuitMessage(0);
             break;
+        case MENU_EDIT_UNDO:
+            g_actionManager.undo();
+            break;
+        case MENU_EDIT_REDO:
+            g_actionManager.redo();
+            break;
     }
 }
 
@@ -136,6 +154,17 @@ void checkShortCut(uintptr_t key)
             else
             {
                 onMenu(MENU_FILE_SAVE);
+            }
+        }
+        else if (key == static_cast<uintptr_t>('Z'))
+        {
+            if (OInput->isStateDown(DIK_LSHIFT))
+            {
+                onMenu(MENU_EDIT_REDO);
+            }
+            else
+            {
+                onMenu(MENU_EDIT_UNDO);
             }
         }
     }

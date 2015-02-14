@@ -127,6 +127,9 @@
     <ClInclude Include="..\..\include\RectUtils.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\ActionManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -223,6 +226,9 @@
       <Filter>src\inputs</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\UI.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ActionManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
