@@ -193,13 +193,44 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
 {
     if (evt.pSelectedItems->empty())
     {
-        g_pDocument->setSelected(nullptr, false);
+        auto pPreviousSelected = g_pDocument->pSelected;
+        g_actionManager.doAction(new onut::Action(
+            [=]{
+            g_pDocument->setSelected(nullptr, true);
+        },
+            [=]{
+            g_pDocument->setSelected(pPreviousSelected, true);
+        },
+            [=]{
+            if (pPreviousSelected) pPreviousSelected->retain();
+        },
+            [=]{
+            if (pPreviousSelected) pPreviousSelected->release();
+        }
+        ));
     }
     else
     {
         auto pViewItem = evt.pSelectedItems->front();
         auto pSelected = static_cast<onut::UIControl*>(pViewItem->getUserData());
-        g_pDocument->setSelected(pSelected, false);
+
+        auto pPreviousSelected = g_pDocument->pSelected;
+        g_actionManager.doAction(new onut::Action(
+            [=]{
+            g_pDocument->setSelected(pSelected, true);
+        },
+            [=]{
+            g_pDocument->setSelected(pPreviousSelected, true);
+        },
+            [=]{
+            if (pSelected) pSelected->retain();
+            if (pPreviousSelected) pPreviousSelected->retain();
+        },
+            [=]{
+            if (pSelected) pSelected->release();
+            if (pPreviousSelected) pPreviousSelected->release();
+        }
+        ));
     }
 }
 
