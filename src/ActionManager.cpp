@@ -69,7 +69,8 @@ namespace onut
         }
     }
 
-    ActionManager::ActionManager()
+    ActionManager::ActionManager(uint32_t maxHistory) :
+        m_maxHistory(maxHistory)
     {
         m_position = m_history.begin();
     }
@@ -90,8 +91,18 @@ namespace onut
         }
         m_history.resize(m_position - m_history.begin());
         m_history.push_back(pAction);
+        if (m_maxHistory)
+        {
+            while (static_cast<decltype(m_maxHistory)>(m_history.size()) > m_maxHistory)
+            {
+                auto pFront = m_history.front();
+                delete pFront;
+                m_history.erase(m_history.begin());
+            }
+        }
         m_position = m_history.end();
         pAction->redo();
+
     }
     
     bool ActionManager::canRedo() const
@@ -120,5 +131,14 @@ namespace onut
             --m_position;
             (*m_position)->undo();
         }
+    }
+
+    void ActionManager::clear()
+    {
+        for (auto pAction : m_history)
+        {
+            delete pAction;
+        }
+        m_history.clear();
     }
 }

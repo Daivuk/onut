@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <cinttypes>
 #include <vector>
 
 namespace onut
@@ -45,7 +46,7 @@ namespace onut
     class ActionManager
     {
     public:
-        ActionManager();
+        ActionManager(uint32_t maxHistory = 1000);
         virtual ~ActionManager();
 
         void doAction(IAction* pAction);
@@ -56,9 +57,13 @@ namespace onut
         void redo();
         void undo();
 
+        void clear();
+
     private:
         using HistoryVector = std::vector < IAction* >;
         HistoryVector           m_history;
         HistoryVector::iterator m_position;
+
+        uint32_t                m_maxHistory;
     };
 }
