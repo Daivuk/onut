@@ -237,13 +237,39 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
 void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto& text = pTextBox->getText();
-    g_pDocument->pSelected->setName(pTextBox->getText());
-    auto pViewItem = static_cast<onut::UITreeViewItem*>(g_pDocument->pSelected->getUserData());
-    if (pViewItem)
-    {
-        pViewItem->setText(text);
+
+    auto text = pTextBox->getText();
+    auto pControl = g_pDocument->pSelected;
+    auto previousText = pControl->getName();
+
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pControl->setName(text);
+        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
+        if (pViewItem)
+        {
+            pViewItem->setText(text);
+        }
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pControl->setName(previousText);
+        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
+        if (pViewItem)
+        {
+            pViewItem->setText(previousText);
+        }
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        if (pTextBox) pTextBox->retain();
+        if (pControl) pControl->retain();
+    },
+        [=]{
+        if (pTextBox) pTextBox->release();
+        if (pControl) pControl->release();
     }
+    ));
 }
 
 void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
