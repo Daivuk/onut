@@ -655,66 +655,83 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
 {
     if (!evt.isChecked) return; // Don't care
     if (!g_pDocument->pSelected) return; // Wuuuut?
-    auto rect = g_pDocument->pSelected->getRect();
-    rect.position.x = 0;
-    rect.position.y = 0;
-    g_pDocument->pSelected->setRect(rect);
-    auto size = g_pDocument->pSelected->getRect().size;
-    if (g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
-    {
-        size.x = 1;
-    }
-    if (g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
-    {
-        size.y = 1;
-    }
+
+    auto pSelected = g_pDocument->pSelected;
+    auto previousRect = pSelected->getRect();
+    auto newRect = previousRect;
+    newRect.position.x = 0;
+    newRect.position.y = 0;
+    auto previousAnchor = pSelected->getAnchor();
+    auto previousAlign = pSelected->getAlign();
     if (pCheckBox == g_pInspector_UIControl_chkTOP_LEFT)
     {
-        g_pDocument->pSelected->setAnchor({0, 0});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::TOP_LEFT);
+        pSelected->setAnchorPercent({0, 0});
+        pSelected->setAlign(onut::eUIAlign::TOP_LEFT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkTOP)
     {
-        g_pDocument->pSelected->setAnchor({size.x * .5f, 0});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::TOP);
+        pSelected->setAnchorPercent({.5f, 0});
+        pSelected->setAlign(onut::eUIAlign::TOP);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkTOP_RIGHT)
     {
-        g_pDocument->pSelected->setAnchor({size.x, 0});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::TOP_RIGHT);
+        pSelected->setAnchorPercent({1, 0});
+        pSelected->setAlign(onut::eUIAlign::TOP_RIGHT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkLEFT)
     {
-        g_pDocument->pSelected->setAnchor({0, size.y * .5f});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::LEFT);
+        pSelected->setAnchorPercent({0, .5f});
+        pSelected->setAlign(onut::eUIAlign::LEFT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkCENTER)
     {
-        g_pDocument->pSelected->setAnchor({size.x * .5f, size.y * .5f});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::CENTER);
+        pSelected->setAnchorPercent({.5f, .5f});
+        pSelected->setAlign(onut::eUIAlign::CENTER);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkRIGHT)
     {
-        g_pDocument->pSelected->setAnchor({size.x, size.y * .5f});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::RIGHT);
+        pSelected->setAnchorPercent({1, .5f});
+        pSelected->setAlign(onut::eUIAlign::RIGHT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_LEFT)
     {
-        g_pDocument->pSelected->setAnchor({0, size.y});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::BOTTOM_LEFT);
+        pSelected->setAnchorPercent({0, 1});
+        pSelected->setAlign(onut::eUIAlign::BOTTOM_LEFT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM)
     {
-        g_pDocument->pSelected->setAnchor({size.x * .5f, size.y});
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::BOTTOM);
+        pSelected->setAnchorPercent({.5f, 1});
+        pSelected->setAlign(onut::eUIAlign::BOTTOM);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_RIGHT)
     {
-        g_pDocument->pSelected->setAnchor(size);
-        g_pDocument->pSelected->setAlign(onut::eUIAlign::BOTTOM_RIGHT);
+        pSelected->setAnchorPercent({1, 1});
+        pSelected->setAlign(onut::eUIAlign::BOTTOM_RIGHT);
     }
-    g_pDocument->updateSelectedGizmoRect();
-    g_pDocument->updateInspector();
+    auto newAnchor = pSelected->getAnchor();
+    auto newAlign = pSelected->getAlign();
+
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setRect(newRect);
+        pSelected->setAnchor(newAnchor);
+        pSelected->setAlign(newAlign);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setRect(previousRect);
+        pSelected->setAnchor(previousAnchor);
+        pSelected->setAlign(previousAlign);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void hookUIEvents(onut::UIControl* pUIScreen)
