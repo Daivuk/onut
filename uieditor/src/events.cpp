@@ -322,27 +322,61 @@ void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
 void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto anchor = g_pDocument->pSelected->getAnchor();
-    anchor.x = pTextBox->getFloat();
+    auto pSelected = g_pDocument->pSelected;
+    auto prevAnchor = g_pDocument->pSelected->getAnchor();
+    auto newAnchor = prevAnchor;
+    newAnchor.x = pTextBox->getFloat();
     if (g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
     {
-        anchor.x /= 100.f;
+        newAnchor.x /= 100.f;
     }
-    g_pDocument->pSelected->setAnchor(anchor);
-    g_pDocument->updateSelectedGizmoRect();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setAnchor(newAnchor);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setAnchor(prevAnchor);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto anchor = g_pDocument->pSelected->getAnchor();
-    anchor.y = pTextBox->getFloat();
+    auto pSelected = g_pDocument->pSelected;
+    auto prevAnchor = g_pDocument->pSelected->getAnchor();
+    auto newAnchor = prevAnchor;
+    newAnchor.y = pTextBox->getFloat();
     if (g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
     {
-        anchor.y /= 100.f;
+        newAnchor.y /= 100.f;
     }
-    g_pDocument->pSelected->setAnchor(anchor);
-    g_pDocument->updateSelectedGizmoRect();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setAnchor(newAnchor);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setAnchor(prevAnchor);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
