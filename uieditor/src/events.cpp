@@ -412,19 +412,67 @@ void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
 void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    g_pDocument->pSelected->setIsEnabled(pCheckBox->getIsChecked());
+    auto pSelected = g_pDocument->pSelected;
+    bool bValue = pCheckBox->getIsChecked();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setIsEnabled(bValue);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setIsEnabled(!bValue);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlVisibleChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    g_pDocument->pSelected->setIsVisible(pCheckBox->getIsChecked());
+    auto pSelected = g_pDocument->pSelected;
+    bool bValue = pCheckBox->getIsChecked();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setIsVisible(bValue);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setIsVisible(!bValue);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    g_pDocument->pSelected->setIsClickThrough(pCheckBox->getIsChecked());
+    auto pSelected = g_pDocument->pSelected;
+    bool bValue = pCheckBox->getIsChecked();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setIsClickThrough(bValue);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setIsClickThrough(!bValue);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
