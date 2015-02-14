@@ -1479,6 +1479,26 @@ namespace onut
         m_anchor = anchor;
     }
 
+    void UIControl::setAnchorPercent(const sUIVector2& anchor)
+    {
+        if (m_anchorType[0] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        {
+            m_anchor.x = m_rect.size.x * anchor.x;
+        }
+        else
+        {
+            m_anchor.x = anchor.x;
+        }
+        if (m_anchorType[1] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        {
+            m_anchor.y = m_rect.size.y * anchor.y;
+        }
+        else
+        {
+            m_anchor.y = anchor.y;
+        }
+    }
+
     void UIControl::setName(const std::string& name)
     {
         m_name = name;

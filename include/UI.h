@@ -413,6 +413,7 @@ namespace onut
         sUIVector2 getAnchorInPixel() const;
         sUIVector2 getAnchorInPercentage() const;
         void setAnchor(const sUIVector2& anchor);
+        void setAnchorPercent(const sUIVector2& anchor);
 
         const std::string& getName() const { return m_name; }
         void setName(const std::string& name);

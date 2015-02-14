@@ -272,6 +272,30 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     ));
 }
 
+void doRectChange(onut::UIControl* pControl, const onut::sUIRect& rect)
+{
+    if (!pControl) return;
+    auto previousRect = pControl->getRect();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pControl->setRect(rect);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pControl->setRect(previousRect);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pControl->retain();
+    },
+        [=]{
+        pControl->release();
+    }
+    ));
+}
+
 void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
@@ -281,8 +305,7 @@ void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
     {
         rect.position.x /= 100.f;
     }
-    g_pDocument->pSelected->setRect(rect);
-    g_pDocument->updateSelectedGizmoRect();
+    doRectChange(g_pDocument->pSelected, rect);
 }
 void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
@@ -293,8 +316,7 @@ void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
     {
         rect.position.y /= 100.f;
     }
-    g_pDocument->pSelected->setRect(rect);
-    g_pDocument->updateSelectedGizmoRect();
+    doRectChange(g_pDocument->pSelected, rect);
 }
 
 void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
@@ -332,8 +354,7 @@ void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
     {
         rect.size.x /= 100.f;
     }
-    g_pDocument->pSelected->setRect(rect);
-    g_pDocument->updateSelectedGizmoRect();
+    doRectChange(g_pDocument->pSelected, rect);
 }
 
 void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
@@ -345,8 +366,7 @@ void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEv
     {
         rect.size.y /= 100.f;
     }
-    g_pDocument->pSelected->setRect(rect);
-    g_pDocument->updateSelectedGizmoRect();
+    doRectChange(g_pDocument->pSelected, rect);
 }
 
 void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
@@ -572,44 +592,63 @@ void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
 void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 {
     if (!g_pDocument->pSelected) return; // Wuuuut?
+    auto pSelected = g_pDocument->pSelected;
+    onut::sUIVector2 prevAnchor = pSelected->getAnchor();
     if (pControl == g_pInspector_UIControl_chkAnchorTOP_LEFT)
     {
-        g_pDocument->pSelected->setAnchor({0, 0});
+        pSelected->setAnchorPercent({0, 0});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorTOP)
     {
-        g_pDocument->pSelected->setAnchor({.5f, 0});
+        pSelected->setAnchorPercent({.5f, 0});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorTOP_RIGHT)
     {
-        g_pDocument->pSelected->setAnchor({1, 0});
+        pSelected->setAnchorPercent({1, 0});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorLEFT)
     {
-        g_pDocument->pSelected->setAnchor({0, .5f});
+        pSelected->setAnchorPercent({0, .5f});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorCENTER)
     {
-        g_pDocument->pSelected->setAnchor({.5f, .5f});
+        pSelected->setAnchorPercent({.5f, .5f});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorRIGHT)
     {
-        g_pDocument->pSelected->setAnchor({1, .5f});
+        pSelected->setAnchorPercent({1, .5f});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorBOTTOM_LEFT)
     {
-        g_pDocument->pSelected->setAnchor({0, 1});
+        pSelected->setAnchorPercent({0, 1});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorBOTTOM)
     {
-        g_pDocument->pSelected->setAnchor({.5f, 1});
+        pSelected->setAnchorPercent({.5f, 1});
     }
     else if (pControl == g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT)
     {
-        g_pDocument->pSelected->setAnchor({1, 1});
+        pSelected->setAnchorPercent({1, 1});
     }
-    g_pDocument->updateSelectedGizmoRect();
-    g_pDocument->updateInspector();
+    onut::sUIVector2 newAnchor = pSelected->getAnchor();
+
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setAnchor(newAnchor);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setAnchor(prevAnchor);
+        g_pDocument->updateSelectedGizmoRect();
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
