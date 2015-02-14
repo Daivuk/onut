@@ -203,8 +203,39 @@ void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIM
     m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
 }
 
+void DocumentView::concludeTransform(onut::UIControl* pControl, const onut::sUIRect& previousRect)
+{
+    auto worldRect = pControl->getWorldRect(*pUIContext);
+    if (worldRect.position.x != previousRect.position.x ||
+        worldRect.position.y != previousRect.position.y ||
+        worldRect.size.x != previousRect.size.x ||
+        worldRect.size.y != previousRect.size.y)
+    {
+        g_actionManager.doAction(new onut::Action(
+            [=]{
+            pControl->setWorldRect(worldRect, *pUIContext);
+            updateSelectionWithRect(worldRect);
+            updateInspector();
+        },
+            [=]{
+            pControl->setWorldRect(previousRect, *pUIContext);
+            updateSelectionWithRect(previousRect);
+            updateInspector();
+        },
+            [=]{
+            pControl->retain();
+        },
+            [=]{
+            pControl->release();
+        }
+        ));
+    }
+}
+
 void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
 {
+    concludeTransform(pSelected, m_controlWorldRectOnDown);
+
     m_guides[0]->setIsVisible(false);
     m_guides[1]->setIsVisible(false);
 
@@ -223,6 +254,8 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
 
 void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
 {
+    concludeTransform(pSelected, m_controlWorldRectOnDown);
+
     m_guides[0]->setIsVisible(false);
     m_guides[1]->setIsVisible(false);
 

@@ -46,6 +46,7 @@ private:
     void updateMovingGizmo();
     void deleteSelection();
     void setDirty(bool isDirty);
+    void concludeTransform(onut::UIControl* pControl, const onut::sUIRect& previousRect);
 
     void snapX(float x, float &ret, const onut::sUIRect& rect, float &closest, bool& found);
     float snapX(onut::UIControl* pControl, float x);
