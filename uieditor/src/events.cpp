@@ -1163,6 +1163,11 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     }; \
 }
 
+    // UIPanel
+    BEGIN_BINDINGS(onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
+    //BIND_TEXT_PROPERTY("Caption", onut::UIButton, onut::UIButton::getCaption, onut::UIButton::setCaption);
+    END_BINDINGS();
+
     // UIButton
     BEGIN_BINDINGS(onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
     BIND_TEXT_PROPERTY("Caption", onut::UIButton, onut::UIButton::getCaption, onut::UIButton::setCaption);
@@ -1171,5 +1176,10 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     // UILabel
     BEGIN_BINDINGS(onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
     BIND_TEXT_PROPERTY("Text", onut::UILabel, onut::UILabel::getText, onut::UILabel::setText);
+    END_BINDINGS();
+
+    // UIImage
+    BEGIN_BINDINGS(onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
+    BIND_TEXT_PROPERTY("Image", onut::UIImage, onut::UIImage::getImage, onut::UIImage::setImage);
     END_BINDINGS();
 }

@@ -1152,6 +1152,23 @@
                         },
                         {
                             "type": "UIPanel",
+                            "name": "pnlInspector_UIPanel",
+                            "y": 408,
+                            "widthType": "RELATIVE",
+                            "visible": false,
+                            "children": [
+                                {
+                                    "type": "UILabel",
+                                    "style": "panelTitle",
+                                    "text": "UIPanel",
+                                    "widthType": "RELATIVE",
+                                    "height": 20,
+                                    "y": 0
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UIPanel",
                             "name": "pnlInspector_UILabel",
                             "y": 408,
                             "widthType": "RELATIVE",
@@ -1161,6 +1178,23 @@
                                     "type": "UILabel",
                                     "style": "panelTitle",
                                     "text": "UILabel",
+                                    "widthType": "RELATIVE",
+                                    "height": 20,
+                                    "y": 0
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UIPanel",
+                            "name": "pnlInspector_UIImage",
+                            "y": 408,
+                            "widthType": "RELATIVE",
+                            "visible": false,
+                            "children": [
+                                {
+                                    "type": "UILabel",
+                                    "style": "panelTitle",
+                                    "text": "UIImage",
                                     "widthType": "RELATIVE",
                                     "height": 20,
                                     "y": 0
