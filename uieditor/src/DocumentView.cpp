@@ -1049,6 +1049,28 @@ void DocumentView::repopulateTreeView(onut::UIControl* pControl)
     }
 }
 
+std::unordered_map<onut::eUIType, onut::UIControl*> g_controlInspectorMap;
+std::unordered_map<onut::eUIType, std::vector<IControlInspectorBind*>> g_inspectorBindings;
+void updateControlInspector(onut::UIControl* pControl)
+{
+    for (auto& kv : g_controlInspectorMap)
+    {
+        kv.second->setIsVisible(false);
+    }
+    if (!pControl) return;
+    auto& it = g_controlInspectorMap.find(pControl->getType());
+    if (it == g_controlInspectorMap.end()) return;
+    it->second->setIsVisible(true);
+
+    auto& it2 = g_inspectorBindings.find(pControl->getType());
+    if (it2 == g_inspectorBindings.end()) return;
+    auto& bindings = it2->second;
+    for (auto binding : bindings)
+    {
+        binding->updateInspector(pControl);
+    }
+}
+
 void DocumentView::updateInspector()
 {
     if (pSelected)
@@ -1226,6 +1248,8 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkAnchorBOTTOM->setIsEnabled(false);
         g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->setIsEnabled(false);
     }
+
+    updateControlInspector(pSelected);
 }
 
 void DocumentView::setDirty(bool isDirty)

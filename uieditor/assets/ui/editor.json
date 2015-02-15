@@ -1132,6 +1132,40 @@
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            "type": "UIPanel",
+                            "name": "pnlInspector_UIButton",
+                            "y": 408,
+                            "widthType": "RELATIVE",
+                            "visible": false,
+                            "children": [
+                                {
+                                    "type": "UILabel",
+                                    "style": "panelTitle",
+                                    "text": "UIButton",
+                                    "widthType": "RELATIVE",
+                                    "height": 20,
+                                    "y": 0
+                                }
+                            ]
+                        },
+                        {
+                            "type": "UIPanel",
+                            "name": "pnlInspector_UILabel",
+                            "y": 408,
+                            "widthType": "RELATIVE",
+                            "visible": false,
+                            "children": [
+                                {
+                                    "type": "UILabel",
+                                    "style": "panelTitle",
+                                    "text": "UILabel",
+                                    "widthType": "RELATIVE",
+                                    "height": 20,
+                                    "y": 0
+                                }
+                            ]
                         }
                     ]
                 }

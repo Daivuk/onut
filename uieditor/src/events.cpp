@@ -985,6 +985,9 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
 
 void hookUIEvents(onut::UIControl* pUIScreen)
 {
+    static HCURSOR curARROW = LoadCursor(nullptr, IDC_ARROW);
+    static HCURSOR curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
+
     // Tool Bar
 
 
@@ -1016,14 +1019,22 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UITextBox>("txtName");
     g_pInspector_UIControl_txtName->onTextChanged = onUIControlNameChanged;
+    g_pInspector_UIControl_txtName->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtName->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
 
     g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UITextBox>("txtStyle");
     g_pInspector_UIControl_txtStyle->onTextChanged = onUIControlStyleChanged;
+    g_pInspector_UIControl_txtStyle->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtStyle->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
 
     g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UITextBox>("txtX");
     g_pInspector_UIControl_txtX->onTextChanged = onUIControlXChanged;
+    g_pInspector_UIControl_txtX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UITextBox>("txtY");
     g_pInspector_UIControl_txtY->onTextChanged = onUIControlYChanged;
+    g_pInspector_UIControl_txtY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
     g_pInspector_UIControl_chkXPercent->onCheckChanged = onUIControlXPercentChanged;
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
@@ -1031,8 +1042,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UITextBox>("txtWidth");
     g_pInspector_UIControl_txtWidth->onTextChanged = onUIControlWidthChanged;
+    g_pInspector_UIControl_txtWidth->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtWidth->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UITextBox>("txtHeight");
     g_pInspector_UIControl_txtHeight->onTextChanged = onUIControlHeightChanged;
+    g_pInspector_UIControl_txtHeight->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtHeight->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkWidthPercent = pUIScreen->getChild<onut::UICheckBox>("chkWidthPercent");
     g_pInspector_UIControl_chkWidthPercent->onCheckChanged = onUIControlWidthPercentChanged;
     g_pInspector_UIControl_chkHeightPercent = pUIScreen->getChild<onut::UICheckBox>("chkHeightPercent");
@@ -1055,8 +1070,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtAnchorX = pUIScreen->getChild<onut::UITextBox>("txtAnchorX");
     g_pInspector_UIControl_txtAnchorX->onTextChanged = onUIControlAnchorXChanged;
+    g_pInspector_UIControl_txtAnchorX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtAnchorX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtAnchorY = pUIScreen->getChild<onut::UITextBox>("txtAnchorY");
     g_pInspector_UIControl_txtAnchorY->onTextChanged = onUIControlAnchorYChanged;
+    g_pInspector_UIControl_txtAnchorY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtAnchorY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkXAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkXAnchorPercent");
     g_pInspector_UIControl_chkXAnchorPercent->onCheckChanged = onUIControlXAnchorPercentChanged;
     g_pInspector_UIControl_chkYAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkYAnchorPercent");
@@ -1091,9 +1110,66 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_chkAnchorBOTTOM->onClick = onAnchorClicked;
     g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->onClick = onAnchorClicked;
 
-    // Turn textbox into text cursor
-    static HCURSOR curARROW = LoadCursor(nullptr, IDC_ARROW);
-    static HCURSOR curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
-    g_pInspector_UIControl_txtName->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtName->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    //--- Controls inspector bindings
+    extern std::unordered_map<onut::eUIType, onut::UIControl*> g_controlInspectorMap;
+    extern std::unordered_map<onut::eUIType, std::vector<IControlInspectorBind*>> g_inspectorBindings;
+
+#define BEGIN_BINDINGS(__type__, __name__) \
+{ \
+    auto pPnl = pUIScreen->getChild<onut::UIPanel>(__name__); \
+    g_controlInspectorMap[__type__] = pPnl; \
+    auto& bindings = g_inspectorBindings[__type__]; \
+    auto yPos = 24.f;
+
+#define END_BINDINGS() \
+}
+
+#define BIND_TEXT_PROPERTY(__name__, __type__, __getter__, __setter__) \
+{ \
+    auto pLabel = new onut::UILabel(); \
+    auto pTextBox = new onut::UITextBox(); \
+     \
+    pLabel->setText(__name__); \
+    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE); \
+    pLabel->setRect({{4, yPos}, {0.382f, 24}}); \
+     \
+    pTextBox->setAlign(onut::eUIAlign::TOP_RIGHT); \
+    pTextBox->setWidthType(onut::eUIDimType::DIM_PERCENTAGE); \
+    pTextBox->setRect({{-4, yPos}, {0.618f, 24}}); \
+    pTextBox->setAnchor({1, 0}); \
+     \
+    yPos += 24 + 4; \
+     \
+    pPnl->add(pLabel); \
+    pPnl->add(pTextBox); \
+     \
+    auto pBinding = new ControlInspectorBind<std::string, \
+        __type__, \
+        decltype(std::bind(&__getter__, std::placeholders::_1)), \
+        decltype(std::bind(&__setter__, std::placeholders::_1, std::placeholders::_2))>( \
+        std::string("Edit ") + __name__, \
+        std::bind(&onut::UITextBox::getText, pTextBox), \
+        std::bind(&onut::UITextBox::setText, pTextBox, std::placeholders::_1), \
+        std::bind(&__getter__, std::placeholders::_1), \
+        std::bind(&__setter__, std::placeholders::_1, std::placeholders::_2) \
+        ); \
+    bindings.push_back(pBinding); \
+     \
+    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); }; \
+    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); }; \
+    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt) \
+    { \
+        pBinding->updateControl(g_pDocument->pSelected); \
+    }; \
+}
+
+    // UIButton
+    BEGIN_BINDINGS(onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
+    BIND_TEXT_PROPERTY("Caption", onut::UIButton, onut::UIButton::getCaption, onut::UIButton::setCaption);
+    END_BINDINGS();
+
+    // UILabel
+    BEGIN_BINDINGS(onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
+    BIND_TEXT_PROPERTY("Text", onut::UILabel, onut::UILabel::getText, onut::UILabel::setText);
+    END_BINDINGS();
 }
