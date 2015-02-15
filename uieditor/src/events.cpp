@@ -406,7 +406,25 @@ void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEv
 void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    g_pDocument->pSelected->setStyle(pTextBox->getText().c_str());
+    auto pSelected = g_pDocument->pSelected;
+    auto prevStyle = pSelected->getStyleName();
+    auto newStyle = pTextBox->getText();
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setStyle(newStyle.c_str());
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setStyle(prevStyle.c_str());
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }
+    ));
 }
 
 void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
@@ -478,43 +496,75 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
 void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    if (pCheckBox->getIsChecked() && g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PIXEL)
+    auto pSelected = g_pDocument->pSelected;
+    auto prevAnchor = pSelected->getAnchor();
+    auto prevAnchorType = pSelected->getXAnchorType();
+    auto newAnchor = prevAnchor;
+    auto newAnchorType = prevAnchorType;
+    if (pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
     {
-        auto anchor = g_pDocument->pSelected->getAnchor();
-        anchor.x = g_pDocument->pSelected->getAnchorInPercentage().x;
-        g_pDocument->pSelected->setXAnchorType(onut::eUIAnchorType::ANCHOR_PERCENTAGE);
-        g_pDocument->pSelected->setAnchor(anchor);
-        g_pInspector_UIControl_txtAnchorX->setText(std::to_string(anchor.x * 100.f));
+        newAnchor.x = pSelected->getAnchorInPercentage().x;
+        newAnchorType = onut::eUIAnchorType::ANCHOR_PERCENTAGE;
     }
-    else if (!pCheckBox->getIsChecked() && g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    else if (!pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
     {
-        auto anchor = g_pDocument->pSelected->getAnchor();
-        anchor.x = g_pDocument->pSelected->getAnchorInPixel().x;
-        g_pDocument->pSelected->setXAnchorType(onut::eUIAnchorType::ANCHOR_PIXEL);
-        g_pDocument->pSelected->setAnchor(anchor);
-        g_pInspector_UIControl_txtAnchorX->setText(std::to_string(anchor.x));
+        newAnchor.x = pSelected->getAnchorInPixel().x;
+        newAnchorType = onut::eUIAnchorType::ANCHOR_PIXEL;
     }
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setAnchor(newAnchor);
+        pSelected->setXAnchorType(newAnchorType);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setAnchor(prevAnchor);
+        pSelected->setXAnchorType(prevAnchorType);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    if (pCheckBox->getIsChecked() && g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PIXEL)
+    auto pSelected = g_pDocument->pSelected;
+    auto prevAnchor = pSelected->getAnchor();
+    auto prevAnchorType = pSelected->getYAnchorType();
+    auto newAnchor = prevAnchor;
+    auto newAnchorType = prevAnchorType;
+    if (pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
     {
-        auto anchor = g_pDocument->pSelected->getAnchor();
-        anchor.y = g_pDocument->pSelected->getAnchorInPercentage().y;
-        g_pDocument->pSelected->setYAnchorType(onut::eUIAnchorType::ANCHOR_PERCENTAGE);
-        g_pDocument->pSelected->setAnchor(anchor);
-        g_pInspector_UIControl_txtAnchorY->setText(std::to_string(anchor.y * 100.f));
+        newAnchor.y = pSelected->getAnchorInPercentage().y;
+        newAnchorType = onut::eUIAnchorType::ANCHOR_PERCENTAGE;
     }
-    else if (!pCheckBox->getIsChecked() && g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    else if (!pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
     {
-        auto anchor = g_pDocument->pSelected->getAnchor();
-        anchor.y = g_pDocument->pSelected->getAnchorInPixel().y;
-        g_pDocument->pSelected->setYAnchorType(onut::eUIAnchorType::ANCHOR_PIXEL);
-        g_pDocument->pSelected->setAnchor(anchor);
-        g_pInspector_UIControl_txtAnchorY->setText(std::to_string(anchor.y));
+        newAnchor.y = pSelected->getAnchorInPixel().y;
+        newAnchorType = onut::eUIAnchorType::ANCHOR_PIXEL;
     }
+    g_actionManager.doAction(new onut::Action(
+        [=]{
+        pSelected->setAnchor(newAnchor);
+        pSelected->setYAnchorType(newAnchorType);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->setAnchor(prevAnchor);
+        pSelected->setYAnchorType(prevAnchorType);
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
 }
 
 void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
