@@ -211,7 +211,7 @@ void DocumentView::concludeTransform(onut::UIControl* pControl, const onut::sUIR
         worldRect.size.x != previousRect.size.x ||
         worldRect.size.y != previousRect.size.y)
     {
-        g_actionManager.doAction(new onut::Action(
+        g_actionManager.doAction(new onut::Action("Transform",
             [=]{
             pControl->setWorldRect(worldRect, *pUIContext);
             updateSelectionWithRect(worldRect);
@@ -292,7 +292,7 @@ void DocumentView::deleteSelection()
     auto pParent = pSelected->getParent();
     auto pControl = pSelected;
 
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Delete",
         [=]{
         pParent->remove(pControl);
         controlDeleted(pControl);

@@ -2,7 +2,18 @@
 
 namespace onut
 {
-    ActionGroup::ActionGroup(const std::vector<IAction*>& actions) :
+    IAction::IAction(const std::string& name) :
+        m_name(name)
+    {
+    }
+
+    const std::string& IAction::getName() const
+    {
+        return m_name;
+    }
+
+    ActionGroup::ActionGroup(const std::string& name, const std::vector<IAction*>& actions) :
+        IAction(name),
         m_actions(actions)
     {
     }
@@ -31,10 +42,12 @@ namespace onut
         }
     }
 
-    Action::Action(const std::function<void()>& onRedo,
+    Action::Action(const std::string& name,
+                   const std::function<void()>& onRedo,
                    const std::function<void()>& onUndo,
                    const std::function<void()>& onInit,
                    const std::function<void()>& onDestroy) :
+                   IAction(name),
                    m_onRedo(onRedo),
                    m_onUndo(onUndo),
                    m_onDestroy(onDestroy)
@@ -113,6 +126,18 @@ namespace onut
     bool ActionManager::canUndo() const
     {
         return (m_position != m_history.begin());
+    }
+
+    IAction* ActionManager::getRedo() const
+    {
+        if (!canRedo()) return nullptr;
+        return *m_position;
+    }
+
+    IAction* ActionManager::getUndo() const
+    {
+        if (!canUndo()) return nullptr;
+        return *(m_position - 1);
     }
     
     void ActionManager::redo()

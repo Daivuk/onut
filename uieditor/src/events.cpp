@@ -69,10 +69,25 @@ onut::UIControl* getCreateParent()
     }
 }
 
+namespace onut
+{
+    const char* getStringFromType(eUIType type);
+}
+
+std::string getControlName(onut::UIControl* pControl)
+{
+    std::string ret = pControl->getName();
+    if (ret.empty())
+    {
+        ret = onut::getStringFromType(pControl->getType());
+    }
+    return std::move(ret);
+}
+
 void createControlAction(onut::UIControl* pControl, onut::UIControl* pParent)
 {
     auto pSelected = g_pDocument->pSelected;
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Create " + getControlName(pControl),
         [=]{
         pParent->add(pControl);
         g_pDocument->controlCreated(pControl, pParent);
@@ -153,7 +168,13 @@ void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pPickedControl = g_pDocument->pUIScreen->getChild(*g_pDocument->pUIContext, mousePos, true, false);
     auto pPreviousSelected = g_pDocument->pSelected;
 
-    g_actionManager.doAction(new onut::Action(
+    std::string ctrlName = "Unselect";
+    if (pPickedControl)
+    {
+        ctrlName = "Select " + getControlName(pControl);
+    }
+
+    g_actionManager.doAction(new onut::Action(ctrlName,
         [=]{
         g_pDocument->setSelected(pPickedControl);
     },
@@ -194,7 +215,7 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
     if (evt.pSelectedItems->empty())
     {
         auto pPreviousSelected = g_pDocument->pSelected;
-        g_actionManager.doAction(new onut::Action(
+        g_actionManager.doAction(new onut::Action("Unselect",
             [=]{
             g_pDocument->setSelected(nullptr, true);
         },
@@ -215,7 +236,7 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
         auto pSelected = static_cast<onut::UIControl*>(pViewItem->getUserData());
 
         auto pPreviousSelected = g_pDocument->pSelected;
-        g_actionManager.doAction(new onut::Action(
+        g_actionManager.doAction(new onut::Action("Select " + getControlName(pSelected),
             [=]{
             g_pDocument->setSelected(pSelected, true);
         },
@@ -242,7 +263,7 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     auto pControl = g_pDocument->pSelected;
     auto previousText = pControl->getName();
 
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Rename " + getControlName(pControl) + " to " + text,
         [=]{
         pControl->setName(text);
         auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
@@ -272,11 +293,11 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     ));
 }
 
-void doRectChange(onut::UIControl* pControl, const onut::sUIRect& rect)
+void doRectChange(const std::string& actionName, onut::UIControl* pControl, const onut::sUIRect& rect)
 {
     if (!pControl) return;
     auto previousRect = pControl->getRect();
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action(actionName, 
         [=]{
         pControl->setRect(rect);
         g_pDocument->updateSelectedGizmoRect();
@@ -305,7 +326,7 @@ void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
     {
         rect.position.x /= 100.f;
     }
-    doRectChange(g_pDocument->pSelected, rect);
+    doRectChange("Edit X position", g_pDocument->pSelected, rect);
 }
 void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
@@ -316,7 +337,7 @@ void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
     {
         rect.position.y /= 100.f;
     }
-    doRectChange(g_pDocument->pSelected, rect);
+    doRectChange("Edit Y position", g_pDocument->pSelected, rect);
 }
 
 void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
@@ -330,7 +351,7 @@ void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
     {
         newAnchor.x /= 100.f;
     }
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Edit X anchor",
         [=]{
         pSelected->setAnchor(newAnchor);
         g_pDocument->updateSelectedGizmoRect();
@@ -360,7 +381,7 @@ void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
     {
         newAnchor.y /= 100.f;
     }
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Edit Y anchor",
         [=]{
         pSelected->setAnchor(newAnchor);
         g_pDocument->updateSelectedGizmoRect();
@@ -388,7 +409,7 @@ void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
     {
         rect.size.x /= 100.f;
     }
-    doRectChange(g_pDocument->pSelected, rect);
+    doRectChange("Edit Width", g_pDocument->pSelected, rect);
 }
 
 void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
@@ -400,7 +421,7 @@ void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEv
     {
         rect.size.y /= 100.f;
     }
-    doRectChange(g_pDocument->pSelected, rect);
+    doRectChange("Edit Height", g_pDocument->pSelected, rect);
 }
 
 void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
@@ -409,7 +430,7 @@ void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
     auto pSelected = g_pDocument->pSelected;
     auto prevStyle = pSelected->getStyleName();
     auto newStyle = pTextBox->getText();
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Edit Style",
         [=]{
         pSelected->setStyle(newStyle.c_str());
         g_pDocument->updateInspector();
@@ -432,7 +453,7 @@ void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEv
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Toggle Enable",
         [=]{
         pSelected->setIsEnabled(bValue);
         g_pDocument->updateInspector();
@@ -454,7 +475,7 @@ void onUIControlVisibleChanged(onut::UICheckBox* pCheckBox, const onut::UICheckE
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Toggle Visible", 
         [=]{
         pSelected->setIsVisible(bValue);
         g_pDocument->updateInspector();
@@ -476,7 +497,7 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Toggle ClickThrough", 
         [=]{
         pSelected->setIsClickThrough(bValue);
         g_pDocument->updateInspector();
@@ -511,7 +532,7 @@ void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
         newAnchor.x = pSelected->getAnchorInPixel().x;
         newAnchorType = onut::eUIAnchorType::ANCHOR_PIXEL;
     }
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Toggle X anchor percent",
         [=]{
         pSelected->setAnchor(newAnchor);
         pSelected->setXAnchorType(newAnchorType);
@@ -548,7 +569,7 @@ void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
         newAnchor.y = pSelected->getAnchorInPixel().y;
         newAnchorType = onut::eUIAnchorType::ANCHOR_PIXEL;
     }
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Toggle Y anchor percent",
         [=]{
         pSelected->setAnchor(newAnchor);
         pSelected->setYAnchorType(newAnchorType);
@@ -764,7 +785,7 @@ void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     }
     onut::sUIVector2 newAnchor = pSelected->getAnchor();
 
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Change Anchor",
         [=]{
         pSelected->setAnchor(newAnchor);
         g_pDocument->updateSelectedGizmoRect();
@@ -843,7 +864,7 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
     auto newAnchor = pSelected->getAnchor();
     auto newAlign = pSelected->getAlign();
 
-    g_actionManager.doAction(new onut::Action(
+    g_actionManager.doAction(new onut::Action("Change Align",
         [=]{
         pSelected->setRect(newRect);
         pSelected->setAnchor(newAnchor);
