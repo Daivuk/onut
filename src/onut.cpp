@@ -52,6 +52,7 @@ namespace onut
 
         // Content
         OContentManager = new ContentManager<>();
+        OContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
         g_inputDevice = new InputDevice(OWindow);

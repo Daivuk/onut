@@ -2,19 +2,29 @@
 #include <unordered_map>
 #include <mutex>
 #include <string>
+
+#include "Asynchronous.h"
 #include "StringUtils.h"
 
 namespace onut
 {
-    class Texture;
-    class BMFont;
-
-    template<bool TuseAssert = true,
-        typename TmutexType = std::mutex>
+    template<bool TuseAssert = true>
     class ContentManager
     {
     public:
         ContentManager()
+        {
+        }
+
+        virtual ~ContentManager()
+        {
+            clear();
+        }
+
+        /**
+         * Add default paths.
+         */
+        void addDefaultSearchPaths()
         {
             addSearchPath("../../assets");
             addSearchPath("../../assets/fonts");
@@ -25,9 +35,12 @@ namespace onut
             addSearchPath("../../assets/musics");
         }
 
-        virtual ~ContentManager()
+        /**
+         * Clear search paths
+         */
+        void clearSearchPaths()
         {
-            clear();
+            m_searchPaths.clear();
         }
 
         /**
@@ -42,40 +55,65 @@ namespace onut
                 if (it == m_resources.end())
                 {
                     // Load it
-                    return load<Ttype>(name);
+                    auto pResource = load<Ttype>(name);
+                    m_resources[name] = pResource;
+                    if (pResource)
+                    {
+                        return pResource->getResource();
+                    }
+                    else
+                    {
+                        return nullptr;
+                    }
                 }
                 auto pResourceHolder = dynamic_cast<ResourceHolder<Ttype>*>(it->second);
-                if (!pResourceHolder)
+                if (pResourceHolder)
                 {
-                    if (TuseAssert)
-                    {
-                        assert(false); // Resource not found
-                    }
+                    return pResourceHolder->getResource();
+                }
+                else
+                {
                     return nullptr;
                 }
-                return pResourceHolder->getResource();
             }
             else
             {
-                m_mutex.lock();
-                auto it = m_resources.find(name);
-                if (it == m_resources.end())
-                {
-                    m_mutex.unlock();
-                    // Load it
-                    return load<Ttype>(name);
-                }
-                auto pResourceHolder = dynamic_cast<ResourceHolder<Ttype>*>(it->second);
-                m_mutex.unlock();
-                if (!pResourceHolder)
-                {
-                    if (TuseAssert)
+                std::promise<Ttype*> p;
+                std::future<Ttype*> f = p.get_future();
+
+                OSync([&]{
+                    auto it = m_resources.find(name);
+                    if (it == m_resources.end())
                     {
-                        assert(false); // Resource not found
+                        // Load it
+                        OAsync([&]{
+                            auto pResource = load<Ttype>(name);
+                            OSync([&]{
+                                m_resources[name] = pResource;
+                                if (pResource)
+                                {
+                                    p.set_value(pResource->getResource());
+                                }
+                                else
+                                {
+                                    p.set_value(nullptr);
+                                }
+                            });
+                        });
+                        return;
                     }
-                    return nullptr;
-                }
-                return pResourceHolder->getResource();
+                    auto pResourceHolder = dynamic_cast<ResourceHolder<Ttype>*>(it->second);
+                    if (pResourceHolder)
+                    {
+                        p.set_value(pResourceHolder->getResource());
+                    }
+                    else
+                    {
+                        p.set_value(nullptr);
+                    }
+                });
+
+                return f.get();
             }
         }
 
@@ -147,7 +185,7 @@ namespace onut
         };
 
         template<typename Ttype>
-        Ttype* load(const std::string& name)
+        ResourceHolder<Ttype>* load(const std::string& name)
         {
             // Find the file
             std::string filename;
@@ -159,21 +197,20 @@ namespace onut
                     break;
                 }
             }
-            if (filename == "") return nullptr;
+            if (filename == "")
+            {
+                return nullptr;
+            }
 
             // Create it
             Ttype* pResource = Ttype::createFromFile(filename, this);
 
             // Put it in our map
             ResourceHolder<Ttype>* pResourceHolder = new ResourceHolder<Ttype>(pResource);
-            m_mutex.lock();
-            m_resources[name] = pResourceHolder;
-            m_mutex.unlock();
 
-            return pResource;
+            return pResourceHolder;
         }
 
-        TmutexType                              m_mutex;
         decltype(std::this_thread::get_id())    m_threadId = std::this_thread::get_id();
         std::vector<std::string>                m_searchPaths;
     };

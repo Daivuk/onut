@@ -56,6 +56,7 @@ void createViewUIStyles(onut::UIContext* pContext)
 
     pContext->addStyle<onut::UIImage>("", [pContext](const onut::UIImage* pImage, const onut::sUIRect& rect)
     {
-        OSB->drawRect(OGetTexture(pImage->getImage().c_str()), onut::UI2Onut(rect));
+        auto pTexture = g_pDocument->contentManager.getResource<OTexture>(pImage->getImage());
+        OSB->drawRect(pTexture, onut::UI2Onut(rect));
     });
 }

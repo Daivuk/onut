@@ -101,10 +101,20 @@ namespace onut
     }
 
     template<>
-    std::string findFile<false>(const std::string& name, const std::string& lookIn, bool deepSearch)
+    std::string findFile<false>(const std::string& in_name, const std::string& in_lookIn, bool deepSearch)
     {
         DIR *dir;
         struct dirent *ent;
+
+        auto name = in_name;
+        auto lookIn = in_lookIn;
+        auto pos = in_name.find_last_of("\\/");
+        if (pos != std::string::npos)
+        {
+            name = in_name.substr(pos + 1);
+            lookIn = in_lookIn + "/" + in_name.substr(0, in_name.find_last_of("\\/"));
+        }
+
         if ((dir = opendir(lookIn.c_str())) != NULL)
         {
             while ((ent = readdir(dir)) != NULL)
@@ -139,5 +149,10 @@ namespace onut
         }
 
         return "";
+    }
+
+    std::string getPath(const std::string& filename)
+    {
+        return filename.substr(0, filename.find_last_of("\\/"));
     }
 }

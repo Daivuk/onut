@@ -54,6 +54,11 @@ static HCURSOR curSIZEALL = nullptr;
 DocumentView::DocumentView(const std::string& filename)
 {
     m_filename = filename;
+    auto path = onut::getPath(filename);
+    if (!path.empty())
+    {
+        contentManager.addSearchPath(path);
+    }
 
     if (!curARROW) curARROW = LoadCursor(nullptr, IDC_ARROW);
     if (!curSIZENWSE) curSIZENWSE = LoadCursor(nullptr, IDC_SIZENWSE);

@@ -20,9 +20,10 @@ public:
     void render();
     void save();
 
-    onut::UIContext* pUIContext = nullptr;
-    onut::UIControl* pUIScreen = nullptr;
-    onut::UIControl* pSelected = nullptr;
+    onut::UIContext*            pUIContext = nullptr;
+    onut::UIControl*            pUIScreen = nullptr;
+    onut::UIControl*            pSelected = nullptr;
+    onut::ContentManager<false> contentManager;
 
     void onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
