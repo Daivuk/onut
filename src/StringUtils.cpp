@@ -1,5 +1,7 @@
-﻿#include <codecvt>
+﻿#include <algorithm>
+#include <codecvt>
 #include <cassert>
+#include <sstream>
 #include "dirent.h"
 #include "StringUtils.h"
 
@@ -154,5 +156,38 @@ namespace onut
     std::string getPath(const std::string& filename)
     {
         return filename.substr(0, filename.find_last_of("\\/"));
+    }
+
+    std::string makeRelativePath(const std::string& in_path, const std::string& in_relativeTo)
+    {
+        auto path = in_path;
+        std::replace(path.begin(), path.end(), '\\', '/');
+        auto pathSplit = splitString(path, '/');
+
+        auto relativeTo = in_relativeTo;
+        std::replace(relativeTo.begin(), relativeTo.end(), '\\', '/');
+        auto relativeSplit = splitString(relativeTo, '/');
+
+        while (pathSplit.size() && relativeSplit.size() && pathSplit.front() == relativeSplit.front())
+        {
+            pathSplit.erase(pathSplit.begin());
+            relativeSplit.erase(relativeSplit.begin());
+        }
+
+        std::stringstream ss;
+        bool bFirst = true;
+        for (auto& folder : relativeSplit)
+        {
+            if (!bFirst) ss << "/";
+            bFirst = false;
+            ss << "..";
+        }
+        for (auto& folder : pathSplit)
+        {
+            if (!bFirst) ss << "/";
+            bFirst = false;
+            ss << folder;
+        }
+        return std::move(ss.str());
     }
 }

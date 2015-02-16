@@ -37,6 +37,8 @@ public:
 
     bool isBusy() const { return m_state != eDocumentState::IDLE; }
 
+    const std::string& getFilename() const { return m_filename; }
+
 private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);

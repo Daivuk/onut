@@ -983,10 +983,147 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
     }));
 }
 
+std::string fileOpen(const char* szFilters)
+{
+    auto window = OWindow->getHandle();
+    char szFileName[MAX_PATH] = "";
+
+    OPENFILENAME ofn = {0};
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = window;
+
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = window;
+    ofn.lpstrFilter = szFilters;
+    ofn.lpstrFile = szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+    ofn.lpstrDefExt = TEXT("json");
+
+    GetOpenFileName(&ofn);
+
+    return ofn.lpstrFile;
+}
+
+extern std::unordered_map<onut::eUIType, onut::UIControl*> g_controlInspectorMap;
+extern std::unordered_map<onut::eUIType, std::vector<IControlInspectorBind*>> g_inspectorBindings;
+float yPos;
+std::vector<IControlInspectorBind*>* pBindings;
+onut::UIPanel* pPnl;
+static HCURSOR curARROW;
+static HCURSOR curIBEAM;
+
+void BEGIN_BINDINGS(onut::UIControl* pUIScreen, onut::eUIType type, const std::string& name)
+{
+    pPnl = pUIScreen->getChild<onut::UIPanel>(name);
+    g_controlInspectorMap[type] = pPnl;
+    pBindings = &(g_inspectorBindings[type]);
+    yPos = 24.f;
+}
+
+template<typename TuiType, typename Tgetter, typename Tsetter>
+void BIND_TEXT_PROPERTY(const std::string& name, const Tgetter& getter, const Tsetter& setter)
+{
+    auto pLabel = new onut::UILabel();
+    auto pTextBox = new onut::UITextBox();
+
+    pLabel->setText(name);
+    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+
+    pTextBox->setAlign(onut::eUIAlign::TOP_RIGHT);
+    pTextBox->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
+    pTextBox->setRect({{-4, yPos}, {0.618f, 24}});
+    pTextBox->setAnchor({1, 0});
+
+    yPos += 24 + 4;
+
+    pPnl->add(pLabel);
+    pPnl->add(pTextBox);
+
+    auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
+        (std::string("Edit ") + name,
+        std::bind(&onut::UITextBox::getText, pTextBox),
+        std::bind(&onut::UITextBox::setText, pTextBox, std::placeholders::_1),
+        getter, setter);
+    pBindings->push_back(pBinding);
+
+    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    {
+        pBinding->updateControl(g_pDocument->pSelected);
+    };
+}
+
+template<typename TuiType, typename Tgetter, typename Tsetter>
+void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, const Tgetter& getter, const Tsetter& setter)
+{
+    auto pLabel = new onut::UILabel();
+    auto pContainer = new onut::UIControl();
+    auto pTextBox = new onut::UITextBox();
+    auto pBrowseButton = new onut::UIButton();
+
+    pLabel->setText(name);
+    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+
+    pContainer->setAlign(onut::eUIAlign::TOP_RIGHT);
+    pContainer->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
+    pContainer->setRect({{-4, yPos}, {0.618f, 24}});
+    pContainer->setAnchor({1, 0});
+
+    pTextBox->setWidthType(onut::eUIDimType::DIM_RELATIVE);
+    pTextBox->setRect({{0, 0}, {-32, 24}});
+
+    pBrowseButton->setAlign(onut::eUIAlign::TOP_RIGHT);
+    pBrowseButton->setAnchor({1, 0});
+    pBrowseButton->setRect({{0, 0}, {32, 24}});
+    pBrowseButton->setCaption("...");
+
+    yPos += 24 + 4;
+
+    pPnl->add(pLabel);
+    pPnl->add(pContainer);
+    pContainer->add(pTextBox);
+    pContainer->add(pBrowseButton);
+
+    auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
+        (std::string("Edit ") + name,
+        std::bind(&onut::UITextBox::getText, pTextBox),
+        std::bind(&onut::UITextBox::setText, pTextBox, std::placeholders::_1),
+        getter, setter);
+    pBindings->push_back(pBinding);
+
+    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    {
+        pBinding->updateControl(g_pDocument->pSelected);
+    };
+    pBrowseButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+    {
+        std::string file = fileOpen(szFilter);
+        if (!file.empty())
+        {
+            // Make it relative to our filename
+            auto filename = onut::getPath(g_pDocument->getFilename());
+            file = onut::makeRelativePath(file, filename);
+            pTextBox->setText(file);
+            if (pTextBox->onTextChanged)
+            {
+                onut::UITextBoxEvent evt;
+                evt.pContext = g_pUIContext;
+                pTextBox->onTextChanged(pTextBox, evt);
+            }
+        }
+    };
+}
+
 void hookUIEvents(onut::UIControl* pUIScreen)
 {
-    static HCURSOR curARROW = LoadCursor(nullptr, IDC_ARROW);
-    static HCURSOR curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
+    curARROW = LoadCursor(nullptr, IDC_ARROW);
+    curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
 
     // Tool Bar
 
@@ -1111,75 +1248,27 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->onClick = onAnchorClicked;
 
     //--- Controls inspector bindings
-    extern std::unordered_map<onut::eUIType, onut::UIControl*> g_controlInspectorMap;
-    extern std::unordered_map<onut::eUIType, std::vector<IControlInspectorBind*>> g_inspectorBindings;
-
-#define BEGIN_BINDINGS(__type__, __name__) \
-{ \
-    auto pPnl = pUIScreen->getChild<onut::UIPanel>(__name__); \
-    g_controlInspectorMap[__type__] = pPnl; \
-    auto& bindings = g_inspectorBindings[__type__]; \
-    auto yPos = 24.f;
-
-#define END_BINDINGS() \
-}
-
-#define BIND_TEXT_PROPERTY(__name__, __type__, __getter__, __setter__) \
-{ \
-    auto pLabel = new onut::UILabel(); \
-    auto pTextBox = new onut::UITextBox(); \
-     \
-    pLabel->setText(__name__); \
-    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE); \
-    pLabel->setRect({{4, yPos}, {0.382f, 24}}); \
-     \
-    pTextBox->setAlign(onut::eUIAlign::TOP_RIGHT); \
-    pTextBox->setWidthType(onut::eUIDimType::DIM_PERCENTAGE); \
-    pTextBox->setRect({{-4, yPos}, {0.618f, 24}}); \
-    pTextBox->setAnchor({1, 0}); \
-     \
-    yPos += 24 + 4; \
-     \
-    pPnl->add(pLabel); \
-    pPnl->add(pTextBox); \
-     \
-    auto pBinding = new ControlInspectorBind<std::string, \
-        __type__, \
-        decltype(std::bind(&__getter__, std::placeholders::_1)), \
-        decltype(std::bind(&__setter__, std::placeholders::_1, std::placeholders::_2))>( \
-        std::string("Edit ") + __name__, \
-        std::bind(&onut::UITextBox::getText, pTextBox), \
-        std::bind(&onut::UITextBox::setText, pTextBox, std::placeholders::_1), \
-        std::bind(&__getter__, std::placeholders::_1), \
-        std::bind(&__setter__, std::placeholders::_1, std::placeholders::_2) \
-        ); \
-    bindings.push_back(pBinding); \
-     \
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); }; \
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); }; \
-    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt) \
-    { \
-        pBinding->updateControl(g_pDocument->pSelected); \
-    }; \
-}
 
     // UIPanel
-    BEGIN_BINDINGS(onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
+    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
     //BIND_TEXT_PROPERTY("Caption", onut::UIButton, onut::UIButton::getCaption, onut::UIButton::setCaption);
-    END_BINDINGS();
 
     // UIButton
-    BEGIN_BINDINGS(onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
-    BIND_TEXT_PROPERTY("Caption", onut::UIButton, onut::UIButton::getCaption, onut::UIButton::setCaption);
-    END_BINDINGS();
+    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
+    BIND_TEXT_PROPERTY<onut::UIButton>("Caption",
+                                       std::bind(&onut::UIButton::getCaption, std::placeholders::_1),
+                                       std::bind(&onut::UIButton::setCaption, std::placeholders::_1, std::placeholders::_2));
 
     // UILabel
-    BEGIN_BINDINGS(onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
-    BIND_TEXT_PROPERTY("Text", onut::UILabel, onut::UILabel::getText, onut::UILabel::setText);
-    END_BINDINGS();
+    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
+    BIND_TEXT_PROPERTY<onut::UILabel>("Text",
+                                      std::bind(&onut::UILabel::getText, std::placeholders::_1),
+                                      std::bind(&onut::UILabel::setText, std::placeholders::_1, std::placeholders::_2));
 
     // UIImage
-    BEGIN_BINDINGS(onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
-    BIND_TEXT_PROPERTY("Image", onut::UIImage, onut::UIImage::getImage, onut::UIImage::setImage);
-    END_BINDINGS();
+    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
+    BIND_FILE_PROPERTY<onut::UIImage>("Image",
+                                      TEXT("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0"),
+                                      std::bind(&onut::UIImage::getImage, std::placeholders::_1),
+                                      std::bind(&onut::UIImage::setImage, std::placeholders::_1, std::placeholders::_2));
 }
