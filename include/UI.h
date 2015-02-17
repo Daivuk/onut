@@ -114,6 +114,8 @@ namespace onut
         float b;
         float a;
         uint32_t packed;
+        void unpack();
+        void pack();
     };
 
     class UIContext;
@@ -546,7 +548,7 @@ namespace onut
         friend UIControl;
 
     public:
-        UIPanel() {}
+        UIPanel();
         UIPanel(const UIPanel& other);
 
         virtual eUIType getType() const override { return eUIType::UI_PANEL; }

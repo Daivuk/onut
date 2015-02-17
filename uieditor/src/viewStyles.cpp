@@ -24,10 +24,9 @@ void createViewUIStyles(onut::UIContext* pContext)
     pContext->addStyle<onut::UIPanel>("", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
         const auto rectOutter = onut::UI2Onut(rect);
-        const auto rectInnuer = rectOutter.Grow(-1);
+        auto& color = pPanel->getColor();
 
-        OSB->drawRect(nullptr, rectOutter, g_outlineColor);
-        OSB->drawRect(nullptr, rectInnuer, g_panelBGColor);
+        OSB->drawRect(nullptr, rectOutter, {color.r, color.g, color.b, color.a});
     });
 
     pContext->addStyle<onut::UIButton>("", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)

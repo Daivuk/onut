@@ -119,6 +119,23 @@ namespace rapidjson
 
 namespace onut
 {
+    void sUIColor::unpack()
+    {
+        r = (float)((packed >> 24) & 0xff) / 255.f;
+        g = (float)((packed >> 16) & 0xff) / 255.f;
+        b = (float)((packed >> 8) & 0xff) / 255.f;
+        a = (float)(packed & 0xff) / 255.f;
+    }
+
+    void sUIColor::pack()
+    {
+        packed = 0;
+        packed |= ((uint32_t)(r * 255.f) << 24) & 0xff000000;
+        packed |= ((uint32_t)(g * 255.f) << 16) & 0x00ff0000;
+        packed |= ((uint32_t)(b * 255.f) << 8) & 0x0000ff00;
+        packed |= (uint32_t)(a * 255.f) & 0x000000ff;
+    }
+
     unsigned int uiHash(const char* s, unsigned int seed)
     {
         unsigned hash = seed;
@@ -377,10 +394,19 @@ namespace onut
         jsonNode.AddMember(szName, value, allocator);
     }
 
-    static void setJsonColor(rapidjson::Value& jsonNode, const char* szName, const sUIColor& value, rapidjson::Allocator& allocator, const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
+    static void setJsonColor(rapidjson::Value& jsonNode, 
+                             const char* szName, 
+                             const sUIColor& value, 
+                             rapidjson::Allocator& allocator, 
+                             const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
     {
         if (value.packed == default.packed) return;
-        //jsonNode.AddMember(szName, value, allocator);
+
+        rapidjson::Value jsonValue;
+        char buffer[10];
+        int len = sprintf_s(buffer, "%08x", value.packed); // dynamically created string.
+        jsonValue.SetString(buffer, len, allocator);
+        jsonNode.AddMember(szName, jsonValue, allocator);
     }
 
     static sUIColor getJsonColor(const rapidjson::Value& jsonNode, const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
@@ -1813,6 +1839,12 @@ namespace onut
         UIControl(other)
     {
         m_caption = other.m_caption;
+    }
+
+    UIPanel::UIPanel()
+    {
+        m_color.r = m_color.g = m_color.b = m_color.a = 1.f;
+        m_color.pack();
     }
 
     UIPanel::UIPanel(const UIPanel& other) :

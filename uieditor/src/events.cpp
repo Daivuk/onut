@@ -1021,6 +1021,59 @@ void BEGIN_BINDINGS(onut::UIControl* pUIScreen, onut::eUIType type, const std::s
     yPos = 24.f;
 }
 
+static COLORREF g_acrCustClr[16]; // array of custom colors
+
+template<typename TuiType, typename Tgetter, typename Tsetter>
+void BIND_COLOR_PROPERTY(const std::string& name, const Tgetter& getter, const Tsetter& setter)
+{
+    auto pLabel = new onut::UILabel();
+    auto pButton = new onut::UIPanel();
+
+    pLabel->setText(name);
+    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+
+    pButton->setStyle("colorPicker");
+    pButton->setAlign(onut::eUIAlign::TOP_RIGHT);
+    pButton->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
+    pButton->setRect({{-4, yPos}, {0.618f, 24}});
+    pButton->setAnchor({1, 0});
+
+    yPos += 24 + 4;
+
+    pPnl->add(pLabel);
+    pPnl->add(pButton);
+
+    auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType, Tgetter, Tsetter>
+        (std::string("Edit ") + name,
+        std::bind(&onut::UIPanel::getColor, pButton),
+        std::bind(&onut::UIPanel::setColor, pButton, std::placeholders::_1),
+        getter, setter);
+    pBindings->push_back(pBinding);
+
+    pButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+    {
+        CHOOSECOLOR colorChooser = {0};
+        DWORD rgbCurrent; // initial color selection
+        rgbCurrent = (DWORD)pButton->getColor().packed;
+        rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
+        colorChooser.lStructSize = sizeof(colorChooser);
+        colorChooser.hwndOwner = OWindow->getHandle();
+        colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
+        colorChooser.rgbResult = rgbCurrent;
+        colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
+        if (ChooseColor(&colorChooser) == TRUE)
+        {
+            onut::sUIColor color;
+            rgbCurrent = colorChooser.rgbResult;
+            color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff;
+            color.unpack();
+            pButton->setColor(color);
+            pBinding->updateControl(g_pDocument->pSelected);
+        }
+    };
+}
+
 template<typename TuiType, typename Tgetter, typename Tsetter>
 void BIND_TEXT_PROPERTY(const std::string& name, const Tgetter& getter, const Tsetter& setter)
 {
@@ -1251,7 +1304,9 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     // UIPanel
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
-    //BIND_TEXT_PROPERTY("Caption", onut::UIButton, onut::UIButton::getCaption, onut::UIButton::setCaption);
+    BIND_COLOR_PROPERTY<onut::UIPanel>("Background Color",
+                                       std::bind(&onut::UIPanel::getColor, std::placeholders::_1),
+                                       std::bind(&onut::UIPanel::setColor, std::placeholders::_1, std::placeholders::_2));
 
     // UIButton
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");

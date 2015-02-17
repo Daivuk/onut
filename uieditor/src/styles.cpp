@@ -60,6 +60,37 @@ void createUIStyles(onut::UIContext* pContext)
         OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
     });
 
+    pContext->addStyle<onut::UIPanel>("colorPicker", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    {
+        auto& color = pPanel->getColor();
+
+        auto state = pPanel->getState(*pContext);
+        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectInnuer = rectOutter.Grow(-1);
+        const auto rectColor = rectOutter.Grow(-4);
+        switch (state)
+        {
+            case onut::eUIState::DISABLED:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
+                OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
+                break;
+            case onut::eUIState::NORMAL:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
+                OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
+                break;
+            case onut::eUIState::HOVER:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[2][0]);
+                OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[2][1]);
+                break;
+            case onut::eUIState::DOWN:
+                OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[3][0]);
+                OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[3][1]);
+                break;
+        }
+
+        OSB->drawRect(nullptr, rectColor, {color.r, color.g, color.b, color.a});
+    });
+
     pContext->addStyle<onut::UIPanel>("guide", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
         OSB->drawRect(nullptr, onut::UI2Onut(rect), g_guideColor);
