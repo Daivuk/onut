@@ -87,42 +87,37 @@ class ControlInspectorBind : public IControlInspectorBind
 {
 public:
     ControlInspectorBind(const std::string& actionName,
-                         std::function<const Ttype&()> inspectorGetter,
-                         std::function<void(const Ttype&)> inspectorSetter,
+                         Ttype* pInspectorValue,
                          TgetterFn getter,
                          TsetterFn setter) :
                          m_actionName(actionName),
-                         m_inspectorGetter(inspectorGetter),
-                         m_inspectorSetter(inspectorSetter),
+                         m_pInspectorValue(pInspectorValue),
                          m_getter(getter),
                          m_setter(setter)
     {
     }
 
 private:
-    std::string                         m_actionName;
-    std::function<const Ttype&()>       m_inspectorGetter;
-    std::function<void(const Ttype&)>   m_inspectorSetter;
-    TgetterFn                           m_getter;
-    TsetterFn                           m_setter;
+    std::string     m_actionName;
+    Ttype*          m_pInspectorValue;
+    TgetterFn       m_getter;
+    TsetterFn       m_setter;
 
 public:
     void updateInspector(onut::UIControl* pControl) override
     {
         auto tControl = dynamic_cast<TtargetControl*>(pControl);
         if (!tControl) return;
-        if (!m_inspectorSetter) return;
-        m_inspectorSetter(m_getter(tControl));
+        *m_pInspectorValue = m_getter(tControl);
     }
 
     void updateControl(onut::UIControl* pControl) override
     {
         auto tControl = dynamic_cast<TtargetControl*>(pControl);
         if (!tControl) return;
-        if (!m_inspectorGetter) return;
 
         auto prevVar = m_getter(tControl);
-        auto newVal = m_inspectorGetter();
+        auto newVal = *m_pInspectorValue;
 
         g_actionManager.doAction(new onut::Action(m_actionName,
             [=]{
