@@ -62,7 +62,7 @@ void createUIStyles(onut::UIContext* pContext)
 
     pContext->addStyle<onut::UIPanel>("colorPicker", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
-        auto& color = pPanel->getColor();
+        auto& color = pPanel->color;
 
         auto state = pPanel->getState(*pContext);
         const auto rectOutter = onut::UI2Onut(rect);
@@ -122,12 +122,12 @@ void createUIStyles(onut::UIContext* pContext)
             selectionRect.z = treeViewWorldRect.size.x;
             OSB->drawRect(nullptr, selectionRect, g_treeItemSelectedBGColor);
         }
-        auto expandClickWidth = pTreeView->getExpandClickWidth();
+        auto expandClickWidth = pTreeView->expandClickWidth;
 
         // Expand icon
         if (!pItem->getItems().empty())
         {
-            if (pItem->getIsExpanded())
+            if (pItem->isExpanded)
             {
                 OSB->drawSprite(g_pTexTreeOpen, orect.Left(expandClickWidth * .5f + 4));
             }
@@ -137,9 +137,9 @@ void createUIStyles(onut::UIContext* pContext)
             }
         }
 
-        const auto& text = pItem->getText();
+        const auto& text = pItem->text;
         bool hasText = !text.empty();
-        auto pControl = static_cast<onut::UIControl*>(pItem->getUserData());
+        auto pControl = static_cast<onut::UIControl*>(pItem->pUserData);
         auto textPos = orect.Left(expandClickWidth + 24);
         auto textColor = g_fontColor;
         if (!pControl->isEnabled())
@@ -195,7 +195,7 @@ void createUIStyles(onut::UIContext* pContext)
         // Label
         if (hasText)
         {
-            g_pFont->draw<OLeft>(pItem->getText(), textPos, g_fontColor);
+            g_pFont->draw<OLeft>(pItem->text, textPos, g_fontColor);
         }
     });
 
@@ -217,7 +217,7 @@ void createUIStyles(onut::UIContext* pContext)
 
     pContext->addStyle<onut::UIImage>("", [](const onut::UIImage* pImage, const onut::sUIRect& rect)
     {
-        OSB->drawRect(OGetTexture(pImage->getImage().c_str()), onut::UI2Onut(rect));
+        OSB->drawRect(OGetTexture(pImage->scale9Component.image.filename.c_str()), onut::UI2Onut(rect));
     });
 
     pContext->addStyle<onut::UIImage>("toolBtn", [pContext](const onut::UIImage* pImage, const onut::sUIRect& rect)
@@ -230,18 +230,18 @@ void createUIStyles(onut::UIContext* pContext)
         switch (state)
         {
             case onut::eUIState::NORMAL:
-                OSB->drawSprite(OGetTexture(pImage->getImage().c_str()), pos);
+                OSB->drawSprite(OGetTexture(pImage->scale9Component.image.filename.c_str()), pos);
                 break;
             case onut::eUIState::HOVER:
                 OSB->drawRect(nullptr, orect, g_toolBtnHoverColor);
-                OSB->drawSprite(OGetTexture(pImage->getImage().c_str()), pos);
+                OSB->drawSprite(OGetTexture(pImage->scale9Component.image.filename.c_str()), pos);
                 break;
             case onut::eUIState::DOWN:
                 OSB->drawRect(nullptr, orect, g_toolBtnDownColor);
-                OSB->drawSprite(OGetTexture(pImage->getImage().c_str()), pos);
+                OSB->drawSprite(OGetTexture(pImage->scale9Component.image.filename.c_str()), pos);
                 break;
             case onut::eUIState::DISABLED:
-                OSB->drawSprite(OGetTexture(pImage->getImage().c_str()), pos, g_toolBtnDisabledColor);
+                OSB->drawSprite(OGetTexture(pImage->scale9Component.image.filename.c_str()), pos, g_toolBtnDisabledColor);
                 break;
         }
     });
@@ -267,14 +267,14 @@ void createUIStyles(onut::UIContext* pContext)
 
     pContext->addStyle<onut::UILabel>("", [](const onut::UILabel* pLabel, const onut::sUIRect& rect)
     {
-        g_pFont->draw<OLeft>(pLabel->getText(), onut::UI2Onut(rect).Left(), g_fontColor);
+        g_pFont->draw<OLeft>(pLabel->textComponent.text, onut::UI2Onut(rect).Left(), g_fontColor);
     });
 
     pContext->addStyle<onut::UILabel>("panelTitle", [](const onut::UILabel* pLabel, const onut::sUIRect& rect)
     {
         const auto orect = onut::UI2Onut(rect);
         OSB->drawRect(nullptr, orect, g_panelTitleBGColor);
-        g_pFont->draw<OCenter>(pLabel->getText(), orect.Center(), g_fontColor);
+        g_pFont->draw<OCenter>(pLabel->textComponent.text, orect.Center(), g_fontColor);
     });
 
     pContext->addStyle<onut::UIButton>("", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)
@@ -287,22 +287,22 @@ void createUIStyles(onut::UIContext* pContext)
             case onut::eUIState::DISABLED:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
-                g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor * .5f);
+                g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor * .5f);
                 break;
             case onut::eUIState::NORMAL:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
-                g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor);
+                g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor);
                 break;
             case onut::eUIState::HOVER:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[2][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[2][1]);
-                g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor);
+                g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor);
                 break;
             case onut::eUIState::DOWN:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[3][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[3][1]);
-                g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center() + Vector2(1, 1), g_fontColor);
+                g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center() + Vector2(1, 1), g_fontColor);
                 break;
         }
     });
@@ -320,22 +320,22 @@ void createUIStyles(onut::UIContext* pContext)
             case onut::eUIState::DISABLED:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
-                g_pFont->draw<OLeft>(pButton->getCaption(), textRect.Left(), g_fontColor * .5f);
+                g_pFont->draw<OLeft>(pButton->textComponent.text, textRect.Left(), g_fontColor * .5f);
                 break;
             case onut::eUIState::NORMAL:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
-                g_pFont->draw<OLeft>(pButton->getCaption(), textRect.Left(), g_fontColor);
+                g_pFont->draw<OLeft>(pButton->textComponent.text, textRect.Left(), g_fontColor);
                 break;
             case onut::eUIState::HOVER:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[2][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[2][1]);
-                g_pFont->draw<OLeft>(pButton->getCaption(), textRect.Left(), g_fontColor);
+                g_pFont->draw<OLeft>(pButton->textComponent.text, textRect.Left(), g_fontColor);
                 break;
             case onut::eUIState::DOWN:
                 OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[3][0]);
                 OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[3][1]);
-                g_pFont->draw<OLeft>(pButton->getCaption(), textRect.Left() + Vector2(1, 1), g_fontColor);
+                g_pFont->draw<OLeft>(pButton->textComponent.text, textRect.Left() + Vector2(1, 1), g_fontColor);
                 break;
         }
     });
@@ -383,22 +383,22 @@ void createUIStyles(onut::UIContext* pContext)
             case onut::eUIState::DISABLED:
                 OSB->drawRect(nullptr, rectChk, g_btnStatesColors[0][0]);
                 OSB->drawRect(nullptr, rectChk.Grow(-1), g_btnStatesColors[0][1]);
-                g_pFont->draw<OLeft>(pCheckBox->getCaption(), rectOutter.Left(20), g_fontColor * .5f);
+                g_pFont->draw<OLeft>(pCheckBox->textComponent.text, rectOutter.Left(20), g_fontColor * .5f);
                 break;
             case onut::eUIState::NORMAL:
                 OSB->drawRect(nullptr, rectChk, g_btnStatesColors[1][0]);
                 OSB->drawRect(nullptr, rectChk.Grow(-1), g_btnStatesColors[1][1]);
-                g_pFont->draw<OLeft>(pCheckBox->getCaption(), rectOutter.Left(20), g_fontColor);
+                g_pFont->draw<OLeft>(pCheckBox->textComponent.text, rectOutter.Left(20), g_fontColor);
                 break;
             case onut::eUIState::HOVER:
                 OSB->drawRect(nullptr, rectChk, g_btnStatesColors[2][0]);
                 OSB->drawRect(nullptr, rectChk.Grow(-1), g_btnStatesColors[2][1]);
-                g_pFont->draw<OLeft>(pCheckBox->getCaption(), rectOutter.Left(20), g_fontColor);
+                g_pFont->draw<OLeft>(pCheckBox->textComponent.text, rectOutter.Left(20), g_fontColor);
                 break;
             case onut::eUIState::DOWN:
                 OSB->drawRect(nullptr, rectChk, g_btnStatesColors[3][0]);
                 OSB->drawRect(nullptr, rectChk.Grow(-1), g_btnStatesColors[3][1]);
-                g_pFont->draw<OLeft>(pCheckBox->getCaption(), rectOutter.Left(20) + Vector2(1, 1), g_fontColor);
+                g_pFont->draw<OLeft>(pCheckBox->textComponent.text, rectOutter.Left(20) + Vector2(1, 1), g_fontColor);
                 break;
         }
         if (pCheckBox->getIsChecked())
@@ -573,7 +573,7 @@ void createUIStyles(onut::UIContext* pContext)
 
     pContext->addTextCaretSolver<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const onut::sUIVector2& localPos) -> decltype(std::string().size())
     {
-        auto& text = pTextBox->getText();
+        auto& text = pTextBox->textComponent.text;
         return g_pFont->caretPos(text, localPos.x - 4);
     });
 
@@ -606,7 +606,7 @@ void createUIStyles(onut::UIContext* pContext)
         {
             auto selectedRegion = pTextBox->getSelectedTextRegion();
 
-            auto& text = pTextBox->getText();
+            auto& text = pTextBox->textComponent.text;
             auto textBefore = text.substr(0, selectedRegion[0]);
             auto regionLen = selectedRegion[1] - selectedRegion[0];
             auto regionText = text.substr(selectedRegion[0], regionLen);
@@ -652,11 +652,11 @@ void createUIStyles(onut::UIContext* pContext)
         {
             if (state == onut::eUIState::DISABLED)
             {
-                g_pFont->draw<OLeft>(pTextBox->getText(), rectInnuer.Left(4), g_fontColor * .5f);
+                g_pFont->draw<OLeft>(pTextBox->textComponent.text, rectInnuer.Left(4), g_fontColor * .5f);
             }
             else
             {
-                g_pFont->draw<OLeft>(pTextBox->getText(), rectInnuer.Left(4), g_fontColor);
+                g_pFont->draw<OLeft>(pTextBox->textComponent.text, rectInnuer.Left(4), g_fontColor);
             }
         }
     });

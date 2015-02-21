@@ -138,9 +138,9 @@ DocumentView::~DocumentView()
 void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pParent)
 {
     auto pItem = new onut::UITreeViewItem();
-    pItem->setUserData(pControl);
-    pControl->setUserData(pItem);
-    auto pParentItem = static_cast<onut::UITreeViewItem*>(pParent->getUserData());
+    pItem->pUserData = pControl;
+    pControl->pUserData = pItem;
+    auto pParentItem = static_cast<onut::UITreeViewItem*>(pParent->pUserData);
     if (pParentItem)
     {
         pParentItem->addItem(pItem);
@@ -153,7 +153,7 @@ void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pP
 
 void DocumentView::controlDeleted(onut::UIControl* pControl)
 {
-    auto pItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
+    auto pItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
     if (pItem->getParent())
     {
         pItem->getParent()->removeItem(pItem);
@@ -192,7 +192,7 @@ void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneG
     {
         if (bUpdateSceneGraph)
         {
-            auto pItem = static_cast<onut::UITreeViewItem*>(pSelected->getUserData());
+            auto pItem = static_cast<onut::UITreeViewItem*>(pSelected->pUserData);
             m_pSceneGraph->addSelectedItem(pItem);
         }
     }
@@ -1036,10 +1036,10 @@ void DocumentView::render()
 void DocumentView::repopulateTreeView(onut::UIControl* pControl)
 {
     auto pItem = new onut::UITreeViewItem();
-    pItem->setUserData(pControl);
-    pItem->setText(pControl->getName());
-    pControl->setUserData(pItem);
-    auto pParentItem = static_cast<onut::UITreeViewItem*>(pControl->getParent() ? pControl->getParent()->getUserData() : nullptr);
+    pItem->pUserData = pControl;
+    pItem->text = pControl->getName();
+    pControl->pUserData = pItem;
+    auto pParentItem = static_cast<onut::UITreeViewItem*>(pControl->getParent() ? pControl->getParent()->pUserData : nullptr);
     if (pParentItem)
     {
         pParentItem->addItem(pItem);
@@ -1123,41 +1123,41 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled());
         g_pInspector_UIControl_chkVisible->setIsChecked(pSelected->isVisible());
         g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough());
-        g_pInspector_UIControl_txtName->setText(pSelected->getName());
-        g_pInspector_UIControl_txtStyle->setText(pSelected->getStyleName());
+        g_pInspector_UIControl_txtName->textComponent.text = pSelected->getName();
+        g_pInspector_UIControl_txtStyle->textComponent.text = pSelected->getStyleName();
         if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtX->setText(std::to_string(pSelected->getRect().position.x * 100.f));
+            g_pInspector_UIControl_txtX->textComponent.text = std::to_string(pSelected->getRect().position.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtX->setText(std::to_string(pSelected->getRect().position.x));
+            g_pInspector_UIControl_txtX->textComponent.text = std::to_string(pSelected->getRect().position.x);
         }
         if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtY->setText(std::to_string(pSelected->getRect().position.y * 100.f));
+            g_pInspector_UIControl_txtY->textComponent.text = std::to_string(pSelected->getRect().position.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtY->setText(std::to_string(pSelected->getRect().position.y));
+            g_pInspector_UIControl_txtY->textComponent.text = std::to_string(pSelected->getRect().position.y);
         }
         g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE);
         g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE);
         if (pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtWidth->setText(std::to_string(pSelected->getRect().size.x * 100.f));
+            g_pInspector_UIControl_txtWidth->textComponent.text = std::to_string(pSelected->getRect().size.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtWidth->setText(std::to_string(pSelected->getRect().size.x));
+            g_pInspector_UIControl_txtWidth->textComponent.text = std::to_string(pSelected->getRect().size.x);
         }
         if (pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtHeight->setText(std::to_string(pSelected->getRect().size.y * 100.f));
+            g_pInspector_UIControl_txtHeight->textComponent.text = std::to_string(pSelected->getRect().size.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtHeight->setText(std::to_string(pSelected->getRect().size.y));
+            g_pInspector_UIControl_txtHeight->textComponent.text = std::to_string(pSelected->getRect().size.y);
         }
         g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE);
         g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE);
@@ -1195,19 +1195,19 @@ void DocumentView::updateInspector()
         }
         if (pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtAnchorX->setText(std::to_string(pSelected->getAnchor().x * 100.f));
+            g_pInspector_UIControl_txtAnchorX->textComponent.text = std::to_string(pSelected->getAnchor().x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtAnchorX->setText(std::to_string(pSelected->getAnchor().x));
+            g_pInspector_UIControl_txtAnchorX->textComponent.text = std::to_string(pSelected->getAnchor().x);
         }
         if (pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtAnchorY->setText(std::to_string(pSelected->getAnchor().y * 100.f));
+            g_pInspector_UIControl_txtAnchorY->textComponent.text = std::to_string(pSelected->getAnchor().y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtAnchorY->setText(std::to_string(pSelected->getAnchor().y));
+            g_pInspector_UIControl_txtAnchorY->textComponent.text = std::to_string(pSelected->getAnchor().y);
         }
         g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
         g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);

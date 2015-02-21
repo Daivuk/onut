@@ -99,12 +99,24 @@ namespace onut
     {
         float x;
         float y;
+        sUIVector2() : x(0), y(0) {}
+        sUIVector2(float in_x, float in_y) : x(in_x), y(in_y) {}
     };
     
     struct sUIRect
     {
         sUIVector2 position;
         sUIVector2 size;
+    };
+
+    struct sUIPadding
+    {
+        float left;
+        float right;
+        float top;
+        float bottom;
+        sUIPadding() : left(0), right(0), top(0), bottom(0) {}
+        sUIPadding(float in_left, float in_right, float in_top, float in_bottom) : left(in_left), right(in_right), top(in_top), bottom(in_bottom) {}
     };
 
     struct sUIColor
@@ -116,6 +128,55 @@ namespace onut
         uint32_t packed;
         void unpack();
         void pack();
+        sUIColor() : r(1.f), g(1.f), b(1.f), a(1.f), packed(0xffffffff) {}
+        sUIColor(float in_r, float in_g, float in_b, float in_a) : r(in_r), g(in_g), b(in_b), a(in_a) { pack(); }
+    };
+
+    // Components
+    struct sUIFont
+    {
+        enum eFontFlag : uint8_t
+        {
+            AUTO_FIT_SIZE = 0x01,
+            ELLIPSIS = 0x02,
+            WORD_WRAP = 0x04
+        };
+        sUIColor            color;
+        eUIAlign            align;
+        sUIPadding          padding;
+        std::string         typeFace;
+        float               size;
+        uint8_t             flags;
+        float               minSize;
+        sUIFont() : align(eUIAlign::TOP_LEFT), typeFace("Arial"), size(12.f), flags(0), minSize(12.f) {}
+    };
+
+    struct sUITextComponent
+    {
+        std::string         text;
+        sUIFont             font;
+    };
+
+    struct sUIImageComponent
+    {
+        std::string         filename;
+        sUIColor            color;
+    };
+
+    struct sUIScale9Component
+    {
+        sUIImageComponent   image;
+        bool                isScaled9;
+        sUIPadding          padding;
+        sUIScale9Component() : isScaled9(false) {}
+    };
+
+    struct sUIIconComponent
+    {
+        sUIScale9Component  background;
+        eUIAlign            align;
+        sUIRect             rect;
+        sUIIconComponent() : align(eUIAlign::TOP_LEFT) {}
     };
 
     class UIContext;
@@ -126,7 +187,7 @@ namespace onut
     public:
         sUIVector2  mousePos;
         sUIVector2  localMousePos;
-        bool        isMouseDown;
+        bool        isMouseDown = false;
         UIContext*  pContext;
     };
 
@@ -141,34 +202,34 @@ namespace onut
     class UIKeyEvent
     {
     public:
-        uintptr_t   key;
-        UIContext*  pContext;
+        uintptr_t   key = 0;
+        UIContext*  pContext = nullptr;
     };
 
     class UICheckEvent
     {
     public:
-        bool        isChecked;
-        UIContext*  pContext;
+        bool        isChecked = false;
+        UIContext*  pContext = nullptr;
     };
 
     class UIFocusEvent
     {
     public:
-        UIContext*  pContext;
+        UIContext*  pContext = nullptr;
     };
 
     class UITreeViewSelectEvent
     {
     public:
-        std::vector<UITreeViewItem*>*   pSelectedItems;
-        UIContext*                      pContext;
+        std::vector<UITreeViewItem*>*   pSelectedItems = nullptr;
+        UIContext*                      pContext = nullptr;
     };
 
     class UITextBoxEvent
     {
     public:
-        UIContext*  pContext;
+        UIContext*  pContext = nullptr;
     };
 
     class UIControl;
@@ -309,6 +370,11 @@ namespace onut
         UIControl* getDownControl() const { return m_pDownControl; }
         UIControl* getFocusControl() const { return m_pFocus; }
 
+        std::function<void(UIControl*, const sUIRect&, const sUIColor&)> drawRect;
+        std::function<void(UIControl*, const sUIRect&, const sUIImageComponent&)> drawTexturedRect;
+        std::function<void(UIControl*, const sUIRect&, const sUIScale9Component&)> drawScale9Rect;
+        std::function<void(UIControl*, const sUIRect&, const sUITextComponent&)> drawText;
+
     private:
         void resolve();
         void dispatchEvents();
@@ -377,6 +443,8 @@ namespace onut
         UIControl(const UIControl& other);
         virtual ~UIControl();
 
+        void* pUserData = nullptr;
+
         void save(const std::string& filename) const;
 
         virtual eUIType getType() const { return eUIType::UI_CONTROL; }
@@ -433,9 +501,6 @@ namespace onut
         bool hasFocus(const UIContext& context) const;
 
         UIControl* getParent() const { return m_pParent; }
-
-        void* getUserData() const { return m_pUserData; }
-        void setUserData(void* pUserData);
 
         using TfnMouseEvent = std::function < void(UIControl*, const UIMouseEvent&) > ;
         TfnMouseEvent onClick;
@@ -505,8 +570,8 @@ namespace onut
         bool                    m_isEnabled = true;
         bool                    m_isClickThrough = false;
         bool                    m_isVisible = true;
-        sUIRect                 m_rect = sUIRect{{0, 0}, {0, 0}};
-        sUIVector2              m_anchor = sUIVector2{0, 0};
+        sUIRect                 m_rect;
+        sUIVector2              m_anchor;
         std::vector<UIControl*> m_children;
         eUIAlign                m_align = eUIAlign::TOP_LEFT;
         eUIPosType              m_posType[2];
@@ -517,7 +582,6 @@ namespace onut
         std::string             m_styleName;
         int32_t                 m_refCount = 0;
         UIControl*              m_pParent = nullptr;
-        void*                   m_pUserData = nullptr;
         std::unordered_map<std::string, UIProperty> m_properties;
     };
 
@@ -526,21 +590,15 @@ namespace onut
         friend UIControl;
 
     public:
-        UIButton() {}
-        UIButton(const UIButton& other);
-
         virtual eUIType getType() const override { return eUIType::UI_BUTTON; }
 
-        const std::string& getCaption() const { return m_caption; }
-        void setCaption(const std::string& caption);
+        sUIScale9Component  scale9Component;
+        sUITextComponent    textComponent;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
-
-    private:
-        std::string m_caption;
     };
 
     class UIPanel : public UIControl
@@ -548,21 +606,14 @@ namespace onut
         friend UIControl;
 
     public:
-        UIPanel();
-        UIPanel(const UIPanel& other);
-
         virtual eUIType getType() const override { return eUIType::UI_PANEL; }
 
-        const sUIColor& getColor() const { return m_color; }
-        void setColor(const sUIColor& color);
+        sUIColor color;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
-
-    private:
-        sUIColor    m_color;
     };
 
     class UILabel : public UIControl
@@ -570,21 +621,14 @@ namespace onut
         friend UIControl;
 
     public:
-        UILabel() {}
-        UILabel(const UILabel& other);
-
         virtual eUIType getType() const override { return eUIType::UI_LABEL; }
 
-        const std::string& getText() const { return m_text; }
-        void setText(const std::string& text);
+        sUITextComponent textComponent;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
-
-    private:
-        std::string m_text;
     };
 
     class UIImage : public UIControl
@@ -592,21 +636,14 @@ namespace onut
         friend UIControl;
 
     public:
-        UIImage() {}
-        UIImage(const UIImage& other);
-
         virtual eUIType getType() const override { return eUIType::UI_IMAGE; }
 
-        const std::string& getImage() const { return m_image; }
-        void setImage(const std::string& image);
+        sUIScale9Component scale9Component;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
-
-    private:
-        std::string m_image;
     };
 
     class UICheckBox : public UIControl
@@ -614,22 +651,16 @@ namespace onut
         friend UIControl;
 
     public:
-        UICheckBox() {}
-        UICheckBox(const UICheckBox& other);
-
         virtual eUIType getType() const override { return eUIType::UI_CHECKBOX; }
 
-        const std::string& getCaption() const { return m_caption; }
-        void setCaption(const std::string& caption);
+        sUIIconComponent iconComponent;
+        sUITextComponent textComponent;
+        eUICheckBehavior behavior = eUICheckBehavior::NORMAL;
 
         bool getIsChecked() const { return m_isChecked; }
         void setIsChecked(bool in_isChecked);
 
-        eUICheckBehavior getBehavior() const { return m_behavior; }
-        void setBehavior(eUICheckBehavior behavior);
-
-        using TfnCheckEvent = std::function<void(UICheckBox*, const UICheckEvent&)>;
-        TfnCheckEvent onCheckChanged;
+        std::function<void(UICheckBox*, const UICheckEvent&)> onCheckChanged;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
@@ -638,9 +669,7 @@ namespace onut
         virtual void onClickInternal(const UIMouseEvent& evt) override;
 
     private:
-        std::string         m_caption;
         bool                m_isChecked = false;
-        eUICheckBehavior    m_behavior = eUICheckBehavior::NORMAL;
     };
 
     class UITreeViewItem;
@@ -656,18 +685,14 @@ namespace onut
 
         virtual eUIType getType() const override { return eUIType::UI_TREEVIEW; }
 
+        sUIFont font;
+        float expandedXOffset = 16.f;
+        float expandClickWidth = 18.f;
+        float itemHeight = 18.f;
+
         void addItem(UITreeViewItem* pItem);
         void removeItem(UITreeViewItem* pItem);
         void clear();
-
-        float getExpandedXOffset() const { return m_expandedXOffset; }
-        void setExpandedXOffset(float expandedXOffset);
-
-        float getExpandClickWidth() const { return m_expandClickWidth; }
-        void setExpandClickWidth(float expandClickWidth);
-
-        float getItemHeight() const { return m_itemHeight; }
-        void setItemHeight(float itemHeight);
 
         void unselectAll();
         void unselectItem(UITreeViewItem* pItem);
@@ -675,8 +700,7 @@ namespace onut
 
         void expandTo(UITreeViewItem* pItem);
 
-        using TfnTreeViewSelectEvent = std::function<void(UITreeView*, const UITreeViewSelectEvent&)>;
-        TfnTreeViewSelectEvent onSelectionChanged;
+        std::function<void(UITreeView*, const UITreeViewSelectEvent&)> onSelectionChanged;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
@@ -690,9 +714,6 @@ namespace onut
 
         std::vector<UITreeViewItem*>    m_items;
         std::vector<UITreeViewItem*>    m_selectedItems;
-        float                           m_expandedXOffset = 16.f;
-        float                           m_expandClickWidth = 18.f;
-        float                           m_itemHeight = 18.f;
     };
 
     class UITreeViewItem
@@ -704,19 +725,14 @@ namespace onut
         UITreeViewItem(const std::string& text);
         UITreeViewItem(const UITreeViewItem& other);
 
-        bool getIsExpanded() const { return m_isExpanded; }
-        void setIsExpanded(bool isExpanded);
+        bool        isExpanded = false;
+        std::string text;
+        void*       pUserData = nullptr;
 
         UITreeViewItem* getParent() const { return m_pParent; }
 
         void addItem(UITreeViewItem* pItem);
         void removeItem(UITreeViewItem* pItem);
-
-        const std::string& getText() const { return m_text; }
-        void setText(const std::string& text);
-
-        void* getUserData() const { return m_pUserData; }
-        void setUserData(void* pUserData);
 
         UITreeView* getTreeView() const { return m_pTreeView; }
 
@@ -729,12 +745,12 @@ namespace onut
         void render(const TfnCallback& itemCallback, const UITreeView* pTreeView, const sUIRect& treeViewRect, sUIRect& rect) const
         {
             itemCallback->render(this, rect);
-            rect.position.y += pTreeView->getItemHeight();
-            if (m_isExpanded)
+            rect.position.y += pTreeView->itemHeight;
+            if (isExpanded)
             {
                 if (!m_items.empty())
                 {
-                    auto xOffset = pTreeView->getExpandedXOffset();
+                    auto xOffset = pTreeView->expandedXOffset;
                     rect.position.x += xOffset;
                     rect.size.x -= xOffset;
                     for (auto pItem : m_items)
@@ -747,10 +763,7 @@ namespace onut
             }
         }
 
-        bool                            m_isExpanded = false;
         std::vector<UITreeViewItem*>    m_items;
-        std::string                     m_text;
-        void*                           m_pUserData = nullptr;
         UITreeView*                     m_pTreeView = nullptr;
         bool                            m_isSelected = false;
         UITreeViewItem*                 m_pParent = nullptr;
@@ -761,20 +774,15 @@ namespace onut
         friend UIControl;
 
     public:
-        UITextBox() {}
-        UITextBox(const UITextBox& other);
-
         virtual eUIType getType() const override { return eUIType::UI_TEXTBOX; }
 
-        const std::string& getText() const { return m_text; }
-        void setText(const std::string& text);
+        sUITextComponent textComponent;
 
-        const decltype(std::string().size())* getSelectedTextRegion() const { return m_selectedTextRegion; }
-        decltype(std::string().size()) getCursorPos() const { return m_cursorPos; }
+        const std::string::size_type* getSelectedTextRegion() const { return m_selectedTextRegion; }
+        std::string::size_type getCursorPos() const { return m_cursorPos; }
         bool isCursorVisible() const;
 
-        using TfnOnTextChangedEvent = std::function<void(UITextBox*, const UITextBoxEvent&)>;
-        TfnOnTextChangedEvent onTextChanged;
+        std::function<void(UITextBox*, const UITextBoxEvent&)> onTextChanged;
 
         void selectAll();
 
@@ -802,13 +810,12 @@ namespace onut
     private:
         void numerifyText();
 
-        std::string                                 m_text;
-        decltype(std::string().size())              m_selectedTextRegion[2];
-        bool                                        m_isSelecting = false;
-        decltype(std::string().size())              m_cursorPos = 0;
-        decltype(std::chrono::steady_clock::now())  m_cursorTime;
-        bool                                        m_isTextChanged = false;
-        bool                                        m_isNumerical = false;
-        int                                         m_decimalPrecision = 0;
+        std::string::size_type                  m_selectedTextRegion[2];
+        bool                                    m_isSelecting = false;
+        std::string::size_type                  m_cursorPos = 0;
+        std::chrono::steady_clock::time_point   m_cursorTime;
+        bool                                    m_isTextChanged = false;
+        bool                                    m_isNumerical = false;
+        int                                     m_decimalPrecision = 0;
     };
 }

@@ -417,7 +417,9 @@
                         {
                             "type": "UILabel",
                             "style": "panelTitle",
-                            "text": "Toolbox",
+                            "textComponent": {
+                                "text": "Toolbox"
+                            },
                             "widthType": "RELATIVE",
                             "height": 20
                         },
@@ -437,7 +439,9 @@
                                     "x": 0,
                                     "width": 84,
                                     "height": 24,
-                                    "caption": "Control",
+                                    "textComponent": {
+                                        "text": "Control"
+                                    },
                                     "allowDrag": true,
                                     "children": [
                                         {
@@ -460,7 +464,9 @@
                                     "x": 88,
                                     "width": 84,
                                     "height": 24,
-                                    "caption": "Panel",
+                                    "textComponent": {
+                                        "text": "Panel"
+                                    },
                                     "allowDrag": true,
                                     "children": [
                                         {
@@ -483,7 +489,9 @@
                                     "x": 176,
                                     "width": 84,
                                     "height": 24,
-                                    "caption": "Button",
+                                    "textComponent": {
+                                        "text": "Button"
+                                    },
                                     "allowDrag": true,
                                     "children": [
                                         {
@@ -507,7 +515,9 @@
                                     "y": 28,
                                     "width": 84,
                                     "height": 24,
-                                    "caption": "Label",
+                                    "textComponent": {
+                                        "text": "Label"
+                                    },
                                     "allowDrag": true,
                                     "children": [
                                         {
@@ -531,7 +541,9 @@
                                     "y": 28,
                                     "width": 84,
                                     "height": 24,
-                                    "caption": "Image",
+                                    "textComponent": {
+                                        "text": "Image"
+                                    },
                                     "allowDrag": true,
                                     "children": [
                                         {
@@ -552,7 +564,9 @@
                         {
                             "type": "UILabel",
                             "style": "panelTitle",
-                            "text": "Scene Graph",
+                            "textComponent": {
+                                "text": "Scene Graph"
+                            },
                             "widthType": "RELATIVE",
                             "y": 88,
                             "height": 20
@@ -582,13 +596,17 @@
                         {
                             "type": "UILabel",
                             "style": "panelTitle",
-                            "text": "UIControl",
+                            "textComponent": {
+                                "text": "UIControl"
+                            },
                             "widthType": "RELATIVE",
                             "height": 20
                         },
                         {
                             "type": "UICheckBox",
-                            "caption": "Enabled",
+                            "textComponent": {
+                                "text": "Enabled"
+                            },
                             "name": "chkEnabled",
                             "width": 135,
                             "height": 24,
@@ -598,7 +616,9 @@
                         },
                         {
                             "type": "UICheckBox",
-                            "caption": "Visible",
+                            "textComponent": {
+                                "text": "Visible"
+                            },
                             "name": "chkVisible",
                             "width": 135,
                             "height": 24,
@@ -608,7 +628,9 @@
                         },
                         {
                             "type": "UICheckBox",
-                            "caption": "Click through",
+                            "textComponent": {
+                                "text": "Click through"
+                            },
                             "name": "chkClickThrough",
                             "width": 135,
                             "height": 24,
@@ -617,7 +639,9 @@
                         },
                         {
                             "type": "UILabel",
-                            "text": "Name",
+                            "textComponent": {
+                                "text": "Name"
+                            },
                             "widthType": "PERCENTAGE",
                             "width": 0.382,
                             "height": 24,
@@ -626,7 +650,9 @@
                         },
                         {
                             "type": "UITextBox",
-                            "text": "Button",
+                            "textComponent": {
+                                "text": "Button"
+                            },
                             "widthType": "PERCENTAGE",
                             "name": "txtName",
                             "width": 0.618,
@@ -638,7 +664,9 @@
                         },
                         {
                             "type": "UILabel",
-                            "text": "Style",
+                            "textComponent": {
+                                "text": "Style"
+                            },
                             "widthType": "PERCENTAGE",
                             "width": 0.382,
                             "height": 24,
@@ -647,7 +675,9 @@
                         },
                         {
                             "type": "UITextBox",
-                            "caption": "Button",
+                            "textComponent": {
+                                "text": "Button"
+                            },
                             "widthType": "PERCENTAGE",
                             "name": "txtStyle",
                             "width": 0.618,
@@ -668,7 +698,9 @@
                             "children": [
                                 {
                                     "type": "UILabel",
-                                    "text": "X",
+                                    "textComponent": {
+                                        "text": "X"
+                                    },
                                     "x": 10,
                                     "y": 4,
                                     "width": 50,
@@ -676,7 +708,9 @@
                                 },
                                 {
                                     "type": "UILabel",
-                                    "text": "Y",
+                                    "textComponent": {
+                                        "text": "Y"
+                                    },
                                     "x": 10,
                                     "y": 32,
                                     "width": 50,
@@ -684,7 +718,9 @@
                                 },
                                 {
                                     "type": "UITextBox",
-                                    "caption": "0.00",
+                                    "textComponent": {
+                                        "text": "0.00"
+                                    },
                                     "name": "txtX",
                                     "x": 55,
                                     "y": 4,
@@ -695,7 +731,9 @@
                                 },
                                 {
                                     "type": "UITextBox",
-                                    "caption": "0.00",
+                                    "textComponent": {
+                                        "text": "0.00"
+                                    },
                                     "name": "txtY",
                                     "x": 55,
                                     "y": 32,
@@ -707,7 +745,9 @@
                                 {
                                     "type": "UICheckBox",
                                     "name": "chkXPercent",
-                                    "caption": "%",
+                                    "textComponent": {
+                                        "text": "%"
+                                    },
                                     "x": 134,
                                     "y": 4,
                                     "width": 36,
@@ -716,7 +756,9 @@
                                 {
                                     "type": "UICheckBox",
                                     "name": "chkYPercent",
-                                    "caption": "%",
+                                    "textComponent": {
+                                        "text": "%"
+                                    },
                                     "x": 134,
                                     "y": 32,
                                     "width": 36,
@@ -735,7 +777,9 @@
                             "children": [
                                 {
                                     "type": "UILabel",
-                                    "text": "Width",
+                                    "textComponent": {
+                                        "text": "Width"
+                                    },
                                     "x": 10,
                                     "y": 4,
                                     "width": 50,
@@ -743,7 +787,9 @@
                                 },
                                 {
                                     "type": "UILabel",
-                                    "text": "Height",
+                                    "textComponent": {
+                                        "text": "Height"
+                                    },
                                     "x": 10,
                                     "y": 32,
                                     "width": 50,
@@ -751,7 +797,9 @@
                                 },
                                 {
                                     "type": "UITextBox",
-                                    "caption": "100.00",
+                                    "textComponent": {
+                                        "text": "100.00"
+                                    },
                                     "name": "txtWidth",
                                     "x": 55,
                                     "y": 4,
@@ -762,7 +810,9 @@
                                 },
                                 {
                                     "type": "UITextBox",
-                                    "caption": "100.00",
+                                    "textComponent": {
+                                        "text": "100.00"
+                                    },
                                     "name": "txtHeight",
                                     "x": 55,
                                     "y": 32,
@@ -781,7 +831,9 @@
                                     "children": [
                                         {
                                             "type": "UICheckBox",
-                                            "caption": "%",
+                                            "textComponent": {
+                                                "text": "%"
+                                            },
                                             "name": "chkWidthPercent",
                                             "behavior": "OPTIONAL",
                                             "x": 4,
@@ -790,7 +842,9 @@
                                         },
                                         {
                                             "type": "UICheckBox",
-                                            "caption": "Relative",
+                                            "textComponent": {
+                                                "text": "Relative"
+                                            },
                                             "name": "chkWidthRelative",
                                             "behavior": "OPTIONAL",
                                             "x": 44,
@@ -809,7 +863,9 @@
                                     "children": [
                                         {
                                             "type": "UICheckBox",
-                                            "caption": "%",
+                                            "textComponent": {
+                                                "text": "%"
+                                            },
                                             "name": "chkHeightPercent",
                                             "behavior": "OPTIONAL",
                                             "x": 4,
@@ -818,7 +874,9 @@
                                         },
                                         {
                                             "type": "UICheckBox",
-                                            "caption": "Relative",
+                                            "textComponent": {
+                                                "text": "Relative"
+                                            },
                                             "name": "chkHeightRelative",
                                             "behavior": "OPTIONAL",
                                             "x": 44,
@@ -835,7 +893,9 @@
                             "y": 264,
                             "width": 62,
                             "height": 68,
-                            "text": "Align"
+                            "textComponent": {
+                                "text": "Align"
+                            }
                         },
                         {
                             "type": "UIPanel",
@@ -959,7 +1019,9 @@
                             "y": 336,
                             "width": 62,
                             "height": 68,
-                            "text": "Anchor"
+                            "textComponent": {
+                                "text": "Anchor"
+                            }
                         },
                         {
                             "type": "UIPanel",
@@ -980,7 +1042,9 @@
                                     "children": [
                                         {
                                             "type": "UILabel",
-                                            "text": "X",
+                                            "textComponent": {
+                                                "text": "X"
+                                            },
                                             "x": 10,
                                             "y": 4,
                                             "width": 50,
@@ -988,7 +1052,9 @@
                                         },
                                         {
                                             "type": "UILabel",
-                                            "text": "Y",
+                                            "textComponent": {
+                                                "text": "Y"
+                                            },
                                             "x": 10,
                                             "y": 32,
                                             "width": 50,
@@ -996,7 +1062,9 @@
                                         },
                                         {
                                             "type": "UITextBox",
-                                            "caption": "Button",
+                                            "textComponent": {
+                                                "text": "Button"
+                                            },
                                             "name": "txtAnchorX",
                                             "x": 35,
                                             "y": 4,
@@ -1007,7 +1075,9 @@
                                         },
                                         {
                                             "type": "UITextBox",
-                                            "caption": "Button",
+                                            "textComponent": {
+                                                "text": "Button"
+                                            },
                                             "name": "txtAnchorY",
                                             "x": 35,
                                             "y": 32,
@@ -1019,7 +1089,9 @@
                                         {
                                             "type": "UICheckBox",
                                             "name": "chkXAnchorPercent",
-                                            "caption": "%",
+                                            "textComponent": {
+                                                "text": "%"
+                                            },
                                             "x": 104,
                                             "y": 4,
                                             "width": 36,
@@ -1028,7 +1100,9 @@
                                         {
                                             "type": "UICheckBox",
                                             "name": "chkYAnchorPercent",
-                                            "caption": "%",
+                                            "textComponent": {
+                                                "text": "%"
+                                            },
                                             "x": 104,
                                             "y": 32,
                                             "width": 36,
@@ -1143,7 +1217,9 @@
                                 {
                                     "type": "UILabel",
                                     "style": "panelTitle",
-                                    "text": "UIButton",
+                                    "textComponent": {
+                                        "text": "UIButton"
+                                    },
                                     "widthType": "RELATIVE",
                                     "height": 20,
                                     "y": 0
@@ -1160,7 +1236,9 @@
                                 {
                                     "type": "UILabel",
                                     "style": "panelTitle",
-                                    "text": "UIPanel",
+                                    "textComponent": {
+                                        "text": "UIPanel"
+                                    },
                                     "widthType": "RELATIVE",
                                     "height": 20,
                                     "y": 0
@@ -1177,7 +1255,9 @@
                                 {
                                     "type": "UILabel",
                                     "style": "panelTitle",
-                                    "text": "UILabel",
+                                    "textComponent": {
+                                        "text": "UILabel"
+                                    },
                                     "widthType": "RELATIVE",
                                     "height": 20,
                                     "y": 0
@@ -1194,7 +1274,9 @@
                                 {
                                     "type": "UILabel",
                                     "style": "panelTitle",
-                                    "text": "UIImage",
+                                    "textComponent": {
+                                        "text": "UIImage"
+                                    },
                                     "widthType": "RELATIVE",
                                     "height": 20,
                                     "y": 0

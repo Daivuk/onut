@@ -133,7 +133,7 @@ void onCreateButton(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pParent = getCreateParent();
     auto pBtn = new onut::UIButton();
 
-    pBtn->setCaption("Button");
+    pBtn->textComponent.text = "Button";
     pBtn->setRect({{0, 0}, {64, 24}});
     createControlAction(pBtn, pParent);
 }
@@ -143,7 +143,7 @@ void onCreateLabel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pParent = getCreateParent();
     auto pLbl = new onut::UILabel();
 
-    pLbl->setText("Label");
+    pLbl->textComponent.text = "Label";
     pLbl->setRect({{0, 0}, {64, 20}});
     createControlAction(pLbl, pParent);
 }
@@ -233,7 +233,7 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
     else
     {
         auto pViewItem = evt.pSelectedItems->front();
-        auto pSelected = static_cast<onut::UIControl*>(pViewItem->getUserData());
+        auto pSelected = static_cast<onut::UIControl*>(pViewItem->pUserData);
 
         auto pPreviousSelected = g_pDocument->pSelected;
         g_actionManager.doAction(new onut::Action("Select " + getControlName(pSelected),
@@ -259,26 +259,26 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
 {
     if (!g_pDocument->pSelected) return;
 
-    auto text = pTextBox->getText();
+    auto text = pTextBox->textComponent.text;
     auto pControl = g_pDocument->pSelected;
     auto previousText = pControl->getName();
 
     g_actionManager.doAction(new onut::Action("Rename " + getControlName(pControl) + " to " + text,
         [=]{
         pControl->setName(text);
-        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
+        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
         if (pViewItem)
         {
-            pViewItem->setText(text);
+            pViewItem->text = text;
         }
         g_pDocument->updateInspector();
     },
         [=]{
         pControl->setName(previousText);
-        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->getUserData());
+        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
         if (pViewItem)
         {
-            pViewItem->setText(previousText);
+            pViewItem->text  =previousText;
         }
         g_pDocument->updateInspector();
     },
@@ -429,7 +429,7 @@ void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     auto prevStyle = pSelected->getStyleName();
-    auto newStyle = pTextBox->getText();
+    auto newStyle = pTextBox->textComponent.text;
     g_actionManager.doAction(new onut::Action("Edit Style",
         [=]{
         pSelected->setStyle(newStyle.c_str());
@@ -1029,7 +1029,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, const Tgetter& getter, const T
     auto pLabel = new onut::UILabel();
     auto pButton = new onut::UIPanel();
 
-    pLabel->setText(name);
+    pLabel->textComponent.text = name;
     pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
     pLabel->setRect({{4, yPos}, {0.382f, 24}});
 
@@ -1046,8 +1046,8 @@ void BIND_COLOR_PROPERTY(const std::string& name, const Tgetter& getter, const T
 
     auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType, Tgetter, Tsetter>
         (std::string("Edit ") + name,
-        std::bind(&onut::UIPanel::getColor, pButton),
-        std::bind(&onut::UIPanel::setColor, pButton, std::placeholders::_1),
+        [=]{return pButton->color; },
+        [=](const onut::sUIColor& color){pButton->color = color; },
         getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1055,7 +1055,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, const Tgetter& getter, const T
     {
         CHOOSECOLOR colorChooser = {0};
         DWORD rgbCurrent; // initial color selection
-        rgbCurrent = (DWORD)pButton->getColor().packed;
+        rgbCurrent = (DWORD)pButton->color.packed;
         rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
         colorChooser.lStructSize = sizeof(colorChooser);
         colorChooser.hwndOwner = OWindow->getHandle();
@@ -1068,7 +1068,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, const Tgetter& getter, const T
             rgbCurrent = colorChooser.rgbResult;
             color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff;
             color.unpack();
-            pButton->setColor(color);
+            pButton->color = color;
             pBinding->updateControl(g_pDocument->pSelected);
         }
     };
@@ -1080,7 +1080,7 @@ void BIND_TEXT_PROPERTY(const std::string& name, const Tgetter& getter, const Ts
     auto pLabel = new onut::UILabel();
     auto pTextBox = new onut::UITextBox();
 
-    pLabel->setText(name);
+    pLabel->textComponent.text = name;
     pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
     pLabel->setRect({{4, yPos}, {0.382f, 24}});
 
@@ -1096,8 +1096,8 @@ void BIND_TEXT_PROPERTY(const std::string& name, const Tgetter& getter, const Ts
 
     auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
         (std::string("Edit ") + name,
-        std::bind(&onut::UITextBox::getText, pTextBox),
-        std::bind(&onut::UITextBox::setText, pTextBox, std::placeholders::_1),
+        [=]{return pTextBox->textComponent.text; },
+        [=](const std::string& text){pTextBox->textComponent.text = text; },
         getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1117,7 +1117,7 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, const Tge
     auto pTextBox = new onut::UITextBox();
     auto pBrowseButton = new onut::UIButton();
 
-    pLabel->setText(name);
+    pLabel->textComponent.text = name;
     pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
     pLabel->setRect({{4, yPos}, {0.382f, 24}});
 
@@ -1132,7 +1132,7 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, const Tge
     pBrowseButton->setAlign(onut::eUIAlign::TOP_RIGHT);
     pBrowseButton->setAnchor({1, 0});
     pBrowseButton->setRect({{0, 0}, {32, 24}});
-    pBrowseButton->setCaption("...");
+    pBrowseButton->textComponent.text = "...";
 
     yPos += 24 + 4;
 
@@ -1143,8 +1143,8 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, const Tge
 
     auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
         (std::string("Edit ") + name,
-        std::bind(&onut::UITextBox::getText, pTextBox),
-        std::bind(&onut::UITextBox::setText, pTextBox, std::placeholders::_1),
+        [=]{return pTextBox->textComponent.text; },
+        [=](const std::string& text){pTextBox->textComponent.text = text; },
         getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1162,7 +1162,7 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, const Tge
             // Make it relative to our filename
             auto filename = onut::getPath(g_pDocument->getFilename());
             file = onut::makeRelativePath(file, filename);
-            pTextBox->setText(file);
+            pTextBox->textComponent.text = file;
             if (pTextBox->onTextChanged)
             {
                 onut::UITextBoxEvent evt;
@@ -1305,25 +1305,25 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     // UIPanel
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
     BIND_COLOR_PROPERTY<onut::UIPanel>("Background Color",
-                                       std::bind(&onut::UIPanel::getColor, std::placeholders::_1),
-                                       std::bind(&onut::UIPanel::setColor, std::placeholders::_1, std::placeholders::_2));
+                                       [](onut::UIPanel* pPanel){return pPanel->color; },
+                                       [](onut::UIPanel* pPanel, const onut::sUIColor& color){ pPanel->color = color; });
 
     // UIButton
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
     BIND_TEXT_PROPERTY<onut::UIButton>("Caption",
-                                       std::bind(&onut::UIButton::getCaption, std::placeholders::_1),
-                                       std::bind(&onut::UIButton::setCaption, std::placeholders::_1, std::placeholders::_2));
+                                       [](onut::UIButton* pButton){return pButton->textComponent.text; },
+                                       [](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.text = text; });
 
     // UILabel
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
     BIND_TEXT_PROPERTY<onut::UILabel>("Text",
-                                      std::bind(&onut::UILabel::getText, std::placeholders::_1),
-                                      std::bind(&onut::UILabel::setText, std::placeholders::_1, std::placeholders::_2));
-
+                                      [](onut::UILabel* pLabel){return pLabel->textComponent.text; },
+                                      [](onut::UILabel* pLabel, const std::string& text){ pLabel->textComponent.text = text; });
+    
     // UIImage
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
     BIND_FILE_PROPERTY<onut::UIImage>("Image",
                                       TEXT("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0"),
-                                      std::bind(&onut::UIImage::getImage, std::placeholders::_1),
-                                      std::bind(&onut::UIImage::setImage, std::placeholders::_1, std::placeholders::_2));
+                                      [](onut::UIImage* pImage){return pImage->scale9Component.image.filename; },
+                                      [](onut::UIImage* pImage, const std::string& filename){ pImage->scale9Component.image.filename = filename; });
 }

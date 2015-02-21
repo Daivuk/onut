@@ -1,117 +1,9 @@
 #include "UI.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filestream.h"
+#include "rapidjson/filewritestream.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
-
-// Copyright (C) 2011 Milo Yip
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-#ifndef RAPIDJSON_FILEWRITESTREAM_H_
-#define RAPIDJSON_FILEWRITESTREAM_H_
-
-#include "rapidjson.h"
-#include <cstdio>
-
-namespace rapidjson
-{
-
-    //! Wrapper of C file stream for input using fread().
-    /*!
-    \note implements Stream concept
-    */
-    class FileWriteStream
-    {
-    public:
-        typedef char Ch;    //!< Character type. Only support char.
-
-        FileWriteStream(FILE* fp, char* buffer, size_t bufferSize) : fp_(fp), buffer_(buffer), bufferEnd_(buffer + bufferSize), current_(buffer_)
-        {
-            RAPIDJSON_ASSERT(fp_ != 0);
-        }
-
-        void Put(char c)
-        {
-            if (current_ >= bufferEnd_)
-                Flush();
-
-            *current_++ = c;
-        }
-
-        void PutN(char c, size_t n)
-        {
-            size_t avail = static_cast<size_t>(bufferEnd_ - current_);
-            while (n > avail)
-            {
-                std::memset(current_, c, avail);
-                current_ += avail;
-                Flush();
-                n -= avail;
-                avail = static_cast<size_t>(bufferEnd_ - current_);
-            }
-
-            if (n > 0)
-            {
-                std::memset(current_, c, n);
-                current_ += n;
-            }
-        }
-
-        void Flush()
-        {
-            if (current_ != buffer_)
-            {
-                fwrite(buffer_, 1, static_cast<size_t>(current_ - buffer_), fp_);
-                current_ = buffer_;
-            }
-        }
-
-        // Not implemented
-        char Peek() const { RAPIDJSON_ASSERT(false); return 0; }
-        char Take() { RAPIDJSON_ASSERT(false); return 0; }
-        size_t Tell() const { RAPIDJSON_ASSERT(false); return 0; }
-        char* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
-        size_t PutEnd(char*) { RAPIDJSON_ASSERT(false); return 0; }
-
-    private:
-        // Prohibit copy constructor & assignment operator.
-        FileWriteStream(const FileWriteStream&);
-        FileWriteStream& operator=(const FileWriteStream&);
-
-        FILE* fp_;
-        char *buffer_;
-        char *bufferEnd_;
-        char *current_;
-    };
-
-    //! Implement specialized version of PutN() with memset() for better performance.
-    template<>
-    inline void PutN(FileWriteStream& stream, char c, size_t n)
-    {
-        stream.PutN(c, n);
-    }
-
-} // namespace rapidjson
-
-#endif // RAPIDJSON_FILESTREAM_H_
-
 #include <algorithm>
 #include <functional>
 #include <sstream>
@@ -119,6 +11,20 @@ namespace rapidjson
 
 namespace onut
 {
+    static std::unordered_map<std::string, sUIFont::eFontFlag> fontFlagMap = {
+        {"AUTO_FIT_SIZE", sUIFont::AUTO_FIT_SIZE},
+        {"ELLIPSIS", sUIFont::ELLIPSIS},
+        {"WORD_WRAP", sUIFont::WORD_WRAP}
+    };
+
+    template<typename Tmap, typename Tenum>
+    Tenum stringToEnum(const Tmap& map, const std::string& key, Tenum default)
+    {
+        auto it = map.find(key);
+        if (it == map.end()) return default;
+        return it->second;
+    }
+
     void sUIColor::unpack()
     {
         r = (float)((packed >> 24) & 0xff) / 255.f;
@@ -398,7 +304,7 @@ namespace onut
                              const char* szName, 
                              const sUIColor& value, 
                              rapidjson::Allocator& allocator, 
-                             const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
+                             const sUIColor& default = {1.f, 1.f, 1.f, 1.f})
     {
         if (value.packed == default.packed) return;
 
@@ -409,7 +315,7 @@ namespace onut
         jsonNode.AddMember(szName, jsonValue, allocator);
     }
 
-    static sUIColor getJsonColor(const rapidjson::Value& jsonNode, const sUIColor& default = {1, 1, 1, 1, 0xffffffff})
+    static sUIColor getJsonColor(const rapidjson::Value& jsonNode, const sUIColor& default = {1.f, 1.f, 1.f, 1.f})
     {
         if (jsonNode.IsString())
         {
@@ -431,6 +337,79 @@ namespace onut
         {
             return default;
         }
+    }
+
+    static sUIPadding getJsonPadding(const rapidjson::Value& node)
+    {
+        sUIPadding ret;
+        if (!node.IsNull())
+        {
+            ret.left = getJsonFloat(node["left"]);
+            ret.right = getJsonFloat(node["right"]);
+            ret.top = getJsonFloat(node["top"]);
+            ret.bottom = getJsonFloat(node["bottom"]);
+        }
+        return std::move(ret);
+    }
+
+    template <typename Tmap, typename Tenum>
+    static Tenum getJsonEnum(const Tmap& enumMap, const rapidjson::Value& jsonNode, Tenum default)
+    {
+        uint8_t ret = default;
+        if (jsonNode.IsString())
+        {
+            ret = stringToEnum(enumMap, jsonNode.GetString(), default);
+        }
+        return ret;
+    }
+
+    template <typename Tmap, typename Tenum = Tmap::mapped_type>
+    static Tenum getJsonBitmask(const Tmap& enumMap, const rapidjson::Value& jsonNode)
+    {
+        uint32_t ret = 0;
+        if (jsonNode.IsArray())
+        {
+            for (decltype(jsonNode.Size()) i = 0; i < jsonNode.Size(); ++i)
+            {
+                auto& jsonEnum = jsonNode[i];
+                if (jsonEnum.IsString())
+                {
+                    ret |= stringToEnum(enumMap, jsonNode.GetString(), (Tenum)0);
+                }
+            }
+        }
+        else if (jsonNode.IsString())
+        {
+            ret = stringToEnum(enumMap, jsonNode.GetString(), (Tenum)0);
+        }
+        return (Tenum)ret;
+    }
+
+    static sUIFont getJsonFont(const rapidjson::Value& node)
+    {
+        sUIFont ret;
+        if (!node.IsNull())
+        {
+            ret.color = getJsonColor(node["color"]);
+            ret.align = getAlignFromString(getJsonString(node["align"]));
+            ret.padding = getJsonPadding(node["padding"]);
+            ret.typeFace = getJsonString(node["typeFace"], "Arial");
+            ret.size = getJsonFloat(node["size"], 12.f);
+            ret.flags = getJsonBitmask(fontFlagMap, node["flags"]);
+            ret.minSize = getJsonFloat(node["minSize"], 12.f);
+        }
+        return std::move(ret);
+    }
+
+    static sUITextComponent getJsonTextComponent(const rapidjson::Value& node)
+    {
+        sUITextComponent ret;
+        if (!node.IsNull())
+        {
+            ret.text = getJsonString(node["text"]);
+            ret.font = getJsonFont(node["font"]);
+        }
+        return std::move(ret);
     }
 
     UIContext::UIContext(const sUIVector2& screenSize) :
@@ -814,7 +793,7 @@ namespace onut
         m_dimType[0] = other.m_dimType[0];
         m_dimType[1] = other.m_dimType[1];
         m_name = other.m_name;
-        m_pUserData = other.m_pUserData;
+        pUserData = pUserData;
         m_properties = other.m_properties;
 
         for (auto pChild : m_children)
@@ -1580,11 +1559,6 @@ namespace onut
         return (context.m_pFocus == this);
     }
 
-    void UIControl::setUserData(void* pUserData)
-    {
-        m_pUserData = pUserData;
-    }
-
     void UIControl::setAlign(eUIAlign align)
     {
         m_align = align;
@@ -1670,7 +1644,7 @@ namespace onut
     UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton) const
     {
         // Render it's items
-        sUIRect itemRect = {rect.position, {rect.size.x, m_itemHeight}};
+        sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
         for (auto pItem : m_items)
         {
             auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton);
@@ -1687,7 +1661,7 @@ namespace onut
         if (pos.y >= rect.position.y &&
             pos.y <= rect.position.y + rect.size.y)
         {
-            if (pos.x >= rect.position.x + getExpandClickWidth() ||
+            if (pos.x >= rect.position.x + expandClickWidth ||
                 pos.x <= rect.position.x)
             {
                 return pItem;
@@ -1698,12 +1672,12 @@ namespace onut
                 return pItem;
             }
         }
-        rect.position.y += getItemHeight();
-        if (pItem->m_isExpanded)
+        rect.position.y += itemHeight;
+        if (pItem->isExpanded)
         {
             if (!pItem->m_items.empty())
             {
-                auto xOffset = getExpandedXOffset();
+                auto xOffset = expandedXOffset;
                 rect.position.x += xOffset;
                 rect.size.x -= xOffset;
                 for (auto pHisItem : pItem->m_items)
@@ -1750,7 +1724,7 @@ namespace onut
     {
         if (pItem->m_pParent)
         {
-            pItem->m_pParent->m_isExpanded = true;
+            pItem->m_pParent->isExpanded = true;
             expandTo(pItem->m_pParent);
         }
     }
@@ -1792,7 +1766,7 @@ namespace onut
     {
         if (m_isNumerical)
         {
-            std::stringstream ss(m_text);
+            std::stringstream ss(textComponent.text);
             float value;
             if (!(ss >> value))
             {
@@ -1800,7 +1774,7 @@ namespace onut
             }
             std::stringstream ssOut;
             ssOut << std::fixed << std::setprecision(static_cast<std::streamsize>(m_decimalPrecision)) << value;
-            m_text = ssOut.str();
+            textComponent.text = ssOut.str();
         }
     }
 
@@ -1808,7 +1782,7 @@ namespace onut
     {
         if (m_isNumerical)
         {
-            std::stringstream ss(m_text);
+            std::stringstream ss(textComponent.text);
             float value;
             if (!(ss >> value))
             {
@@ -1823,7 +1797,7 @@ namespace onut
     {
         if (m_isNumerical)
         {
-            std::stringstream ss(m_text);
+            std::stringstream ss(textComponent.text);
             int value;
             if (!(ss >> value))
             {
@@ -1835,43 +1809,6 @@ namespace onut
     }
 
     //--- Copy
-    UIButton::UIButton(const UIButton& other) :
-        UIControl(other)
-    {
-        m_caption = other.m_caption;
-    }
-
-    UIPanel::UIPanel()
-    {
-        m_color.r = m_color.g = m_color.b = m_color.a = 1.f;
-        m_color.pack();
-    }
-
-    UIPanel::UIPanel(const UIPanel& other) :
-        UIControl(other)
-    {
-    }
-
-    UILabel::UILabel(const UILabel& other) :
-        UIControl(other)
-    {
-        m_text = other.m_text;
-    }
-
-    UIImage::UIImage(const UIImage& other) :
-        UIControl(other)
-    {
-        m_image = other.m_image;
-    }
-
-    UICheckBox::UICheckBox(const UICheckBox& other) :
-        UIControl(other)
-    {
-        m_caption = other.m_caption;
-        m_isChecked = other.m_isChecked;
-        m_behavior = other.m_behavior;
-    }
-
     UITreeView::UITreeView(const UITreeView& other) :
         UIControl(other)
     {
@@ -1882,7 +1819,7 @@ namespace onut
     }
 
     UITreeViewItem::UITreeViewItem(const std::string& text) :
-        m_text(text)
+        text(text)
     {
     }
 
@@ -1892,42 +1829,14 @@ namespace onut
         {
             m_items.push_back(new UITreeViewItem(*pOtherItem));
         }
-        m_isExpanded = other.m_isExpanded;
-        m_text = other.m_text;
-    }
-
-    UITextBox::UITextBox(const UITextBox& other) :
-        UIControl(other)
-    {
-        m_text = other.m_text;
-        m_isNumerical = other.m_isNumerical;
-        m_decimalPrecision = other.m_decimalPrecision;
+        isExpanded = other.isExpanded;
+        text = other.text;
     }
 
     //--- Properties
-    void UIButton::setCaption(const std::string& caption)
-    {
-        m_caption = caption;
-    }
-
-    void UIPanel::setColor(const sUIColor& color)
-    {
-        m_color = color;
-    }
-
-    void UILabel::setText(const std::string& text)
-    {
-        m_text = text;
-    }
-
-    void UIImage::setImage(const std::string& image)
-    {
-        m_image = image;
-    }
-
     void UICheckBox::setIsChecked(bool in_isChecked)
     {
-        switch (m_behavior)
+        switch (behavior)
         {
             case eUICheckBehavior::NORMAL:
             {
@@ -1947,7 +1856,7 @@ namespace onut
                             if (pSibbling->getType() == eUIType::UI_CHECKBOX)
                             {
                                 auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
-                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                if (pSibblingCheckBox->behavior == behavior)
                                 {
                                     if (pSibblingCheckBox->m_isChecked)
                                     {
@@ -1975,7 +1884,7 @@ namespace onut
                             if (pSibbling->getType() == eUIType::UI_CHECKBOX)
                             {
                                 auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
-                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                if (pSibblingCheckBox->behavior == behavior)
                                 {
                                     if (pSibblingCheckBox->m_isChecked)
                                     {
@@ -1991,47 +1900,6 @@ namespace onut
                 break;
             }
         }
-    }
-
-    void UICheckBox::setBehavior(eUICheckBehavior behavior)
-    {
-        m_behavior = behavior;
-    }
-
-    void UITreeView::setExpandedXOffset(float expandedXOffset)
-    {
-        m_expandedXOffset = expandedXOffset;
-    }
-
-    void UITreeView::setExpandClickWidth(float expandClickWidth)
-    {
-        m_expandClickWidth = expandClickWidth;
-    }
-
-    void UITreeView::setItemHeight(float itemHeight)
-    {
-        m_itemHeight = itemHeight;
-    }
-
-    void UITreeViewItem::setIsExpanded(bool isExpanded)
-    {
-        m_isExpanded = isExpanded;
-    }
-
-    void UITreeViewItem::setText(const std::string& text)
-    {
-        m_text = text;
-    }
-
-    void UITreeViewItem::setUserData(void* pUserData)
-    {
-        m_pUserData = pUserData;
-    }
-
-    void UITextBox::setText(const std::string& text)
-    {
-        m_text = text;
-        numerifyText();
     }
 
     void UITextBox::setIsNumerical(bool isNumerical)
@@ -2050,87 +1918,87 @@ namespace onut
     void UIButton::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_caption = getJsonString(jsonNode["caption"]);
+        textComponent = getJsonTextComponent(jsonNode["textComponent"]);
     }
 
     void UIButton::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
+        //setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
     }
 
     void UIPanel::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_color = getJsonColor(jsonNode["color"]);
+        color = getJsonColor(jsonNode["color"]);
     }
 
     void UIPanel::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonColor(jsonNode, "color", m_color, allocator);
+        setJsonColor(jsonNode, "color", color, allocator);
     }
 
     void UILabel::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_text = getJsonString(jsonNode["text"]);
+        textComponent = getJsonTextComponent(jsonNode["textComponent"]);
     }
 
     void UILabel::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonString(jsonNode, "text", m_text.c_str(), allocator);
+        //setJsonString(jsonNode, "text", m_text.c_str(), allocator);
     }
 
     void UIImage::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_image = getJsonString(jsonNode["image"]);
+        //scale9Component = getJsonScale9Component(jsonNode["scale9Component"]);
     }
 
     void UIImage::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonString(jsonNode, "image", m_image.c_str(), allocator);
+        //setJsonString(jsonNode, "image", m_image.c_str(), allocator);
     }
 
     void UICheckBox::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_caption = getJsonString(jsonNode["caption"]);
+        textComponent = getJsonTextComponent(jsonNode["textComponent"]);
         m_isChecked = getJsonBool(jsonNode["checked"], false);
-        m_behavior = getJsonCheckBehavior(getJsonString(jsonNode["behavior"]));
+        behavior = getJsonCheckBehavior(getJsonString(jsonNode["behavior"]));
     }
 
     void UICheckBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
-        setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
-        setJsonString(jsonNode, "behavior", getStringFromCheckBehavior(m_behavior), allocator);
+        //setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
+        //setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
+        //setJsonString(jsonNode, "behavior", getStringFromCheckBehavior(m_behavior), allocator);
     }
 
     void UITreeView::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_expandedXOffset = getJsonFloat(jsonNode["expandedXOffset"], 18.f);
-        m_expandClickWidth = getJsonFloat(jsonNode["expandClickWidth"], 18.f);
-        m_itemHeight = getJsonFloat(jsonNode["itemHeight"], 18.f);
+        expandedXOffset = getJsonFloat(jsonNode["expandedXOffset"], 18.f);
+        expandClickWidth = getJsonFloat(jsonNode["expandClickWidth"], 18.f);
+        itemHeight = getJsonFloat(jsonNode["itemHeight"], 18.f);
     }
 
     void UITreeView::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonFloat(jsonNode, "expandedXOffset", m_expandedXOffset, allocator, 18.f);
-        setJsonFloat(jsonNode, "expandClickWidth", m_expandClickWidth, allocator, 18.f);
-        setJsonFloat(jsonNode, "itemHeight", m_itemHeight, allocator, 18.f);
+        setJsonFloat(jsonNode, "expandedXOffset", expandedXOffset, allocator, 18.f);
+        setJsonFloat(jsonNode, "expandClickWidth", expandClickWidth, allocator, 18.f);
+        setJsonFloat(jsonNode, "itemHeight", itemHeight, allocator, 18.f);
     }
 
     void UITextBox::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        m_text = getJsonString(jsonNode["text"]);
+        textComponent = getJsonTextComponent(jsonNode["textComponent"]);
         m_isNumerical = getJsonBool(jsonNode["numerical"]);
         m_decimalPrecision = getJsonInt(jsonNode["precision"]);
         numerifyText();
@@ -2139,9 +2007,9 @@ namespace onut
     void UITextBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        setJsonString(jsonNode, "text", m_text.c_str(), allocator);
-        setJsonBool(jsonNode, "numerical", m_isNumerical, allocator);
-        setJsonInt(jsonNode, "precision", m_decimalPrecision, allocator);
+        //setJsonString(jsonNode, "text", m_text.c_str(), allocator);
+        //setJsonBool(jsonNode, "numerical", m_isNumerical, allocator);
+        //setJsonInt(jsonNode, "precision", m_decimalPrecision, allocator);
     }
 
     //--- Renders
@@ -2199,7 +2067,7 @@ namespace onut
         }
 
         // Render it's items
-        sUIRect itemRect = {rect.position, {rect.size.x, m_itemHeight}};
+        sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
         const auto& itemCallback = context.getStyle<UITreeViewItem>(getStyle());
         if (itemCallback)
         {
@@ -2222,7 +2090,7 @@ namespace onut
     //--- Internal events
     void UICheckBox::onClickInternal(const UIMouseEvent& evt)
     {
-        switch (m_behavior)
+        switch (behavior)
         {
             case eUICheckBehavior::NORMAL:
             {
@@ -2249,7 +2117,7 @@ namespace onut
                             if (pSibbling->getType() == eUIType::UI_CHECKBOX)
                             {
                                 auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
-                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                if (pSibblingCheckBox->behavior == behavior)
                                 {
                                     if (pSibblingCheckBox->m_isChecked)
                                     {
@@ -2291,7 +2159,7 @@ namespace onut
                             if (pSibbling->getType() == eUIType::UI_CHECKBOX)
                             {
                                 auto pSibblingCheckBox = dynamic_cast<UICheckBox*>(pSibbling);
-                                if (pSibblingCheckBox->getBehavior() == m_behavior)
+                                if (pSibblingCheckBox->behavior == behavior)
                                 {
                                     if (pSibblingCheckBox->m_isChecked)
                                     {
@@ -2332,7 +2200,7 @@ namespace onut
         {
             if (pickedExpandButton)
             {
-                pPicked->m_isExpanded = !pPicked->m_isExpanded;
+                pPicked->isExpanded = !pPicked->isExpanded;
             }
             else
             {
@@ -2409,7 +2277,7 @@ namespace onut
     void UITextBox::selectAll()
     {
         m_selectedTextRegion[0] = 0;
-        m_selectedTextRegion[1] = m_text.size();
+        m_selectedTextRegion[1] = textComponent.text.size();
         m_cursorPos = m_selectedTextRegion[1];
     }
 
@@ -2421,12 +2289,12 @@ namespace onut
         {
             if (m_selectedTextRegion[1] - m_selectedTextRegion[0])
             {
-                m_text = m_text.substr(0, m_selectedTextRegion[0]) + m_text.substr(m_selectedTextRegion[1]);
+                textComponent.text = textComponent.text.substr(0, m_selectedTextRegion[0]) + textComponent.text.substr(m_selectedTextRegion[1]);
                 m_cursorPos = m_selectedTextRegion[1] = m_selectedTextRegion[0];
             }
             else if (m_cursorPos)
             {
-                m_text = m_text.substr(0, m_cursorPos - 1) + m_text.substr(m_cursorPos);
+                textComponent.text = textComponent.text.substr(0, m_cursorPos - 1) + textComponent.text.substr(m_cursorPos);
                 m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos - 1;
             }
         }
@@ -2447,10 +2315,10 @@ namespace onut
         else // Normal character
         {
             std::stringstream ss;
-            ss << m_text.substr(0, m_selectedTextRegion[0]);
+            ss << textComponent.text.substr(0, m_selectedTextRegion[0]);
             ss << c;
-            ss << m_text.substr(m_selectedTextRegion[1]);
-            m_text = ss.str();
+            ss << textComponent.text.substr(m_selectedTextRegion[1]);
+            textComponent.text = ss.str();
             m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_selectedTextRegion[0] + 1;
         }
     }
@@ -2461,7 +2329,7 @@ namespace onut
         switch (evt.key)
         {
             case KEY_END:
-                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_text.size();
+                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = textComponent.text.size();
                 break;
             case KEY_HOME:
                 m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = 0;
@@ -2476,7 +2344,7 @@ namespace onut
                 break;
             case KEY_RIGHT:
             case KEY_DOWN:
-                if (m_cursorPos < m_text.size())
+                if (m_cursorPos < textComponent.text.size())
                 {
                     ++m_cursorPos;
                     m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
@@ -2486,12 +2354,12 @@ namespace onut
                 m_isTextChanged = true;
                 if (m_selectedTextRegion[0] != m_selectedTextRegion[1])
                 {
-                    m_text = m_text.substr(0, m_selectedTextRegion[0]) + m_text.substr(m_selectedTextRegion[1]);
+                    textComponent.text = textComponent.text.substr(0, m_selectedTextRegion[0]) + textComponent.text.substr(m_selectedTextRegion[1]);
                     m_cursorPos = m_selectedTextRegion[1] = m_selectedTextRegion[0];
                 }
-                else if (m_cursorPos < m_text.size())
+                else if (m_cursorPos < textComponent.text.size())
                 {
-                    m_text = m_text.substr(0, m_cursorPos) + m_text.substr(m_cursorPos + 1);
+                    textComponent.text = textComponent.text.substr(0, m_cursorPos) + textComponent.text.substr(m_cursorPos + 1);
                 }
                 break;
         }

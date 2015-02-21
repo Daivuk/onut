@@ -24,7 +24,7 @@ void createViewUIStyles(onut::UIContext* pContext)
     pContext->addStyle<onut::UIPanel>("", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
         const auto rectOutter = onut::UI2Onut(rect);
-        auto& color = pPanel->getColor();
+        auto& color = pPanel->color;
 
         OSB->drawRect(nullptr, rectOutter, {color.r, color.g, color.b, color.a});
     });
@@ -38,24 +38,24 @@ void createViewUIStyles(onut::UIContext* pContext)
         {
             OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
             OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
-            g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor * .5f);
+            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor * .5f);
         }
         else
         {
             OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
             OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
-            g_pFont->draw<OCenter>(pButton->getCaption(), rectInnuer.Center(), g_fontColor);
+            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor);
         }
     });
 
     pContext->addStyle<onut::UILabel>("", [pContext](const onut::UILabel* pLabel, const onut::sUIRect& rect)
     {
-        g_pFont->draw<OLeft>(pLabel->getText(), onut::UI2Onut(rect).Left(), g_fontColor);
+        g_pFont->draw<OLeft>(pLabel->textComponent.text, onut::UI2Onut(rect).Left(), g_fontColor);
     });
 
     pContext->addStyle<onut::UIImage>("", [pContext](const onut::UIImage* pImage, const onut::sUIRect& rect)
     {
-        auto pTexture = g_pDocument->contentManager.getResource<OTexture>(pImage->getImage());
+        auto pTexture = g_pDocument->contentManager.getResource<OTexture>(pImage->scale9Component.image.filename);
         OSB->drawRect(pTexture, onut::UI2Onut(rect));
     });
 }
