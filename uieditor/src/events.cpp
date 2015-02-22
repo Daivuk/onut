@@ -1044,7 +1044,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     pPnl->add(pLabel);
     pPnl->add(pButton);
 
-    auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType, Tgetter, Tsetter>
+    auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>
         (std::string("Edit ") + name, &pButton->color, getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1071,6 +1071,228 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     };
 }
 
+template<typename TuiType>
+void BIND_TEXT_COMPONENT(const std::string& name)
+{
+    auto pLabel = new onut::UILabel();
+    auto pContainer = new onut::UIPanel();
+    auto pTxtText = new onut::UITextBox();
+    auto pBtnColor = new onut::UIPanel();
+    auto pTxtTypeFace = new onut::UITextBox();
+    auto pLblSize = new onut::UILabel();
+    auto pTxtSize = new onut::UITextBox();
+    auto pLblMinSize = new onut::UILabel();
+    auto pTxtMinSize = new onut::UITextBox();
+    auto pChkWordWrap = new onut::UICheckBox();
+    auto pChkAutoFit = new onut::UICheckBox();
+    auto pChkEllipsis = new onut::UICheckBox();
+    auto pLblPadding = new onut::UILabel();
+    auto pTxtPaddingLeft = new onut::UITextBox();
+    auto pTxtPaddingRight = new onut::UITextBox();
+    auto pTxtPaddingTop = new onut::UITextBox();
+    auto pTxtPaddingBottom = new onut::UITextBox();
+    auto pAlign = new onut::UIControl();
+    auto pAlignTL = new onut::UICheckBox();
+    auto pAlignT = new onut::UICheckBox();
+    auto pAlignTR = new onut::UICheckBox();
+    auto pAlignL = new onut::UICheckBox();
+    auto pAlignC = new onut::UICheckBox();
+    auto pAlignR = new onut::UICheckBox();
+    auto pAlignBL = new onut::UICheckBox();
+    auto pAlignB = new onut::UICheckBox();
+    auto pAlignBR = new onut::UICheckBox();
+
+    pLabel->textComponent.text = name;
+    pLabel->setRect({{4, yPos}, {58, 174}});
+
+    pContainer->setStyle("group");
+    pContainer->setWidthType(onut::eUIDimType::DIM_RELATIVE);
+    pContainer->setRect({{66, yPos}, {-70, 174}});
+
+    pTxtText->setWidthType(onut::eUIDimType::DIM_RELATIVE);
+    pTxtText->setRect({{4, 4}, {-8, 24}});
+
+    pBtnColor->setStyle("colorPicker");
+    pBtnColor->setRect({{4, 33}, {26, 24}});
+
+    pTxtTypeFace->setRect({{34, 33}, {118, 24}});
+
+    pLblSize->textComponent.text = "Size";
+    pLblSize->setRect({{4, 61}, {26, 24}});
+
+    pTxtSize->textComponent.text = "0";
+    pTxtSize->setRect({{34, 61}, {44, 24}});
+    pTxtSize->setIsNumerical(true);
+    pTxtSize->setIsDecimalPrecision(1);
+
+    pLblMinSize->textComponent.text = "Min";
+    pLblMinSize->setRect({{82, 61}, {24, 24}});
+
+    pTxtMinSize->textComponent.text = "0";
+    pTxtMinSize->setRect({{108, 61}, {44, 24}});
+    pTxtMinSize->setIsNumerical(true);
+    pTxtMinSize->setIsDecimalPrecision(1);
+
+    pChkWordWrap->textComponent.text = "Word wrap";
+    pChkWordWrap->setRect({{4, 90}, {87 - 4, 24}});
+
+    pChkAutoFit->textComponent.text = "Auto fit";
+    pChkAutoFit->setRect({{4 + 87, 90}, {68 - 4, 24}});
+
+    pChkEllipsis->textComponent.text = "Ellipsis";
+    pChkEllipsis->setRect({{4 + 87 + 68, 90}, {55 - 4, 24}});
+
+    pLblPadding->textComponent.text = "Padding";
+    pLblPadding->setRect({{4, 118}, {53 - 8, 50}});
+
+    pTxtPaddingLeft->textComponent.text = "0";
+    pTxtPaddingLeft->setRect({{53, 130}, {51, 24}});
+    pTxtPaddingLeft->setIsNumerical(true);
+    pTxtPaddingLeft->setIsDecimalPrecision(0);
+
+    pTxtPaddingRight->textComponent.text = "0";
+    pTxtPaddingRight->setRect({{159, 130}, {51, 24}});
+    pTxtPaddingRight->setIsNumerical(true);
+    pTxtPaddingRight->setIsDecimalPrecision(0);
+
+    pTxtPaddingTop->textComponent.text = "0";
+    pTxtPaddingTop->setRect({{106, 118}, {51, 24}});
+    pTxtPaddingTop->setIsNumerical(true);
+    pTxtPaddingTop->setIsDecimalPrecision(0);
+
+    pTxtPaddingBottom->textComponent.text = "0";
+    pTxtPaddingBottom->setRect({{106, 144}, {51, 24}});
+    pTxtPaddingBottom->setIsNumerical(true);
+    pTxtPaddingBottom->setIsDecimalPrecision(0);
+
+    pAlign->setRect({{156, 32}, {54, 54}});
+
+    pAlignTL->setStyle("align");
+    pAlignTL->setRect({{0, 0}, {18, 18}});
+    pAlignTL->setAlign(onut::eUIAlign::TOP_LEFT);
+    pAlignTL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+
+    pAlignT->setStyle("align");
+    pAlignT->setRect({{0, 0}, {18, 18}});
+    pAlignT->setAlign(onut::eUIAlign::TOP);
+    pAlignT->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignT->setAnchor({.5f, 0});
+
+    pAlignTR->setStyle("align");
+    pAlignTR->setRect({{0, 0}, {18, 18}});
+    pAlignTR->setAlign(onut::eUIAlign::TOP_RIGHT);
+    pAlignTR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignTR->setAnchor({1, 0});
+
+    pAlignL->setStyle("align");
+    pAlignL->setRect({{0, 0}, {18, 18}});
+    pAlignL->setAlign(onut::eUIAlign::LEFT);
+    pAlignL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignL->setAnchor({0, .5f});
+
+    pAlignC->setStyle("align");
+    pAlignC->setRect({{0, 0}, {18, 18}});
+    pAlignC->setAlign(onut::eUIAlign::CENTER);
+    pAlignC->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignC->setAnchor({.5f, .5f});
+
+    pAlignR->setStyle("align");
+    pAlignR->setRect({{0, 0}, {18, 18}});
+    pAlignR->setAlign(onut::eUIAlign::RIGHT);
+    pAlignR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignR->setAnchor({1, .5f});
+
+    pAlignBL->setStyle("align");
+    pAlignBL->setRect({{0, 0}, {18, 18}});
+    pAlignBL->setAlign(onut::eUIAlign::BOTTOM_LEFT);
+    pAlignBL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignBL->setAnchor({0, 1});
+
+    pAlignB->setStyle("align");
+    pAlignB->setRect({{0, 0}, {18, 18}});
+    pAlignB->setAlign(onut::eUIAlign::BOTTOM);
+    pAlignB->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignB->setAnchor({.5f, 1});
+
+    pAlignBR->setStyle("align");
+    pAlignBR->setRect({{0, 0}, {18, 18}});
+    pAlignBR->setAlign(onut::eUIAlign::BOTTOM_RIGHT);
+    pAlignBR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignBR->setAnchor({1, 1});
+
+    pPnl->add(pLabel);
+    pPnl->add(pContainer);
+    pContainer->add(pTxtText);
+    pContainer->add(pBtnColor);
+    pContainer->add(pTxtTypeFace);
+    pContainer->add(pLblSize);
+    pContainer->add(pTxtSize);
+    pContainer->add(pLblMinSize);
+    pContainer->add(pTxtMinSize);
+    pContainer->add(pChkWordWrap);
+    pContainer->add(pChkAutoFit);
+    pContainer->add(pChkEllipsis);
+    pContainer->add(pLblPadding);
+    pContainer->add(pTxtPaddingLeft);
+    pContainer->add(pTxtPaddingRight);
+    pContainer->add(pTxtPaddingTop);
+    pContainer->add(pTxtPaddingBottom);
+    pContainer->add(pAlign);
+    pAlign->add(pAlignTL);
+    pAlign->add(pAlignT);
+    pAlign->add(pAlignTR);
+    pAlign->add(pAlignL);
+    pAlign->add(pAlignC);
+    pAlign->add(pAlignR);
+    pAlign->add(pAlignBL);
+    pAlign->add(pAlignB);
+    pAlign->add(pAlignBR);
+
+    yPos += 174 + 4;
+
+    // Bindings
+    auto actionName = std::string("Edit ") + name;
+    {
+        auto pBinding = new ControlInspectorBind<std::string, TuiType>(
+            actionName, &(pTxtText->textComponent.text),
+            [](TuiType* pControl) {return pControl->textComponent.text; },
+            [](TuiType* pControl, const std::string& text){pControl->textComponent.text = text; });
+        pBindings->push_back(pBinding);
+        pTxtText->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+    }
+    {
+        auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>(
+            actionName, &(pBtnColor->color),
+            [](TuiType* pControl) {return pControl->textComponent.font.color; },
+            [](TuiType* pControl, const onut::sUIColor& color){pControl->textComponent.font.color = color; });
+        pBindings->push_back(pBinding);
+        pBtnColor->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+        {
+            CHOOSECOLOR colorChooser = {0};
+            DWORD rgbCurrent; // initial color selection
+            rgbCurrent = (DWORD)pBtnColor->color.packed;
+            rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
+            colorChooser.lStructSize = sizeof(colorChooser);
+            colorChooser.hwndOwner = OWindow->getHandle();
+            colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
+            colorChooser.rgbResult = rgbCurrent;
+            colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
+            if (ChooseColor(&colorChooser) == TRUE)
+            {
+                onut::sUIColor color;
+                rgbCurrent = colorChooser.rgbResult;
+                color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff;
+                color.unpack();
+                pBtnColor->color = color;
+                pBinding->updateControl(g_pDocument->pSelected);
+            }
+        };
+    }
+}
+
 template<typename TuiType, typename Tgetter, typename Tsetter>
 void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
 {
@@ -1091,7 +1313,7 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
     pPnl->add(pLabel);
     pPnl->add(pTextBox);
 
-    auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
+    auto pBinding = new ControlInspectorBind<std::string, TuiType>
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1124,7 +1346,7 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
     pPnl->add(pLabel);
     pPnl->add(pTextBox);
 
-    auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
+    auto pBinding = new ControlInspectorBind<std::string, TuiType>
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1168,7 +1390,7 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     pContainer->add(pTextBox);
     pContainer->add(pBrowseButton);
 
-    auto pBinding = new ControlInspectorBind<std::string, TuiType, Tgetter, Tsetter>
+    auto pBinding = new ControlInspectorBind<std::string, TuiType>
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
@@ -1334,28 +1556,22 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     // UIButton
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
-    BIND_TEXT_PROPERTY<onut::UIButton>("Text",
-                                       [=](onut::UIButton* pButton) -> std::string {return pButton->textComponent.text; },
-                                       [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.text = text; });
-    BIND_COLOR_PROPERTY<onut::UIButton>("Text Color",
-                                        [=](onut::UIButton* pButton) -> onut::sUIColor {return pButton->textComponent.font.color; },
-                                        [=](onut::UIButton* pButton, const onut::sUIColor& color){ pButton->textComponent.font.color = color; });
-    BIND_TEXT_PROPERTY<onut::UIButton>("Text TypeFace",
-                                       [=](onut::UIButton* pButton) -> std::string {return pButton->textComponent.font.typeFace; },
-                                       [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.font.typeFace = text; });
-    BIND_NUMERIC_PROPERTY<onut::UIButton>("Text Size",
-                                          [=](onut::UIButton* pButton) -> std::string {return std::to_string(pButton->textComponent.font.size); },
-                                          [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.font.size = std::stof(text); });
-    BIND_NUMERIC_PROPERTY<onut::UIButton>("Text Min Size",
-                                          [=](onut::UIButton* pButton) -> std::string {return std::to_string(pButton->textComponent.font.minSize); },
-                                          [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.font.minSize = std::stof(text); });
-
-    //eUIAlign            align;
-    //sUIPadding          padding;
-        //std::string         typeFace;
-        //float               size;
-    //uint8_t             flags;
-        //float               minSize;
+    //BIND_TEXT_PROPERTY<onut::UIButton>("Text",
+    //                                   [=](onut::UIButton* pButton) -> std::string {return pButton->textComponent.text; },
+    //                                   [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.text = text; });
+    //BIND_COLOR_PROPERTY<onut::UIButton>("Text Color",
+    //                                    [=](onut::UIButton* pButton) -> onut::sUIColor {return pButton->textComponent.font.color; },
+    //                                    [=](onut::UIButton* pButton, const onut::sUIColor& color){ pButton->textComponent.font.color = color; });
+    //BIND_TEXT_PROPERTY<onut::UIButton>("Text TypeFace",
+    //                                   [=](onut::UIButton* pButton) -> std::string {return pButton->textComponent.font.typeFace; },
+    //                                   [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.font.typeFace = text; });
+    //BIND_NUMERIC_PROPERTY<onut::UIButton>("Text Size",
+    //                                      [=](onut::UIButton* pButton) -> std::string {return std::to_string(pButton->textComponent.font.size); },
+    //                                      [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.font.size = std::stof(text); });
+    //BIND_NUMERIC_PROPERTY<onut::UIButton>("Text Min Size",
+    //                                      [=](onut::UIButton* pButton) -> std::string {return std::to_string(pButton->textComponent.font.minSize); },
+    //                                      [=](onut::UIButton* pButton, const std::string& text){ pButton->textComponent.font.minSize = std::stof(text); });
+    BIND_TEXT_COMPONENT<onut::UIButton>("Caption");
 
     // UILabel
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_LABEL, "pnlInspector_UILabel");

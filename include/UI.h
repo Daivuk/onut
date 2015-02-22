@@ -793,6 +793,8 @@ namespace onut
 
         float getFloat() const;
         int getInt() const;
+        void setFloat(float f);
+        void setInt(int i);
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;

@@ -1808,6 +1808,18 @@ namespace onut
         return 0;
     }
 
+    void UITextBox::setFloat(float f)
+    {
+        textComponent.text = std::to_string(f);
+        numerifyText();
+    }
+
+    void UITextBox::setInt(int i)
+    {
+        textComponent.text = std::to_string(i);
+        numerifyText();
+    }
+
     //--- Copy
     UITreeView::UITreeView(const UITreeView& other) :
         UIControl(other)

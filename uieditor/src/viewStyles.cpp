@@ -33,18 +33,19 @@ void createViewUIStyles(onut::UIContext* pContext)
     {
         const auto rectOutter = onut::UI2Onut(rect);
         const auto rectInnuer = rectOutter.Grow(-1);
+        auto textColor = onut::UI2Onut(pButton->textComponent.font.color);
 
         if (pButton->getState(*pContext) == onut::eUIState::DISABLED)
         {
             OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
             OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
-            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor * .5f);
+            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), textColor * .5f);
         }
         else
         {
             OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
             OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
-            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), g_fontColor);
+            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), textColor);
         }
     });
 

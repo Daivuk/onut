@@ -1127,37 +1127,37 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_txtStyle->textComponent.text = pSelected->getStyleName();
         if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtX->textComponent.text = std::to_string(pSelected->getRect().position.x * 100.f);
+            g_pInspector_UIControl_txtX->setFloat(pSelected->getRect().position.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtX->textComponent.text = std::to_string(pSelected->getRect().position.x);
+            g_pInspector_UIControl_txtX->setFloat(pSelected->getRect().position.x);
         }
         if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtY->textComponent.text = std::to_string(pSelected->getRect().position.y * 100.f);
+            g_pInspector_UIControl_txtY->setFloat(pSelected->getRect().position.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtY->textComponent.text = std::to_string(pSelected->getRect().position.y);
+            g_pInspector_UIControl_txtY->setFloat(pSelected->getRect().position.y);
         }
         g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE);
         g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE);
         if (pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtWidth->textComponent.text = std::to_string(pSelected->getRect().size.x * 100.f);
+            g_pInspector_UIControl_txtWidth->setFloat(pSelected->getRect().size.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtWidth->textComponent.text = std::to_string(pSelected->getRect().size.x);
+            g_pInspector_UIControl_txtWidth->setFloat(pSelected->getRect().size.x);
         }
         if (pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtHeight->textComponent.text = std::to_string(pSelected->getRect().size.y * 100.f);
+            g_pInspector_UIControl_txtHeight->setFloat(pSelected->getRect().size.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtHeight->textComponent.text = std::to_string(pSelected->getRect().size.y);
+            g_pInspector_UIControl_txtHeight->setFloat(pSelected->getRect().size.y);
         }
         g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE);
         g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE);
@@ -1195,19 +1195,19 @@ void DocumentView::updateInspector()
         }
         if (pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtAnchorX->textComponent.text = std::to_string(pSelected->getAnchor().x * 100.f);
+            g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->getAnchor().x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtAnchorX->textComponent.text = std::to_string(pSelected->getAnchor().x);
+            g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->getAnchor().x);
         }
         if (pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtAnchorY->textComponent.text = std::to_string(pSelected->getAnchor().y * 100.f);
+            g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->getAnchor().y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtAnchorY->textComponent.text = std::to_string(pSelected->getAnchor().y);
+            g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->getAnchor().y);
         }
         g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
         g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);

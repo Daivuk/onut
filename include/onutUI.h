@@ -14,4 +14,10 @@ namespace onut
         ret.w = uiRect.size.y;
         return std::move(ret);
     }
+
+    inline Color UI2Onut(const sUIColor& uiColor)
+    {
+        Color ret{&uiColor.r};
+        return std::move(ret);
+    }
 };

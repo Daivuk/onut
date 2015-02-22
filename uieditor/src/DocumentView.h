@@ -82,14 +82,17 @@ public:
     virtual void updateControl(onut::UIControl* pControl) = 0;
 };
 
-template<typename Ttype, typename TtargetControl, typename TgetterFn, typename TsetterFn>
+template<typename Ttype, typename TtargetControl>
 class ControlInspectorBind : public IControlInspectorBind
 {
 public:
+    using Tgetter = std::function < Ttype(TtargetControl*) > ;
+    using Tsetter = std::function < void(TtargetControl*, const Ttype&) > ;
+
     ControlInspectorBind(const std::string& actionName,
                          Ttype* pInspectorValue,
-                         TgetterFn getter,
-                         TsetterFn setter) :
+                         const Tgetter& getter,
+                         const Tsetter& setter) :
                          m_actionName(actionName),
                          m_pInspectorValue(pInspectorValue),
                          m_getter(getter),
@@ -100,8 +103,8 @@ public:
 private:
     std::string     m_actionName;
     Ttype*          m_pInspectorValue;
-    TgetterFn       m_getter;
-    TsetterFn       m_setter;
+    Tgetter         m_getter;
+    Tsetter         m_setter;
 
 public:
     void updateInspector(onut::UIControl* pControl) override
