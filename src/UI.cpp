@@ -1140,7 +1140,7 @@ namespace onut
 
     void UIControl::updateInternal(UIContext& context, const sUIRect& parentRect)
     {
-        if (!isEnabled || isClickThrough) return;
+        if (!isEnabled || !isVisible) return;
         sUIRect worldRect = getWorldRect(parentRect);
 
         // Do children first, inverted
@@ -1151,7 +1151,7 @@ namespace onut
             pChild->updateInternal(context, worldRect);
         }
 
-        if (!context.m_pHoverControl)
+        if (!context.m_pHoverControl && !isClickThrough)
         {
             if (context.m_mouseEvent.mousePos.x >= worldRect.position.x &&
                 context.m_mouseEvent.mousePos.y >= worldRect.position.y &&
