@@ -69,17 +69,22 @@ onut::UIControl* getCreateParent()
     }
 }
 
-namespace onut
-{
-    const char* getStringFromType(eUIType type);
-}
-
 std::string getControlName(onut::UIControl* pControl)
 {
-    std::string ret = pControl->getName();
+    std::string ret = pControl->name;
     if (ret.empty())
     {
-        ret = onut::getStringFromType(pControl->getType());
+        switch (pControl->getType())
+        {
+            case onut::eUIType::UI_BUTTON: return "UIButton";
+            case onut::eUIType::UI_CHECKBOX: return "UICheckBox";
+            case onut::eUIType::UI_CONTROL: return "UIControl";
+            case onut::eUIType::UI_IMAGE: return "UIImage";
+            case onut::eUIType::UI_LABEL: return "UILabel";
+            case onut::eUIType::UI_PANEL: return "UIPanel";
+            case onut::eUIType::UI_TEXTBOX: return "UITextBox";
+            case onut::eUIType::UI_TREEVIEW: return "UITreeView";
+        }
     }
     return std::move(ret);
 }
@@ -115,7 +120,7 @@ void onCreateControl(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pParent = getCreateParent();
     auto pCtrl = new onut::UIControl();
 
-    pCtrl->setRect({{0, 0}, {100, 100}});
+    pCtrl->rect = {{0, 0}, {100, 100}};
     createControlAction(pCtrl, pParent);
 }
 
@@ -124,7 +129,7 @@ void onCreatePanel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pParent = getCreateParent();
     auto pPanel = new onut::UIPanel();
 
-    pPanel->setRect({{0, 0}, {100, 100}});
+    pPanel->rect = {{0, 0}, {100, 100}};
     createControlAction(pPanel, pParent);
 }
 
@@ -134,7 +139,7 @@ void onCreateButton(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pBtn = new onut::UIButton();
 
     pBtn->textComponent.text = "Button";
-    pBtn->setRect({{0, 0}, {64, 24}});
+    pBtn->rect = {{0, 0}, {64, 24}};
     createControlAction(pBtn, pParent);
 }
 
@@ -144,7 +149,7 @@ void onCreateLabel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pLbl = new onut::UILabel();
 
     pLbl->textComponent.text = "Label";
-    pLbl->setRect({{0, 0}, {64, 20}});
+    pLbl->rect = {{0, 0}, {64, 20}};
     createControlAction(pLbl, pParent);
 }
 
@@ -153,7 +158,7 @@ void onCreateImage(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     auto pParent = getCreateParent();
     auto pImg = new onut::UIImage();
 
-    pImg->setRect({{0, 0}, {32, 32}});
+    pImg->rect = {{0, 0}, {32, 32}};
     createControlAction(pImg, pParent);
 }
 
@@ -261,11 +266,11 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
 
     auto text = pTextBox->textComponent.text;
     auto pControl = g_pDocument->pSelected;
-    auto previousText = pControl->getName();
+    auto previousText = pControl->name;
 
     g_actionManager.doAction(new onut::Action("Rename " + getControlName(pControl) + " to " + text,
         [=]{
-        pControl->setName(text);
+        pControl->name = text;
         auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
         if (pViewItem)
         {
@@ -274,7 +279,7 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
         g_pDocument->updateInspector();
     },
         [=]{
-        pControl->setName(previousText);
+        pControl->name = previousText;
         auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
         if (pViewItem)
         {
@@ -296,15 +301,15 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
 void doRectChange(const std::string& actionName, onut::UIControl* pControl, const onut::sUIRect& rect)
 {
     if (!pControl) return;
-    auto previousRect = pControl->getRect();
+    auto previousRect = pControl->rect;
     g_actionManager.doAction(new onut::Action(actionName, 
         [=]{
-        pControl->setRect(rect);
+        pControl->rect = rect;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pControl->setRect(previousRect);
+        pControl->rect = previousRect;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -320,9 +325,9 @@ void doRectChange(const std::string& actionName, onut::UIControl* pControl, cons
 void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto rect = g_pDocument->pSelected->getRect();
+    auto rect = g_pDocument->pSelected->rect;
     rect.position.x = pTextBox->getFloat();
-    if (g_pDocument->pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
+    if (g_pDocument->pSelected->xType == onut::eUIPosType::POS_PERCENTAGE)
     {
         rect.position.x /= 100.f;
     }
@@ -331,9 +336,9 @@ void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
 void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto rect = g_pDocument->pSelected->getRect();
+    auto rect = g_pDocument->pSelected->rect;
     rect.position.y = pTextBox->getFloat();
-    if (g_pDocument->pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
+    if (g_pDocument->pSelected->yType == onut::eUIPosType::POS_PERCENTAGE)
     {
         rect.position.y /= 100.f;
     }
@@ -344,21 +349,21 @@ void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevAnchor = g_pDocument->pSelected->getAnchor();
+    auto prevAnchor = g_pDocument->pSelected->anchor;
     auto newAnchor = prevAnchor;
     newAnchor.x = pTextBox->getFloat();
-    if (g_pDocument->pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    if (g_pDocument->pSelected->xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
     {
         newAnchor.x /= 100.f;
     }
     g_actionManager.doAction(new onut::Action("Edit X anchor",
         [=]{
-        pSelected->setAnchor(newAnchor);
+        pSelected->anchor = newAnchor;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setAnchor(prevAnchor);
+        pSelected->anchor = prevAnchor;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -374,21 +379,21 @@ void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevAnchor = g_pDocument->pSelected->getAnchor();
+    auto prevAnchor = g_pDocument->pSelected->anchor;
     auto newAnchor = prevAnchor;
     newAnchor.y = pTextBox->getFloat();
-    if (g_pDocument->pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    if (g_pDocument->pSelected->yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
     {
         newAnchor.y /= 100.f;
     }
     g_actionManager.doAction(new onut::Action("Edit Y anchor",
         [=]{
-        pSelected->setAnchor(newAnchor);
+        pSelected->anchor = newAnchor;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setAnchor(prevAnchor);
+        pSelected->anchor = prevAnchor;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -403,9 +408,9 @@ void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
 void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto rect = g_pDocument->pSelected->getRect();
+    auto rect = g_pDocument->pSelected->rect;
     rect.size.x = pTextBox->getFloat();
-    if (g_pDocument->pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE)
+    if (g_pDocument->pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE)
     {
         rect.size.x /= 100.f;
     }
@@ -415,9 +420,9 @@ void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
 void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
-    auto rect = g_pDocument->pSelected->getRect();
+    auto rect = g_pDocument->pSelected->rect;
     rect.size.y = pTextBox->getFloat();
-    if (g_pDocument->pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE)
+    if (g_pDocument->pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE)
     {
         rect.size.y /= 100.f;
     }
@@ -455,11 +460,11 @@ void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEv
     bool bValue = pCheckBox->getIsChecked();
     g_actionManager.doAction(new onut::Action("Toggle Enable",
         [=]{
-        pSelected->setIsEnabled(bValue);
+        pSelected->isEnabled = bValue;
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setIsEnabled(!bValue);
+        pSelected->isEnabled = !bValue;
         g_pDocument->updateInspector();
     },
         [=]{
@@ -477,11 +482,11 @@ void onUIControlVisibleChanged(onut::UICheckBox* pCheckBox, const onut::UICheckE
     bool bValue = pCheckBox->getIsChecked();
     g_actionManager.doAction(new onut::Action("Toggle Visible", 
         [=]{
-        pSelected->setIsVisible(bValue);
+        pSelected->isVisible = bValue;
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setIsVisible(!bValue);
+        pSelected->isVisible = !bValue;
         g_pDocument->updateInspector();
     },
         [=]{
@@ -499,11 +504,11 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
     bool bValue = pCheckBox->getIsChecked();
     g_actionManager.doAction(new onut::Action("Toggle ClickThrough", 
         [=]{
-        pSelected->setIsClickThrough(bValue);
+        pSelected->isClickThrough = bValue;
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setIsClickThrough(!bValue);
+        pSelected->isClickThrough = !bValue;
         g_pDocument->updateInspector();
     },
         [=]{
@@ -518,8 +523,8 @@ void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevAnchor = pSelected->getAnchor();
-    auto prevAnchorType = pSelected->getXAnchorType();
+    auto prevAnchor = pSelected->anchor;
+    auto prevAnchorType = pSelected->xAnchorType;
     auto newAnchor = prevAnchor;
     auto newAnchorType = prevAnchorType;
     if (pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
@@ -534,13 +539,13 @@ void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
     }
     g_actionManager.doAction(new onut::Action("Toggle X anchor percent",
         [=]{
-        pSelected->setAnchor(newAnchor);
-        pSelected->setXAnchorType(newAnchorType);
+        pSelected->anchor = newAnchor;
+        pSelected->xAnchorType = newAnchorType;
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setAnchor(prevAnchor);
-        pSelected->setXAnchorType(prevAnchorType);
+        pSelected->anchor = prevAnchor;
+        pSelected->xAnchorType = prevAnchorType;
         g_pDocument->updateInspector();
     },
         [=]{
@@ -555,8 +560,8 @@ void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevAnchor = pSelected->getAnchor();
-    auto prevAnchorType = pSelected->getYAnchorType();
+    auto prevAnchor = pSelected->anchor;
+    auto prevAnchorType = pSelected->yAnchorType;
     auto newAnchor = prevAnchor;
     auto newAnchorType = prevAnchorType;
     if (pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
@@ -571,13 +576,13 @@ void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
     }
     g_actionManager.doAction(new onut::Action("Toggle Y anchor percent",
         [=]{
-        pSelected->setAnchor(newAnchor);
-        pSelected->setYAnchorType(newAnchorType);
+        pSelected->anchor = newAnchor;
+        pSelected->yAnchorType = newAnchorType;
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setAnchor(prevAnchor);
-        pSelected->setYAnchorType(prevAnchorType);
+        pSelected->anchor = prevAnchor;
+        pSelected->yAnchorType = prevAnchorType;
         g_pDocument->updateInspector();
     },
         [=]{
@@ -592,8 +597,8 @@ void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UIC
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevRect = pSelected->getRect();
-    auto prevDimType = pSelected->getWidthType();
+    auto prevRect = pSelected->rect;
+    auto prevDimType = pSelected->widthType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
     if (pCheckBox->getIsChecked() && prevDimType != onut::eUIDimType::DIM_PERCENTAGE)
@@ -611,14 +616,14 @@ void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UIC
     }
     g_actionManager.doAction(new onut::Action("Toggle Width percent",
         [=]{
-        pSelected->setWidthType(newDimType);
-        pSelected->setRect(newRect);
+        pSelected->widthType = (newDimType);
+        pSelected->rect = (newRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setWidthType(prevDimType);
-        pSelected->setRect(prevRect);
+        pSelected->widthType = (prevDimType);
+        pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -634,8 +639,8 @@ void onUIControlHeightPercentChanged(onut::UICheckBox* pCheckBox, const onut::UI
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevRect = pSelected->getRect();
-    auto prevDimType = pSelected->getHeightType();
+    auto prevRect = pSelected->rect;
+    auto prevDimType = pSelected->heightType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
     if (pCheckBox->getIsChecked() && prevDimType != onut::eUIDimType::DIM_PERCENTAGE)
@@ -653,14 +658,14 @@ void onUIControlHeightPercentChanged(onut::UICheckBox* pCheckBox, const onut::UI
     }
     g_actionManager.doAction(new onut::Action("Toggle Height percent",
         [=]{
-        pSelected->setHeightType(newDimType);
-        pSelected->setRect(newRect);
+        pSelected->heightType = (newDimType);
+        pSelected->rect = (newRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setHeightType(prevDimType);
-        pSelected->setRect(prevRect);
+        pSelected->heightType = (prevDimType);
+        pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -676,11 +681,11 @@ void onUIControlWidthRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UI
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevRect = pSelected->getRect();
-    auto prevDimType = pSelected->getWidthType();
+    auto prevRect = pSelected->rect;
+    auto prevDimType = pSelected->widthType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
-    if (pCheckBox->getIsChecked() && pSelected->getWidthType() != onut::eUIDimType::DIM_RELATIVE)
+    if (pCheckBox->getIsChecked() && pSelected->widthType != onut::eUIDimType::DIM_RELATIVE)
     {
         auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_RELATIVE;
@@ -695,14 +700,14 @@ void onUIControlWidthRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UI
     }
     g_actionManager.doAction(new onut::Action("Toggle Width relative",
         [=]{
-        pSelected->setWidthType(newDimType);
-        pSelected->setRect(newRect);
+        pSelected->widthType = (newDimType);
+        pSelected->rect = (newRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setWidthType(prevDimType);
-        pSelected->setRect(prevRect);
+        pSelected->widthType = (prevDimType);
+        pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -718,11 +723,11 @@ void onUIControlHeightRelativeChanged(onut::UICheckBox* pCheckBox, const onut::U
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevRect = pSelected->getRect();
-    auto prevDimType = pSelected->getHeightType();
+    auto prevRect = pSelected->rect;
+    auto prevDimType = pSelected->heightType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
-    if (pCheckBox->getIsChecked() && pSelected->getHeightType() != onut::eUIDimType::DIM_RELATIVE)
+    if (pCheckBox->getIsChecked() && pSelected->heightType != onut::eUIDimType::DIM_RELATIVE)
     {
         auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_RELATIVE;
@@ -737,14 +742,14 @@ void onUIControlHeightRelativeChanged(onut::UICheckBox* pCheckBox, const onut::U
     }
     g_actionManager.doAction(new onut::Action("Toggle Height relative",
         [=]{
-        pSelected->setHeightType(newDimType);
-        pSelected->setRect(newRect);
+        pSelected->heightType = (newDimType);
+        pSelected->rect = (newRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setHeightType(prevDimType);
-        pSelected->setRect(prevRect);
+        pSelected->heightType = (prevDimType);
+        pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -760,8 +765,8 @@ void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevType = pSelected->getXType();
-    auto prevRect = pSelected->getRect();
+    auto prevType = pSelected->xType;
+    auto prevRect = pSelected->rect;
     auto newType = prevType;
     auto newRect = prevRect;
     if (pCheckBox->getIsChecked() && prevType != onut::eUIPosType::POS_PERCENTAGE)
@@ -778,14 +783,14 @@ void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
     }
     g_actionManager.doAction(new onut::Action("Toggle X percent",
         [=]{
-        pSelected->setXType(newType);
-        pSelected->setRect(newRect);
+        pSelected->xType = (newType);
+        pSelected->rect = (newRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setXType(prevType);
-        pSelected->setRect(prevRect);
+        pSelected->xType = (prevType);
+        pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -801,8 +806,8 @@ void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
-    auto prevType = pSelected->getYType();
-    auto prevRect = pSelected->getRect();
+    auto prevType = pSelected->yType;
+    auto prevRect = pSelected->rect;
     auto newType = prevType;
     auto newRect = prevRect;
     if (pCheckBox->getIsChecked() && prevType != onut::eUIPosType::POS_PERCENTAGE)
@@ -819,14 +824,14 @@ void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
     }
     g_actionManager.doAction(new onut::Action("Toggle Y percent",
         [=]{
-        pSelected->setYType(newType);
-        pSelected->setRect(newRect);
+        pSelected->yType = (newType);
+        pSelected->rect = (newRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setYType(prevType);
-        pSelected->setRect(prevRect);
+        pSelected->yType = (prevType);
+        pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -842,7 +847,7 @@ void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 {
     if (!g_pDocument->pSelected) return; // Wuuuut?
     auto pSelected = g_pDocument->pSelected;
-    onut::sUIVector2 prevAnchor = pSelected->getAnchor();
+    onut::sUIVector2 prevAnchor = pSelected->anchor;
     if (pControl == g_pInspector_UIControl_chkAnchorTOP_LEFT)
     {
         pSelected->setAnchorPercent({0, 0});
@@ -879,16 +884,16 @@ void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     {
         pSelected->setAnchorPercent({1, 1});
     }
-    onut::sUIVector2 newAnchor = pSelected->getAnchor();
+    onut::sUIVector2 newAnchor = pSelected->anchor;
 
     g_actionManager.doAction(new onut::Action("Change Anchor",
         [=]{
-        pSelected->setAnchor(newAnchor);
+        pSelected->anchor = (newAnchor);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setAnchor(prevAnchor);
+        pSelected->anchor = (prevAnchor);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -906,72 +911,72 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
     if (!g_pDocument->pSelected) return; // Wuuuut?
 
     auto pSelected = g_pDocument->pSelected;
-    auto previousRect = pSelected->getRect();
+    auto previousRect = pSelected->rect;
     auto newRect = previousRect;
     newRect.position.x = 0;
     newRect.position.y = 0;
-    auto previousAnchor = pSelected->getAnchor();
-    auto previousAlign = pSelected->getAlign();
+    auto previousAnchor = pSelected->anchor;
+    auto previousAlign = pSelected->align;
     if (pCheckBox == g_pInspector_UIControl_chkTOP_LEFT)
     {
         pSelected->setAnchorPercent({0, 0});
-        pSelected->setAlign(onut::eUIAlign::TOP_LEFT);
+        pSelected->align = (onut::eUIAlign::TOP_LEFT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkTOP)
     {
         pSelected->setAnchorPercent({.5f, 0});
-        pSelected->setAlign(onut::eUIAlign::TOP);
+        pSelected->align = (onut::eUIAlign::TOP);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkTOP_RIGHT)
     {
         pSelected->setAnchorPercent({1, 0});
-        pSelected->setAlign(onut::eUIAlign::TOP_RIGHT);
+        pSelected->align = (onut::eUIAlign::TOP_RIGHT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkLEFT)
     {
         pSelected->setAnchorPercent({0, .5f});
-        pSelected->setAlign(onut::eUIAlign::LEFT);
+        pSelected->align = (onut::eUIAlign::LEFT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkCENTER)
     {
         pSelected->setAnchorPercent({.5f, .5f});
-        pSelected->setAlign(onut::eUIAlign::CENTER);
+        pSelected->align = (onut::eUIAlign::CENTER);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkRIGHT)
     {
         pSelected->setAnchorPercent({1, .5f});
-        pSelected->setAlign(onut::eUIAlign::RIGHT);
+        pSelected->align = (onut::eUIAlign::RIGHT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_LEFT)
     {
         pSelected->setAnchorPercent({0, 1});
-        pSelected->setAlign(onut::eUIAlign::BOTTOM_LEFT);
+        pSelected->align = (onut::eUIAlign::BOTTOM_LEFT);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM)
     {
         pSelected->setAnchorPercent({.5f, 1});
-        pSelected->setAlign(onut::eUIAlign::BOTTOM);
+        pSelected->align = (onut::eUIAlign::BOTTOM);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_RIGHT)
     {
         pSelected->setAnchorPercent({1, 1});
-        pSelected->setAlign(onut::eUIAlign::BOTTOM_RIGHT);
+        pSelected->align = (onut::eUIAlign::BOTTOM_RIGHT);
     }
-    auto newAnchor = pSelected->getAnchor();
-    auto newAlign = pSelected->getAlign();
+    auto newAnchor = pSelected->anchor;
+    auto newAlign = pSelected->align;
 
     g_actionManager.doAction(new onut::Action("Change Align",
         [=]{
-        pSelected->setRect(newRect);
-        pSelected->setAnchor(newAnchor);
-        pSelected->setAlign(newAlign);
+        pSelected->rect = (newRect);
+        pSelected->anchor = (newAnchor);
+        pSelected->align = (newAlign);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
         [=]{
-        pSelected->setRect(previousRect);
-        pSelected->setAnchor(previousAnchor);
-        pSelected->setAlign(previousAlign);
+        pSelected->rect = (previousRect);
+        pSelected->anchor = (previousAnchor);
+        pSelected->align = (previousAlign);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
     },
@@ -1030,14 +1035,14 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     auto pButton = new onut::UIPanel();
 
     pLabel->textComponent.text = name;
-    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
     pButton->setStyle("colorPicker");
-    pButton->setAlign(onut::eUIAlign::TOP_RIGHT);
-    pButton->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pButton->setRect({{-4, yPos}, {0.618f, 24}});
-    pButton->setAnchor({1, 0});
+    pButton->align = (onut::eUIAlign::TOP_RIGHT);
+    pButton->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pButton->rect = {{-4, yPos}, {0.618f, 24}};
+    pButton->anchor = {1, 0};
 
     yPos += 24 + 4;
 
@@ -1103,122 +1108,122 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     auto pAlignBR = new onut::UICheckBox();
 
     pLabel->textComponent.text = name;
-    pLabel->setRect({{4, yPos}, {58, 174}});
+    pLabel->rect = {{4, yPos}, {58, 174}};
 
     pContainer->setStyle("group");
-    pContainer->setWidthType(onut::eUIDimType::DIM_RELATIVE);
-    pContainer->setRect({{66, yPos}, {-70, 174}});
+    pContainer->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pContainer->rect = {{66, yPos}, {-70, 174}};
 
-    pTxtText->setWidthType(onut::eUIDimType::DIM_RELATIVE);
-    pTxtText->setRect({{4, 4}, {-8, 24}});
+    pTxtText->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pTxtText->rect = {{4, 4}, {-8, 24}};
 
     pBtnColor->setStyle("colorPicker");
-    pBtnColor->setRect({{4, 33}, {26, 24}});
+    pBtnColor->rect = {{4, 33}, {26, 24}};
 
-    pTxtTypeFace->setRect({{34, 33}, {118, 24}});
+    pTxtTypeFace->rect = {{34, 33}, {118, 24}};
 
     pLblSize->textComponent.text = "Size";
-    pLblSize->setRect({{4, 61}, {26, 24}});
+    pLblSize->rect = {{4, 61}, {26, 24}};
 
     pTxtSize->textComponent.text = "0";
-    pTxtSize->setRect({{34, 61}, {44, 24}});
+    pTxtSize->rect = {{34, 61}, {44, 24}};
     pTxtSize->setIsNumerical(true);
     pTxtSize->setIsDecimalPrecision(1);
 
     pLblMinSize->textComponent.text = "Min";
-    pLblMinSize->setRect({{82, 61}, {24, 24}});
+    pLblMinSize->rect = {{82, 61}, {24, 24}};
 
     pTxtMinSize->textComponent.text = "0";
-    pTxtMinSize->setRect({{108, 61}, {44, 24}});
+    pTxtMinSize->rect = {{108, 61}, {44, 24}};
     pTxtMinSize->setIsNumerical(true);
     pTxtMinSize->setIsDecimalPrecision(1);
 
     pChkWordWrap->textComponent.text = "Word wrap";
-    pChkWordWrap->setRect({{4, 90}, {87 - 4, 24}});
+    pChkWordWrap->rect = {{4, 90}, {87 - 4, 24}};
 
     pChkAutoFit->textComponent.text = "Auto fit";
-    pChkAutoFit->setRect({{4 + 87, 90}, {68 - 4, 24}});
+    pChkAutoFit->rect = {{4 + 87, 90}, {68 - 4, 24}};
 
     pChkEllipsis->textComponent.text = "Ellipsis";
-    pChkEllipsis->setRect({{4 + 87 + 68, 90}, {55 - 4, 24}});
+    pChkEllipsis->rect = {{4 + 87 + 68, 90}, {55 - 4, 24}};
 
     pLblPadding->textComponent.text = "Padding";
-    pLblPadding->setRect({{4, 118}, {53 - 8, 50}});
+    pLblPadding->rect = {{4, 118}, {53 - 8, 50}};
 
     pTxtPaddingLeft->textComponent.text = "0";
-    pTxtPaddingLeft->setRect({{53, 130}, {51, 24}});
+    pTxtPaddingLeft->rect = {{53, 130}, {51, 24}};
     pTxtPaddingLeft->setIsNumerical(true);
     pTxtPaddingLeft->setIsDecimalPrecision(0);
 
     pTxtPaddingRight->textComponent.text = "0";
-    pTxtPaddingRight->setRect({{159, 130}, {51, 24}});
+    pTxtPaddingRight->rect = {{159, 130}, {51, 24}};
     pTxtPaddingRight->setIsNumerical(true);
     pTxtPaddingRight->setIsDecimalPrecision(0);
 
     pTxtPaddingTop->textComponent.text = "0";
-    pTxtPaddingTop->setRect({{106, 118}, {51, 24}});
+    pTxtPaddingTop->rect = {{106, 118}, {51, 24}};
     pTxtPaddingTop->setIsNumerical(true);
     pTxtPaddingTop->setIsDecimalPrecision(0);
 
     pTxtPaddingBottom->textComponent.text = "0";
-    pTxtPaddingBottom->setRect({{106, 144}, {51, 24}});
+    pTxtPaddingBottom->rect = {{106, 144}, {51, 24}};
     pTxtPaddingBottom->setIsNumerical(true);
     pTxtPaddingBottom->setIsDecimalPrecision(0);
 
-    pAlign->setRect({{156, 32}, {54, 54}});
+    pAlign->rect = {{156, 32}, {54, 54}};
 
     pAlignTL->setStyle("align");
-    pAlignTL->setRect({{0, 0}, {18, 18}});
-    pAlignTL->setAlign(onut::eUIAlign::TOP_LEFT);
+    pAlignTL->rect = {{0, 0}, {18, 18}};
+    pAlignTL->align = onut::eUIAlign::TOP_LEFT;
     pAlignTL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
 
     pAlignT->setStyle("align");
-    pAlignT->setRect({{0, 0}, {18, 18}});
-    pAlignT->setAlign(onut::eUIAlign::TOP);
+    pAlignT->rect = {{0, 0}, {18, 18}};
+    pAlignT->align = (onut::eUIAlign::TOP);
     pAlignT->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignT->setAnchor({.5f, 0});
+    pAlignT->anchor = {.5f, 0};
 
     pAlignTR->setStyle("align");
-    pAlignTR->setRect({{0, 0}, {18, 18}});
-    pAlignTR->setAlign(onut::eUIAlign::TOP_RIGHT);
+    pAlignTR->rect = {{0, 0}, {18, 18}};
+    pAlignTR->align = (onut::eUIAlign::TOP_RIGHT);
     pAlignTR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignTR->setAnchor({1, 0});
+    pAlignTR->anchor = {1, 0};
 
     pAlignL->setStyle("align");
-    pAlignL->setRect({{0, 0}, {18, 18}});
-    pAlignL->setAlign(onut::eUIAlign::LEFT);
+    pAlignL->rect = {{0, 0}, {18, 18}};
+    pAlignL->align = (onut::eUIAlign::LEFT);
     pAlignL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignL->setAnchor({0, .5f});
+    pAlignL->anchor = {0, .5f};
 
     pAlignC->setStyle("align");
-    pAlignC->setRect({{0, 0}, {18, 18}});
-    pAlignC->setAlign(onut::eUIAlign::CENTER);
+    pAlignC->rect = {{0, 0}, {18, 18}};
+    pAlignC->align = (onut::eUIAlign::CENTER);
     pAlignC->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignC->setAnchor({.5f, .5f});
+    pAlignC->anchor = {.5f, .5f};
 
     pAlignR->setStyle("align");
-    pAlignR->setRect({{0, 0}, {18, 18}});
-    pAlignR->setAlign(onut::eUIAlign::RIGHT);
+    pAlignR->rect = {{0, 0}, {18, 18}};
+    pAlignR->align = (onut::eUIAlign::RIGHT);
     pAlignR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignR->setAnchor({1, .5f});
+    pAlignR->anchor = {1, .5f};
 
     pAlignBL->setStyle("align");
-    pAlignBL->setRect({{0, 0}, {18, 18}});
-    pAlignBL->setAlign(onut::eUIAlign::BOTTOM_LEFT);
+    pAlignBL->rect = {{0, 0}, {18, 18}};
+    pAlignBL->align = (onut::eUIAlign::BOTTOM_LEFT);
     pAlignBL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignBL->setAnchor({0, 1});
+    pAlignBL->anchor = {0, 1};
 
     pAlignB->setStyle("align");
-    pAlignB->setRect({{0, 0}, {18, 18}});
-    pAlignB->setAlign(onut::eUIAlign::BOTTOM);
+    pAlignB->rect = {{0, 0}, {18, 18}};
+    pAlignB->align = (onut::eUIAlign::BOTTOM);
     pAlignB->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignB->setAnchor({.5f, 1});
+    pAlignB->anchor = {.5f, 1};
 
     pAlignBR->setStyle("align");
-    pAlignBR->setRect({{0, 0}, {18, 18}});
-    pAlignBR->setAlign(onut::eUIAlign::BOTTOM_RIGHT);
+    pAlignBR->rect = {{0, 0}, {18, 18}};
+    pAlignBR->align = (onut::eUIAlign::BOTTOM_RIGHT);
     pAlignBR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
-    pAlignBR->setAnchor({1, 1});
+    pAlignBR->anchor = {1, 1};
 
     pPnl->add(pLabel);
     pPnl->add(pContainer);
@@ -1300,13 +1305,13 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
     auto pTextBox = new onut::UITextBox();
 
     pLabel->textComponent.text = name;
-    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
-    pTextBox->setAlign(onut::eUIAlign::TOP_RIGHT);
-    pTextBox->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pTextBox->setRect({{-4, yPos}, {0.618f, 24}});
-    pTextBox->setAnchor({1, 0});
+    pTextBox->align = (onut::eUIAlign::TOP_RIGHT);
+    pTextBox->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
+    pTextBox->anchor = {1, 0};
 
     yPos += 24 + 4;
 
@@ -1332,13 +1337,13 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
     auto pTextBox = new onut::UITextBox();
 
     pLabel->textComponent.text = name;
-    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
-    pTextBox->setAlign(onut::eUIAlign::TOP_RIGHT);
-    pTextBox->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pTextBox->setRect({{-4, yPos}, {0.618f, 24}});
-    pTextBox->setAnchor({1, 0});
+    pTextBox->align = (onut::eUIAlign::TOP_RIGHT);
+    pTextBox->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
+    pTextBox->anchor = {1, 0};
     pTextBox->setIsNumerical(true);
 
     yPos += 24 + 4;
@@ -1367,20 +1372,20 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     auto pBrowseButton = new onut::UIButton();
 
     pLabel->textComponent.text = name;
-    pLabel->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pLabel->setRect({{4, yPos}, {0.382f, 24}});
+    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
-    pContainer->setAlign(onut::eUIAlign::TOP_RIGHT);
-    pContainer->setWidthType(onut::eUIDimType::DIM_PERCENTAGE);
-    pContainer->setRect({{-4, yPos}, {0.618f, 24}});
-    pContainer->setAnchor({1, 0});
+    pContainer->align = (onut::eUIAlign::TOP_RIGHT);
+    pContainer->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pContainer->rect = {{-4, yPos}, {0.618f, 24}};
+    pContainer->anchor = {1, 0};
 
-    pTextBox->setWidthType(onut::eUIDimType::DIM_RELATIVE);
-    pTextBox->setRect({{0, 0}, {-32, 24}});
+    pTextBox->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pTextBox->rect = {{0, 0}, {-32, 24}};
 
-    pBrowseButton->setAlign(onut::eUIAlign::TOP_RIGHT);
-    pBrowseButton->setAnchor({1, 0});
-    pBrowseButton->setRect({{0, 0}, {32, 24}});
+    pBrowseButton->align = (onut::eUIAlign::TOP_RIGHT);
+    pBrowseButton->anchor = {1, 0};
+    pBrowseButton->rect = {{0, 0}, {32, 24}};
     pBrowseButton->textComponent.text = "...";
 
     yPos += 24 + 4;

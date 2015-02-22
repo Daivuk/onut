@@ -78,16 +78,16 @@ DocumentView::DocumentView(const std::string& filename)
     {
         pUIScreen = new onut::UIControl(m_filename.c_str());
     }
-    pUIScreen->setName("Root");
-    pUIScreen->setWidthType(onut::eUIDimType::DIM_RELATIVE);
-    pUIScreen->setHeightType(onut::eUIDimType::DIM_RELATIVE);
+    pUIScreen->name = "Root";
+    pUIScreen->widthType = onut::eUIDimType::DIM_RELATIVE;
+    pUIScreen->heightType = onut::eUIDimType::DIM_RELATIVE;
 
     m_guides[0] = g_pUIScreen->getChild("hGuide");
     m_guides[1] = g_pUIScreen->getChild("vGuide");
 
     // Dotted line gizmo for selection
     m_pGizmo = g_pUIScreen->getChild<onut::UIPanel>("gizmo");
-    m_pGizmo->setIsVisible(false);
+    m_pGizmo->isVisible = false;
     m_gizmoHandles[0] = m_pGizmo->getChild("topLeftHandle");
     m_gizmoHandles[1] = m_pGizmo->getChild("topHandle");
     m_gizmoHandles[2] = m_pGizmo->getChild("topRightHandle");
@@ -166,10 +166,10 @@ void DocumentView::controlDeleted(onut::UIControl* pControl)
 
 void DocumentView::updateSelectedGizmoRect()
 {
-    m_pGizmo->setIsVisible(pSelected != nullptr);
+    m_pGizmo->isVisible = (pSelected != nullptr);
     if (pSelected)
     {
-        m_pGizmo->setRect(pSelected->getWorldRect(*pUIContext));
+        m_pGizmo->rect = (pSelected->getWorldRect(*pUIContext));
     }
 }
 
@@ -204,7 +204,7 @@ void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIM
     m_state = eDocumentState::MOVING_HANDLE;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_pCurrentHandle = pControl;
-    m_controlRectOnDown = pSelected->getRect();
+    m_controlRectOnDown = pSelected->rect;
     m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
 }
 
@@ -241,8 +241,8 @@ void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMou
 {
     concludeTransform(pSelected, m_controlWorldRectOnDown);
 
-    m_guides[0]->setIsVisible(false);
-    m_guides[1]->setIsVisible(false);
+    m_guides[0]->isVisible = (false);
+    m_guides[1]->isVisible = (false);
 
     m_state = eDocumentState::IDLE;
 }
@@ -253,7 +253,7 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
     OWindow->setCursor(curSIZEALL);
     m_state = eDocumentState::MOVING_GIZO;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
-    m_controlRectOnDown = pSelected->getRect();
+    m_controlRectOnDown = pSelected->rect;
     m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
 }
 
@@ -261,8 +261,8 @@ void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEven
 {
     concludeTransform(pSelected, m_controlWorldRectOnDown);
 
-    m_guides[0]->setIsVisible(false);
-    m_guides[1]->setIsVisible(false);
+    m_guides[0]->isVisible = (false);
+    m_guides[1]->isVisible = (false);
 
     m_state = eDocumentState::IDLE;
 }
@@ -331,7 +331,7 @@ void DocumentView::updateGizmoRect()
     auto rct = pSelected->getWorldRect(*pUIContext);
     rct.position.x = std::roundf(rct.position.x);
     rct.position.y = std::roundf(rct.position.y);
-    m_pGizmo->setRect(rct);
+    m_pGizmo->rect = (rct);
 }
 
 void DocumentView::xAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& x, bool& side, float& closest)
@@ -500,13 +500,13 @@ float DocumentView::snapX(onut::UIControl* pControl, float x)
 
     if (found)
     {
-        auto& rect = m_guides[1]->getRect();
-        m_guides[1]->setRect({{ret, rect.position.y}, rect.size});
-        m_guides[1]->setIsVisible(true);
+        auto& rect = m_guides[1]->rect;
+        m_guides[1]->rect = {{ret, rect.position.y}, rect.size};
+        m_guides[1]->isVisible = (true);
     }
     else
     {
-        m_guides[1]->setIsVisible(false);
+        m_guides[1]->isVisible = (false);
     }
 
     return ret;
@@ -569,13 +569,13 @@ float DocumentView::snapY(onut::UIControl* pControl, float y)
 
     if (found)
     {
-        auto& rect = m_guides[0]->getRect();
-        m_guides[0]->setRect({{rect.position.x, ret}, rect.size});
-        m_guides[0]->setIsVisible(true);
+        auto& rect = m_guides[0]->rect;
+        m_guides[0]->rect = {{rect.position.x, ret}, rect.size};
+        m_guides[0]->isVisible = (true);
     }
     else
     {
-        m_guides[0]->setIsVisible(false);
+        m_guides[0]->isVisible = (false);
     }
 
     return ret;
@@ -685,13 +685,13 @@ void DocumentView::updateMovingGizmo()
                 finalOffset = (x - m_controlWorldRectOnDown.size.x) - m_controlWorldRectOnDown.position.x;
             }
             newRect.position.x = m_controlWorldRectOnDown.position.x + finalOffset;
-            auto& rect = m_guides[1]->getRect();
-            m_guides[1]->setRect({{x, rect.position.y}, rect.size});
-            m_guides[1]->setIsVisible(true);
+            auto& rect = m_guides[1]->rect;
+            m_guides[1]->rect = {{x, rect.position.y}, rect.size};
+            m_guides[1]->isVisible = (true);
         }
         else
         {
-            m_guides[1]->setIsVisible(false);
+            m_guides[1]->isVisible = (false);
         }
         if (getYAutoGuide(guideRect, y, side))
         {
@@ -705,13 +705,13 @@ void DocumentView::updateMovingGizmo()
                 finalOffset = (y - m_controlWorldRectOnDown.size.y) - m_controlWorldRectOnDown.position.y;
             }
             newRect.position.y = m_controlWorldRectOnDown.position.y + finalOffset;
-            auto& rect = m_guides[0]->getRect();
-            m_guides[0]->setRect({{rect.position.x, y}, rect.size});
-            m_guides[0]->setIsVisible(true);
+            auto& rect = m_guides[0]->rect;
+            m_guides[0]->rect = {{rect.position.x, y}, rect.size};
+            m_guides[0]->isVisible = (true);
         }
         else
         {
-            m_guides[0]->setIsVisible(false);
+            m_guides[0]->isVisible = (false);
         }
     }
 
@@ -1037,7 +1037,7 @@ void DocumentView::repopulateTreeView(onut::UIControl* pControl)
 {
     auto pItem = new onut::UITreeViewItem();
     pItem->pUserData = pControl;
-    pItem->text = pControl->getName();
+    pItem->text = pControl->name;
     pControl->pUserData = pItem;
     auto pParentItem = static_cast<onut::UITreeViewItem*>(pControl->getParent() ? pControl->getParent()->pUserData : nullptr);
     if (pParentItem)
@@ -1060,12 +1060,12 @@ void updateControlInspector(onut::UIControl* pControl)
 {
     for (auto& kv : g_controlInspectorMap)
     {
-        kv.second->setIsVisible(false);
+        kv.second->isVisible = (false);
     }
     if (!pControl) return;
     auto& it = g_controlInspectorMap.find(pControl->getType());
     if (it == g_controlInspectorMap.end()) return;
-    it->second->setIsVisible(true);
+    it->second->isVisible = (true);
 
     auto& it2 = g_inspectorBindings.find(pControl->getType());
     if (it2 == g_inspectorBindings.end()) return;
@@ -1081,89 +1081,89 @@ void DocumentView::updateInspector()
     if (pSelected)
     {
         // Enable controls
-        g_pInspector_UIControl_chkEnabled->setIsEnabled(true);
-        g_pInspector_UIControl_chkVisible->setIsEnabled(true);
-        g_pInspector_UIControl_chkClickThrough->setIsEnabled(true);
-        g_pInspector_UIControl_txtName->setIsEnabled(true);
-        g_pInspector_UIControl_txtStyle->setIsEnabled(true);
-        g_pInspector_UIControl_txtX->setIsEnabled(true);
-        g_pInspector_UIControl_txtY->setIsEnabled(true);
-        g_pInspector_UIControl_chkXPercent->setIsEnabled(true);
-        g_pInspector_UIControl_chkYPercent->setIsEnabled(true);
-        g_pInspector_UIControl_txtWidth->setIsEnabled(true);
-        g_pInspector_UIControl_txtHeight->setIsEnabled(true);
-        g_pInspector_UIControl_chkWidthPercent->setIsEnabled(true);
-        g_pInspector_UIControl_chkHeightPercent->setIsEnabled(true);
-        g_pInspector_UIControl_chkWidthRelative->setIsEnabled(true);
-        g_pInspector_UIControl_chkHeightRelative->setIsEnabled(true);
-        g_pInspector_UIControl_chkTOP_LEFT->setIsEnabled(true);
-        g_pInspector_UIControl_chkTOP->setIsEnabled(true);
-        g_pInspector_UIControl_chkTOP_RIGHT->setIsEnabled(true);
-        g_pInspector_UIControl_chkLEFT->setIsEnabled(true);
-        g_pInspector_UIControl_chkCENTER->setIsEnabled(true);
-        g_pInspector_UIControl_chkRIGHT->setIsEnabled(true);
-        g_pInspector_UIControl_chkBOTTOM_LEFT->setIsEnabled(true);
-        g_pInspector_UIControl_chkBOTTOM->setIsEnabled(true);
-        g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsEnabled(true);
-        g_pInspector_UIControl_txtAnchorX->setIsEnabled(true);
-        g_pInspector_UIControl_txtAnchorY->setIsEnabled(true);
-        g_pInspector_UIControl_chkXAnchorPercent->setIsEnabled(true);
-        g_pInspector_UIControl_chkYAnchorPercent->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorTOP_LEFT->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorTOP->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorTOP_RIGHT->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorLEFT->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorCENTER->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorRIGHT->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorBOTTOM->setIsEnabled(true);
-        g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->setIsEnabled(true);
+        g_pInspector_UIControl_chkEnabled->isEnabled = (true);
+        g_pInspector_UIControl_chkVisible->isEnabled = (true);
+        g_pInspector_UIControl_chkClickThrough->isEnabled = (true);
+        g_pInspector_UIControl_txtName->isEnabled = (true);
+        g_pInspector_UIControl_txtStyle->isEnabled = (true);
+        g_pInspector_UIControl_txtX->isEnabled = (true);
+        g_pInspector_UIControl_txtY->isEnabled = (true);
+        g_pInspector_UIControl_chkXPercent->isEnabled = (true);
+        g_pInspector_UIControl_chkYPercent->isEnabled = (true);
+        g_pInspector_UIControl_txtWidth->isEnabled = (true);
+        g_pInspector_UIControl_txtHeight->isEnabled = (true);
+        g_pInspector_UIControl_chkWidthPercent->isEnabled = (true);
+        g_pInspector_UIControl_chkHeightPercent->isEnabled = (true);
+        g_pInspector_UIControl_chkWidthRelative->isEnabled = (true);
+        g_pInspector_UIControl_chkHeightRelative->isEnabled = (true);
+        g_pInspector_UIControl_chkTOP_LEFT->isEnabled = (true);
+        g_pInspector_UIControl_chkTOP->isEnabled = (true);
+        g_pInspector_UIControl_chkTOP_RIGHT->isEnabled = (true);
+        g_pInspector_UIControl_chkLEFT->isEnabled = (true);
+        g_pInspector_UIControl_chkCENTER->isEnabled = (true);
+        g_pInspector_UIControl_chkRIGHT->isEnabled = (true);
+        g_pInspector_UIControl_chkBOTTOM_LEFT->isEnabled = (true);
+        g_pInspector_UIControl_chkBOTTOM->isEnabled = (true);
+        g_pInspector_UIControl_chkBOTTOM_RIGHT->isEnabled = (true);
+        g_pInspector_UIControl_txtAnchorX->isEnabled = (true);
+        g_pInspector_UIControl_txtAnchorY->isEnabled = (true);
+        g_pInspector_UIControl_chkXAnchorPercent->isEnabled = (true);
+        g_pInspector_UIControl_chkYAnchorPercent->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorTOP_LEFT->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorTOP->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorTOP_RIGHT->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorLEFT->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorCENTER->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorRIGHT->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorBOTTOM->isEnabled = (true);
+        g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->isEnabled = (true);
 
         // Set their values
-        g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled());
-        g_pInspector_UIControl_chkVisible->setIsChecked(pSelected->isVisible());
-        g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough());
-        g_pInspector_UIControl_txtName->textComponent.text = pSelected->getName();
+        g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled);
+        g_pInspector_UIControl_chkVisible->setIsChecked(pSelected->isVisible);
+        g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough);
+        g_pInspector_UIControl_txtName->textComponent.text = pSelected->name;
         g_pInspector_UIControl_txtStyle->textComponent.text = pSelected->getStyleName();
-        if (pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE)
+        if (pSelected->xType == onut::eUIPosType::POS_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtX->setFloat(pSelected->getRect().position.x * 100.f);
+            g_pInspector_UIControl_txtX->setFloat(pSelected->rect.position.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtX->setFloat(pSelected->getRect().position.x);
+            g_pInspector_UIControl_txtX->setFloat(pSelected->rect.position.x);
         }
-        if (pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE)
+        if (pSelected->yType == onut::eUIPosType::POS_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtY->setFloat(pSelected->getRect().position.y * 100.f);
+            g_pInspector_UIControl_txtY->setFloat(pSelected->rect.position.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtY->setFloat(pSelected->getRect().position.y);
+            g_pInspector_UIControl_txtY->setFloat(pSelected->rect.position.y);
         }
-        g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->getXType() == onut::eUIPosType::POS_PERCENTAGE);
-        g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->getYType() == onut::eUIPosType::POS_PERCENTAGE);
-        if (pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE)
+        g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->xType == onut::eUIPosType::POS_PERCENTAGE);
+        g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->yType == onut::eUIPosType::POS_PERCENTAGE);
+        if (pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtWidth->setFloat(pSelected->getRect().size.x * 100.f);
+            g_pInspector_UIControl_txtWidth->setFloat(pSelected->rect.size.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtWidth->setFloat(pSelected->getRect().size.x);
+            g_pInspector_UIControl_txtWidth->setFloat(pSelected->rect.size.x);
         }
-        if (pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE)
+        if (pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtHeight->setFloat(pSelected->getRect().size.y * 100.f);
+            g_pInspector_UIControl_txtHeight->setFloat(pSelected->rect.size.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtHeight->setFloat(pSelected->getRect().size.y);
+            g_pInspector_UIControl_txtHeight->setFloat(pSelected->rect.size.y);
         }
-        g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->getWidthType() == onut::eUIDimType::DIM_PERCENTAGE);
-        g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->getHeightType() == onut::eUIDimType::DIM_PERCENTAGE);
-        g_pInspector_UIControl_chkWidthRelative->setIsChecked(pSelected->getWidthType() == onut::eUIDimType::DIM_RELATIVE);
-        g_pInspector_UIControl_chkHeightRelative->setIsChecked(pSelected->getHeightType() == onut::eUIDimType::DIM_RELATIVE);
-        switch (pSelected->getAlign())
+        g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE);
+        g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE);
+        g_pInspector_UIControl_chkWidthRelative->setIsChecked(pSelected->widthType == onut::eUIDimType::DIM_RELATIVE);
+        g_pInspector_UIControl_chkHeightRelative->setIsChecked(pSelected->heightType == onut::eUIDimType::DIM_RELATIVE);
+        switch (pSelected->align)
         {
             case onut::eUIAlign::TOP_LEFT:
                 g_pInspector_UIControl_chkTOP_LEFT->setIsChecked(true);
@@ -1193,65 +1193,65 @@ void DocumentView::updateInspector()
                 g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsChecked(true);
                 break;
         }
-        if (pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        if (pSelected->xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->getAnchor().x * 100.f);
+            g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->anchor.x * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->getAnchor().x);
+            g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->anchor.x);
         }
-        if (pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        if (pSelected->yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->getAnchor().y * 100.f);
+            g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->anchor.y * 100.f);
         }
         else
         {
-            g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->getAnchor().y);
+            g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->anchor.y);
         }
-        g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->getXAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
-        g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->getYAnchorType() == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
+        g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
+        g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
     }
     else
     {
         // Disable all controls
-        g_pInspector_UIControl_chkEnabled->setIsEnabled(false);
-        g_pInspector_UIControl_chkVisible->setIsEnabled(false);
-        g_pInspector_UIControl_chkClickThrough->setIsEnabled(false);
-        g_pInspector_UIControl_txtName->setIsEnabled(false);
-        g_pInspector_UIControl_txtStyle->setIsEnabled(false);
-        g_pInspector_UIControl_txtX->setIsEnabled(false);
-        g_pInspector_UIControl_txtY->setIsEnabled(false);
-        g_pInspector_UIControl_chkXPercent->setIsEnabled(false);
-        g_pInspector_UIControl_chkYPercent->setIsEnabled(false);
-        g_pInspector_UIControl_txtWidth->setIsEnabled(false);
-        g_pInspector_UIControl_txtHeight->setIsEnabled(false);
-        g_pInspector_UIControl_chkWidthPercent->setIsEnabled(false);
-        g_pInspector_UIControl_chkHeightPercent->setIsEnabled(false);
-        g_pInspector_UIControl_chkWidthRelative->setIsEnabled(false);
-        g_pInspector_UIControl_chkHeightRelative->setIsEnabled(false);
-        g_pInspector_UIControl_chkTOP_LEFT->setIsEnabled(false);
-        g_pInspector_UIControl_chkTOP->setIsEnabled(false);
-        g_pInspector_UIControl_chkTOP_RIGHT->setIsEnabled(false);
-        g_pInspector_UIControl_chkLEFT->setIsEnabled(false);
-        g_pInspector_UIControl_chkCENTER->setIsEnabled(false);
-        g_pInspector_UIControl_chkRIGHT->setIsEnabled(false);
-        g_pInspector_UIControl_chkBOTTOM_LEFT->setIsEnabled(false);
-        g_pInspector_UIControl_chkBOTTOM->setIsEnabled(false);
-        g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsEnabled(false);
-        g_pInspector_UIControl_txtAnchorX->setIsEnabled(false);
-        g_pInspector_UIControl_txtAnchorY->setIsEnabled(false);
-        g_pInspector_UIControl_chkXAnchorPercent->setIsEnabled(false);
-        g_pInspector_UIControl_chkYAnchorPercent->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorTOP_LEFT->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorTOP->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorTOP_RIGHT->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorLEFT->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorCENTER->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorRIGHT->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorBOTTOM->setIsEnabled(false);
-        g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->setIsEnabled(false);
+        g_pInspector_UIControl_chkEnabled->isEnabled = (false);
+        g_pInspector_UIControl_chkVisible->isEnabled = (false);
+        g_pInspector_UIControl_chkClickThrough->isEnabled = (false);
+        g_pInspector_UIControl_txtName->isEnabled = (false);
+        g_pInspector_UIControl_txtStyle->isEnabled = (false);
+        g_pInspector_UIControl_txtX->isEnabled = (false);
+        g_pInspector_UIControl_txtY->isEnabled = (false);
+        g_pInspector_UIControl_chkXPercent->isEnabled = (false);
+        g_pInspector_UIControl_chkYPercent->isEnabled = (false);
+        g_pInspector_UIControl_txtWidth->isEnabled = (false);
+        g_pInspector_UIControl_txtHeight->isEnabled = (false);
+        g_pInspector_UIControl_chkWidthPercent->isEnabled = (false);
+        g_pInspector_UIControl_chkHeightPercent->isEnabled = (false);
+        g_pInspector_UIControl_chkWidthRelative->isEnabled = (false);
+        g_pInspector_UIControl_chkHeightRelative->isEnabled = (false);
+        g_pInspector_UIControl_chkTOP_LEFT->isEnabled = (false);
+        g_pInspector_UIControl_chkTOP->isEnabled = (false);
+        g_pInspector_UIControl_chkTOP_RIGHT->isEnabled = (false);
+        g_pInspector_UIControl_chkLEFT->isEnabled = (false);
+        g_pInspector_UIControl_chkCENTER->isEnabled = (false);
+        g_pInspector_UIControl_chkRIGHT->isEnabled = (false);
+        g_pInspector_UIControl_chkBOTTOM_LEFT->isEnabled = (false);
+        g_pInspector_UIControl_chkBOTTOM->isEnabled = (false);
+        g_pInspector_UIControl_chkBOTTOM_RIGHT->isEnabled = (false);
+        g_pInspector_UIControl_txtAnchorX->isEnabled = (false);
+        g_pInspector_UIControl_txtAnchorY->isEnabled = (false);
+        g_pInspector_UIControl_chkXAnchorPercent->isEnabled = (false);
+        g_pInspector_UIControl_chkYAnchorPercent->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorTOP_LEFT->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorTOP->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorTOP_RIGHT->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorLEFT->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorCENTER->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorRIGHT->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorBOTTOM_LEFT->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorBOTTOM->isEnabled = (false);
+        g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT->isEnabled = (false);
     }
 
     updateControlInspector(pSelected);

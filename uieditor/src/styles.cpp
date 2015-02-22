@@ -142,7 +142,7 @@ void createUIStyles(onut::UIContext* pContext)
         auto pControl = static_cast<onut::UIControl*>(pItem->pUserData);
         auto textPos = orect.Left(expandClickWidth + 24);
         auto textColor = g_fontColor;
-        if (!pControl->isEnabled())
+        if (!pControl->isEnabled)
         {
             textColor = g_fontColorFaded;
         }
@@ -412,7 +412,7 @@ void createUIStyles(onut::UIContext* pContext)
         const auto orect = onut::UI2Onut(rect);
         auto texture = OGetTexture("align.png");
         Vector4 UVs;
-        switch (pCheckBox->getAlign())
+        switch (pCheckBox->align)
         {
             case onut::eUIAlign::TOP_LEFT:
                 UVs.x = 0.f;
@@ -499,7 +499,7 @@ void createUIStyles(onut::UIContext* pContext)
         const auto orect = onut::UI2Onut(rect);
         auto texture = OGetTexture("align.png");
         Vector4 UVs;
-        switch (pButton->getAlign())
+        switch (pButton->align)
         {
             case onut::eUIAlign::TOP_LEFT:
                 UVs.x = 0.f;

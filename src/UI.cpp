@@ -11,18 +11,73 @@
 
 namespace onut
 {
+    // Strings to Enums used for loading/saving
     static std::unordered_map<std::string, sUIFont::eFontFlag> fontFlagMap = {
         {"AUTO_FIT_SIZE", sUIFont::AUTO_FIT_SIZE},
         {"ELLIPSIS", sUIFont::ELLIPSIS},
         {"WORD_WRAP", sUIFont::WORD_WRAP}
     };
+    static std::unordered_map<std::string, eUIAlign> alignMap = {
+        {"TOP_LEFT", eUIAlign::TOP_LEFT},
+        {"TOP", eUIAlign::TOP},
+        {"TOP_RIGHT", eUIAlign::TOP_RIGHT},
+        {"LEFT", eUIAlign::LEFT},
+        {"CENTER", eUIAlign::CENTER},
+        {"RIGHT", eUIAlign::RIGHT},
+        {"BOTTOM_LEFT", eUIAlign::BOTTOM_LEFT},
+        {"BOTTOM", eUIAlign::BOTTOM},
+        {"BOTTOM_RIGHT", eUIAlign::BOTTOM_RIGHT}
+    };
+    static std::unordered_map<std::string, eUIDimType> dimTypeMap = {
+        {"ABSOLUTE", eUIDimType::DIM_ABSOLUTE},
+        {"RELATIVE", eUIDimType::DIM_RELATIVE},
+        {"PERCENTAGE", eUIDimType::DIM_PERCENTAGE}
+    };
+    static std::unordered_map<std::string, eUIPosType> posTypeMap = {
+        {"RELATIVE", eUIPosType::POS_RELATIVE},
+        {"PERCENTAGE", eUIPosType::POS_PERCENTAGE}
+    };
+    static std::unordered_map<std::string, eUIAnchorType> anchorTypeMap = {
+        {"PIXEL", eUIAnchorType::ANCHOR_PIXEL},
+        {"PERCENTAGE", eUIAnchorType::ANCHOR_PERCENTAGE}
+    };
+    static std::unordered_map<std::string, eUICheckBehavior> checkBehaviorMap = {
+        {"OPTIONAL", eUICheckBehavior::OPTIONAL},
+        {"EXCLUSIVE", eUICheckBehavior::EXCLUSIVE}
+    };
+    static std::unordered_map<std::string, eUIType> typeMap = {
+        {"UIControl", eUIType::UI_CONTROL},
+        {"UIButton", eUIType::UI_BUTTON},
+        {"UIPanel", eUIType::UI_PANEL},
+        {"UILabel", eUIType::UI_LABEL},
+        {"UIImage", eUIType::UI_IMAGE},
+        {"UICheckBox", eUIType::UI_CHECKBOX},
+        {"UITreeView", eUIType::UI_TREEVIEW},
+        {"UITextBox", eUIType::UI_TEXTBOX},
+    };
 
+    // Convert string to enum. Used for loading
     template<typename Tmap, typename Tenum>
     Tenum stringToEnum(const Tmap& map, const std::string& key, Tenum default)
     {
         auto it = map.find(key);
         if (it == map.end()) return default;
         return it->second;
+    }
+
+    // Convert enum to string. Used for saving. A bit slower
+    template<typename Tmap, typename Tenum>
+    const std::string& enumToString(const Tmap& map, Tenum value)
+    {
+        for (auto& kv : map)
+        {
+            if (kv.second == value)
+            {
+                return kv.first;
+            }
+        }
+        static std::string empty;
+        return empty;
     }
 
     void sUIColor::unpack()
@@ -45,235 +100,32 @@ namespace onut
     unsigned int uiHash(const char* s, unsigned int seed)
     {
         unsigned hash = seed;
-        while (*s)
-        {
-            hash = hash * 101 + *s++;
-        }
+        while (*s) hash = hash * 101 + *s++;
         return hash;
-    }
-
-    const char* getStringFromType(eUIType type)
-    {
-        switch (type)
-        {
-            case eUIType::UI_CONTROL: return "UIControl";
-            case eUIType::UI_BUTTON: return "UIButton";
-            case eUIType::UI_PANEL: return "UIPanel";
-            case eUIType::UI_LABEL: return "UILabel";
-            case eUIType::UI_IMAGE: return "UIImage";
-            case eUIType::UI_CHECKBOX: return "UICheckBox";
-            case eUIType::UI_TREEVIEW: return "UITreeView";
-            case eUIType::UI_TEXTBOX: return "UITextBox";
-        }
-        return "";
-    }
-
-    eUIAlign getAlignFromString(const char* szAlign)
-    {
-        if (!strcmp(szAlign, "TOP_LEFT"))
-        {
-            return eUIAlign::TOP_LEFT;
-        }
-        else if (!strcmp(szAlign, "TOP"))
-        {
-            return eUIAlign::TOP;
-        }
-        else if (!strcmp(szAlign, "TOP_RIGHT"))
-        {
-            return eUIAlign::TOP_RIGHT;
-        }
-        else if (!strcmp(szAlign, "LEFT"))
-        {
-            return eUIAlign::LEFT;
-        }
-        else if (!strcmp(szAlign, "CENTER"))
-        {
-            return eUIAlign::CENTER;
-        }
-        else if (!strcmp(szAlign, "RIGHT"))
-        {
-            return eUIAlign::RIGHT;
-        }
-        else if (!strcmp(szAlign, "BOTTOM_LEFT"))
-        {
-            return eUIAlign::BOTTOM_LEFT;
-        }
-        else if (!strcmp(szAlign, "BOTTOM"))
-        {
-            return eUIAlign::BOTTOM;
-        }
-        else if (!strcmp(szAlign, "BOTTOM_RIGHT"))
-        {
-            return eUIAlign::BOTTOM_RIGHT;
-        }
-    
-        return eUIAlign::TOP_LEFT;
-    }
-
-    const char* getStringFromAlign(eUIAlign align)
-    {
-        switch (align)
-        {
-            case eUIAlign::TOP_LEFT: return "TOP_LEFT";
-            case eUIAlign::TOP: return "TOP";
-            case eUIAlign::TOP_RIGHT: return "TOP_RIGHT";
-            case eUIAlign::LEFT: return "LEFT";
-            case eUIAlign::CENTER: return "CENTER";
-            case eUIAlign::RIGHT: return "RIGHT";
-            case eUIAlign::BOTTOM_LEFT: return "BOTTOM_LEFT";
-            case eUIAlign::BOTTOM: return "BOTTOM";
-            case eUIAlign::BOTTOM_RIGHT: return "BOTTOM_RIGHT";
-        }
-        return "";
-    }
-
-    eUIDimType getDimTypeFromString(const char* szDimType)
-    {
-        if (!strcmp(szDimType, "ABSOLUTE"))
-        {
-            return eUIDimType::DIM_ABSOLUTE;
-        }
-        else if (!strcmp(szDimType, "RELATIVE"))
-        {
-            return eUIDimType::DIM_RELATIVE;
-        }
-        else if (!strcmp(szDimType, "PERCENTAGE"))
-        {
-            return eUIDimType::DIM_PERCENTAGE;
-        }
-
-        return eUIDimType::DIM_ABSOLUTE;
-    }
-
-    const char* getStringFromDimType(eUIDimType dimType)
-    {
-        switch (dimType)
-        {
-            case eUIDimType::DIM_ABSOLUTE: return "ABSOLUTE";
-            case eUIDimType::DIM_RELATIVE: return "RELATIVE";
-            case eUIDimType::DIM_PERCENTAGE: return "PERCENTAGE";
-        }
-        return "";
-    }
-
-    eUIPosType getPosTypeFromString(const char* szPosType)
-    {
-        if (!strcmp(szPosType, "RELATIVE"))
-        {
-            return eUIPosType::POS_RELATIVE;
-        }
-        else if (!strcmp(szPosType, "PERCENTAGE"))
-        {
-            return eUIPosType::POS_PERCENTAGE;
-        }
-
-        return eUIPosType::POS_RELATIVE;
-    }
-
-    const char* getStringFromPosType(eUIPosType posType)
-    {
-        switch (posType)
-        {
-            case eUIPosType::POS_RELATIVE: return "RELATIVE";
-            case eUIPosType::POS_PERCENTAGE: return "PERCENTAGE";
-        }
-        return "";
-    }
-
-    eUIAnchorType getAnchorTypeFromString(const char* szAnchorType)
-    {
-        if (!strcmp(szAnchorType, "PIXEL"))
-        {
-            return eUIAnchorType::ANCHOR_PIXEL;
-        }
-        else if (!strcmp(szAnchorType, "PERCENTAGE"))
-        {
-            return eUIAnchorType::ANCHOR_PERCENTAGE;
-        }
-
-        return eUIAnchorType::ANCHOR_PERCENTAGE;
-    }
-
-    const char* getStringFromAnchorType(eUIAnchorType anchorType)
-    {
-        switch (anchorType)
-        {
-            case eUIAnchorType::ANCHOR_PIXEL: return "PIXEL";
-            case eUIAnchorType::ANCHOR_PERCENTAGE: return "PERCENTAGE";
-        }
-        return "";
-    }
-
-    eUICheckBehavior getJsonCheckBehavior(const char* szCheckBehavior)
-    {
-        if (!strcmp(szCheckBehavior, "OPTIONAL"))
-        {
-            return eUICheckBehavior::OPTIONAL;
-        }
-        else if (!strcmp(szCheckBehavior, "EXCLUSIVE"))
-        {
-            return eUICheckBehavior::EXCLUSIVE;
-        }
-
-        return eUICheckBehavior::NORMAL;
-    }
-
-    const char* getStringFromCheckBehavior(eUICheckBehavior checkBehavior)
-    {
-        switch (checkBehavior)
-        {
-            case eUICheckBehavior::OPTIONAL: return "OPTIONAL";
-            case eUICheckBehavior::EXCLUSIVE: return "EXCLUSIVE";
-        }
-        return "";
     }
 
     static const char* getJsonString(const rapidjson::Value& jsonNode, const char* szDefault = "")
     {
-        if (jsonNode.IsString())
-        {
-            return jsonNode.GetString();
-        }
-        else
-        {
-            return szDefault;
-        }
+        if (jsonNode.IsString()) return jsonNode.GetString();
+        else return szDefault;
     }
     
     static float getJsonFloat(const rapidjson::Value& jsonNode, const float default = 0.f)
     {
-        if (jsonNode.IsNumber())
-        {
-            return static_cast<float>(jsonNode.GetDouble());
-        }
-        else
-        {
-            return default;
-        }
+        if (jsonNode.IsNumber()) return static_cast<float>(jsonNode.GetDouble());
+        else return default;
     }
     
     static int getJsonInt(const rapidjson::Value& jsonNode, const int default = 0)
     {
-        if (jsonNode.IsInt())
-        {
-            return jsonNode.GetInt();
-        }
-        else
-        {
-            return default;
-        }
+        if (jsonNode.IsInt()) return jsonNode.GetInt();
+        else return default;
     }
 
     static bool getJsonBool(const rapidjson::Value& jsonNode, const bool default = false)
     {
-        if (jsonNode.IsBool())
-        {
-            return jsonNode.GetBool();
-        }
-        else
-        {
-            return default;
-        }
+        if (jsonNode.IsBool()) return jsonNode.GetBool();
+        else return default;
     }
 
     static void setJsonFloat(rapidjson::Value& jsonNode, const char* szName, float value, rapidjson::Allocator& allocator, float default = 0.f)
@@ -292,6 +144,12 @@ namespace onut
     {
         if (!strcmp(szValue, default)) return;
         jsonNode.AddMember(szName, szValue, allocator);
+    }
+
+    static void setJsonString(rapidjson::Value& jsonNode, const char* szName, const std::string& value, rapidjson::Allocator& allocator, const char* default = "")
+    {
+        if (!strcmp(value.c_str(), default)) return;
+        jsonNode.AddMember(szName, value.c_str(), allocator);
     }
 
     static void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool default = false)
@@ -355,7 +213,7 @@ namespace onut
     template <typename Tmap, typename Tenum>
     static Tenum getJsonEnum(const Tmap& enumMap, const rapidjson::Value& jsonNode, Tenum default)
     {
-        uint8_t ret = default;
+        Tenum ret = default;
         if (jsonNode.IsString())
         {
             ret = stringToEnum(enumMap, jsonNode.GetString(), default);
@@ -391,7 +249,7 @@ namespace onut
         if (!node.IsNull())
         {
             ret.color = getJsonColor(node["color"]);
-            ret.align = getAlignFromString(getJsonString(node["align"]));
+            ret.align = getJsonEnum(alignMap, node["align"], eUIAlign::TOP_LEFT);
             ret.padding = getJsonPadding(node["padding"]);
             ret.typeFace = getJsonString(node["typeFace"], "Arial");
             ret.size = getJsonFloat(node["size"], 12.f);
@@ -593,12 +451,6 @@ namespace onut
 
     UIControl::UIControl()
     {
-        m_posType[0] = eUIPosType::POS_RELATIVE;
-        m_posType[1] = eUIPosType::POS_RELATIVE;
-        m_dimType[0] = eUIDimType::DIM_ABSOLUTE;
-        m_dimType[1] = eUIDimType::DIM_ABSOLUTE;
-        m_anchorType[0] = eUIAnchorType::ANCHOR_PERCENTAGE;
-        m_anchorType[1] = eUIAnchorType::ANCHOR_PERCENTAGE;
     }
 
     UIControl::UIControl(const char* szFilename)
@@ -619,28 +471,28 @@ namespace onut
 
     void UIControl::load(const rapidjson::Value& jsonNode)
     {
-        m_rect.position.x = getJsonFloat(jsonNode["x"]);
-        m_rect.position.y = getJsonFloat(jsonNode["y"]);
-        m_rect.size.x = getJsonFloat(jsonNode["width"], 0.f);
-        m_rect.size.y = getJsonFloat(jsonNode["height"], 0.f);
-        m_anchor.x = getJsonFloat(jsonNode["xAnchor"]);
-        m_anchor.y = getJsonFloat(jsonNode["yAnchor"]);
+        rect.position.x = getJsonFloat(jsonNode["x"]);
+        rect.position.y = getJsonFloat(jsonNode["y"]);
+        rect.size.x = getJsonFloat(jsonNode["width"], 0.f);
+        rect.size.y = getJsonFloat(jsonNode["height"], 0.f);
+        anchor.x = getJsonFloat(jsonNode["xAnchor"]);
+        anchor.y = getJsonFloat(jsonNode["yAnchor"]);
 
-        m_align = getAlignFromString(getJsonString(jsonNode["align"]));
-        m_posType[0] = getPosTypeFromString(getJsonString(jsonNode["xType"]));
-        m_posType[1] = getPosTypeFromString(getJsonString(jsonNode["yType"]));
-        m_dimType[0] = getDimTypeFromString(getJsonString(jsonNode["widthType"]));
-        m_dimType[1] = getDimTypeFromString(getJsonString(jsonNode["heightType"]));
-        m_anchorType[0] = getAnchorTypeFromString(getJsonString(jsonNode["anchorType"]));
-        m_anchorType[1] = getAnchorTypeFromString(getJsonString(jsonNode["anchorType"]));
+        align = getJsonEnum(alignMap, jsonNode["align"], eUIAlign::TOP_LEFT);
+        xType = getJsonEnum(posTypeMap, jsonNode["xType"], eUIPosType::POS_RELATIVE);
+        yType = getJsonEnum(posTypeMap, jsonNode["yType"], eUIPosType::POS_RELATIVE);
+        widthType = getJsonEnum(dimTypeMap, jsonNode["widthType"], eUIDimType::DIM_ABSOLUTE);
+        heightType = getJsonEnum(dimTypeMap, jsonNode["heightType"], eUIDimType::DIM_ABSOLUTE);
+        xAnchorType = getJsonEnum(anchorTypeMap, jsonNode["anchorType"], eUIAnchorType::ANCHOR_PERCENTAGE);
+        yAnchorType = getJsonEnum(anchorTypeMap, jsonNode["anchorType"], eUIAnchorType::ANCHOR_PERCENTAGE);
 
-        m_name = getJsonString(jsonNode["name"]);
+        name = getJsonString(jsonNode["name"]);
         m_styleName = getJsonString(jsonNode["style"]);
         m_style = uiHash(m_styleName.c_str());
 
-        m_isEnabled = getJsonBool(jsonNode["enabled"], true);
-        m_isVisible = getJsonBool(jsonNode["visible"], true);
-        m_isClickThrough = getJsonBool(jsonNode["clickThrough"], false);
+        isEnabled = getJsonBool(jsonNode["enabled"], true);
+        isVisible = getJsonBool(jsonNode["visible"], true);
+        isClickThrough = getJsonBool(jsonNode["clickThrough"], false);
 
         // Properties
         auto& properties = jsonNode["properties"];
@@ -725,29 +577,29 @@ namespace onut
 
     void UIControl::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
-        setJsonString(jsonNode, "type", getStringFromType(getType()), allocator);
+        setJsonString(jsonNode, "type", enumToString(typeMap, getType()), allocator);
 
-        setJsonFloat(jsonNode, "x", m_rect.position.x, allocator);
-        setJsonFloat(jsonNode, "y", m_rect.position.y, allocator);
-        setJsonFloat(jsonNode, "width", m_rect.size.x, allocator);
-        setJsonFloat(jsonNode, "height", m_rect.size.y, allocator);
-        setJsonFloat(jsonNode, "xAnchor", m_anchor.x, allocator);
-        setJsonFloat(jsonNode, "yAnchor", m_anchor.y, allocator);
+        setJsonFloat(jsonNode, "x", rect.position.x, allocator);
+        setJsonFloat(jsonNode, "y", rect.position.y, allocator);
+        setJsonFloat(jsonNode, "width", rect.size.x, allocator);
+        setJsonFloat(jsonNode, "height", rect.size.y, allocator);
+        setJsonFloat(jsonNode, "xAnchor", anchor.x, allocator);
+        setJsonFloat(jsonNode, "yAnchor", anchor.y, allocator);
 
-        setJsonString(jsonNode, "align", getStringFromAlign(m_align), allocator, "TOP_LEFT");
-        setJsonString(jsonNode, "xType", getStringFromPosType(m_posType[0]), allocator, "RELATIVE");
-        setJsonString(jsonNode, "yType", getStringFromPosType(m_posType[1]), allocator, "RELATIVE");
-        setJsonString(jsonNode, "widthType", getStringFromDimType(m_dimType[0]), allocator, "ABSOLUTE");
-        setJsonString(jsonNode, "heightType", getStringFromDimType(m_dimType[1]), allocator, "ABSOLUTE");
-        setJsonString(jsonNode, "xAnchorType", getStringFromAnchorType(m_anchorType[0]), allocator, "PERCENTAGE");
-        setJsonString(jsonNode, "yAnchorType", getStringFromAnchorType(m_anchorType[1]), allocator, "PERCENTAGE");
+        setJsonString(jsonNode, "align", enumToString(alignMap, align), allocator, "TOP_LEFT");
+        setJsonString(jsonNode, "xType", enumToString(posTypeMap, xType), allocator, "RELATIVE");
+        setJsonString(jsonNode, "yType", enumToString(posTypeMap, yType), allocator, "RELATIVE");
+        setJsonString(jsonNode, "widthType", enumToString(dimTypeMap, widthType), allocator, "ABSOLUTE");
+        setJsonString(jsonNode, "heightType", enumToString(dimTypeMap, heightType), allocator, "ABSOLUTE");
+        setJsonString(jsonNode, "xAnchorType", enumToString(anchorTypeMap, xAnchorType), allocator, "PERCENTAGE");
+        setJsonString(jsonNode, "yAnchorType", enumToString(anchorTypeMap, yAnchorType), allocator, "PERCENTAGE");
 
-        setJsonString(jsonNode, "name", m_name.c_str(), allocator);
+        setJsonString(jsonNode, "name", name.c_str(), allocator);
         setJsonString(jsonNode, "style", m_styleName.c_str(), allocator);
 
-        setJsonBool(jsonNode, "enabled", m_isEnabled, allocator, true);
-        setJsonBool(jsonNode, "visible", m_isVisible, allocator, true);
-        setJsonBool(jsonNode, "clickThrough", m_isClickThrough, allocator, false);
+        setJsonBool(jsonNode, "enabled", isEnabled, allocator, true);
+        setJsonBool(jsonNode, "visible", isVisible, allocator, true);
+        setJsonBool(jsonNode, "clickThrough", isClickThrough, allocator, false);
 
         for (auto& kv : m_properties)
         {
@@ -783,16 +635,16 @@ namespace onut
 
     UIControl::UIControl(const UIControl& other)
     {
-        m_isEnabled = other.m_isEnabled;
-        m_isClickThrough = other.m_isClickThrough;
-        m_isVisible = other.m_isVisible;
-        m_rect = other.m_rect;
-        m_align = other.m_align;
-        m_posType[0] = other.m_posType[0];
-        m_posType[1] = other.m_posType[1];
-        m_dimType[0] = other.m_dimType[0];
-        m_dimType[1] = other.m_dimType[1];
-        m_name = other.m_name;
+        isEnabled = other.isEnabled;
+        isClickThrough = other.isClickThrough;
+        isVisible = other.isVisible;
+        rect = other.rect;
+        align = other.align;
+        xType = other.xType;
+        yType = other.yType;
+        widthType = other.widthType;
+        heightType = other.heightType;
+        name = other.name;
         pUserData = pUserData;
         m_properties = other.m_properties;
 
@@ -867,11 +719,11 @@ namespace onut
         in_pChild->release();
     }
 
-    UIControl* UIControl::getChild(const std::string& name, bool bSearchSubChildren) const
+    UIControl* UIControl::getChild(const std::string& in_name, bool bSearchSubChildren) const
     {
         for (auto pChild : m_children)
         {
-            if (pChild->m_name == name)
+            if (pChild->name == in_name)
             {
                 return pChild;
             }
@@ -881,7 +733,7 @@ namespace onut
         {
             for (auto pChild : m_children)
             {
-                auto pRet = pChild->getChild(name, bSearchSubChildren);
+                auto pRet = pChild->getChild(in_name, bSearchSubChildren);
                 if (pRet)
                 {
                     return pRet;
@@ -899,7 +751,7 @@ namespace onut
                              const sUIRect& parentRect, 
                              const UIControl** ppHoverControl) const
     {
-        if (!isVisible() || isClickThrough() && bIgnoreClickThrough) return;
+        if (!isVisible || isClickThrough && bIgnoreClickThrough) return;
 
         sUIRect worldRect = getWorldRect(parentRect);
         auto itend = m_children.rend();
@@ -1175,51 +1027,51 @@ namespace onut
         sUIRect worldRect;
 
         // Generate position and width values first
-        switch (m_posType[0])
+        switch (xType)
         {
             case eUIPosType::POS_RELATIVE:
-                worldRect.position.x = m_rect.position.x;
+                worldRect.position.x = rect.position.x;
                 break;
             case eUIPosType::POS_PERCENTAGE:
-                worldRect.position.x = parentRect.size.x * m_rect.position.x;
+                worldRect.position.x = parentRect.size.x * rect.position.x;
                 break;
         }
-        switch (m_posType[1])
+        switch (yType)
         {
             case eUIPosType::POS_RELATIVE:
-                worldRect.position.y = m_rect.position.y;
+                worldRect.position.y = rect.position.y;
                 break;
             case eUIPosType::POS_PERCENTAGE:
-                worldRect.position.y = parentRect.size.y * m_rect.position.y;
+                worldRect.position.y = parentRect.size.y * rect.position.y;
                 break;
         }
-        switch (m_dimType[0])
+        switch (widthType)
         {
             case eUIDimType::DIM_ABSOLUTE:
-                worldRect.size.x = m_rect.size.x;
+                worldRect.size.x = rect.size.x;
                 break;
             case eUIDimType::DIM_RELATIVE:
-                worldRect.size.x = parentRect.size.x + m_rect.size.x;
+                worldRect.size.x = parentRect.size.x + rect.size.x;
                 break;
             case eUIDimType::DIM_PERCENTAGE:
-                worldRect.size.x = parentRect.size.x * m_rect.size.x;
+                worldRect.size.x = parentRect.size.x * rect.size.x;
                 break;
         }
-        switch (m_dimType[1])
+        switch (heightType)
         {
             case eUIDimType::DIM_ABSOLUTE:
-                worldRect.size.y = m_rect.size.y;
+                worldRect.size.y = rect.size.y;
                 break;
             case eUIDimType::DIM_RELATIVE:
-                worldRect.size.y = parentRect.size.y + m_rect.size.y;
+                worldRect.size.y = parentRect.size.y + rect.size.y;
                 break;
             case eUIDimType::DIM_PERCENTAGE:
-                worldRect.size.y = parentRect.size.y * m_rect.size.y;
+                worldRect.size.y = parentRect.size.y * rect.size.y;
                 break;
         }
 
         // Then do alignement
-        switch (m_align)
+        switch (align)
         {
             case eUIAlign::TOP_LEFT:
                 worldRect.position.x = parentRect.position.x + worldRect.position.x;
@@ -1260,22 +1112,22 @@ namespace onut
         }
 
         // Finally anchoring
-        switch (m_anchorType[0])
+        switch (xAnchorType)
         {
             case eUIAnchorType::ANCHOR_PIXEL:
-                worldRect.position.x -= m_anchor.x;
+                worldRect.position.x -= anchor.x;
                 break;
             case eUIAnchorType::ANCHOR_PERCENTAGE:
-                worldRect.position.x -= worldRect.size.x * m_anchor.x;
+                worldRect.position.x -= worldRect.size.x * anchor.x;
                 break;
         }
-        switch (m_anchorType[1])
+        switch (yAnchorType)
         {
             case eUIAnchorType::ANCHOR_PIXEL:
-                worldRect.position.y -= m_anchor.y;
+                worldRect.position.y -= anchor.y;
                 break;
             case eUIAnchorType::ANCHOR_PERCENTAGE:
-                worldRect.position.y -= worldRect.size.y * m_anchor.y;
+                worldRect.position.y -= worldRect.size.y * anchor.y;
                 break;
         }
 
@@ -1288,7 +1140,7 @@ namespace onut
 
     void UIControl::updateInternal(UIContext& context, const sUIRect& parentRect)
     {
-        if (!isEnabled() || isClickThrough()) return;
+        if (!isEnabled || isClickThrough) return;
         sUIRect worldRect = getWorldRect(parentRect);
 
         // Do children first, inverted
@@ -1315,7 +1167,7 @@ namespace onut
 
     void UIControl::renderInternal(const UIContext& context, const sUIRect& parentRect) const
     {
-        if (!isVisible()) return;
+        if (!isVisible) return;
 
         sUIRect worldRect = getWorldRect(parentRect);
         renderControl(context, worldRect);
@@ -1325,41 +1177,36 @@ namespace onut
         }
     }
 
-    void UIControl::setRect(const sUIRect& rect)
-    {
-        m_rect = rect;
-    }
-
-    void UIControl::setWorldRect(const sUIRect& rect, const UIContext& context)
+    void UIControl::setWorldRect(const sUIRect& in_rect, const UIContext& context)
     {
         if (getParent())
         {
             auto parentRect = getParent()->getWorldRect(context);
 
-            sUIRect localRect = rect;
+            sUIRect localRect = in_rect;
 
             // Undo anchoring
-            switch (m_anchorType[0])
+            switch (xAnchorType)
             {
                 case eUIAnchorType::ANCHOR_PIXEL:
-                    localRect.position.x += m_anchor.x;
+                    localRect.position.x += anchor.x;
                     break;
                 case eUIAnchorType::ANCHOR_PERCENTAGE:
-                    localRect.position.x += localRect.size.x * m_anchor.x;
+                    localRect.position.x += localRect.size.x * anchor.x;
                     break;
             }
-            switch (m_anchorType[1])
+            switch (yAnchorType)
             {
                 case eUIAnchorType::ANCHOR_PIXEL:
-                    localRect.position.y += m_anchor.y;
+                    localRect.position.y += anchor.y;
                     break;
                 case eUIAnchorType::ANCHOR_PERCENTAGE:
-                    localRect.position.y += localRect.size.y * m_anchor.y;
+                    localRect.position.y += localRect.size.y * anchor.y;
                     break;
             }
 
             // Undo alignement
-            switch (m_align)
+            switch (align)
             {
                 case eUIAlign::TOP_LEFT:
                     localRect.position.x = localRect.position.x - parentRect.position.x;
@@ -1400,7 +1247,7 @@ namespace onut
             }
 
             // Undo position and width values
-            switch (m_posType[0])
+            switch (xType)
             {
                 case eUIPosType::POS_RELATIVE:
                     localRect.position.x = localRect.position.x;
@@ -1409,7 +1256,7 @@ namespace onut
                     localRect.position.x = localRect.position.x / parentRect.size.x;
                     break;
             }
-            switch (m_posType[1])
+            switch (yType)
             {
                 case eUIPosType::POS_RELATIVE:
                     localRect.position.y = localRect.position.y;
@@ -1418,7 +1265,7 @@ namespace onut
                     localRect.position.y = localRect.position.y / parentRect.size.y;
                     break;
             }
-            switch (m_dimType[0])
+            switch (widthType)
             {
                 case eUIDimType::DIM_ABSOLUTE:
                     localRect.size.x = localRect.size.x;
@@ -1430,7 +1277,7 @@ namespace onut
                     localRect.size.x = localRect.size.x / parentRect.size.x;
                     break;
             }
-            switch (m_dimType[1])
+            switch (heightType)
             {
                 case eUIDimType::DIM_ABSOLUTE:
                     localRect.size.y = localRect.size.y;
@@ -1443,90 +1290,65 @@ namespace onut
                     break;
             }
 
-            m_rect = std::move(localRect);
+            rect = std::move(localRect);
         }
         else
         {
-            m_rect = rect;
+            rect = in_rect;
         }
     }
 
     sUIVector2 UIControl::getAnchorInPixel() const
     {
-        sUIVector2 ret = m_anchor;
-        if (m_anchorType[0] == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        sUIVector2 ret = anchor;
+        if (xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            ret.x = ret.x * m_rect.size.x;
+            ret.x = ret.x * rect.size.x;
         }
-        if (m_anchorType[1] == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        if (yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            ret.y = ret.y * m_rect.size.y;
+            ret.y = ret.y * rect.size.y;
         }
         return std::move(ret);
     }
 
     sUIVector2 UIControl::getAnchorInPercentage() const
     {
-        sUIVector2 ret = m_anchor;
-        if (m_anchorType[0] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        sUIVector2 ret = anchor;
+        if (xAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            ret.x = ret.x / m_rect.size.x;
+            ret.x = ret.x / rect.size.x;
         }
-        if (m_anchorType[1] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        if (yAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            ret.y = ret.y / m_rect.size.y;
+            ret.y = ret.y / rect.size.y;
         }
         return std::move(ret);
     }
 
-    void UIControl::setAnchor(const sUIVector2& anchor)
+    void UIControl::setAnchorPercent(const sUIVector2& in_anchor)
     {
-        m_anchor = anchor;
-    }
-
-    void UIControl::setAnchorPercent(const sUIVector2& anchor)
-    {
-        if (m_anchorType[0] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        if (xAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            m_anchor.x = m_rect.size.x * anchor.x;
+            anchor.x = rect.size.x * in_anchor.x;
         }
         else
         {
-            m_anchor.x = anchor.x;
+            anchor.x = in_anchor.x;
         }
-        if (m_anchorType[1] == onut::eUIAnchorType::ANCHOR_PIXEL)
+        if (yAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            m_anchor.y = m_rect.size.y * anchor.y;
+            anchor.y = rect.size.y * in_anchor.y;
         }
         else
         {
-            m_anchor.y = anchor.y;
+            anchor.y = in_anchor.y;
         }
-    }
-
-    void UIControl::setName(const std::string& name)
-    {
-        m_name = name;
-    }
-
-    void UIControl::setIsEnabled(bool bIsEnabled)
-    {
-        m_isEnabled = bIsEnabled;
-    }
-
-    void UIControl::setIsVisible(bool bIsVisible)
-    {
-        m_isVisible = bIsVisible;
-    }
-
-    void UIControl::setIsClickThrough(bool bIsClickThrough)
-    {
-        m_isClickThrough = bIsClickThrough;
     }
 
     eUIState UIControl::getState(const UIContext& context) const
     {
-        if (isEnabled())
+        if (isEnabled)
         {
             if (context.m_pHoverControl == this)
             {
@@ -1557,41 +1379,6 @@ namespace onut
     bool UIControl::hasFocus(const UIContext& context) const
     {
         return (context.m_pFocus == this);
-    }
-
-    void UIControl::setAlign(eUIAlign align)
-    {
-        m_align = align;
-    }
-
-    void UIControl::setWidthType(eUIDimType widthType)
-    {
-        m_dimType[0] = widthType;
-    }
-
-    void UIControl::setHeightType(eUIDimType heightType)
-    {
-        m_dimType[1] = heightType;
-    }
-
-    void UIControl::setXType(eUIPosType xType)
-    {
-        m_posType[0] = xType;
-    }
-
-    void UIControl::setYType(eUIPosType yType)
-    {
-        m_posType[1] = yType;
-    }
-
-    void UIControl::setXAnchorType(eUIAnchorType xAnchorType)
-    {
-        m_anchorType[0] = xAnchorType;
-    }
-
-    void UIControl::setYAnchorType(eUIAnchorType yAnchorType)
-    {
-        m_anchorType[1] = yAnchorType;
     }
 
     const UIProperty& UIControl::getProperty(const std::string& name) const
@@ -1980,7 +1767,7 @@ namespace onut
         UIControl::load(jsonNode);
         textComponent = getJsonTextComponent(jsonNode["textComponent"]);
         m_isChecked = getJsonBool(jsonNode["checked"], false);
-        behavior = getJsonCheckBehavior(getJsonString(jsonNode["behavior"]));
+        behavior = getJsonEnum(checkBehaviorMap, jsonNode["behavior"], eUICheckBehavior::NORMAL);
     }
 
     void UICheckBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const

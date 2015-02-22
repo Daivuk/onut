@@ -443,12 +443,27 @@ namespace onut
         UIControl(const UIControl& other);
         virtual ~UIControl();
 
-        void* pUserData = nullptr;
+        // Public properties
+        bool            isEnabled = true; /*! Disabled control and their children won't receive mouse events */
+        bool            isClickThrough = false; /*! Same as isEnabled, but will traverse children */
+        bool            isVisible = true; /*! Visible or not. Invisible controls don't receive mouse events */
+        sUIRect         rect; /*! Local rectangle. Greatly influenced by align, anchor, pos and dim types. \see getWorldRect */
+        eUIAlign        align = eUIAlign::TOP_LEFT; /*! Alignement inside parent control */
+        eUIPosType      xType = eUIPosType::POS_RELATIVE; /*! x position type */
+        eUIPosType      yType = eUIPosType::POS_RELATIVE; /*! y position type */
+        eUIDimType      widthType = eUIDimType::DIM_ABSOLUTE; /*! width type */
+        eUIDimType      heightType = eUIDimType::DIM_ABSOLUTE; /*! height type */
+        eUIAnchorType   xAnchorType = eUIAnchorType::ANCHOR_PERCENTAGE; /*! x anchor type */
+        eUIAnchorType   yAnchorType = eUIAnchorType::ANCHOR_PERCENTAGE; /*! y anchor type */
+        sUIVector2      anchor; /*! Anchor position */
+        std::string     name; /*! This control's name. Can be used to search for it */
+        void*           pUserData = nullptr; /*! Set whatever data you want on this. it will never be accessed or freed by onut::UI */
 
         void save(const std::string& filename) const;
 
         virtual eUIType getType() const { return eUIType::UI_CONTROL; }
 
+        // Child methods
         void add(UIControl* pChild);
         void remove(UIControl* pChild);
         UIControl* getChild(const std::string& name, bool bSearchSubChildren = true) const;
@@ -474,34 +489,23 @@ namespace onut
         void update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown);
         void render(const UIContext& context) const;
 
-        const sUIRect& getRect() const { return m_rect; }
-        void setRect(const sUIRect& rect);
         sUIRect getWorldRect(const UIContext& context) const;
         void setWorldRect(const sUIRect& rect, const UIContext& context);
 
-        const sUIVector2& getAnchor() const { return m_anchor; }
         sUIVector2 getAnchorInPixel() const;
         sUIVector2 getAnchorInPercentage() const;
-        void setAnchor(const sUIVector2& anchor);
         void setAnchorPercent(const sUIVector2& anchor);
-
-        const std::string& getName() const { return m_name; }
-        void setName(const std::string& name);
-
-        bool isEnabled() const { return m_isEnabled && m_isVisible; }
-        void setIsEnabled(bool bIsEnabled);
-
-        bool isVisible() const { return m_isVisible; }
-        void setIsVisible(bool bIsVisible);
-
-        bool isClickThrough() const { return m_isClickThrough; }
-        void setIsClickThrough(bool bIsClickThrough);
 
         eUIState getState(const UIContext& context) const;
         bool hasFocus(const UIContext& context) const;
 
         UIControl* getParent() const { return m_pParent; }
 
+        const UIProperty&   getProperty(const std::string& name) const;
+
+        const std::vector<UIControl*>& getChildren() const { return m_children; };
+
+        // Event callbacks
         using TfnMouseEvent = std::function < void(UIControl*, const UIMouseEvent&) > ;
         TfnMouseEvent onClick;
         TfnMouseEvent onMouseMove;
@@ -516,28 +520,6 @@ namespace onut
 
         using TfnKeyEvent = std::function < void(UIControl*, const UIKeyEvent&) >;
         TfnKeyEvent onKeyDown;
-
-        const UIProperty&   getProperty(const std::string& name) const;
-
-        eUIAlign getAlign() const { return m_align; }
-        void setAlign(eUIAlign align);
-
-        eUIDimType getWidthType() const { return m_dimType[0]; }
-        eUIDimType getHeightType() const { return m_dimType[1]; }
-        void setWidthType(eUIDimType widthType);
-        void setHeightType(eUIDimType heightType);
-
-        eUIPosType getXType() const { return m_posType[0]; }
-        eUIPosType getYType() const { return m_posType[1]; }
-        void setXType(eUIPosType xType);
-        void setYType(eUIPosType yType);
-
-        eUIAnchorType getXAnchorType() const { return m_anchorType[0]; }
-        eUIAnchorType getYAnchorType() const { return m_anchorType[1]; }
-        void setXAnchorType(eUIAnchorType xAnchorType);
-        void setYAnchorType(eUIAnchorType yAnchorType);
-
-        const std::vector<UIControl*>& getChildren() const { return m_children; };
 
     protected:
         friend UIContext;
@@ -567,21 +549,11 @@ namespace onut
                       const sUIRect& parentRect, 
                       const UIControl** ppHoverControl) const;
 
-        bool                    m_isEnabled = true;
-        bool                    m_isClickThrough = false;
-        bool                    m_isVisible = true;
-        sUIRect                 m_rect;
-        sUIVector2              m_anchor;
-        std::vector<UIControl*> m_children;
-        eUIAlign                m_align = eUIAlign::TOP_LEFT;
-        eUIPosType              m_posType[2];
-        eUIDimType              m_dimType[2];
-        eUIAnchorType           m_anchorType[2];
-        int                     m_style = 0;
-        std::string             m_name;
-        std::string             m_styleName;
-        int32_t                 m_refCount = 0;
-        UIControl*              m_pParent = nullptr;
+        std::vector<UIControl*>                     m_children;
+        int                                         m_style = 0;
+        std::string                                 m_styleName;
+        int32_t                                     m_refCount = 0;
+        UIControl*                                  m_pParent = nullptr;
         std::unordered_map<std::string, UIProperty> m_properties;
     };
 
