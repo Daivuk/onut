@@ -42,6 +42,7 @@ namespace onut
         {"PERCENTAGE", eUIAnchorType::ANCHOR_PERCENTAGE}
     };
     static std::unordered_map<std::string, eUICheckBehavior> checkBehaviorMap = {
+        {"NORMAL", eUICheckBehavior::NORMAL},
         {"OPTIONAL", eUICheckBehavior::OPTIONAL},
         {"EXCLUSIVE", eUICheckBehavior::EXCLUSIVE}
     };
@@ -354,8 +355,36 @@ namespace onut
         return std::move(scale9Component);
     }
 
+    static void setJsonImageComponent(rapidjson::Value& node, const sUIImageComponent& imageComponent, rapidjson::Allocator& allocator)
+    {
+        rapidjson::Value imageNode(rapidjson::kObjectType);
+        setJsonString(imageNode, "filename", imageComponent.filename, allocator);
+        setJsonColor(imageNode, "color", imageComponent.color, allocator);
+        node.AddMember("imageComponent", imageNode, allocator);
+    }
+
     static void setJsonScale9Component(rapidjson::Value& node, const sUIScale9Component& scale9Component, rapidjson::Allocator& allocator)
     {
+        if (scale9Component.isScaled9)
+        {
+            rapidjson::Value scale9Node(rapidjson::kObjectType);
+            setJsonPadding(scale9Node, scale9Component.padding, allocator);
+            setJsonImageComponent(scale9Node, scale9Component.image, allocator);
+            node.AddMember("scale9Component", scale9Node, allocator);
+            return;
+        }
+        sUIColor white;
+        if (scale9Component.image.color.r != white.r ||
+            scale9Component.image.color.g != white.g ||
+            scale9Component.image.color.b != white.b ||
+            scale9Component.image.color.a != white.a)
+        {
+            setJsonImageComponent(node, scale9Component.image, allocator);
+        }
+        else
+        {
+            setJsonString(node, "image", scale9Component.image.filename, allocator);
+        }
     }
 
     static void setJsonTextComponent(rapidjson::Value& node, const sUITextComponent& textComponent, rapidjson::Allocator& allocator)
@@ -1873,7 +1902,7 @@ namespace onut
         UIControl::save(jsonNode, allocator);
         setJsonTextComponent(jsonNode, textComponent, allocator);
         setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
-        //setJsonString(jsonNode, "behavior", getStringFromCheckBehavior(m_behavior), allocator);
+        setJsonString(jsonNode, "behavior", enumToString(checkBehaviorMap, behavior), allocator, "NORMAL");
     }
 
     void UITreeView::load(const rapidjson::Value& jsonNode)
