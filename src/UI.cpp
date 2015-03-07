@@ -210,6 +210,16 @@ namespace onut
         return std::move(ret);
     }
 
+    static void setJsonPadding(rapidjson::Value& node, const sUIPadding& padding, rapidjson::Allocator& allocator)
+    {
+        rapidjson::Value paddingNode(rapidjson::kObjectType);
+        setJsonFloat(paddingNode, "left", padding.left, allocator);
+        setJsonFloat(paddingNode, "right", padding.right, allocator);
+        setJsonFloat(paddingNode, "top", padding.top, allocator);
+        setJsonFloat(paddingNode, "bottom", padding.bottom, allocator);
+        node.AddMember("padding", paddingNode, allocator);
+    }
+
     template <typename Tmap, typename Tenum>
     static Tenum getJsonEnum(const Tmap& enumMap, const rapidjson::Value& jsonNode, Tenum default)
     {
@@ -243,6 +253,35 @@ namespace onut
         return (Tenum)ret;
     }
 
+    template <typename Tmap, typename Tenum = Tmap::mapped_type>
+    static void setJsonBitmask(rapidjson::Value& node, const char* szName, const Tmap& enumMap, Tenum value, rapidjson::Allocator& allocator)
+    {
+        if (value == 0) return;
+        std::vector<std::string> ret;
+        for (auto& kv : enumMap)
+        {
+            if (value & kv.second)
+            {
+                ret.push_back(kv.first);
+            }
+        }
+        if (ret.size() == 1)
+        {
+            setJsonString(node, szName, ret.front(), allocator);
+        }
+        else if (!ret.empty())
+        {
+            rapidjson::Value arr(rapidjson::kArrayType);
+            for (auto& str : ret)
+            {
+                rapidjson::Value strValue;
+                strValue.SetString(str.c_str(), allocator);
+                arr.PushBack(strValue, allocator);
+            }
+            node.AddMember(szName, arr, allocator);
+        }
+    }
+
     static sUIFont getJsonFont(const rapidjson::Value& node)
     {
         sUIFont ret;
@@ -259,6 +298,19 @@ namespace onut
         return std::move(ret);
     }
 
+    static void setJsonFont(rapidjson::Value& node, const sUIFont& font, rapidjson::Allocator& allocator)
+    {
+        rapidjson::Value fontNode(rapidjson::kObjectType);
+        setJsonColor(fontNode, "color", font.color, allocator);
+        setJsonString(fontNode, "align", enumToString(alignMap, font.align), allocator, "TOP_LEFT");
+        setJsonPadding(fontNode, font.padding, allocator);
+        setJsonString(fontNode, "typeFace", font.typeFace, allocator, "Arial");
+        setJsonFloat(fontNode, "size", font.size, allocator, 12.f);
+        setJsonBitmask(fontNode, "flags", fontFlagMap, font.flags, allocator);
+        setJsonFloat(fontNode, "minSize", font.minSize, allocator, 12.f);
+        node.AddMember("font", fontNode, allocator);
+    }
+
     static sUITextComponent getJsonTextComponent(const rapidjson::Value& node)
     {
         sUITextComponent ret;
@@ -268,6 +320,50 @@ namespace onut
             ret.font = getJsonFont(node["font"]);
         }
         return std::move(ret);
+    }
+
+    static sUIImageComponent getJsonImageComponent(const rapidjson::Value& node)
+    {
+        sUIImageComponent ret;
+        if (!node.IsNull())
+        {
+            ret.filename = getJsonString(node["filename"]);
+            ret.color = getJsonColor(node["color"]);
+        }
+        return std::move(ret);
+    }
+
+    static sUIScale9Component getJsonScale9Component(const rapidjson::Value& node)
+    {
+        sUIScale9Component scale9Component;
+        if (node.HasMember("scale9Component"))
+        {
+            auto& scale9Node = node["scale9Component"];
+            scale9Component.isScaled9 = true;
+            scale9Component.padding = getJsonPadding(scale9Node["padding"]);
+            scale9Component.image = getJsonImageComponent(scale9Node["imageComponent"]);
+        }
+        else if (node.HasMember("imageComponent"))
+        {
+            scale9Component.image = getJsonImageComponent(node["imageComponent"]);
+        }
+        else if (node.HasMember("image"))
+        {
+            scale9Component.image.filename = getJsonString(node["image"]);
+        }
+        return std::move(scale9Component);
+    }
+
+    static void setJsonScale9Component(rapidjson::Value& node, const sUIScale9Component& scale9Component, rapidjson::Allocator& allocator)
+    {
+    }
+
+    static void setJsonTextComponent(rapidjson::Value& node, const sUITextComponent& textComponent, rapidjson::Allocator& allocator)
+    {
+        rapidjson::Value textNode(rapidjson::kObjectType);
+        setJsonString(textNode, "text", textComponent.text, allocator);
+        setJsonFont(textNode, textComponent.font, allocator);
+        node.AddMember("textComponent", textNode, allocator);
     }
 
     UIContext::UIContext(const sUIVector2& screenSize) :
@@ -1718,12 +1814,14 @@ namespace onut
     {
         UIControl::load(jsonNode);
         textComponent = getJsonTextComponent(jsonNode["textComponent"]);
+        scale9Component = getJsonScale9Component(jsonNode);
     }
 
     void UIButton::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        //setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
+        setJsonTextComponent(jsonNode, textComponent, allocator);
+        setJsonScale9Component(jsonNode, scale9Component, allocator);
     }
 
     void UIPanel::load(const rapidjson::Value& jsonNode)
@@ -1747,19 +1845,19 @@ namespace onut
     void UILabel::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        //setJsonString(jsonNode, "text", m_text.c_str(), allocator);
+        setJsonTextComponent(jsonNode, textComponent, allocator);
     }
 
     void UIImage::load(const rapidjson::Value& jsonNode)
     {
         UIControl::load(jsonNode);
-        //scale9Component = getJsonScale9Component(jsonNode["scale9Component"]);
+        scale9Component = getJsonScale9Component(jsonNode);
     }
 
     void UIImage::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        //setJsonString(jsonNode, "image", m_image.c_str(), allocator);
+        setJsonScale9Component(jsonNode, scale9Component, allocator);
     }
 
     void UICheckBox::load(const rapidjson::Value& jsonNode)
@@ -1773,8 +1871,8 @@ namespace onut
     void UICheckBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        //setJsonString(jsonNode, "caption", m_caption.c_str(), allocator);
-        //setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
+        setJsonTextComponent(jsonNode, textComponent, allocator);
+        setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
         //setJsonString(jsonNode, "behavior", getStringFromCheckBehavior(m_behavior), allocator);
     }
 
@@ -1798,6 +1896,7 @@ namespace onut
     {
         UIControl::load(jsonNode);
         textComponent = getJsonTextComponent(jsonNode["textComponent"]);
+        scale9Component = getJsonScale9Component(jsonNode);
         m_isNumerical = getJsonBool(jsonNode["numerical"]);
         m_decimalPrecision = getJsonInt(jsonNode["precision"]);
         numerifyText();
@@ -1806,9 +1905,10 @@ namespace onut
     void UITextBox::save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const
     {
         UIControl::save(jsonNode, allocator);
-        //setJsonString(jsonNode, "text", m_text.c_str(), allocator);
-        //setJsonBool(jsonNode, "numerical", m_isNumerical, allocator);
-        //setJsonInt(jsonNode, "precision", m_decimalPrecision, allocator);
+        setJsonTextComponent(jsonNode, textComponent, allocator);
+        setJsonScale9Component(jsonNode, scale9Component, allocator);
+        setJsonBool(jsonNode, "numerical", m_isNumerical, allocator);
+        setJsonInt(jsonNode, "precision", m_decimalPrecision, allocator);
     }
 
     //--- Renders

@@ -749,6 +749,7 @@ namespace onut
         virtual eUIType getType() const override { return eUIType::UI_TEXTBOX; }
 
         sUITextComponent textComponent;
+        sUIScale9Component scale9Component;
 
         const std::string::size_type* getSelectedTextRegion() const { return m_selectedTextRegion; }
         std::string::size_type getCursorPos() const { return m_cursorPos; }
