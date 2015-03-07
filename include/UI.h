@@ -370,10 +370,14 @@ namespace onut
         UIControl* getDownControl() const { return m_pDownControl; }
         UIControl* getFocusControl() const { return m_pFocus; }
 
-        std::function<void(UIControl*, const sUIRect&, const sUIColor&)> drawRect;
-        std::function<void(UIControl*, const sUIRect&, const sUIImageComponent&)> drawTexturedRect;
-        std::function<void(UIControl*, const sUIRect&, const sUIScale9Component&)> drawScale9Rect;
-        std::function<void(UIControl*, const sUIRect&, const sUITextComponent&)> drawText;
+        std::function<void(UIControl*, const sUIRect&, const sUIColor&)> drawRect = 
+            [](UIControl*, const sUIRect&, const sUIColor&){};
+        std::function<void(UIControl*, const sUIRect&, const sUIImageComponent&)> drawTexturedRect =
+            [](UIControl*, const sUIRect&, const sUIImageComponent&){};
+        std::function<void(UIControl*, const sUIRect&, const sUIScale9Component&)> drawScale9Rect =
+            [](UIControl*, const sUIRect&, const sUIScale9Component&){};
+        std::function<void(UIControl*, const sUIRect&, const sUITextComponent&)> drawText = 
+            [](UIControl*, const sUIRect&, const sUITextComponent&){};
 
     private:
         void resolve();
@@ -487,7 +491,7 @@ namespace onut
         void release();
 
         void update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown);
-        void render(const UIContext& context) const;
+        void render(const UIContext& context);
 
         sUIRect getWorldRect(const UIContext& context) const;
         void setWorldRect(const sUIRect& rect, const UIContext& context);
@@ -528,8 +532,8 @@ namespace onut
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
 
         void updateInternal(UIContext& context, const sUIRect& parentRect);
-        void renderInternal(const UIContext& context, const sUIRect& parentRect) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const {}
+        void renderInternal(const UIContext& context, const sUIRect& parentRect);
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) {}
 
         virtual void onClickInternal(const UIMouseEvent& evt) {}
         virtual void onMouseDownInternal(const UIMouseEvent& evt) {}
@@ -572,7 +576,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
     };
 
     class UIPanel : public UIControl
@@ -587,7 +591,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
     };
 
     class UILabel : public UIControl
@@ -604,7 +608,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
     };
 
     class UIImage : public UIControl
@@ -619,7 +623,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
     };
 
     class UICheckBox : public UIControl
@@ -641,7 +645,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
         virtual void onClickInternal(const UIMouseEvent& evt) override;
 
     private:
@@ -681,7 +685,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
         virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
 
     private:
@@ -776,7 +780,7 @@ namespace onut
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
-        virtual void renderControl(const UIContext& context, const sUIRect& rect) const override;
+        virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
 
         virtual void onGainFocusInternal(const UIFocusEvent& evt) override;
         virtual void onLoseFocusInternal(const UIFocusEvent& evt) override;

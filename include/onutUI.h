@@ -26,4 +26,9 @@ namespace onut
         Vector4 ret{&uiPadding.left};
         return std::move(ret);
     }
+
+    inline Align UI2Onut(eUIAlign uiAlign)
+    {
+        return static_cast<Align>(uiAlign);
+    }
 };

@@ -1976,6 +1976,7 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     // UIButton
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
     BIND_TEXT_COMPONENT<onut::UIButton>("Caption");
+    BIND_SCALE9_COMPONENT<onut::UIButton>("Bg Image");
 
     // UILabel
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
@@ -1984,8 +1985,4 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     // UIImage
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
     BIND_SCALE9_COMPONENT<onut::UIImage>("Image");
-    //BIND_FILE_PROPERTY<onut::UIImage>("Image",
-    //                                  TEXT("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0"),
-    //                                  [=](onut::UIImage* pImage) -> std::string {return pImage->scale9Component.image.filename; },
-    //                                  [=](onut::UIImage* pImage, const std::string& filename){ pImage->scale9Component.image.filename = filename; });
 }

@@ -1130,7 +1130,7 @@ namespace onut
         m_pFocus = pFocus;
     }
 
-    void UIControl::render(const UIContext& context) const
+    void UIControl::render(const UIContext& context)
     {
         sUIRect parentRect = {{0, 0}, context.getScreenSize() };
         renderInternal(context, parentRect);
@@ -1292,7 +1292,7 @@ namespace onut
         }
     }
 
-    void UIControl::renderInternal(const UIContext& context, const sUIRect& parentRect) const
+    void UIControl::renderInternal(const UIContext& context, const sUIRect& parentRect)
     {
         if (!isVisible) return;
 
@@ -1954,16 +1954,47 @@ namespace onut
     }
 
     //--- Renders
-    void UIButton::renderControl(const UIContext& context, const sUIRect& rect) const
+    void renderScale9Component(const UIContext& context, UIControl* pControl, const sUIRect& rect, const sUIScale9Component& scale9Component)
+    {
+        if (scale9Component.image.filename.empty())
+        {
+            context.drawRect(pControl, rect, scale9Component.image.color);
+        }
+        else if (scale9Component.isScaled9)
+        {
+            context.drawScale9Rect(pControl, rect, scale9Component);
+        }
+        else
+        {
+            context.drawTexturedRect(pControl, rect, scale9Component.image);
+        }
+    }
+
+    void renderTextComponent(const UIContext& context, UIControl* pControl, const sUIRect& rect, const sUITextComponent& textComponent)
+    {
+        auto textRect = rect;
+        textRect.position.x += textComponent.font.padding.left;
+        textRect.position.y += textComponent.font.padding.top;
+        textRect.size.x -= textComponent.font.padding.left + textComponent.font.padding.right;
+        textRect.size.y -= textComponent.font.padding.top + textComponent.font.padding.bottom;
+        context.drawText(pControl, textRect, textComponent);
+    }
+
+    void UIButton::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UIButton>(getStyle());
         if (callback)
         {
             callback->render(this, rect);
         }
+        else
+        {
+            renderScale9Component(context, this, rect, scale9Component);
+            renderTextComponent(context, this, rect, textComponent);
+        }
     }
 
-    void UIPanel::renderControl(const UIContext& context, const sUIRect& rect) const
+    void UIPanel::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UIPanel>(getStyle());
         if (callback)
@@ -1972,34 +2003,46 @@ namespace onut
         }
     }
 
-    void UILabel::renderControl(const UIContext& context, const sUIRect& rect) const
+    void UILabel::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UILabel>(getStyle());
         if (callback)
         {
             callback->render(this, rect);
         }
+        else
+        {
+            renderTextComponent(context, this, rect, textComponent);
+        }
     }
 
-    void UIImage::renderControl(const UIContext& context, const sUIRect& rect) const
+    void UIImage::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UIImage>(getStyle());
         if (callback)
         {
             callback->render(this, rect);
         }
+        else
+        {
+            renderScale9Component(context, this, rect, scale9Component);
+        }
     }
 
-    void UICheckBox::renderControl(const UIContext& context, const sUIRect& rect) const
+    void UICheckBox::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UICheckBox>(getStyle());
         if (callback)
         {
             callback->render(this, rect);
         }
+        else
+        {
+            renderTextComponent(context, this, rect, textComponent);
+        }
     }
 
-    void UITreeView::renderControl(const UIContext& context, const sUIRect& rect) const
+    void UITreeView::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UITreeView>(getStyle());
         if (callback)
@@ -2019,12 +2062,17 @@ namespace onut
         }
     }
 
-    void UITextBox::renderControl(const UIContext& context, const sUIRect& rect) const
+    void UITextBox::renderControl(const UIContext& context, const sUIRect& rect)
     {
         const auto& callback = context.getStyle<UITextBox>(getStyle());
         if (callback)
         {
             callback->render(this, rect);
+        }
+        else
+        {
+            renderScale9Component(context, this, rect, scale9Component);
+            renderTextComponent(context, this, rect, textComponent);
         }
     }
 

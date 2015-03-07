@@ -21,50 +21,27 @@ void createViewUIStyles(onut::UIContext* pContext)
 {
     g_pFont = OGetBMFont("segeo12.fnt");
 
-    pContext->addStyle<onut::UIPanel>("", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->drawRect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)
     {
-        const auto rectOutter = onut::UI2Onut(rect);
-        auto& color = pPanel->color;
+        OSB->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
+    };
 
-        OSB->drawRect(nullptr, rectOutter, {color.r, color.g, color.b, color.a});
-    });
-
-    pContext->addStyle<onut::UIButton>("", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)
+    pContext->drawTexturedRect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIImageComponent &image)
     {
-        const auto rectOutter = onut::UI2Onut(rect);
-        const auto rectInnuer = rectOutter.Grow(-1);
-        auto textColor = onut::UI2Onut(pButton->textComponent.font.color);
+        auto pTexture = g_pDocument->contentManager.getResource<OTexture>(image.filename);
+        OSB->drawRect(pTexture, onut::UI2Onut(rect), onut::UI2Onut(image.color));
+    };
 
-        if (pButton->getState(*pContext) == onut::eUIState::DISABLED)
-        {
-            OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[0][0]);
-            OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[0][1]);
-            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), textColor * .5f);
-        }
-        else
-        {
-            OSB->drawRect(nullptr, rectOutter, g_btnStatesColors[1][0]);
-            OSB->drawRect(nullptr, rectInnuer, g_btnStatesColors[1][1]);
-            g_pFont->draw<OCenter>(pButton->textComponent.text, rectInnuer.Center(), textColor);
-        }
-    });
-
-    pContext->addStyle<onut::UILabel>("", [pContext](const onut::UILabel* pLabel, const onut::sUIRect& rect)
+    pContext->drawScale9Rect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIScale9Component &scale9Component)
     {
-        g_pFont->draw<OLeft>(pLabel->textComponent.text, onut::UI2Onut(rect).Left(), g_fontColor);
-    });
+        auto pTexture = g_pDocument->contentManager.getResource<OTexture>(scale9Component.image.filename);
+        OSB->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
+    };
 
-    pContext->addStyle<onut::UIImage>("", [pContext](const onut::UIImage* pImage, const onut::sUIRect& rect)
+    pContext->drawText = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUITextComponent &textComponent)
     {
-        auto pTexture = g_pDocument->contentManager.getResource<OTexture>(pImage->scale9Component.image.filename);
-        auto color = onut::UI2Onut(pImage->scale9Component.image.color);
-        if (pImage->scale9Component.isScaled9 && pTexture)
-        {
-            OSB->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(pImage->scale9Component.padding), color);
-        }
-        else
-        {
-            OSB->drawRect(pTexture, onut::UI2Onut(rect), color);
-        }
-    });
+        auto align = onut::UI2Onut(textComponent.font.align);
+        auto oRect = onut::UI2Onut(rect);
+        g_pFont->draw<>(textComponent.text, ORectAlign<>(oRect, align), onut::UI2Onut(textComponent.font.color), OSB, align);
+    };
 }

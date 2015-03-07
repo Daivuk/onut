@@ -65,6 +65,52 @@ namespace onut
     }
 
     template<Align Talign = Align::TOP_LEFT>
+    Vector2 alignedRect(const Rect& rect, Align align = Talign)
+    {
+        Vector2 ret;
+        switch (align)
+        {
+            case Align::TOP_LEFT:
+                ret.x = rect.x;
+                ret.y = rect.y;
+                break;
+            case Align::TOP:
+                ret.x = rect.x + rect.z * .5f;
+                ret.y = rect.y;
+                break;
+            case Align::TOP_RIGHT:
+                ret.x = rect.x + rect.z;
+                ret.y = rect.y;
+                break;
+            case Align::LEFT:
+                ret.x = rect.x;
+                ret.y = rect.y + rect.w * .5f;
+                break;
+            case Align::CENTER:
+                ret.x = rect.x + rect.z * .5f;
+                ret.y = rect.y + rect.w * .5f;
+                break;
+            case Align::RIGHT:
+                ret.x = rect.x + rect.z;
+                ret.y = rect.y + rect.w * .5f;
+                break;
+            case Align::BOTTOM_LEFT:
+                ret.x = rect.x;
+                ret.y = rect.y + rect.w;
+                break;
+            case Align::BOTTOM:
+                ret.x = rect.x + rect.z * .5f;
+                ret.y = rect.y + rect.w;
+                break;
+            case Align::BOTTOM_RIGHT:
+                ret.x = rect.x + rect.z;
+                ret.y = rect.y + rect.w;
+                break;
+        }
+        return std::move(ret);
+    }
+
+    template<Align Talign = Align::TOP_LEFT>
     Rect alignedRect(const Rect& rect, float padding = 0, Align align = Talign)
     {
         return alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
