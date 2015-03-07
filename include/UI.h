@@ -112,8 +112,8 @@ namespace onut
     struct sUIPadding
     {
         float left;
-        float right;
         float top;
+        float right;
         float bottom;
         sUIPadding() : left(0), right(0), top(0), bottom(0) {}
         sUIPadding(float in_left, float in_right, float in_top, float in_bottom) : left(in_left), right(in_right), top(in_top), bottom(in_bottom) {}
@@ -562,6 +562,8 @@ namespace onut
         friend UIControl;
 
     public:
+        UIButton();
+
         virtual eUIType getType() const override { return eUIType::UI_BUTTON; }
 
         sUIScale9Component  scale9Component;
@@ -593,6 +595,8 @@ namespace onut
         friend UIControl;
 
     public:
+        UILabel();
+
         virtual eUIType getType() const override { return eUIType::UI_LABEL; }
 
         sUITextComponent textComponent;

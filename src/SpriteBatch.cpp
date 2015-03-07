@@ -152,6 +152,46 @@ namespace onut
         }
     }
 
+    void SpriteBatch::drawRectScaled9(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color)
+    {
+        assert(m_isDrawing); // Should call begin() before calling draw()
+
+        if (!pTexture) pTexture = m_pTexWhite;
+
+        const auto& textureSize = pTexture->getSizef();
+        const Vector4 paddingUVs{padding.x / textureSize.x, padding.y / textureSize.y, padding.z / textureSize.x, padding.w / textureSize.y};
+
+        drawRectWithUVs(pTexture,
+            {rect.x, rect.y, padding.x, padding.y},
+            {0.f, 0.f, paddingUVs.x, paddingUVs.y}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + padding.x, rect.y, rect.z - padding.x - padding.y, padding.y},
+            {paddingUVs.x, 0.f, 1.f - paddingUVs.z, paddingUVs.y}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + rect.z - padding.z, rect.y, padding.z, padding.y},
+            {1.f - paddingUVs.z, 0.f, 1.f, paddingUVs.y}, color);
+
+        drawRectWithUVs(pTexture,
+            {rect.x, rect.y + padding.y, padding.x, rect.w - padding.y - padding.w},
+            {0.f, paddingUVs.y, paddingUVs.x, 1.f - paddingUVs.w}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + padding.x, rect.y + padding.y, rect.z - padding.x - padding.y, rect.w - padding.y - padding.w},
+            {paddingUVs.x, paddingUVs.y, 1.f - paddingUVs.z, 1.f - paddingUVs.y}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + rect.z - padding.z, rect.y + padding.y, padding.z, rect.w - padding.y - padding.w},
+            {1.f - paddingUVs.z, paddingUVs.y, 1.f, 1.f - paddingUVs.y}, color);
+
+        drawRectWithUVs(pTexture,
+            {rect.x, rect.y + rect.w - padding.w, padding.x, padding.w},
+            {0.f, 1.f - paddingUVs.w, paddingUVs.x, 1.f}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + padding.x, rect.y + rect.w - padding.w, rect.z - padding.x - padding.y, padding.w},
+            {paddingUVs.x, 1.f - paddingUVs.w, 1.f - paddingUVs.z, 1.f}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + rect.z - padding.z, rect.y + rect.w - padding.w, padding.z, padding.w},
+            {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
+    }
+
     void SpriteBatch::drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()

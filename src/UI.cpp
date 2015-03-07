@@ -150,7 +150,9 @@ namespace onut
     static void setJsonString(rapidjson::Value& jsonNode, const char* szName, const std::string& value, rapidjson::Allocator& allocator, const char* default = "")
     {
         if (!strcmp(value.c_str(), default)) return;
-        jsonNode.AddMember(szName, value.c_str(), allocator);
+        rapidjson::Value jsonValue;
+        jsonValue.SetString(value.c_str(), allocator);
+        jsonNode.AddMember(szName, jsonValue, allocator);
     }
 
     static void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool default = false)
@@ -243,7 +245,7 @@ namespace onut
                 auto& jsonEnum = jsonNode[i];
                 if (jsonEnum.IsString())
                 {
-                    ret |= stringToEnum(enumMap, jsonNode.GetString(), (Tenum)0);
+                    ret |= stringToEnum(enumMap, jsonEnum.GetString(), (Tenum)0);
                 }
             }
         }
@@ -1730,6 +1732,17 @@ namespace onut
     {
         textComponent.text = std::to_string(i);
         numerifyText();
+    }
+
+    //--- Constructors
+    UIButton::UIButton()
+    {
+        textComponent.font.align = eUIAlign::CENTER;
+    }
+
+    UILabel::UILabel()
+    {
+        textComponent.font.align = eUIAlign::LEFT;
     }
 
     //--- Copy

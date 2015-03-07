@@ -57,6 +57,14 @@ void createViewUIStyles(onut::UIContext* pContext)
     pContext->addStyle<onut::UIImage>("", [pContext](const onut::UIImage* pImage, const onut::sUIRect& rect)
     {
         auto pTexture = g_pDocument->contentManager.getResource<OTexture>(pImage->scale9Component.image.filename);
-        OSB->drawRect(pTexture, onut::UI2Onut(rect));
+        auto color = onut::UI2Onut(pImage->scale9Component.image.color);
+        if (pImage->scale9Component.isScaled9 && pTexture)
+        {
+            OSB->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(pImage->scale9Component.padding), color);
+        }
+        else
+        {
+            OSB->drawRect(pTexture, onut::UI2Onut(rect), color);
+        }
     });
 }

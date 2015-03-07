@@ -88,15 +88,21 @@ class ControlInspectorBind : public IControlInspectorBind
 public:
     using Tgetter = std::function < Ttype(TtargetControl*) > ;
     using Tsetter = std::function < void(TtargetControl*, const Ttype&) > ;
+    using TgetInspector = std::function < Ttype() >;
+    using TsetInspector = std::function < void(const Ttype&) >;
 
     ControlInspectorBind(const std::string& actionName,
                          Ttype* pInspectorValue,
                          const Tgetter& getter,
-                         const Tsetter& setter) :
+                         const Tsetter& setter,
+                         const TgetInspector& getInspector = nullptr,
+                         const TsetInspector& setInspector = nullptr) :
                          m_actionName(actionName),
                          m_pInspectorValue(pInspectorValue),
                          m_getter(getter),
-                         m_setter(setter)
+                         m_setter(setter),
+                         m_getInspector(getInspector),
+                         m_setInspector(setInspector)
     {
     }
 
@@ -105,13 +111,22 @@ private:
     Ttype*          m_pInspectorValue;
     Tgetter         m_getter;
     Tsetter         m_setter;
+    TgetInspector   m_getInspector;
+    TsetInspector   m_setInspector;
 
 public:
     void updateInspector(onut::UIControl* pControl) override
     {
         auto tControl = dynamic_cast<TtargetControl*>(pControl);
         if (!tControl) return;
-        *m_pInspectorValue = m_getter(tControl);
+        if (m_pInspectorValue)
+        {
+            *m_pInspectorValue = m_getter(tControl);
+        }
+        else
+        {
+            m_setInspector(m_getter(tControl));
+        }
     }
 
     void updateControl(onut::UIControl* pControl) override
@@ -120,7 +135,15 @@ public:
         if (!tControl) return;
 
         auto prevVar = m_getter(tControl);
-        auto newVal = *m_pInspectorValue;
+        Ttype newVal;
+        if (m_pInspectorValue)
+        {
+            newVal = *m_pInspectorValue;
+        }
+        else
+        {
+            newVal = m_getInspector();
+        }
 
         g_actionManager.doAction(new onut::Action(m_actionName,
             [=]{

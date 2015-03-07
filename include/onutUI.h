@@ -20,4 +20,10 @@ namespace onut
         Color ret{&uiColor.r};
         return std::move(ret);
     }
+
+    inline Vector4 UI2Onut(const sUIPadding& uiPadding)
+    {
+        Vector4 ret{&uiPadding.left};
+        return std::move(ret);
+    }
 };
