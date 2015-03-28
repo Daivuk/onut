@@ -162,6 +162,16 @@ void onCreateImage(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     createControlAction(pImg, pParent);
 }
 
+void onCreateCheckBox(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+{
+    auto pParent = getCreateParent();
+    auto pBtn = new onut::UICheckBox();
+
+    pBtn->textComponent.text = "CheckBox";
+    pBtn->rect = {{0, 0}, {64, 24}};
+    createControlAction(pBtn, pParent);
+}
+
 bool g_bSelected = false;
 
 void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -1852,6 +1862,7 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     pUIScreen->getChild("btnCreateButton")->onClick = onCreateButton;
     pUIScreen->getChild("btnCreateLabel")->onClick = onCreateLabel;
     pUIScreen->getChild("btnCreateImage")->onClick = onCreateImage;
+    pUIScreen->getChild("btnCreateCheckBox")->onClick = onCreateCheckBox;
 
     // View
     pUIScreen->getChild("pnlView")->onMouseDown = onSelect;

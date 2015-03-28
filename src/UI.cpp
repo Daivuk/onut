@@ -43,7 +43,7 @@ namespace onut
     };
     static std::unordered_map<std::string, eUICheckBehavior> checkBehaviorMap = {
         {"NORMAL", eUICheckBehavior::NORMAL},
-        {"OPTIONAL", eUICheckBehavior::OPTIONAL},
+        {"OPTIONAL", eUICheckBehavior::CHK_OPTIONAL},
         {"EXCLUSIVE", eUICheckBehavior::EXCLUSIVE}
     };
     static std::unordered_map<std::string, eUIType> typeMap = {
@@ -774,6 +774,8 @@ namespace onut
         name = other.name;
         pUserData = pUserData;
         m_properties = other.m_properties;
+        m_style = other.m_style;
+        m_styleName = other.m_styleName;
 
         for (auto pChild : m_children)
         {
@@ -809,6 +811,19 @@ namespace onut
 
     UIControl::~UIControl()
     {
+        if (m_pParent)
+        {
+            auto size = m_pParent->m_children.size();
+            for (decltype(size) i = 0; i < size; ++i)
+            {
+                auto pChild = m_pParent->m_children[i];
+                if (pChild == this)
+                {
+                    m_pParent->m_children.erase(m_pParent->m_children.begin() + i);
+                    break;
+                }
+            }
+        }
         for (auto pChild : m_children)
         {
             pChild->release();
@@ -1780,7 +1795,7 @@ namespace onut
                 m_isChecked = in_isChecked;
                 break;
             }
-            case eUICheckBehavior::OPTIONAL:
+            case eUICheckBehavior::CHK_OPTIONAL:
             {
                 if (!m_isChecked && in_isChecked)
                 {
@@ -2093,7 +2108,7 @@ namespace onut
                 }
                 break;
             }
-            case eUICheckBehavior::OPTIONAL:
+            case eUICheckBehavior::CHK_OPTIONAL:
             {
                 if (!m_isChecked)
                 {

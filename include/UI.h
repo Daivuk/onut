@@ -92,7 +92,7 @@ namespace onut
         /** Behaves like a radio button. Only one sibblings can be checked. And one HAS to be checked */
         EXCLUSIVE,
         /** Like exclusive, but all sibblings can be toggled off */
-        OPTIONAL
+        CHK_OPTIONAL
     };
 
     struct sUIVector2

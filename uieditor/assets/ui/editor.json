@@ -558,6 +558,31 @@
                                             "clickThrough": true
                                         }
                                     ]
+                                },
+                                {
+                                    "type": "UIButton",
+                                    "name": "btnCreateCheckBox",
+                                    "style": "imgButton",
+                                    "x": 176,
+                                    "y": 28,
+                                    "width": 84,
+                                    "height": 24,
+                                    "textComponent": {
+                                        "text": "CheckBox"
+                                    },
+                                    "allowDrag": true,
+                                    "children": [
+                                        {
+                                            "type": "UIImage",
+                                            "style": "icon",
+                                            "x": 4,
+                                            "width": 16,
+                                            "height": 16,
+                                            "align": "LEFT",
+                                            "yAnchor": 0.5,
+                                            "clickThrough": true
+                                        }
+                                    ]
                                 }
                             ]
                         },
