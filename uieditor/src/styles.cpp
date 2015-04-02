@@ -199,22 +199,6 @@ void createUIStyles(onut::UIContext* pContext)
         }
     });
 
-    pContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
-    {
-        OSB->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
-        OSB->end();
-
-        // Render edited UIs
-      //  ORenderer->set2DCamera({std::roundf(-rect.position.x), std::roundf(-rect.position.y)});
-        ORenderer->set2DCamera({-rect.position.x, -rect.position.y});
-        OSB->begin();
-        g_pDocument->render();
-        OSB->end();
-
-        ORenderer->set2DCamera({0, 0});
-        OSB->begin();
-    });
-
     pContext->addStyle<onut::UIImage>("", [](const onut::UIImage* pImage, const onut::sUIRect& rect)
     {
         OSB->drawRect(OGetTexture(pImage->scale9Component.image.filename.c_str()), onut::UI2Onut(rect));

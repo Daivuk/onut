@@ -51,6 +51,8 @@ static HCURSOR curSIZEWE = nullptr;
 static HCURSOR curSIZENS = nullptr;
 static HCURSOR curSIZEALL = nullptr;
 
+extern void createUIStyles(onut::UIContext* pContext);
+
 DocumentView::DocumentView(const std::string& filename)
 {
     m_filename = filename;
@@ -68,7 +70,8 @@ DocumentView::DocumentView(const std::string& filename)
     if (!curSIZEALL) curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
 
     pUIContext = new onut::UIContext(onut::sUIVector2{640, 480});
-    createViewUIStyles(pUIContext);
+    //createViewUIStyles(pUIContext);
+    createUIStyles(pUIContext);
 
     if (m_filename.empty())
     {

@@ -32,6 +32,22 @@ void init()
     g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
     createUIStyles(g_pUIContext);
 
+    g_pUIContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    {
+        OSB->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
+        OSB->end();
+
+        // Render edited UIs
+        //  ORenderer->set2DCamera({std::roundf(-rect.position.x), std::roundf(-rect.position.y)});
+        ORenderer->set2DCamera({-rect.position.x, -rect.position.y});
+        OSB->begin();
+        g_pDocument->render();
+        OSB->end();
+
+        ORenderer->set2DCamera({0, 0});
+        OSB->begin();
+    });
+
     g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
     hookUIEvents(g_pUIScreen);
 

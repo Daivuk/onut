@@ -172,6 +172,16 @@ void onCreateCheckBox(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     createControlAction(pBtn, pParent);
 }
 
+void onCreateTextBox(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+{
+    auto pParent = getCreateParent();
+    auto pBtn = new onut::UITextBox();
+
+    pBtn->textComponent.text = "";
+    pBtn->rect = {{0, 0}, {64, 24}};
+    createControlAction(pBtn, pParent);
+}
+
 bool g_bSelected = false;
 
 void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -1848,13 +1858,24 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     };
 }
 
+onut::UIContext* pDrawContext = nullptr;
+
 void hookUIEvents(onut::UIControl* pUIScreen)
 {
     curARROW = LoadCursor(nullptr, IDC_ARROW);
     curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
 
     // Tool Bar
-
+    pUIScreen->getChild<onut::UICheckBox>("chkEditorStyle")->onCheckChanged = [&](onut::UICheckBox* pControl, const onut::UICheckEvent& checkEvent){
+        if (checkEvent.isChecked)
+        {
+            pDrawContext = g_pUIContext;
+        }
+        else
+        {
+            pDrawContext = g_pDocument->pUIContext;
+        }
+    };
 
     // Tool box
     pUIScreen->getChild("btnCreateControl")->onClick = onCreateControl;
@@ -1863,6 +1884,7 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     pUIScreen->getChild("btnCreateLabel")->onClick = onCreateLabel;
     pUIScreen->getChild("btnCreateImage")->onClick = onCreateImage;
     pUIScreen->getChild("btnCreateCheckBox")->onClick = onCreateCheckBox;
+    pUIScreen->getChild("btnCreateTextBox")->onClick = onCreateTextBox;
 
     // View
     pUIScreen->getChild("pnlView")->onMouseDown = onSelect;
