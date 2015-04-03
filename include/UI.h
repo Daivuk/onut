@@ -446,6 +446,7 @@ namespace onut
         UIControl(const char* szFilename);
         UIControl(const UIControl& other);
         virtual ~UIControl();
+        UIControl* copy() const;
 
         // Public properties
         bool            isEnabled = true; /*! Disabled control and their children won't receive mouse events */
@@ -567,6 +568,7 @@ namespace onut
 
     public:
         UIButton();
+        UIButton(const UIButton& other);
 
         virtual eUIType getType() const override { return eUIType::UI_BUTTON; }
 
@@ -584,6 +586,9 @@ namespace onut
         friend UIControl;
 
     public:
+        UIPanel() {}
+        UIPanel(const UIPanel& other);
+
         virtual eUIType getType() const override { return eUIType::UI_PANEL; }
 
         sUIColor color;
@@ -600,6 +605,7 @@ namespace onut
 
     public:
         UILabel();
+        UILabel(const UILabel& other);
 
         virtual eUIType getType() const override { return eUIType::UI_LABEL; }
 
@@ -616,6 +622,9 @@ namespace onut
         friend UIControl;
 
     public:
+        UIImage() {}
+        UIImage(const UIImage& other);
+
         virtual eUIType getType() const override { return eUIType::UI_IMAGE; }
 
         sUIScale9Component scale9Component;
@@ -631,6 +640,9 @@ namespace onut
         friend UIControl;
 
     public:
+        UICheckBox() {}
+        UICheckBox(const UICheckBox& other);
+
         virtual eUIType getType() const override { return eUIType::UI_CHECKBOX; }
 
         sUIIconComponent iconComponent;
@@ -754,6 +766,9 @@ namespace onut
         friend UIControl;
 
     public:
+        UITextBox() {}
+        UITextBox(const UITextBox& other);
+
         virtual eUIType getType() const override { return eUIType::UI_TEXTBOX; }
 
         sUITextComponent textComponent;

@@ -760,7 +760,8 @@ namespace onut
         }
     }
 
-    UIControl::UIControl(const UIControl& other)
+    UIControl::UIControl(const UIControl& other) :
+        UIControl()
     {
         isEnabled = other.isEnabled;
         isClickThrough = other.isClickThrough;
@@ -771,42 +772,43 @@ namespace onut
         yType = other.yType;
         widthType = other.widthType;
         heightType = other.heightType;
+        xAnchorType = other.xAnchorType;
+        yAnchorType = other.yAnchorType;
+        anchor = other.anchor;
         name = other.name;
-        pUserData = pUserData;
+        pUserData = other.pUserData;
         m_properties = other.m_properties;
         m_style = other.m_style;
         m_styleName = other.m_styleName;
 
-        for (auto pChild : m_children)
+        for (auto pChild : other.m_children)
         {
-            switch (pChild->getType())
-            {
-                case eUIType::UI_CONTROL:
-                    add(new UIControl(*pChild));
-                    break;
-                case eUIType::UI_BUTTON:
-                    add(new UIButton(*(UIButton*)pChild));
-                    break;
-                case eUIType::UI_PANEL:
-                    add(new UIPanel(*(UIPanel*)pChild));
-                    break;
-                case eUIType::UI_LABEL:
-                    add(new UILabel(*(UILabel*)pChild));
-                    break;
-                case eUIType::UI_IMAGE:
-                    add(new UIImage(*(UIImage*)pChild));
-                    break;
-                case eUIType::UI_CHECKBOX:
-                    add(new UICheckBox(*(UICheckBox*)pChild));
-                    break;
-                case eUIType::UI_TREEVIEW:
-                    add(new UITreeView(*(UITreeView*)pChild));
-                    break;
-                case eUIType::UI_TEXTBOX:
-                    add(new UITextBox(*(UITextBox*)pChild));
-                    break;
-            }
+            add(pChild->copy());
         }
+    }
+
+    UIControl* UIControl::copy() const
+    {
+        switch (getType())
+        {
+            case eUIType::UI_CONTROL:
+                return (new UIControl(*this));
+            case eUIType::UI_BUTTON:
+                return (new UIButton(*(UIButton*)this));
+            case eUIType::UI_PANEL:
+                return (new UIPanel(*(UIPanel*)this));
+            case eUIType::UI_LABEL:
+                return (new UILabel(*(UILabel*)this));
+            case eUIType::UI_IMAGE:
+                return (new UIImage(*(UIImage*)this));
+            case eUIType::UI_CHECKBOX:
+                return (new UICheckBox(*(UICheckBox*)this));
+            case eUIType::UI_TREEVIEW:
+                return (new UITreeView(*(UITreeView*)this));
+            case eUIType::UI_TEXTBOX:
+                return (new UITextBox(*(UITextBox*)this));
+        }
+        return nullptr;
     }
 
     UIControl::~UIControl()
@@ -1762,6 +1764,49 @@ namespace onut
     }
 
     //--- Copy
+    UIButton::UIButton(const UIButton& other) :
+        UIControl(other)
+    {
+        textComponent = other.textComponent;
+        scale9Component = other.scale9Component;
+    }
+
+    UIPanel::UIPanel(const UIPanel& other) :
+        UIControl(other)
+    {
+        color = other.color;
+    }
+
+    UILabel::UILabel(const UILabel& other) :
+        UIControl(other)
+    {
+        textComponent = other.textComponent;
+    }
+
+    UIImage::UIImage(const UIImage& other) :
+        UIControl(other)
+    {
+        scale9Component = other.scale9Component;
+    }
+
+    UICheckBox::UICheckBox(const UICheckBox& other) :
+        UIControl(other)
+    {
+        iconComponent = other.iconComponent;
+        textComponent = other.textComponent;
+        behavior = other.behavior;
+        m_isChecked = other.m_isChecked;
+    }
+
+    UITextBox::UITextBox(const UITextBox& other) :
+        UIControl(other)
+    {
+        textComponent = other.textComponent;
+        scale9Component = other.scale9Component;
+        m_isNumerical = other.m_isNumerical;
+        m_decimalPrecision = other.m_decimalPrecision;
+    }
+
     UITreeView::UITreeView(const UITreeView& other) :
         UIControl(other)
     {

@@ -41,6 +41,11 @@ public:
 
     const std::string& getFilename() const { return m_filename; }
 
+    void cut();
+    void copy();
+    void paste();
+    void del();
+
 private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
@@ -66,6 +71,7 @@ private:
     onut::UIControl*    m_gizmoHandles[8];
     onut::UIControl*    m_guides[2];
     onut::UIControl*    m_pCurrentHandle = nullptr;
+    onut::UIControl*    m_pClipBoard = nullptr;
     onut::UITreeView*   m_pSceneGraph = nullptr;
     Vector2             m_mousePosOnDown;
     onut::sUIRect       m_controlRectOnDown;

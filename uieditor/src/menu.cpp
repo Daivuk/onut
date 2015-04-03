@@ -28,6 +28,11 @@ void buildMenu()
         auto subMenu = CreatePopupMenu();
         InsertMenu(subMenu, 0, MF_BYPOSITION | MF_STRING, MENU_EDIT_UNDO, TEXT("&Undo\tCtrl+Z"));
         InsertMenu(subMenu, 1, MF_BYPOSITION | MF_STRING, MENU_EDIT_REDO, TEXT("&Redo\tCtrl+Shift+Z"));
+        InsertMenu(subMenu, 2, MF_BYPOSITION | MF_SEPARATOR, 0, nullptr);
+        InsertMenu(subMenu, 3, MF_BYPOSITION | MF_STRING, MENU_EDIT_CUT, TEXT("&Cut\tCtrl+X"));
+        InsertMenu(subMenu, 4, MF_BYPOSITION | MF_STRING, MENU_EDIT_COPY, TEXT("&Copy\tCtrl+C"));
+        InsertMenu(subMenu, 5, MF_BYPOSITION | MF_STRING, MENU_EDIT_PASTE, TEXT("&Paste\tCtrl+V"));
+        InsertMenu(subMenu, 6, MF_BYPOSITION | MF_STRING, MENU_EDIT_DELETE, TEXT("&Delete\tDel"));
         InsertMenu(menu, 1, MF_BYPOSITION | MF_POPUP, (UINT)subMenu, TEXT("&Edit"));
     }
 
@@ -101,6 +106,18 @@ void onMenu(UINT menuId)
         case MENU_EDIT_REDO:
             g_actionManager.redo();
             break;
+        case MENU_EDIT_CUT:
+            g_pDocument->cut();
+            break;
+        case MENU_EDIT_COPY:
+            g_pDocument->copy();
+            break;
+        case MENU_EDIT_PASTE:
+            g_pDocument->paste();
+            break;
+        case MENU_EDIT_DELETE:
+            g_pDocument->del();
+            break;
     }
 }
 
@@ -140,5 +157,21 @@ void checkShortCut(uintptr_t key)
                 onMenu(MENU_EDIT_UNDO);
             }
         }
+        else if (key == static_cast<uintptr_t>('X'))
+        {
+            onMenu(MENU_EDIT_CUT);
+        }
+        else if (key == static_cast<uintptr_t>('C'))
+        {
+            onMenu(MENU_EDIT_COPY);
+        }
+        else if (key == static_cast<uintptr_t>('V'))
+        {
+            onMenu(MENU_EDIT_PASTE);
+        }
+    }
+    else if (key == VK_DELETE)
+    {
+        onMenu(MENU_EDIT_DELETE);
     }
 }

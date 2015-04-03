@@ -9,6 +9,10 @@ const UINT MENU_FILE_EXIT = 105;
 
 const UINT MENU_EDIT_UNDO = 201;
 const UINT MENU_EDIT_REDO = 202;
+const UINT MENU_EDIT_CUT = 203;
+const UINT MENU_EDIT_COPY = 204;
+const UINT MENU_EDIT_PASTE = 205;
+const UINT MENU_EDIT_DELETE = 206;
 
 void buildMenu();
 void onMenu(UINT index);

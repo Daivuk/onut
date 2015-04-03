@@ -137,6 +137,7 @@ DocumentView::DocumentView(const std::string& filename)
 
 DocumentView::~DocumentView()
 {
+    if (m_pClipBoard) m_pClipBoard->release();
     pUIScreen->release();
     delete pUIContextUserStyle;
     delete pUIContextEditorStyle;
@@ -144,18 +145,7 @@ DocumentView::~DocumentView()
 
 void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pParent)
 {
-    auto pItem = new onut::UITreeViewItem();
-    pItem->pUserData = pControl;
-    pControl->pUserData = pItem;
-    auto pParentItem = static_cast<onut::UITreeViewItem*>(pParent->pUserData);
-    if (pParentItem)
-    {
-        pParentItem->addItem(pItem);
-    }
-    else
-    {
-        m_pSceneGraph->addItem(pItem);
-    }
+    repopulateTreeView(pControl);
 }
 
 void DocumentView::controlDeleted(onut::UIControl* pControl)
@@ -274,6 +264,54 @@ void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEven
     m_state = eDocumentState::IDLE;
 }
 
+void DocumentView::cut()
+{
+    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+    {
+        if (pSelected)
+        {
+            if (m_pClipBoard) m_pClipBoard->release();
+            m_pClipBoard = pSelected;
+            if (m_pClipBoard) m_pClipBoard->retain();
+            deleteSelection();
+        }
+    }
+}
+
+void DocumentView::copy()
+{
+    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+    {
+        if (pSelected)
+        {
+            if (m_pClipBoard) m_pClipBoard->release();
+            m_pClipBoard = pSelected->copy();
+            if (m_pClipBoard) m_pClipBoard->retain();
+        }
+    }
+}
+
+extern void createControlAction(onut::UIControl* pControl, onut::UIControl* pParent);
+extern onut::UIControl* getCreateParent();
+
+void DocumentView::paste()
+{
+    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+    {
+        if (m_pClipBoard)
+        {
+            auto pParent = getCreateParent();
+            auto pCtrl = m_pClipBoard->copy();
+            createControlAction(pCtrl, pParent);
+        }
+    }
+}
+
+void DocumentView::del()
+{
+    deleteSelection();
+}
+
 void DocumentView::update()
 {
     switch (m_state)
@@ -284,15 +322,6 @@ void DocumentView::update()
         case eDocumentState::MOVING_GIZO:
             updateMovingGizmo();
             break;
-        case eDocumentState::IDLE:
-            if (OInput->isStateJustDown(DIK_DELETE))
-            {
-                if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
-                {
-                    deleteSelection();
-                }
-            }
-            break;
     }
 }
 
@@ -300,6 +329,8 @@ void DocumentView::deleteSelection()
 {
     if (!pSelected) return;
     if (!pSelected->getParent()) return; // huh?
+    if (m_state != eDocumentState::IDLE) return;
+    if ((g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX)) return;
 
     auto pParent = pSelected->getParent();
     auto pControl = pSelected;

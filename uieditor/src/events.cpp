@@ -1879,10 +1879,10 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     pUIScreen->getChild("toolNew")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_NEW); };
     pUIScreen->getChild("toolOpen")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_OPEN); };
     pUIScreen->getChild("toolSave")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
-    //pUIScreen->getChild("toolCopy")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
-    //pUIScreen->getChild("toolPaste")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
-    //pUIScreen->getChild("toolCut")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
-    //pUIScreen->getChild("toolDelete")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    pUIScreen->getChild("toolCut")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_CUT); };
+    pUIScreen->getChild("toolCopy")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_COPY); };
+    pUIScreen->getChild("toolPaste")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_PASTE); };
+    pUIScreen->getChild("toolDelete")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_DELETE); };
     pUIScreen->getChild("toolUndo")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_UNDO); };
     pUIScreen->getChild("toolRedo")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_REDO); };
 
