@@ -475,6 +475,7 @@ namespace onut
         void insertAfter(UIControl* pChild, UIControl* pAfter);
         void remove();
         void remove(UIControl* pChild);
+        void removeAll();
         UIControl* getChild(const std::string& name, bool bSearchSubChildren = true) const;
         template<typename TuiType>
         TuiType* getChild(const std::string& name, bool bSearchSubChildren = true) const

@@ -907,6 +907,14 @@ namespace onut
         in_pChild->release();
     }
 
+    void UIControl::removeAll()
+    {
+        while (m_children.size())
+        {
+            remove(m_children.front());
+        }
+    }
+
     UIControl* UIControl::getChild(const std::string& in_name, bool bSearchSubChildren) const
     {
         for (auto pChild : m_children)
