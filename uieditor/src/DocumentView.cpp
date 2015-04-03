@@ -83,6 +83,7 @@ DocumentView::DocumentView(const std::string& filename)
     {
         pUIScreen = new onut::UIControl(m_filename.c_str());
     }
+    pUIScreen->retain();
     pUIScreen->name = "Root";
     pUIScreen->widthType = onut::eUIDimType::DIM_RELATIVE;
     pUIScreen->heightType = onut::eUIDimType::DIM_RELATIVE;
@@ -136,8 +137,9 @@ DocumentView::DocumentView(const std::string& filename)
 
 DocumentView::~DocumentView()
 {
-    delete pUIScreen;
-    delete pUIContext;
+    pUIScreen->release();
+    delete pUIContextUserStyle;
+    delete pUIContextEditorStyle;
 }
 
 void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pParent)

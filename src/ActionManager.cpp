@@ -165,5 +165,6 @@ namespace onut
             delete pAction;
         }
         m_history.clear();
+        m_position = m_history.begin();
     }
 }

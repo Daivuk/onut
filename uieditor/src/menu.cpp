@@ -90,6 +90,7 @@ std::string fileOpen()
 //
 //    return ofn.lpstrFile;
 //}
+extern onut::ActionManager  g_actionManager;
 
 void onMenu(UINT menuId)
 {
@@ -100,6 +101,7 @@ void onMenu(UINT menuId)
         case MENU_FILE_NEW: // New
         {
 //            showMessageBox("New Document", "Save changes?", 
+            g_actionManager.clear();
             delete g_pDocument;
             g_pDocument = new DocumentView("");
             break;
@@ -109,6 +111,7 @@ void onMenu(UINT menuId)
             auto filename = fileOpen();
             if (!filename.empty())
             {
+                g_actionManager.clear();
                 delete g_pDocument;
                 g_pDocument = new DocumentView(filename);
             }

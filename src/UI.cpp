@@ -826,6 +826,7 @@ namespace onut
         }
         for (auto pChild : m_children)
         {
+            pChild->m_pParent = nullptr;
             pChild->release();
         }
     }
