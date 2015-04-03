@@ -35,6 +35,7 @@ static onut::Texture* g_pTexIcoUIButton;
 static onut::Texture* g_pTexIcoUILabel;
 static onut::Texture* g_pTexIcoUIImage;
 static onut::Texture* g_pTexIcoUICheckbox;
+static onut::Texture* g_pTexIcoUITextBox;
 
 extern DocumentView* g_pDocument;
 OAnimf g_dottedLineAnim = 0.f;
@@ -50,6 +51,7 @@ void createUIStyles(onut::UIContext* pContext)
     g_pTexIcoUILabel = OGetTexture("text_dropcaps.png");
     g_pTexIcoUIImage = OGetTexture("picture.png");
     g_pTexIcoUICheckbox = OGetTexture("accept.png");
+    g_pTexIcoUITextBox = OGetTexture("textfield.png");
     g_dottedLineAnim.start(0.f, -1.f, .5f, OLinear, OLoop);
 
     pContext->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
@@ -197,6 +199,14 @@ void createUIStyles(onut::UIContext* pContext)
                 if (!hasText)
                 {
                     static const std::string uiText = "UICheckBox";
+                    g_pFont->draw<OLeft>(uiText, textPos, textColor);
+                }
+                break;
+            case onut::eUIType::UI_TEXTBOX:
+                OSB->drawSprite(g_pTexIcoUITextBox, orect.Left(expandClickWidth + 12));
+                if (!hasText)
+                {
+                    static const std::string uiText = "UITextBox";
                     g_pFont->draw<OLeft>(uiText, textPos, textColor);
                 }
                 break;
