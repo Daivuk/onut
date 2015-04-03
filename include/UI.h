@@ -365,6 +365,7 @@ namespace onut
         void write(char c);
         void keyDown(uintptr_t key);
         void focus(UIControl* pFocus);
+        void clearState();
 
         UIControl* getHoverControl() const { return m_pHoverControl; }
         UIControl* getDownControl() const { return m_pDownControl; }
@@ -470,6 +471,9 @@ namespace onut
 
         // Child methods
         void add(UIControl* pChild);
+        void insert(UIControl* pChild, UIControl* pBefore);
+        void insertAfter(UIControl* pChild, UIControl* pAfter);
+        void remove();
         void remove(UIControl* pChild);
         UIControl* getChild(const std::string& name, bool bSearchSubChildren = true) const;
         template<typename TuiType>

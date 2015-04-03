@@ -845,6 +845,49 @@ namespace onut
         m_children.push_back(pChild);
     }
 
+    void UIControl::insert(UIControl* pChild, UIControl* pBefore)
+    {
+        pChild->retain();
+        if (pChild->m_pParent)
+        {
+            pChild->m_pParent->remove(pChild);
+        }
+
+        size_t i = 0;
+        for (auto& pC : m_children)
+        {
+            if (pC == pBefore) break;
+            ++i;
+        }
+
+        pChild->m_pParent = this;
+        m_children.insert(m_children.begin() + i, pChild);
+    }
+
+    void UIControl::insertAfter(UIControl* pChild, UIControl* pAfter)
+    {
+        pChild->retain();
+        if (pChild->m_pParent)
+        {
+            pChild->m_pParent->remove(pChild);
+        }
+
+        size_t i = 0;
+        for (auto& pC : m_children)
+        {
+            ++i;
+            if (pC == pAfter) break;
+        }
+
+        pChild->m_pParent = this;
+        m_children.insert(m_children.begin() + i, pChild);
+    }
+
+    void UIControl::remove()
+    {
+        if (m_pParent) m_pParent->remove(this);
+    }
+
     void UIControl::remove(UIControl* in_pChild)
     {
         if (in_pChild->m_pParent != this) return;
@@ -1146,6 +1189,17 @@ namespace onut
     void UIContext::focus(UIControl* pFocus)
     {
         m_pFocus = pFocus;
+    }
+
+    void UIContext::clearState()
+    {
+        m_pLastHoverControl = nullptr;
+        m_pLastDownControl = nullptr;
+        m_pLastFocus = nullptr;
+
+        m_pHoverControl = nullptr;
+        m_pDownControl = nullptr;
+        m_pFocus = nullptr;
     }
 
     void UIControl::render(const UIContext& context)
