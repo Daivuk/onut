@@ -126,6 +126,15 @@ DocumentView::DocumentView(const std::string& filename)
     m_pSceneGraph->clear();
     repopulateTreeView(pUIScreen);
 
+    m_pChkSnap = g_pUIScreen->getChild<onut::UICheckBox>("chkSnap");
+    m_pChkSnapMargins = g_pUIScreen->getChild<onut::UICheckBox>("chkSnapMargins");
+    m_pTxtSnapMargins = g_pUIScreen->getChild<onut::UITextBox>("txtSnapMargins");
+    m_autoPadding = m_pTxtSnapMargins->getFloat();
+    m_pTxtSnapMargins->onTextChanged = [this](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    {
+        m_autoPadding = m_pTxtSnapMargins->getFloat();
+    };
+
     // Transform handles
     const float HANDLE_SIZE = 6.f;
     const float HANDLE_PADDING = 3.f;
@@ -411,21 +420,24 @@ void DocumentView::xAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found
     }
 
     // Padding guides
-    if (rect.position.x > otherRect.position.x + otherRect.size.x + m_autoPadding - closest &&
-        rect.position.x < otherRect.position.x + otherRect.size.x + m_autoPadding + closest)
+    if (m_pChkSnapMargins->getIsChecked())
     {
-        found = true;
-        x = otherRect.position.x + otherRect.size.x + m_autoPadding;
-        closest = std::abs(otherRect.position.x + otherRect.size.x + m_autoPadding - rect.position.x);
-        side = false;
-    }
-    if (rect.position.x + rect.size.x > otherRect.position.x - m_autoPadding - closest &&
-        rect.position.x + rect.size.x < otherRect.position.x - m_autoPadding + closest)
-    {
-        found = true;
-        x = otherRect.position.x - m_autoPadding;
-        closest = std::abs((otherRect.position.x - m_autoPadding) - (rect.position.x + rect.size.x));
-        side = true;
+        if (rect.position.x > otherRect.position.x + otherRect.size.x + m_autoPadding - closest &&
+            rect.position.x < otherRect.position.x + otherRect.size.x + m_autoPadding + closest)
+        {
+            found = true;
+            x = otherRect.position.x + otherRect.size.x + m_autoPadding;
+            closest = std::abs(otherRect.position.x + otherRect.size.x + m_autoPadding - rect.position.x);
+            side = false;
+        }
+        if (rect.position.x + rect.size.x > otherRect.position.x - m_autoPadding - closest &&
+            rect.position.x + rect.size.x < otherRect.position.x - m_autoPadding + closest)
+        {
+            found = true;
+            x = otherRect.position.x - m_autoPadding;
+            closest = std::abs((otherRect.position.x - m_autoPadding) - (rect.position.x + rect.size.x));
+            side = true;
+        }
     }
 }
 
@@ -465,21 +477,24 @@ void DocumentView::yAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found
     }
 
     // Padding guides
-    if (rect.position.y > otherRect.position.y + otherRect.size.y + m_autoPadding - closest &&
-        rect.position.y < otherRect.position.y + otherRect.size.y + m_autoPadding + closest)
+    if (m_pChkSnapMargins->getIsChecked())
     {
-        found = true;
-        y = otherRect.position.y + otherRect.size.y + m_autoPadding;
-        closest = std::abs(otherRect.position.y + otherRect.size.y + m_autoPadding - rect.position.y);
-        side = false;
-    }
-    if (rect.position.y + rect.size.y > otherRect.position.y - m_autoPadding - closest &&
-        rect.position.y + rect.size.y < otherRect.position.y - m_autoPadding + closest)
-    {
-        found = true;
-        y = otherRect.position.y - m_autoPadding;
-        closest = std::abs((otherRect.position.y - m_autoPadding) - (rect.position.y + rect.size.y));
-        side = true;
+        if (rect.position.y > otherRect.position.y + otherRect.size.y + m_autoPadding - closest &&
+            rect.position.y < otherRect.position.y + otherRect.size.y + m_autoPadding + closest)
+        {
+            found = true;
+            y = otherRect.position.y + otherRect.size.y + m_autoPadding;
+            closest = std::abs(otherRect.position.y + otherRect.size.y + m_autoPadding - rect.position.y);
+            side = false;
+        }
+        if (rect.position.y + rect.size.y > otherRect.position.y - m_autoPadding - closest &&
+            rect.position.y + rect.size.y < otherRect.position.y - m_autoPadding + closest)
+        {
+            found = true;
+            y = otherRect.position.y - m_autoPadding;
+            closest = std::abs((otherRect.position.y - m_autoPadding) - (rect.position.y + rect.size.y));
+            side = true;
+        }
     }
 }
 
@@ -502,25 +517,28 @@ void DocumentView::snapX(float x, float &ret, const onut::sUIRect& rect, float &
     }
 
     // Padding guides
-    if (x > rect.position.x + rect.size.x + m_autoPadding - closest &&
-        x < rect.position.x + rect.size.x + m_autoPadding + closest)
+    if (m_pChkSnapMargins->getIsChecked())
     {
-        found = true;
-        ret = rect.position.x + rect.size.x + m_autoPadding;
-        closest = std::abs(rect.position.x + rect.size.x + m_autoPadding - x);
-    }
-    if (x > rect.position.x - m_autoPadding - closest &&
-        x < rect.position.x - m_autoPadding + closest)
-    {
-        found = true;
-        ret = rect.position.x - m_autoPadding;
-        closest = std::abs((rect.position.x - m_autoPadding) - x);
+        if (x > rect.position.x + rect.size.x + m_autoPadding - closest &&
+            x < rect.position.x + rect.size.x + m_autoPadding + closest)
+        {
+            found = true;
+            ret = rect.position.x + rect.size.x + m_autoPadding;
+            closest = std::abs(rect.position.x + rect.size.x + m_autoPadding - x);
+        }
+        if (x > rect.position.x - m_autoPadding - closest &&
+            x < rect.position.x - m_autoPadding + closest)
+        {
+            found = true;
+            ret = rect.position.x - m_autoPadding;
+            closest = std::abs((rect.position.x - m_autoPadding) - x);
+        }
     }
 }
 
 float DocumentView::snapX(onut::UIControl* pControl, float x)
 {
-    if (!m_autoGuide)
+    if (!m_pChkSnap->getIsChecked())
     {
         return x;
     }
@@ -571,25 +589,28 @@ void DocumentView::snapY(float y, float &ret, const onut::sUIRect& rect, float &
     }
 
     // Padding guides
-    if (y > rect.position.y + rect.size.y + m_autoPadding - closest &&
-        y < rect.position.y + rect.size.y + m_autoPadding + closest)
+    if (m_pChkSnapMargins->getIsChecked())
     {
-        found = true;
-        ret = rect.position.y + rect.size.y + m_autoPadding;
-        closest = std::abs(rect.position.y + rect.size.y + m_autoPadding - y);
-    }
-    if (y > rect.position.y - m_autoPadding - closest &&
-        y < rect.position.y - m_autoPadding + closest)
-    {
-        found = true;
-        ret = rect.position.y - m_autoPadding;
-        closest = std::abs((rect.position.y - m_autoPadding) - y);
+        if (y > rect.position.y + rect.size.y + m_autoPadding - closest &&
+            y < rect.position.y + rect.size.y + m_autoPadding + closest)
+        {
+            found = true;
+            ret = rect.position.y + rect.size.y + m_autoPadding;
+            closest = std::abs(rect.position.y + rect.size.y + m_autoPadding - y);
+        }
+        if (y > rect.position.y - m_autoPadding - closest &&
+            y < rect.position.y - m_autoPadding + closest)
+        {
+            found = true;
+            ret = rect.position.y - m_autoPadding;
+            closest = std::abs((rect.position.y - m_autoPadding) - y);
+        }
     }
 }
 
 float DocumentView::snapY(onut::UIControl* pControl, float y)
 {
-    if (!m_autoGuide)
+    if (!m_pChkSnap->getIsChecked())
     {
         return y;
     }
@@ -710,7 +731,7 @@ void DocumentView::updateMovingGizmo()
     newRect.position.x += mouseDiff.x;
     newRect.position.y += mouseDiff.y;
 
-    if (m_autoGuide && pSelected->getParent())
+    if (m_pChkSnap->getIsChecked() && pSelected->getParent())
     {
         // Auto snap the rect to it's brothers
         float x, y;

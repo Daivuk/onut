@@ -1765,7 +1765,7 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
 }
 
 template<typename TuiType, typename Tgetter, typename Tsetter>
-void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
+void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter, int decimalCount = 0)
 {
     auto pLabel = new onut::UILabel();
     auto pTextBox = new onut::UITextBox();
@@ -1779,6 +1779,7 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
     pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
     pTextBox->anchor = {1, 0};
     pTextBox->setIsNumerical(true);
+    pTextBox->setIsDecimalPrecision(decimalCount);
 
     yPos += 24 + 4;
 
@@ -1792,6 +1793,37 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
     pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
     pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
     pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    {
+        pBinding->updateControl(g_pDocument->pSelected);
+    };
+}
+
+template<typename TuiType, typename Tgetter, typename Tsetter>
+void BIND_BOOL_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
+{
+    auto pCheckBox = new onut::UICheckBox();
+
+    pCheckBox->textComponent.text = name;
+    pCheckBox->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pCheckBox->rect = {{4, yPos}, {-8, 24}};
+
+    yPos += 24 + 4;
+
+    pPnl->add(pCheckBox);
+
+    auto pBinding = new ControlInspectorBind<bool, TuiType>(
+        "Edit " + name, nullptr, getter, setter,
+        [=]
+    {
+        return pCheckBox->getIsChecked();;
+    },
+        [=](const bool& isChecked)
+    {
+        pCheckBox->setIsChecked(isChecked);
+    });
+    pBindings->push_back(pBinding);
+
+    pCheckBox->onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
     };
@@ -2027,4 +2059,22 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     // UIImage
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
     BIND_SCALE9_COMPONENT<onut::UIImage>("Image");
+
+    // UICheckBox
+    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_CHECKBOX, "pnlInspector_UICheckBox");
+    BIND_TEXT_COMPONENT<onut::UICheckBox>("Text");
+    BIND_BOOL_PROPERTY<onut::UICheckBox>("Checked",
+                                         [](onut::UICheckBox* pControl) {return pControl->getIsChecked(); },
+                                         [](onut::UICheckBox* pControl, const bool& isChecked){pControl->setIsChecked(isChecked); });
+
+    // UITextBox
+    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_TEXTBOX, "pnlInspector_UITextBox");
+    BIND_TEXT_COMPONENT<onut::UITextBox>("Text");
+    BIND_SCALE9_COMPONENT<onut::UITextBox>("Bg Image");
+    BIND_BOOL_PROPERTY<onut::UITextBox>("Numerical",
+                                        [](onut::UITextBox* pControl) {return pControl->getIsNumerical(); },
+                                        [](onut::UITextBox* pControl, const bool& isNumerical){pControl->setIsNumerical(isNumerical); });
+    BIND_NUMERIC_PROPERTY<onut::UITextBox>("Decimal",
+                                        [](onut::UITextBox* pControl) {return std::to_string(pControl->getDecimalPrecision()); },
+                                        [](onut::UITextBox* pControl, const std::string& decimal){pControl->setIsDecimalPrecision(std::stoi(decimal)); });
 }

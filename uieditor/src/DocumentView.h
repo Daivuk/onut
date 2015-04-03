@@ -82,6 +82,9 @@ private:
     bool                m_isDirty = false;
     std::string         m_filename;
     bool                m_bStartMoving = false;
+    onut::UICheckBox*   m_pChkSnap = nullptr;
+    onut::UICheckBox*   m_pChkSnapMargins = nullptr;
+    onut::UITextBox*    m_pTxtSnapMargins = nullptr;
 };
 
 class IControlInspectorBind
