@@ -5,15 +5,6 @@
 extern DocumentView*        g_pDocument;
 extern onut::ActionManager  g_actionManager;
 
-const UINT MENU_FILE_NEW = 101;
-const UINT MENU_FILE_OPEN = 102;
-const UINT MENU_FILE_SAVE = 103;
-const UINT MENU_FILE_SAVE_AS = 104;
-const UINT MENU_FILE_EXIT = 105;
-
-const UINT MENU_EDIT_UNDO = 201;
-const UINT MENU_EDIT_REDO = 202;
-
 onut::UIControl*    g_pMessageBox = nullptr;
 
 void buildMenu()
@@ -69,27 +60,6 @@ std::string fileOpen()
     return ofn.lpstrFile;
 }
 
-//std::string fileOpen()
-//{
-//    auto window = OWindow->getHandle();
-//    char szFileName[MAX_PATH] = "";
-//
-//    OPENFILENAME ofn = {0};
-//    ofn.lStructSize = sizeof(OPENFILENAME);
-//    ofn.hwndOwner = window;
-//
-//    ofn.lStructSize = sizeof(ofn);
-//    ofn.hwndOwner = window;
-//    ofn.lpstrFilter = TEXT("JSon Files (*.json)\0*.json\0All Files (*.*)\0*.*\0");
-//    ofn.lpstrFile = szFileName;
-//    ofn.nMaxFile = MAX_PATH;
-//    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
-//    ofn.lpstrDefExt = TEXT("json");
-//
-//    GetOpenFileName(&ofn);
-//
-//    return ofn.lpstrFile;
-//}
 extern onut::ActionManager  g_actionManager;
 
 void onMenu(UINT menuId)

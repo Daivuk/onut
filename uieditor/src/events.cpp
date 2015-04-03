@@ -1858,6 +1858,8 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     };
 }
 
+#include "menu.h"
+
 void hookUIEvents(onut::UIControl* pUIScreen)
 {
     curARROW = LoadCursor(nullptr, IDC_ARROW);
@@ -1874,6 +1876,15 @@ void hookUIEvents(onut::UIControl* pUIScreen)
             g_pDocument->pUIContext = g_pDocument->pUIContextUserStyle;
         }
     };
+    pUIScreen->getChild("toolNew")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_NEW); };
+    pUIScreen->getChild("toolOpen")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_OPEN); };
+    pUIScreen->getChild("toolSave")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    //pUIScreen->getChild("toolCopy")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    //pUIScreen->getChild("toolPaste")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    //pUIScreen->getChild("toolCut")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    //pUIScreen->getChild("toolDelete")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    pUIScreen->getChild("toolUndo")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_UNDO); };
+    pUIScreen->getChild("toolRedo")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_REDO); };
 
     // Tool box
     pUIScreen->getChild("btnCreateControl")->onClick = onCreateControl;
