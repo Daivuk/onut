@@ -1858,8 +1858,6 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     };
 }
 
-onut::UIContext* pDrawContext = nullptr;
-
 void hookUIEvents(onut::UIControl* pUIScreen)
 {
     curARROW = LoadCursor(nullptr, IDC_ARROW);
@@ -1869,11 +1867,11 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     pUIScreen->getChild<onut::UICheckBox>("chkEditorStyle")->onCheckChanged = [&](onut::UICheckBox* pControl, const onut::UICheckEvent& checkEvent){
         if (checkEvent.isChecked)
         {
-            pDrawContext = g_pUIContext;
+            g_pDocument->pUIContext = g_pDocument->pUIContextEditorStyle;
         }
         else
         {
-            pDrawContext = g_pDocument->pUIContext;
+            g_pDocument->pUIContext = g_pDocument->pUIContextUserStyle;
         }
     };
 

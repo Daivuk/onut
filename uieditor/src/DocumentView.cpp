@@ -69,10 +69,12 @@ DocumentView::DocumentView(const std::string& filename)
     if (!curSIZENS) curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
     if (!curSIZEALL) curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
 
-    pUIContext = new onut::UIContext(onut::sUIVector2{640, 480});
-    //createViewUIStyles(pUIContext);
-    createUIStyles(pUIContext);
-
+    pUIContextUserStyle = new onut::UIContext(onut::sUIVector2{640, 480});
+    pUIContextEditorStyle = new onut::UIContext(onut::sUIVector2{640, 480});
+    createViewUIStyles(pUIContextUserStyle);
+    createUIStyles(pUIContextEditorStyle);
+    pUIContext = pUIContextUserStyle;
+    
     if (m_filename.empty())
     {
         pUIScreen = new onut::UIControl(/*"../../assets/ui/editor.json"*/);

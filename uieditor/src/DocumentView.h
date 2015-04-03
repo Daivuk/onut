@@ -21,6 +21,8 @@ public:
     void save();
 
     onut::UIContext*            pUIContext = nullptr;
+    onut::UIContext*            pUIContextUserStyle = nullptr;
+    onut::UIContext*            pUIContextEditorStyle = nullptr;
     onut::UIControl*            pUIScreen = nullptr;
     onut::UIControl*            pSelected = nullptr;
     onut::ContentManager<false> contentManager;
