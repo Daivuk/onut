@@ -2,7 +2,7 @@
 #include "styles.h"
 
 static const Color g_panelBGColor = OColorHex(2d2d30);
-static const Color g_panelDarkenBGColor = Color::fromHexRGBA(0x2d2d30ff);
+static const Color g_panelDarkenBGColor = Color::fromHexRGBA(0x00000066);
 static const Color g_groupOutlineColor = OColorHex(3f3f46);
 static const Color g_panelTitleBGColor = OColorHex(3f3f46);
 static const Color g_fontColor = OColorHex(f1f1f1);
@@ -61,7 +61,7 @@ void createUIStyles(onut::UIContext* pContext)
 
     pContext->addStyle<onut::UIPanel>("darken", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
-        OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
+        OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelDarkenBGColor);
     });
 
     pContext->addStyle<onut::UIPanel>("colorPicker", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)

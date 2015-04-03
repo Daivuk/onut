@@ -52,6 +52,8 @@ static HCURSOR curSIZENS = nullptr;
 static HCURSOR curSIZEALL = nullptr;
 
 extern void createUIStyles(onut::UIContext* pContext);
+static const Color g_panelBGColor = OColorHex(2d2d30);
+static const Color g_panelTitleBGColor = OColorHex(3f3f46);
 
 DocumentView::DocumentView(const std::string& filename)
 {
@@ -73,6 +75,13 @@ DocumentView::DocumentView(const std::string& filename)
     pUIContextEditorStyle = new onut::UIContext(onut::sUIVector2{640, 480});
     createViewUIStyles(pUIContextUserStyle);
     createUIStyles(pUIContextEditorStyle);
+
+    pUIContextEditorStyle->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    {
+        OSB->drawRect(nullptr, onut::UI2Onut(rect), g_panelTitleBGColor);
+        OSB->drawRect(nullptr, onut::UI2Onut(rect).Grow(-1), g_panelBGColor);
+    });
+
     pUIContext = pUIContextUserStyle;
     
     if (m_filename.empty())
