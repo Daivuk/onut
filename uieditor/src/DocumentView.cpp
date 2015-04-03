@@ -199,6 +199,7 @@ void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneG
 void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
 {
     m_state = eDocumentState::MOVING_HANDLE;
+    m_bStartMoving = false;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_pCurrentHandle = pControl;
     m_controlRectOnDown = pSelected->rect;
@@ -249,6 +250,7 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
     static HCURSOR curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
     OWindow->setCursor(curSIZEALL);
     m_state = eDocumentState::MOVING_GIZO;
+    m_bStartMoving = false;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_controlRectOnDown = pSelected->rect;
     m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
@@ -688,6 +690,11 @@ void DocumentView::onKeyDown(uintptr_t key)
 void DocumentView::updateMovingGizmo()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
+    if (!m_bStartMoving)
+    {
+        if (fabsf(mouseDiff.x) < 3 && fabsf(mouseDiff.y) < 3) return;
+        m_bStartMoving = true;
+    }
     if (OInput->isStateDown(DIK_LSHIFT))
     {
         if (std::abs(mouseDiff.x) >= std::abs(mouseDiff.y))
@@ -760,6 +767,11 @@ void DocumentView::updateMovingGizmo()
 void DocumentView::updateMovingHandle()
 {
     auto mouseDiff = OMousePos - m_mousePosOnDown;
+    if (!m_bStartMoving)
+    {
+        if (fabsf(mouseDiff.x) < 3 && fabsf(mouseDiff.y) < 3) return;
+        m_bStartMoving = true;
+    }
     auto newRect = m_controlWorldRectOnDown;
     Vector2 anchor{0, 0};
     Vector2 invAnchor{1, 1};

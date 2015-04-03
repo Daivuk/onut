@@ -81,6 +81,7 @@ private:
     float               m_autoPadding = 8.f;
     bool                m_isDirty = false;
     std::string         m_filename;
+    bool                m_bStartMoving = false;
 };
 
 class IControlInspectorBind
