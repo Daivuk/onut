@@ -65,6 +65,7 @@ namespace onut
         // Render states
         ID3D11DepthStencilState*    m_pDs2D = nullptr;
         ID3D11RasterizerState*      m_pSr2D = nullptr;
+        ID3D11RasterizerState*      m_pSr2DScissor = nullptr;
         ID3D11BlendState*           m_pBs2D = nullptr;
         ID3D11SamplerState*         m_pSs2D = nullptr;
 

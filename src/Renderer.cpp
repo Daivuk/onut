@@ -28,6 +28,7 @@ namespace onut
         if (m_pSs2D) m_pSs2D->Release();
         if (m_pBs2D) m_pBs2D->Release();
         if (m_pSr2D) m_pSr2D->Release();
+        if (m_pSr2DScissor) m_pSr2DScissor->Release();
         if (m_pDs2D) m_pDs2D->Release();
 
         if (m_renderTargetView) m_renderTargetView->Release();
@@ -119,10 +120,24 @@ namespace onut
             0.f,
             0.f,
             false,
-            true,
+            false,
             false,
             false
         }), &m_pSr2D);
+        assert(ret == S_OK);
+
+        ret = m_device->CreateRasterizerState(&(D3D11_RASTERIZER_DESC{
+            D3D11_FILL_SOLID,
+            D3D11_CULL_NONE,
+            false,
+            0,
+            0.f,
+            0.f,
+            false,
+            true,
+            false,
+            false
+        }), &m_pSr2DScissor);
         assert(ret == S_OK);
 
         // 2D Blend state
@@ -257,8 +272,6 @@ namespace onut
         m_cameraPos = Vector3::UnitZ;
         m_cameraDir = -Vector3::UnitZ;
         m_cameraUp = -Vector3::UnitY;
-
-        setScissor(false, {});
     }
 
     Matrix Renderer::build2DCamera(const Vector2& position, float zoom)
@@ -328,18 +341,11 @@ namespace onut
                 }
             };
             m_deviceContext->RSSetScissorRects(1, dxRect);
+            m_deviceContext->RSSetState(m_pSr2DScissor);
         }
         else
         {
-            D3D11_RECT dxRect[1] = {
-                {
-                    static_cast<LONG>(0),
-                    static_cast<LONG>(0), 
-                    static_cast<LONG>(m_backBufferDesc.Width),
-                    static_cast<LONG>(m_backBufferDesc.Height),
-                }
-            };
-            m_deviceContext->RSSetScissorRects(1, dxRect);
+            m_deviceContext->RSSetState(m_pSr2D);
         }
     }
 }
