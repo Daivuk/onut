@@ -380,10 +380,15 @@ namespace onut
         std::function<void(UIControl*, const sUIRect&, const sUITextComponent&)> drawText = 
             [](UIControl*, const sUIRect&, const sUITextComponent&){};
 
+        std::function<void(bool, const sUIRect&)> onClipping =
+            [](bool enableClipping, const sUIRect& rect){};
+
     private:
         void resolve();
         void dispatchEvents();
         void reset();
+        void pushClip(const sUIRect& rect);
+        void popClip();
 
         std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUIRenderCallback*>>       m_callbacks;
         std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUITextCaretCallback*>>    m_textCaretSolvers;
@@ -403,6 +408,7 @@ namespace onut
 
         std::vector<char>       m_writes;
         std::vector<uintptr_t>  m_keyDowns;
+        std::vector<sUIRect>    m_clips;
     };
 
     enum class eUIPropertyType : uint8_t
@@ -453,6 +459,7 @@ namespace onut
         bool            isEnabled = true; /*! Disabled control and their children won't receive mouse events */
         bool            isClickThrough = false; /*! Same as isEnabled, but will traverse children */
         bool            isVisible = true; /*! Visible or not. Invisible controls don't receive mouse events */
+        bool            clipChildren = false; /*! Will trigger a scissor on the children. Usefull for lists */
         sUIRect         rect; /*! Local rectangle. Greatly influenced by align, anchor, pos and dim types. \see getWorldRect */
         eUIAlign        align = eUIAlign::TOP_LEFT; /*! Alignement inside parent control */
         eUIPosType      xType = eUIPosType::POS_RELATIVE; /*! x position type */
@@ -498,7 +505,7 @@ namespace onut
         void release();
 
         void update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown);
-        void render(const UIContext& context);
+        void render(UIContext& context);
 
         sUIRect getWorldRect(const UIContext& context) const;
         void setWorldRect(const sUIRect& rect, const UIContext& context);
@@ -539,7 +546,7 @@ namespace onut
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
 
         void updateInternal(UIContext& context, const sUIRect& parentRect);
-        void renderInternal(const UIContext& context, const sUIRect& parentRect);
+        void renderInternal(UIContext& context, const sUIRect& parentRect);
         virtual void renderControl(const UIContext& context, const sUIRect& rect) {}
 
         virtual void onClickInternal(const UIMouseEvent& evt) {}

@@ -119,7 +119,7 @@ namespace onut
             0.f,
             0.f,
             false,
-            false,
+            true,
             false,
             false
         }), &m_pSr2D);
@@ -257,6 +257,8 @@ namespace onut
         m_cameraPos = Vector3::UnitZ;
         m_cameraDir = -Vector3::UnitZ;
         m_cameraUp = -Vector3::UnitY;
+
+        setScissor(false, {});
     }
 
     Matrix Renderer::build2DCamera(const Vector2& position, float zoom)
@@ -311,5 +313,33 @@ namespace onut
 
         if (m_renderSetup == eRenderSetup::SETUP_3D) return;
         m_renderSetup = eRenderSetup::SETUP_3D;
+    }
+
+    void Renderer::setScissor(bool enabled, const Rect& rect)
+    {
+        if (enabled)
+        {
+            D3D11_RECT dxRect[1] = {
+                {
+                    static_cast<LONG>(rect.x),
+                    static_cast<LONG>(rect.y), 
+                    static_cast<LONG>(rect.x + rect.z),
+                    static_cast<LONG>(rect.y + rect.w),
+                }
+            };
+            m_deviceContext->RSSetScissorRects(1, dxRect);
+        }
+        else
+        {
+            D3D11_RECT dxRect[1] = {
+                {
+                    static_cast<LONG>(0),
+                    static_cast<LONG>(0), 
+                    static_cast<LONG>(m_backBufferDesc.Width),
+                    static_cast<LONG>(m_backBufferDesc.Height),
+                }
+            };
+            m_deviceContext->RSSetScissorRects(1, dxRect);
+        }
     }
 }

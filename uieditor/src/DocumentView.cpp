@@ -9,6 +9,7 @@ extern onut::ActionManager  g_actionManager;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 extern onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
+extern onut::UICheckBox*    g_pInspector_UIControl_chkClipChildren;
 extern onut::UITextBox*     g_pInspector_UIControl_txtName;
 extern onut::UITextBox*     g_pInspector_UIControl_txtStyle;
 extern onut::UITextBox*     g_pInspector_UIControl_txtX;
@@ -1164,6 +1165,7 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkEnabled->isEnabled = (true);
         g_pInspector_UIControl_chkVisible->isEnabled = (true);
         g_pInspector_UIControl_chkClickThrough->isEnabled = (true);
+        g_pInspector_UIControl_chkClipChildren->isEnabled = (true);
         g_pInspector_UIControl_txtName->isEnabled = (true);
         g_pInspector_UIControl_txtStyle->isEnabled = (true);
         g_pInspector_UIControl_txtX->isEnabled = (true);
@@ -1203,6 +1205,7 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkEnabled->setIsChecked(pSelected->isEnabled);
         g_pInspector_UIControl_chkVisible->setIsChecked(pSelected->isVisible);
         g_pInspector_UIControl_chkClickThrough->setIsChecked(pSelected->isClickThrough);
+        g_pInspector_UIControl_chkClipChildren->setIsChecked(pSelected->clipChildren);
         g_pInspector_UIControl_txtName->textComponent.text = pSelected->name;
         g_pInspector_UIControl_txtStyle->textComponent.text = pSelected->getStyleName();
         if (pSelected->xType == onut::eUIPosType::POS_PERCENTAGE)
@@ -1298,6 +1301,7 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkEnabled->isEnabled = (false);
         g_pInspector_UIControl_chkVisible->isEnabled = (false);
         g_pInspector_UIControl_chkClickThrough->isEnabled = (false);
+        g_pInspector_UIControl_chkClipChildren->isEnabled = (false);
         g_pInspector_UIControl_txtName->isEnabled = (false);
         g_pInspector_UIControl_txtStyle->isEnabled = (false);
         g_pInspector_UIControl_txtX->isEnabled = (false);

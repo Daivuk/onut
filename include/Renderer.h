@@ -26,6 +26,8 @@ namespace onut
         Matrix                  build2DCamera(const Vector2& position, float zoom = 1.f);
         Matrix                  build2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
 
+        void                    setScissor(bool enabled, const Rect& rect);
+
         Vector3                 getCameraPos() const { return m_cameraPos; }
         Vector3                 getCameraDir() const { return m_cameraDir; }
         Vector3                 getCameraUp() const { return m_cameraUp; }

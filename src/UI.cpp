@@ -418,6 +418,25 @@ namespace onut
         m_screenSize = screenSize;
     }
 
+    void UIContext::pushClip(const sUIRect& rect)
+    {
+        m_clips.push_back(rect);
+        onClipping(true, rect);
+    }
+
+    void UIContext::popClip()
+    {
+        m_clips.pop_back();
+        if (m_clips.empty())
+        {
+            onClipping(false, {{0, 0}, m_screenSize});
+        }
+        else
+        {
+            onClipping(true, m_clips.back());
+        }
+    }
+
     UIProperty::UIProperty()
     {
         m_szString = nullptr;
@@ -766,6 +785,7 @@ namespace onut
         isEnabled = other.isEnabled;
         isClickThrough = other.isClickThrough;
         isVisible = other.isVisible;
+        clipChildren = other.clipChildren;
         rect = other.rect;
         align = other.align;
         xType = other.xType;
@@ -1197,6 +1217,7 @@ namespace onut
         m_pLastHoverControl = m_pHoverControl;
         m_pLastDownControl = m_pDownControl;
         m_pLastFocus = m_pFocus;
+        m_clips.clear();
     }
 
     void UIContext::write(char c)
@@ -1225,7 +1246,7 @@ namespace onut
         m_pFocus = nullptr;
     }
 
-    void UIControl::render(const UIContext& context)
+    void UIControl::render(UIContext& context)
     {
         sUIRect parentRect = {{0, 0}, context.getScreenSize() };
         renderInternal(context, parentRect);
@@ -1387,15 +1408,23 @@ namespace onut
         }
     }
 
-    void UIControl::renderInternal(const UIContext& context, const sUIRect& parentRect)
+    void UIControl::renderInternal(UIContext& context, const sUIRect& parentRect)
     {
         if (!isVisible) return;
 
         sUIRect worldRect = getWorldRect(parentRect);
         renderControl(context, worldRect);
+        if (clipChildren)
+        {
+            context.pushClip(worldRect);
+        }
         for (auto pChild : m_children)
         {
             pChild->renderInternal(context, worldRect);
+        }
+        if (clipChildren)
+        {
+            context.popClip();
         }
     }
 

@@ -10,6 +10,7 @@ extern onut::ActionManager  g_actionManager;
 onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
 onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
 onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
+onut::UICheckBox*    g_pInspector_UIControl_chkClipChildren;
 onut::UITextBox*     g_pInspector_UIControl_txtName;
 onut::UITextBox*     g_pInspector_UIControl_txtStyle;
 onut::UITextBox*     g_pInspector_UIControl_txtX;
@@ -529,6 +530,28 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
     },
         [=]{
         pSelected->isClickThrough = !bValue;
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->retain();
+    },
+        [=]{
+        pSelected->release();
+    }));
+}
+
+void onUIControlClipChildrenChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+{
+    if (!g_pDocument->pSelected) return;
+    auto pSelected = g_pDocument->pSelected;
+    bool bValue = pCheckBox->getIsChecked();
+    g_actionManager.doAction(new onut::Action("Toggle ClipChildren", 
+        [=]{
+        pSelected->clipChildren = bValue;
+        g_pDocument->updateInspector();
+    },
+        [=]{
+        pSelected->clipChildren = !bValue;
         g_pDocument->updateInspector();
     },
         [=]{
@@ -1945,6 +1968,9 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_chkClickThrough = pUIScreen->getChild<onut::UICheckBox>("chkClickThrough");
     g_pInspector_UIControl_chkClickThrough->onCheckChanged = onUIControlClickThroughChanged;
+
+    g_pInspector_UIControl_chkClipChildren = pUIScreen->getChild<onut::UICheckBox>("chkClipChildren");
+    g_pInspector_UIControl_chkClipChildren->onCheckChanged = onUIControlClipChildrenChanged;
 
     g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UITextBox>("txtName");
     g_pInspector_UIControl_txtName->onTextChanged = onUIControlNameChanged;
