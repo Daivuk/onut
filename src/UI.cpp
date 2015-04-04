@@ -883,6 +883,21 @@ namespace onut
         m_children.insert(m_children.begin() + i, pChild);
     }
 
+    bool UIControl::insertAt(UIControl* pChild, decltype(std::vector<UIControl*>().size()) index)
+    {
+        if (index > m_children.size()) return false;
+
+        pChild->retain();
+        if (pChild->m_pParent)
+        {
+            pChild->m_pParent->remove(pChild);
+        }
+
+        pChild->m_pParent = this;
+        m_children.insert(m_children.begin() + index, pChild);
+        return true;
+    }
+
     void UIControl::remove()
     {
         if (m_pParent) m_pParent->remove(this);

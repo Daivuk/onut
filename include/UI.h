@@ -473,6 +473,7 @@ namespace onut
         void add(UIControl* pChild);
         void insert(UIControl* pChild, UIControl* pBefore);
         void insertAfter(UIControl* pChild, UIControl* pAfter);
+        bool insertAt(UIControl* pChild, decltype(std::vector<UIControl*>().size()) index);
         void remove();
         void remove(UIControl* pChild);
         void removeAll();
