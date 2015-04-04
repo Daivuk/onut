@@ -639,6 +639,7 @@ namespace onut
         isEnabled = getJsonBool(jsonNode["enabled"], true);
         isVisible = getJsonBool(jsonNode["visible"], true);
         isClickThrough = getJsonBool(jsonNode["clickThrough"], false);
+        clipChildren = getJsonBool(jsonNode["clipChildren"], false);
 
         // Properties
         auto& properties = jsonNode["properties"];
@@ -746,6 +747,7 @@ namespace onut
         setJsonBool(jsonNode, "enabled", isEnabled, allocator, true);
         setJsonBool(jsonNode, "visible", isVisible, allocator, true);
         setJsonBool(jsonNode, "clickThrough", isClickThrough, allocator, false);
+        setJsonBool(jsonNode, "clipChildren", clipChildren, allocator, false);
 
         for (auto& kv : m_properties)
         {
