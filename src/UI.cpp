@@ -1184,6 +1184,22 @@ namespace onut
                 {
                     m_pDownControl->onMouseDown(m_pDownControl, m_mouseEvent);
                 }
+
+                // Check for double click events
+                auto now = std::chrono::steady_clock::now();
+                if (now - m_clickTime <= doubleClickTime &&
+                    m_clickPos.x > m_mouseEvent.mousePos.x - 3 &&
+                    m_clickPos.y > m_mouseEvent.mousePos.y - 3 && 
+                    m_clickPos.x < m_mouseEvent.mousePos.x + 3 && 
+                    m_clickPos.y < m_mouseEvent.mousePos.y + 3)
+                {
+                    if (m_pDownControl->onDoubleClick)
+                    {
+                        m_pDownControl->onDoubleClick(m_pDownControl, m_mouseEvent);
+                    }
+                }
+                m_clickTime = now;
+                m_clickPos = m_mouseEvent.mousePos;
             }
         }
 
@@ -1246,6 +1262,9 @@ namespace onut
         m_pHoverControl = nullptr;
         m_pDownControl = nullptr;
         m_pFocus = nullptr;
+
+        m_clickPos.x = -100;
+        m_clickPos.y = -100;
     }
 
     void UIControl::render(UIContext& context)

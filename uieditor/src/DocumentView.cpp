@@ -83,6 +83,15 @@ DocumentView::DocumentView(const std::string& filename)
         OSB->drawRect(nullptr, onut::UI2Onut(rect).Grow(-1), g_panelBGColor);
     });
 
+    // We don't render controls
+    //pUIContextEditorStyle->addStyle<onut::UIControl>("", [](const onut::UIControl* pPanel, const onut::sUIRect& rect)
+    //{
+    //    OSB->drawRect(nullptr, {rect.position.x, rect.position.y, rect.size.x, 1}, g_panelTitleBGColor);
+    //    OSB->drawRect(nullptr, {rect.position.x, rect.position.y, 1, rect.size.y}, g_panelTitleBGColor);
+    //    OSB->drawRect(nullptr, {rect.position.x, rect.position.y + rect.size.y, rect.size.x, 1}, g_panelTitleBGColor);
+    //    OSB->drawRect(nullptr, {rect.position.x + rect.size.x, rect.position.y, 1, rect.size.y}, g_panelTitleBGColor);
+    //});
+
     pUIContext = pUIContextUserStyle;
     
     if (m_filename.empty())

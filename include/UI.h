@@ -383,6 +383,8 @@ namespace onut
         std::function<void(bool, const sUIRect&)> onClipping =
             [](bool enableClipping, const sUIRect& rect){};
 
+        std::chrono::steady_clock::duration doubleClickTime = std::chrono::milliseconds(500);
+
     private:
         void resolve();
         void dispatchEvents();
@@ -409,6 +411,9 @@ namespace onut
         std::vector<char>       m_writes;
         std::vector<uintptr_t>  m_keyDowns;
         std::vector<sUIRect>    m_clips;
+
+        std::chrono::steady_clock::time_point m_clickTime;
+        sUIVector2              m_clickPos;
     };
 
     enum class eUIPropertyType : uint8_t
@@ -526,6 +531,7 @@ namespace onut
         // Event callbacks
         using TfnMouseEvent = std::function < void(UIControl*, const UIMouseEvent&) > ;
         TfnMouseEvent onClick;
+        TfnMouseEvent onDoubleClick;
         TfnMouseEvent onMouseMove;
         TfnMouseEvent onMouseDown;
         TfnMouseEvent onMouseUp;
