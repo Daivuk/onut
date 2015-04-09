@@ -39,6 +39,8 @@ namespace onut
 
         void                    onResize();
 
+        ID3D11PixelShader*      create2DShader(const std::string& filename);
+
     private:
         enum class eRenderSetup
         {

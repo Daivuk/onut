@@ -199,6 +199,19 @@ namespace onut
         }
     }
 
+    ID3D11PixelShader* Renderer::create2DShader(const std::string& filename)
+    {
+        ID3D11PixelShader* pRet = nullptr;
+
+        std::ifstream psFile("../../assets/shaders/" + filename, std::ios::binary);
+        std::vector<char> psData = {std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>()};
+
+        auto ret = m_device->CreatePixelShader(psData.data(), psData.size(), nullptr, &pRet);
+        assert(ret == S_OK);
+
+        return pRet;
+    }
+
     void Renderer::createUniforms()
     {
         // 2D view projection matrix

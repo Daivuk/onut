@@ -186,6 +186,8 @@ namespace onut
         if (m_pTexture) m_pTexture->Release();
     }
 
-    void Texture::bind()
-    {}
+    void Texture::bind(int slot)
+    {
+        ORenderer->getDeviceContext()->PSSetShaderResources(slot, 1, &m_pTextureView);
+    }
 }

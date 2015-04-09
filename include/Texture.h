@@ -20,7 +20,7 @@ namespace onut
         Texture() {}
         virtual ~Texture();
 
-        void                        bind();
+        void                        bind(int slot = 0);
         ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
         const POINT&                getSize() const { return m_size; }
         Vector2                     getSizef() const { return{static_cast<float>(m_size.x), static_cast<float>(m_size.y)}; }
