@@ -345,6 +345,7 @@ namespace onut
             scale9Component.isScaled9 = true;
             scale9Component.padding = getJsonPadding(scale9Node["padding"]);
             scale9Component.image = getJsonImageComponent(scale9Node["imageComponent"]);
+            scale9Component.isRepeat = getJsonBool(scale9Node["repeat"]);
         }
         else if (node.HasMember("imageComponent"))
         {
@@ -372,6 +373,7 @@ namespace onut
             rapidjson::Value scale9Node(rapidjson::kObjectType);
             setJsonPadding(scale9Node, scale9Component.padding, allocator);
             setJsonImageComponent(scale9Node, scale9Component.image, allocator);
+            setJsonBool(scale9Node, "repeat", scale9Component.isRepeat, allocator);
             node.AddMember("scale9Component", scale9Node, allocator);
             return;
         }

@@ -35,7 +35,14 @@ void createViewUIStyles(onut::UIContext* pContext)
     pContext->drawScale9Rect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIScale9Component &scale9Component)
     {
         auto pTexture = g_pDocument->contentManager.getResource<OTexture>(scale9Component.image.filename);
-        OSB->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
+        if (scale9Component.isRepeat)
+        {
+            OSB->drawRectScaled9RepeatCenters(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
+        }
+        else
+        {
+            OSB->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
+        }
     };
 
     pContext->drawText = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUITextComponent &textComponent)

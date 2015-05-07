@@ -1128,6 +1128,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     auto pBrowseButton = new onut::UIButton();
     auto pBtnColor = new onut::UIPanel();
     auto pChkScale9 = new onut::UICheckBox();
+    auto pChkRepeat = new onut::UICheckBox();
     auto pBtnFit = new onut::UIButton();
     auto pLblPadding = new onut::UILabel();
     auto pTxtPaddingLeft = new onut::UITextBox();
@@ -1155,6 +1156,9 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 
     pChkScale9->textComponent.text = "Scale 9";
     pChkScale9->rect = {{34, 33}, {118, 24}};
+
+    pChkRepeat->textComponent.text = "Repeat";
+    pChkRepeat->rect = {{98, 26}, {118, 24}};
 
     pBtnFit->textComponent.text = "Fit";
     pBtnFit->anchor = {1, 0};
@@ -1190,6 +1194,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     pContainer->add(pBrowseButton);
     pContainer->add(pBtnColor);
     pContainer->add(pChkScale9);
+    pContainer->add(pChkRepeat);
     pContainer->add(pBtnFit);
     pContainer->add(pLblPadding);
     pContainer->add(pTxtPaddingLeft);
@@ -1282,6 +1287,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
             [=](const bool& isScaled9)
             {
                 pChkScale9->setIsChecked(isScaled9);
+                pChkRepeat->isEnabled = isScaled9;
                 pTxtPaddingLeft->isEnabled = isScaled9;
                 pTxtPaddingRight->isEnabled = isScaled9;
                 pTxtPaddingTop->isEnabled = isScaled9;
@@ -1289,6 +1295,25 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
             });
         pBindings->push_back(pBinding);
         pChkScale9->onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+    }
+    { // repeat
+        auto pBinding = new ControlInspectorBind<bool, TuiType>(
+            actionName, nullptr,
+            [](TuiType* pControl) {return pControl->scale9Component.isRepeat; },
+            [](TuiType* pControl, const bool& isRepeat){pControl->scale9Component.isRepeat = isRepeat; },
+            [=]
+            {
+                return pChkRepeat->getIsChecked();
+            },
+            [=](const bool& isScaled9)
+            {
+                pChkRepeat->setIsChecked(isScaled9);
+            });
+        pBindings->push_back(pBinding);
+        pChkRepeat->onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };

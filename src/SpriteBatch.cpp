@@ -252,8 +252,10 @@ namespace onut
         if (!pTexture) pTexture = m_pTexWhite;
 #endif /* !EASY_GRAPHIX */
 
-        const auto& textureSize = pTexture->getSizef();
-        const Vector4 paddingUVs{padding.x / textureSize.x, padding.y / textureSize.y, padding.z / textureSize.x, padding.w / textureSize.y};
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        const Vector4 paddingUVs{padding.x / sizexf, padding.y / sizeyf, padding.z / sizexf, padding.w / sizeyf};
 
         drawRectWithUVs(pTexture,
             {rect.x, rect.y, padding.x, padding.y},
@@ -270,10 +272,10 @@ namespace onut
             {0.f, paddingUVs.y, paddingUVs.x, 1.f - paddingUVs.w}, color);
         drawRectWithUVs(pTexture,
             {rect.x + padding.x, rect.y + padding.y, rect.z - padding.x - padding.y, rect.w - padding.y - padding.w},
-            {paddingUVs.x, paddingUVs.y, 1.f - paddingUVs.z, 1.f - paddingUVs.y}, color);
+            {paddingUVs.x, paddingUVs.y, 1.f - paddingUVs.z, 1.f - paddingUVs.w}, color);
         drawRectWithUVs(pTexture,
             {rect.x + rect.z - padding.z, rect.y + padding.y, padding.z, rect.w - padding.y - padding.w},
-            {1.f - paddingUVs.z, paddingUVs.y, 1.f, 1.f - paddingUVs.y}, color);
+            {1.f - paddingUVs.z, paddingUVs.y, 1.f, 1.f - paddingUVs.w}, color);
 
         drawRectWithUVs(pTexture,
             {rect.x, rect.y + rect.w - padding.w, padding.x, padding.w},
@@ -284,6 +286,101 @@ namespace onut
         drawRectWithUVs(pTexture,
             {rect.x + rect.z - padding.z, rect.y + rect.w - padding.w, padding.z, padding.w},
             {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
+    }
+
+    void SpriteBatch::drawRectScaled9RepeatCenters(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color)
+    {
+#ifdef EASY_GRAPHIX
+        if (pTexture != m_pTexture) flush();
+        m_pTexture = pTexture;
+        if (!m_spriteCount)
+        {
+            if (m_pTexture)
+            {
+                m_pTexture->bind();
+            }
+            else
+            {
+                egBindDiffuse(0);
+            }
+            egBegin(EG_QUADS);
+        }
+#else /* EASY_GRAPHIX */
+        assert(m_isDrawing); // Should call begin() before calling draw()
+
+        if (!pTexture) pTexture = m_pTexWhite;
+#endif /* !EASY_GRAPHIX */
+
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        const Vector4 paddingUVs{padding.x / sizexf, padding.y / sizeyf, padding.z / sizexf, padding.w / sizeyf};
+
+        // Corners
+        drawRectWithUVs(pTexture,
+            {rect.x, rect.y, padding.x, padding.y},
+            {0.f, 0.f, paddingUVs.x, paddingUVs.y}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + rect.z - padding.z, rect.y, padding.z, padding.y},
+            {1.f - paddingUVs.z, 0.f, 1.f, paddingUVs.y}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x, rect.y + rect.w - padding.w, padding.x, padding.w},
+            {0.f, 1.f - paddingUVs.w, paddingUVs.x, 1.f}, color);
+        drawRectWithUVs(pTexture,
+            {rect.x + rect.z - padding.z, rect.y + rect.w - padding.w, padding.z, padding.w},
+            {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
+
+        // Edges
+        auto middleXLen = rect.z - padding.x - padding.z;
+        auto middleYLen = rect.w - padding.y - padding.w;
+        auto textureMiddleXLen = sizexf - padding.x - padding.z;
+        auto textureMiddleYLen = sizeyf - padding.y - padding.w;
+        auto repeatX = middleXLen / textureMiddleXLen;
+        auto repeatY = middleYLen / textureMiddleYLen;
+        auto xCount = std::max<>(1, static_cast<int>(round(repeatX)));
+        auto yCount = std::max<>(1, static_cast<int>(round(repeatY)));
+        auto xPartLen = middleXLen / static_cast<float>(xCount);
+        auto yPartLen = middleYLen / static_cast<float>(yCount);
+
+        for (int x = 0; x < xCount; ++x)
+        {
+            drawRectWithUVs(pTexture,
+                {rect.x + padding.x + static_cast<float>(x)* xPartLen,
+                rect.y, xPartLen, padding.y},
+                {paddingUVs.x, 0.f, 1.f - paddingUVs.z, paddingUVs.y}, color);
+            drawRectWithUVs(pTexture,
+                {rect.x + padding.x + static_cast<float>(x)* xPartLen, 
+                rect.y + rect.w - padding.w, xPartLen, padding.w},
+                {paddingUVs.x, 1.f - paddingUVs.w, 1.f - paddingUVs.z, 1.f}, color);
+        }
+
+        for (int y = 0; y < yCount; ++y)
+        {
+            drawRectWithUVs(pTexture,
+                {rect.x, 
+                rect.y + padding.y + static_cast<float>(y)* yPartLen,
+                padding.x, yPartLen},
+                {0.f, paddingUVs.y, paddingUVs.x, 1.f - paddingUVs.w}, color);
+            drawRectWithUVs(pTexture,
+                {rect.x + rect.z - padding.z, 
+                rect.y + padding.y + static_cast<float>(y)* yPartLen,
+                padding.z, yPartLen},
+                {1.f - paddingUVs.z, paddingUVs.y, 1.f, 1.f - paddingUVs.w}, color);
+        }
+
+        for (int y = 0; y < yCount; ++y)
+        {
+            for (int x = 0; x < xCount; ++x)
+            {
+                // The middle part
+                drawRectWithUVs(pTexture,
+                {rect.x + padding.x + static_cast<float>(x)* xPartLen,
+                rect.y + padding.y + static_cast<float>(y)* yPartLen,
+                xPartLen,
+                yPartLen},
+                {paddingUVs.x, paddingUVs.y, 1.f - paddingUVs.z, 1.f - paddingUVs.w}, color);
+            }
+        }
     }
 
     void SpriteBatch::drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio, const Color& color)
@@ -515,8 +612,10 @@ namespace onut
         if (!pTexture) pTexture = m_pTexWhite;
 #endif /* !EASY_GRAPHIX */
 
-        const auto& textureSize = pTexture->getSizef();
-        Rect cornerRect{0, 0, textureSize.x * .5f, textureSize.y * .5f};
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        Rect cornerRect{0, 0, sizexf * .5f, sizeyf * .5f};
         drawRectWithUVs(pTexture, rect.TopLeft(cornerRect), {0, 0, .5f, .5f}, color);
         drawRectWithUVs(pTexture, rect.TopRight(cornerRect), {.5f, 0, 1, .5f}, color);
         drawRectWithUVs(pTexture, rect.BottomLeft(cornerRect), {0, .5f, .5f, 1}, color);
@@ -525,6 +624,7 @@ namespace onut
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color)
     {
+        if (!pTexture) return;
 #ifdef EASY_GRAPHIX
         if (pTexture != m_pTexture) flush();
         m_pTexture = pTexture;
@@ -544,13 +644,19 @@ namespace onut
         if (!pTexture) pTexture = m_pTexWhite;
 #endif /* !EASY_GRAPHIX */
 
-        const auto& textureSize = pTexture->getSizef();
-        drawRect(pTexture, {position.x - textureSize.x * .5f, position.y - textureSize.y * .5f, textureSize.x, textureSize.y}, color);
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        drawRect(pTexture, {position.x - sizexf * .5f, position.y - sizeyf * .5f, sizexf, sizeyf}, color);
     }
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale)
     {
-        auto hSize = pTexture->getSizef() * .5f * scale;
+        if (!pTexture) return;
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
         auto radTheta = DirectX::XMConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);
         auto cosTheta = std::cos(radTheta);

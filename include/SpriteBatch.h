@@ -18,6 +18,7 @@ namespace onut
         void drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
         void drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors);
         void drawRectScaled9(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
+        void drawRectScaled9RepeatCenters(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
         void draw4Corner(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawSprite(Texture* pTexture, const Vector2& position, const Color& color = Color::White);
         void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 0.f);

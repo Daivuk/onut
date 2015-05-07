@@ -167,8 +167,9 @@ namespace onut
     {
         sUIImageComponent   image;
         bool                isScaled9;
+        bool                isRepeat;
         sUIPadding          padding;
-        sUIScale9Component() : isScaled9(false) {}
+        sUIScale9Component() : isScaled9(false), isRepeat(false) {}
     };
 
     struct sUIIconComponent
