@@ -9,6 +9,9 @@ namespace onut
 {
     Texture* Texture::createDynamic(const POINT& size)
     {
+#ifdef EASY_GRAPHIX
+        return nullptr;
+#else /* EASY_GRAPHIX */
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
         auto pRet = new Texture();
@@ -36,6 +39,7 @@ namespace onut
         pRet->m_pTexture = pTexture;
 
         return pRet;
+#endif /* !EASY_GRAPHIX */
     }
 
     Texture* Texture::createFromFile(const std::string& filename, bool generateMipmaps)
@@ -63,6 +67,15 @@ namespace onut
 
     Texture* Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps)
     {
+#ifdef EASY_GRAPHIX
+        auto pRet = new Texture();
+        pRet->m_pTextureView = egCreateTexture2D(static_cast<uint32_t>(size.x),
+                                                 static_cast<uint32_t>(size.y),
+                                                 in_pData, EG_U8 | EG_RGBA, 
+                                                 in_generateMipmaps ? EG_GENERATE_MIPMAPS : static_cast<EG_TEXTURE_FLAGS>(0));
+        pRet->m_size = size;
+        return pRet;
+#else /* EASY_GRAPHIX */
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
         auto pRet = new Texture();
@@ -178,16 +191,36 @@ namespace onut
         pRet->m_pTextureView = pTextureView;
 
         return pRet;
+#endif /* EASY_GRAPHIX */
     }
 
     Texture::~Texture()
     {
+#ifdef EASY_GRAPHIX
+        egDestroyTexture(&m_pTextureView);
+#else
         if (m_pTextureView) m_pTextureView->Release();
         if (m_pTexture) m_pTexture->Release();
+#endif
     }
 
     void Texture::bind(int slot)
     {
+#ifdef EASY_GRAPHIX
+        switch (slot)
+        {
+            case 0:
+                egBindDiffuse(m_pTextureView);
+                break;
+            case 1:
+                egBindNormal(m_pTextureView);
+                break;
+            case 2:
+                egBindMaterial(m_pTextureView);
+                break;
+        }
+#else
         ORenderer->getDeviceContext()->PSSetShaderResources(slot, 1, &m_pTextureView);
+#endif
     }
 }

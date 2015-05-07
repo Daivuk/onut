@@ -508,6 +508,7 @@ namespace onut
 
         void retain();
         void release();
+        int32_t getRefCount() const { return m_refCount; }
 
         void update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown);
         void render(UIContext& context);
@@ -576,7 +577,7 @@ namespace onut
         std::vector<UIControl*>                     m_children;
         int                                         m_style = 0;
         std::string                                 m_styleName;
-        int32_t                                     m_refCount = 0;
+        int32_t                                     m_refCount = 1;
         UIControl*                                  m_pParent = nullptr;
         std::unordered_map<std::string, UIProperty> m_properties;
     };

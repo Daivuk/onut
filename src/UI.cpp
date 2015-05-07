@@ -1051,6 +1051,8 @@ namespace onut
 
     void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown)
     {
+        retain();
+
         // Prepare our data
         sUIRect parentRect = {{0, 0}, context.getScreenSize()};
         context.m_mouseEvent.mousePos = mousePos;
@@ -1069,6 +1071,8 @@ namespace onut
 
         // Reset for next frame
         context.reset();
+
+        release();
     }
 
     void UIContext::resolve()
@@ -1102,6 +1106,14 @@ namespace onut
 
     void UIContext::dispatchEvents()
     {
+        if (m_pHoverControl) m_pHoverControl->retain();
+        if (m_pDownControl) m_pDownControl->retain();
+        if (m_pFocus) m_pFocus->retain();
+
+        if (m_pLastHoverControl) m_pLastHoverControl->retain();
+        if (m_pLastDownControl) m_pLastDownControl->retain();
+        if (m_pLastFocus) m_pLastFocus->retain();
+
         // Do writes
         if (m_pFocus)
         {
@@ -1227,6 +1239,20 @@ namespace onut
                 }
             }
         }
+
+        if (m_pHoverControl) if (m_pHoverControl->getRefCount() <= 1) { m_pHoverControl->release(); m_pHoverControl = nullptr; }
+        else { m_pHoverControl->release(); }
+        if (m_pDownControl) if (m_pDownControl->getRefCount() <= 1) { m_pDownControl->release(); m_pDownControl = nullptr; }
+        else { m_pDownControl->release(); }
+        if (m_pFocus) if (m_pFocus->getRefCount() <= 1) { m_pFocus->release(); m_pFocus = nullptr; }
+        else { m_pFocus->release(); }
+
+        if (m_pLastHoverControl) if (m_pLastHoverControl->getRefCount() <= 1) { m_pLastHoverControl->release(); m_pLastHoverControl = nullptr; }
+        else { m_pLastHoverControl->release(); }
+        if (m_pLastDownControl) if (m_pLastDownControl->getRefCount() <= 1) { m_pLastDownControl->release(); m_pLastDownControl = nullptr; }
+        else { m_pLastDownControl->release(); }
+        if (m_pLastFocus) if (m_pLastFocus->getRefCount() <= 1) { m_pLastFocus->release(); m_pLastFocus = nullptr; }
+        else { m_pLastFocus->release(); }
     }
 
     void UIContext::reset()
@@ -2188,6 +2214,10 @@ namespace onut
         if (callback)
         {
             callback->render(this, rect);
+        }
+        else
+        {
+            context.drawRect(this, rect, color);
         }
     }
 

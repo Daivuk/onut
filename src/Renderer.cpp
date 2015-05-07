@@ -18,6 +18,9 @@ namespace onut
 
     Renderer::~Renderer()
     {
+#ifdef EASY_GRAPHIX
+        egDestroyDevice(&m_device);
+#else
         if (m_pWorldMatrixBuffer) m_pWorldMatrixBuffer->Release();
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
 
@@ -36,10 +39,21 @@ namespace onut
         if (m_deviceContext) m_deviceContext->Release();
         if (m_device) m_device->Release();
         if (m_swapChain) m_swapChain->Release();
+#endif;
     }
 
     void Renderer::createDevice(Window& window)
     {
+#ifdef EASY_GRAPHIX
+        m_device = egCreateDevice(window.getHandle());
+
+        // Check for error
+        if (!m_device)
+        {
+            MessageBox(nullptr, L"egCreateDevice", L"Error", MB_OK);
+            exit(0);
+        }
+#else
         // Define our swap chain
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};
         swapChainDesc.BufferCount = 1;
@@ -67,10 +81,12 @@ namespace onut
             MessageBox(nullptr, L"D3D11CreateDeviceAndSwapChain", L"Error", MB_OK);
             exit(0);
         }
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::createRenderTarget()
     {
+#ifndef EASY_GRAPHIX
         ID3D11Texture2D* backBuffer;
         auto result = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
         if (result != S_OK)
@@ -87,17 +103,32 @@ namespace onut
 
         backBuffer->GetDesc(&m_backBufferDesc);
         backBuffer->Release();
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::onResize()
     {
+#ifndef EASY_GRAPHIX
         m_renderTargetView->Release();
         m_swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
         createRenderTarget();
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::createRenderStates()
     {
+#ifdef EASY_GRAPHIX
+        egDisable(EG_ALL);
+        egEnable(EG_BLEND);
+        egBlendFunc(EG_ONE, EG_ONE_MINUS_SRC_ALPHA);
+        m_2dstate = egCreateState();
+        assert(m_2dstate);
+
+        egDisable(EG_ALL);
+        egEnable(EG_LIGHTING | EG_DEPTH_TEST | EG_DEPTH_WRITE);
+        m_3dState = egCreateState();
+        assert(m_3dState);
+#else /* EASY_GRAPHIX */
         // 2D Depth state
         auto ret = m_device->CreateDepthStencilState(&(D3D11_DEPTH_STENCIL_DESC{
             false,
@@ -171,10 +202,12 @@ namespace onut
             D3D11_FLOAT32_MAX
         }), &m_pSs2D);
         assert(ret == S_OK);
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::loadShaders()
     {
+#ifndef EASY_GRAPHIX
         // Create 2D shaders
         {
             std::ifstream vsFile("../../assets/shaders/2dvs.cso", std::ios::binary);
@@ -197,8 +230,10 @@ namespace onut
             ret = m_device->CreateInputLayout(layout, 3, vsData.data(), vsData.size(), &m_p2DInputLayout);
             assert(ret == S_OK);
         }
+#endif /* !EASY_GRAPHIX */
     }
 
+#ifndef EASY_GRAPHIX
     ID3D11PixelShader* Renderer::create2DShader(const std::string& filename)
     {
         ID3D11PixelShader* pRet = nullptr;
@@ -211,9 +246,11 @@ namespace onut
 
         return pRet;
     }
+#endif /* !EASY_GRAPHIX */
 
     void Renderer::createUniforms()
     {
+#ifndef EASY_GRAPHIX
         // 2D view projection matrix
         {
             Matrix viewProj = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
@@ -223,16 +260,23 @@ namespace onut
             auto ret = m_device->CreateBuffer(&cbDesc, &initData, &m_pViewProj2dBuffer);
             assert(ret == S_OK);
         }
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::beginFrame()
     {
+#ifdef EASY_GRAPHIX
+        auto resolution = getResolution();
+        egViewPort(0, 0, static_cast<uint32_t>(resolution.x), static_cast<uint32_t>(resolution.y));
+        m_renderSetup = eRenderSetup::SETUP_NONE;
+#else /* EASY_GRAPHIX */
         // Bind render target
         m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
 
         // Set viewport
         auto viewport = CD3D11_VIEWPORT(0.f, 0.f, (float)m_backBufferDesc.Width, (float)m_backBufferDesc.Height);
         m_deviceContext->RSSetViewports(1, &viewport);
+#endif /* !EASY_GRAPHIX */
 
         // Reset 2d view
         set2DCamera(Vector2::Zero);
@@ -240,28 +284,53 @@ namespace onut
 
     void Renderer::endFrame()
     {
+#ifdef EASY_GRAPHIX
+        egPostProcess();
+        egSwap();
+#else /* EASY_GRAPHIX */
         // Swap the buffer!
         m_swapChain->Present(1, 0);
+#endif /* !EASY_GRAPHIX */
     }
 
+#ifdef EASY_GRAPHIX
+    EGDevice Renderer::getDevice()
+    {
+        return m_device;
+    }
+#else /* EASY_GRAPHIX */
     ID3D11Device* Renderer::getDevice()
     {
         return m_device;
     }
+#endif /* !EASY_GRAPHIX */
 
+#ifndef EASY_GRAPHIX
     ID3D11DeviceContext* Renderer::getDeviceContext()
     {
         return m_deviceContext;
     }
+#endif /* !EASY_GRAPHIX */
 
     POINT Renderer::getResolution() const
     {
+#ifdef EASY_GRAPHIX
+        int res[2];
+        egGetiv(EG_RESOLUTION, res);
+        return {static_cast<LONG>(res[0]), static_cast<LONG>(res[1])};
+#else /* EASY_GRAPHIX */
         return{m_backBufferDesc.Width, m_backBufferDesc.Height};
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::clear(const Color& color)
     {
+#ifdef EASY_GRAPHIX
+        egClearColor(color.x, color.y, color.z, color.w);
+        egClear(EG_CLEAR_ALL);
+#else /* EASY_GRAPHIX */
         m_deviceContext->ClearRenderTargetView(m_renderTargetView, &color.x);
+#endif /* !EASY_GRAPHIX */
     }
 
     void Renderer::setupFor2D()
@@ -269,6 +338,13 @@ namespace onut
         if (m_renderSetup == eRenderSetup::SETUP_2D) return;
         m_renderSetup = eRenderSetup::SETUP_2D;
 
+#ifdef EASY_GRAPHIX
+        egSet2DViewProj(-999, 999);
+        egBindState(m_2dstate);
+        egBindDiffuse(0);
+        egBindNormal(0);
+        egBindMaterial(0);
+#else /* EASY_GRAPHIX */
         // Set 2d render states
         m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
         m_deviceContext->RSSetState(m_pSr2D);
@@ -282,6 +358,8 @@ namespace onut
 
         // Bind the matrix
         m_deviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
+#endif /* !EASY_GRAPHIX */
+
         m_cameraPos = Vector3::UnitZ;
         m_cameraDir = -Vector3::UnitZ;
         m_cameraUp = -Vector3::UnitY;
@@ -313,10 +391,14 @@ namespace onut
 
     void Renderer::set2DCamera(const Matrix& viewProj)
     {
+#ifdef EASY_GRAPHIX
+        egSetViewProjMerged(&viewProj._11);
+#else /* EASY_GRAPHIX */
         D3D11_MAPPED_SUBRESOURCE map;
         m_deviceContext->Map(m_pViewProj2dBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
         memcpy(map.pData, &viewProj._11, sizeof(viewProj));
         m_deviceContext->Unmap(m_pViewProj2dBuffer, 0);
+#endif /* !EASY_GRAPHIX */
     }
 
     Matrix Renderer::set2DCamera(const Vector2& position, float zoom)
@@ -343,6 +425,20 @@ namespace onut
 
     void Renderer::setScissor(bool enabled, const Rect& rect)
     {
+#ifdef EASY_GRAPHIX
+        if (enabled)
+        {
+            egEnable(EG_SCISSOR);
+            egScissor(static_cast<uint32_t>(rect.x),
+                      static_cast<uint32_t>(rect.y),
+                      static_cast<uint32_t>(rect.x + rect.z), 
+                      static_cast<uint32_t>(rect.y + rect.w));
+        }
+        else
+        {
+            egDisable(EG_SCISSOR);
+        }
+#else /* EASY_GRAPHIX */
         if (enabled)
         {
             D3D11_RECT dxRect[1] = {
@@ -360,5 +456,6 @@ namespace onut
         {
             m_deviceContext->RSSetState(m_pSr2D);
         }
+#endif /* !EASY_GRAPHIX */
     }
 }

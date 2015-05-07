@@ -5,12 +5,13 @@ namespace onut
 {
     PrimitiveBatch::PrimitiveBatch()
     {
-        auto pDevice = ORenderer->getDevice();
-        auto pDeviceContext = ORenderer->getDeviceContext();
-
+#ifndef EASY_GRAPHIX
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = {255, 255, 255, 255};
         m_pTexWhite = Texture::createFromData({1, 1}, white, false);
+
+        auto pDevice = ORenderer->getDevice();
+        auto pDeviceContext = ORenderer->getDeviceContext();
 
         SVertexP2T2C4 vertices[MAX_VERTEX_COUNT];
 
@@ -31,16 +32,44 @@ namespace onut
 
         auto ret = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer);
         assert(ret == S_OK);
+#endif /* !EASY_GRAPHIX */
     }
 
     PrimitiveBatch::~PrimitiveBatch()
     {
+#ifndef EASY_GRAPHIX
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         delete m_pTexWhite;
+#endif /* !EASY_GRAPHIX */
     }
 
     void PrimitiveBatch::begin(ePrimitiveType primitiveType, Texture* pTexture)
     {
+#ifdef EASY_GRAPHIX
+        if (pTexture)
+        {
+            pTexture->bind();
+        }
+        else
+        {
+            egBindDiffuse(0);
+        }
+        switch (primitiveType)
+        {
+            case ePrimitiveType::POINTS:
+                egBegin(EG_POINTS);
+                break;
+            case ePrimitiveType::LINES:
+                egBegin(EG_LINES);
+                break;
+            case ePrimitiveType::LINE_STRIP:
+                egBegin(EG_LINE_STRIP);
+                break;
+            case ePrimitiveType::TRIANGLES:
+                egBegin(EG_TRIANGLES);
+                break;
+        }
+#else /* EASY_GRAPHIX */
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -50,10 +79,16 @@ namespace onut
         ORenderer->setupFor2D();
         m_isDrawing = true;
         ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+#endif /* !EASY_GRAPHIX */
     }
 
     void PrimitiveBatch::draw(const Vector2& position, const Color& color, const Vector2& texCoord)
     {
+#ifdef EASY_GRAPHIX
+        egColor4(color.x, color.y, color.z, color.w);
+        egTexCoord(texCoord.x, texCoord.y);
+        egPosition2(position.x, position.y);
+#else /* EASY_GRAPHIX */
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + m_vertexCount;
         pVerts->position = position;
         pVerts->texCoord = texCoord;
@@ -78,10 +113,14 @@ namespace onut
                 flush();
             }
         }
+#endif /* !EASY_GRAPHIX */
     }
 
     void PrimitiveBatch::end()
     {
+#ifdef EASY_GRAPHIX
+        egEnd();
+#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling end()
 
         m_isDrawing = false;
@@ -90,8 +129,10 @@ namespace onut
             flush();
         }
         ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
+#endif /* !EASY_GRAPHIX */
     }
 
+#ifndef EASY_GRAPHIX
     void PrimitiveBatch::flush()
     {
         if (!m_vertexCount)
@@ -127,4 +168,5 @@ namespace onut
 
         m_vertexCount = 0;
     }
+#endif /* !EASY_GRAPHIX */
 }

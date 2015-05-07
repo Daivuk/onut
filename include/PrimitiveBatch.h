@@ -24,6 +24,7 @@ namespace onut
         void end();
 
     private:
+#ifndef EASY_GRAPHIX
         struct SVertexP2T2C4
         {
             Vector2 position;
@@ -38,14 +39,16 @@ namespace onut
         ID3D11Buffer*               m_pVertexBuffer = nullptr;
         D3D11_MAPPED_SUBRESOURCE    m_pMappedVertexBuffer;
 
-        Texture*                    m_pTexWhite = nullptr;
-        Texture*                    m_pTexture = nullptr;
-        ePrimitiveType              m_primitiveType;
-
         static const unsigned int   m_stride = sizeof(SVertexP2T2C4);
         static const unsigned int   m_offset = 0;
         unsigned int                m_vertexCount = 0;
 
         bool                        m_isDrawing = false;
+
+        Texture*                    m_pTexWhite = nullptr;
+        Texture*                    m_pTexture = nullptr;
+
+        ePrimitiveType              m_primitiveType;
+#endif /* !EASY_GRAPHIX */
     };
 }
