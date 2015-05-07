@@ -6,6 +6,11 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uieditor", "uieditor.vcxproj", "{91456A4F-3F36-4BE4-AACF-BAA7105CC7CB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "onut", "..\..\..\project\win\onut.vcxproj", "{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0AA82497-CC19-4C6A-99BC-F0027C2F7CCA} = {0AA82497-CC19-4C6A-99BC-F0027C2F7CCA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "egdx11", "..\..\..\EasyGraphix\eg\src\dx11\egdx11.vcxproj", "{0AA82497-CC19-4C6A-99BC-F0027C2F7CCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}.Debug|Win32.Build.0 = Debug|Win32
 		{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}.Release|Win32.ActiveCfg = Release|Win32
 		{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}.Release|Win32.Build.0 = Release|Win32
+		{0AA82497-CC19-4C6A-99BC-F0027C2F7CCA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0AA82497-CC19-4C6A-99BC-F0027C2F7CCA}.Debug|Win32.Build.0 = Debug|Win32
+		{0AA82497-CC19-4C6A-99BC-F0027C2F7CCA}.Release|Win32.ActiveCfg = Release|Win32
+		{0AA82497-CC19-4C6A-99BC-F0027C2F7CCA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

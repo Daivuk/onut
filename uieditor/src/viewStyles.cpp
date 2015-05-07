@@ -40,6 +40,8 @@ void createViewUIStyles(onut::UIContext* pContext)
 
     pContext->drawText = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUITextComponent &textComponent)
     {
+        auto pFont = OGetBMFont(textComponent.font.typeFace.c_str());
+        if (!pFont) pFont = g_pFont;
         auto align = onut::UI2Onut(textComponent.font.align);
         auto oRect = onut::UI2Onut(rect);
         g_pFont->draw<>(textComponent.text, ORectAlign<>(oRect, align), onut::UI2Onut(textComponent.font.color), OSB, align);

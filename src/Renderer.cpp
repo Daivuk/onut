@@ -108,7 +108,9 @@ namespace onut
 
     void Renderer::onResize()
     {
-#ifndef EASY_GRAPHIX
+#ifdef EASY_GRAPHIX
+        egResize();
+#else /* EASY_GRAPHIX */
         m_renderTargetView->Release();
         m_swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
         createRenderTarget();
