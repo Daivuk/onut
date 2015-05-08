@@ -22,6 +22,7 @@ namespace onut
         void                    beginFrame();
         void                    endFrame();
 
+        void                    resetState();
         void                    setupFor2D();
         void                    setupFor3D();
         void                    set2DCamera(const Matrix& viewProj);

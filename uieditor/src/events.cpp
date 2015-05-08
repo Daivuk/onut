@@ -1036,8 +1036,8 @@ std::string fileOpen(const char* szFilters)
     auto window = OWindow->getHandle();
     char szFileName[MAX_PATH] = "";
 
-    OPENFILENAME ofn = {0};
-    ofn.lStructSize = sizeof(OPENFILENAME);
+    OPENFILENAMEA ofn = {0};
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
     ofn.hwndOwner = window;
 
     ofn.lStructSize = sizeof(ofn);
@@ -1046,9 +1046,9 @@ std::string fileOpen(const char* szFilters)
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-    ofn.lpstrDefExt = TEXT("json");
+    ofn.lpstrDefExt = "json";
 
-    GetOpenFileName(&ofn);
+    GetOpenFileNameA(&ofn);
 
     return ofn.lpstrFile;
 }
@@ -1231,7 +1231,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
         // Browse
         pBrowseButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
         {
-            std::string file = fileOpen(TEXT("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0"));
+            std::string file = fileOpen("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0");
             if (!file.empty())
             {
                 // Make it relative to our filename

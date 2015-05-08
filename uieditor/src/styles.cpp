@@ -416,69 +416,71 @@ void createUIStyles(onut::UIContext* pContext)
         const auto orect = onut::UI2Onut(rect);
         auto texture = OGetTexture("align.png");
         Vector4 UVs;
+        auto textureSizeX = static_cast<float>(texture->getSize().x);
+        auto textureSizeY = static_cast<float>(texture->getSize().y);
         switch (pCheckBox->align)
         {
             case onut::eUIAlign::TOP_LEFT:
                 UVs.x = 0.f;
-                UVs.z = 13.f / texture->getSizef().x;
+                UVs.z = 13.f / textureSizeX;
                 UVs.y = 0.f;
-                UVs.w = 13.f / texture->getSizef().y;
+                UVs.w = 13.f / textureSizeY;
                 break;
             case onut::eUIAlign::TOP:
-                UVs.x = 13.f / texture->getSizef().x;
-                UVs.z = 26.f / texture->getSizef().x;
+                UVs.x = 13.f / textureSizeX;
+                UVs.z = 26.f / textureSizeX;
                 UVs.y = 0.f;
-                UVs.w = 13.f / texture->getSizef().y;
+                UVs.w = 13.f / textureSizeY;
                 break;
             case onut::eUIAlign::TOP_RIGHT:
-                UVs.x = 26.f / texture->getSizef().x;
-                UVs.z = 39.f / texture->getSizef().x;
+                UVs.x = 26.f / textureSizeX;
+                UVs.z = 39.f / textureSizeX;
                 UVs.y = 0.f;
-                UVs.w = 13.f / texture->getSizef().y;
+                UVs.w = 13.f / textureSizeY;
                 break;
             case onut::eUIAlign::LEFT:
                 UVs.x = 0.f;
-                UVs.z = 13.f / texture->getSizef().x;
-                UVs.y = 13.f / texture->getSizef().y;
-                UVs.w = 26.f / texture->getSizef().y;
+                UVs.z = 13.f / textureSizeX;
+                UVs.y = 13.f / textureSizeY;
+                UVs.w = 26.f / textureSizeY;
                 break;
             case onut::eUIAlign::CENTER:    
-                UVs.x = 13.f / texture->getSizef().x;
-                UVs.z = 26.f / texture->getSizef().x;
-                UVs.y = 13.f / texture->getSizef().y;
-                UVs.w = 26.f / texture->getSizef().y;
+                UVs.x = 13.f / textureSizeX;
+                UVs.z = 26.f / textureSizeX;
+                UVs.y = 13.f / textureSizeY;
+                UVs.w = 26.f / textureSizeY;
                 break;
             case onut::eUIAlign::RIGHT:
-                UVs.x = 26.f / texture->getSizef().x;
-                UVs.z = 39.f / texture->getSizef().x;
-                UVs.y = 13.f / texture->getSizef().y;
-                UVs.w = 26.f / texture->getSizef().y;
+                UVs.x = 26.f / textureSizeX;
+                UVs.z = 39.f / textureSizeX;
+                UVs.y = 13.f / textureSizeY;
+                UVs.w = 26.f / textureSizeY;
                 break;
             case onut::eUIAlign::BOTTOM_LEFT:
                 UVs.x = 0.f;
-                UVs.z = 13.f / texture->getSizef().x;
-                UVs.y = 26.f / texture->getSizef().y;
-                UVs.w = 39.f / texture->getSizef().y;
+                UVs.z = 13.f / textureSizeX;
+                UVs.y = 26.f / textureSizeY;
+                UVs.w = 39.f / textureSizeY;
                 break;
             case onut::eUIAlign::BOTTOM:
-                UVs.x = 13.f / texture->getSizef().x;
-                UVs.z = 26.f / texture->getSizef().x;
-                UVs.y = 26.f / texture->getSizef().y;
-                UVs.w = 39.f / texture->getSizef().y;
+                UVs.x = 13.f / textureSizeX;
+                UVs.z = 26.f / textureSizeX;
+                UVs.y = 26.f / textureSizeY;
+                UVs.w = 39.f / textureSizeY;
                 break;
             case onut::eUIAlign::BOTTOM_RIGHT:
-                UVs.x = 26.f / texture->getSizef().x;
-                UVs.z = 39.f / texture->getSizef().x;
-                UVs.y = 26.f / texture->getSizef().y;
-                UVs.w = 39.f / texture->getSizef().y;
+                UVs.x = 26.f / textureSizeX;
+                UVs.z = 39.f / textureSizeX;
+                UVs.y = 26.f / textureSizeY;
+                UVs.w = 39.f / textureSizeY;
                 break;
         }
         if (pCheckBox->getIsChecked())
         {
-            UVs.x += 39.f / texture->getSizef().x;
-            UVs.z += 39.f / texture->getSizef().x;
-            UVs.y += 39.f / texture->getSizef().y;
-            UVs.w += 39.f / texture->getSizef().y;
+            UVs.x += 39.f / textureSizeX;
+            UVs.z += 39.f / textureSizeX;
+            UVs.y += 39.f / textureSizeY;
+            UVs.w += 39.f / textureSizeY;
         }
         else
         {
@@ -486,12 +488,12 @@ void createUIStyles(onut::UIContext* pContext)
             switch (state)
             {
                 case onut::eUIState::HOVER:
-                    UVs.x += 39.f / texture->getSizef().x;
-                    UVs.z += 39.f / texture->getSizef().x;
+                    UVs.x += 39.f / textureSizeX;
+                    UVs.z += 39.f / textureSizeX;
                     break;
                 case onut::eUIState::DOWN:
-                    UVs.y += 39.f / texture->getSizef().y;
-                    UVs.w += 39.f / texture->getSizef().y;
+                    UVs.y += 39.f / textureSizeY;
+                    UVs.w += 39.f / textureSizeY;
                     break;
             }
         }

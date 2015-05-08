@@ -335,6 +335,11 @@ namespace onut
 #endif /* !EASY_GRAPHIX */
     }
 
+    void Renderer::resetState()
+    {
+        m_renderSetup = eRenderSetup::SETUP_NONE;
+    }
+
     void Renderer::setupFor2D()
     {
         if (m_renderSetup == eRenderSetup::SETUP_2D) return;

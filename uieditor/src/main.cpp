@@ -49,6 +49,7 @@ void init()
     });
 
     g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
+    g_pUIScreen->retain();
     hookUIEvents(g_pUIScreen);
 
     g_pDocument = new DocumentView("");

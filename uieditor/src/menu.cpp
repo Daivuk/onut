@@ -48,19 +48,19 @@ std::string fileOpen()
     auto window = OWindow->getHandle();
     char szFileName[MAX_PATH] = "";
 
-    OPENFILENAME ofn = {0};
-    ofn.lStructSize = sizeof(OPENFILENAME);
+    OPENFILENAMEA ofn = {0};
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
     ofn.hwndOwner = window;
 
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = window;
-    ofn.lpstrFilter = TEXT("JSon Files (*.json)\0*.json\0All Files (*.*)\0*.*\0");
+    ofn.lpstrFilter = "JSon Files (*.json)\0*.json\0All Files (*.*)\0*.*\0";
     ofn.lpstrFile = szFileName;
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-    ofn.lpstrDefExt = TEXT("json");
+    ofn.lpstrDefExt = "json";
 
-    GetOpenFileName(&ofn);
+    GetOpenFileNameA(&ofn);
 
     return ofn.lpstrFile;
 }

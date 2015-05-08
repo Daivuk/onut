@@ -644,7 +644,7 @@ namespace onut
         if (!pTexture) pTexture = m_pTexWhite;
 #endif /* !EASY_GRAPHIX */
 
-        auto textureSize = pTexture->getSize();
+        auto& textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
         drawRect(pTexture, {position.x - sizexf * .5f, position.y - sizeyf * .5f, sizexf, sizeyf}, color);

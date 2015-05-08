@@ -7,7 +7,7 @@
 
 namespace onut
 {
-    Texture* Texture::createDynamic(const POINT& size)
+    Texture* Texture::createDynamic(const sSize& size)
     {
 #ifdef EASY_GRAPHIX
         return nullptr;
@@ -50,7 +50,7 @@ namespace onut
         unsigned int w, h;
         auto ret = lodepng::decode(image, w, h, filename);
         assert(!ret);
-        POINT size{w, h};
+        sSize size{w, h};
         byte* pData = &(image[0]);
         ULONG len = size.x * size.y;
 
@@ -65,7 +65,7 @@ namespace onut
         return createFromData(size, &(image[0]), generateMipmaps);
     }
 
-    Texture* Texture::createFromData(const POINT& size, const unsigned char* in_pData, bool in_generateMipmaps)
+    Texture* Texture::createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps)
     {
 #ifdef EASY_GRAPHIX
         auto pRet = new Texture();

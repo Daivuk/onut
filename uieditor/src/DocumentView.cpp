@@ -63,6 +63,7 @@ DocumentView::DocumentView(const std::string& filename)
     if (!path.empty())
     {
         contentManager.addSearchPath(path);
+        contentManager.addSearchPath(path + "/../fonts");
     }
 
     if (!curARROW) curARROW = LoadCursor(nullptr, IDC_ARROW);
@@ -1358,22 +1359,22 @@ void DocumentView::setDirty(bool isDirty)
     {
         if (m_filename.empty())
         {
-            SetWindowText(window, (OSettings->getGameName() + " - Untitle*").c_str());
+            SetWindowTextA(window, (OSettings->getGameName() + " - Untitle*").c_str());
         }
         else
         {
-            SetWindowText(window, (OSettings->getGameName() + " - " + m_filename + "*").c_str());
+            SetWindowTextA(window, (OSettings->getGameName() + " - " + m_filename + "*").c_str());
         }
     }
     else
     {
         if (m_filename.empty())
         {
-            SetWindowText(window, (OSettings->getGameName() + " - Untitle").c_str()); // That shouldn't be possible
+            SetWindowTextA(window, (OSettings->getGameName() + " - Untitle").c_str()); // That shouldn't be possible
         }
         else
         {
-            SetWindowText(window, (OSettings->getGameName() + " - " + m_filename).c_str());
+            SetWindowTextA(window, (OSettings->getGameName() + " - " + m_filename).c_str());
         }
     }
 }
