@@ -30,6 +30,18 @@ void init()
     OContentManager->addSearchPath("../../assets/textures/icons");
 
     g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
+    g_pUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
+    {
+        if (enabled)
+        {
+            egEnable(EG_SCISSOR);
+            egScissor((uint32_t)rect.position.x, (uint32_t)rect.position.y, (uint32_t)rect.size.x, (uint32_t)rect.size.y);
+        }
+        else
+        {
+            egDisable(EG_SCISSOR);
+        }
+    };
     createUIStyles(g_pUIContext);
 
     g_pUIContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)

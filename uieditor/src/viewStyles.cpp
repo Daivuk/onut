@@ -21,6 +21,19 @@ void createViewUIStyles(onut::UIContext* pContext)
 {
     g_pFont = OGetBMFont("segeo12.fnt");
 
+    pContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
+    {
+        if (enabled)
+        {
+            egEnable(EG_SCISSOR);
+            egScissor((uint32_t)rect.position.x, (uint32_t)rect.position.y, (uint32_t)rect.size.x, (uint32_t)rect.size.y);
+        }
+        else
+        {
+            egDisable(EG_SCISSOR);
+        }
+    };
+
     pContext->drawRect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)
     {
         OSB->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
