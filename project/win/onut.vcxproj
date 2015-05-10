@@ -16,10 +16,13 @@
     <ClInclude Include="..\..\include\Asynchronous.h" />
     <ClInclude Include="..\..\include\BMFont.h" />
     <ClInclude Include="..\..\include\ContentManager.h" />
+    <ClInclude Include="..\..\include\crypto.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
+    <ClInclude Include="..\..\include\http.h" />
     <ClInclude Include="..\..\include\Input.h" />
+    <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
     <ClInclude Include="..\..\include\Particle.h" />
@@ -60,13 +63,16 @@
     <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\AudioEngine.cpp" />
     <ClCompile Include="..\..\src\BMFont.cpp" />
+    <ClCompile Include="..\..\src\crypto.cpp" />
     <ClCompile Include="..\..\src\DefineHelpers.cpp" />
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
+    <ClCompile Include="..\..\src\http.cpp" />
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
+    <ClCompile Include="..\..\src\object.cpp" />
     <ClCompile Include="..\..\src\Particle.cpp" />
     <ClCompile Include="..\..\src\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\src\ParticleSystem.cpp" />
@@ -154,7 +160,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput9_1_0.lib;x3daudio.lib;xapofx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput9_1_0.lib;x3daudio.lib;xapofx.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -181,7 +187,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput9_1_0.lib;x3daudio.lib;xapofx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput9_1_0.lib;x3daudio.lib;xapofx.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
