@@ -16,6 +16,8 @@ static const Color g_btnStatesColors[4][2] = {
 static onut::BMFont* g_pFont;
 
 extern DocumentView* g_pDocument;
+extern onut::UIControl* g_pUIScreen;
+extern onut::UIContext* g_pUIContext;
 
 void createViewUIStyles(onut::UIContext* pContext)
 {
@@ -23,15 +25,15 @@ void createViewUIStyles(onut::UIContext* pContext)
 
     pContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
     {
-        if (enabled)
-        {
-            egEnable(EG_SCISSOR);
-            egScissor((uint32_t)rect.position.x, (uint32_t)rect.position.y, (uint32_t)rect.size.x, (uint32_t)rect.size.y);
-        }
-        else
-        {
-            egDisable(EG_SCISSOR);
-        }
+        OSB->end();
+
+        auto regionRect = onut::UI2Onut(g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext));
+        auto orect = onut::UI2Onut(rect);
+        orect.x += regionRect.x;
+        orect.y += regionRect.y;
+
+        ORenderer->setScissor(enabled, orect);
+        OSB->begin();
     };
 
     pContext->drawRect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)

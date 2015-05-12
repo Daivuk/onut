@@ -1462,11 +1462,11 @@ namespace onut
         if (!isVisible) return;
 
         sUIRect worldRect = getWorldRect(parentRect);
-        renderControl(context, worldRect);
         if (clipChildren)
         {
             context.pushClip(worldRect);
         }
+        renderControl(context, worldRect);
         for (auto pChild : m_children)
         {
             pChild->renderInternal(context, worldRect);

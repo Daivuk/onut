@@ -438,8 +438,8 @@ namespace onut
             egEnable(EG_SCISSOR);
             egScissor(static_cast<uint32_t>(rect.x),
                       static_cast<uint32_t>(rect.y),
-                      static_cast<uint32_t>(rect.x + rect.z), 
-                      static_cast<uint32_t>(rect.y + rect.w));
+                      static_cast<uint32_t>(rect.z), 
+                      static_cast<uint32_t>(rect.w));
         }
         else
         {

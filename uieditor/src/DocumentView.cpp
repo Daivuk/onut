@@ -1121,14 +1121,9 @@ void DocumentView::updateMovingHandle()
 
 void DocumentView::render()
 {
-    //auto rect = pUIScreen->getWorldRect(*pUIContext);
-
-    //egEnable(EG_SCISSOR);
-    //egScissor((uint32_t)rect.position.x, (uint32_t)rect.position.y, (uint32_t)rect.size.x, (uint32_t)rect.size.y);
+    auto rect = pUIScreen->getWorldRect(*pUIContext);
 
     pUIScreen->render(*pUIContext);
-
-    //egDisable(EG_SCISSOR);
 }
 
 void DocumentView::repopulateTreeView(onut::UIControl* pControl)
