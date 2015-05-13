@@ -8,6 +8,7 @@
 #include "http.h"
 #include "Input.h"
 #include "GamePad.h"
+#include "object.h"
 #include "ParticleSystemManager.h"
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"

@@ -261,7 +261,7 @@ namespace onut
             {rect.x, rect.y, padding.x, padding.y},
             {0.f, 0.f, paddingUVs.x, paddingUVs.y}, color);
         drawRectWithUVs(pTexture,
-            {rect.x + padding.x, rect.y, rect.z - padding.x - padding.y, padding.y},
+            {rect.x + padding.x, rect.y, rect.z - padding.x - padding.z, padding.y},
             {paddingUVs.x, 0.f, 1.f - paddingUVs.z, paddingUVs.y}, color);
         drawRectWithUVs(pTexture,
             {rect.x + rect.z - padding.z, rect.y, padding.z, padding.y},
@@ -271,7 +271,7 @@ namespace onut
             {rect.x, rect.y + padding.y, padding.x, rect.w - padding.y - padding.w},
             {0.f, paddingUVs.y, paddingUVs.x, 1.f - paddingUVs.w}, color);
         drawRectWithUVs(pTexture,
-            {rect.x + padding.x, rect.y + padding.y, rect.z - padding.x - padding.y, rect.w - padding.y - padding.w},
+            {rect.x + padding.x, rect.y + padding.y, rect.z - padding.x - padding.z, rect.w - padding.y - padding.w},
             {paddingUVs.x, paddingUVs.y, 1.f - paddingUVs.z, 1.f - paddingUVs.w}, color);
         drawRectWithUVs(pTexture,
             {rect.x + rect.z - padding.z, rect.y + padding.y, padding.z, rect.w - padding.y - padding.w},
@@ -281,10 +281,10 @@ namespace onut
             {rect.x, rect.y + rect.w - padding.w, padding.x, padding.w},
             {0.f, 1.f - paddingUVs.w, paddingUVs.x, 1.f}, color);
         drawRectWithUVs(pTexture,
-            {rect.x + padding.x, rect.y + rect.w - padding.w, rect.z - padding.x - padding.y, padding.w},
+            {rect.x + padding.x, rect.y + rect.w - padding.w, rect.z - padding.x - padding.z, padding.w},
             {paddingUVs.x, 1.f - paddingUVs.w, 1.f - paddingUVs.z, 1.f}, color);
         drawRectWithUVs(pTexture,
-            {rect.x + rect.z - padding.z, rect.y + rect.w - padding.w, padding.z, padding.w},
+            {rect.x + rect.z - padding.z, rect.y + rect.w - padding.z, padding.w, padding.w},
             {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
     }
 
