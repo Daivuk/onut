@@ -34,6 +34,7 @@
     <ClInclude Include="..\..\include\Random.h" />
     <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\Renderer.h" />
+    <ClInclude Include="..\..\include\RTS.h" />
     <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
     <ClInclude Include="..\..\include\Sound.h" />
@@ -81,6 +82,7 @@
     <ClCompile Include="..\..\src\Random.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
     <ClCompile Include="..\..\src\onut.cpp" />
+    <ClCompile Include="..\..\src\RTS.cpp" />
     <ClCompile Include="..\..\src\Settings.cpp" />
     <ClCompile Include="..\..\src\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />

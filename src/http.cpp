@@ -4,8 +4,24 @@
 #include <msxml6.h>
 #include <locale>
 #include "StringUtils.h"
+#include "Asynchronous.h"
 
-std::string OStringFromURL(const std::string &url, 
+void OHTTPPostAsync(const std::string &url,
+                    const std::vector<std::pair<std::string, std::string>> &postArgs,
+                    std::function<void(std::string)> onSuccess,
+                    std::function<void(long, std::string)> onError)
+{
+    OAsync([url, postArgs, onSuccess, onError]
+    {
+        auto ret = OHTTPPost(url, postArgs, onError);
+        if (!ret.empty())
+        {
+            onSuccess(ret);
+        }
+    });
+}
+
+std::string OHTTPPost(const std::string &url, 
                            const std::vector<std::pair<std::string, std::string>> &postArgs,
                            std::function<void(long, std::string)> onError)
 {

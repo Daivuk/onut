@@ -139,6 +139,9 @@
     <ClInclude Include="..\..\include\object.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\RTS.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -247,6 +250,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\object.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\RTS.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
