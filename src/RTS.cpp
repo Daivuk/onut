@@ -1,9 +1,12 @@
 #include "RTS.h"
+#include "Synchronous.h"
 #include <algorithm>
 #include <thread>
 
 namespace onut
 {
+    static const char signature[4] = {'O', 'R', 'T', '1'};
+
     RTSSocket::RTSSocket()
     {
         if ((m_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
@@ -28,8 +31,49 @@ namespace onut
         {
             m_ipport.resize(m_ipport.size() - 1);
         }
+
+        // Decompose the address
+        auto it = m_ipport.find_last_of(':');
+        if (it == std::string::npos)
+        {
+            OutputDebugStringA("RTSSocket no port in: ");
+            OutputDebugStringA(ipPort.c_str());
+            OutputDebugStringA("\n");
+            if (m_sock != INVALID_SOCKET)
+            {
+                closesocket(m_sock);
+                m_sock = INVALID_SOCKET;
+            }
+            return;
+        }
+        auto portStr = ipPort.substr(it + 1);
+        u_short port = 0;
+        try
+        {
+            port = static_cast<u_short>(std::stoul(portStr));
+        }
+        catch (std::exception e)
+        {
+            if (m_sock != INVALID_SOCKET)
+            {
+                closesocket(m_sock);
+                m_sock = INVALID_SOCKET;
+            }
+            return;
+        }
+        auto addr = ipPort.substr(0, it);
+
+        // Setup the address
+        m_addr = {0};
+        m_addr.sin_family = AF_INET;
+        m_addr.sin_port = htons(port);
+        m_addr.sin_addr.S_un.S_addr = inet_addr(addr.c_str());
     }
 
+    void RTSSocket::setAddr(const sockaddr_in& addr)
+    {
+        m_addr = addr;
+    }
 
     RTSSocket *natPunchThrough(const std::string& url)
     {
@@ -93,7 +137,9 @@ namespace onut
                 setsockopt(pSocket->getSock(), SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 
                 // Try to receive some data, this is a blocking call (But it's ok, we're in a thread yo)
-                if ((recv_len = recvfrom(pSocket->getSock(), pBuf, 256, 0, NULL, NULL)) == SOCKET_ERROR)
+                struct sockaddr_in si_other;
+                int slen = sizeof(si_other);
+                if ((recv_len = recvfrom(pSocket->getSock(), pBuf, 256, 0, (struct sockaddr *)&si_other, &slen)) == SOCKET_ERROR)
                 {
                     // We might just have killed the thread
                     OutputDebugStringA("Stun failed recvfrom: ");
@@ -134,10 +180,94 @@ namespace onut
         , m_playerId(playerId)
     {
         m_pSocket = new RTSSocket();
+        m_pSocket->retain();
+        m_pSocket->setIPPort(ipPort);
     }
 
     RTSPeer::~RTSPeer()
     {
+        m_pSocket->release();
+    }
+
+    void RTSPeer::queueTurn(const sPacket& packet)
+    {
+        // make sure it's not already in there
+        for (auto &turn : queuedTurns)
+        {
+            if (turn.header.turnId == packet.header.turnId)
+            {
+                return;
+            }
+        }
+
+        // Add it!
+        queuedTurns.push_back(packet);
+    }
+
+    bool RTSPeer::isReadyForTurn(uint8_t turnId)
+    {
+        for (auto &turn : queuedTurns)
+        {
+            if (turn.header.turnId == turnId)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void RTSPeer::extractTurn(uint8_t turnId, sPacket *pOut)
+    {
+        for (decltype(queuedTurns.size()) i = 0; i < queuedTurns.size(); ++i)
+        {
+            auto &turn = queuedTurns[i];
+            if (turn.header.turnId == turnId)
+            {
+                memcpy(pOut, turn.pBuf, turn.size);
+                queuedTurns.erase(queuedTurns.begin() + i);
+                return;
+            }
+        }
+    }
+
+    void RTSPeer::sendPacket(const sPacket& packet)
+    {
+        sending.push_back(packet);
+        auto toAddr = getSocket()->getAddr();
+        auto ret = sendto(getSocket()->getSock(), (char *)packet.pBuf, packet.size, 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
+        if (ret == SOCKET_ERROR)
+        {
+            auto err = WSAGetLastError();
+            return;
+        }
+    }
+
+    void RTSPeer::resendPackets()
+    {
+        auto toAddr = getSocket()->getAddr();
+        for (auto &packet : sending)
+        {
+            auto ret = sendto(getSocket()->getSock(), (char *)packet.pBuf, packet.size, 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
+            if (ret == SOCKET_ERROR)
+            {
+                auto err = WSAGetLastError();
+                continue;
+            }
+        }
+    }
+
+    void RTSPeer::ackReceived(uint8_t turnId)
+    {
+        for (decltype(sending.size()) i = 0; i < sending.size();)
+        {
+            auto &turn = sending[i];
+            if (turn.header.turnId == turnId)
+            {
+                sending.erase(sending.begin() + i);
+                continue;
+            }
+            ++i;
+        }
     }
 
     RTS::RTS()
@@ -148,26 +278,304 @@ namespace onut
 
     RTS::~RTS()
     {
+        stopRecvThread();
+        for (auto pPeer : m_peers)
+        {
+            pPeer->release();
+        }
         if (m_pMySocket) m_pMySocket->release();
         WSACleanup();
     }
 
+    void RTS::stopRecvThread()
+    {
+        if (m_pRecvThread)
+        {
+            m_isRecvThreadValid = false;
+            m_pRecvThread->join();
+            delete m_pRecvThread;
+            m_pRecvThread = nullptr;
+        }
+    }
+    
+    bool validatePacket(const sPacket& packet)
+    {
+        if (packet.size < sizeof(sPacketHeader)) return false;
+        const char signature[4] = {'O', 'R', 'T', '1'};
+        if (memcmp(packet.pBuf, signature, 4)) return false;
+        return true;
+    }
+
+    void RTS::startRecvThread()
+    {
+        stopRecvThread();
+        m_isRecvThreadValid = true;
+        m_pRecvThread = new std::thread([this]
+        {
+            int recv_len;
+            int curBuf = 0;
+            char pBuf[packetSize];
+            struct sockaddr_in si_other;
+            int slen = sizeof(si_other);
+
+            while (m_isRecvThreadValid)
+            {
+                int timeout = 100; // Short burst of 100 ms
+                setsockopt(m_pMySocket->getSock(), SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
+
+                // Try to receive some data, this is a blocking call (But it's ok, we're in a thread yo)
+                if ((recv_len = recvfrom(m_pMySocket->getSock(), pBuf, packetSize, 0, (struct sockaddr *)&si_other, &slen)) == SOCKET_ERROR)
+                {
+                    if (!recv_len)
+                    {
+                        // Socket was closed :|
+                        return;
+                    }
+                    auto err = WSAGetLastError();
+                    if (err == WSAETIMEDOUT) continue;
+                    return; // Shiiiet!
+                }
+
+                if (recv_len)
+                {
+                    sPacket packet(pBuf, recv_len, si_other);
+                    if (validatePacket(packet))
+                    {
+                        m_sync.sync([this](sPacket packet)
+                        {
+                            onPacket(packet);
+                        }, packet);
+                    }
+                }
+            }
+        });
+    }
+
+    RTSPeer *RTS::getPeerFromPacket(const sPacket& packet)
+    {
+        for (auto pPeer : m_peers)
+        {
+            if (!memcmp(&pPeer->getSocket()->getAddr(), &packet.from, sizeof(sockaddr_in)))
+            {
+                return pPeer;
+            }
+        }
+        return nullptr;
+    }
+
+    void RTS::onPacket(const sPacket& packet)
+    {
+        auto pPeer = getPeerFromPacket(packet);
+        if (!pPeer) return;
+
+        if (packet.header.ack)
+        {
+            // It's a ack. We can safely delete that packet from the sending queue
+            pPeer->ackReceived(packet.header.turnId);
+            return;
+        }
+
+        // Send back a confirmation to the peer
+        static sPacket replyPacket;
+        memcpy(&replyPacket, &packet, sizeof(sPacketHeader));
+        replyPacket.header.ack = 1;
+        auto toAddr = pPeer->getSocket()->getAddr();
+        sendto(pPeer->getSocket()->getSock(), (char *)replyPacket.pBuf, sizeof(sPacketHeader), 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
+
+        // Add to queue
+        pPeer->queueTurn(packet);
+    }
+
     void RTS::addMe(RTSSocket *pSocket, uint64_t playerId)
     {
-        pSocket->retain();
+        if (m_pMySocket)
+        {
+            stopRecvThread();
+            m_pMySocket->release();
+        }
+        m_pMySocket = pSocket;
+        m_pMySocket->retain();
+        startRecvThread();
     }
 
     void RTS::addPeer(RTSPeer *in_pPeer)
     {
         in_pPeer->retain();
+        if (!in_pPeer->getSocket()->isValid())
+        {
+            in_pPeer->release();
+            return;
+        }
         for (auto pPeer : m_peers)
         {
-            if (pPeer == in_pPeer)
+            if (pPeer->getPlayerId() == in_pPeer->getPlayerId())
             {
                 in_pPeer->release();
                 return;
             }
         }
         m_peers.push_back(in_pPeer);
+    }
+
+    void RTS::removePeer(RTSPeer *in_pPeer)
+    {
+        for (decltype(m_peers.size()) i = 0; i < m_peers.size(); ++i)
+        {
+            auto pPeer = m_peers[i];
+            if (pPeer == in_pPeer)
+            {
+                pPeer->release();
+                m_peers.erase(m_peers.begin() + i);
+                return;
+            }
+        }
+    }
+
+    void RTS::start()
+    {
+        m_isStarted = true;
+        lastResend = lastTurnTime = std::chrono::steady_clock::now();
+        m_currentTurn = 0;
+        memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
+        m_commandBuffer.size = sizeof(m_commandBuffer.header);
+
+        // Send the turn for the next one, #1
+        memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
+        memcpy(m_commandBuffer.header.signature, signature, 4);
+        m_commandBuffer.header.ack = 0;
+        m_commandBuffer.header.turnId = 1;
+        m_commandBuffer.size = sizeof(sPacketHeader);
+        for (auto pPeer : m_peers)
+        {
+            pPeer->sendPacket(m_commandBuffer);
+        }
+        m_commandBuffer.size = sizeof(m_commandBuffer.header);
+    }
+
+    static const auto TURN_DURATION = std::chrono::milliseconds(100);
+    static const auto RESEND_TIME = std::chrono::milliseconds(50);
+
+    int RTS::update()
+    {
+        m_sync.processQueue();
+
+        if (m_isStarted)
+        {
+            auto now = std::chrono::steady_clock::now();
+
+            // Resend packets until they are acked
+            if (now - lastResend >= RESEND_TIME)
+            {
+                resendPackets();
+                lastResend = now;
+            }
+
+            // Do the turn logic
+            int maxTurnAdvance = 4;
+            while (now - lastTurnTime >= TURN_DURATION && maxTurnAdvance--)
+            {
+                lastTurnTime += TURN_DURATION;
+                auto bProcessed = processTurn();
+                if (bProcessed)
+                {
+                    m_currentTurn = (m_currentTurn + 1) % 128;
+                    m_realTurn++;
+                }
+            }
+            if (!maxTurnAdvance)
+            {
+                lastTurnTime = now;
+            }
+        }
+
+        return 1;
+    }
+
+    void RTS::resendPackets()
+    {
+        for (auto pPeer : m_peers)
+        {
+            pPeer->resendPackets();
+        }
+    }
+
+    bool RTS::arePlayersReadyForTurn(uint8_t turn)
+    {
+        for (auto pPeer : m_peers)
+        {
+            if (!pPeer->isReadyForTurn(turn)) return false;
+        }
+        return true;
+    }
+
+    void RTS::registerCommand(uint8_t cmdId, int cmdSize, const std::function<void(void*, RTSPeer*)> &callback)
+    {
+        commands[cmdId] = {cmdSize, callback};
+    }
+
+    void RTS::sendCommand(uint8_t cmdId, void *pData)
+    {
+        auto pCmd = getCommand(cmdId);
+        if (!pCmd) return;
+        if (m_commandBuffer.size + pCmd->size + 1 > packetSize)
+        {
+            //TODO: Queue it for next turn I guess
+            return;
+        }
+        *(m_commandBuffer.pBuf + m_commandBuffer.size) = cmdId;
+        memcpy(m_commandBuffer.pBuf + m_commandBuffer.size + 1, pData, pCmd->size);
+        m_commandBuffer.size += pCmd->size + 1;
+    }
+
+    RTS::sCmd *RTS::getCommand(uint8_t cmdId)
+    {
+        auto it = commands.find(cmdId);
+        if (it == commands.end()) return nullptr;
+        return &(it->second);
+    }
+
+    void RTS::processCommands(uint8_t *pCommands, int size, RTSPeer *pPeer)
+    {
+        while (size)
+        {
+            auto cmdId = *pCommands;
+            auto *pCmd = getCommand(cmdId);
+            if (!pCmd) return; // That's bad
+            auto pCmdData = pCommands + 1;
+            if (pCmd->callback)
+            {
+                pCmd->callback(pCmdData, pPeer);
+            }
+            pCommands += 1 + pCmd->size;
+            size += 1 + pCmd->size;
+        }
+    }
+
+    bool RTS::processTurn()
+    {
+        auto turnId = (m_currentTurn + 1) % 128;
+        if (!arePlayersReadyForTurn(turnId)) return false;
+
+        // Process commands for this turn on all peers
+        static sPacket extractedPacket;
+        for (auto pPeer : m_peers)
+        {
+            pPeer->extractTurn(turnId, &extractedPacket);
+            auto headerSize = sizeof(sPacketHeader);
+            processCommands(extractedPacket.pBuf + headerSize, extractedPacket.size - headerSize, pPeer);
+        }
+
+        // Package commands for next turn (in 2 turns)
+        memcpy(m_commandBuffer.header.signature, signature, 4);
+        m_commandBuffer.header.ack = 0;
+        m_commandBuffer.header.turnId = (turnId + 2) % 128;
+        for (auto pPeer : m_peers)
+        {
+            pPeer->sendPacket(m_commandBuffer);
+        }
+        memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
+        m_commandBuffer.size = sizeof(m_commandBuffer.header);
+
+        return true;
     }
 };

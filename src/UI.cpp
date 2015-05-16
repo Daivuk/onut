@@ -1260,9 +1260,19 @@ namespace onut
     void UIContext::reset()
     {
         m_lastMouseEvent = m_mouseEvent;
+
+        if (m_pLastHoverControl) m_pLastHoverControl->release();
+        if (m_pLastDownControl) m_pLastDownControl->release();
+        if (m_pLastFocus) m_pLastFocus->release();
+
         m_pLastHoverControl = m_pHoverControl;
         m_pLastDownControl = m_pDownControl;
         m_pLastFocus = m_pFocus;
+
+        if (m_pLastHoverControl) m_pLastHoverControl->retain();
+        if (m_pLastDownControl) m_pLastDownControl->retain();
+        if (m_pLastFocus) m_pLastFocus->retain();
+
         m_clips.clear();
     }
 
@@ -1283,6 +1293,10 @@ namespace onut
 
     void UIContext::clearState()
     {
+        if (m_pLastHoverControl) m_pLastHoverControl->release();
+        if (m_pLastDownControl) m_pLastDownControl->release();
+        if (m_pLastFocus) m_pLastFocus->release();
+
         m_pLastHoverControl = nullptr;
         m_pLastDownControl = nullptr;
         m_pLastFocus = nullptr;
@@ -1290,6 +1304,8 @@ namespace onut
         m_pHoverControl = nullptr;
         m_pDownControl = nullptr;
         m_pFocus = nullptr;
+
+        m_clips.clear();
 
         m_clickPos.x = -100;
         m_clickPos.y = -100;
