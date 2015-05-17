@@ -492,7 +492,7 @@ namespace onut
         memcpy(&replyPacket, &packet, sizeof(sPacketHeader));
         replyPacket.header.ack = 1;
         replyPacket.header.playerId = m_myPlayerId;
-        auto toAddr = replyPacket.from;
+        auto toAddr = pPeer->getSocket()->getAddr();
         sendto(pPeer->getSocket()->getSock(), (char *)replyPacket.pBuf, sizeof(sPacketHeader), 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
 
         if (packet.header.connection) return;
@@ -561,13 +561,18 @@ namespace onut
         memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
         m_commandBuffer.size = sizeof(m_commandBuffer.header);
 
-        // Send the turn for the next one, #1
+        // Send the turn for the next ones, #1 and #2
         memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
         memcpy(m_commandBuffer.header.signature, signature, 4);
         m_commandBuffer.header.ack = 0;
-        m_commandBuffer.header.turnId = 1;
         m_commandBuffer.header.playerId = m_myPlayerId;
         m_commandBuffer.size = sizeof(sPacketHeader);
+        m_commandBuffer.header.turnId = 1;
+        for (auto pPeer : m_peers)
+        {
+            pPeer->sendPacket(m_commandBuffer);
+        }
+        m_commandBuffer.header.turnId = 2;
         for (auto pPeer : m_peers)
         {
             pPeer->sendPacket(m_commandBuffer);
