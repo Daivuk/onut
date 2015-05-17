@@ -18,8 +18,10 @@ namespace onut
     struct sPacketHeader
     {
         char signature[4];
-        uint8_t turnId : 7;
+        uint8_t turnId : 6;
         uint8_t ack : 1;
+        uint8_t connection : 1;
+        uint64_t playerId;
     };
 #pragma pack (pop)
 
@@ -54,6 +56,7 @@ namespace onut
     {
     public:
         RTSSocket();
+        RTSSocket(SOCKET parentSocket);
         virtual ~RTSSocket();
 
         bool                isValid() const { return m_sock != INVALID_SOCKET; }
@@ -67,6 +70,7 @@ namespace onut
         SOCKET m_sock = INVALID_SOCKET;
         std::string m_ipport;
         sockaddr_in m_addr;
+        bool m_ownSocket = false;
     };
 
     /*!
@@ -75,16 +79,19 @@ namespace onut
     */
     RTSSocket *natPunchThrough(const std::string& url);
 
+    std::vector<std::string> getLocalIPS();
+
     class RTSPeer : public Object
     {
     public:
-        RTSPeer(const std::string &ipPort, uint64_t playerId);
+        RTSPeer(RTSSocket *pParentSocket, const std::string &ipPort, uint64_t playerId);
         virtual ~RTSPeer();
 
         const std::string& getIPPort() const { return m_ipPort; }
         RTSSocket *getSocket() const { return m_pSocket; }
         uint64_t getPlayerId() const { return m_playerId; }
         uint8_t getCurrentTurn() const { return m_currentTurn; }
+        bool isConnected() const { return m_isConnected; }
 
     private:
         friend class RTS;
@@ -95,11 +102,20 @@ namespace onut
         void sendPacket(const sPacket& packet);
         void resendPackets();
         void ackReceived(uint8_t turn);
+        void connectionAckReceived(const sPacket& packet);
+        void updateConnection(uint64_t parentPlayerId);
+        void keepAlive();
+        void setIsConnected(const sockaddr_in& addr);
 
         RTSSocket *m_pSocket;
         std::string m_ipPort;
         uint64_t m_playerId;
         uint8_t m_currentTurn = 0; // 0 - 127
+        bool m_isConnected = false;
+        std::vector<std::string> m_ips;
+        std::string m_port;
+        int m_connectionTries = 0;
+        int m_connectionAttemptId = 0;
 
         std::vector<sPacket> queuedTurns;
         std::vector<sPacket> sending;
@@ -118,6 +134,7 @@ namespace onut
         int update();
         void start();
         uint32_t getTurn() const { return m_realTurn; }
+        RTSSocket *getSocket() const { return m_pMySocket; }
 
         void sendCommand(uint8_t cmdId, void *pData);
         void registerCommand(uint8_t cmdId, int cmdSize, const std::function<void(void*,RTSPeer*)> &callback);
@@ -138,6 +155,9 @@ namespace onut
         void processCommands(uint8_t *pCommands, int size, RTSPeer *pPeer);
         sCmd *getCommand(uint8_t cmdId);
         void resendPackets();
+        void updateConnections();
+        void keepAlive();
+        bool arePeersConnected() const;
 
         WSADATA m_wsa;
         RTSSocket *m_pMySocket = nullptr;
@@ -150,7 +170,10 @@ namespace onut
         bool m_isStarted = false;
         std::chrono::steady_clock::time_point lastTurnTime;
         std::chrono::steady_clock::time_point lastResend;
+        std::chrono::steady_clock::time_point lastConnectionAttempt;
+        std::chrono::steady_clock::time_point lastKeepAlive;
         std::unordered_map<uint8_t, sCmd> commands;
         sPacket m_commandBuffer;
+        uint64_t m_myPlayerId;
     };
 };

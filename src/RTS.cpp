@@ -1,79 +1,12 @@
 #include "RTS.h"
 #include "Synchronous.h"
+#include "StringUtils.h"
 #include <algorithm>
 #include <thread>
 
 namespace onut
 {
     static const char signature[4] = {'O', 'R', 'T', '1'};
-
-    RTSSocket::RTSSocket()
-    {
-        if ((m_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
-        {
-            return;
-        }
-    }
-
-    RTSSocket::~RTSSocket()
-    {
-        if (m_sock != INVALID_SOCKET)
-        {
-            closesocket(m_sock);
-        }
-    }
-
-    void RTSSocket::setIPPort(const std::string& ipPort)
-    {
-        m_ipport = ipPort;
-        std::replace(m_ipport.begin(), m_ipport.end(), '&', ':');
-        if (m_ipport[m_ipport.size() - 1] == ':')
-        {
-            m_ipport.resize(m_ipport.size() - 1);
-        }
-
-        // Decompose the address
-        auto it = m_ipport.find_last_of(':');
-        if (it == std::string::npos)
-        {
-            OutputDebugStringA("RTSSocket no port in: ");
-            OutputDebugStringA(ipPort.c_str());
-            OutputDebugStringA("\n");
-            if (m_sock != INVALID_SOCKET)
-            {
-                closesocket(m_sock);
-                m_sock = INVALID_SOCKET;
-            }
-            return;
-        }
-        auto portStr = ipPort.substr(it + 1);
-        u_short port = 0;
-        try
-        {
-            port = static_cast<u_short>(std::stoul(portStr));
-        }
-        catch (std::exception e)
-        {
-            if (m_sock != INVALID_SOCKET)
-            {
-                closesocket(m_sock);
-                m_sock = INVALID_SOCKET;
-            }
-            return;
-        }
-        auto addr = ipPort.substr(0, it);
-
-        // Setup the address
-        m_addr = {0};
-        m_addr.sin_family = AF_INET;
-        m_addr.sin_port = htons(port);
-        m_addr.sin_addr.S_un.S_addr = inet_addr(addr.c_str());
-    }
-
-    void RTSSocket::setAddr(const sockaddr_in& addr)
-    {
-        m_addr = addr;
-    }
 
     RTSSocket *natPunchThrough(const std::string& url)
     {
@@ -175,18 +108,179 @@ namespace onut
         return nullptr;
     } /* natPunchThrough */
 
-    RTSPeer::RTSPeer(const std::string &ipPort, uint64_t playerId)
+    std::vector<std::string> getLocalIPS()
+    {
+        std::vector<std::string> IPs;
+
+        char ac[80];
+        if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR)
+        {
+            return std::move(IPs);
+        }
+
+        struct hostent *phe = gethostbyname(ac);
+        if (phe == 0)
+        {
+            return std::move(IPs);
+        }
+
+        for (int i = 0; phe->h_addr_list[i] != 0; ++i)
+        {
+            struct in_addr addr;
+            memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+            IPs.push_back(inet_ntoa(addr));
+        }
+
+        return std::move(IPs);
+    }
+
+    RTSSocket::RTSSocket()
+    {
+        if ((m_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+        {
+            return;
+        }
+        m_ownSocket = true;
+    }
+
+    RTSSocket::RTSSocket(SOCKET parentSocket)
+    {
+        m_sock = parentSocket;
+    }
+
+    RTSSocket::~RTSSocket()
+    {
+        if (m_sock != INVALID_SOCKET && m_ownSocket)
+        {
+            closesocket(m_sock);
+        }
+    }
+
+    void RTSSocket::setIPPort(const std::string& ipPort)
+    {
+        m_ipport = ipPort;
+        std::replace(m_ipport.begin(), m_ipport.end(), '&', ':');
+        if (m_ipport[m_ipport.size() - 1] == ':')
+        {
+            m_ipport.resize(m_ipport.size() - 1);
+        }
+
+        // Decompose the address
+        auto it = m_ipport.find_last_of(':');
+        if (it == std::string::npos)
+        {
+            OutputDebugStringA("RTSSocket no port in: ");
+            OutputDebugStringA(ipPort.c_str());
+            OutputDebugStringA("\n");
+            if (m_sock != INVALID_SOCKET)
+            {
+                closesocket(m_sock);
+                m_sock = INVALID_SOCKET;
+            }
+            return;
+        }
+        auto portStr = ipPort.substr(it + 1);
+        int port = 0;
+        try
+        {
+            port = std::stoi(portStr);
+        }
+        catch (std::exception e)
+        {
+            if (m_sock != INVALID_SOCKET)
+            {
+                closesocket(m_sock);
+                m_sock = INVALID_SOCKET;
+            }
+            return;
+        }
+        auto addr = ipPort.substr(0, it);
+
+        // Setup the address
+        m_addr = {0};
+        m_addr.sin_family = AF_INET;
+        m_addr.sin_port = htons(port);
+        m_addr.sin_addr.S_un.S_addr = inet_addr(addr.c_str());
+    }
+
+    void RTSSocket::setAddr(const sockaddr_in& addr)
+    {
+        m_addr = addr;
+    }
+
+    RTSPeer::RTSPeer(RTSSocket *pParentSocket, const std::string &ipPort, uint64_t playerId)
         : m_ipPort(ipPort)
         , m_playerId(playerId)
     {
-        m_pSocket = new RTSSocket();
+        m_pSocket = new RTSSocket(pParentSocket->getSock());
+        if (!m_pSocket->isValid())
+        {
+            m_pSocket->release();
+            m_pSocket = nullptr;
+            return;
+        }
         m_pSocket->retain();
-        m_pSocket->setIPPort(ipPort);
+
+        auto split = splitString(m_ipPort, ':');
+        if (split.size() < 2)
+        {
+            m_pSocket->release();
+            m_pSocket = nullptr;
+            return;
+        }
+        m_port = split.back();
+        for (decltype(split.size()) i = 0; i < split.size() - 1; ++i)
+        {
+            m_ips.push_back(split[i]);
+        }
+
+        m_pSocket->setIPPort(m_ips[0] + ":" + m_port);
     }
 
     RTSPeer::~RTSPeer()
     {
-        m_pSocket->release();
+        if (m_pSocket)
+        {
+            m_pSocket->release();
+        }
+    }
+
+    void RTSPeer::updateConnection(uint64_t parentPlayerId)
+    {
+        m_connectionTries++;
+        m_pSocket->setIPPort(m_ips[m_connectionAttemptId] + ":" + m_port);
+
+        // Setup packet
+        static sPacket packet;
+        memset(packet.pBuf, 0, sizeof(packet.header));
+        memcpy(packet.header.signature, signature, 4);
+        packet.header.connection = 1;
+        packet.header.turnId = m_connectionAttemptId;
+        packet.header.playerId = parentPlayerId;
+        packet.size = sizeof(packet.header);
+
+        // Send
+        auto toAddr = getSocket()->getAddr();
+        sendto(getSocket()->getSock(), (char *)packet.pBuf, packet.size, 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
+
+        // Increment to next IP for next try
+        m_connectionAttemptId = (m_connectionAttemptId + 1) % m_ips.size();
+    }
+
+    void RTSPeer::keepAlive()
+    {
+        // Setup packet
+        static sPacket packet;
+        memset(packet.pBuf, 0, sizeof(packet.header));
+        memcpy(packet.header.signature, signature, 4);
+        packet.header.connection = 1;
+        packet.header.turnId = m_connectionAttemptId;
+        packet.header.playerId = 0;
+        packet.size = sizeof(packet.header);
+
+        // Send
+        auto toAddr = getSocket()->getAddr();
+        sendto(getSocket()->getSock(), (char *)packet.pBuf, packet.size, 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
     }
 
     void RTSPeer::queueTurn(const sPacket& packet)
@@ -270,6 +364,17 @@ namespace onut
         }
     }
 
+    void RTSPeer::connectionAckReceived(const sPacket& packet)
+    {
+        if (isConnected()) return;
+        if (packet.header.turnId >= m_ips.size()) return; // That's wrong O_o
+        m_isConnected = true;
+        std::string ipport = m_ips[packet.header.turnId] + ":" + m_port;
+        m_pSocket->setIPPort(ipport);
+        m_pSocket->setAddr(packet.from);
+        OutputDebugStringA(("Connected to: " + ipport + "\n").c_str());
+    }
+
     RTS::RTS()
     {
         // Initialise winsock
@@ -297,11 +402,10 @@ namespace onut
             m_pRecvThread = nullptr;
         }
     }
-    
+
     bool validatePacket(const sPacket& packet)
     {
         if (packet.size < sizeof(sPacketHeader)) return false;
-        const char signature[4] = {'O', 'R', 'T', '1'};
         if (memcmp(packet.pBuf, signature, 4)) return false;
         return true;
     }
@@ -355,7 +459,7 @@ namespace onut
     {
         for (auto pPeer : m_peers)
         {
-            if (!memcmp(&pPeer->getSocket()->getAddr(), &packet.from, sizeof(sockaddr_in)))
+            if (pPeer->getPlayerId() == packet.header.playerId)
             {
                 return pPeer;
             }
@@ -367,11 +471,19 @@ namespace onut
     {
         auto pPeer = getPeerFromPacket(packet);
         if (!pPeer) return;
+        pPeer->setIsConnected(packet.from);
 
         if (packet.header.ack)
         {
             // It's a ack. We can safely delete that packet from the sending queue
-            pPeer->ackReceived(packet.header.turnId);
+            if (packet.header.connection)
+            {
+                pPeer->connectionAckReceived(packet);
+            }
+            else
+            {
+                pPeer->ackReceived(packet.header.turnId);
+            }
             return;
         }
 
@@ -379,11 +491,20 @@ namespace onut
         static sPacket replyPacket;
         memcpy(&replyPacket, &packet, sizeof(sPacketHeader));
         replyPacket.header.ack = 1;
-        auto toAddr = pPeer->getSocket()->getAddr();
+        replyPacket.header.playerId = m_myPlayerId;
+        auto toAddr = replyPacket.from;
         sendto(pPeer->getSocket()->getSock(), (char *)replyPacket.pBuf, sizeof(sPacketHeader), 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
+
+        if (packet.header.connection) return;
 
         // Add to queue
         pPeer->queueTurn(packet);
+    }
+
+    void RTSPeer::setIsConnected(const sockaddr_in& addr)
+    {
+        m_pSocket->setAddr(addr);
+        m_isConnected = true;
     }
 
     void RTS::addMe(RTSSocket *pSocket, uint64_t playerId)
@@ -395,6 +516,7 @@ namespace onut
         }
         m_pMySocket = pSocket;
         m_pMySocket->retain();
+        m_myPlayerId = playerId;
         startRecvThread();
     }
 
@@ -434,7 +556,7 @@ namespace onut
     void RTS::start()
     {
         m_isStarted = true;
-        lastResend = lastTurnTime = std::chrono::steady_clock::now();
+        lastKeepAlive = lastConnectionAttempt = lastResend = lastTurnTime = std::chrono::steady_clock::now();
         m_currentTurn = 0;
         memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
         m_commandBuffer.size = sizeof(m_commandBuffer.header);
@@ -444,6 +566,7 @@ namespace onut
         memcpy(m_commandBuffer.header.signature, signature, 4);
         m_commandBuffer.header.ack = 0;
         m_commandBuffer.header.turnId = 1;
+        m_commandBuffer.header.playerId = m_myPlayerId;
         m_commandBuffer.size = sizeof(sPacketHeader);
         for (auto pPeer : m_peers)
         {
@@ -454,15 +577,35 @@ namespace onut
 
     static const auto TURN_DURATION = std::chrono::milliseconds(100);
     static const auto RESEND_TIME = std::chrono::milliseconds(50);
+    static const auto CONNECT_ATTEMPT_TIME = std::chrono::milliseconds(500);
+    static const auto KEEP_ALIVE_TIME = std::chrono::milliseconds(2000);
 
     int RTS::update()
     {
         m_sync.processQueue();
 
+        auto now = std::chrono::steady_clock::now();
+
+        if (now - lastConnectionAttempt >= CONNECT_ATTEMPT_TIME)
+        {
+            // Make sure peers are connected
+            updateConnections();
+            lastConnectionAttempt = now;
+        }
+
+        // Keep alive for connected peers.
+        // This is important because if the connection block for whatever
+        // reason, like a player get stuck. We need to keep alive otherwise
+        // UDP ports might close.
+        if (now - lastKeepAlive >= CONNECT_ATTEMPT_TIME)
+        {
+            // Make sure peers are connected
+            keepAlive();
+            lastKeepAlive = now;
+        }
+
         if (m_isStarted)
         {
-            auto now = std::chrono::steady_clock::now();
-
             // Resend packets until they are acked
             if (now - lastResend >= RESEND_TIME)
             {
@@ -471,24 +614,62 @@ namespace onut
             }
 
             // Do the turn logic
-            int maxTurnAdvance = 4;
-            while (now - lastTurnTime >= TURN_DURATION && maxTurnAdvance--)
+            if (arePeersConnected())
             {
-                lastTurnTime += TURN_DURATION;
-                auto bProcessed = processTurn();
-                if (bProcessed)
+                int maxTurnAdvance = 4;
+                while (now - lastTurnTime >= TURN_DURATION && maxTurnAdvance--)
                 {
-                    m_currentTurn = (m_currentTurn + 1) % 128;
-                    m_realTurn++;
+                    lastTurnTime += TURN_DURATION;
+                    auto bProcessed = processTurn();
+                    if (bProcessed)
+                    {
+                        m_currentTurn = (m_currentTurn + 1) % 64;
+                        m_realTurn++;
+                    }
+                }
+                if (!maxTurnAdvance)
+                {
+                    lastTurnTime = now;
                 }
             }
-            if (!maxTurnAdvance)
+            else
             {
                 lastTurnTime = now;
             }
         }
 
         return 1;
+    }
+
+    void RTS::updateConnections()
+    {
+        for (auto pPeer : m_peers)
+        {
+            if (!pPeer->isConnected())
+            {
+                pPeer->updateConnection(m_myPlayerId);
+            }
+        }
+    }
+
+    void RTS::keepAlive()
+    {
+        for (auto pPeer : m_peers)
+        {
+            if (pPeer->isConnected())
+            {
+                pPeer->keepAlive();
+            }
+        }
+    }
+
+    bool RTS::arePeersConnected() const
+    {
+        for (auto pPeer : m_peers)
+        {
+            if (!pPeer->isConnected()) return false;
+        }
+        return true;
     }
 
     void RTS::resendPackets()
@@ -553,7 +734,7 @@ namespace onut
 
     bool RTS::processTurn()
     {
-        auto turnId = (m_currentTurn + 1) % 128;
+        auto turnId = (m_currentTurn + 1) % 64;
         if (!arePlayersReadyForTurn(turnId)) return false;
 
         // Process commands for this turn on all peers
@@ -568,7 +749,8 @@ namespace onut
         // Package commands for next turn (in 2 turns)
         memcpy(m_commandBuffer.header.signature, signature, 4);
         m_commandBuffer.header.ack = 0;
-        m_commandBuffer.header.turnId = (turnId + 2) % 128;
+        m_commandBuffer.header.playerId = m_myPlayerId;
+        m_commandBuffer.header.turnId = (turnId + 2) % 64;
         for (auto pPeer : m_peers)
         {
             pPeer->sendPacket(m_commandBuffer);
