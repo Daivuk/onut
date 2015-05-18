@@ -324,6 +324,21 @@ namespace onut
         }
     }
 
+    void RTS::extractTurn(uint8_t turnId, sPacket *pOut)
+    {
+        for (decltype(queuedTurns.size()) i = 0; i < queuedTurns.size(); ++i)
+        {
+            auto &turn = queuedTurns[i];
+            if (turn.header.turnId == turnId)
+            {
+                memcpy(pOut, turn.pBuf, turn.size);
+                pOut->size = turn.size;
+                queuedTurns.erase(queuedTurns.begin() + i);
+                return;
+            }
+        }
+    }
+
     void RTSPeer::sendPacket(const sPacket& packet)
     {
         sending.push_back(packet);
@@ -750,6 +765,9 @@ namespace onut
             auto headerSize = sizeof(sPacketHeader);
             processCommands(extractedPacket.pBuf + headerSize, extractedPacket.size - headerSize, pPeer);
         }
+        extractTurn(turnId, &extractedPacket);
+        auto headerSize = sizeof(sPacketHeader);
+        processCommands(extractedPacket.pBuf + headerSize, extractedPacket.size - headerSize, nullptr);
 
         // Package commands for next turn (in 2 turns)
         memcpy(m_commandBuffer.header.signature, signature, 4);
@@ -760,6 +778,7 @@ namespace onut
         {
             pPeer->sendPacket(m_commandBuffer);
         }
+        queuedTurns.push_back(m_commandBuffer);
         memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
         m_commandBuffer.size = sizeof(m_commandBuffer.header);
 

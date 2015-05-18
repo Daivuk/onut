@@ -247,15 +247,15 @@ namespace onut
         unsigned int len = text.length();
         int page = -1;
         float r, g, b;
-        unsigned int i = 0;
         Color curColor = color;
-        for (const auto& charId : text)
+        for (unsigned int i = 0; i < text.size(); )
         {
+            char charId = text[i];
             if (charId == '\n')
             {
                 curPos.x = pos.x;
                 curPos.y += static_cast<float>(m_common.lineHeight);
-                ++i;
+                i += 2;
                 continue;
             }
             if (charId == '^' && i + 3 < len)
@@ -268,7 +268,11 @@ namespace onut
                 i += 4;
                 continue;
             }
-            if (!m_chars.count(charId)) continue;
+            if (!m_chars.count(charId))
+            {
+                ++i;
+                continue;
+            }
             auto pDatChar = m_chars[charId];
             auto pTexture = m_pages[pDatChar->page]->pTexture;
 

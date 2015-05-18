@@ -1306,6 +1306,8 @@ namespace onut
         m_pFocus = nullptr;
 
         m_clips.clear();
+        m_writes.clear();
+        m_keyDowns.clear();
 
         m_clickPos.x = -100;
         m_clickPos.y = -100;
@@ -2308,7 +2310,18 @@ namespace onut
         else
         {
             renderScale9Component(context, this, rect, scale9Component);
-            renderTextComponent(context, this, rect, textComponent);
+
+            if (isCursorVisible() && hasFocus(context))
+            {
+                auto prevText = textComponent.text;
+                textComponent.text = prevText + "_";
+                renderTextComponent(context, this, rect, textComponent);
+                textComponent.text = prevText;
+            }
+            else
+            {
+                renderTextComponent(context, this, rect, textComponent);
+            }
         }
     }
 
@@ -2510,6 +2523,11 @@ namespace onut
     {
         m_cursorTime = std::chrono::steady_clock::now();
         m_isTextChanged = true;
+        const auto& callback = context.getStyle<UITextBox>(getStyle());
+        if (!callback)
+        {
+            m_selectedTextRegion[1] = m_selectedTextRegion[0] = m_cursorPos;
+        }
         if (c == '\b') // Backspace
         {
             if (m_selectedTextRegion[1] - m_selectedTextRegion[0])
@@ -2525,17 +2543,62 @@ namespace onut
         }
         else if (c == '\r') // Return
         {
-            //selectAll();
             context.focus(nullptr);
+            release();
         }
         else if (c == '\x1b') // Escape
         {
             context.focus(nullptr);
+            release();
         }
         else if (c == '\t')
         {
-            // We go to the next textfield. Ignored feature for now
-            context.focus(nullptr);
+            // We go to the next textfield
+            auto pParent = getParent();
+            UITextBox *pNext = nullptr;
+            if (pParent)
+            {
+                float closest[2] = {100000.f, 100000.f};
+                auto myRect = getWorldRect(context);
+                for (auto pChild : pParent->getChildren())
+                {
+                    if (pChild->getType() == eUIType::UI_TEXTBOX &&
+                        pChild != this)
+                    {
+                        auto childRect = pChild->getWorldRect(context);
+                        float dists[2] = {
+                            childRect.position.x - myRect.position.x,
+                            childRect.position.y - myRect.position.y};
+                        if (dists[0] <= -5.f || dists[1] <= -5.f) continue;
+                        if (dists[1] < closest[1])
+                        {
+                            closest[0] = dists[0];
+                            closest[1] = dists[1];
+                            pNext = dynamic_cast<UITextBox *>(pChild);
+                            continue;
+                        }
+                        if (dists[0] < closest[0] &&
+                            dists[1] < closest[1] + 5.f)
+                        {
+                            closest[0] = dists[0];
+                            closest[1] = dists[1];
+                            pNext = dynamic_cast<UITextBox *>(pChild);
+                            continue;
+                        }
+                    }
+                }
+            }
+            if (pNext)
+            {
+                pNext->retain();
+                context.focus(pNext);
+                release();
+            }
+            else
+            {
+                context.focus(nullptr);
+                release();
+            }
         }
         else // Normal character
         {
@@ -2551,32 +2614,49 @@ namespace onut
     void UITextBox::onKeyDownInternal(const UIKeyEvent& evt)
     {
         m_cursorTime = std::chrono::steady_clock::now();
+        const auto& callback = evt.pContext->getStyle<UITextBox>(getStyle());
         switch (evt.key)
         {
             case KEY_END:
-                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = textComponent.text.size();
+                if (callback)
+                {
+                    m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = textComponent.text.size();
+                }
                 break;
             case KEY_HOME:
-                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = 0;
+                if (callback)
+                {
+                    m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = 0;
+                }
                 break;
             case KEY_LEFT:
             case KEY_UP:
-                if (m_cursorPos > 0)
+                if (callback)
                 {
-                    --m_cursorPos;
-                    m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
+                    if (m_cursorPos > 0)
+                    {
+                        --m_cursorPos;
+                        m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
+                    }
                 }
                 break;
             case KEY_RIGHT:
             case KEY_DOWN:
-                if (m_cursorPos < textComponent.text.size())
+                if (callback)
                 {
-                    ++m_cursorPos;
-                    m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
+                    if (m_cursorPos < textComponent.text.size())
+                    {
+                        ++m_cursorPos;
+                        m_selectedTextRegion[0] = m_selectedTextRegion[1] = m_cursorPos;
+                    }
                 }
                 break;
             case KEY_DELETE:
                 m_isTextChanged = true;
+                if (!callback)
+                {
+                    selectAll();
+                }
                 if (m_selectedTextRegion[0] != m_selectedTextRegion[1])
                 {
                     textComponent.text = textComponent.text.substr(0, m_selectedTextRegion[0]) + textComponent.text.substr(m_selectedTextRegion[1]);

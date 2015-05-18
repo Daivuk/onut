@@ -158,6 +158,7 @@ namespace onut
         void updateConnections();
         void keepAlive();
         bool arePeersConnected() const;
+        void extractTurn(uint8_t turn, sPacket *pOut);
 
         WSADATA m_wsa;
         RTSSocket *m_pMySocket = nullptr;
@@ -175,5 +176,6 @@ namespace onut
         std::unordered_map<uint8_t, sCmd> commands;
         sPacket m_commandBuffer;
         uint64_t m_myPlayerId;
+        std::vector<sPacket> queuedTurns; // Those are mine
     };
 };

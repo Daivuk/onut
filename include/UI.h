@@ -182,6 +182,7 @@ namespace onut
 
     class UIContext;
     class UITreeViewItem;
+    class UITextBox;
 
     class UIMouseEvent
     {
@@ -371,6 +372,8 @@ namespace onut
         UIControl* getHoverControl() const { return m_pHoverControl; }
         UIControl* getDownControl() const { return m_pDownControl; }
         UIControl* getFocusControl() const { return m_pFocus; }
+
+        std::function<sUIVector2(const onut::UITextBox* pTextBox, const std::string &text)> textSize = nullptr;
 
         std::function<void(UIControl*, const sUIRect&, const sUIColor&)> drawRect = 
             [](UIControl*, const sUIRect&, const sUIColor&){};
