@@ -265,6 +265,7 @@ namespace onut
                 g = (static_cast<float>(text[i + 2]) - static_cast<float>('0')) / 9.0f;
                 b = (static_cast<float>(text[i + 3]) - static_cast<float>('0')) / 9.0f;
                 curColor = {r, g, b, color.w};
+                curColor.Premultiply();
                 i += 4;
                 continue;
             }

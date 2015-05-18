@@ -262,6 +262,8 @@ namespace onut
         // Send
         auto toAddr = getSocket()->getAddr();
         sendto(getSocket()->getSock(), (char *)packet.pBuf, packet.size, 0, (struct sockaddr *)&toAddr, sizeof(toAddr));
+        std::string addrStr = inet_ntoa(toAddr.sin_addr);
+        OutputDebugStringA(("Trying to connect: " + addrStr + "\n").c_str());
 
         // Increment to next IP for next try
         m_connectionAttemptId = (m_connectionAttemptId + 1) % m_ips.size();
@@ -318,6 +320,7 @@ namespace onut
             if (turn.header.turnId == turnId)
             {
                 memcpy(pOut, turn.pBuf, turn.size);
+                pOut->size = turn.size;
                 queuedTurns.erase(queuedTurns.begin() + i);
                 return;
             }
@@ -518,8 +521,13 @@ namespace onut
 
     void RTSPeer::setIsConnected(const sockaddr_in& addr)
     {
-        m_pSocket->setAddr(addr);
-        m_isConnected = true;
+        if (!m_isConnected)
+        {
+            m_pSocket->setAddr(addr);
+            m_isConnected = true;
+            std::string addrStr = inet_ntoa(addr.sin_addr);
+            OutputDebugStringA(("Connected to: " + addrStr + "\n").c_str());
+        }
     }
 
     void RTS::addMe(RTSSocket *pSocket, uint64_t playerId)
@@ -538,6 +546,11 @@ namespace onut
     void RTS::addPeer(RTSPeer *in_pPeer)
     {
         in_pPeer->retain();
+        if (!in_pPeer->getSocket())
+        {
+            in_pPeer->release();
+            return;
+        }
         if (!in_pPeer->getSocket()->isValid())
         {
             in_pPeer->release();
