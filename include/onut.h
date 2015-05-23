@@ -18,6 +18,7 @@
 #include "SpriteBatch.h"
 #include "StateManager.h"
 #include "Synchronous.h"
+#include "TiledMap.h"
 #include "TimingUtils.h"
 #include "onutUI.h"
 #include "UINodeNav.h"

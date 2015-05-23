@@ -44,8 +44,10 @@
     <ClInclude Include="..\..\include\StringUtils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\Texture.h" />
+    <ClInclude Include="..\..\include\TiledMap.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
+    <ClInclude Include="..\..\include\tinyxml2.h" />
     <ClInclude Include="..\..\include\Typedefs.h" />
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
@@ -58,6 +60,17 @@
     <ClInclude Include="..\..\src\SoundCommon.h" />
     <ClInclude Include="..\..\src\WaveBankReader.h" />
     <ClInclude Include="..\..\src\WAVFileReader.h" />
+    <ClInclude Include="..\..\src\zlib\crc32.h" />
+    <ClInclude Include="..\..\src\zlib\deflate.h" />
+    <ClInclude Include="..\..\src\zlib\gzguts.h" />
+    <ClInclude Include="..\..\src\zlib\inffast.h" />
+    <ClInclude Include="..\..\src\zlib\inffixed.h" />
+    <ClInclude Include="..\..\src\zlib\inflate.h" />
+    <ClInclude Include="..\..\src\zlib\inftrees.h" />
+    <ClInclude Include="..\..\src\zlib\trees.h" />
+    <ClInclude Include="..\..\src\zlib\zconf.h" />
+    <ClInclude Include="..\..\src\zlib\zlib.h" />
+    <ClInclude Include="..\..\src\zlib\zutil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ActionManager.cpp" />
@@ -92,11 +105,28 @@
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\StringUtils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
+    <ClCompile Include="..\..\src\TiledMap.cpp" />
+    <ClCompile Include="..\..\src\tinyxml2.cpp" />
     <ClCompile Include="..\..\src\UI.cpp" />
     <ClCompile Include="..\..\src\WaveBank.cpp" />
     <ClCompile Include="..\..\src\WaveBankReader.cpp" />
     <ClCompile Include="..\..\src\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
+    <ClCompile Include="..\..\src\zlib\adler32.c" />
+    <ClCompile Include="..\..\src\zlib\compress.c" />
+    <ClCompile Include="..\..\src\zlib\crc32.c" />
+    <ClCompile Include="..\..\src\zlib\deflate.c" />
+    <ClCompile Include="..\..\src\zlib\gzclose.c" />
+    <ClCompile Include="..\..\src\zlib\gzlib.c" />
+    <ClCompile Include="..\..\src\zlib\gzread.c" />
+    <ClCompile Include="..\..\src\zlib\gzwrite.c" />
+    <ClCompile Include="..\..\src\zlib\infback.c" />
+    <ClCompile Include="..\..\src\zlib\inffast.c" />
+    <ClCompile Include="..\..\src\zlib\inflate.c" />
+    <ClCompile Include="..\..\src\zlib\inftrees.c" />
+    <ClCompile Include="..\..\src\zlib\trees.c" />
+    <ClCompile Include="..\..\src\zlib\uncompr.c" />
+    <ClCompile Include="..\..\src\zlib\zutil.c" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\2dps.hlsl">
@@ -148,7 +178,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>EASY_GRAPHIX;ONUT;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;EASY_GRAPHIX;ONUT;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson;../../EasyGraphix/eg/include;$(DXSDK_DIR)Include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
