@@ -538,9 +538,15 @@ namespace onut
             m_pMySocket->release();
         }
         m_pMySocket = pSocket;
-        m_pMySocket->retain();
+        if (m_pMySocket)
+        {
+            m_pMySocket->retain();
+        }
         m_myPlayerId = playerId;
-        startRecvThread();
+        if (m_pMySocket)
+        {
+            startRecvThread();
+        }
     }
 
     void RTS::addPeer(RTSPeer *in_pPeer)

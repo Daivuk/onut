@@ -72,7 +72,13 @@ namespace onut
 #ifdef _DEBUG
         eflags = eflags | AudioEngine_Debug;
 #endif
-        g_pAudioEngine = new AudioEngine(eflags);
+        try
+        {
+            g_pAudioEngine = new AudioEngine(eflags);
+        }
+        catch (std::exception e)
+        {
+        }
 
         // Particles
         OParticles = new ParticleSystemManager<>();
@@ -165,7 +171,7 @@ namespace onut
             g_mainSync.processQueue();
 
             // Update
-            g_pAudioEngine->Update();
+            if (g_pAudioEngine) g_pAudioEngine->Update();
             auto framesToUpdate = g_timeInfo.update();
             ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--)

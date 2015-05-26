@@ -83,6 +83,16 @@ namespace onut
     {
     }
 
+    void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
+    {
+        auto it = m_userSettings.find(key);
+        if (it == m_userSettings.end())
+        {
+            m_userSettings[key] = value;
+            m_isDirty = true;
+        }
+    }
+
     void Settings::setUserSetting(const std::string& key, const std::string& value)
     {
         m_userSettings[key] = value;

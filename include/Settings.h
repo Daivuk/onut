@@ -23,6 +23,7 @@ namespace onut
         bool                getIsResizableWindow() const { return m_isResizableWindow; }
         void                setIsResizableWindow(bool isResizableWindow);
 
+        void                setUserSettingDefault(const std::string& key, const std::string& value);
         void                setUserSetting(const std::string& key, const std::string& value);
         const std::string&  getUserSetting(const std::string& key) const;
 

@@ -258,17 +258,17 @@ namespace onut
         egModelIdentity();
         egModelMult(&m_transform._11);
 
+        OSB->begin();
         for (LONG y = rect.top; y <= rect.bottom; ++y)
         {
-            OSB->begin();
             sTile *pTile = pLayer->tiles + y * m_width + rect.left;
             for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
             {
                 if (!pTile->pTileset) continue;
                 OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
             }
-            OSB->end();
         }
+        OSB->end();
 
         egModelPop();
     }
