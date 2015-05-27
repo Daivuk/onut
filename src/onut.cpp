@@ -200,6 +200,7 @@ namespace onut
             }
 
             // Render
+            g_timeInfo.render();
             ORenderer->beginFrame();
             if (renderCallback)
             {

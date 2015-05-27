@@ -41,6 +41,18 @@ namespace onut
             return framesToUpdate;
         }
 
+        void render()
+        {
+            ++m_currentFPS;
+            auto now = std::chrono::steady_clock::now();
+            if (now - m_lastFPSSnapShotTime >= std::chrono::seconds(1))
+            {
+                m_fps = m_currentFPS;
+                m_currentFPS = 0;
+                m_lastFPSSnapShotTime = now;
+            }
+        }
+
         /**
         @return the time elapsed between this frame and the last one, in seconds.
         Perfect for performing animations
@@ -60,6 +72,14 @@ namespace onut
             return static_cast<TrequestedPrecision>(m_totalElapsed);
         }
 
+        /*!
+        @return Frame rate. Updated each seconds
+        */
+        int getFPS() const
+        {
+            return m_fps;
+        }
+
     private:
         Tprecision                                  m_deltaTime = static_cast<Tprecision>(1.0) / static_cast<Tprecision>(TframePerSecond);
         Tprecision                                  m_totalElapsed = static_cast<Tprecision>(0.0);
@@ -67,5 +87,8 @@ namespace onut
         decltype(std::chrono::steady_clock::now())  m_lastUpdateTime = std::chrono::steady_clock::now();
         std::chrono::steady_clock::duration         m_currentFrameProgress = std::chrono::seconds(0);
         std::chrono::steady_clock::duration         m_timePerFrame = std::chrono::microseconds(1000000) / TframePerSecond;
+        int                                         m_currentFPS = 0;
+        int                                         m_fps = 0;
+        decltype(std::chrono::steady_clock::now())  m_lastFPSSnapShotTime = std::chrono::steady_clock::now();
     };
 }
