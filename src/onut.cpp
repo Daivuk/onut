@@ -172,7 +172,7 @@ namespace onut
 
             // Update
             if (g_pAudioEngine) g_pAudioEngine->Update();
-            auto framesToUpdate = g_timeInfo.update();
+            auto framesToUpdate = g_timeInfo.update(OSettings->getIsFixedStep());
             ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--)
             {

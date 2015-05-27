@@ -23,6 +23,9 @@ namespace onut
         bool                getIsResizableWindow() const { return m_isResizableWindow; }
         void                setIsResizableWindow(bool isResizableWindow);
 
+        bool                getIsFixedStep() const { return m_isFixedStep; }
+        void                setIsFixedStep(bool isFixedStep);
+
         void                setUserSettingDefault(const std::string& key, const std::string& value);
         void                setUserSetting(const std::string& key, const std::string& value);
         const std::string&  getUserSetting(const std::string& key) const;
@@ -31,6 +34,7 @@ namespace onut
         POINT               m_resolution = POINT{800, 600};
         std::string         m_gameName = "Game Name";
         bool                m_isResizableWindow = false;
+        bool                m_isFixedStep = true;
 
         std::atomic<bool>   m_isDirty = false;
         std::atomic<bool>   m_requestShutdown = false;

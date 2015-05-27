@@ -10,12 +10,12 @@ namespace onut
     class TimeInfo
     {
     public:
-        int update()
+        int update(bool fixedStep = true)
         {
             int framesToUpdate = 0;
 
             // Get cur time
-            auto currentTime = std::chrono::steady_clock::now();
+            auto currentTime = std::chrono::high_resolution_clock::now();
 
             // Deltas
             auto updateElapsed = currentTime - m_lastUpdateTime;
@@ -25,26 +25,38 @@ namespace onut
             m_totalElapsed = static_cast<Tprecision>(totalElapsedMS.count()) / 1000.0;
 
             // Progress current frame
-            m_currentFrameProgress += updateElapsed;
-            while (m_currentFrameProgress > m_timePerFrame)
+            if (fixedStep)
             {
-                ++framesToUpdate;
-                if (framesToUpdate > TmaxUpdatePerFrame)
+                m_currentFrameProgress += updateElapsed;
+                while (m_currentFrameProgress > m_timePerFrame)
                 {
-                    framesToUpdate = TmaxUpdatePerFrame;
-                    m_currentFrameProgress = std::chrono::microseconds(0);
-                    break;
+                    ++framesToUpdate;
+                    if (framesToUpdate > TmaxUpdatePerFrame)
+                    {
+                        framesToUpdate = TmaxUpdatePerFrame;
+                        m_currentFrameProgress = std::chrono::microseconds(0);
+                        break;
+                    }
+                    m_currentFrameProgress -= m_timePerFrame;
                 }
-                m_currentFrameProgress -= m_timePerFrame;
-            }
 
-            return framesToUpdate;
+                m_deltaTime = static_cast<Tprecision>(1.0) / static_cast<Tprecision>(TframePerSecond);
+
+                return framesToUpdate;
+            }
+            else
+            {
+                m_deltaTime = 
+                    static_cast<Tprecision>(std::chrono::duration_cast<std::chrono::microseconds>(updateElapsed).count()) /
+                    static_cast<Tprecision>(1000000.0);
+                return 1;
+            }
         }
 
         void render()
         {
             ++m_currentFPS;
-            auto now = std::chrono::steady_clock::now();
+            auto now = std::chrono::high_resolution_clock::now();
             if (now - m_lastFPSSnapShotTime >= std::chrono::seconds(1))
             {
                 m_fps = m_currentFPS;
@@ -81,14 +93,14 @@ namespace onut
         }
 
     private:
-        Tprecision                                  m_deltaTime = static_cast<Tprecision>(1.0) / static_cast<Tprecision>(TframePerSecond);
-        Tprecision                                  m_totalElapsed = static_cast<Tprecision>(0.0);
-        decltype(std::chrono::steady_clock::now())  m_startTime = std::chrono::steady_clock::now();
-        decltype(std::chrono::steady_clock::now())  m_lastUpdateTime = std::chrono::steady_clock::now();
-        std::chrono::steady_clock::duration         m_currentFrameProgress = std::chrono::seconds(0);
-        std::chrono::steady_clock::duration         m_timePerFrame = std::chrono::microseconds(1000000) / TframePerSecond;
-        int                                         m_currentFPS = 0;
-        int                                         m_fps = 0;
-        decltype(std::chrono::steady_clock::now())  m_lastFPSSnapShotTime = std::chrono::steady_clock::now();
+        Tprecision                                          m_deltaTime = static_cast<Tprecision>(1.0) / static_cast<Tprecision>(TframePerSecond);
+        Tprecision                                          m_totalElapsed = static_cast<Tprecision>(0.0);
+        decltype(std::chrono::high_resolution_clock::now()) m_startTime = std::chrono::high_resolution_clock::now();
+        decltype(std::chrono::high_resolution_clock::now()) m_lastUpdateTime = std::chrono::high_resolution_clock::now();
+        std::chrono::high_resolution_clock::duration        m_currentFrameProgress = std::chrono::seconds(0);
+        std::chrono::high_resolution_clock::duration        m_timePerFrame = std::chrono::microseconds(1000000) / TframePerSecond;
+        int                                                 m_currentFPS = 0;
+        int                                                 m_fps = 0;
+        decltype(std::chrono::high_resolution_clock::now()) m_lastFPSSnapShotTime = std::chrono::high_resolution_clock::now();
     };
 }

@@ -81,6 +81,12 @@ namespace onut
 
     void Settings::setIsResizableWindow(bool isResizableWindow)
     {
+        m_isResizableWindow = isResizableWindow;
+    }
+
+    void Settings::setIsFixedStep(bool isFixedStep)
+    {
+        m_isFixedStep = isFixedStep;
     }
 
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
