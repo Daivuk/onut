@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "ContentManager.h"
+#include <unordered_map>
 
 extern onut::ContentManager<>* OContentManager;
 
@@ -14,11 +15,33 @@ namespace onut
         struct sLayer
         {
             virtual ~sLayer();
+            std::string name;
+            bool isVisible = true;
+        };
+
+        struct sTileLayer : public sLayer
+        {
+            virtual ~sTileLayer();
             int width;
             int height;
             uint32_t *tileIds = nullptr;
+        };
+
+        struct sObject
+        {
+            Vector2 position;
+            Vector2 size;
+            uint32_t id;
             std::string name;
-            bool isVisible = true;
+            std::string type;
+            std::unordered_map<std::string, std::string> properties;
+        };
+
+        struct sObjectLayer : public sLayer
+        {
+            virtual ~sObjectLayer();
+            uint32_t objectCount = 0;
+            sObject *pObjects = nullptr;
         };
 
         TiledMap(const std::string &map, onut::ContentManager<> *pContentManager = OContentManager);
@@ -36,7 +59,7 @@ namespace onut
         void renderLayer(const RECT &rect, sLayer *pLayer);
 
         int getLayerCount() const { return m_layerCount; }
-        sLayer *getLayer(int index) const { return m_layers + index; }
+        sLayer *getLayer(int index) const { return m_layers[index]; }
         sLayer *getLayer(const std::string &name) const;
 
     private:
@@ -56,9 +79,9 @@ namespace onut
             Vector4 UVs;
         };
 
-        struct sLayerInternal : public sLayer
+        struct sTileLayerInternal : public sTileLayer
         {
-            virtual ~sLayerInternal();
+            virtual ~sTileLayerInternal();
             sTile *tiles = nullptr;
         };
 
@@ -66,7 +89,7 @@ namespace onut
         int m_height = 0;
         int m_layerCount = 0;
         int m_tilesetCount = 0;
-        sLayerInternal *m_layers = nullptr;
+        sLayer **m_layers = nullptr;
         sTileSet *m_tileSets = nullptr;
         Matrix m_transform = Matrix::Identity;
     };

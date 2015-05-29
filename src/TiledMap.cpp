@@ -8,10 +8,19 @@ namespace onut
 {
     TiledMap::sLayer::~sLayer()
     {
+    }
+
+    TiledMap::sTileLayer::~sTileLayer()
+    {
         if (tileIds) delete[] tileIds;
     }
 
-    TiledMap::sLayerInternal::~sLayerInternal()
+    TiledMap::sObjectLayer::~sObjectLayer()
+    {
+        if (pObjects) delete[] pObjects;
+    }
+
+    TiledMap::sTileLayerInternal::~sTileLayerInternal()
     {
         if (tiles) delete[] tiles;
     }
@@ -55,156 +64,210 @@ namespace onut
         }
 
         // Layers
-        for (auto pXMLLayer = pXMLMap->FirstChildElement("layer"); pXMLLayer; pXMLLayer = pXMLLayer->NextSiblingElement("layer"))
+        for (auto pXMLLayer = pXMLMap->FirstChildElement(); pXMLLayer; pXMLLayer = pXMLLayer->NextSiblingElement())
         {
-            ++m_layerCount;
+            if (!strcmp(pXMLLayer->Name(), "layer") ||
+                !strcmp(pXMLLayer->Name(), "objectgroup"))
+            {
+                ++m_layerCount;
+            }
         }
         assert(m_layerCount);
-        m_layers = new sLayerInternal[m_layerCount];
+        m_layers = new sLayer*[m_layerCount];
         m_layerCount = 0;
-        for (auto pXMLLayer = pXMLMap->FirstChildElement("layer"); pXMLLayer; pXMLLayer = pXMLLayer->NextSiblingElement("layer"))
+        for (auto pXMLLayer = pXMLMap->FirstChildElement(); pXMLLayer; pXMLLayer = pXMLLayer->NextSiblingElement())
         {
-            auto &pLayer = m_layers[m_layerCount];
-
-            pLayer.name = pXMLLayer->Attribute("name");
-            pLayer.width = pXMLLayer->IntAttribute("width");
-            assert(pLayer.width);
-            pLayer.height = pXMLLayer->IntAttribute("height");
-            assert(pLayer.height);
-            m_width = std::max<>(m_width, pLayer.width);
-            m_height = std::max<>(m_height, pLayer.height);
-            auto len = pLayer.width * pLayer.height;
-            pLayer.tileIds = new uint32_t[len];
-
-            if (pXMLLayer->Attribute("visible"))
+            if (!strcmp(pXMLLayer->Name(), "layer"))
             {
-                pLayer.isVisible = pXMLLayer->BoolAttribute("visible");
-            }
+                m_layers[m_layerCount] = new sTileLayerInternal();
+                auto &pLayer = *(sTileLayerInternal*)m_layers[m_layerCount];
 
-            auto pXMLData = pXMLLayer->FirstChildElement("data");
-            assert(pXMLData);
-            auto szEncoding = pXMLData->Attribute("encoding");
-            auto szCompression = pXMLData->Attribute("compression");
-
-            if (!szEncoding)
-            {
-                int i = 0;
-                for (auto pXMLTile = pXMLData->FirstChildElement("tile"); pXMLTile; pXMLTile = pXMLTile->NextSiblingElement("tile"), ++i)
+                pLayer.name = pXMLLayer->Attribute("name");
+                if (pXMLLayer->Attribute("visible"))
                 {
-                    auto id = pXMLTile->IntAttribute("gid");
-                    assert(i < len);
-                    pLayer.tileIds[i] = id;
+                    pLayer.isVisible = pXMLLayer->BoolAttribute("visible");
                 }
-                assert(i == len);
-            }
-            else
-            {
-                auto szData = pXMLData->GetText();
-                assert(szData);
-                auto pos = std::string(szData).find_first_not_of("\n ");
-                assert(pos < strlen(szData));
-                szData = szData + pos;
 
-                if (!strcmp(szEncoding, "csv"))
+                pLayer.width = pXMLLayer->IntAttribute("width");
+                assert(pLayer.width);
+                pLayer.height = pXMLLayer->IntAttribute("height");
+                assert(pLayer.height);
+                m_width = std::max<>(m_width, pLayer.width);
+                m_height = std::max<>(m_height, pLayer.height);
+                auto len = pLayer.width * pLayer.height;
+                pLayer.tileIds = new uint32_t[len];
+
+                auto pXMLData = pXMLLayer->FirstChildElement("data");
+                assert(pXMLData);
+                auto szEncoding = pXMLData->Attribute("encoding");
+                auto szCompression = pXMLData->Attribute("compression");
+
+                if (!szEncoding)
                 {
-                    auto csvData = splitString(szData, ',');
-                    assert(static_cast<int>(csvData.size()) == len);
-                    for (int i = 0; i < len; ++i)
+                    int i = 0;
+                    for (auto pXMLTile = pXMLData->FirstChildElement("tile"); pXMLTile; pXMLTile = pXMLTile->NextSiblingElement("tile"), ++i)
                     {
-                        try
+                        auto id = pXMLTile->IntAttribute("gid");
+                        assert(i < len);
+                        pLayer.tileIds[i] = id;
+                    }
+                    assert(i == len);
+                }
+                else
+                {
+                    auto szData = pXMLData->GetText();
+                    assert(szData);
+                    auto pos = std::string(szData).find_first_not_of("\n ");
+                    assert(pos < strlen(szData));
+                    szData = szData + pos;
+
+                    if (!strcmp(szEncoding, "csv"))
+                    {
+                        auto csvData = splitString(szData, ',');
+                        assert(static_cast<int>(csvData.size()) == len);
+                        for (int i = 0; i < len; ++i)
                         {
-                            pLayer.tileIds[i] = static_cast<uint32_t>(std::stoul(csvData[i]));
+                            try
+                            {
+                                pLayer.tileIds[i] = static_cast<uint32_t>(std::stoul(csvData[i]));
+                            }
+                            catch (std::exception e)
+                            {
+                                assert(false);
+                            }
                         }
-                        catch (std::exception e)
+                    }
+                    else if (!strcmp(szEncoding, "base64"))
+                    {
+                        auto decoded = base64_decode(szData);
+                        if (!szCompression)
                         {
-                            assert(false);
+                            assert(static_cast<int>(decoded.size()) == len * 4);
+                            memcpy(pLayer.tileIds, decoded.data(), 4 * len);
+                        }
+                        else if (!strcmp(szCompression, "gzip"))
+                        {
+                            int err;
+                            z_stream d_stream; // decompression stream
+
+                            d_stream.zalloc = (alloc_func)0;
+                            d_stream.zfree = (free_func)0;
+                            d_stream.opaque = (voidpf)0;
+
+                            d_stream.next_in = reinterpret_cast<Bytef*>(decoded.data()); // where deflated is a pointer the the compressed data buffer
+                            d_stream.avail_in = static_cast<uInt>(decoded.size()); // where deflatedLen is the length of the compressed data
+                            d_stream.next_out = reinterpret_cast<Bytef*>(pLayer.tileIds); // where inflated is a pointer to the resulting uncompressed data buffer
+                            d_stream.avail_out = static_cast<uInt>(len * 4); // where inflatedLen is the size of the uncompressed data buffer
+
+                            err = inflateInit2(&d_stream, 31);
+                            assert(err == Z_OK);
+                            err = inflate(&d_stream, Z_FINISH);
+                            assert(err == Z_STREAM_END);
+                            err = inflateEnd(&d_stream);
+                            assert(err == Z_OK);
+                        }
+                        else if (!strcmp(szCompression, "zlib"))
+                        {
+                            int err;
+                            z_stream d_stream; // decompression stream
+
+                            d_stream.zalloc = (alloc_func)0;
+                            d_stream.zfree = (free_func)0;
+                            d_stream.opaque = (voidpf)0;
+
+                            d_stream.next_in = reinterpret_cast<Bytef*>(decoded.data()); // where deflated is a pointer the the compressed data buffer
+                            d_stream.avail_in = static_cast<uInt>(decoded.size()); // where deflatedLen is the length of the compressed data
+                            d_stream.next_out = reinterpret_cast<Bytef*>(pLayer.tileIds); // where inflated is a pointer to the resulting uncompressed data buffer
+                            d_stream.avail_out = static_cast<uInt>(len * 4); // where inflatedLen is the size of the uncompressed data buffer
+
+                            err = inflateInit2(&d_stream, 15 + 32);
+                            assert(err == Z_OK);
+                            err = inflate(&d_stream, Z_FINISH);
+                            assert(err == Z_STREAM_END);
+                            err = inflateEnd(&d_stream);
+                            assert(err == Z_OK);
                         }
                     }
                 }
-                else if (!strcmp(szEncoding, "base64"))
+
+                // Resolve the tiles to tilesets
+                pLayer.tiles = new sTile[len];
+                for (int i = 0; i < len; ++i)
                 {
-                    auto decoded = base64_decode(szData);
-                    if (!szCompression)
+                    auto pTile = pLayer.tiles + i;
+                    auto tileId = pLayer.tileIds[i];
+                    if (tileId == 0)
                     {
-                        assert(static_cast<int>(decoded.size()) == len * 4);
-                        memcpy(pLayer.tileIds, decoded.data(), 4 * len);
+                        continue;
                     }
-                    else if (!strcmp(szCompression, "gzip"))
+                    auto pTileSet = m_tileSets;
+                    for (int j = 0; j < m_tilesetCount; ++j, pTileSet)
                     {
-                        int err;
-                        z_stream d_stream; // decompression stream
-
-                        d_stream.zalloc = (alloc_func)0;
-                        d_stream.zfree = (free_func)0;
-                        d_stream.opaque = (voidpf)0;
-
-                        d_stream.next_in = reinterpret_cast<Bytef*>(decoded.data()); // where deflated is a pointer the the compressed data buffer
-                        d_stream.avail_in = static_cast<uInt>(decoded.size()); // where deflatedLen is the length of the compressed data
-                        d_stream.next_out = reinterpret_cast<Bytef*>(pLayer.tileIds); // where inflated is a pointer to the resulting uncompressed data buffer
-                        d_stream.avail_out = static_cast<uInt>(len * 4); // where inflatedLen is the size of the uncompressed data buffer
-
-                        err = inflateInit2(&d_stream, 31);
-                        assert(err == Z_OK);
-                        err = inflate(&d_stream, Z_FINISH);
-                        assert(err == Z_STREAM_END);
-                        err = inflateEnd(&d_stream);
-                        assert(err == Z_OK);
+                        if (pTileSet->firstId > static_cast<int>(tileId)) break;
                     }
-                    else if (!strcmp(szCompression, "zlib"))
-                    {
-                        int err;
-                        z_stream d_stream; // decompression stream
-
-                        d_stream.zalloc = (alloc_func)0;
-                        d_stream.zfree = (free_func)0;
-                        d_stream.opaque = (voidpf)0;
-
-                        d_stream.next_in = reinterpret_cast<Bytef*>(decoded.data()); // where deflated is a pointer the the compressed data buffer
-                        d_stream.avail_in = static_cast<uInt>(decoded.size()); // where deflatedLen is the length of the compressed data
-                        d_stream.next_out = reinterpret_cast<Bytef*>(pLayer.tileIds); // where inflated is a pointer to the resulting uncompressed data buffer
-                        d_stream.avail_out = static_cast<uInt>(len * 4); // where inflatedLen is the size of the uncompressed data buffer
-
-                        err = inflateInit2(&d_stream, 15 + 32);
-                        assert(err == Z_OK);
-                        err = inflate(&d_stream, Z_FINISH);
-                        assert(err == Z_STREAM_END);
-                        err = inflateEnd(&d_stream);
-                        assert(err == Z_OK);
-                    }
+                    pTile->pTileset = pTileSet;
+                    auto texSize = pTileSet->pTexture->getSize();
+                    auto fitW = texSize.x / 40;
+                    auto fitH = texSize.y / 40;
+                    auto onTextureId = tileId - pTileSet->firstId;
+                    pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
+                    pTile->UVs.y = static_cast<float>((onTextureId / fitH) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+                    pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
+                    pTile->UVs.w = static_cast<float>((onTextureId / fitH + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+                    pTile->rect.x = static_cast<float>((i % pLayer.width) * pTileSet->tileWidth);
+                    pTile->rect.y = static_cast<float>((i / pLayer.height) * pTileSet->tileHeight);
+                    pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
+                    pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
                 }
-            }
 
-            // Resolve the tiles to tilesets
-            pLayer.tiles = new sTile[len];
-            for (int i = 0; i < len; ++i)
+                ++m_layerCount;
+            }
+            else if (!strcmp(pXMLLayer->Name(), "objectgroup"))
             {
-                auto pTile = pLayer.tiles + i;
-                auto tileId = pLayer.tileIds[i];
-                if (tileId == 0)
-                {
-                    continue;
-                }
-                auto pTileSet = m_tileSets;
-                for (int j = 0; j < m_tilesetCount; ++j, pTileSet)
-                {
-                    if (pTileSet->firstId > static_cast<int>(tileId)) break;
-                }
-                pTile->pTileset = pTileSet;
-                auto texSize = pTileSet->pTexture->getSize();
-                auto fitW = texSize.x / 40;
-                auto fitH = texSize.y / 40;
-                auto onTextureId = tileId - pTileSet->firstId;
-                pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-                pTile->UVs.y = static_cast<float>((onTextureId / fitH) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
-                pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-                pTile->UVs.w = static_cast<float>((onTextureId / fitH + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
-                pTile->rect.x = static_cast<float>((i % pLayer.width) * pTileSet->tileWidth);
-                pTile->rect.y = static_cast<float>((i / pLayer.height) * pTileSet->tileHeight);
-                pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
-                pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
-            }
+                m_layers[m_layerCount] = new sObjectLayer();
+                auto &pLayer = *(sObjectLayer*)m_layers[m_layerCount];
 
-            ++m_layerCount;
+                pLayer.name = pXMLLayer->Attribute("name");
+                if (pXMLLayer->Attribute("visible"))
+                {
+                    pLayer.isVisible = pXMLLayer->BoolAttribute("visible");
+                }
+
+                for (auto pXMLObject = pXMLLayer->FirstChildElement("object"); pXMLObject; pXMLObject = pXMLObject->NextSiblingElement("object"))
+                {
+                    pLayer.objectCount++;
+                }
+                pLayer.pObjects = new sObject[pLayer.objectCount];
+                pLayer.objectCount = 0;
+                for (auto pXMLObject = pXMLLayer->FirstChildElement("object"); pXMLObject; pXMLObject = pXMLObject->NextSiblingElement("object"))
+                {
+                    auto &object = pLayer.pObjects[pLayer.objectCount];
+                    pLayer.objectCount++;
+                    
+                    object.id = pXMLObject->IntAttribute("id");
+                    if (pXMLObject->Attribute("name")) object.name = pXMLObject->Attribute("name");
+                    if (pXMLObject->Attribute("type")) object.type = pXMLObject->Attribute("type");
+                    object.position.x = pXMLObject->FloatAttribute("x");
+                    object.position.y = pXMLObject->FloatAttribute("y");
+                    object.size.x = pXMLObject->FloatAttribute("width");
+                    object.size.y = pXMLObject->FloatAttribute("160");
+
+                    auto pXMLProperties = pXMLObject->FirstChildElement("properties");
+                    if (pXMLProperties)
+                    {
+                        for (auto pXMLProperty = pXMLProperties->FirstChildElement("property"); pXMLProperty; pXMLProperty = pXMLProperty->NextSiblingElement("property"))
+                        {
+                            if (pXMLProperty->Attribute("name") &&
+                                pXMLProperty->Attribute("value"))
+                            {
+                                object.properties[pXMLProperty->Attribute("name")] = pXMLProperty->Attribute("value");
+                            }
+                        }
+                    }
+                }
+
+                ++m_layerCount;
+            }
         }
 
         //TODO: Compile the graphics by batch of 16x16 terrain chunks
@@ -212,7 +275,14 @@ namespace onut
 
     TiledMap::~TiledMap()
     {
-        if (m_layers) delete[] m_layers;
+        if (m_layers)
+        {
+            for (auto i = 0; i < m_layerCount; ++i)
+            {
+                if (m_layers[i]) delete m_layers[i];
+            }
+            delete[] m_layers;
+        }
         if (m_tileSets) delete[] m_tileSets;
     }
 
@@ -220,7 +290,7 @@ namespace onut
     {
         for (int i = 0; i < m_layerCount; ++i)
         {
-            if (m_layers[i].name == name) return m_layers + i;
+            if (m_layers[i]->name == name) return m_layers[i];
         }
         return nullptr;
     }
@@ -229,14 +299,14 @@ namespace onut
     {
         for (int i = 0; i < m_layerCount; ++i)
         {
-            if (!m_layers[i].isVisible) continue;
-            renderLayer(rect, m_layers + i);
+            if (!m_layers[i]->isVisible) continue;
+            renderLayer(rect, m_layers[i]);
         }
     }
 
     void TiledMap::renderLayer(const RECT &rect, int index)
     {
-        renderLayer(rect, m_layers + index);
+        renderLayer(rect, m_layers[index]);
     }
 
     void TiledMap::renderLayer(const RECT &rect, const std::string &name)
@@ -246,7 +316,8 @@ namespace onut
 
     void TiledMap::renderLayer(const RECT &in_rect, sLayer *in_pLayer)
     {
-        auto pLayer = dynamic_cast<sLayerInternal*>(in_pLayer);
+        auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
+        if (!pLayer) return;
 
         RECT rect = in_rect;
         rect.left = std::max<>(0l, rect.left);
