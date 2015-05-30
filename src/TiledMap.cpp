@@ -250,7 +250,7 @@ namespace onut
                     object.position.x = pXMLObject->FloatAttribute("x");
                     object.position.y = pXMLObject->FloatAttribute("y");
                     object.size.x = pXMLObject->FloatAttribute("width");
-                    object.size.y = pXMLObject->FloatAttribute("160");
+                    object.size.y = pXMLObject->FloatAttribute("height");
 
                     auto pXMLProperties = pXMLObject->FirstChildElement("properties");
                     if (pXMLProperties)
