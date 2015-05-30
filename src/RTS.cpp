@@ -592,6 +592,7 @@ namespace onut
         m_isStarted = true;
         lastKeepAlive = lastConnectionAttempt = lastResend = lastTurnTime = std::chrono::steady_clock::now();
         m_currentTurn = 0;
+        m_frame = 0;
         memset(&m_commandBuffer, 0, sizeof(m_commandBuffer));
         m_commandBuffer.size = sizeof(m_commandBuffer.header);
 
@@ -614,7 +615,7 @@ namespace onut
         m_commandBuffer.size = sizeof(m_commandBuffer.header);
     }
 
-    static const auto TURN_DURATION = std::chrono::milliseconds(100);
+    static const int FPT = 15;
     static const auto RESEND_TIME = std::chrono::milliseconds(50);
     static const auto CONNECT_ATTEMPT_TIME = std::chrono::milliseconds(500);
     static const auto KEEP_ALIVE_TIME = std::chrono::milliseconds(2000);
@@ -643,6 +644,8 @@ namespace onut
             lastKeepAlive = now;
         }
 
+        bool blocked = false;
+
         if (m_isStarted)
         {
             // Resend packets until they are acked
@@ -655,20 +658,21 @@ namespace onut
             // Do the turn logic
             if (arePeersConnected())
             {
-                int maxTurnAdvance = 4;
-                while (now - lastTurnTime >= TURN_DURATION && maxTurnAdvance--)
+                ++m_frame;
+                if (m_frame > FPT)
                 {
-                    lastTurnTime += TURN_DURATION;
                     auto bProcessed = processTurn();
                     if (bProcessed)
                     {
                         m_currentTurn = (m_currentTurn + 1) % 64;
                         m_realTurn++;
+                        m_frame -= FPT;
                     }
-                }
-                if (!maxTurnAdvance)
-                {
-                    lastTurnTime = now;
+                    else
+                    {
+                        blocked = true;
+                        --m_frame;
+                    }
                 }
             }
             else
@@ -677,7 +681,7 @@ namespace onut
             }
         }
 
-        return 1;
+        return blocked ? 0 : 1;
     }
 
     void RTS::updateConnections()

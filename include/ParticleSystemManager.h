@@ -107,8 +107,8 @@ namespace onut
             }
         }
 
-        Pool<sizeof(ParticleEmitter), TmaxPFX, sizeof(uintptr_t), false>    m_emitterPool;
-        Pool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false>     m_particlePool;
+        StaticPool<sizeof(ParticleEmitter), TmaxPFX, sizeof(uintptr_t), false>    m_emitterPool;
+        StaticPool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false>     m_particlePool;
         Vector3                                                             m_camRight;
         Vector3                                                             m_camUp;
     };

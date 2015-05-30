@@ -177,5 +177,6 @@ namespace onut
         sPacket m_commandBuffer;
         uint64_t m_myPlayerId;
         std::vector<sPacket> queuedTurns; // Those are mine
+        int m_frame = 0; // Turn frame. 15 Frame per turn (FPT)
     };
 };
