@@ -299,7 +299,6 @@ namespace onut
     {
         for (int i = 0; i < m_layerCount; ++i)
         {
-            if (!m_layers[i]->isVisible) continue;
             renderLayer(rect, m_layers[i]);
         }
     }
@@ -316,6 +315,8 @@ namespace onut
 
     void TiledMap::renderLayer(const RECT &in_rect, sLayer *in_pLayer)
     {
+        if (!in_pLayer->isVisible) return;
+
         auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
         if (!pLayer) return;
 

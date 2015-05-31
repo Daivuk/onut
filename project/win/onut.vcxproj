@@ -212,8 +212,9 @@
       <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson;../../EasyGraphix/eg/include;$(DXSDK_DIR)Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/D_WIN32_WINNT=0x0601 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
