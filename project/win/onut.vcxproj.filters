@@ -181,6 +181,12 @@
     <ClInclude Include="..\..\src\zlib\zutil.h">
       <Filter>src\zlib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\NavMesh.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\micropather.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -344,6 +350,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzclose.c">
       <Filter>src\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\NavMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\micropather.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

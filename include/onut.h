@@ -8,6 +8,8 @@
 #include "http.h"
 #include "Input.h"
 #include "GamePad.h"
+#include "NavMesh.h"
+#include "onutUI.h"
 #include "ParticleSystemManager.h"
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"
@@ -20,7 +22,6 @@
 #include "Synchronous.h"
 #include "TiledMap.h"
 #include "TimingUtils.h"
-#include "onutUI.h"
 #include "UINodeNav.h"
 #include "Window.h"
 
