@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\http.h" />
     <ClInclude Include="..\..\include\Input.h" />
+    <ClInclude Include="..\..\include\List.h" />
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />

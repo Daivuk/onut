@@ -187,6 +187,9 @@
     <ClInclude Include="..\..\include\micropather.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\List.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
