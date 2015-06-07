@@ -683,6 +683,7 @@ Quaternion operator* (float S, const Quaternion& Q);
 struct Color : public XMFLOAT4
 {
     Color() : XMFLOAT4(0, 0, 0, 1.f) {}
+    Color(float _rgba) : XMFLOAT4(_rgba, _rgba, _rgba, _rgba) {}
     Color( float _r, float _g, float _b ) : XMFLOAT4(_r, _g, _b, 1.f) {}
     Color( float _r, float _g, float _b, float _a ) : XMFLOAT4(_r, _g, _b, _a) {}
     explicit Color( const Vector3& clr ) : XMFLOAT4( clr.x, clr.y, clr.z, 1.f ) {}

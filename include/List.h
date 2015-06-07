@@ -76,10 +76,7 @@
 ***/
 
 
-#ifdef LIST_H
-#error "Header included more than once"
-#endif
-#define LIST_H
+#pragma once
 
 #include <cassert>
 
