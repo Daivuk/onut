@@ -297,6 +297,8 @@ struct Vector4 : public XMFLOAT4
     // Vector operations
     bool InBounds( const Vector4& Bounds ) const;
 
+    float Distance(const Vector2& p) const;
+
     float Length() const;
     float LengthSquared() const;
 

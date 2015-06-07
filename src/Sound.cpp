@@ -26,11 +26,32 @@ namespace onut
         }
     }
 
-    void Sound::play()
+    void Sound::play(float volume, float balance)
     {
         if (m_pSound)
         {
-            m_pSound->Play();
+            std::shared_ptr<DirectX::SoundEffectInstance> pInst = nullptr;
+            for (auto &inst : m_instances)
+            {
+                if (inst->GetState() == SoundState::STOPPED)
+                {
+                    pInst = inst;
+                    break;
+                }
+            }
+            if (!pInst)
+            {
+                if (m_maxInstance != -1)
+                {
+                    if (static_cast<int>(m_instances.size()) >= m_maxInstance) return;
+                }
+                std::shared_ptr<DirectX::SoundEffectInstance> inst = m_pSound->CreateInstance();
+                m_instances.push_back(inst);
+                pInst = inst;
+            }
+            pInst->SetVolume(volume);
+            pInst->SetPan(balance);
+            pInst->Play();
         }
     }
 

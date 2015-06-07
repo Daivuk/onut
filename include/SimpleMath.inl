@@ -1330,6 +1330,13 @@ inline bool Vector4::InBounds( const Vector4& Bounds ) const
     return XMVector4InBounds( v1, v2 );
 }
 
+inline float Vector4::Distance(const Vector2& p) const
+{
+    auto dx = std::max<float>(x - p.x, p.x - (x + z));
+    auto dy = std::max<float>(y - p.y, p.y - (y + w));
+    return std::sqrtf(dx*dx + dy*dy);
+}
+
 inline float Vector4::Length() const
 {
     using namespace DirectX;
