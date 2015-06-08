@@ -650,6 +650,94 @@ namespace onut
         drawRect(pTexture, {position.x - sizexf * .5f, position.y - sizeyf * .5f, sizexf, sizeyf}, color);
     }
 
+    void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale)
+    {
+        if (!pTexture) return;
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        sizexf *= (uvs.z - uvs.x);
+        sizeyf *= (uvs.w - uvs.y);
+        auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
+        auto radTheta = DirectX::XMConvertToRadians(rotation);
+        auto sinTheta = std::sin(radTheta);
+        auto cosTheta = std::cos(radTheta);
+
+        Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
+        Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
+
+#ifdef EASY_GRAPHIX
+        if (pTexture != m_pTexture) flush();
+        m_pTexture = pTexture;
+        if (!m_spriteCount)
+        {
+            if (m_pTexture)
+            {
+                m_pTexture->bind();
+            }
+            else
+            {
+                egBindDiffuse(0);
+            }
+            egBegin(EG_QUADS);
+        }
+
+        egColor4(color.x, color.y, color.z, color.w);
+        egTexCoord(uvs.x, uvs.y);
+        egPosition2(position.x - right.x - down.x, position.y - right.y - down.y);
+
+        egTexCoord(uvs.x, uvs.w);
+        egPosition2(position.x - right.x + down.x, position.y - right.y + down.y);
+
+        egTexCoord(uvs.z, uvs.w);
+        egPosition2(position.x + right.x + down.x, position.y + right.y + down.y);
+
+        egTexCoord(uvs.z, uvs.y);
+        egPosition2(position.x + right.x - down.x, position.y + right.y - down.y);
+
+        ++m_spriteCount;
+#else /* EASY_GRAPHIX */
+        if (!pTexture) pTexture = m_pTexWhite;
+        if (pTexture != m_pTexture)
+        {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        pVerts[0].position = position;
+        pVerts[0].position -= right;
+        pVerts[0].position -= down;
+        pVerts[0].texCoord = {0, 0};
+        pVerts[0].color = color;
+
+        pVerts[1].position = position;
+        pVerts[1].position -= right;
+        pVerts[1].position += down;
+        pVerts[1].texCoord = {0, 1};
+        pVerts[1].color = color;
+
+        pVerts[2].position = position;
+        pVerts[2].position += right;
+        pVerts[2].position += down;
+        pVerts[2].texCoord = {1, 1};
+        pVerts[2].color = color;
+
+        pVerts[3].position = position;
+        pVerts[3].position += right;
+        pVerts[3].position -= down;
+        pVerts[3].texCoord = {1, 0};
+        pVerts[3].color = color;
+
+        ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
+#endif /* !EASY_GRAPHIX */
+    }
+
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale)
     {
         if (!pTexture) return;

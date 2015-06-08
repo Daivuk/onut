@@ -163,3 +163,14 @@ inline Vector4 ORectWorldToLocal(const Vector4& world, const Vector4& parent)
     ret.w /= parent.w;
     return std::move(ret);
 }
+
+inline Vector4 OUVS(OTexture* pTexture, const Rect &rect)
+{
+    auto texDim = pTexture->getSizef();
+    return{
+        rect.x / texDim.x,
+        rect.y / texDim.y,
+        (rect.x + rect.z) / texDim.x,
+        (rect.y + rect.w) / texDim.y
+    };
+}

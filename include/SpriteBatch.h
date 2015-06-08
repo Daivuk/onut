@@ -21,7 +21,8 @@ namespace onut
         void drawRectScaled9RepeatCenters(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
         void draw4Corner(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawSprite(Texture* pTexture, const Vector2& position, const Color& color = Color::White);
-        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 0.f);
+        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f);
+        void drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f);
         void end();
 
     private:
