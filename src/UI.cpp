@@ -402,6 +402,12 @@ namespace onut
     UIContext::UIContext(const sUIVector2& screenSize) :
         m_screenSize(screenSize)
     {
+        m_pDownControls[0] = nullptr;
+        m_pDownControls[1] = nullptr;
+        m_pDownControls[2] = nullptr;
+        m_pLastDownControls[0] = nullptr;
+        m_pLastDownControls[1] = nullptr;
+        m_pLastDownControls[2] = nullptr;
     }
 
     UIContext::~UIContext()
@@ -1051,15 +1057,24 @@ namespace onut
         }
     }
 
-    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown)
+    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down)
     {
         retain();
 
         // Prepare our data
         sUIRect parentRect = {{0, 0}, context.getScreenSize()};
-        context.m_mouseEvent.mousePos = mousePos;
-        context.m_mouseEvent.isMouseDown = bMouseDown;
-        context.m_mouseEvent.pContext = &context;
+        context.m_mouseEvents[0].mousePos = mousePos;
+        context.m_mouseEvents[0].isMouseDown = bMouse1Down;
+        context.m_mouseEvents[0].pContext = &context;
+        context.m_mouseEvents[0].button = 1;
+        context.m_mouseEvents[1].mousePos = mousePos;
+        context.m_mouseEvents[1].isMouseDown = bMouse2Down;
+        context.m_mouseEvents[1].pContext = &context;
+        context.m_mouseEvents[1].button = 2;
+        context.m_mouseEvents[2].mousePos = mousePos;
+        context.m_mouseEvents[2].isMouseDown = bMouse3Down;
+        context.m_mouseEvents[2].pContext = &context;
+        context.m_mouseEvents[2].button = 3;
         context.m_pHoverControl = nullptr;
 
         // Update UIs
@@ -1081,39 +1096,42 @@ namespace onut
     {
         // If it's the first mouse down since last frame, and there is an hover
         // control. Put him into down state
-        if (!m_lastMouseEvent.isMouseDown && 
-            m_mouseEvent.isMouseDown &&
-            m_pHoverControl)
+        for (int i = 0; i < 3; ++i)
         {
-            m_pDownControl = m_pHoverControl;
+            if (!m_lastMouseEvents[i].isMouseDown &&
+                m_mouseEvents[i].isMouseDown &&
+                m_pHoverControl)
+            {
+                m_pDownControls[i] = m_pHoverControl;
+            }
+
+            if (!m_mouseEvents[i].isMouseDown)
+            {
+                m_pDownControls[i] = nullptr;
+            }
+
+            // Don't allow hovering of other controls if a control is in DOWN state
+            if (m_pDownControls[i] &&
+                m_pHoverControl != m_pDownControls[i])
+            {
+                m_pHoverControl = nullptr;
+            }
         }
 
-        if (!m_mouseEvent.isMouseDown)
+        if (m_pDownControls[0])
         {
-            m_pDownControl = nullptr;
-        }
-
-        // Don't allow hovering of other controls if a control is in DOWN state
-        if (m_pDownControl && 
-            m_pHoverControl != m_pDownControl)
-        {
-            m_pHoverControl = nullptr;
-        }
-
-        if (m_pDownControl)
-        {
-            m_pFocus = m_pDownControl;
+            m_pFocus = m_pDownControls[0];
         }
     }
 
     void UIContext::dispatchEvents()
     {
         if (m_pHoverControl) m_pHoverControl->retain();
-        if (m_pDownControl) m_pDownControl->retain();
+        for (int i = 0; i < 3; ++i) if (m_pDownControls[i]) m_pDownControls[i]->retain();
         if (m_pFocus) m_pFocus->retain();
 
         if (m_pLastHoverControl) m_pLastHoverControl->retain();
-        if (m_pLastDownControl) m_pLastDownControl->retain();
+        for (int i = 0; i < 3; ++i) if (m_pLastDownControls[i]) m_pLastDownControls[i]->retain();
         if (m_pLastFocus) m_pLastFocus->retain();
 
         // Do writes
@@ -1149,71 +1167,142 @@ namespace onut
             {
                 if (m_pLastHoverControl->onMouseLeave)
                 {
-                    m_pLastHoverControl->onMouseLeave(m_pLastHoverControl, m_mouseEvent);
+                    m_pLastHoverControl->onMouseLeave(m_pLastHoverControl, m_mouseEvents[0]);
                 }
             }
             if (m_pHoverControl)
             {
                 if (m_pHoverControl->onMouseEnter)
                 {
-                    m_pHoverControl->onMouseEnter(m_pHoverControl, m_mouseEvent);
+                    m_pHoverControl->onMouseEnter(m_pHoverControl, m_mouseEvents[0]);
                 }
             }
         }
         if (m_pHoverControl)
         {
-            if (m_lastMouseEvent.mousePos.x != m_mouseEvent.mousePos.x ||
-                m_lastMouseEvent.mousePos.y != m_mouseEvent.mousePos.y)
+            if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
+                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
             {
-                m_pHoverControl->onMouseMoveInternal(m_mouseEvent);
+                m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
                 if (m_pHoverControl->onMouseMove)
                 {
-                    m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvent);
+                    m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
                 }
             }
         }
-        if (m_pDownControl != m_pLastDownControl)
+        for (int i = 0; i < 3; ++i)
         {
-            if (m_pLastDownControl)
+            if (m_pDownControls[i] != m_pLastDownControls[i])
             {
-                m_pLastDownControl->onMouseUpInternal(m_mouseEvent);
-                if (m_pLastDownControl->onMouseUp)
+                if (m_pLastDownControls[i])
                 {
-                    m_pLastDownControl->onMouseUp(m_pLastDownControl, m_mouseEvent);
-                }
-                if (m_pHoverControl == m_pLastDownControl &&
-                    !m_mouseEvent.isMouseDown)
-                {
-                    m_pLastDownControl->onClickInternal(m_mouseEvent);
-                    if (m_pLastDownControl->onClick)
+                    if (!i) m_pLastDownControls[i]->onMouseUpInternal(m_mouseEvents[i]);
+                    if (i == 0)
                     {
-                        m_pLastDownControl->onClick(m_pLastDownControl, m_mouseEvent);
+                        if (m_pLastDownControls[i]->onMouseUp)
+                        {
+                            m_pLastDownControls[i]->onMouseUp(m_pLastDownControls[i], m_mouseEvents[i]);
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (m_pLastDownControls[i]->onRightMouseUp)
+                        {
+                            m_pLastDownControls[i]->onRightMouseUp(m_pLastDownControls[i], m_mouseEvents[i]);
+                        }
+                    }
+                    else if (i == 2)
+                    {
+                        if (m_pLastDownControls[i]->onMiddleMouseUp)
+                        {
+                            m_pLastDownControls[i]->onMiddleMouseUp(m_pLastDownControls[i], m_mouseEvents[i]);
+                        }
+                    }
+                    if (m_pHoverControl == m_pLastDownControls[i] &&
+                        !m_mouseEvents[i].isMouseDown)
+                    {
+                        if (!i) m_pLastDownControls[i]->onClickInternal(m_mouseEvents[i]);
+                        if (i == 0)
+                        {
+                            if (m_pLastDownControls[i]->onClick)
+                            {
+                                m_pLastDownControls[i]->onClick(m_pLastDownControls[i], m_mouseEvents[i]);
+                            }
+                        }
+                        else if (i == 1)
+                        {
+                            if (m_pLastDownControls[i]->onRightClick)
+                            {
+                                m_pLastDownControls[i]->onRightClick(m_pLastDownControls[i], m_mouseEvents[i]);
+                            }
+                        }
+                        else if (i == 2)
+                        {
+                            if (m_pLastDownControls[i]->onMiddleClick)
+                            {
+                                m_pLastDownControls[i]->onMiddleClick(m_pLastDownControls[i], m_mouseEvents[i]);
+                            }
+                        }
                     }
                 }
-            }
-            if (m_pDownControl)
-            {
-                m_pDownControl->onMouseDownInternal(m_mouseEvent);
-                if (m_pDownControl->onMouseDown)
+                if (m_pDownControls[i])
                 {
-                    m_pDownControl->onMouseDown(m_pDownControl, m_mouseEvent);
-                }
+                    if (!i) m_pDownControls[i]->onMouseDownInternal(m_mouseEvents[i]);
+                    if (i == 0)
+                    {
+                        if (m_pDownControls[i]->onMouseDown)
+                        {
+                            m_pDownControls[i]->onMouseDown(m_pDownControls[i], m_mouseEvents[i]);
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (m_pDownControls[i]->onRightMouseDown)
+                        {
+                            m_pDownControls[i]->onRightMouseDown(m_pDownControls[i], m_mouseEvents[i]);
+                        }
+                    }
+                    else if (i == 2)
+                    {
+                        if (m_pDownControls[i]->onMiddleMouseDown)
+                        {
+                            m_pDownControls[i]->onMiddleMouseDown(m_pDownControls[i], m_mouseEvents[i]);
+                        }
+                    }
 
-                // Check for double click events
-                auto now = std::chrono::steady_clock::now();
-                if (now - m_clickTime <= doubleClickTime &&
-                    m_clickPos.x > m_mouseEvent.mousePos.x - 3 &&
-                    m_clickPos.y > m_mouseEvent.mousePos.y - 3 && 
-                    m_clickPos.x < m_mouseEvent.mousePos.x + 3 && 
-                    m_clickPos.y < m_mouseEvent.mousePos.y + 3)
-                {
-                    if (m_pDownControl->onDoubleClick)
+                    // Check for double click events
+                    auto now = std::chrono::steady_clock::now();
+                    if (now - m_clickTimes[i] <= doubleClickTime &&
+                        m_clicksPos[i].x > m_mouseEvents[i].mousePos.x - 3 &&
+                        m_clicksPos[i].y > m_mouseEvents[i].mousePos.y - 3 &&
+                        m_clicksPos[i].x < m_mouseEvents[i].mousePos.x + 3 &&
+                        m_clicksPos[i].y < m_mouseEvents[i].mousePos.y + 3)
                     {
-                        m_pDownControl->onDoubleClick(m_pDownControl, m_mouseEvent);
+                        if (i == 0)
+                        {
+                            if (m_pDownControls[i]->onDoubleClick)
+                            {
+                                m_pDownControls[i]->onDoubleClick(m_pDownControls[i], m_mouseEvents[i]);
+                            }
+                        }
+                        else if (i == 1)
+                        {
+                            if (m_pDownControls[i]->onRightDoubleClick)
+                            {
+                                m_pDownControls[i]->onRightDoubleClick(m_pDownControls[i], m_mouseEvents[i]);
+                            }
+                        }
+                        else if (i == 2)
+                        {
+                            if (m_pDownControls[i]->onMiddleDoubleClick)
+                            {
+                                m_pDownControls[i]->onMiddleDoubleClick(m_pDownControls[i], m_mouseEvents[i]);
+                            }
+                        }
                     }
+                    m_clickTimes[i] = now;
+                    m_clicksPos[i] = m_mouseEvents[i].mousePos;
                 }
-                m_clickTime = now;
-                m_clickPos = m_mouseEvent.mousePos;
             }
         }
 
@@ -1244,33 +1333,33 @@ namespace onut
 
         if (m_pHoverControl) if (m_pHoverControl->getRefCount() <= 1) { m_pHoverControl->release(); m_pHoverControl = nullptr; }
         else { m_pHoverControl->release(); }
-        if (m_pDownControl) if (m_pDownControl->getRefCount() <= 1) { m_pDownControl->release(); m_pDownControl = nullptr; }
-        else { m_pDownControl->release(); }
+        for (int i = 0; i < 3; ++i) if (m_pDownControls[i]) if (m_pDownControls[i]->getRefCount() <= 1) { m_pDownControls[i]->release(); m_pDownControls[i] = nullptr; }
+        else { m_pDownControls[i]->release(); }
         if (m_pFocus) if (m_pFocus->getRefCount() <= 1) { m_pFocus->release(); m_pFocus = nullptr; }
         else { m_pFocus->release(); }
 
         if (m_pLastHoverControl) if (m_pLastHoverControl->getRefCount() <= 1) { m_pLastHoverControl->release(); m_pLastHoverControl = nullptr; }
         else { m_pLastHoverControl->release(); }
-        if (m_pLastDownControl) if (m_pLastDownControl->getRefCount() <= 1) { m_pLastDownControl->release(); m_pLastDownControl = nullptr; }
-        else { m_pLastDownControl->release(); }
+        for (int i = 0; i < 3; ++i) if (m_pLastDownControls[i]) if (m_pLastDownControls[i]->getRefCount() <= 1) { m_pLastDownControls[i]->release(); m_pLastDownControls[i] = nullptr; }
+        else { m_pLastDownControls[i]->release(); }
         if (m_pLastFocus) if (m_pLastFocus->getRefCount() <= 1) { m_pLastFocus->release(); m_pLastFocus = nullptr; }
         else { m_pLastFocus->release(); }
     }
 
     void UIContext::reset()
     {
-        m_lastMouseEvent = m_mouseEvent;
+        for (int i = 0; i < 3; ++i) m_lastMouseEvents[i] = m_mouseEvents[i];
 
         if (m_pLastHoverControl) m_pLastHoverControl->release();
-        if (m_pLastDownControl) m_pLastDownControl->release();
+        for (int i = 0; i < 3; ++i) if (m_pLastDownControls[i]) m_pLastDownControls[i]->release();
         if (m_pLastFocus) m_pLastFocus->release();
 
         m_pLastHoverControl = m_pHoverControl;
-        m_pLastDownControl = m_pDownControl;
+        for (int i = 0; i < 3; ++i) m_pLastDownControls[i] = m_pDownControls[i];
         m_pLastFocus = m_pFocus;
 
         if (m_pLastHoverControl) m_pLastHoverControl->retain();
-        if (m_pLastDownControl) m_pLastDownControl->retain();
+        for (int i = 0; i < 3; ++i) if (m_pLastDownControls[i]) m_pLastDownControls[i]->retain();
         if (m_pLastFocus) m_pLastFocus->retain();
 
         m_clips.clear();
@@ -1294,23 +1383,26 @@ namespace onut
     void UIContext::clearState()
     {
         if (m_pLastHoverControl) m_pLastHoverControl->release();
-        if (m_pLastDownControl) m_pLastDownControl->release();
+        for (int i = 0; i < 3; ++i) if (m_pLastDownControls[i]) m_pLastDownControls[i]->release();
         if (m_pLastFocus) m_pLastFocus->release();
 
         m_pLastHoverControl = nullptr;
-        m_pLastDownControl = nullptr;
+        for (int i = 0; i < 3; ++i) m_pLastDownControls[i] = nullptr;
         m_pLastFocus = nullptr;
 
         m_pHoverControl = nullptr;
-        m_pDownControl = nullptr;
+        for (int i = 0; i < 3; ++i) m_pDownControls[i] = nullptr;
         m_pFocus = nullptr;
 
         m_clips.clear();
         m_writes.clear();
         m_keyDowns.clear();
 
-        m_clickPos.x = -100;
-        m_clickPos.y = -100;
+        for (int i = 0; i < 3; ++i)
+        {
+            m_clicksPos[i].x = -100;
+            m_clicksPos[i].y = -100;
+        }
     }
 
     void UIControl::render(UIContext& context)
@@ -1463,13 +1555,16 @@ namespace onut
 
         if (!context.m_pHoverControl && !isClickThrough)
         {
-            if (context.m_mouseEvent.mousePos.x >= worldRect.position.x &&
-                context.m_mouseEvent.mousePos.y >= worldRect.position.y &&
-                context.m_mouseEvent.mousePos.x <= worldRect.position.x + worldRect.size.x &&
-                context.m_mouseEvent.mousePos.y <= worldRect.position.y + worldRect.size.y)
+            auto &mouseEvt = context.m_mouseEvents[0];
+            if (mouseEvt.mousePos.x >= worldRect.position.x &&
+                mouseEvt.mousePos.y >= worldRect.position.y &&
+                mouseEvt.mousePos.x <= worldRect.position.x + worldRect.size.x &&
+                mouseEvt.mousePos.y <= worldRect.position.y + worldRect.size.y)
             {
-                context.m_mouseEvent.localMousePos.x = context.m_mouseEvent.mousePos.x - worldRect.position.x;
-                context.m_mouseEvent.localMousePos.y = context.m_mouseEvent.mousePos.y - worldRect.position.y;
+                context.m_mouseEvents[0].localMousePos.x = mouseEvt.mousePos.x - worldRect.position.x;
+                context.m_mouseEvents[0].localMousePos.y = mouseEvt.mousePos.y - worldRect.position.y;
+                context.m_mouseEvents[1].localMousePos = context.m_mouseEvents[0].localMousePos;
+                context.m_mouseEvents[2].localMousePos = context.m_mouseEvents[0].localMousePos;
                 context.m_pHoverControl = this;
             }
         }
@@ -1670,7 +1765,7 @@ namespace onut
         {
             if (context.m_pHoverControl == this)
             {
-                if (context.m_pDownControl == this)
+                if (context.m_pDownControls[0] == this)
                 {
                     return eUIState::DOWN;
                 }
@@ -1679,7 +1774,7 @@ namespace onut
                     return eUIState::HOVER;
                 }
             }
-            else if (context.m_pDownControl == this)
+            else if (context.m_pDownControls[0] == this)
             {
                 return eUIState::HOVER;
             }

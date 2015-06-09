@@ -571,6 +571,12 @@ namespace onut
             }
         }
         m_peers.push_back(in_pPeer);
+
+        // Sort by playerId
+        std::sort(m_peers.begin(), m_peers.end(), [](RTSPeer *pA, RTSPeer *pB)
+        {
+            return pA->getPlayerId() < pB->getPlayerId();
+        });
     }
 
     void RTS::removePeer(RTSPeer *in_pPeer)

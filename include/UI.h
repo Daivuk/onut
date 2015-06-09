@@ -191,6 +191,7 @@ namespace onut
         sUIVector2  localMousePos;
         bool        isMouseDown = false;
         UIContext*  pContext;
+        int         button = 1;
     };
 
     static const uintptr_t KEY_END = 0x23;
@@ -370,7 +371,7 @@ namespace onut
         void clearState();
 
         UIControl* getHoverControl() const { return m_pHoverControl; }
-        UIControl* getDownControl() const { return m_pDownControl; }
+        UIControl* getDownControl(int mouseButton = 1) const { return m_pDownControls[mouseButton - 1]; }
         UIControl* getFocusControl() const { return m_pFocus; }
 
         std::function<sUIVector2(const onut::UITextBox* pTextBox, const std::string &text)> textSize = nullptr;
@@ -399,25 +400,25 @@ namespace onut
         std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUIRenderCallback*>>       m_callbacks;
         std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUITextCaretCallback*>>    m_textCaretSolvers;
 
-        UIMouseEvent    m_mouseEvent;
-        UIMouseEvent    m_lastMouseEvent;
+        UIMouseEvent    m_mouseEvents[3];
+        UIMouseEvent    m_lastMouseEvents[3];
         sUIVector2      m_hoverLocalMousePos;
         sUIVector2      m_screenSize;
 
         UIControl*      m_pHoverControl = nullptr;
-        UIControl*      m_pDownControl = nullptr;
+        UIControl*      m_pDownControls[3];
         UIControl*      m_pFocus = nullptr;
 
         UIControl*      m_pLastHoverControl = nullptr;
-        UIControl*      m_pLastDownControl = nullptr;
+        UIControl*      m_pLastDownControls[3];
         UIControl*      m_pLastFocus = nullptr;
 
         std::vector<char>       m_writes;
         std::vector<uintptr_t>  m_keyDowns;
         std::vector<sUIRect>    m_clips;
 
-        std::chrono::steady_clock::time_point m_clickTime;
-        sUIVector2              m_clickPos;
+        std::chrono::steady_clock::time_point m_clickTimes[3];
+        sUIVector2              m_clicksPos[3];
     };
 
     enum class eUIPropertyType : uint8_t
@@ -514,7 +515,7 @@ namespace onut
         void release();
         int32_t getRefCount() const { return m_refCount; }
 
-        void update(UIContext& context, const sUIVector2& mousePos, bool bMouseDown);
+        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false);
         void render(UIContext& context);
 
         sUIRect getWorldRect(const UIContext& context) const;
@@ -542,6 +543,16 @@ namespace onut
         TfnMouseEvent onMouseUp;
         TfnMouseEvent onMouseEnter;
         TfnMouseEvent onMouseLeave;
+
+        TfnMouseEvent onRightClick;
+        TfnMouseEvent onRightDoubleClick;
+        TfnMouseEvent onRightMouseDown;
+        TfnMouseEvent onRightMouseUp;
+
+        TfnMouseEvent onMiddleClick;
+        TfnMouseEvent onMiddleDoubleClick;
+        TfnMouseEvent onMiddleMouseDown;
+        TfnMouseEvent onMiddleMouseUp;
 
         using TfnFocusEvent = std::function < void(UIControl*) > ;
         TfnFocusEvent onGainFocus;

@@ -31,4 +31,9 @@ namespace onut
     {
         return static_cast<Align>(uiAlign);
     }
+
+    inline Vector2 UI2Onut(sUIVector2 uiPos)
+    {
+        return{uiPos.x, uiPos.y};
+    }
 };
