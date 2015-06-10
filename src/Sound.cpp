@@ -28,11 +28,6 @@ namespace onut
 
     void Sound::play(float volume, float balance)
     {
-        if (m_pSound->GetFormat()->nChannels > 1)
-        {
-            m_pSound->Play();
-            return;
-        }
         if (m_pSound)
         {
             std::shared_ptr<DirectX::SoundEffectInstance> pInst = nullptr;
@@ -55,7 +50,10 @@ namespace onut
                 pInst = inst;
             }
             pInst->SetVolume(volume);
-            pInst->SetPan(balance);
+            if (m_pSound->GetFormat()->nChannels == 1)
+            {
+                pInst->SetPan(balance);
+            }
             pInst->Play();
         }
     }
