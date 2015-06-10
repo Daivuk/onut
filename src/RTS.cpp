@@ -621,7 +621,7 @@ namespace onut
         m_commandBuffer.size = sizeof(m_commandBuffer.header);
     }
 
-    static const int FPT = 15;
+    static const int FPT = 6;
     static const auto RESEND_TIME = std::chrono::milliseconds(50);
     static const auto CONNECT_ATTEMPT_TIME = std::chrono::milliseconds(500);
     static const auto KEEP_ALIVE_TIME = std::chrono::milliseconds(2000);
