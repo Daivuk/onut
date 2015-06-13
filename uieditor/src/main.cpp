@@ -16,7 +16,7 @@ onut::ActionManager g_actionManager;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setResolution({1280, 720});
+    OSettings->setResolution({1280, 900});
     OSettings->setGameName("Oak Nut UI Editor");
     OSettings->setIsResizableWindow(true);
 
