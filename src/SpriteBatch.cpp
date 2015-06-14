@@ -738,6 +738,49 @@ namespace onut
 #endif /* !EASY_GRAPHIX */
     }
 
+    void SpriteBatch::drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset, float uScale)
+    {
+#ifdef EASY_GRAPHIX
+        if (pTexture != m_pTexture) flush();
+        m_pTexture = pTexture;
+        if (!m_spriteCount)
+        {
+            if (m_pTexture)
+            {
+                m_pTexture->bind();
+            }
+            else
+            {
+                egBindDiffuse(0);
+            }
+            egBegin(EG_QUADS);
+        }
+
+        auto texSize = pTexture->getSizef();
+        Vector2 dir = to - from;
+        float len = dir.Length();
+        if (len == 0) return;
+        dir /= len;
+        Vector2 right{-dir.y, dir.x};
+        right *= size * .5f;
+
+        egColor4(color.x, color.y, color.z, color.w);
+        egTexCoord(uOffset, 0);
+        egPosition2(from.x - right.x, from.y - right.y);
+
+        egTexCoord(uOffset, 1);
+        egPosition2(from.x + right.x, from.y + right.y);
+
+        egTexCoord(uOffset + len * uScale / texSize.x, 1);
+        egPosition2(to.x + right.x, to.y + right.y);
+
+        egTexCoord(uOffset + len * uScale / texSize.x, 0);
+        egPosition2(to.x - right.x, to.y - right.y);
+
+        ++m_spriteCount;
+#endif
+    }
+
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale)
     {
         if (!pTexture) return;

@@ -23,6 +23,7 @@ namespace onut
         void drawSprite(Texture* pTexture, const Vector2& position, const Color& color = Color::White);
         void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f);
         void drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f);
+        void drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
         void end();
 
     private:
