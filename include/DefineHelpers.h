@@ -33,7 +33,7 @@
 #define OScreen             ORenderer->getResolution()
 #define OScreenf            Vector2{static_cast<float>(ORenderer->getResolution().x), static_cast<float>(ORenderer->getResolution().y)}
 #define OScreenW            ORenderer->getResolution().x
-#define OScreenH            ORenderer->getResolution().y;
+#define OScreenH            ORenderer->getResolution().y
 #define OScreenWf           static_cast<float>(ORenderer->getResolution().x)
 #define OScreenHf           static_cast<float>(ORenderer->getResolution().y)
 #define OScreenCenter       (ORenderer->getResolution() / 2)
