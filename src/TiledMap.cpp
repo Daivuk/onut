@@ -207,8 +207,8 @@ namespace onut
                     }
                     pTile->pTileset = pTileSet;
                     auto texSize = pTileSet->pTexture->getSize();
-                    auto fitW = texSize.x / 40;
-                    auto fitH = texSize.y / 40;
+                    auto fitW = texSize.x / pTile->pTileset->tileWidth;
+                    auto fitH = texSize.y / pTile->pTileset->tileHeight;
                     auto onTextureId = tileId - pTileSet->firstId;
                     pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
                     pTile->UVs.y = static_cast<float>((onTextureId / fitH) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
@@ -331,6 +331,7 @@ namespace onut
         egModelMult(&m_transform._11);
 
         OSB->begin();
+        egFilter(EG_FILTER_NEAREST);
         for (LONG y = rect.top; y <= rect.bottom; ++y)
         {
             sTile *pTile = pLayer->tiles + y * m_width + rect.left;
