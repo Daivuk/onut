@@ -18,6 +18,7 @@ namespace onut
             uint32_t y;
         };
 
+        static Texture* createRenderTarget(const sSize& size);
         static Texture* createDynamic(const sSize& size);
         template<typename TcontentManagerType>
         static Texture* createFromFile(const std::string& filename, TcontentManagerType* pContentManager, bool generateMipmaps = true)

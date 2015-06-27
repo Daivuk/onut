@@ -344,4 +344,29 @@ namespace onut
 
         egModelPop();
     }
+
+    onut::Texture *TiledMap::getMinimap()
+    {
+        //if (pMinimap) return pMinimap;
+        if (!m_tilesetCount) return nullptr;
+
+        pMinimap = OTexture::createRenderTarget({m_width, m_height});
+        ORenderer->bindRenderTarget(pMinimap);
+
+        auto tileWidth = m_tileSets[0].tileWidth;
+
+        setTransform(Matrix::CreateScale(1.f / static_cast<float>(tileWidth)));
+        egStatePush();
+        egFilter(EG_FILTER_TRILINEAR);
+        auto h = 32768 / m_width / 4;
+        for (auto y = 0; y < m_height; y += h)
+        {
+            render({0, y, m_width, std::min<>(y + h, m_height)});
+        }
+        egPostProcess();
+        egStatePop();
+
+        ORenderer->bindRenderTarget(nullptr);
+        return pMinimap;
+    }
 };

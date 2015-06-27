@@ -62,6 +62,8 @@ namespace onut
         sLayer *getLayer(int index) const { return m_layers[index]; }
         sLayer *getLayer(const std::string &name) const;
 
+        onut::Texture *getMinimap();
+
     private:
         struct sTileSet
         {
@@ -92,5 +94,6 @@ namespace onut
         sLayer **m_layers = nullptr;
         sTileSet *m_tileSets = nullptr;
         Matrix m_transform = Matrix::Identity;
+        onut::Texture *pMinimap = nullptr;
     };
 };

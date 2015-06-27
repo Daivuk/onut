@@ -7,6 +7,20 @@
 
 namespace onut
 {
+    Texture* Texture::createRenderTarget(const sSize& size)
+    {
+#ifdef EASY_GRAPHIX
+        auto pRet = new Texture();
+        pRet->m_pTextureView = egCreateTexture2D(static_cast<uint32_t>(size.x),
+                                                 static_cast<uint32_t>(size.y),
+                                                 nullptr, 0, EG_RENDER_TARGET);
+        pRet->m_size = size;
+        return pRet;
+#else
+        return nullptr;
+#endif /* !EASY_GRAPHIX */
+    }
+
     Texture* Texture::createDynamic(const sSize& size)
     {
 #ifdef EASY_GRAPHIX

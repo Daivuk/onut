@@ -10,6 +10,7 @@ using namespace DirectX::SimpleMath;
 namespace onut
 {
     class Window;
+    class Texture;
 
     class Renderer
     {
@@ -39,6 +40,8 @@ namespace onut
 
         POINT                   getResolution() const;
         void                    onResize();
+
+        void                    bindRenderTarget(Texture *pTexture = nullptr);
 
 #ifdef EASY_GRAPHIX
         EGDevice                getDevice();

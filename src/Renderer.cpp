@@ -295,6 +295,21 @@ namespace onut
 #endif /* !EASY_GRAPHIX */
     }
 
+    void Renderer::bindRenderTarget(Texture *pTexture)
+    {
+#ifdef EASY_GRAPHIX
+        if (pTexture == nullptr)
+        {
+            egBindRenderTarget(0);
+        }
+        else
+        {
+            egBindRenderTarget(pTexture->getResource());
+        }
+#else /* EASY_GRAPHIX */
+#endif /* !EASY_GRAPHIX */
+    }
+
 #ifdef EASY_GRAPHIX
     EGDevice Renderer::getDevice()
     {
