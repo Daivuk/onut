@@ -86,14 +86,16 @@ namespace onut
         auto screenW = GetSystemMetrics(SM_CXSCREEN);
         auto screenH = GetSystemMetrics(SM_CYSCREEN);
 
+        OSettings->setResolution({screenW, screenH});
+
         if (bIsFullscreen)
         {
             long posX = 0;
             long posY = 0;
             m_handle = CreateWindow(L"OakNutWindow",
                                     utf8ToUtf16(OSettings->getGameName()).c_str(),
-                                    WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                    posX, posY, resolution.x, resolution.y,
+                                    WS_POPUP | WS_VISIBLE,
+                                    posX, posY, screenW, screenH,
                                     nullptr, nullptr, nullptr, nullptr);
         }
         else

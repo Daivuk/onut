@@ -38,7 +38,7 @@ namespace onut
         std::string         m_gameName = "Game Name";
         bool                m_isResizableWindow = false;
         bool                m_isFixedStep = true;
-        bool                m_isBorderLessFullscreen = true;
+        bool                m_isBorderLessFullscreen = false;
 
         std::atomic<bool>   m_isDirty = false;
         std::atomic<bool>   m_requestShutdown = false;
