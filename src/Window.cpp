@@ -72,6 +72,8 @@ namespace onut
     {
         pWindow = this;
 
+        auto bIsFullscreen = OSettings->getBorderlessFullscreen();
+
         // Define window style
         WNDCLASS wc = {0};
         wc.style = CS_OWNDC;
@@ -83,25 +85,39 @@ namespace onut
         // Centered position
         auto screenW = GetSystemMetrics(SM_CXSCREEN);
         auto screenH = GetSystemMetrics(SM_CYSCREEN);
-        auto posX = (screenW - resolution.x) / 2;
-        auto posY = (screenH - resolution.y) / 2;
 
-        // Create the window
-        if (isResizable)
+        if (bIsFullscreen)
         {
-            m_handle = CreateWindow(L"OakNutWindow",
-                                    utf8ToUtf16(OSettings->getGameName()).c_str(),
-                                    WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
-                                    posX, posY, resolution.x, resolution.y,
-                                    nullptr, nullptr, nullptr, nullptr);
-        }
-        else
-        {
+            long posX = 0;
+            long posY = 0;
             m_handle = CreateWindow(L"OakNutWindow",
                                     utf8ToUtf16(OSettings->getGameName()).c_str(),
                                     WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                     posX, posY, resolution.x, resolution.y,
                                     nullptr, nullptr, nullptr, nullptr);
+        }
+        else
+        {
+            auto posX = (screenW - resolution.x) / 2;
+            auto posY = (screenH - resolution.y) / 2;
+
+            // Create the window
+            if (isResizable)
+            {
+                m_handle = CreateWindow(L"OakNutWindow",
+                                        utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                        WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
+                                        posX, posY, resolution.x, resolution.y,
+                                        nullptr, nullptr, nullptr, nullptr);
+            }
+            else
+            {
+                m_handle = CreateWindow(L"OakNutWindow",
+                                        utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                        posX, posY, resolution.x, resolution.y,
+                                        nullptr, nullptr, nullptr, nullptr);
+            }
         }
     }
 

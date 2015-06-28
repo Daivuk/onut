@@ -21,7 +21,10 @@ namespace onut
         void                setGameName(const std::string& gameName);
 
         bool                getIsResizableWindow() const { return m_isResizableWindow; }
-        void                setIsResizableWindow(bool isResizableWindow);
+        void                setIsResizableWindow(bool isBorderLessFullscreen);
+
+        bool                getBorderlessFullscreen() const { return m_isBorderLessFullscreen; }
+        void                setBorderlessFullscreen(bool m_isBorderLessFullscreen);
 
         bool                getIsFixedStep() const { return m_isFixedStep; }
         void                setIsFixedStep(bool isFixedStep);
@@ -35,6 +38,7 @@ namespace onut
         std::string         m_gameName = "Game Name";
         bool                m_isResizableWindow = false;
         bool                m_isFixedStep = true;
+        bool                m_isBorderLessFullscreen = true;
 
         std::atomic<bool>   m_isDirty = false;
         std::atomic<bool>   m_requestShutdown = false;

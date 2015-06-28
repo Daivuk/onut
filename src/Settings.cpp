@@ -84,6 +84,11 @@ namespace onut
         m_isResizableWindow = isResizableWindow;
     }
 
+    void Settings::setBorderlessFullscreen(bool isBorderLessFullscreen)
+    {
+        m_isBorderLessFullscreen = isBorderLessFullscreen;
+    }
+
     void Settings::setIsFixedStep(bool isFixedStep)
     {
         m_isFixedStep = isFixedStep;
