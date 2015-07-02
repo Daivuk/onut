@@ -40,17 +40,25 @@ Make sure to follow the recommanded folder structure when doing those steps.
 
 1. Create a new win32 solution and project for your game
 2. Clone onut inside your main directory.
-3. Add onut project to your solution.
+3. Clone EasyGraphix inside onut. https://github.com/Daivuk/EasyGraphix
+4. Add onut and EasyGraphix projects to your solution.
   * Right click your solution -> Add -> Existing project -> `YourGamePath\onut\project\win\onut.vcxproj`
-4. Add build dependancies for your game to include `onut`.
+  * Right click your solution -> Add -> Existing project -> `YourGamePath\onut\EasyGraphix\eg\src\dx11\egdx11.vcxproj`
+5. Add build dependancies for onut game to include `egdx11`.
+  * Right click onut project -> Build Dependencies -> Project Dependencies -> Check mark `egdx11`
+6. Add build dependancies for your game to include `onut`.
   * Right click YourGame project -> Build Dependencies -> Project Dependencies -> Check mark `onut`
-5. Add references to `onut` from your game.
+7. Add references to `egdx11` from `onut`.
+  * Right click `onut` project -> Add -> References -> Add New Reference -> Check mark `egdx11`
+8. Add references to `onut` from your game.
   * Right click YourGame project -> Add -> References -> Add New Reference -> Check mark `onut`
-6. Add include path to onut
+9. Add include path to onut
   * Right click YourGame project -> Properties -> Configuration Properties -> C/C++ -> General -> Additional Include Directories. Add the following:
     * `../../src`
     * `../../onut/include`
-
+    * `../../onut/EasyGraphix/eg/include`
+10. Add C++ preprocessor to YourGame `EASY_GRAPHIX`. Do for both Debug and Release
+11. Make sure to enable multi core compilation to increase speed. You might have to disable minimal rebuild **No (/Gm-)**
 
 ###Main
 ```cpp
