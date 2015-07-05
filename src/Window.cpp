@@ -86,10 +86,10 @@ namespace onut
         auto screenW = GetSystemMetrics(SM_CXSCREEN);
         auto screenH = GetSystemMetrics(SM_CYSCREEN);
 
-        OSettings->setResolution({screenW, screenH});
-
         if (bIsFullscreen)
         {
+            OSettings->setResolution({screenW, screenH});
+
             long posX = 0;
             long posY = 0;
             m_handle = CreateWindow(L"OakNutWindow",
