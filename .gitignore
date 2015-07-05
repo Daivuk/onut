@@ -35,5 +35,6 @@
 Thumbs.db
 
 #folders
-Debug
-Release
+Debug/
+Release/
+EasyGraphix/
