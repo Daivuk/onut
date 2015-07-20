@@ -104,7 +104,7 @@ namespace onut
             auto posY = (screenH - resolution.y) / 2;
 
             // Create the window
-            if (isResizable)
+            if (!isResizable)
             {
                 m_handle = CreateWindow(L"OakNutWindow",
                                         utf8ToUtf16(OSettings->getGameName()).c_str(),

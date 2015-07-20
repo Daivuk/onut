@@ -16,7 +16,12 @@ onut::ActionManager g_actionManager;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setResolution({1280, 900});
+    auto screenW = GetSystemMetrics(SM_CXSCREEN) * 4 / 5;
+    auto screenH = GetSystemMetrics(SM_CYSCREEN) * 4 / 5;
+    OSettings->setUserSettingDefault("width", std::to_string(screenW));
+    OSettings->setUserSettingDefault("height", std::to_string(screenH));
+    OSettings->setResolution({std::stoi(OSettings->getUserSetting("width")), 
+                              std::stoi(OSettings->getUserSetting("height"))});
     OSettings->setGameName("Oak Nut UI Editor");
     OSettings->setIsResizableWindow(true);
 

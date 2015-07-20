@@ -33,6 +33,7 @@
 *.sdf
 *.opensdf
 Thumbs.db
+usersettings.cfg
 
 #folders
 Debug/
