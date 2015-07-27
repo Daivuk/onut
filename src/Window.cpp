@@ -89,7 +89,6 @@ namespace onut
         if (bIsFullscreen)
         {
             OSettings->setResolution({screenW, screenH});
-
             long posX = 0;
             long posY = 0;
             m_handle = CreateWindow(L"OakNutWindow",

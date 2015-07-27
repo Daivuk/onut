@@ -37,3 +37,5 @@ namespace onut
         return{uiPos.x, uiPos.y};
     }
 };
+
+#define OToOnut onut::UI2Onut

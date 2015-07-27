@@ -1334,6 +1334,8 @@ inline float Vector4::Distance(const Vector2& p) const
 {
     auto dx = std::max<float>(x - p.x, p.x - (x + z));
     auto dy = std::max<float>(y - p.y, p.y - (y + w));
+    dx = std::max<float>(0, dx);
+    dy = std::max<float>(0, dy);
     return std::sqrtf(dx*dx + dy*dy);
 }
 

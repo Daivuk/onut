@@ -48,6 +48,9 @@ namespace onut
         bool                        m_isDrawing = false;
 
         Texture*                    m_pTexWhite = nullptr;
+#else
+        static const int MAX_SPRITE_COUNT = 2000;
+
 #endif /* !EASY_GRAPHIX */
         void flush();
 

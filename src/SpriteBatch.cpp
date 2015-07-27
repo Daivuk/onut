@@ -124,6 +124,11 @@ namespace onut
         egPosition2(rect.x + rect.z, rect.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
@@ -193,6 +198,11 @@ namespace onut
         egPosition2(rect.x + rect.z, rect.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
@@ -415,6 +425,11 @@ namespace onut
         egPosition2(rect.x + rect.z, rect.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
@@ -483,6 +498,11 @@ namespace onut
         egPosition2(rect.x + rect.z, rect.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
@@ -554,6 +574,11 @@ namespace onut
         egPosition2(rect.x + rect.z, rect.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
@@ -696,6 +721,11 @@ namespace onut
         egPosition2(position.x + right.x - down.x, position.y + right.y - down.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
@@ -778,6 +808,11 @@ namespace onut
         egPosition2(to.x - right.x, to.y - right.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #endif
     }
 
@@ -825,6 +860,11 @@ namespace onut
         egPosition2(position.x + right.x - down.x, position.y + right.y - down.y);
 
         ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #else /* EASY_GRAPHIX */
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
