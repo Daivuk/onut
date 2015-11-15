@@ -67,7 +67,7 @@ namespace onut
         auto result = D3D11CreateDeviceAndSwapChain(
             nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 
 #if _DEBUG
-            D3D11_CREATE_DEVICE_DEBUG,
+            0,
 #else
             0,
 #endif

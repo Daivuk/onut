@@ -315,6 +315,7 @@ namespace onut
 
     void TiledMap::renderLayer(const RECT &in_rect, sLayer *in_pLayer)
     {
+#if defined(EASY_GRAPHIX)
         if (!in_pLayer->isVisible) return;
 
         auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
@@ -344,10 +345,12 @@ namespace onut
         OSB->end();
 
         egModelPop();
+#endif
     }
 
     onut::Texture *TiledMap::getMinimap()
     {
+#if defined(EASY_GRAPHIX)
         //if (pMinimap) return pMinimap;
         if (!m_tilesetCount) return nullptr;
 
@@ -369,5 +372,8 @@ namespace onut
 
         ORenderer->bindRenderTarget(nullptr);
         return pMinimap;
+#else
+        return nullptr;
+#endif
     }
 };
