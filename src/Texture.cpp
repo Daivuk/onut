@@ -56,6 +56,16 @@ namespace onut
 #endif /* !EASY_GRAPHIX */
     }
 
+    void Texture::setData(const uint8_t *in_pData)
+    {
+        auto pDeviceContext = ORenderer->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE data;
+        pDeviceContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+        memcpy(data.pData, in_pData, m_size.x * m_size.y * 4);
+        pDeviceContext->Unmap(m_pTexture, 0);
+    }
+
     Texture* Texture::createFromFile(const std::string& filename, bool generateMipmaps)
     {
         Texture* pRet = NULL;
