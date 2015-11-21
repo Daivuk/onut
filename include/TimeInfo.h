@@ -55,13 +55,14 @@ namespace onut
 
         void render()
         {
+            m_lastRenderTime = m_thisRenderTime;
             ++m_currentFPS;
-            auto now = std::chrono::high_resolution_clock::now();
-            if (now - m_lastFPSSnapShotTime >= std::chrono::seconds(1))
+            m_thisRenderTime = std::chrono::high_resolution_clock::now();
+            if (m_thisRenderTime - m_lastFPSSnapShotTime >= std::chrono::seconds(1))
             {
                 m_fps = m_currentFPS;
                 m_currentFPS = 0;
-                m_lastFPSSnapShotTime = now;
+                m_lastFPSSnapShotTime = m_thisRenderTime;
             }
         }
 
@@ -73,6 +74,20 @@ namespace onut
         TrequestedPrecision getDeltaTime() const
         {
             return static_cast<TrequestedPrecision>(m_deltaTime);
+        }
+
+        /**
+        @return the time elapsed between this frame and the last one, in seconds.
+        The render frames, not update.
+        */
+        template<typename TrequestedPrecision = float>
+        TrequestedPrecision getRenderDeltaTime() const
+        {
+            auto deltaTime =
+                static_cast<Tprecision>(std::chrono::duration_cast<std::chrono::microseconds>(m_thisRenderTime - m_lastRenderTime).count()) /
+                static_cast<Tprecision>(1000000.0);
+
+            return static_cast<TrequestedPrecision>(deltaTime);
         }
 
         /**
@@ -102,5 +117,7 @@ namespace onut
         int                                                 m_currentFPS = 0;
         int                                                 m_fps = 0;
         decltype(std::chrono::high_resolution_clock::now()) m_lastFPSSnapShotTime = std::chrono::high_resolution_clock::now();
+        decltype(std::chrono::high_resolution_clock::now()) m_lastRenderTime = std::chrono::high_resolution_clock::now();
+        decltype(std::chrono::high_resolution_clock::now()) m_thisRenderTime = std::chrono::high_resolution_clock::now();
     };
 }

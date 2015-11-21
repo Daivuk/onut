@@ -119,6 +119,16 @@ namespace onut
                                         posX, posY, resolution.x, resolution.y,
                                         nullptr, nullptr, nullptr, nullptr);
             }
+
+            RECT clientRect;
+            GetClientRect(m_handle, &clientRect);
+            auto wDiff = resolution.x - (clientRect.right - clientRect.left);
+            auto hDiff = resolution.y - (clientRect.bottom - clientRect.top);
+            auto newW = resolution.x + wDiff;
+            auto newH = resolution.y + hDiff;
+            posX = (screenW - newW) / 2;
+            posY = (screenH - newH) / 2;
+            SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
         }
     }
 
