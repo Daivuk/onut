@@ -8,10 +8,17 @@ namespace onut
     class SpriteBatch
     {
     public:
+        enum class eBlendMode
+        {
+            PRE_MULT,
+            FORCE_WRITE,
+        };
+
         SpriteBatch();
         virtual ~SpriteBatch();
 
-        void begin();
+        void begin(eBlendMode blendMode = eBlendMode::PRE_MULT);
+        void drawAbsoluteRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);
         void drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors);
@@ -56,5 +63,7 @@ namespace onut
 
         Texture*                    m_pTexture = nullptr;
         unsigned int                m_spriteCount = 0;
+        eBlendMode                  m_curBlendMode = eBlendMode::PRE_MULT;
+        ID3D11BlendState*           m_pForceWriteBlend = nullptr;
     };
 }

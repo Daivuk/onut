@@ -61,19 +61,36 @@ namespace onut
 
         ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
         assert(ret == S_OK);
+
+        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ZERO,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ZERO,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        }), &m_pForceWriteBlend);
+        assert(ret == S_OK);
 #endif /* !EASY_GRAPHIX */
     }
 
     SpriteBatch::~SpriteBatch()
     {
 #ifndef EASY_GRAPHIX
+        if (m_pForceWriteBlend) m_pForceWriteBlend->Release();
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
         delete m_pTexWhite;
 #endif /* !EASY_GRAPHIX */
     }
 
-    void SpriteBatch::begin()
+    void SpriteBatch::begin(eBlendMode blendMode)
     {
 #ifdef EASY_GRAPHIX
         ORenderer->setupFor2D();
@@ -83,6 +100,11 @@ namespace onut
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
         ORenderer->setupFor2D();
+        m_curBlendMode = blendMode;
+        if (m_curBlendMode == eBlendMode::FORCE_WRITE)
+        {
+            ORenderer->getDeviceContext()->OMSetBlendState(m_pForceWriteBlend, NULL, 0xffffffff);
+        }
         m_pTexture = nullptr;
         m_isDrawing = true;
         ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
@@ -164,6 +186,11 @@ namespace onut
             flush();
         }
 #endif /* !EASY_GRAPHIX */
+    }
+
+    void SpriteBatch::drawAbsoluteRect(Texture* pTexture, const Rect& rect, const Color& color)
+    {
+        drawRect(pTexture, {rect.x, rect.y, rect.z - rect.x, rect.w - rect.y}, color);
     }
 
     void SpriteBatch::drawRect(Texture* pTexture, const Rect& rect, const Color& color)
@@ -920,6 +947,11 @@ namespace onut
             flush();
         }
         ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
+
+        if (m_curBlendMode == eBlendMode::FORCE_WRITE)
+        {
+            ORenderer->resetState();
+        }
 #endif /* !EASY_GRAPHIX */
     }
 

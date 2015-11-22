@@ -34,6 +34,9 @@ namespace onut
         virtual ~Texture();
 
         void                        bind(int slot = 0);
+        void                        bindRenderTarget();
+        void                        unbindRenderTarget();
+        void                        clearRenderTarget(const Color& color);
         const sSize&                getSize() const { return m_size; }
         Vector2                     getSizef() const
         {
@@ -56,6 +59,7 @@ namespace onut
 #else
         ID3D11Texture2D*            m_pTexture = nullptr;
         ID3D11ShaderResourceView*   m_pTextureView = nullptr;
+        ID3D11RenderTargetView*     m_pRenderTargetView = nullptr;
 #endif
         sSize                       m_size;
     };

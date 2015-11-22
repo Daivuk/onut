@@ -307,6 +307,14 @@ namespace onut
             egBindRenderTarget(pTexture->getResource());
         }
 #else /* EASY_GRAPHIX */
+        if (pTexture)
+        {
+            pTexture->bindRenderTarget();
+        }
+        else
+        {
+            m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
+        }
 #endif /* !EASY_GRAPHIX */
     }
 
