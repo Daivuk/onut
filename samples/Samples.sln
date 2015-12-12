@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{EA12
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Text", "Text\project\win\Text.vcxproj", "{EC9B18E3-D1DA-43BF-AF00-05272898CB46}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sounds", "Sounds\project\win\Sounds.vcxproj", "{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -29,6 +31,10 @@ Global
 		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Debug|Win32.Build.0 = Debug|Win32
 		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Release|Win32.ActiveCfg = Release|Win32
 		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Release|Win32.Build.0 = Release|Win32
+		{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E}.Debug|Win32.Build.0 = Debug|Win32
+		{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E}.Release|Win32.ActiveCfg = Release|Win32
+		{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,5 +42,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{949E5B14-195A-4AB4-990C-F1574F5055AE} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{EC9B18E3-D1DA-43BF-AF00-05272898CB46} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal

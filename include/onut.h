@@ -116,9 +116,9 @@ inline OPfx* OEmitPFX(const char* pName, const Vector3& position, const Vector3&
     return pPfx;
 }
 
-inline void OPlaySound(const char* pName)
+inline void OPlaySound(const char* pName, float volume = 1.0f, float balance = 0.f)
 {
-    OGetSound(pName)->play();
+    OGetSound(pName)->play(volume, balance);
 }
 
 //--- Game pads
