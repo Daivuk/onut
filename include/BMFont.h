@@ -49,7 +49,7 @@ namespace onut
             const Color& color = Color::White,
             Color outlineColor = {0, 0, 0, .75f},
             float outlineSize = 2.f,
-            onut::SpriteBatch* pSpriteBatch = OSB,
+            onut::SpriteBatch* pSpriteBatch = OSpriteBatch,
             Align align = Talign)
         {
             outlineColor.w *= color.w;

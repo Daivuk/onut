@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "onut", "..\project\win\onut
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{EA1213E7-4804-4594-A944-35D5A4117E51}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Text", "Text\project\win\Text.vcxproj", "{EC9B18E3-D1DA-43BF-AF00-05272898CB46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -23,11 +25,16 @@ Global
 		{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}.Debug|Win32.Build.0 = Debug|Win32
 		{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}.Release|Win32.ActiveCfg = Release|Win32
 		{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}.Release|Win32.Build.0 = Release|Win32
+		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Debug|Win32.Build.0 = Debug|Win32
+		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Release|Win32.ActiveCfg = Release|Win32
+		{EC9B18E3-D1DA-43BF-AF00-05272898CB46}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{949E5B14-195A-4AB4-990C-F1574F5055AE} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{EC9B18E3-D1DA-43BF-AF00-05272898CB46} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal
