@@ -72,7 +72,7 @@ void checkTest(bool cond, TtextType testName)
 template<uintptr_t TloopCount>
 bool testRandomPool()
 {
-    onut::Pool<9, 7, 11, false> pool;
+    onut::StaticPool<9, 7, 11, false> pool;
 
     class CObj
     {
@@ -370,7 +370,7 @@ int main(int argc, char** args)
     {
         subTest("Basic tests using onut::Pool<16, 10, 5, false>");
         {
-            onut::Pool<16, 10, 5, false> pool;
+            onut::StaticPool<16, 10, 5, false> pool;
 
             class CObj
             {
@@ -618,19 +618,28 @@ int main(int argc, char** args)
             onut::ContentManager<false> contentManager;
 
             bool testRet[6] = {false};
+            std::atomic<int> completed = 0;
 
-            auto future1 = std::async(std::launch::async, [&contentManager, &testRet]
+            auto future1 = std::async(std::launch::async, [&]
             {
                 testRet[0] = contentManager.getResource<TestResource1>("res1.txt") != nullptr;
                 testRet[1] = contentManager.getResource<TestResource2>("someFileThatDoesntExist.txt") == nullptr;
                 testRet[2] = contentManager.getResource<TestResource2>("res2.txt") != nullptr;
+                ++completed;
             });
-            auto future2 = std::async(std::launch::async, [&contentManager, &testRet]
+            auto future2 = std::async(std::launch::async, [&]
             {
                 testRet[3] = contentManager.getResource<TestResource1>("res1.txt") != nullptr;
                 testRet[4] = contentManager.getResource<TestResource2>("res2.txt") != nullptr;
                 testRet[5] = contentManager.getResource<TestResource2>("someFileThatDoesntExist.txt") == nullptr;
+                ++completed;
             });
+
+            extern onut::Synchronous<onut::Pool<>> g_mainSync;
+            while (completed < 2)
+            {
+                g_mainSync.processQueue();
+            }
 
             future1.wait();
             future2.wait();

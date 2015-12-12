@@ -14,6 +14,7 @@ namespace onut
     public:
         ContentManager()
         {
+            addDefaultSearchPaths();
         }
 
         virtual ~ContentManager()
@@ -81,17 +82,17 @@ namespace onut
                 std::promise<Ttype*> p;
                 std::future<Ttype*> f = p.get_future();
 
-                OSync([&]{
+                OSync([&p, name, this]{
                     auto it = m_resources.find(name);
                     if (it == m_resources.end())
                     {
                         // Load it
-                        OAsync([&]{
+                        OAsync([&p, name, this]{
                             auto pResource = load<Ttype>(name);
-                            OSync([&]{
-                                m_resources[name] = pResource;
+                            OSync([&p, name, pResource, this]{
                                 if (pResource)
                                 {
+                                    m_resources[name] = pResource;
                                     p.set_value(pResource->getResource());
                                 }
                                 else
