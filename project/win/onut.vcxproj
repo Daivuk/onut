@@ -55,6 +55,8 @@
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\include\Window.h" />
+    <ClInclude Include="..\..\src\_2dps.cso.h" />
+    <ClInclude Include="..\..\src\_2dvs.cso.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
@@ -132,20 +134,6 @@
     <ClCompile Include="..\..\src\zlib\trees.c" />
     <ClCompile Include="..\..\src\zlib\uncompr.c" />
     <ClCompile Include="..\..\src\zlib\zutil.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\src\2dps.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="..\..\src\2dvs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\assets\shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}</ProjectGuid>

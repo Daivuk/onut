@@ -147,16 +147,16 @@ namespace onut
         {
             if (!(previousMouseState.rgbButtons[i] & 0x80) && (mouseState.rgbButtons[i] & 0x80))
             {
-                OInput->setStateDown(DIK_MOUSEB1 + i);
+                OInput->setStateDown(OINPUT_MOUSEB1 + i);
             }
             else if ((previousMouseState.rgbButtons[i] & 0x80) && !(mouseState.rgbButtons[i] & 0x80))
             {
-                OInput->setStateUp(DIK_MOUSEB1 + i);
+                OInput->setStateUp(OINPUT_MOUSEB1 + i);
             }
         }
         memcpy(&previousMouseState, &mouseState, sizeof(DIMOUSESTATE));
-        OInput->setStateValue(DIK_MOUSEX, (float)mouseState.lX);
-        OInput->setStateValue(DIK_MOUSEY, (float)mouseState.lY);
-        OInput->setStateValue(DIK_MOUSEZ, (float)mouseState.lZ);
+        OInput->setStateValue(OINPUT_MOUSEX, (float)mouseState.lX);
+        OInput->setStateValue(OINPUT_MOUSEY, (float)mouseState.lY);
+        OInput->setStateValue(OINPUT_MOUSEZ, (float)mouseState.lZ);
     }
 }

@@ -36,7 +36,7 @@ namespace onut
         Rect draw(const std::string& text,
                   const Vector2& pos,
                   const Color& color = Color::White,
-                  onut::SpriteBatch* pSpriteBatch = OSB,
+                  onut::SpriteBatch* pSpriteBatch = OSpriteBatch,
                   Align align = Talign)
         {
             return drawInternal(text, pos, color, pSpriteBatch, align);

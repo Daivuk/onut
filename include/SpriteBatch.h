@@ -33,6 +33,8 @@ namespace onut
         void drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
         void end();
 
+        bool isInBatch() const { return m_isDrawing; };
+
     private:
 #ifndef EASY_GRAPHIX
         struct SVertexP2T2C4

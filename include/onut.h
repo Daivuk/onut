@@ -26,26 +26,29 @@
 #include "UINodeNav.h"
 #include "Window.h"
 
-typedef onut::Anim<float>       OAnimf;
-typedef onut::Anim<int>         OAnimi;
-typedef onut::Anim<Vector2>     OAnim2;
-typedef onut::Anim<Vector3>     OAnim3;
-typedef onut::Anim<Vector4>     OAnim4;
-typedef onut::Anim<std::string> OAnimStr;
-typedef onut::Anim<Color>       OAnimc;
-typedef onut::Timer<float>      OTimer;
-typedef std::vector<Color>      OPal;
-
 // For quick stuff, we have shortcuts outside of the namespace
 extern onut::Renderer*                  ORenderer;
-extern onut::SpriteBatch*               OSB;
-extern onut::PrimitiveBatch*            OPB;
+extern onut::SpriteBatch*               OSpriteBatch;
+extern onut::PrimitiveBatch*            OPrimitiveBatch;
 extern onut::Settings*                  OSettings;
 extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;
 extern onut::Input*                     OInput;
 extern onut::Window*                    OWindow;
+
+using OAnimf = onut::Anim<float>;
+using OAnimi = onut::Anim<int>;
+using OAnim2 = onut::Anim<Vector2>;
+using OAnim3 = onut::Anim<Vector3>;
+using OAnim4 = onut::Anim<Vector4>;
+using OAnimStr = onut::Anim<std::string>;
+using OAnimc = onut::Anim<Color>;
+using OTimer = onut::Timer<float>;
+using OPal = std::vector<Color>;
+
+#define OSB OSpriteBatch
+#define OPB OPrimitiveBatch
 
 namespace onut
 {
@@ -81,6 +84,8 @@ namespace onut
     void drawPal(const OPal& pal, OFont* pFont = nullptr);
 }
 
+#define ORun onut::run
+
 //--- Resource shortcuts
 extern onut::ContentManager<>* OContentManager;
 
@@ -104,6 +109,13 @@ inline OPfx* OGetPFX(const char* pName)
     return OContentManager->getResource<OPfx>(pName);
 }
 
+inline OPfx* OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ)
+{
+    auto pPfx = OGetPFX(pName);
+    OParticles->emit(pPfx, position, dir);
+    return pPfx;
+}
+
 inline void OPlaySound(const char* pName)
 {
     OGetSound(pName)->play();
@@ -115,17 +127,17 @@ inline onut::GamePad* OGamePad(int index)
     return onut::getGamePad(index);
 }
 
-inline bool OPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0)
+inline bool OGamePadPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0)
 {
     return OGamePad(gamePadIndex)->isPressed(button);
 }
 
-inline bool OJustPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0)
+inline bool OGamePadJustPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0)
 {
     return OGamePad(gamePadIndex)->isJustPressed(button);
 }
 
-inline bool OJustReleased(onut::GamePad::eGamePad button, int gamePadIndex = 0)
+inline bool OGamePadJustReleased(onut::GamePad::eGamePad button, int gamePadIndex = 0)
 {
     return OGamePad(gamePadIndex)->isJustReleased(button);
 }
@@ -138,6 +150,26 @@ inline const Vector2& OLThumb(int gamePadIndex = 0)
 inline const Vector2& ORThumb(int gamePadIndex = 0)
 {
     return OGamePad(gamePadIndex)->getRightThumb();
+}
+
+inline bool OPressed(int state)
+{
+    return OInput->isStateDown(state);
+}
+
+inline bool OJustPressed(int state)
+{
+    return OInput->isStateJustDown(state);
+}
+
+inline bool OJustReleased(int state)
+{
+    return OInput->isStateJustUp(state);
+}
+
+inline bool OReleased(int state)
+{
+    return OInput->isStateUp(state);
 }
 
 inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent)

@@ -190,6 +190,12 @@
     <ClInclude Include="..\..\include\List.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\_2dps.cso.h">
+      <Filter>src\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\_2dvs.cso.h">
+      <Filter>src\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -368,9 +374,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{f147408f-9c92-4c54-bcfd-bd3c26c0fc93}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\shaders">
-      <UniqueIdentifier>{c06ade93-9118-49de-bba1-fb9abed7757a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\audio">
       <UniqueIdentifier>{0fcd117a-dc6b-4505-b51e-c00eb77824fb}</UniqueIdentifier>
     </Filter>
@@ -392,13 +395,8 @@
     <Filter Include="src\zlib">
       <UniqueIdentifier>{f490e9c5-e976-4386-a9e2-78c2d22bc76f}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\src\2dps.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\2dvs.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
+    <Filter Include="src\shaders">
+      <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

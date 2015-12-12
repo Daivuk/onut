@@ -45,7 +45,7 @@ namespace onut
 
         void render()
         {
-            OSB->begin();
+            OSpriteBatch->begin();
             if (TsortEmitters)
             {
             }
@@ -61,7 +61,7 @@ namespace onut
                     }
                 }
             }
-            OSB->end();
+            OSpriteBatch->end();
         }
 
         Particle* allocParticle() override
@@ -79,7 +79,7 @@ namespace onut
         void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override
         {
             float dim = static_cast<float>(std::max<decltype(pParticle->pTexture->getSize().x)>(pParticle->pTexture->getSize().x, pParticle->pTexture->getSize().y));
-            OSB->drawSprite(pParticle->pTexture, pParticle->position, pParticle->color.value, pParticle->angle.value, pParticle->size.value / dim);
+            OSpriteBatch->drawSprite(pParticle->pTexture, pParticle->position, pParticle->color.value, pParticle->angle.value, pParticle->size.value / dim);
         }
 
     private:

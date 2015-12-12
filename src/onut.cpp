@@ -13,8 +13,8 @@ using namespace DirectX;
 onut::Window*                       OWindow = nullptr;
 onut::Renderer*                     ORenderer = nullptr;
 onut::Settings*                     OSettings = new onut::Settings();
-onut::SpriteBatch*                  OSB = nullptr;
-onut::PrimitiveBatch*               OPB = nullptr;
+onut::SpriteBatch*                  OSpriteBatch = nullptr;
+onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 onut::GamePad*                      g_gamePads[4] = {nullptr};
 onut::EventManager*                 OEvent = nullptr;
 onut::ContentManager<>*             OContentManager = nullptr;
@@ -56,7 +56,7 @@ namespace onut
 
         // Mouse/Keyboard
         g_inputDevice = new InputDevice(OWindow);
-        OInput = new onut::Input(DIK_MOUSEZ + 1);
+        OInput = new onut::Input(OINPUT_MOUSEZ + 1);
 
         // Gamepads
         for (int i = 0; i < 4; ++i)

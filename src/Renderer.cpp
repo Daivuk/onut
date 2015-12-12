@@ -5,6 +5,11 @@
 #include <fstream>
 #include <vector>
 
+#ifndef EASY_GRAPHIX
+#include "_2dvs.cso.h"
+#include "_2dps.cso.h"
+#endif
+
 namespace onut
 {
     Renderer::Renderer(Window& window)
@@ -39,7 +44,7 @@ namespace onut
         if (m_deviceContext) m_deviceContext->Release();
         if (m_device) m_device->Release();
         if (m_swapChain) m_swapChain->Release();
-#endif;
+#endif
     }
 
     void Renderer::createDevice(Window& window)
@@ -212,15 +217,9 @@ namespace onut
 #ifndef EASY_GRAPHIX
         // Create 2D shaders
         {
-            std::ifstream vsFile("../../assets/shaders/2dvs.cso", std::ios::binary);
-            std::vector<char> vsData = {std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>()};
-
-            std::ifstream psFile("../../assets/shaders/2dps.cso", std::ios::binary);
-            std::vector<char> psData = {std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>()};
-
-            auto ret = m_device->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &m_p2DVertexShader);
+            auto ret = m_device->CreateVertexShader(_2dvs_cso, sizeof(_2dvs_cso), nullptr, &m_p2DVertexShader);
             assert(ret == S_OK);
-            ret = m_device->CreatePixelShader(psData.data(), psData.size(), nullptr, &m_p2DPixelShader);
+            ret = m_device->CreatePixelShader(_2dps_cso, sizeof(_2dps_cso), nullptr, &m_p2DPixelShader);
             assert(ret == S_OK);
 
             // Create input layout
@@ -229,7 +228,7 @@ namespace onut
                 {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
                 {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
             };
-            ret = m_device->CreateInputLayout(layout, 3, vsData.data(), vsData.size(), &m_p2DInputLayout);
+            ret = m_device->CreateInputLayout(layout, 3, _2dvs_cso, sizeof(_2dvs_cso), &m_p2DInputLayout);
             assert(ret == S_OK);
         }
 #endif /* !EASY_GRAPHIX */

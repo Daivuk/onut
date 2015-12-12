@@ -248,6 +248,8 @@ namespace onut
         int page = -1;
         float r, g, b;
         Color curColor = color;
+        bool bHandleBatch = !pSpriteBatch->isInBatch();
+        if (bHandleBatch) pSpriteBatch->begin();
         for (unsigned int i = 0; i < text.size(); )
         {
             char charId = text[i];
@@ -292,6 +294,7 @@ namespace onut
             curPos.x += static_cast<float>(pDatChar->xadvance);
             ++i;
         }
+        if (bHandleBatch) pSpriteBatch->end();
 
         return std::move(ret);
     }
