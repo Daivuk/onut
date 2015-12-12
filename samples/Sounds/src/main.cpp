@@ -56,6 +56,7 @@ void render()
 
     // Draw info
     auto pFont = OGetBMFont("font.fnt");
+
     pFont->draw("Press ^9901-5^999 to play sounds", {10, 10});
     pFont->draw("Hold ^990Left Arrow^999 to on left channel", {10, 30});
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", {10, 50});
