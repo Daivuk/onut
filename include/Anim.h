@@ -471,6 +471,11 @@ namespace onut
             return m_retValue;
         }
 
+        operator const Ttype&() const
+        {
+            return m_retValue;
+        }
+
         /**
         Assign a new value. This changes the start position. So it might affect the currently playing animation.
         @param rvalue Value to set it
@@ -492,7 +497,7 @@ namespace onut
         */
         void start(const Ttype& from, const Ttype& goal, Tprecision duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE)
         {
-            start(from, {goal, duration, tween}, loop);
+            startKeyframed(from, {{goal, duration, tween}}, loop);
         }
 
         /**
@@ -502,30 +507,9 @@ namespace onut
         @param tween Tween to use. Default TweenType::LINEAR
         @param loop Looping state. Default LoopType::NONE
         */
-        void start(const Ttype& goal, Tprecision duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE)
+        void startFromCurrent(const Ttype& goal, Tprecision duration, TweenType tween = TweenType::LINEAR, LoopType loop = LoopType::NONE)
         {
-            start(m_value, {goal, duration, tween}, loop);
-        }
-
-        /**
-        Start the animation
-        @param from Starting value of the animation
-        @param keyFrame Anim::KeyFrame defining the animation: goal, duration, tween
-        @param loop Looping state. Default LoopType::NONE
-        */
-        void start(const Ttype& from, const KeyFrame& keyFrame, LoopType loop = LoopType::NONE)
-        {
-            start(from, std::vector < KeyFrame > { keyFrame }, loop);
-        }
-
-        /**
-        Start the animation
-        @param keyFrame Anim::KeyFrame defining the animation: goal, duration, tween
-        @param loop Looping state. Default LoopType::NONE
-        */
-        void start(const KeyFrame& keyFrame, LoopType loop = LoopType::NONE)
-        {
-            start(m_value, std::vector < KeyFrame > { keyFrame }, loop);
+            startKeyframed(m_value, {{goal, duration, tween}}, loop);
         }
 
         /**
@@ -533,9 +517,9 @@ namespace onut
         @param keyFrames Sequences of Anim::KeyFrame
         @param loop Looping state. Default LoopType::NONE
         */
-        void start(const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE)
+        void startFromCurrentKeyframed(const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE)
         {
-            start(m_value, keyFrames, loop);
+            startKeyframed(m_value, keyFrames, loop);
         }
 
         /**
@@ -544,7 +528,7 @@ namespace onut
         @param keyFrames Sequences of Anim::KeyFrame
         @param loop Looping state. Default LoopType::NONE
         */
-        void start(const Ttype& startValue, const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE)
+        void startKeyframed(const Ttype& startValue, const std::vector<KeyFrame>& keyFrames, LoopType loop = LoopType::NONE)
         {
             assert(!keyFrames.empty());
 
