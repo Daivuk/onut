@@ -15,7 +15,7 @@ OTexture* pDownloadedTexture = nullptr;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Animations Sample");
+    OSettings->setGameName("HTTP Sample");
     ORun(init, update, render);
 }
 

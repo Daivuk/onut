@@ -17,7 +17,7 @@ namespace onut
 
     inline Color UI2Onut(const sUIColor& uiColor)
     {
-        Color ret{&uiColor.r};
+        Color ret(uiColor.r * uiColor.a, uiColor.g * uiColor.a, uiColor.b * uiColor.a, uiColor.a);
         return std::move(ret);
     }
 

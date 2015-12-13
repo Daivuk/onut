@@ -1076,6 +1076,8 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
 {
     auto pLabel = new onut::UILabel();
     auto pButton = new onut::UIPanel();
+    auto pAlphaLabel = new onut::UILabel();
+    auto pAlphaText = new onut::UITextBox();
 
     pLabel->textComponent.text = name;
     pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
@@ -1089,34 +1091,68 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
 
     yPos += 24 + 4;
 
+    pAlphaLabel->textComponent.text = "Alpha:";
+    pAlphaLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pAlphaLabel->align = (onut::eUIAlign::TOP_RIGHT);
+    pAlphaLabel->rect = {{-4 - 64 - 4, yPos}, {64, 24}};
+    pAlphaLabel->anchor = {1, 0};
+
+    pAlphaText->setInt(100);
+    pAlphaText->setIsNumerical(true);
+    pAlphaText->align = (onut::eUIAlign::TOP_RIGHT);
+    pAlphaText->rect = {{-4, yPos}, {64, 24}};
+    pAlphaText->anchor = {1, 0};
+
+    yPos += 24 + 4;
+
     pPnl->add(pLabel);
     pPnl->add(pButton);
+    pPnl->add(pAlphaLabel);
+    pPnl->add(pAlphaText);
 
-    auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>
-        (std::string("Edit ") + name, &pButton->color, getter, setter);
-    pBindings->push_back(pBinding);
-
-    pButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     {
-        CHOOSECOLOR colorChooser = {0};
-        DWORD rgbCurrent; // initial color selection
-        rgbCurrent = (DWORD)pButton->color.packed;
-        rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
-        colorChooser.lStructSize = sizeof(colorChooser);
-        colorChooser.hwndOwner = OWindow->getHandle();
-        colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
-        colorChooser.rgbResult = rgbCurrent;
-        colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
-        if (ChooseColor(&colorChooser) == TRUE)
+        auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>
+            (std::string("Edit ") + name, &pButton->color, getter, setter);
+        pBindings->push_back(pBinding);
+
+        pButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
         {
-            onut::sUIColor color;
-            rgbCurrent = colorChooser.rgbResult;
-            color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff;
-            color.unpack();
-            pButton->color = color;
+            CHOOSECOLOR colorChooser = {0};
+            DWORD rgbCurrent; // initial color selection
+            rgbCurrent = (DWORD)pButton->color.packed;
+            auto alphaVal = rgbCurrent & 0x000000ff;
+            rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
+            colorChooser.lStructSize = sizeof(colorChooser);
+            colorChooser.hwndOwner = OWindow->getHandle();
+            colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
+            colorChooser.rgbResult = rgbCurrent;
+            colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
+            if (ChooseColor(&colorChooser) == TRUE)
+            {
+                onut::sUIColor color;
+                rgbCurrent = colorChooser.rgbResult;
+                color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | alphaVal;
+                color.unpack();
+                pButton->color = color;
+                pBinding->updateControl(g_pDocument->pSelected);
+            }
+        };
+    }
+
+    { // alpha
+        auto pBinding = new ControlInspectorBind<float, TuiType>(
+            "Alpha", nullptr,
+            [](TuiType* pControl) {return pControl->color.a * 100.f; },
+            [](TuiType* pControl, const float& alpha){pControl->color.a = alpha / 100.f; pControl->color.pack(); },
+            [=]{return pAlphaText->getFloat(); },
+            [=](const float& alpha) {pAlphaText->setFloat(alpha); });
+        pBindings->push_back(pBinding);
+
+        pAlphaText->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        {
             pBinding->updateControl(g_pDocument->pSelected);
-        }
-    };
+        };
+    }
 }
 
 template<typename TuiType>

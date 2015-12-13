@@ -456,6 +456,10 @@ namespace onut
         };
     };
 
+    struct sVoidEvent
+    {
+    };
+
     class UIControl
     {
     public:
@@ -535,7 +539,7 @@ namespace onut
         const std::vector<UIControl*>& getChildren() const { return m_children; };
 
         // Event callbacks
-        using TfnMouseEvent = std::function < void(UIControl*, const UIMouseEvent&) > ;
+        using TfnMouseEvent = std::function<void(UIControl*, const UIMouseEvent&)>;
         TfnMouseEvent onClick;
         TfnMouseEvent onDoubleClick;
         TfnMouseEvent onMouseMove;
@@ -554,11 +558,11 @@ namespace onut
         TfnMouseEvent onMiddleMouseDown;
         TfnMouseEvent onMiddleMouseUp;
 
-        using TfnFocusEvent = std::function < void(UIControl*) > ;
+        using TfnFocusEvent = std::function<void(UIControl*)>;
         TfnFocusEvent onGainFocus;
         TfnFocusEvent onLoseFocus;
 
-        using TfnKeyEvent = std::function < void(UIControl*, const UIKeyEvent&) >;
+        using TfnKeyEvent = std::function<void(UIControl*, const UIKeyEvent&)>;
         TfnKeyEvent onKeyDown;
 
     protected:

@@ -25,6 +25,8 @@ onut::ParticleSystemManager<>*      OParticles = nullptr;
 Vector2                             OMousePos;
 onut::InputDevice*                  g_inputDevice = nullptr;
 onut::Input*                        OInput = nullptr;
+onut::UIContext*                    OUIContext = nullptr;
+onut::UIControl*                    OUI = nullptr;
 
 
 // So commonly used stuff
@@ -32,6 +34,163 @@ float                               ODT = 0.f;
 
 namespace onut
 {
+    void createUI()
+    {
+        OUIContext = new UIContext(sUIVector2(OScreenWf, OScreenHf));
+        OUI = new UIControl();
+        OUI->retain();
+        OUI->widthType = eUIDimType::DIM_RELATIVE;
+        OUI->heightType = eUIDimType::DIM_RELATIVE;
+
+        OUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
+        {
+            OSB->end();
+            ORenderer->setScissor(enabled, onut::UI2Onut(rect));
+            OSB->begin();
+        };
+
+#if EASY_GRAPHIX
+        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pControl, const onut::sUIRect& rect)
+        {
+            OSB->end();
+            egEnable(EG_BLUR);
+            egBlur(32.f);
+            egPostProcess();
+            ORenderer->resetState();
+            OSB->begin();
+            OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .35f));
+        });
+#endif
+
+        auto getTextureForState = [](onut::UIControl *pControl, const std::string &filename)
+        {
+            static std::string stateFilename;
+            stateFilename = filename;
+            OTexture *pTexture;
+            switch (pControl->getState(*OUIContext))
+            {
+                case onut::eUIState::NORMAL:
+                    pTexture = OGetTexture(filename.c_str());
+                    break;
+                case onut::eUIState::DISABLED:
+                    stateFilename.insert(filename.size() - 4, "_disabled");
+                    pTexture = OGetTexture(stateFilename.c_str());
+                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                    break;
+                case onut::eUIState::HOVER:
+                    stateFilename.insert(filename.size() - 4, "_hover");
+                    pTexture = OGetTexture(stateFilename.c_str());
+                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                    break;
+                case onut::eUIState::DOWN:
+                    stateFilename.insert(filename.size() - 4, "_down");
+                    pTexture = OGetTexture(stateFilename.c_str());
+                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                    break;
+            }
+            return pTexture;
+        };
+
+        OUIContext->drawRect = [=](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)
+        {
+            OSB->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
+        };
+
+        OUIContext->drawTexturedRect = [=](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIImageComponent &image)
+        {
+            OSB->drawRect(getTextureForState(pControl, image.filename),
+                          onut::UI2Onut(rect),
+                          onut::UI2Onut(image.color));
+        };
+
+        OUIContext->drawScale9Rect = [=](onut::UIControl* pControl, const onut::sUIRect& rect, const onut::sUIScale9Component& scale9)
+        {
+            const std::string &filename = scale9.image.filename;
+            OTexture *pTexture;
+            switch (pControl->getState(*OUIContext))
+            {
+                case onut::eUIState::NORMAL:
+                    pTexture = OGetTexture(filename.c_str());
+                    break;
+                case onut::eUIState::DISABLED:
+                    pTexture = OGetTexture((filename + "_disabled").c_str());
+                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                    break;
+                case onut::eUIState::HOVER:
+                    pTexture = OGetTexture((filename + "_hover").c_str());
+                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                    break;
+                case onut::eUIState::DOWN:
+                    pTexture = OGetTexture((filename + "_down").c_str());
+                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                    break;
+            }
+            if (scale9.isRepeat)
+            {
+                OSB->drawRectScaled9RepeatCenters(getTextureForState(pControl, scale9.image.filename),
+                                                  onut::UI2Onut(rect),
+                                                  onut::UI2Onut(scale9.padding),
+                                                  onut::UI2Onut(scale9.image.color));
+            }
+            else
+            {
+                OSB->drawRectScaled9(getTextureForState(pControl, scale9.image.filename),
+                                     onut::UI2Onut(rect),
+                                     onut::UI2Onut(scale9.padding),
+                                     onut::UI2Onut(scale9.image.color));
+            }
+        };
+
+        OUIContext->drawText = [=](onut::UIControl* pControl, const onut::sUIRect& rect, const onut::sUITextComponent& text)
+        {
+            if (text.text.empty()) return;
+            auto align = onut::UI2Onut(text.font.align);
+            auto oRect = onut::UI2Onut(rect);
+            auto pFont = OGetBMFont(text.font.typeFace.c_str());
+            auto oColor = onut::UI2Onut(text.font.color);
+            if (pControl->getState(*OUIContext) == onut::eUIState::DISABLED)
+            {
+                oColor = {.4f, .4f, .4f, 1};
+            }
+            oColor.Premultiply();
+
+            if (pFont)
+            {
+                if (pControl->getStyleName() == "password")
+                {
+                    std::string pwd;
+                    pwd.resize(text.text.size(), '*');
+                    if (pControl->hasFocus(*OUIContext) && ((onut::UITextBox*)pControl)->isCursorVisible())
+                    {
+                        pwd.back() = '_';
+                    }
+                    pFont->draw<>(pwd, ORectAlign<>(oRect, align), oColor, OSB, align);
+                }
+                else
+                {
+                    pFont->draw<>(text.text, ORectAlign<>(oRect, align), oColor, OSB, align);
+                }
+            }
+        };
+
+        OUIContext->addTextCaretSolver<onut::UITextBox>("", [=](const onut::UITextBox* pTextBox, const onut::sUIVector2& localPos) -> decltype(std::string().size())
+        {
+            auto pFont = OGetBMFont(pTextBox->textComponent.font.typeFace.c_str());
+            if (!pFont) return 0;
+            auto& text = pTextBox->textComponent.text;
+            return pFont->caretPos(text, localPos.x - 4);
+        });
+
+        OWindow->onWrite = [](char c)
+        {
+            OUIContext->write(c);
+        };
+        OWindow->onKey = [](uintptr_t key)
+        {
+            OUIContext->keyDown(key);
+        };
+    }
+
     void createServices()
     {
         // Random
@@ -116,10 +275,14 @@ namespace onut
         {
             return OJustPressed(OBackBtn) || OJustPressed(OBBtn);
         });
+
+        // UI Context
+        createUI();
     }
 
     void cleanup()
     {
+        delete OUIContext;
         delete OParticles;
         delete g_pAudioEngine;
         for (int i = 0; i < 4; ++i)
@@ -190,6 +353,7 @@ namespace onut
                 {
                     gamePad->update();
                 }
+                OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3));
                 AnimManager::getGlobalManager()->update();
                 OEvent->processEvents();
                 OParticles->update();
@@ -207,6 +371,9 @@ namespace onut
                 renderCallback();
             }
             OParticles->render();
+            OSB->begin();
+            OUI->render(*OUIContext);
+            OSB->end();
             ORenderer->endFrame();
         }
 

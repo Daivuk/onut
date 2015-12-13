@@ -36,6 +36,8 @@ extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;
 extern onut::Input*                     OInput;
 extern onut::Window*                    OWindow;
+extern onut::UIControl*                 OUI;
+extern onut::UIContext*                 OUIContext;
 
 using OAnimf = onut::Anim<float>;
 using OAnimi = onut::Anim<int>;
@@ -114,6 +116,12 @@ inline OPfx* OEmitPFX(const char* pName, const Vector3& position, const Vector3&
     auto pPfx = OGetPFX(pName);
     OParticles->emit(pPfx, position, dir);
     return pPfx;
+}
+
+inline onut::UIControl* OLoadUI(const std::string& name)
+{
+    std::string filename = "../../assets/ui/" + name;
+    return new onut::UIControl(filename.c_str());
 }
 
 inline void OPlaySound(const char* pName, float volume = 1.0f, float balance = 0.f)
@@ -205,4 +213,14 @@ inline Vector4 OUVS(OTexture* pTexture, const Rect &rect)
         (rect.x + rect.z) / texDim.x,
         (rect.y + rect.w) / texDim.y
     };
+}
+
+inline void OQuit()
+{
+    PostQuitMessage(0);
+}
+
+inline onut::UIControl* OFindUI(const std::string& name)
+{
+    return OUI->getChild(name);
 }

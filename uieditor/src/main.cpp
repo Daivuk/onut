@@ -48,21 +48,15 @@ void init()
         OSB->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
         OSB->end();
 
-        //OSB->end();
-        egEnable(EG_SCISSOR);
-        egScissor((uint32_t)rect.position.x, (uint32_t)rect.position.y, (uint32_t)rect.size.x, (uint32_t)rect.size.y);
-        //OSB->begin();
+        ORenderer->setScissor(true, onut::UI2Onut(rect));
 
         // Render edited UIs
-        //  ORenderer->set2DCamera({std::roundf(-rect.position.x), std::roundf(-rect.position.y)});
         ORenderer->set2DCamera({-rect.position.x, -rect.position.y});
         OSB->begin();
         g_pDocument->render();
         OSB->end();
 
-        //OSB->end();
-        egDisable(EG_SCISSOR);
-        //OSB->begin();
+        ORenderer->setScissor(false, onut::UI2Onut(rect));
 
         ORenderer->set2DCamera({0, 0});
         OSB->begin();
@@ -98,7 +92,7 @@ void update()
     g_pUIContext->resize({OScreenWf, OScreenHf});
 
     // Update.
-    g_pUIScreen->update(*g_pUIContext, {OMousePos.x, OMousePos.y}, OInput->isStateDown(DIK_MOUSEB1));
+    g_pUIScreen->update(*g_pUIContext, {OMousePos.x, OMousePos.y}, OInput->isStateDown(OINPUT_MOUSEB1), OInput->isStateDown(OINPUT_MOUSEB2), OInput->isStateDown(OINPUT_MOUSEB3));
     g_pDocument->update();
 }
 
