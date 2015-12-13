@@ -149,6 +149,30 @@ namespace onut
         return createFromData(size, &(image[0]), generateMipmaps);
     }
 
+    Texture* Texture::createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps)
+    {
+        Texture* pRet = NULL;
+
+        std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
+        unsigned int w, h;
+        lodepng::State state;
+        auto ret = lodepng::decode(image, w, h, state, in_pData, in_size);
+        assert(!ret);
+        sSize size{w, h};
+        byte* pData = &(image[0]);
+        ULONG len = size.x * size.y;
+
+        // Pre multiplied
+        for (ULONG i = 0; i < len; ++i, pData += 4)
+        {
+            pData[0] = pData[0] * pData[3] / 255;
+            pData[1] = pData[1] * pData[3] / 255;
+            pData[2] = pData[2] * pData[3] / 255;
+        }
+
+        return createFromData(size, &(image[0]), in_generateMipmaps);
+    }
+
     Texture* Texture::createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps)
     {
 #ifdef EASY_GRAPHIX

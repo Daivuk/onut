@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sprites", "Sprites\project\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Animations", "Animations\project\win\Animations.vcxproj", "{BC461FBF-EEEB-43CD-AA86-89C0D9539D14}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Http", "Http\project\win\Http.vcxproj", "{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -47,6 +49,10 @@ Global
 		{BC461FBF-EEEB-43CD-AA86-89C0D9539D14}.Debug|Win32.Build.0 = Debug|Win32
 		{BC461FBF-EEEB-43CD-AA86-89C0D9539D14}.Release|Win32.ActiveCfg = Release|Win32
 		{BC461FBF-EEEB-43CD-AA86-89C0D9539D14}.Release|Win32.Build.0 = Release|Win32
+		{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA}.Debug|Win32.Build.0 = Debug|Win32
+		{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA}.Release|Win32.ActiveCfg = Release|Win32
+		{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,5 +63,6 @@ Global
 		{1BFD83C8-5DCC-4A8B-B175-8D7A5941ED4E} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{D33D3D2D-CD39-4E82-8D40-51CB51BB697A} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{BC461FBF-EEEB-43CD-AA86-89C0D9539D14} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal

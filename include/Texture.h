@@ -26,6 +26,7 @@ namespace onut
             return Texture::createFromFile(filename, generateMipmaps);
         }
         static Texture* createFromFile(const std::string& filename, bool generateMipmaps = true);
+        static Texture* createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps = true);
         static Texture* createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps = true);
 
         void setData(const uint8_t *in_pData);

@@ -257,7 +257,7 @@ namespace onut
             {
                 curPos.x = pos.x;
                 curPos.y += static_cast<float>(m_common.lineHeight);
-                i += 2;
+                i += 1;
                 continue;
             }
             if (charId == '^' && i + 3 < len)

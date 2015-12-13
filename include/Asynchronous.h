@@ -1,5 +1,6 @@
 #pragma once
 #include <future>
+#include "Pool.h"
 #include "Synchronous.h"
 
 /**

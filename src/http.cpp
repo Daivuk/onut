@@ -6,6 +6,19 @@
 #include "StringUtils.h"
 #include "Asynchronous.h"
 
+std::string OHTTPGet(const std::string &url,
+                     std::function<void(long, std::string)> onError)
+{
+    return OHTTPPost(url, {}, onError);
+}
+
+void OHTTPGetAsync(const std::string &url,
+                   std::function<void(std::string)> onSuccess,
+                   std::function<void(long, std::string)> onError)
+{
+    OHTTPPostAsync(url, {}, onSuccess, onError);
+}
+
 void OHTTPPostAsync(const std::string &url,
                     const std::vector<std::pair<std::string, std::string>> &postArgs,
                     std::function<void(std::string)> onSuccess,
@@ -13,17 +26,29 @@ void OHTTPPostAsync(const std::string &url,
 {
     OAsync([url, postArgs, onSuccess, onError]
     {
-        auto ret = OHTTPPost(url, postArgs, onError);
+        auto ret = OHTTPPost(url, postArgs, [onError](long errCode, std::string message)
+        {
+            OSync([errCode, message, onError]
+            {
+                if (onError)
+                {
+                    onError(errCode, message);
+                }
+            });
+        });
         if (!ret.empty())
         {
-            onSuccess(ret);
+            OSync([ret, onSuccess]
+            {
+                onSuccess(ret);
+            });
         }
     });
 }
 
 std::string OHTTPPost(const std::string &url, 
-                           const std::vector<std::pair<std::string, std::string>> &postArgs,
-                           std::function<void(long, std::string)> onError)
+                      const std::vector<std::pair<std::string, std::string>> &postArgs,
+                      std::function<void(long, std::string)> onError)
 {
     HRESULT hr;
     CComPtr<IXMLHTTPRequest> request;
@@ -104,4 +129,85 @@ std::string OHTTPPost(const std::string &url,
         }
         return "";
     }
+}
+
+OTexture* OHTTPGetTexture(const std::string &url,
+                               std::function<void(long, std::string)> onError)
+{
+    HRESULT hr;
+    CComPtr<IXMLHTTPRequest> request;
+
+    hr = request.CoCreateInstance(CLSID_XMLHTTP60);
+    hr = request->open(_bstr_t("GET"),
+                        _bstr_t(url.c_str()),
+                        _variant_t(VARIANT_FALSE),
+                        _variant_t(),
+                        _variant_t());
+    hr = request->send(_variant_t());
+
+    if (hr != S_OK)
+    {
+        if (onError)
+        {
+            onError(0, "error");
+        }
+        return nullptr;
+    }
+
+    // get status - 200 if succuss
+    long status;
+    hr = request->get_status(&status);
+    if (hr != S_OK)
+    {
+        if (onError)
+        {
+            onError(0, "error");
+        }
+        return nullptr;
+    }
+
+    // Load the texture
+    VARIANT body;
+    request->get_responseBody(&body);
+
+    if (status == 200)
+    {
+        return OTexture::createFromFileData((const uint8_t*)body.parray->pvData, body.parray->rgsabound[0].cElements);
+    }
+    else
+    {
+        if (onError)
+        {
+            BSTR bstrResponse = NULL;
+            request->get_responseText(&bstrResponse);
+            std::wstring wret = bstrResponse;
+            if (bstrResponse) SysFreeString(bstrResponse);
+            std::string ret = onut::utf16ToUtf8(wret);
+            onError(status, ret);
+        }
+        return nullptr;
+    }
+}
+
+void OHTTPGetTextureAsync(const std::string &url,
+                          std::function<void(OTexture*)> onSuccess,
+                          std::function<void(long, std::string)> onError)
+{
+    OAsync([url, onSuccess, onError]
+    {
+        auto ret = OHTTPGetTexture(url, [onError](long errCode, std::string message)
+        {
+            OSync([errCode, message, onError]
+            {
+                if (onError)
+                {
+                    onError(errCode, message);
+                }
+            });
+        });
+        OSync([ret, onSuccess]
+        {
+            onSuccess(ret);
+        });
+    });
 }
