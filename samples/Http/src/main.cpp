@@ -64,10 +64,7 @@ void render()
     pFont->draw(userAgent, {10, 130}, Color(.7f, .7f, .7f, 1));
 
     pFont->draw("Press ^9913^999 to download a picture.", {10, 210});
-    if (pDownloadedTexture)
-    {
-        OSpriteBatch->drawRect(pDownloadedTexture, Rect(10, 230, 256, 256));
-    }
+    OSpriteBatch->drawRect(pDownloadedTexture, Rect(10, 230, 256, 256));
 
     OSpriteBatch->end();
 }
