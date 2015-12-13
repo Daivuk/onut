@@ -11,7 +11,7 @@ void render();
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("UI Sample");
+    OSettings->setGameName("UI from Code Sample");
     ORun(init, update, render);
 }
 

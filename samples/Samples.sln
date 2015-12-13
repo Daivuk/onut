@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UI", "UI\project\win\UI.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIFromCode", "UIFromCode\project\win\UIFromCode.vcxproj", "{2185242E-6588-4BD2-B8C9-68206F93FEAE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Primitives", "Primitives\project\win\Primitives.vcxproj", "{605ED1FB-4DCF-4FD1-B878-B61074095B49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -65,6 +67,10 @@ Global
 		{2185242E-6588-4BD2-B8C9-68206F93FEAE}.Debug|Win32.Build.0 = Debug|Win32
 		{2185242E-6588-4BD2-B8C9-68206F93FEAE}.Release|Win32.ActiveCfg = Release|Win32
 		{2185242E-6588-4BD2-B8C9-68206F93FEAE}.Release|Win32.Build.0 = Release|Win32
+		{605ED1FB-4DCF-4FD1-B878-B61074095B49}.Debug|Win32.ActiveCfg = Debug|Win32
+		{605ED1FB-4DCF-4FD1-B878-B61074095B49}.Debug|Win32.Build.0 = Debug|Win32
+		{605ED1FB-4DCF-4FD1-B878-B61074095B49}.Release|Win32.ActiveCfg = Release|Win32
+		{605ED1FB-4DCF-4FD1-B878-B61074095B49}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +84,6 @@ Global
 		{BEC8668C-3C8E-4CE8-9AD0-02CE73717AAA} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{AE478531-04E1-4F5A-B46D-B13AA02BECEC} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{2185242E-6588-4BD2-B8C9-68206F93FEAE} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{605ED1FB-4DCF-4FD1-B878-B61074095B49} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal
