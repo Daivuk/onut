@@ -345,6 +345,29 @@ namespace onut
         OSB->end();
 
         egModelPop();
+#else
+        if (!in_pLayer->isVisible) return;
+
+        auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
+        if (!pLayer) return;
+
+        RECT rect = in_rect;
+        rect.left = std::max<>(0l, rect.left);
+        rect.top = std::max<>(0l, rect.top);
+        rect.right = std::min<>(static_cast<LONG>(m_width - 1), rect.right);
+        rect.bottom = std::min<>(static_cast<LONG>(m_height - 1), rect.bottom);
+
+        OSB->begin();
+        for (LONG y = rect.top; y <= rect.bottom; ++y)
+        {
+            sTile *pTile = pLayer->tiles + y * m_width + rect.left;
+            for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
+            {
+                if (!pTile->pTileset) continue;
+                OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
+            }
+        }
+        OSB->end();
 #endif
     }
 
