@@ -840,6 +840,45 @@ namespace onut
         {
             flush();
         }
+#else
+        if (!pTexture) pTexture = m_pTexWhite;
+        if (pTexture != m_pTexture)
+        {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        auto texSize = m_pTexture->getSizef();
+        Vector2 dir = to - from;
+        float len = dir.Length();
+        if (len == 0) return;
+        dir /= len;
+        Vector2 right{-dir.y, dir.x};
+        right *= size * .5f;
+
+        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        pVerts[0].position = Vector2(from.x - right.x, from.y - right.y);
+        pVerts[0].texCoord = {uOffset, 0};
+        pVerts[0].color = color;
+
+        pVerts[1].position = Vector2(from.x + right.x, from.y + right.y);
+        pVerts[1].texCoord = {uOffset, 1};
+        pVerts[1].color = color;
+
+        pVerts[2].position = Vector2(to.x + right.x, to.y + right.y);
+        pVerts[2].texCoord = {uOffset + len * uScale / texSize.x, 1};
+        pVerts[2].color = color;
+
+        pVerts[3].position = Vector2(to.x - right.x, to.y - right.y);
+        pVerts[3].texCoord = {uOffset + len * uScale / texSize.x, 0};
+        pVerts[3].color = color;
+
+        ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
 #endif
     }
 
