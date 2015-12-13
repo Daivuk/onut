@@ -13,7 +13,7 @@ onut::TiledMap* pTiledMap = nullptr;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Primitives Sample");
+    OSettings->setGameName("Tiled Map Sample");
     ORun(init, update, render);
 }
 
