@@ -46,7 +46,6 @@ using OAnim3 = onut::Anim<Vector3>;
 using OAnim4 = onut::Anim<Vector4>;
 using OAnimStr = onut::Anim<std::string>;
 using OAnimc = onut::Anim<Color>;
-using OTimer = onut::Timer<float>;
 using OPal = std::vector<Color>;
 
 #define OSB OSpriteBatch
@@ -106,6 +105,16 @@ inline OSound* OGetSound(const char* pName)
     return OContentManager->getResource<OSound>(pName);
 }
 
+inline OSoundCue* OGetSoundCue(const char* pName)
+{
+    return OContentManager->getResource<OSoundCue>(pName);
+}
+
+inline OSoundInstance* OCreateSoundInstance(const char* pName)
+{
+    return OGetSound(pName)->createInstance();
+}
+
 inline OPfx* OGetPFX(const char* pName)
 {
     return OContentManager->getResource<OPfx>(pName);
@@ -124,9 +133,20 @@ inline onut::UIControl* OLoadUI(const std::string& name)
     return new onut::UIControl(filename.c_str());
 }
 
-inline void OPlaySound(const char* pName, float volume = 1.0f, float balance = 0.f)
+inline void OPlaySound(const char* pName, float volume = 1.0f, float balance = 0.f, float pitch = 1.f)
 {
-    OGetSound(pName)->play(volume, balance);
+    OGetSound(pName)->play(volume, balance, pitch);
+}
+
+inline void OPlayRandomSound(const std::vector<const char*>& sounds, 
+                             float volume = 1.0f, float balance = 0.f, float pitch = 1.f)
+{
+    OPlaySound(onut::randv(sounds), volume, balance, pitch);
+}
+
+inline void OPlaySoundCue(const char* pName, float volume = 1.0f, float balance = 0.f, float pitch = 1.f)
+{
+    OGetSoundCue(pName)->play(volume, balance, pitch);
 }
 
 //--- Game pads
