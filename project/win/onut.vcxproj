@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\List.h" />
     <ClInclude Include="..\..\include\micropather.h" />
+    <ClInclude Include="..\..\include\Music.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut.h" />
@@ -55,6 +56,7 @@
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\include\Window.h" />
+    <ClInclude Include="..\..\src\Mp3.h" />
     <ClInclude Include="..\..\src\_2dps.cso.h" />
     <ClInclude Include="..\..\src\_2dvs.cso.h" />
     <ClInclude Include="..\..\src\Audio.h" />
@@ -92,6 +94,8 @@
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
+    <ClCompile Include="..\..\src\Mp3.cpp" />
+    <ClCompile Include="..\..\src\Music.cpp" />
     <ClCompile Include="..\..\src\NavMesh.cpp" />
     <ClCompile Include="..\..\src\object.cpp" />
     <ClCompile Include="..\..\src\Particle.cpp" />

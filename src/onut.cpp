@@ -27,6 +27,7 @@ onut::InputDevice*                  g_inputDevice = nullptr;
 onut::Input*                        OInput = nullptr;
 onut::UIContext*                    OUIContext = nullptr;
 onut::UIControl*                    OUI = nullptr;
+onut::Music*                        OMusic = nullptr;
 
 
 // So commonly used stuff
@@ -278,10 +279,14 @@ namespace onut
 
         // UI Context
         createUI();
+
+        // Music
+        OMusic = new onut::Music();
     }
 
     void cleanup()
     {
+        delete OMusic;
         delete OUIContext;
         delete OParticles;
         delete g_pAudioEngine;

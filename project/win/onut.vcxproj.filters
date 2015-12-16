@@ -196,6 +196,12 @@
     <ClInclude Include="..\..\src\_2dvs.cso.h">
       <Filter>src\shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Music.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Mp3.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -364,6 +370,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\micropather.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Music.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Mp3.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

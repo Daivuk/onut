@@ -67,6 +67,17 @@ void update()
     {
         OPlaySoundCue("soundCue.xml", volume, balance);
     }
+    if (OJustPressed(OINPUT_8))
+    {
+        if (OMusic->isPlaying())
+        {
+            OMusic->stop();
+        }
+        else
+        {
+            OMusic->play("music.mp3");
+        }
+    }
 }
 
 void render()
@@ -93,6 +104,7 @@ void render()
         pFont->draw("Press ^9906^999 to start/stop looping sound", {10, 110});
     }
     pFont->draw("Press ^9907^999 to play cue file", {10, 130});
+    pFont->draw("Press ^9908^999 to play/stop music", {10, 150});
 
     pFont->draw("Hold ^990Left Arrow^999 to on left channel", {10, OScreenHf - 50});
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", {10, OScreenHf - 30});
