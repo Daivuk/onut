@@ -71,10 +71,12 @@ void update()
     {
         if (OMusic->isPlaying())
         {
+            OLog("Stop Music");
             OMusic->stop();
         }
         else
         {
+            OLog("Start Music");
             OMusic->play("music.mp3");
         }
     }

@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\include\http.h" />
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\List.h" />
+    <ClInclude Include="..\..\include\Log.h" />
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\Music.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
@@ -93,6 +94,7 @@
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
+    <ClCompile Include="..\..\src\Log.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
     <ClCompile Include="..\..\src\Mp3.cpp" />
     <ClCompile Include="..\..\src\Music.cpp" />

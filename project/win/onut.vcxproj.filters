@@ -202,6 +202,9 @@
     <ClInclude Include="..\..\src\Mp3.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Log.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -376,6 +379,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Mp3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

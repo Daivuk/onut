@@ -9,6 +9,7 @@
 #include "Input.h"
 #include "GamePad.h"
 #include "List.h"
+#include "Log.h"
 #include "Music.h"
 #include "NavMesh.h"
 #include "onutUI.h"
