@@ -57,8 +57,8 @@ void render()
 
     // Draw info
     auto pFont = OGetBMFont("font.fnt");
-    pFont->draw("Press ^9901^999 to spawn particles from PFX file", {10, 10});
-    pFont->draw("Press ^9902^999 to spawn particles from PFX file", {10, 30});
+    pFont->draw("Press ^9901^999 to spawn particles from an onut PFX file", {10, 10});
+    pFont->draw("Press ^9902^999 to spawn particles from PEX file", {10, 30});
 
     // It is possible to manually call render an emitter,
     // so we can specify in which order it is renderer manually
