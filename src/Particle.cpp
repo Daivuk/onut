@@ -13,11 +13,14 @@ namespace onut
         // Animate position with velocity
         position += velocity * ODT;
         velocity += pDesc->gravity * ODT;
+        angle.from += rotation.value * ODT;
+        angle.to += rotation.value * ODT;
 
         // Animate constant properties
         color.update(t);
         angle.update(t);
         size.update(t);
         image_index.update(t);
+        rotation.update(t);
     }
 }

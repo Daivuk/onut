@@ -24,7 +24,7 @@
     <startParticleSizeVariance value="2.50"></startParticleSizeVariance>
     <finishParticleSize value="0.00"></finishParticleSize>
     <finishParticleSizeVariance value="0.00"></finishParticleSizeVariance>
-    <duration value="-1.00"></duration>
+    <duration value="-1"></duration>
     <emitterType value="0"></emitterType>
     <maxRadius value="0.00"></maxRadius>
     <maxRadiusVariance value="0.00"></maxRadiusVariance>

@@ -38,11 +38,12 @@ void update()
         }
         else
         {
-            emitter = OEmitPFX("test.pex", Vector3{OScreenWf * 2 / 3, OScreenHf / 2, 0});
-            emitter.setRenderEnabled(false);
-
             // Animate it back and forth across the screen
             position.start(Vector3{OScreenWf - 100, OScreenHf / 2, 0}, Vector3{100, OScreenHf / 2, 0}, 2.f, OLinear, OPingPongLoop);
+
+            emitter = OEmitPFX("test.pex", position);
+            emitter.setRenderEnabled(false);
+
         }
     }
 }

@@ -402,8 +402,8 @@ namespace onut
 
             emitter.color.value.from = pex.startColor - pex.startColorVariance;
             emitter.color.value.to = pex.startColor + pex.startColorVariance;
-            emitter.color.finalValue.from = pex.startColor - pex.startColorVariance;
-            emitter.color.finalValue.to = pex.startColor + pex.startColorVariance;
+            emitter.color.finalValue.from = pex.finishColor - pex.finishColorVariance;
+            emitter.color.finalValue.to = pex.finishColor + pex.finishColorVariance;
             emitter.color.finalSpecified = true;
 
             emitter.angle.value.from = pex.angle - pex.angleVariance;
@@ -417,21 +417,31 @@ namespace onut
             emitter.size.finalValue.to = pex.finishParticleSize + pex.finishParticleSizeVariance;
             emitter.size.finalSpecified = true;
 
+            emitter.rotation.value.from = pex.rotatePerSecond - pex.rotatePerSecondVariance;
+            emitter.rotation.value.to = pex.rotatePerSecond + pex.rotatePerSecondVariance;
+
             emitter.life.from = pex.particleLifeSpan - pex.particleLifespanVariance;
             emitter.life.to = pex.particleLifeSpan + pex.particleLifespanVariance;
 
             emitter.position.from = Vector3(pex.sourcePosition - pex.sourcePositionVariance, 0);
             emitter.position.to = Vector3(pex.sourcePosition + pex.sourcePositionVariance, 0);
 
+            emitter.duration = pex.duration;
+
             if (pex.duration == -1)
             {
                 emitter.rate = pex.maxParticles;
                 emitter.type = eEmitterType::CONTINOUS;
             }
-            else
+            else if (pex.duration == 0)
             {
                 emitter.count = pex.maxParticles;
                 emitter.type = eEmitterType::BURST;
+            }
+            else
+            {
+                emitter.rate = pex.maxParticles;
+                emitter.type = eEmitterType::FINITE;
             }
 
             return pRet;

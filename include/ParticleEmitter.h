@@ -39,5 +39,6 @@ namespace onut
         uint32_t                m_instanceId = 0;
         bool                    m_isStopped = false;
         bool                    m_renderEnabled = true;
+        float                   m_duration = 0.f;
     };
 }

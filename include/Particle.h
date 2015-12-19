@@ -41,6 +41,7 @@ namespace onut
         sParticleRange<float>           angle;
         sParticleRange<float>           size;
         sParticleRange<unsigned int>    image_index;
+        sParticleRange<float>           rotation;
 
         Texture*                        pTexture = nullptr;
     };

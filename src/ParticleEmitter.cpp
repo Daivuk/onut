@@ -13,6 +13,7 @@ namespace onut
         m_isAlive(true),
         m_instanceId(instanceId)
     {
+        m_duration = m_pDesc->duration.generate();
         if (m_pDesc->type == eEmitterType::BURST)
         {
             // Spawn them all!
@@ -68,6 +69,28 @@ namespace onut
                 m_rateProgress -= rate;
                 spawnParticle();
             }
+        }
+
+        if (m_pDesc->type == eEmitterType::CONTINOUS && m_isStopped)
+        {
+            if (!m_pParticles) m_isAlive = false;
+        }
+
+        if (m_pDesc->type == eEmitterType::FINITE && m_pDesc->rate > 0 && !m_isStopped && m_duration > 0.f)
+        {
+            m_duration -= ODT;
+            m_rateProgress += ODT;
+            auto rate = 1.0f / static_cast<float>(m_pDesc->rate);
+            while (m_rateProgress >= rate)
+            {
+                m_rateProgress -= rate;
+                spawnParticle();
+            }
+        }
+
+        if (m_pDesc->type == eEmitterType::FINITE && (m_isStopped || m_duration <= 0.f))
+        {
+            if (!m_pParticles) m_isAlive = false;
         }
 
         // Kill self if done
@@ -126,6 +149,7 @@ namespace onut
             pParticle->angle.to = m_pDesc->angle.generateTo(pParticle->angle.from = m_pDesc->angle.generateFrom());
             pParticle->size.to = m_pDesc->size.generateTo(pParticle->size.from = m_pDesc->size.generateFrom());
             pParticle->image_index.to = m_pDesc->image_index.generateTo(pParticle->image_index.from = m_pDesc->image_index.generateFrom());
+            pParticle->rotation.to = m_pDesc->rotation.generateTo(pParticle->rotation.from = m_pDesc->rotation.generateFrom());
 
             pParticle->color.update(0);
             pParticle->angle.update(0);
