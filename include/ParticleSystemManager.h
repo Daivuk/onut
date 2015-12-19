@@ -30,6 +30,25 @@ namespace onut
                 setTransform(transform);
             }
 
+            void setRenderEnabled(bool renderEnabled)
+            {
+                if (m_pParticleSystemManager)
+                {
+                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        {
+                            if (pEmitter->getInstanceId() == m_id)
+                            {
+                                pEmitter->setRenderEnabled(renderEnabled);
+                            }
+                        }
+                    }
+                }
+            }
+
             void setTransform(const Matrix& transform)
             {
                 if (m_pParticleSystemManager)
@@ -110,11 +129,33 @@ namespace onut
                 return false;
             }
 
+            void render()
+            {
+                if (m_pParticleSystemManager)
+                {
+                    bool bManageBatch = !OSpriteBatch->isInBatch();
+                    if (bManageBatch) OSpriteBatch->begin();
+                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        {
+                            if (pEmitter->getInstanceId() == m_id)
+                            {
+                                pEmitter->render();
+                            }
+                        }
+                    }
+                    if (bManageBatch) OSpriteBatch->end();
+                }
+            }
+
         private:
             friend class ParticleSystemManager;
 
-            uint32_t m_id;
-            ParticleSystemManager* m_pParticleSystemManager;
+            uint32_t m_id = 0;
+            ParticleSystemManager* m_pParticleSystemManager = nullptr;
             bool m_bStopped = false;
         };
 
@@ -161,7 +202,10 @@ namespace onut
                     auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
                     if (m_emitterPool.isUsed(pEmitter))
                     {
-                        pEmitter->render();
+                        if (pEmitter->getRenderEnabled())
+                        {
+                            pEmitter->render();
+                        }
                     }
                 }
             }

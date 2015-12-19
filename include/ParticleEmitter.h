@@ -24,6 +24,9 @@ namespace onut
         void setTransform(const Matrix& transform);
         uint32_t getInstanceId() const { return m_instanceId; }
 
+        void setRenderEnabled(bool renderEnabled);
+        bool getRenderEnabled() const { return m_renderEnabled; }
+
     private:
         Particle* spawnParticle();
 
@@ -35,5 +38,6 @@ namespace onut
         float                   m_rateProgress = 0.f;
         uint32_t                m_instanceId = 0;
         bool                    m_isStopped = false;
+        bool                    m_renderEnabled = true;
     };
 }

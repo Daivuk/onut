@@ -94,6 +94,11 @@ namespace onut
         m_transform = transform;
     }
 
+    void ParticleEmitter::setRenderEnabled(bool renderEnabled)
+    {
+        m_renderEnabled = renderEnabled;
+    }
+
     Particle* ParticleEmitter::spawnParticle()
     {
         auto pParticle = m_pParticleSystemManager->allocParticle();
@@ -121,6 +126,11 @@ namespace onut
             pParticle->angle.to = m_pDesc->angle.generateTo(pParticle->angle.from = m_pDesc->angle.generateFrom());
             pParticle->size.to = m_pDesc->size.generateTo(pParticle->size.from = m_pDesc->size.generateFrom());
             pParticle->image_index.to = m_pDesc->image_index.generateTo(pParticle->image_index.from = m_pDesc->image_index.generateFrom());
+
+            pParticle->color.update(0);
+            pParticle->angle.update(0);
+            pParticle->size.update(0);
+            pParticle->image_index.update(0);
 
             if (!pParticle->pDesc->textures.empty())
             {
