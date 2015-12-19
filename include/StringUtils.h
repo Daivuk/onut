@@ -9,6 +9,9 @@ namespace onut
 
     std::vector<std::string>    splitString(const std::string& in_string, char in_delimiter);
     std::vector<std::string>    splitString(const std::string& in_string, const std::string& in_delimiters);
+    std::string                 removeChars(const std::string& str, const std::string& charsToRemove);
+    std::string                 toUpper(const std::string& str);
+    std::string                 toLower(const std::string& str);
 
     template<bool TuseAssert = true>
     std::string                 findFile(const std::string& name, const std::string& lookIn = ".", bool deepSearch = true);

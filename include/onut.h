@@ -123,12 +123,13 @@ inline OPfx* OGetPFX(const char* pName)
     return OContentManager->getResource<OPfx>(pName);
 }
 
-inline OPfx* OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ)
+inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ) -> decltype(OParticles->emit(nullptr, position, dir))
 {
     auto pPfx = OGetPFX(pName);
-    OParticles->emit(pPfx, position, dir);
-    return pPfx;
+    return OParticles->emit(pPfx, position, dir);
 }
+
+using OEmitterInstance = onut::ParticleSystemManager<>::EmitterInstance;
 
 inline onut::UIControl* OLoadUI(const std::string& name)
 {

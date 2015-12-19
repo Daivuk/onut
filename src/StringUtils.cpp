@@ -190,4 +190,28 @@ namespace onut
         }
         return std::move(ss.str());
     }
+
+    std::string removeChars(const std::string& str, const std::string& charsToRemove)
+    {
+        auto ret = str;
+        for (decltype(charsToRemove.size()) i = 0; i < charsToRemove.size(); ++i)
+        {
+            ret.erase(remove(ret.begin(), ret.end(), charsToRemove[i]), ret.end());
+        }
+        return ret;
+    }
+
+    std::string toUpper(const std::string& str)
+    {
+        auto ret = str;
+        std::transform(ret.begin(), ret.end(), ret.begin(), ::toupper);
+        return ret;
+    }
+
+    std::string toLower(const std::string& str)
+    {
+        auto ret = str;
+        std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
+        return ret;
+    }
 }

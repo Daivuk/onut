@@ -216,6 +216,8 @@ namespace onut
         sPfxValue<float>        size = 1;
         sPfxValue<unsigned int> image_index = 0;
         sPfxRange<float>        life = 1;
+        sPfxRange<Vector3>      position = Vector3(0, 0, 0);
+        Vector3                 gravity = Vector3(0, 0, 0);
     };
 
     struct sParticleSystemDesc

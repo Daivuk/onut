@@ -8,6 +8,8 @@ void init();
 void update();
 void render();
 
+OEmitterInstance emitter;
+
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
@@ -21,9 +23,20 @@ void init()
 
 void update()
 {
-    if (OJustPressed(OINPUT_SPACE))
+    if (OJustPressed(OINPUT_1))
     {
-        OEmitPFX("test.pfx", Vector3{OScreenWf / 2, OScreenHf / 2, 0});
+        OEmitPFX("test.pfx", Vector3{OScreenWf / 3, OScreenHf / 2, 0});
+    }
+    if (OJustPressed(OINPUT_2))
+    {
+        if (emitter.isPlaying())
+        {
+            emitter.stop();
+        }
+        else
+        {
+            emitter = OEmitPFX("test.pex", Vector3{OScreenWf * 2 / 3, OScreenHf / 2, 0});
+        }
     }
 }
 
@@ -34,5 +47,6 @@ void render()
 
     // Draw info
     auto pFont = OGetBMFont("font.fnt");
-    pFont->draw("Press ^990Space Bar^999 to spawn particles", {10, 10});
+    pFont->draw("Press ^9901^999 to spawn particles from PFX file", {10, 10});
+    pFont->draw("Press ^9902^999 to spawn particles from PFX file", {10, 30});
 }

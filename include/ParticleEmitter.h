@@ -12,13 +12,17 @@ namespace onut
     class ParticleEmitter
     {
     public:
-        ParticleEmitter(sEmitterDesc* pEmitterDesc, IParticleSystemManager* pParticleSystemManager, const Matrix& transform);
+        ParticleEmitter(sEmitterDesc* pEmitterDesc, IParticleSystemManager* pParticleSystemManager, const Matrix& transform, uint32_t instanceId = 0);
         ~ParticleEmitter();
 
         bool isAlive() const { return m_isAlive; }
+        void stop();
 
         void update();
         void render();
+
+        void setTransform(const Matrix& transform);
+        uint32_t getInstanceId() const { return m_instanceId; }
 
     private:
         Particle* spawnParticle();
@@ -28,5 +32,8 @@ namespace onut
         bool                    m_isAlive = false;
         Matrix                  m_transform;
         sEmitterDesc*           m_pDesc;
+        float                   m_rateProgress = 0.f;
+        uint32_t                m_instanceId = 0;
+        bool                    m_isStopped = false;
     };
 }

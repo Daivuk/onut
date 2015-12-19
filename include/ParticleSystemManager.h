@@ -21,15 +21,119 @@ namespace onut
     class ParticleSystemManager : public IParticleSystemManager
     {
     public:
-        void emit(ParticleSystem* pParticleSystem, const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
+        class EmitterInstance
         {
+        public:
+            void setTransform(const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
+            {
+                Matrix transform = Matrix::CreateBillboard(pos, pos + dir, Vector3::UnitY);
+                setTransform(transform);
+            }
+
+            void setTransform(const Matrix& transform)
+            {
+                if (m_pParticleSystemManager)
+                {
+                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        {
+                            if (pEmitter->getInstanceId() == m_id)
+                            {
+                                pEmitter->setTransform(transform);
+                            }
+                        }
+                    }
+                }
+            }
+
+            void stop()
+            {
+                if (m_pParticleSystemManager)
+                {
+                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        {
+                            if (pEmitter->getInstanceId() == m_id)
+                            {
+                                pEmitter->stop();
+                            }
+                        }
+                    }
+                }
+                m_bStopped = true;
+            }
+
+            bool isPlaying() const
+            {
+                if (m_bStopped) return false;
+                if (m_pParticleSystemManager)
+                {
+                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        {
+                            if (pEmitter->getInstanceId() == m_id)
+                            {
+                                if (pEmitter->isAlive()) return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            bool isAlive() const
+            {
+                if (m_pParticleSystemManager)
+                {
+                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        {
+                            if (pEmitter->getInstanceId() == m_id)
+                            {
+                                if (pEmitter->isAlive()) return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+        private:
+            friend class ParticleSystemManager;
+
+            uint32_t m_id;
+            ParticleSystemManager* m_pParticleSystemManager;
+            bool m_bStopped = false;
+        };
+
+        EmitterInstance emit(ParticleSystem* pParticleSystem, const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
+        {
+            static uint32_t nextId = 1;
+            EmitterInstance instance;
+            instance.m_id = nextId++;
+            instance.m_pParticleSystemManager = this;
+
             Matrix transform = Matrix::CreateBillboard(pos, pos + dir, Vector3::UnitY);
             for (auto& emitter : pParticleSystem->emitters)
             {
-                auto pEmitter = m_emitterPool.alloc<ParticleEmitter>(&emitter, this, transform);
+                auto pEmitter = m_emitterPool.alloc<ParticleEmitter>(&emitter, this, transform, instance.m_id);
                 // Update the first frame right away
                 pEmitter->update();
             }
+
+            return instance;
         }
 
         void clear()
@@ -83,6 +187,8 @@ namespace onut
         }
 
     private:
+        friend class EmitterInstance;
+
         void updateEmitters()
         {
             auto len = m_emitterPool.size();
@@ -107,9 +213,9 @@ namespace onut
             }
         }
 
-        StaticPool<sizeof(ParticleEmitter), TmaxPFX, sizeof(uintptr_t), false>    m_emitterPool;
-        StaticPool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false>     m_particlePool;
-        Vector3                                                             m_camRight;
-        Vector3                                                             m_camUp;
+        StaticPool<sizeof(ParticleEmitter), TmaxPFX, sizeof(uintptr_t), false> m_emitterPool;
+        StaticPool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false> m_particlePool;
+        Vector3 m_camRight;
+        Vector3 m_camUp;
     };
 }

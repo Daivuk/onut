@@ -5,11 +5,13 @@ namespace onut
 {
     ParticleEmitter::ParticleEmitter(sEmitterDesc* pEmitterDesc,
                                      IParticleSystemManager* pParticleSystemManager, 
-                                     const Matrix& transform) :
+                                     const Matrix& transform,
+                                     uint32_t instanceId) :
         m_pDesc(pEmitterDesc),
         m_pParticleSystemManager(pParticleSystemManager),
         m_transform(transform),
-        m_isAlive(true)
+        m_isAlive(true),
+        m_instanceId(instanceId)
     {
         if (m_pDesc->type == eEmitterType::BURST)
         {
@@ -28,6 +30,11 @@ namespace onut
         {
             pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
         }
+    }
+
+    void ParticleEmitter::stop()
+    {
+        m_isStopped = true;
     }
 
     void ParticleEmitter::update()
@@ -51,6 +58,18 @@ namespace onut
             pParticle = pParticle->pNext;
         }
 
+        // Spawn at rate
+        if (m_pDesc->type == eEmitterType::CONTINOUS && m_pDesc->rate > 0 && !m_isStopped)
+        {
+            m_rateProgress += ODT;
+            auto rate = 1.0f / static_cast<float>(m_pDesc->rate);
+            while (m_rateProgress >= rate)
+            {
+                m_rateProgress -= rate;
+                spawnParticle();
+            }
+        }
+
         // Kill self if done
         if (m_pDesc->type == eEmitterType::BURST && !m_pParticles)
         {
@@ -68,6 +87,11 @@ namespace onut
         {
             m_pParticleSystemManager->renderParticle(pParticle, camRight, camUp);
         }
+    }
+
+    void ParticleEmitter::setTransform(const Matrix& transform)
+    {
+        m_transform = transform;
     }
 
     Particle* ParticleEmitter::spawnParticle()
@@ -90,7 +114,7 @@ namespace onut
 
             pParticle->pDesc = m_pDesc;
 
-            pParticle->position = spawnPos;
+            pParticle->position = spawnPos + m_pDesc->position.generate();
             pParticle->velocity = up * m_pDesc->speed.generate();
 
             pParticle->color.to = m_pDesc->color.generateTo(pParticle->color.from = m_pDesc->color.generateFrom());
@@ -98,11 +122,29 @@ namespace onut
             pParticle->size.to = m_pDesc->size.generateTo(pParticle->size.from = m_pDesc->size.generateFrom());
             pParticle->image_index.to = m_pDesc->image_index.generateTo(pParticle->image_index.from = m_pDesc->image_index.generateFrom());
 
+            if (!pParticle->pDesc->textures.empty())
+            {
+                pParticle->pTexture = pParticle->pDesc->textures[static_cast<decltype(pParticle->pDesc->textures.size())>(pParticle->image_index.value)];
+            }
+
             pParticle->life = 1.f;
             pParticle->delta = 1.f / m_pDesc->life.generate();
 
-            pParticle->pNext = m_pParticles;
-            m_pParticles = pParticle;
+            if (m_pParticles)
+            {
+                for (auto pAliveParticle = m_pParticles; pAliveParticle; pAliveParticle = pAliveParticle->pNext)
+                {
+                    if (!pAliveParticle->pNext)
+                    {
+                        pAliveParticle->pNext = pParticle;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                m_pParticles = pParticle;
+            }
         }
         return pParticle;
     }
