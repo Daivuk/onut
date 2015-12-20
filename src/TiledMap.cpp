@@ -315,37 +315,6 @@ namespace onut
 
     void TiledMap::renderLayer(const RECT &in_rect, sLayer *in_pLayer)
     {
-#if defined(EASY_GRAPHIX)
-        if (!in_pLayer->isVisible) return;
-
-        auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
-        if (!pLayer) return;
-
-        RECT rect = in_rect;
-        rect.left = std::max<>(0l, rect.left);
-        rect.top = std::max<>(0l, rect.top);
-        rect.right = std::min<>(static_cast<LONG>(m_width - 1), rect.right);
-        rect.bottom = std::min<>(static_cast<LONG>(m_height - 1), rect.bottom);
-
-        egModelPush();
-        egModelIdentity();
-        egModelMult(&m_transform._11);
-
-        OSB->begin();
-        egFilter(EG_FILTER_NEAREST);
-        for (LONG y = rect.top; y <= rect.bottom; ++y)
-        {
-            sTile *pTile = pLayer->tiles + y * m_width + rect.left;
-            for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
-            {
-                if (!pTile->pTileset) continue;
-                OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
-            }
-        }
-        OSB->end();
-
-        egModelPop();
-#else
         if (!in_pLayer->isVisible) return;
 
         auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
@@ -368,35 +337,31 @@ namespace onut
             }
         }
         OSB->end();
-#endif
     }
 
     onut::Texture *TiledMap::getMinimap()
     {
-#if defined(EASY_GRAPHIX)
-        //if (pMinimap) return pMinimap;
-        if (!m_tilesetCount) return nullptr;
-
-        pMinimap = OTexture::createRenderTarget({m_width, m_height});
-        ORenderer->bindRenderTarget(pMinimap);
-
-        auto tileWidth = m_tileSets[0].tileWidth;
-
-        setTransform(Matrix::CreateScale(1.f / static_cast<float>(tileWidth)));
-        egStatePush();
-        egFilter(EG_FILTER_TRILINEAR);
-        auto h = 32768 / m_width / 4;
-        for (auto y = 0; y < m_height; y += h)
-        {
-            render({0, y, m_width, std::min<>(y + h, m_height)});
-        }
-        egPostProcess();
-        egStatePop();
-
-        ORenderer->bindRenderTarget(nullptr);
-        return pMinimap;
-#else
+//        //if (pMinimap) return pMinimap;
+//        if (!m_tilesetCount) return nullptr;
+//
+//        pMinimap = OTexture::createRenderTarget({m_width, m_height});
+//        ORenderer->bindRenderTarget(pMinimap);
+//
+//        auto tileWidth = m_tileSets[0].tileWidth;
+//
+//        setTransform(Matrix::CreateScale(1.f / static_cast<float>(tileWidth)));
+//        egStatePush();
+//        egFilter(EG_FILTER_TRILINEAR);
+//        auto h = 32768 / m_width / 4;
+//        for (auto y = 0; y < m_height; y += h)
+//        {
+//            render({0, y, m_width, std::min<>(y + h, m_height)});
+//        }
+//        egPostProcess();
+//        egStatePop();
+//
+//        ORenderer->bindRenderTarget(nullptr);
+//        return pMinimap;
         return nullptr;
-#endif
     }
 };

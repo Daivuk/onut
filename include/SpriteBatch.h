@@ -19,6 +19,13 @@ namespace onut
             BlendModeCount
         };
 
+        enum class eFiltering
+        {
+            Nearest,
+            Linear,
+            FilteringCount
+        };
+
         SpriteBatch();
         virtual ~SpriteBatch();
 
@@ -45,11 +52,11 @@ namespace onut
         void end();
 
         void changeBlendMode(eBlendMode blendMode);
+        void changeFiltering(eFiltering filtering);
 
         bool isInBatch() const { return m_isDrawing; };
 
     private:
-#ifndef EASY_GRAPHIX
         struct SVertexP2T2C4
         {
             Vector2 position;
@@ -58,7 +65,6 @@ namespace onut
         };
 
         static const int MAX_SPRITE_COUNT = 300;
-
 
         ID3D11Buffer*               m_pVertexBuffer = nullptr;
         ID3D11Buffer*               m_pIndexBuffer = nullptr;
@@ -70,16 +76,15 @@ namespace onut
         bool                        m_isDrawing = false;
 
         Texture*                    m_pTexWhite = nullptr;
-#else
-        static const int MAX_SPRITE_COUNT = 2000;
 
-#endif /* !EASY_GRAPHIX */
         void flush();
 
         Texture*                    m_pTexture = nullptr;
         unsigned int                m_spriteCount = 0;
         eBlendMode                  m_curBlendMode = eBlendMode::PreMultiplied;
         ID3D11BlendState*           m_pBlendStates[static_cast<int>(eBlendMode::BlendModeCount)];
+        eFiltering                  m_curFiltering = eFiltering::Linear;
+        ID3D11SamplerState*         m_pSamplers[static_cast<int>(eFiltering::FilteringCount)];
         Matrix                      m_currentTransform;
     };
 }

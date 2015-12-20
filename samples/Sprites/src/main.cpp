@@ -128,6 +128,12 @@ void render()
     OSpriteBatch->drawSprite(pNutTexture, Vector2(600, 200), Color::White, 0, .25f, Vector2(1, 1));
     OSpriteBatch->drawCross(Vector2(600, 200), 10.f, Color(1, 1, 0, 1));
 
+    // Filtering
+    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Linear);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 100), Color::White, 0.f, 1.5f);
+    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Nearest);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 300), Color::White, 0.f, 1.5f);
+
     // End and flush the batch
     OSpriteBatch->end();
 }

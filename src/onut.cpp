@@ -50,19 +50,6 @@ namespace onut
             OSB->begin();
         };
 
-#if EASY_GRAPHIX
-        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pControl, const onut::sUIRect& rect)
-        {
-            OSB->end();
-            egEnable(EG_BLUR);
-            egBlur(32.f);
-            egPostProcess();
-            ORenderer->resetState();
-            OSB->begin();
-            OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .35f));
-        });
-#endif
-
         auto getTextureForState = [](onut::UIControl *pControl, const std::string &filename)
         {
             static std::string stateFilename;

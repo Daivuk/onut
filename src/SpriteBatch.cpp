@@ -61,7 +61,10 @@ namespace onut
         ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
         assert(ret == S_OK);
 
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        // Blend modes
+        D3D11_BLEND_DESC blendDesc;
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -74,9 +77,11 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pBlendStates[static_cast<int>(eBlendMode::Opaque)]);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Opaque)]);
         assert(ret == S_OK);
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -89,9 +94,11 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pBlendStates[static_cast<int>(eBlendMode::Alpha)]);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Alpha)]);
         assert(ret == S_OK);
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -104,9 +111,11 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pBlendStates[static_cast<int>(eBlendMode::Add)]);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Add)]);
         assert(ret == S_OK);
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -119,9 +128,11 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pBlendStates[static_cast<int>(eBlendMode::PreMultiplied)]);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::PreMultiplied)]);
         assert(ret == S_OK);
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -134,9 +145,11 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pBlendStates[static_cast<int>(eBlendMode::Multiplied)]);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Multiplied)]);
         assert(ret == S_OK);
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -149,7 +162,41 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pBlendStates[static_cast<int>(eBlendMode::ForceWrite)]);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::ForceWrite)]);
+        assert(ret == S_OK);
+
+        // Samplers
+        D3D11_SAMPLER_DESC samplerDesc;
+        samplerDesc = D3D11_SAMPLER_DESC
+        {
+            D3D11_FILTER_MIN_MAG_MIP_POINT,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            0.f,
+            1,
+            D3D11_COMPARISON_ALWAYS,
+            {0, 0, 0, 0},
+            0,
+            D3D11_FLOAT32_MAX
+        };
+        ret = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplers[static_cast<int>(eFiltering::Nearest)]);
+        assert(ret == S_OK);
+        samplerDesc = D3D11_SAMPLER_DESC
+        {
+            D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            0.f,
+            1,
+            D3D11_COMPARISON_ALWAYS,
+            {0, 0, 0, 0},
+            0,
+            D3D11_FLOAT32_MAX
+        };
+        ret = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplers[static_cast<int>(eFiltering::Linear)]);
         assert(ret == S_OK);
     }
 
@@ -158,6 +205,10 @@ namespace onut
         for (int i = 0; i < static_cast<int>(eBlendMode::BlendModeCount); ++i)
         {
             m_pBlendStates[i]->Release();
+        }
+        for (int i = 0; i < static_cast<int>(eFiltering::FilteringCount); ++i)
+        {
+            m_pSamplers[i]->Release();
         }
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
@@ -177,6 +228,7 @@ namespace onut
         ORenderer->setupFor2D(transform);
         m_curBlendMode = blendMode;
         ORenderer->getDeviceContext()->OMSetBlendState(m_pBlendStates[static_cast<int>(blendMode)], NULL, 0xffffffff);
+        ORenderer->getDeviceContext()->PSSetSamplers(0, 1, &m_pSamplers[static_cast<int>(m_curFiltering)]);
         m_pTexture = nullptr;
         m_isDrawing = true;
         ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
@@ -188,6 +240,15 @@ namespace onut
         if (m_curBlendMode == blendMode) return;
         end();
         begin(m_currentTransform, blendMode);
+    }
+
+    void SpriteBatch::changeFiltering(eFiltering filtering)
+    {
+        if (m_curFiltering == filtering) return;
+        auto bManageBatch = isInBatch();
+        if (bManageBatch) end();
+        m_curFiltering = filtering;
+        if (bManageBatch) begin(m_currentTransform, m_curBlendMode);
     }
 
     void SpriteBatch::drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors)

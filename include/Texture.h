@@ -1,9 +1,5 @@
 #pragma once
-#ifdef EASY_GRAPHIX
-#include "eg.h"
-#else
 #include <d3d11.h>
-#endif
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
@@ -48,20 +44,12 @@ namespace onut
             return std::move(Vector4{0, 0, static_cast<float>(m_size.x), static_cast<float>(m_size.y)});
         }
 
-#ifdef EASY_GRAPHIX
-        EGTexture                   getResource() const { return m_pTextureView; }
-#else
         ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
-#endif
 
     private:
-#ifdef EASY_GRAPHIX
-        EGTexture                   m_pTextureView = 0;
-#else
         ID3D11Texture2D*            m_pTexture = nullptr;
         ID3D11ShaderResourceView*   m_pTextureView = nullptr;
         ID3D11RenderTargetView*     m_pRenderTargetView = nullptr;
-#endif
         sSize                       m_size;
     };
 }

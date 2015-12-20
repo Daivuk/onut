@@ -1,9 +1,5 @@
 #pragma once
-#ifdef EASY_GRAPHIX
-#include "eg.h"
-#else
 #include <d3d11.h>
-#endif
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
@@ -44,13 +40,9 @@ namespace onut
 
         void                    bindRenderTarget(Texture *pTexture = nullptr);
 
-#ifdef EASY_GRAPHIX
-        EGDevice                getDevice();
-#else
         ID3D11Device*           getDevice();
         ID3D11DeviceContext*    getDeviceContext();
         ID3D11PixelShader*      create2DShader(const std::string& filename);
-#endif
 
     private:
         enum class eRenderSetup
@@ -66,11 +58,6 @@ namespace onut
         void                    loadShaders();
         void                    createUniforms();
 
-#ifdef EASY_GRAPHIX
-        EGDevice                m_device = 0;
-        EGState                 m_2dstate = 0;
-        EGState                 m_3dState = 0;
-#else /* EASY_GRAPHIX */
         // Device stuff
         IDXGISwapChain*             m_swapChain = nullptr;
         ID3D11Device*               m_device = nullptr;
@@ -95,7 +82,6 @@ namespace onut
         // Constant buffers
         ID3D11Buffer*               m_pViewProj2dBuffer = nullptr;
         ID3D11Buffer*               m_pWorldMatrixBuffer = nullptr;
-#endif /* EASY_GRAPHIX */
 
         eRenderSetup                m_renderSetup = eRenderSetup::SETUP_NONE;
 

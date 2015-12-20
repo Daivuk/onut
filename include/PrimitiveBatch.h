@@ -24,7 +24,6 @@ namespace onut
         void end();
 
     private:
-#ifndef EASY_GRAPHIX
         struct SVertexP2T2C4
         {
             Vector2 position;
@@ -49,6 +48,5 @@ namespace onut
         Texture*                    m_pTexture = nullptr;
 
         ePrimitiveType              m_primitiveType;
-#endif /* !EASY_GRAPHIX */
     };
 }
