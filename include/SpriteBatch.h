@@ -35,12 +35,13 @@ namespace onut
         void drawRectScaled9(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
         void drawRectScaled9RepeatCenters(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
         void draw4Corner(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
-        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color = Color::White);
-        void drawSprite(Texture* pTexture, const Matrix& transform, const Color& color = Color::White);
-        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f);
-        void drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f);
-        void drawSpriteWithUVs(Texture* pTexture, const Matrix& transform, const Vector4& uvs, const Color& color);
+        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color = Color::White, const Vector2& origin = Vector2(0.5f, 0.5f));
+        void drawSprite(Texture* pTexture, const Matrix& transform, const Color& color = Color::White, const Vector2& origin = Vector2(0.5f, 0.5f));
+        void drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = Vector2(0.5f, 0.5f));
+        void drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = Vector2(0.5f, 0.5f));
+        void drawSpriteWithUVs(Texture* pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin = Vector2(0.5f, 0.5f));
         void drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
+        void drawCross(const Vector2& position, float size, const Color& color = Color::White, float thickness = 2.f);
         void end();
 
         void changeBlendMode(eBlendMode blendMode);

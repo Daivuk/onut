@@ -20,39 +20,39 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
-    batchTransform.startKeyframed(
-        Matrix::Identity,
-        {
-            {
-                Matrix::Identity,
-                2.f,
-                OTeleport
-            },
-            {
-                Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
-                Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45.f)) *
-                Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
-                1.0f,
-                OLinear
-            },
-            {
-                Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
-                Matrix::CreateRotationZ(DirectX::XMConvertToRadians(-45.f)) *
-                Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
-                2.0f,
-                OLinear
-            },
-            {
-                Matrix::Identity,
-                1.f,
-                OLinear
-            }
-        }, OLoop);
+    batchTransform = Matrix::Identity;
 }
 
 void update()
 {
     g_spriteAngle += ODT * 45.f;
+
+    if (OJustPressed(OINPUT_SPACE))
+    {
+        batchTransform.startKeyframed(
+            Matrix::Identity,
+            {
+                {
+                    Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
+                    Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45.f)) *
+                    Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
+                    1.0f,
+                    OLinear
+                },
+                {
+                    Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
+                    Matrix::CreateRotationZ(DirectX::XMConvertToRadians(-45.f)) *
+                    Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
+                    2.0f,
+                    OLinear
+                },
+                {
+                    Matrix::Identity,
+                    1.f,
+                    OLinear
+                }
+            });
+    }
 }
 
 void render()
@@ -119,6 +119,14 @@ void render()
     OSpriteBatch->drawSprite(pNutTexture, Vector2(600, 50), Color::White, 0, .25f);
     OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::PreMultiplied);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(650, 50), Color::White, 0, .25f);
+
+    // Origin
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(400, 200), Color::White, 0, .25f, Vector2(0, 0));
+    OSpriteBatch->drawCross(Vector2(400, 200), 10.f, Color(1, 1, 0, 1));
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(500, 200), Color::White, 0, .25f, Vector2(.5f, .5f));
+    OSpriteBatch->drawCross(Vector2(500, 200), 10.f, Color(1, 1, 0, 1));
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(600, 200), Color::White, 0, .25f, Vector2(1, 1));
+    OSpriteBatch->drawCross(Vector2(600, 200), 10.f, Color(1, 1, 0, 1));
 
     // End and flush the batch
     OSpriteBatch->end();
