@@ -1,5 +1,5 @@
 ﻿#include "onut.h"
-#include "StringUtils.h"
+#include "Utils.h"
 #include "Window.h"
 #include <windowsx.h>
 

@@ -1,5 +1,7 @@
 #pragma once
 #include <d3d11.h>
+#include <vector>
+
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
@@ -22,6 +24,7 @@ namespace onut
             return Texture::createFromFile(filename, generateMipmaps);
         }
         static Texture* createFromFile(const std::string& filename, bool generateMipmaps = true);
+        static Texture* createFromFileData(const std::vector<uint8_t>& data, bool in_generateMipmaps = true);
         static Texture* createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps = true);
         static Texture* createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps = true);
 

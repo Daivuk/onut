@@ -136,6 +136,11 @@ namespace onut
         return createFromData(size, &(image[0]), generateMipmaps);
     }
 
+    Texture* Texture::createFromFileData(const std::vector<uint8_t>& data, bool in_generateMipmaps)
+    {
+        return createFromFileData(data.data(), data.size(), in_generateMipmaps);
+    }
+
     Texture* Texture::createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps)
     {
         Texture* pRet = NULL;

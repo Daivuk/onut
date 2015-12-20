@@ -46,7 +46,7 @@
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\State.h" />
     <ClInclude Include="..\..\include\StateManager.h" />
-    <ClInclude Include="..\..\include\StringUtils.h" />
+    <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TiledMap.h" />
@@ -116,7 +116,7 @@
     <ClCompile Include="..\..\src\SoundEffect.cpp" />
     <ClCompile Include="..\..\src\SoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
-    <ClCompile Include="..\..\src\StringUtils.cpp" />
+    <ClCompile Include="..\..\src\Utils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\TiledMap.cpp" />
     <ClCompile Include="..\..\src\tinyxml2.cpp" />

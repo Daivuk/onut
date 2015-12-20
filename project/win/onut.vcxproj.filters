@@ -13,9 +13,6 @@
     <ClInclude Include="..\..\include\Renderer.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\StringUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\LodePNG.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -205,6 +202,9 @@
     <ClInclude Include="..\..\include\Log.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -220,9 +220,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\StringUtils.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\LodePNG.cpp">
@@ -382,6 +379,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

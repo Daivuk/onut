@@ -3,7 +3,7 @@
 #include <comutil.h>
 #include <msxml6.h>
 #include <locale>
-#include "StringUtils.h"
+#include "Utils.h"
 #include "Asynchronous.h"
 
 std::string OHTTPGet(const std::string &url,

@@ -1,9 +1,11 @@
 ﻿#include <algorithm>
 #include <codecvt>
 #include <cassert>
+#include <fstream>
 #include <sstream>
+
 #include "dirent.h"
-#include "StringUtils.h"
+#include "Utils.h"
 
 namespace onut
 {
@@ -213,5 +215,12 @@ namespace onut
         auto ret = str;
         std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
         return ret;
+    }
+
+    std::vector<uint8_t> getFileData(const std::string& filename)
+    {
+        std::ifstream file(filename, std::ios::binary);
+        std::vector<uint8_t> data = {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+        return std::move(data);
     }
 }
