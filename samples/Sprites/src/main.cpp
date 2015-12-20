@@ -93,7 +93,8 @@ void render()
     // Sprites
     OSpriteBatch->drawSprite(pNutTexture, Vector2(64, 480));
     OSpriteBatch->drawSprite(pNutTexture, Vector2(192, 480), Color::White, g_spriteAngle);
-    OSpriteBatch->drawSprite(pNutTexture, Vector2(320, 480), Color::White, g_spriteAngle, .5f);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(320, 440), Color::White, g_spriteAngle, .5f);
+    OSpriteBatch->drawSprite(nullptr, Vector2(320, 500), Color::White, g_spriteAngle, 32.f);
 
     // With a custom matrix
     Matrix customTransform = Matrix::Identity;
@@ -129,9 +130,9 @@ void render()
     OSpriteBatch->drawCross(Vector2(600, 200), 10.f, Color(1, 1, 0, 1));
 
     // Filtering
-    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Linear);
-    OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 100), Color::White, 0.f, 1.5f);
     OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Nearest);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 100), Color::White, 0.f, 1.5f);
+    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Linear);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 300), Color::White, 0.f, 1.5f);
 
     // End and flush the batch

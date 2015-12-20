@@ -574,7 +574,6 @@ namespace onut
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, const Vector2& origin)
     {
-        if (!pTexture) return;
         if (!pTexture) pTexture = m_pTexWhite;
 
         auto& textureSize = pTexture->getSize();
@@ -585,7 +584,7 @@ namespace onut
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Matrix& transform, const Color& color, const Vector2& origin)
     {
-        if (!pTexture) return;
+        if (!pTexture) pTexture = m_pTexWhite;
         auto sizef = pTexture->getSizef();
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -624,7 +623,7 @@ namespace onut
 
     void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin)
     {
-        if (!pTexture) return;
+        if (!pTexture) pTexture = m_pTexWhite;
         auto sizef = pTexture->getSizef();
         sizef.x *= (uvs.z - uvs.x);
         sizef.y *= (uvs.w - uvs.y);
@@ -665,7 +664,7 @@ namespace onut
 
     void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale, const Vector2& origin)
     {
-        if (!pTexture) return;
+        if (!pTexture) pTexture = m_pTexWhite;
         auto textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
@@ -770,7 +769,7 @@ namespace onut
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale, const Vector2& origin)
     {
-        if (!pTexture) return;
+        if (!pTexture) pTexture = m_pTexWhite;
         auto textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
