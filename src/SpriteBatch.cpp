@@ -66,6 +66,81 @@ namespace onut
             FALSE,
             FALSE,
             {{
+                    FALSE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ZERO,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ZERO,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        }), &m_pBlendStates[static_cast<int>(eBlendMode::Opaque)]);
+        assert(ret == S_OK);
+        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_SRC_ALPHA,
+                    D3D11_BLEND_INV_SRC_ALPHA,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        }), &m_pBlendStates[static_cast<int>(eBlendMode::Alpha)]);
+        assert(ret == S_OK);
+        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        }), &m_pBlendStates[static_cast<int>(eBlendMode::Add)]);
+        assert(ret == S_OK);
+        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_INV_SRC_ALPHA,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        }), &m_pBlendStates[static_cast<int>(eBlendMode::PreMultiplied)]);
+        assert(ret == S_OK);
+        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_DEST_COLOR,
+                    D3D11_BLEND_INV_SRC_ALPHA,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        }), &m_pBlendStates[static_cast<int>(eBlendMode::Multiplied)]);
+        assert(ret == S_OK);
+        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+            FALSE,
+            FALSE,
+            {{
                     TRUE,
                     D3D11_BLEND_ONE,
                     D3D11_BLEND_ZERO,
@@ -75,7 +150,7 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pForceWriteBlend);
+        }), &m_pBlendStates[static_cast<int>(eBlendMode::ForceWrite)]);
         assert(ret == S_OK);
 #endif /* !EASY_GRAPHIX */
     }
@@ -83,11 +158,19 @@ namespace onut
     SpriteBatch::~SpriteBatch()
     {
 #ifndef EASY_GRAPHIX
-        if (m_pForceWriteBlend) m_pForceWriteBlend->Release();
+        for (int i = 0; i < static_cast<int>(eBlendMode::BlendModeCount); ++i)
+        {
+            m_pBlendStates[i]->Release();
+        }
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
         delete m_pTexWhite;
 #endif /* !EASY_GRAPHIX */
+    }
+
+    void SpriteBatch::begin(eBlendMode blendMode)
+    {
+        begin(Matrix::Identity, blendMode);
     }
 
     void SpriteBatch::begin(const Matrix& transform, eBlendMode blendMode)
@@ -99,16 +182,22 @@ namespace onut
 #else /* EASY_GRAPHIX */
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
+        m_currentTransform = transform;
         ORenderer->setupFor2D(transform);
         m_curBlendMode = blendMode;
-        if (m_curBlendMode == eBlendMode::FORCE_WRITE)
-        {
-            ORenderer->getDeviceContext()->OMSetBlendState(m_pForceWriteBlend, NULL, 0xffffffff);
-        }
+        ORenderer->getDeviceContext()->OMSetBlendState(m_pBlendStates[static_cast<int>(blendMode)], NULL, 0xffffffff);
         m_pTexture = nullptr;
         m_isDrawing = true;
         ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
 #endif /* !EASY_GRAPHIX */
+    }
+
+    void SpriteBatch::changeBlendMode(eBlendMode blendMode)
+    {
+        if (!isInBatch()) return;
+        if (m_curBlendMode == blendMode) return;
+        end();
+        begin(m_currentTransform, blendMode);
     }
 
     void SpriteBatch::drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors)
@@ -1062,11 +1151,6 @@ namespace onut
             flush();
         }
         ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
-
-        if (m_curBlendMode == eBlendMode::FORCE_WRITE)
-        {
-            ORenderer->resetState();
-        }
 #endif /* !EASY_GRAPHIX */
     }
 

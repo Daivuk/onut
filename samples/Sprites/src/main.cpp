@@ -106,6 +106,19 @@ void render()
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 480), Vector2(648, 440), 32.0f, Color::White);
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 520), Vector2(648, 480), 32.0f, Color::White, g_spriteAngle * .1f);
 
+    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Add);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(400, 50), Color::White, 0, .25f);
+    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Alpha);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(450, 50), Color::White, 0, .25f);
+    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::ForceWrite);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(500, 50), Color::White, 0, .25f);
+    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Multiplied);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(550, 50), Color::White, 0, .25f);
+    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Opaque);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(600, 50), Color::White, 0, .25f);
+    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::PreMultiplied);
+    OSpriteBatch->drawSprite(pNutTexture, Vector2(650, 50), Color::White, 0, .25f);
+
     // End and flush the batch
     OSpriteBatch->end();
 }

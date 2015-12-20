@@ -10,8 +10,13 @@ namespace onut
     public:
         enum class eBlendMode
         {
-            PRE_MULT,
-            FORCE_WRITE,
+            Opaque,
+            Alpha,
+            Add,
+            PreMultiplied,
+            Multiplied,
+            ForceWrite,
+            BlendModeCount
         };
 
         SpriteBatch();
@@ -19,7 +24,8 @@ namespace onut
 
         void begin(
             const Matrix& transform = Matrix::Identity,
-            eBlendMode blendMode = eBlendMode::PRE_MULT);
+            eBlendMode blendMode = eBlendMode::PreMultiplied);
+        void begin(eBlendMode blendMode);
         void drawAbsoluteRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);
@@ -36,6 +42,8 @@ namespace onut
         void drawSpriteWithUVs(Texture* pTexture, const Matrix& transform, const Vector4& uvs, const Color& color);
         void drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
         void end();
+
+        void changeBlendMode(eBlendMode blendMode);
 
         bool isInBatch() const { return m_isDrawing; };
 
@@ -69,7 +77,8 @@ namespace onut
 
         Texture*                    m_pTexture = nullptr;
         unsigned int                m_spriteCount = 0;
-        eBlendMode                  m_curBlendMode = eBlendMode::PRE_MULT;
-        ID3D11BlendState*           m_pForceWriteBlend = nullptr;
+        eBlendMode                  m_curBlendMode = eBlendMode::PreMultiplied;
+        ID3D11BlendState*           m_pBlendStates[static_cast<int>(eBlendMode::BlendModeCount)];
+        Matrix                      m_currentTransform;
     };
 }
