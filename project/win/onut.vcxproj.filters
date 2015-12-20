@@ -199,15 +199,6 @@
     <ClInclude Include="..\..\include\Utils.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\blurvs.cso.h">
-      <Filter>src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\_2dps.cso.h">
-      <Filter>src\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\_2dvs.cso.h">
-      <Filter>src\shaders</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -419,16 +410,5 @@
     <Filter Include="src\shaders">
       <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\src\blurhps.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\blurvps.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\blurvs.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>
