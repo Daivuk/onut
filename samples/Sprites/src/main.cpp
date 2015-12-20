@@ -106,6 +106,7 @@ void render()
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 480), Vector2(648, 440), 32.0f, Color::White);
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 520), Vector2(648, 480), 32.0f, Color::White, g_spriteAngle * .1f);
 
+    // Blend modes
     OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Add);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(400, 50), Color::White, 0, .25f);
     OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Alpha);
