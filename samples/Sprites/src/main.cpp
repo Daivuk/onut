@@ -66,6 +66,13 @@ void render()
     OSpriteBatch->drawSprite(pNutTexture, Vector2(192, 480), Color::White, g_spriteAngle);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(320, 480), Color::White, g_spriteAngle, .5f);
 
+    // With a custom matrix
+    Matrix customTransform = Matrix::Identity;
+    customTransform *= Matrix::CreateRotationZ(DirectX::XMConvertToRadians(g_spriteAngle));
+    customTransform *= Matrix::CreateScale(4.f, 0.5f, 1.f);
+    customTransform *= Matrix::CreateTranslation(520, 120, 0);
+    OSpriteBatch->drawSprite(pNutTexture, customTransform, Color::White);
+
     // Lines
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 480), Vector2(648, 440), 32.0f, Color::White);
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 520), Vector2(648, 480), 32.0f, Color::White, g_spriteAngle * .1f);
