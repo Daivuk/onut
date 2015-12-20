@@ -90,7 +90,7 @@ namespace onut
 #endif /* !EASY_GRAPHIX */
     }
 
-    void SpriteBatch::begin(eBlendMode blendMode)
+    void SpriteBatch::begin(const Matrix& transform, eBlendMode blendMode)
     {
 #ifdef EASY_GRAPHIX
         ORenderer->setupFor2D();
@@ -99,7 +99,7 @@ namespace onut
 #else /* EASY_GRAPHIX */
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
-        ORenderer->setupFor2D();
+        ORenderer->setupFor2D(transform);
         m_curBlendMode = blendMode;
         if (m_curBlendMode == eBlendMode::FORCE_WRITE)
         {

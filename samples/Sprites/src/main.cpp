@@ -9,6 +9,7 @@ void update();
 void render();
 
 float g_spriteAngle = 0.f;
+OAnim<Matrix> batchTransform;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -19,6 +20,34 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
+    batchTransform.startKeyframed(
+        Matrix::Identity,
+        {
+            {
+                Matrix::Identity,
+                2.f,
+                OTeleport
+            },
+            {
+                Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
+                Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45.f)) *
+                Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
+                1.0f,
+                OLinear
+            },
+            {
+                Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
+                Matrix::CreateRotationZ(DirectX::XMConvertToRadians(-45.f)) *
+                Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
+                2.0f,
+                OLinear
+            },
+            {
+                Matrix::Identity,
+                1.f,
+                OLinear
+            }
+        }, OLoop);
 }
 
 void update()
@@ -36,7 +65,7 @@ void render()
     ORenderer->clear(OColorHex(1d232d));
 
     // Begin a batch
-    OSpriteBatch->begin();
+    OSpriteBatch->begin(batchTransform);
 
     // Opaque
     OSpriteBatch->drawRect(nullptr, Rect(0, 0, 64, 64));

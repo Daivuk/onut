@@ -25,8 +25,9 @@ namespace onut
 
         void                    resetState();
         void                    setupFor2D();
+        void                    setupFor2D(const Matrix& transform);
         void                    setupFor3D();
-        void                    set2DCamera(const Matrix& viewProj);
+        void                    set2DCamera(const Matrix& viewProj, const Matrix& transform = Matrix::Identity);
         Matrix                  set2DCamera(const Vector2& position, float zoom = 1.f);
         Matrix                  set2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
         Matrix                  build2DCamera(const Vector2& position, float zoom = 1.f);
@@ -102,5 +103,6 @@ namespace onut
         Vector3                     m_cameraPos;
         Vector3                     m_cameraDir;
         Vector3                     m_cameraUp;
+        Matrix                      m_2dViewProj;
     };
 }

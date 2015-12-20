@@ -17,7 +17,9 @@ namespace onut
         SpriteBatch();
         virtual ~SpriteBatch();
 
-        void begin(eBlendMode blendMode = eBlendMode::PRE_MULT);
+        void begin(
+            const Matrix& transform = Matrix::Identity,
+            eBlendMode blendMode = eBlendMode::PRE_MULT);
         void drawAbsoluteRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawRect(Texture* pTexture, const Rect& rect, const Color& color = Color::White);
         void drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);

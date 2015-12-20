@@ -364,6 +364,15 @@ namespace onut
 
     void Renderer::setupFor2D()
     {
+        setupFor2D(Matrix::Identity);
+    }
+
+    void Renderer::setupFor2D(const Matrix& transform)
+    {
+        // Bind the matrix
+        set2DCamera(m_2dViewProj, transform);
+        m_deviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
+
         if (m_renderSetup == eRenderSetup::SETUP_2D) return;
         m_renderSetup = eRenderSetup::SETUP_2D;
 
@@ -385,8 +394,6 @@ namespace onut
         m_deviceContext->VSSetShader(m_p2DVertexShader, nullptr, 0);
         m_deviceContext->PSSetShader(m_p2DPixelShader, nullptr, 0);
 
-        // Bind the matrix
-        m_deviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
 #endif /* !EASY_GRAPHIX */
 
         m_cameraPos = Vector3::UnitZ;
@@ -418,30 +425,31 @@ namespace onut
         return viewProj;
     }
 
-    void Renderer::set2DCamera(const Matrix& viewProj)
+    void Renderer::set2DCamera(const Matrix& viewProj, const Matrix& transform)
     {
 #ifdef EASY_GRAPHIX
         egSetViewProjMerged(&viewProj._11);
 #else /* EASY_GRAPHIX */
         D3D11_MAPPED_SUBRESOURCE map;
         m_deviceContext->Map(m_pViewProj2dBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &viewProj._11, sizeof(viewProj));
+        auto finalTransform = viewProj * transform.Transpose();
+        memcpy(map.pData, &finalTransform._11, sizeof(finalTransform));
         m_deviceContext->Unmap(m_pViewProj2dBuffer, 0);
 #endif /* !EASY_GRAPHIX */
     }
 
     Matrix Renderer::set2DCamera(const Vector2& position, float zoom)
     {
-        auto viewProj = build2DCamera(position, zoom);
-        set2DCamera(viewProj);
-        return viewProj;
+        m_2dViewProj = build2DCamera(position, zoom);
+        set2DCamera(m_2dViewProj);
+        return m_2dViewProj;
     }
 
     Matrix Renderer::set2DCameraOffCenter(const Vector2& position, float zoom)
     {
-        auto viewProj = build2DCameraOffCenter(position, zoom);
-        set2DCamera(viewProj);
-        return viewProj;
+        m_2dViewProj = build2DCameraOffCenter(position, zoom);
+        set2DCamera(m_2dViewProj);
+        return m_2dViewProj;
     }
 
     void Renderer::setupFor3D()
