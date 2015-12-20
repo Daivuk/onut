@@ -44,6 +44,11 @@ namespace onut
         ID3D11DeviceContext*    getDeviceContext();
         ID3D11PixelShader*      create2DShader(const std::string& filename);
 
+        // For effects
+        void                    setKernelSize(const Vector2& kernelSize);
+        void                    drawBlurH();
+        void                    drawBlurV();
+
     private:
         enum class eRenderSetup
         {
@@ -79,9 +84,16 @@ namespace onut
         ID3D11PixelShader*          m_p2DPixelShader = nullptr;
         ID3D11InputLayout*          m_p2DInputLayout = nullptr;
 
+        ID3D11VertexShader*         m_pEffectsVertexShader = nullptr;
+        ID3D11PixelShader*          m_pBlurHPixelShader = nullptr;
+        ID3D11PixelShader*          m_pBlurVPixelShader = nullptr;
+        ID3D11InputLayout*          m_pEffectsInputLayout = nullptr;
+        ID3D11Buffer*               m_pEffectsVertexBuffer = nullptr;
+
         // Constant buffers
         ID3D11Buffer*               m_pViewProj2dBuffer = nullptr;
         ID3D11Buffer*               m_pWorldMatrixBuffer = nullptr;
+        ID3D11Buffer*               m_pKernelSizeBuffer = nullptr;
 
         eRenderSetup                m_renderSetup = eRenderSetup::SETUP_NONE;
 

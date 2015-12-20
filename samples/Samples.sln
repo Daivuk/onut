@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GamePads", "GamePads\projec
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Textures", "Textures\project\win\Textures.vcxproj", "{8EB57E79-9EDD-4ABC-9D33-0CD7763B54CC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Effects", "Effects\project\win\Effects.vcxproj", "{AE6059C9-BBEA-4B18-B742-07E33F93ADF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -89,6 +91,10 @@ Global
 		{8EB57E79-9EDD-4ABC-9D33-0CD7763B54CC}.Debug|Win32.Build.0 = Debug|Win32
 		{8EB57E79-9EDD-4ABC-9D33-0CD7763B54CC}.Release|Win32.ActiveCfg = Release|Win32
 		{8EB57E79-9EDD-4ABC-9D33-0CD7763B54CC}.Release|Win32.Build.0 = Release|Win32
+		{AE6059C9-BBEA-4B18-B742-07E33F93ADF6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AE6059C9-BBEA-4B18-B742-07E33F93ADF6}.Debug|Win32.Build.0 = Debug|Win32
+		{AE6059C9-BBEA-4B18-B742-07E33F93ADF6}.Release|Win32.ActiveCfg = Release|Win32
+		{AE6059C9-BBEA-4B18-B742-07E33F93ADF6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,5 +112,6 @@ Global
 		{551945DC-A5E8-4969-8258-97AF05963411} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{92B454B7-4DB0-4694-9F49-EB8167D3CEDF} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{8EB57E79-9EDD-4ABC-9D33-0CD7763B54CC} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{AE6059C9-BBEA-4B18-B742-07E33F93ADF6} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal

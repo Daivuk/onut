@@ -7,7 +7,7 @@
 
 namespace onut
 {
-    Texture* Texture::createRenderTarget(const sSize& size)
+    Texture* Texture::createRenderTarget(const sSize& size, bool willUseFX)
     {
         auto pDevice = ORenderer->getDevice();
 
@@ -67,6 +67,11 @@ namespace onut
         {
             assert(false && "Failed CreateShaderResourceView");
             return nullptr;
+        }
+
+        if (willUseFX)
+        {
+            pRet->generateOffscreenFX();
         }
 
         return pRet;
@@ -289,6 +294,9 @@ namespace onut
         if (m_pTextureView) m_pTextureView->Release();
         if (m_pTexture) m_pTexture->Release();
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
+        if (m_pTextureViewFX) m_pTextureViewFX->Release();
+        if (m_pTextureFX) m_pTextureFX->Release();
+        if (m_pRenderTargetViewFX) m_pRenderTargetViewFX->Release();
     }
 
     void Texture::bind(int slot)
@@ -312,5 +320,125 @@ namespace onut
     void Texture::clearRenderTarget(const Color& color)
     {
         ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, &color.x);
+    }
+
+    void Texture::blur(float amount)
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            generateOffscreenFX();
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        int i = 0;
+        while (amount >= 6.f)
+        {
+            amount -= 6.f;
+            ORenderer->setKernelSize({
+                1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
+                1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
+            });
+
+            ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+            ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+            ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+            ORenderer->drawBlurH();
+
+            ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+            ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+            ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureViewFX);
+            ORenderer->drawBlurV();
+            i += 6;
+        }
+
+        ORenderer->setKernelSize({
+            1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
+            1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
+        });
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+        ORenderer->drawBlurH();
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureViewFX);
+        ORenderer->drawBlurV();
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+
+    void Texture::generateOffscreenFX()
+    {
+        auto pDevice = ORenderer->getDevice();
+
+        D3D11_TEXTURE2D_DESC textureDesc = {0};
+        HRESULT result;
+        D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+        D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+        memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
+        memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
+
+        // Setup the render target texture description.
+        textureDesc.Width = m_size.x;
+        textureDesc.Height = m_size.y;
+        textureDesc.MipLevels = 1;
+        textureDesc.ArraySize = 1;
+        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        textureDesc.SampleDesc.Count = 1;
+        textureDesc.Usage = D3D11_USAGE_DEFAULT;
+        textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        textureDesc.CPUAccessFlags = 0;
+        textureDesc.MiscFlags = 0;
+
+        // Create the render target texture.
+        result = pDevice->CreateTexture2D(&textureDesc, NULL, &m_pTextureFX);
+        if (result != S_OK)
+        {
+            assert(false && "Failed CreateTexture2D");
+            return;
+        }
+
+        // Setup the description of the render target view.
+        renderTargetViewDesc.Format = textureDesc.Format;
+        renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+        // Create the render target view.
+        result = pDevice->CreateRenderTargetView(m_pTextureFX, &renderTargetViewDesc, &m_pRenderTargetViewFX);
+        if (result != S_OK)
+        {
+            assert(false && "Failed CreateRenderTargetView");
+            return;
+        }
+
+        // Setup the description of the shader resource view.
+        shaderResourceViewDesc.Format = textureDesc.Format;
+        shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+        shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+        // Create the shader resource view.
+        result = pDevice->CreateShaderResourceView(m_pTextureFX, &shaderResourceViewDesc, &m_pTextureViewFX);
+        if (result != S_OK)
+        {
+            assert(false && "Failed CreateShaderResourceView");
+            return;
+        }
     }
 }

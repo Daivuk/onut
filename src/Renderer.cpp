@@ -7,6 +7,9 @@
 
 #include "_2dvs.cso.h"
 #include "_2dps.cso.h"
+#include "blurvs.cso.h"
+#include "blurhps.cso.h"
+#include "blurvps.cso.h"
 
 namespace onut
 {
@@ -17,16 +20,49 @@ namespace onut
         createRenderStates();
         loadShaders();
         createUniforms();
+
+        // Set up the description of the static vertex buffer.
+        D3D11_BUFFER_DESC vertexBufferDesc;
+        vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        vertexBufferDesc.ByteWidth = 12 * 4;
+        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        vertexBufferDesc.CPUAccessFlags = 0;
+        vertexBufferDesc.MiscFlags = 0;
+        vertexBufferDesc.StructureByteStride = 0;
+
+        // Give the subresource structure a pointer to the vertex data.
+        D3D11_SUBRESOURCE_DATA vertexData;
+        const float vertices[] = {
+            -1, -1, 
+            -1, 1, 
+            1, -1, 
+            1, -1, 
+            -1, 1, 
+            1, 1
+        };
+        vertexData.pSysMem = vertices;
+        vertexData.SysMemPitch = 0;
+        vertexData.SysMemSlicePitch = 0;
+
+        auto ret = m_device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pEffectsVertexBuffer);
+        assert(ret == S_OK);
     }
 
     Renderer::~Renderer()
     {
         if (m_pWorldMatrixBuffer) m_pWorldMatrixBuffer->Release();
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
+        if (m_pKernelSizeBuffer) m_pKernelSizeBuffer->Release();
 
         if (m_p2DInputLayout) m_p2DInputLayout->Release();
         if (m_p2DPixelShader) m_p2DPixelShader->Release();
         if (m_p2DVertexShader) m_p2DVertexShader->Release();
+
+        if (m_pEffectsVertexShader) m_pEffectsVertexShader->Release();
+        if (m_pBlurHPixelShader) m_pBlurHPixelShader->Release();
+        if (m_pBlurVPixelShader) m_pBlurVPixelShader->Release();
+        if (m_pEffectsInputLayout) m_pEffectsInputLayout->Release();
+        if (m_pEffectsVertexBuffer) m_pEffectsVertexBuffer->Release();
 
         if (m_pSs2D) m_pSs2D->Release();
         if (m_pBs2D) m_pBs2D->Release();
@@ -194,13 +230,30 @@ namespace onut
             ret = m_device->CreateInputLayout(layout, 3, _2dvs_cso, sizeof(_2dvs_cso), &m_p2DInputLayout);
             assert(ret == S_OK);
         }
+
+        // Effects
+        {       
+            auto ret = m_device->CreateVertexShader(blurvs_cso, sizeof(blurvs_cso), nullptr, &m_pEffectsVertexShader);
+            assert(ret == S_OK);
+            ret = m_device->CreatePixelShader(blurhps_cso, sizeof(blurhps_cso), nullptr, &m_pBlurHPixelShader);
+            assert(ret == S_OK);
+            ret = m_device->CreatePixelShader(blurvps_cso, sizeof(blurvps_cso), nullptr, &m_pBlurVPixelShader);
+            assert(ret == S_OK);
+
+            // Create input layout
+            D3D11_INPUT_ELEMENT_DESC layout[] = {
+                {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            };
+            ret = m_device->CreateInputLayout(layout, 1, blurvs_cso, sizeof(blurvs_cso), &m_pEffectsInputLayout);
+            assert(ret == S_OK);
+        }
     }
 
     ID3D11PixelShader* Renderer::create2DShader(const std::string& filename)
     {
         ID3D11PixelShader* pRet = nullptr;
 
-        std::ifstream psFile("../../assets/shaders/" + filename, std::ios::binary);
+        std::ifstream psFile(filename, std::ios::binary);
         std::vector<char> psData = {std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>()};
 
         auto ret = m_device->CreatePixelShader(psData.data(), psData.size(), nullptr, &pRet);
@@ -218,6 +271,13 @@ namespace onut
             D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Matrix), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
             D3D11_SUBRESOURCE_DATA initData{&viewProj, 0, 0};
             auto ret = m_device->CreateBuffer(&cbDesc, &initData, &m_pViewProj2dBuffer);
+            assert(ret == S_OK);
+        }
+
+        // For effects
+        {
+            D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Vector4), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+            auto ret = m_device->CreateBuffer(&cbDesc, nullptr, &m_pKernelSizeBuffer);
             assert(ret == S_OK);
         }
     }
@@ -382,5 +442,53 @@ namespace onut
         {
             m_deviceContext->RSSetState(m_pSr2D);
         }
+    }
+
+    void Renderer::setKernelSize(const Vector2& kernelSize)
+    {
+        D3D11_MAPPED_SUBRESOURCE map;
+        m_deviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        Vector4 kernelSize4(kernelSize.x, kernelSize.y, 0, 0);
+        memcpy(map.pData, &kernelSize4.x, sizeof(kernelSize4));
+        m_deviceContext->Unmap(m_pKernelSizeBuffer, 0);
+        m_deviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
+    }
+
+    void Renderer::drawBlurH()
+    {
+        // Set 2d render states
+        m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
+        m_deviceContext->RSSetState(m_pSr2D);
+        m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pSs2D);
+
+        // Bind the shaders
+        m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
+        m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
+        m_deviceContext->PSSetShader(m_pBlurHPixelShader, nullptr, 0);
+
+        UINT stride = 2 * 4;
+        UINT offset = 0;
+        m_deviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
+        m_deviceContext->Draw(6, 0);
+    }
+
+    void Renderer::drawBlurV()
+    {
+        // Set 2d render states
+        m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
+        m_deviceContext->RSSetState(m_pSr2D);
+        m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pSs2D);
+
+        // Bind the shaders
+        m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
+        m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
+        m_deviceContext->PSSetShader(m_pBlurVPixelShader, nullptr, 0);
+
+        UINT stride = 2 * 4;
+        UINT offset = 0;
+        m_deviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
+        m_deviceContext->Draw(6, 0);
     }
 }
