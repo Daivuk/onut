@@ -3,6 +3,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/filestream.h"
 #include "tinyxml2.h"
+#include "zlib/zlib.h"
 
 #define PFX_READ_ENUM(__node__, __target__, __name__, __enumType__, ...) \
 { \
@@ -96,6 +97,12 @@ namespace onut
 
     struct sPEX
     {
+        enum class Type
+        {
+            Gravity,
+            Radial
+        };
+
         bool absolutePosition = false;
         float yCoordFlipped = -1;
         Vector2 sourcePosition;
@@ -121,7 +128,7 @@ namespace onut
         float finishParticleSize = 1;
         float finishParticleSizeVariance = 0;
         float duration = 0;
-        unsigned int emitterType = 0;
+        Type type = Type::Gravity;
         float maxRadius = 0;
         float maxRadiusVariance = 0;
         float minRadius = 0;
@@ -135,6 +142,7 @@ namespace onut
         float rotationEnd = 0;
         float rotationEndVariance = 0;
         std::string texture;
+        bool hasTextureData = false;
     };
 
     sPEX loadPEXFile(const std::string& filename)
@@ -268,7 +276,17 @@ namespace onut
             }
             else if (name == "emitterType")
             {
-                pXMLElement->QueryAttribute("value", &pex.emitterType);
+                unsigned int type = 0;
+                pXMLElement->QueryAttribute("value", &type);
+                switch (type)
+                {
+                    case 0:
+                        pex.type = sPEX::Type::Gravity;
+                        break;
+                    case 1:
+                        pex.type = sPEX::Type::Radial;
+                        break;
+                }
             }
             else if (name == "maxRadius")
             {
@@ -321,7 +339,16 @@ namespace onut
             else if (name == "texture")
             {
                 auto pText = pXMLElement->Attribute("name");
-                if (pText) pex.texture = pText;
+                std::string data = pXMLElement->Attribute("data");
+                if (data.empty())
+                {
+                    if (pText) pex.texture = pText;
+                }
+                else
+                {
+                    pex.hasTextureData = true;
+                    pex.texture = std::move(data);
+                }
             }
             else
             {
@@ -365,7 +392,7 @@ namespace onut
                     {"FINITE", eEmitterType::FINITE},
                     {"CONTINOUS", eEmitterType::CONTINOUS}});
                 pfxReadUint(emitter.count, jsonEmitter["count"]);
-                pfxReadUint(emitter.rate, jsonEmitter["rate"]);
+                pfxReadFloat(emitter.rate, jsonEmitter["rate"]);
                 emitter.spread = jsonEmitter["spread"];
                 emitter.speed = jsonEmitter["speed"];
                 emitter.color = jsonEmitter["color"];
@@ -395,27 +422,73 @@ namespace onut
             pRet->emitters.resize(1);
             auto& emitter = pRet->emitters.front();
 
-            emitter.textures.push_back(OGetTexture(pex.texture.c_str()));
-            emitter.spread = 180;
+            if (pex.hasTextureData)
+            {
+                assert(false);
+                //auto imageData = base64_decode(pex.texture);
+
+                //int err;
+                //z_stream d_stream; // decompression stream
+
+                //d_stream.zalloc = (alloc_func)0;
+                //d_stream.zfree = (free_func)0;
+                //d_stream.opaque = (voidpf)0;
+
+                //static uint8_t inflatedData[1024 * 1024 * 4]; // 4 meg
+
+                //d_stream.next_in = reinterpret_cast<Bytef*>(imageData.data()); // where deflated is a pointer the the compressed data buffer
+                //d_stream.avail_in = static_cast<uInt>(imageData.size()); // where deflatedLen is the length of the compressed data
+                //d_stream.next_out = reinterpret_cast<Bytef*>(inflatedData); // where inflated is a pointer to the resulting uncompressed data buffer
+                //d_stream.avail_out = static_cast<uInt>(1024 * 1024 * 4); // where inflatedLen is the size of the uncompressed data buffer
+
+                //err = inflateInit2(&d_stream, 15 + 32);
+                //assert(err == Z_OK);
+                //err = inflate(&d_stream, Z_FINISH);
+                //assert(err == Z_STREAM_END);
+                //err = inflateEnd(&d_stream);
+                //assert(err == Z_OK);
+
+                //auto pTexture = OTexture::createFromFileData(inflatedData, 1024 * 1024 * 4);
+                //emitter.textures.push_back(pTexture);
+            }
+            else
+            {
+                emitter.textures.push_back(OGetTexture(pex.texture.c_str()));
+            }
+            emitter.spread = pex.angleVariance;
             emitter.speed.from = pex.speed - pex.speedVariance;
             emitter.speed.to = pex.speed + pex.speedVariance;
 
+            emitter.dir = Vector3(
+                cosf(DirectX::XMConvertToRadians(pex.angle)),
+                -sinf(DirectX::XMConvertToRadians(pex.angle)),
+                0);
+
+            pex.startColor.Premultiply();
             emitter.color.value.from = pex.startColor - pex.startColorVariance;
             emitter.color.value.to = pex.startColor + pex.startColorVariance;
             emitter.color.finalValue.from = pex.finishColor - pex.finishColorVariance;
             emitter.color.finalValue.to = pex.finishColor + pex.finishColorVariance;
             emitter.color.finalSpecified = true;
 
-            emitter.angle.value.from = pex.angle - pex.angleVariance;
-            emitter.angle.value.to = pex.angle + pex.angleVariance;
+            emitter.angle.value.from = pex.rotationStart - pex.rotationStartVariance;
+            emitter.angle.value.to = pex.rotationStart + pex.rotationStartVariance;
+            emitter.angle.finalValue.from = pex.rotationEnd - pex.rotationEndVariance;
+            emitter.angle.finalValue.to = pex.rotationEnd + pex.rotationEndVariance;
+            emitter.angle.finalSpecified = true;
 
             emitter.gravity = Vector3(pex.gravity, 0);
 
-            emitter.size.value.from = pex.startParticleSize - pex.startParticleSizeVariance;
-            emitter.size.value.to = pex.startParticleSize + pex.startParticleSizeVariance;
-            emitter.size.finalValue.from = pex.finishParticleSize - pex.finishParticleSizeVariance;
-            emitter.size.finalValue.to = pex.finishParticleSize + pex.finishParticleSizeVariance;
+            emitter.size.value.from = std::max<>(0.f, pex.startParticleSize  - pex.startParticleSizeVariance);
+            emitter.size.value.to = std::max<>(0.f, pex.startParticleSize + pex.startParticleSizeVariance);
+            emitter.size.finalValue.from = std::max<>(0.f, pex.finishParticleSize  - pex.finishParticleSizeVariance);
+            emitter.size.finalValue.to = std::max<>(0.f, pex.finishParticleSize + pex.finishParticleSizeVariance);
             emitter.size.finalSpecified = true;
+
+            emitter.radialAccel.value.from = pex.radialAcceleration - pex.radialAccelVariance;
+            emitter.radialAccel.value.to = pex.radialAcceleration + pex.radialAccelVariance;
+            emitter.tangentAccel.value.from = pex.tangentialAcceleration - pex.tangentialAccelVariance;
+            emitter.tangentAccel.value.to = pex.tangentialAcceleration + pex.tangentialAccelVariance;
 
             emitter.rotation.value.from = pex.rotatePerSecond - pex.rotatePerSecondVariance;
             emitter.rotation.value.to = pex.rotatePerSecond + pex.rotatePerSecondVariance;
@@ -428,9 +501,20 @@ namespace onut
 
             emitter.duration = pex.duration;
 
+            switch (pex.type)
+            {
+                case sPEX::Type::Gravity:
+                    emitter.accelType = sEmitterDesc::AccelType::Gravity;
+                    break;
+                case sPEX::Type::Radial:
+                    assert(false); // Unsupported for now
+                    emitter.accelType = sEmitterDesc::AccelType::Radial;
+                    break;
+            }
+
             if (pex.duration == -1)
             {
-                emitter.rate = pex.maxParticles;
+                emitter.rate = (static_cast<float>(pex.maxParticles) / pex.particleLifeSpan);
                 emitter.type = eEmitterType::CONTINOUS;
             }
             else if (pex.duration == 0)
@@ -440,7 +524,7 @@ namespace onut
             }
             else
             {
-                emitter.rate = pex.maxParticles;
+                emitter.rate = (static_cast<float>(pex.maxParticles) / pex.particleLifeSpan);
                 emitter.type = eEmitterType::FINITE;
             }
 

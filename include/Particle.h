@@ -6,6 +6,7 @@ using namespace DirectX::SimpleMath;
 namespace onut
 {
     class Texture;
+    class ParticleEmitter;
     class ParticleSystem;
     struct sEmitterDesc;
 
@@ -33,6 +34,7 @@ namespace onut
         sEmitterDesc*           pDesc;
         float                   life;
         float                   delta;
+        ParticleEmitter*        pEmitter = nullptr;
 
         Vector3                 position;
         Vector3                 velocity;
@@ -42,6 +44,8 @@ namespace onut
         sParticleRange<float>           size;
         sParticleRange<unsigned int>    image_index;
         sParticleRange<float>           rotation;
+        sParticleRange<float>           radialAccel;
+        sParticleRange<float>           tangentAccel;
 
         Texture*                        pTexture = nullptr;
     };

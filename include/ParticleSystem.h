@@ -202,14 +202,21 @@ namespace onut
 
     struct sEmitterDesc
     {
+        enum AccelType
+        {
+            Gravity,
+            Radial
+        };
+
         eEmitterType type = eEmitterType::FINITE;
         union
         {
             unsigned int count = 1;
-            unsigned int rate;
+            float rate;
         };
         std::vector<Texture*>   textures;
         sPfxValue<float>        spread = 0;
+        Vector3                 dir = Vector3(0, 0, 0);
         sPfxRange<float>        speed = 0;
         sPfxValue<Color>        color = Color::White;
         sPfxValue<float>        angle = 0;
@@ -220,6 +227,9 @@ namespace onut
         Vector3                 gravity = Vector3(0, 0, 0);
         sPfxRange<float>        duration = 0;
         sPfxValue<float>        rotation = 0;
+        sPfxValue<float>        radialAccel = 0;
+        sPfxValue<float>        tangentAccel = 0;
+        AccelType               accelType = AccelType::Gravity;
     };
 
     struct sParticleSystemDesc

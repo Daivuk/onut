@@ -63,7 +63,7 @@ namespace onut
         if (m_pDesc->type == eEmitterType::CONTINOUS && m_pDesc->rate > 0 && !m_isStopped)
         {
             m_rateProgress += ODT;
-            auto rate = 1.0f / static_cast<float>(m_pDesc->rate);
+            auto rate = 1.0f / m_pDesc->rate;
             while (m_rateProgress >= rate)
             {
                 m_rateProgress -= rate;
@@ -80,7 +80,7 @@ namespace onut
         {
             m_duration -= ODT;
             m_rateProgress += ODT;
-            auto rate = 1.0f / static_cast<float>(m_pDesc->rate);
+            auto rate = 1.0f / m_pDesc->rate;
             while (m_rateProgress >= rate)
             {
                 m_rateProgress -= rate;
@@ -139,8 +139,14 @@ namespace onut
 
             up = Vector3::Transform(up, rotX);
             up = Vector3::Transform(up, rotZ);
+            if (m_pDesc->dir.LengthSquared() != 0)
+            {
+                Matrix rotDir = Matrix::CreateFromAxisAngle(Vector3(m_pDesc->dir.y, m_pDesc->dir.x, 0), DirectX::XMConvertToRadians(90));
+                up = Vector3::Transform(up, rotDir);
+            }
 
             pParticle->pDesc = m_pDesc;
+            pParticle->pEmitter = this;
 
             pParticle->position = spawnPos + m_pDesc->position.generate();
             pParticle->velocity = up * m_pDesc->speed.generate();
@@ -150,11 +156,16 @@ namespace onut
             pParticle->size.to = m_pDesc->size.generateTo(pParticle->size.from = m_pDesc->size.generateFrom());
             pParticle->image_index.to = m_pDesc->image_index.generateTo(pParticle->image_index.from = m_pDesc->image_index.generateFrom());
             pParticle->rotation.to = m_pDesc->rotation.generateTo(pParticle->rotation.from = m_pDesc->rotation.generateFrom());
+            pParticle->radialAccel.to = m_pDesc->radialAccel.generateTo(pParticle->radialAccel.from = m_pDesc->radialAccel.generateFrom());
+            pParticle->tangentAccel.to = m_pDesc->tangentAccel.generateTo(pParticle->tangentAccel.from = m_pDesc->tangentAccel.generateFrom());
 
             pParticle->color.update(0);
             pParticle->angle.update(0);
             pParticle->size.update(0);
             pParticle->image_index.update(0);
+            pParticle->rotation.update(0);
+            pParticle->radialAccel.update(0);
+            pParticle->tangentAccel.update(0);
 
             if (!pParticle->pDesc->textures.empty())
             {
