@@ -12,6 +12,8 @@
 #include "blurvps.cso.h"
 #include "sepia.cso.h"
 #include "crt.cso.h"
+#include "cartoon.cso.h"
+#include "vignette.cso.h"
 
 namespace onut
 {
@@ -66,6 +68,8 @@ namespace onut
         if (m_pBlurVPixelShader) m_pBlurVPixelShader->Release();
         if (m_pSepiaPixelShader) m_pSepiaPixelShader->Release();
         if (m_pCRTPixelShader) m_pCRTPixelShader->Release();
+        if (m_pCartoonPixelShader) m_pCartoonPixelShader->Release();
+        if (m_pVignettePixelShader) m_pVignettePixelShader->Release();
         if (m_pEffectsInputLayout) m_pEffectsInputLayout->Release();
         if (m_pEffectsVertexBuffer) m_pEffectsVertexBuffer->Release();
         if (m_pEffectsSampler) m_pEffectsSampler->Release();
@@ -259,7 +263,9 @@ namespace onut
             ret = m_device->CreatePixelShader(blurvps_cso, sizeof(blurvps_cso), nullptr, &m_pBlurVPixelShader);
             ret = m_device->CreatePixelShader(sepia_cso, sizeof(sepia_cso), nullptr, &m_pSepiaPixelShader);
             ret = m_device->CreatePixelShader(crt_cso, sizeof(crt_cso), nullptr, &m_pCRTPixelShader);
-            //m_pCRTPixelShader = create2DShader("../../../Debug/crt.cso");
+            ret = m_device->CreatePixelShader(cartoon_cso, sizeof(cartoon_cso), nullptr, &m_pCartoonPixelShader);
+            ret = m_device->CreatePixelShader(vignette_cso, sizeof(vignette_cso), nullptr, &m_pVignettePixelShader);
+            //m_pVignettePixelShader = create2DShader("../../../Debug/vignette.cso");
 
             // Create input layout
             D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -496,6 +502,39 @@ namespace onut
         m_deviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
     }
 
+    void Renderer::setCartoon(const Vector3& tone)
+    {
+        struct sCartoon
+        {
+            Vector3 tone;
+            float padding;
+        };
+        sCartoon cartoon = {tone};
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        m_deviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, &cartoon, sizeof(cartoon));
+        m_deviceContext->Unmap(m_pKernelSizeBuffer, 0);
+        m_deviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
+    }
+
+    void Renderer::setVignette(const Vector2& kernelSize, float amount)
+    {
+        struct sVignette
+        {
+            Vector2 kernelSize;
+            float amount;
+            float padding;
+        };
+        sVignette vignette = {kernelSize, amount};
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        m_deviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, &vignette, sizeof(vignette));
+        m_deviceContext->Unmap(m_pKernelSizeBuffer, 0);
+        m_deviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
+    }
+
     void Renderer::setSepia(const Vector3& tone, float saturation, float sepiaAmount)
     {
         struct sSepia
@@ -583,6 +622,44 @@ namespace onut
         m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
         m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
         m_deviceContext->PSSetShader(m_pCRTPixelShader, nullptr, 0);
+
+        UINT stride = 2 * 4;
+        UINT offset = 0;
+        m_deviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
+        m_deviceContext->Draw(6, 0);
+    }
+
+    void Renderer::drawCartoon()
+    {
+        // Set 2d render states
+        m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
+        m_deviceContext->RSSetState(m_pSr2D);
+        m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pEffectsSampler);
+
+        // Bind the shaders
+        m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
+        m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
+        m_deviceContext->PSSetShader(m_pCartoonPixelShader, nullptr, 0);
+
+        UINT stride = 2 * 4;
+        UINT offset = 0;
+        m_deviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
+        m_deviceContext->Draw(6, 0);
+    }
+
+    void Renderer::drawVignette()
+    {
+        // Set 2d render states
+        m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
+        m_deviceContext->RSSetState(m_pSr2D);
+        m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pEffectsSampler);
+
+        // Bind the shaders
+        m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
+        m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
+        m_deviceContext->PSSetShader(m_pVignettePixelShader, nullptr, 0);
 
         UINT stride = 2 * 4;
         UINT offset = 0;

@@ -50,10 +50,14 @@ namespace onut
                                          float saturation = .25f, // 0 - 1
                                          float sepiaAmount = .75f); // 0 - 1
         void                    setCRT(const Vector2& kernelSize);
+        void                    setCartoon(const Vector3& tone);
+        void                    setVignette(const Vector2& kernelSize, float amount = .5f);
         void                    drawBlurH();
         void                    drawBlurV();
         void                    drawSepia();
         void                    drawCRT();
+        void                    drawCartoon();
+        void                    drawVignette();
 
     private:
         enum class eRenderSetup
@@ -95,6 +99,8 @@ namespace onut
         ID3D11PixelShader*          m_pBlurVPixelShader = nullptr;
         ID3D11PixelShader*          m_pSepiaPixelShader = nullptr;
         ID3D11PixelShader*          m_pCRTPixelShader = nullptr;
+        ID3D11PixelShader*          m_pCartoonPixelShader = nullptr;
+        ID3D11PixelShader*          m_pVignettePixelShader = nullptr;
         ID3D11InputLayout*          m_pEffectsInputLayout = nullptr;
         ID3D11Buffer*               m_pEffectsVertexBuffer = nullptr;
         ID3D11SamplerState*         m_pEffectsSampler = nullptr;

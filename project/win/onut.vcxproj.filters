@@ -418,5 +418,11 @@
     <FxCompile Include="..\..\src\sepia.hlsl">
       <Filter>src\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\cartoon.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\vignette.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

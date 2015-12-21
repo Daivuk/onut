@@ -29,17 +29,10 @@ namespace onut
         static Texture* createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps = true);
         static Texture* createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps = true);
 
-        // Apply effects. It will only work if the texture is a render target
-        void blur(float amount = 16.f); // Blur radius
-        void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
-                   float saturation = 0, // 0 - 1
-                   float sepiaAmount = .75f); // 0 - 1
-        void crt();
-
-        void setData(const uint8_t *in_pData);
-
         Texture() {}
         virtual ~Texture();
+
+        void setData(const uint8_t *in_pData);
 
         void                        bind(int slot = 0);
         void                        bindRenderTarget();
@@ -56,6 +49,15 @@ namespace onut
         }
 
         ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
+
+        // Apply effects. It will only work if the texture is a render target
+        void blur(float amount = 16.f); // Blur radius
+        void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
+                   float saturation = 0, // 0 - 1
+                   float sepiaAmount = .75f); // 0 - 1
+        void crt();
+        void cartoon(const Vector3& tone = Vector3(2, 5, 1)); // Values range from 1 to infinite
+        void vignette(float amount = .5f); // 0 - 1
 
     private:
         void createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView);
