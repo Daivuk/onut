@@ -412,6 +412,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\..\src\crt.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
     <FxCompile Include="..\..\src\sepia.hlsl">
       <Filter>src\shaders</Filter>
     </FxCompile>

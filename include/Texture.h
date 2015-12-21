@@ -34,6 +34,7 @@ namespace onut
         void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
                    float saturation = 0, // 0 - 1
                    float sepiaAmount = .75f); // 0 - 1
+        void crt();
 
         void setData(const uint8_t *in_pData);
 

@@ -49,9 +49,11 @@ namespace onut
         void                    setSepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
                                          float saturation = .25f, // 0 - 1
                                          float sepiaAmount = .75f); // 0 - 1
+        void                    setCRT(const Vector2& kernelSize);
         void                    drawBlurH();
         void                    drawBlurV();
-        void                    drawSepia(); // 0 to 1
+        void                    drawSepia();
+        void                    drawCRT();
 
     private:
         enum class eRenderSetup
@@ -92,6 +94,7 @@ namespace onut
         ID3D11PixelShader*          m_pBlurHPixelShader = nullptr;
         ID3D11PixelShader*          m_pBlurVPixelShader = nullptr;
         ID3D11PixelShader*          m_pSepiaPixelShader = nullptr;
+        ID3D11PixelShader*          m_pCRTPixelShader = nullptr;
         ID3D11InputLayout*          m_pEffectsInputLayout = nullptr;
         ID3D11Buffer*               m_pEffectsVertexBuffer = nullptr;
         ID3D11SamplerState*         m_pEffectsSampler = nullptr;
