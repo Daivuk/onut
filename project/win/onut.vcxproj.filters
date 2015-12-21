@@ -411,4 +411,9 @@
       <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\sepia.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

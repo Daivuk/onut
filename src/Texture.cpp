@@ -9,71 +9,23 @@ namespace onut
 {
     Texture* Texture::createRenderTarget(const sSize& size, bool willUseFX)
     {
-        auto pDevice = ORenderer->getDevice();
-
         auto pRet = new Texture();
-
-        D3D11_TEXTURE2D_DESC textureDesc = {0};
-        HRESULT result;
-        D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-        D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-        memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
-        memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
-
         pRet->m_size = size;
-
-        // Setup the render target texture description.
-        textureDesc.Width = size.x;
-        textureDesc.Height = size.y;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-        textureDesc.CPUAccessFlags = 0;
-        textureDesc.MiscFlags = 0;
-
-        // Create the render target texture.
-        result = pDevice->CreateTexture2D(&textureDesc, NULL, &pRet->m_pTexture);
-        if (result != S_OK)
-        {
-            assert(false && "Failed CreateTexture2D");
-            return nullptr;
-        }
-
-        // Setup the description of the render target view.
-        renderTargetViewDesc.Format = textureDesc.Format;
-        renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-        // Create the render target view.
-        result = pDevice->CreateRenderTargetView(pRet->m_pTexture, &renderTargetViewDesc, &pRet->m_pRenderTargetView);
-        if (result != S_OK)
-        {
-            assert(false && "Failed CreateRenderTargetView");
-            return nullptr;
-        }
-
-        // Setup the description of the shader resource view.
-        shaderResourceViewDesc.Format = textureDesc.Format;
-        shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-        shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-        // Create the shader resource view.
-        result = pDevice->CreateShaderResourceView(pRet->m_pTexture, &shaderResourceViewDesc, &pRet->m_pTextureView);
-        if (result != S_OK)
-        {
-            assert(false && "Failed CreateShaderResourceView");
-            return nullptr;
-        }
-
+        pRet->createRenderTargetViews(pRet->m_pTexture, pRet->m_pTextureView, pRet->m_pRenderTargetView);
         if (willUseFX)
         {
-            pRet->generateOffscreenFX();
+            pRet->createRenderTargetViews(pRet->m_pTextureFX, pRet->m_pTextureViewFX, pRet->m_pRenderTargetViewFX);
         }
+        return pRet;
+    }
 
+    Texture* Texture::createScreenRenderTarget(bool willBeUsedInEffects)
+    {
+        auto pRet = createRenderTarget({OScreenW, OScreenH}, willBeUsedInEffects);
+        if (pRet)
+        {
+            pRet->m_isScreenRenderTarget = true;
+        }
         return pRet;
     }
 
@@ -308,6 +260,35 @@ namespace onut
     {
         if (m_pRenderTargetView)
         {
+            if (m_isScreenRenderTarget)
+            {
+                if (m_size.x != OScreenW ||
+                    m_size.y != OScreenH)
+                {
+                    // Release
+                    if (m_pTexture) m_pTexture->Release();
+                    if (m_pTextureView) m_pTextureView->Release();
+                    if (m_pRenderTargetView)
+                    {
+                        m_pRenderTargetView->Release();
+                        m_pTexture = nullptr;
+                        m_pTextureView = nullptr;
+                        m_pRenderTargetView = nullptr;
+                        createRenderTargetViews(m_pTexture, m_pTextureView, m_pRenderTargetView);
+                    }
+
+                    if (m_pTextureFX) m_pTextureFX->Release();
+                    if (m_pTextureViewFX) m_pTextureViewFX->Release();
+                    if (m_pRenderTargetViewFX)
+                    {
+                        m_pRenderTargetViewFX->Release();
+                        m_pTextureFX = nullptr;
+                        m_pTextureViewFX = nullptr;
+                        m_pRenderTargetViewFX = nullptr;
+                        createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+                    }
+                }
+            }
             ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
         }
     }
@@ -327,7 +308,7 @@ namespace onut
         if (!m_pRenderTargetView) return; // Not a render target
         if (!m_pRenderTargetViewFX)
         {
-            generateOffscreenFX();
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
         ID3D11RenderTargetView* pPrevRT = nullptr;
@@ -342,13 +323,13 @@ namespace onut
         ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
 
         int i = 0;
-        while (amount >= 6.f)
+        while (amount > 0.f)
         {
-            amount -= 6.f;
             ORenderer->setKernelSize({
                 1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
                 1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
             });
+            amount -= 6.f;
 
             ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
             ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
@@ -359,23 +340,8 @@ namespace onut
             ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, clearColor);
             ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureViewFX);
             ORenderer->drawBlurV();
-            i += 6;
+            i += 1;
         }
-
-        ORenderer->setKernelSize({
-            1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
-            1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
-        });
-
-        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
-        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
-        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
-        ORenderer->drawBlurH();
-
-        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
-        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, clearColor);
-        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureViewFX);
-        ORenderer->drawBlurV();
 
         ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
         ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
@@ -383,7 +349,42 @@ namespace onut
         ORenderer->resetState();
     }
 
-    void Texture::generateOffscreenFX()
+    void Texture::sepia(const Vector3& tone, float saturation, float sepiaAmount)
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+        ORenderer->setSepia(tone, saturation, sepiaAmount);
+        ORenderer->drawSepia();
+
+        std::swap(m_pTexture, m_pTextureFX);
+        std::swap(m_pTextureView, m_pTextureViewFX);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+
+    void Texture::createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView)
     {
         auto pDevice = ORenderer->getDevice();
 
@@ -407,7 +408,7 @@ namespace onut
         textureDesc.MiscFlags = 0;
 
         // Create the render target texture.
-        result = pDevice->CreateTexture2D(&textureDesc, NULL, &m_pTextureFX);
+        result = pDevice->CreateTexture2D(&textureDesc, NULL, &pTexture);
         if (result != S_OK)
         {
             assert(false && "Failed CreateTexture2D");
@@ -420,7 +421,7 @@ namespace onut
         renderTargetViewDesc.Texture2D.MipSlice = 0;
 
         // Create the render target view.
-        result = pDevice->CreateRenderTargetView(m_pTextureFX, &renderTargetViewDesc, &m_pRenderTargetViewFX);
+        result = pDevice->CreateRenderTargetView(pTexture, &renderTargetViewDesc, &pRenderTargetView);
         if (result != S_OK)
         {
             assert(false && "Failed CreateRenderTargetView");
@@ -434,7 +435,7 @@ namespace onut
         shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
         // Create the shader resource view.
-        result = pDevice->CreateShaderResourceView(m_pTextureFX, &shaderResourceViewDesc, &m_pTextureViewFX);
+        result = pDevice->CreateShaderResourceView(pTexture, &shaderResourceViewDesc, &pTextureView);
         if (result != S_OK)
         {
             assert(false && "Failed CreateShaderResourceView");

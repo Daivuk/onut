@@ -10,6 +10,7 @@
 #include "blurvs.cso.h"
 #include "blurhps.cso.h"
 #include "blurvps.cso.h"
+#include "sepia.cso.h"
 
 namespace onut
 {
@@ -53,6 +54,7 @@ namespace onut
         if (m_pWorldMatrixBuffer) m_pWorldMatrixBuffer->Release();
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
         if (m_pKernelSizeBuffer) m_pKernelSizeBuffer->Release();
+        if (m_pSepiaBuffer) m_pSepiaBuffer->Release();
 
         if (m_p2DInputLayout) m_p2DInputLayout->Release();
         if (m_p2DPixelShader) m_p2DPixelShader->Release();
@@ -61,8 +63,10 @@ namespace onut
         if (m_pEffectsVertexShader) m_pEffectsVertexShader->Release();
         if (m_pBlurHPixelShader) m_pBlurHPixelShader->Release();
         if (m_pBlurVPixelShader) m_pBlurVPixelShader->Release();
+        if (m_pSepiaPixelShader) m_pSepiaPixelShader->Release();
         if (m_pEffectsInputLayout) m_pEffectsInputLayout->Release();
         if (m_pEffectsVertexBuffer) m_pEffectsVertexBuffer->Release();
+        if (m_pEffectsSampler) m_pEffectsSampler->Release();
 
         if (m_pSs2D) m_pSs2D->Release();
         if (m_pBs2D) m_pBs2D->Release();
@@ -130,8 +134,10 @@ namespace onut
 
     void Renderer::onResize()
     {
+        m_deviceContext->ClearState();
         m_renderTargetView->Release();
-        m_swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        m_renderTargetView = nullptr;
+        auto ret = m_swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
         createRenderTarget();
     }
 
@@ -210,6 +216,19 @@ namespace onut
             D3D11_FLOAT32_MAX
         }), &m_pSs2D);
         assert(ret == S_OK);
+        ret = m_device->CreateSamplerState(&(D3D11_SAMPLER_DESC{
+            D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+            D3D11_TEXTURE_ADDRESS_CLAMP,
+            D3D11_TEXTURE_ADDRESS_CLAMP,
+            D3D11_TEXTURE_ADDRESS_CLAMP,
+            0.f,
+            1,
+            D3D11_COMPARISON_ALWAYS,
+            {0, 0, 0, 0},
+            0,
+            D3D11_FLOAT32_MAX
+        }), &m_pEffectsSampler);
+        assert(ret == S_OK);
     }
 
     void Renderer::loadShaders()
@@ -234,11 +253,10 @@ namespace onut
         // Effects
         {       
             auto ret = m_device->CreateVertexShader(blurvs_cso, sizeof(blurvs_cso), nullptr, &m_pEffectsVertexShader);
-            assert(ret == S_OK);
             ret = m_device->CreatePixelShader(blurhps_cso, sizeof(blurhps_cso), nullptr, &m_pBlurHPixelShader);
-            assert(ret == S_OK);
             ret = m_device->CreatePixelShader(blurvps_cso, sizeof(blurvps_cso), nullptr, &m_pBlurVPixelShader);
-            assert(ret == S_OK);
+            ret = m_device->CreatePixelShader(sepia_cso, sizeof(sepia_cso), nullptr, &m_pSepiaPixelShader);
+            //m_pSepiaPixelShader = create2DShader("../../../Debug/sepia.cso");
 
             // Create input layout
             D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -278,6 +296,11 @@ namespace onut
         {
             D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Vector4), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
             auto ret = m_device->CreateBuffer(&cbDesc, nullptr, &m_pKernelSizeBuffer);
+            assert(ret == S_OK);
+        }
+        {
+            D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Vector4) * 2, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+            auto ret = m_device->CreateBuffer(&cbDesc, nullptr, &m_pSepiaBuffer);
             assert(ret == S_OK);
         }
     }
@@ -454,13 +477,31 @@ namespace onut
         m_deviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
     }
 
+    void Renderer::setSepia(const Vector3& tone, float saturation, float sepiaAmount)
+    {
+        struct sSepia
+        {
+            Vector3 tone;
+            float desaturation;
+            float sepia;
+            Vector3 padding;
+        };
+        sSepia sepia = {tone, 1.f - saturation, sepiaAmount};
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        m_deviceContext->Map(m_pSepiaBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, &sepia, sizeof(sepia));
+        m_deviceContext->Unmap(m_pSepiaBuffer, 0);
+        m_deviceContext->PSSetConstantBuffers(0, 1, &m_pSepiaBuffer);
+    }
+
     void Renderer::drawBlurH()
     {
         // Set 2d render states
         m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
         m_deviceContext->RSSetState(m_pSr2D);
         m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
-        m_deviceContext->PSSetSamplers(0, 1, &m_pSs2D);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pEffectsSampler);
 
         // Bind the shaders
         m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
@@ -479,12 +520,31 @@ namespace onut
         m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
         m_deviceContext->RSSetState(m_pSr2D);
         m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
-        m_deviceContext->PSSetSamplers(0, 1, &m_pSs2D);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pEffectsSampler);
 
         // Bind the shaders
         m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
         m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
         m_deviceContext->PSSetShader(m_pBlurVPixelShader, nullptr, 0);
+
+        UINT stride = 2 * 4;
+        UINT offset = 0;
+        m_deviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
+        m_deviceContext->Draw(6, 0);
+    }
+
+    void Renderer::drawSepia()
+    {
+        // Set 2d render states
+        m_deviceContext->OMSetDepthStencilState(m_pDs2D, 1);
+        m_deviceContext->RSSetState(m_pSr2D);
+        m_deviceContext->OMSetBlendState(m_pBs2D, NULL, 0xffffffff);
+        m_deviceContext->PSSetSamplers(0, 1, &m_pEffectsSampler);
+
+        // Bind the shaders
+        m_deviceContext->IASetInputLayout(m_pEffectsInputLayout);
+        m_deviceContext->VSSetShader(m_pEffectsVertexShader, nullptr, 0);
+        m_deviceContext->PSSetShader(m_pSepiaPixelShader, nullptr, 0);
 
         UINT stride = 2 * 4;
         UINT offset = 0;

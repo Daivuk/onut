@@ -16,7 +16,8 @@ namespace onut
             uint32_t y;
         };
 
-        static Texture* createRenderTarget(const sSize& size, bool willUseFX = false);
+        static Texture* createRenderTarget(const sSize& size, bool willBeUsedInEffects = false);
+        static Texture* createScreenRenderTarget(bool willBeUsedInEffects = false);
         static Texture* createDynamic(const sSize& size);
         template<typename TcontentManagerType>
         static Texture* createFromFile(const std::string& filename, TcontentManagerType* pContentManager, bool generateMipmaps = true)
@@ -29,7 +30,10 @@ namespace onut
         static Texture* createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps = true);
 
         // Apply effects. It will only work if the texture is a render target
-        void blur(float amount = 8.f);
+        void blur(float amount = 16.f); // Blur radius
+        void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
+                   float saturation = 0, // 0 - 1
+                   float sepiaAmount = .75f); // 0 - 1
 
         void setData(const uint8_t *in_pData);
 
@@ -53,15 +57,16 @@ namespace onut
         ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
 
     private:
-        void generateOffscreenFX();
+        void createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView);
 
+        sSize                       m_size;
         ID3D11Texture2D*            m_pTexture = nullptr;
         ID3D11ShaderResourceView*   m_pTextureView = nullptr;
         ID3D11RenderTargetView*     m_pRenderTargetView = nullptr;
         ID3D11Texture2D*            m_pTextureFX = nullptr;
         ID3D11ShaderResourceView*   m_pTextureViewFX = nullptr;
         ID3D11RenderTargetView*     m_pRenderTargetViewFX = nullptr;
-        sSize                       m_size;
+        bool                        m_isScreenRenderTarget = false;
     };
 }
 

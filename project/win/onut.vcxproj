@@ -139,6 +139,14 @@
     <ClCompile Include="..\..\src\zlib\uncompr.c" />
     <ClCompile Include="..\..\src\zlib\zutil.c" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\sepia.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
