@@ -14,6 +14,7 @@
 #include "NavMesh.h"
 #include "onutUI.h"
 #include "ParticleSystemManager.h"
+#include "player.h"
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"
 #include "Renderer.h"

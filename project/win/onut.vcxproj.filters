@@ -202,6 +202,12 @@
     <ClInclude Include="..\..\include\SpriteAnim.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\player.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MFPlayer.h">
+      <Filter>src\player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -384,6 +390,12 @@
     <ClCompile Include="..\..\src\SpriteAnim.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\player.cpp">
+      <Filter>src\player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MFPlayer.cpp">
+      <Filter>src\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -415,6 +427,9 @@
     </Filter>
     <Filter Include="src\shaders">
       <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\player">
+      <UniqueIdentifier>{d7b7008c-d864-461a-a895-d340743846e1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

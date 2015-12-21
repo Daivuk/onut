@@ -256,6 +256,34 @@ namespace onut
         ORenderer->getDeviceContext()->PSSetShaderResources(slot, 1, &m_pTextureView);
     }
 
+    void Texture::resizeTarget(const sSize& size)
+    {
+        m_size = size;
+
+        // Release
+        if (m_pTexture) m_pTexture->Release();
+        if (m_pTextureView) m_pTextureView->Release();
+        if (m_pRenderTargetView)
+        {
+            m_pRenderTargetView->Release();
+            m_pTexture = nullptr;
+            m_pTextureView = nullptr;
+            m_pRenderTargetView = nullptr;
+            createRenderTargetViews(m_pTexture, m_pTextureView, m_pRenderTargetView);
+        }
+
+        if (m_pTextureFX) m_pTextureFX->Release();
+        if (m_pTextureViewFX) m_pTextureViewFX->Release();
+        if (m_pRenderTargetViewFX)
+        {
+            m_pRenderTargetViewFX->Release();
+            m_pTextureFX = nullptr;
+            m_pTextureViewFX = nullptr;
+            m_pRenderTargetViewFX = nullptr;
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+    }
+
     void Texture::bindRenderTarget()
     {
         if (m_pRenderTargetView)

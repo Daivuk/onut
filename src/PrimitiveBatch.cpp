@@ -103,7 +103,7 @@ namespace onut
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        auto textureView = m_pTexture->getResource();
+        auto textureView = m_pTexture->getResourceView();
         pDeviceContext->PSSetShaderResources(0, 1, &textureView);
         switch (m_primitiveType)
         {

@@ -34,6 +34,7 @@ namespace onut
 
         void setData(const uint8_t *in_pData);
 
+        void                        resizeTarget(const sSize& size);
         void                        bind(int slot = 0);
         void                        bindRenderTarget();
         void                        unbindRenderTarget();
@@ -48,7 +49,9 @@ namespace onut
             return std::move(Vector4{0, 0, static_cast<float>(m_size.x), static_cast<float>(m_size.y)});
         }
 
-        ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
+        ID3D11Texture2D*            getResource() const { return m_pTexture; }
+        ID3D11ShaderResourceView*   getResourceView() const { return m_pTextureView; }
+        ID3D11RenderTargetView*     getRenderTargetResource() const { return m_pRenderTargetView; }
 
         // Apply effects. It will only work if the texture is a render target
         void blur(float amount = 16.f); // Blur radius

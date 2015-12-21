@@ -579,7 +579,7 @@ namespace onut
         auto& textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
-        drawRect(pTexture, {position.x - sizexf * origin.x, position.y - sizeyf * .5f * origin.y, sizexf, sizeyf}, color);
+        drawRect(pTexture, {position.x - sizexf * origin.x, position.y - sizeyf * origin.y, sizexf, sizeyf}, color);
     }
 
     void SpriteBatch::drawSprite(Texture* pTexture, const Matrix& transform, const Color& color, const Vector2& origin)
@@ -844,7 +844,7 @@ namespace onut
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        auto textureView = m_pTexture->getResource();
+        auto textureView = m_pTexture->getResourceView();
         pDeviceContext->PSSetShaderResources(0, 1, &textureView);
         pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);

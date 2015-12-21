@@ -34,6 +34,7 @@
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystem.h" />
     <ClInclude Include="..\..\include\ParticleSystemManager.h" />
+    <ClInclude Include="..\..\include\player.h" />
     <ClInclude Include="..\..\include\Pool.h" />
     <ClInclude Include="..\..\include\PrimitiveBatch.h" />
     <ClInclude Include="..\..\include\Random.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\include\Window.h" />
+    <ClInclude Include="..\..\src\MFPlayer.h" />
     <ClInclude Include="..\..\src\Mp3.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
@@ -94,6 +96,7 @@
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
+    <ClCompile Include="..\..\src\MFPlayer.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
     <ClCompile Include="..\..\src\Mp3.cpp" />
     <ClCompile Include="..\..\src\Music.cpp" />
@@ -103,6 +106,7 @@
     <ClCompile Include="..\..\src\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\src\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\ParticleSystemManager.cpp" />
+    <ClCompile Include="..\..\src\player.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
@@ -220,7 +224,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -247,7 +251,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

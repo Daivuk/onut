@@ -35,6 +35,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Effects", "Effects\project\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpriteFrames", "SpriteFrames\project\win\SpriteFrames.vcxproj", "{99F7BC4D-ED9C-4A43-AA1C-DBF2C0810DD2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoPlayer", "VideoPlayer\project\win\VideoPlayer.vcxproj", "{931FFF90-F473-40AD-981C-F5E605A20F5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -101,6 +103,10 @@ Global
 		{99F7BC4D-ED9C-4A43-AA1C-DBF2C0810DD2}.Debug|Win32.Build.0 = Debug|Win32
 		{99F7BC4D-ED9C-4A43-AA1C-DBF2C0810DD2}.Release|Win32.ActiveCfg = Release|Win32
 		{99F7BC4D-ED9C-4A43-AA1C-DBF2C0810DD2}.Release|Win32.Build.0 = Release|Win32
+		{931FFF90-F473-40AD-981C-F5E605A20F5E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{931FFF90-F473-40AD-981C-F5E605A20F5E}.Debug|Win32.Build.0 = Debug|Win32
+		{931FFF90-F473-40AD-981C-F5E605A20F5E}.Release|Win32.ActiveCfg = Release|Win32
+		{931FFF90-F473-40AD-981C-F5E605A20F5E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,5 +126,6 @@ Global
 		{8EB57E79-9EDD-4ABC-9D33-0CD7763B54CC} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{AE6059C9-BBEA-4B18-B742-07E33F93ADF6} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{99F7BC4D-ED9C-4A43-AA1C-DBF2C0810DD2} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{931FFF90-F473-40AD-981C-F5E605A20F5E} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal
