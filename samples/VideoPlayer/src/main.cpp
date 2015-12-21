@@ -16,14 +16,13 @@ OAnim2 bounceAnim;
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
     OSettings->setGameName("Sprite Animation Sample");
-    OSettings->setResolution({1280, 720});
     ORun(init, update, render);
 }
 
 void init()
 {
     // Create a render target that the video will render to
-    pVideoTexture = OTexture::createRenderTarget({320, 240});
+    pVideoTexture = OTexture::createRenderTarget();
 
     // Initialize our video using our rendering target
     pPlayer = OPlayer::Create();
@@ -52,10 +51,10 @@ void render()
     auto pFont = OGetBMFont("font.fnt");
 
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    ORenderer->clear(OColorHex(0));
 
     OSpriteBatch->begin();
-    OSB->drawRect(pVideoTexture, ORectFullScreen);
+    OSB->drawRect(pVideoTexture, ORectFit(ORectFullScreen, pVideoTexture->getSize()));
     OSB->drawSprite(pOnutLogo, bounceAnim, Color::White, Vector2::One);
     pFont->draw<ORight>("Pretend that's a loading animation ->\n^555(That's an Apple style bounce anim btw)", Vector2(OScreenWf - 128, OScreenHf - 32), Color(.75f));
     OSpriteBatch->end();

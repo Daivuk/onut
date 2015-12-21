@@ -16,7 +16,7 @@ namespace onut
             uint32_t y;
         };
 
-        static Texture* createRenderTarget(const sSize& size, bool willBeUsedInEffects = false);
+        static Texture* createRenderTarget(const sSize& size = {1, 1}, bool willBeUsedInEffects = false);
         static Texture* createScreenRenderTarget(bool willBeUsedInEffects = false);
         static Texture* createDynamic(const sSize& size);
         template<typename TcontentManagerType>
