@@ -199,6 +199,9 @@
     <ClInclude Include="..\..\include\Utils.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\SpriteAnim.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -376,6 +379,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteAnim.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

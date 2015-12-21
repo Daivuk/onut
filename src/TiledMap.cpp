@@ -25,7 +25,7 @@ namespace onut
         if (tiles) delete[] tiles;
     }
 
-    TiledMap::TiledMap(const std::string &map, onut::ContentManager<> *pContentManager)
+    TiledMap::TiledMap(const std::string &map, onut::ContentManager *pContentManager)
     {
         tinyxml2::XMLDocument doc;
         doc.LoadFile(map.c_str());

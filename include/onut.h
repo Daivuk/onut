@@ -20,6 +20,7 @@
 #include "RTS.h"
 #include "Settings.h"
 #include "Sound.h"
+#include "SpriteAnim.h"
 #include "SpriteBatch.h"
 #include "StateManager.h"
 #include "Synchronous.h"
@@ -41,6 +42,7 @@ extern onut::Window*                    OWindow;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;
 extern onut::Music*                     OMusic;
+extern onut::ContentManager*            OContentManager;
 
 using OAnimf = onut::Anim<float>;
 using OAnimi = onut::Anim<int>;
@@ -91,8 +93,6 @@ namespace onut
 #define ORun onut::run
 
 //--- Resource shortcuts
-extern onut::ContentManager<>* OContentManager;
-
 inline OTexture* OGetTexture(const char* pName)
 {
     return OContentManager->getResource<OTexture>(pName);

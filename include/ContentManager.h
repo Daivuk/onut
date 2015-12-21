@@ -8,7 +8,6 @@
 
 namespace onut
 {
-    template<bool TuseAssert = true>
     class ContentManager
     {
     public:

@@ -43,6 +43,7 @@
     <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
     <ClInclude Include="..\..\include\Sound.h" />
+    <ClInclude Include="..\..\include\SpriteAnim.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\State.h" />
     <ClInclude Include="..\..\include\StateManager.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="..\..\src\SoundCommon.cpp" />
     <ClCompile Include="..\..\src\SoundEffect.cpp" />
     <ClCompile Include="..\..\src\SoundEffectInstance.cpp" />
+    <ClCompile Include="..\..\src\SpriteAnim.cpp" />
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\Utils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
