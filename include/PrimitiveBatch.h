@@ -19,7 +19,7 @@ namespace onut
         PrimitiveBatch();
         virtual ~PrimitiveBatch();
 
-        void begin(ePrimitiveType primitiveType, Texture* pTexture = nullptr);
+        void begin(ePrimitiveType primitiveType, Texture* pTexture = nullptr, const Matrix& transform = Matrix::Identity);
         void draw(const Vector2& position, const Color& color = Color::White, const Vector2& texCoord = Vector2::Zero);
         void end();
 

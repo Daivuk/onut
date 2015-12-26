@@ -39,7 +39,7 @@ namespace onut
         delete m_pTexWhite;
     }
 
-    void PrimitiveBatch::begin(ePrimitiveType primitiveType, Texture* pTexture)
+	void PrimitiveBatch::begin(ePrimitiveType primitiveType, Texture* pTexture, const Matrix& transform)
     {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
@@ -47,7 +47,7 @@ namespace onut
         m_pTexture = pTexture;
 
         m_primitiveType = primitiveType;
-        ORenderer->setupFor2D();
+		ORenderer->setupFor2D(transform);
         m_isDrawing = true;
         ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
     }
