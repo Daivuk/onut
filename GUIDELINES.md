@@ -1,283 +1,204 @@
 #Oak Nut Coding Guidelines
 These guidelines are to ensure the uniformity of the engine. They are syntax and coding style. The current code _does not_ respect those guidelines in its current state. Refactoring is necessary.
 
+##Anatomy of a header file
+```cpp
+#pragma once                                // include guard
+#include "A.h"                              // onut includes
+#include "B.h"                              // alphabetical order
+#include "Entity.h"
+
+#include <string>                           // Third party includes, or STD
+#include <thirdPartyA.h>                    // alphabetical order
+#include <thirdPartyB.h>
+
+namespace onut
+{
+    class Inventory;                        // Forward declarations
+}
+
+namespace onut
+{
+    class Player final : public Entity      // use final if class is not meant to be inherited
+    {
+    public:
+        using Health = int;                 // sub types
+        
+        Player();                           // Constructors
+        Player(Health health);              // Define multiple constructors instead of init() methods
+        virtual ~Player();                  // virtual destructor
+        
+        Health getHealth() const;           // Accessors
+        void setHealth(Health health);
+        
+        Inventory* getInventory() const;    // Group things together that make sense
+        void setInventory(Inventory* pInventory);
+        
+    protected:
+        void update() override;             // use override when overriding.
+    
+    private:
+        void initializeInventory();         // Private methods
+    
+        Health m_health = 100;              // Members initialized in header where possible
+        Inventory* m_pInventory = nullptr;  // use nullptr instead of NULL or 0
+        Vector2 m_position;                 // Don't align members with spaces
+    };
+}
+using OPlayer = onut::Player;               // Declare this for classes in the public API
+                                            // Extra return at the end
+```
+
+##Anatomy of a source file
+```cpp
+#include "Entity.h"                         // onut includes
+#include "Inventory.h"                      // alphabetical order
+#include "Player.h"                         // Don't put our class at the top
+
+#include <string>                           // Third party includes, or STD
+#include <thirdPartyA.h>                    // alphabetical order
+#include <thirdPartyB.h>
+
+namespace onut
+{
+    static const float MAX_SPEED = 10.f;    // Constants at the top
+    
+    Player::Player()
+        : m_position(500, 500)
+    {
+        initializeInventory();
+    }
+    
+    Player::Player(Health health)
+        : m_health(health)
+        , m_position(500, 500)              // Initialize members in the same order they are declared
+    {
+        initializeInventory();
+    }
+    
+    Player::~Player()
+    {
+        delete m_pInventory;                // Don't check for null. delete takes care of that
+    }
+    
+    Health Player::getHealth() const
+    {
+        return m_health;
+    }
+    
+    void Player::setHealth(Health health)
+    {
+        m_health = health;
+    }
+    
+    Inventory* Player::getInventory() const
+    {
+        return m_pInventory;
+    }
+    
+    void Player::setInventory(Inventory* pInventory)
+    {
+        delete m_pIntenvory;
+        m_pInventory = pInventory;
+    }
+    
+    void Player::initializeInventory()
+    {
+        m_pInventory = new Inventory();
+    }
+}
+                                            // Extra return at the end
+```
+
+##Memory management
+Don't use `std::shared_ptr` and such, as they come with an overhead. Try to pool as much as possible using `OPool` object. The less the memory moves around, the better the engine works.
+
 ##4 spaces instead of tabs
 4 spaces should used instead of tabs
 
 ##Curly braces
-**bad**
 ```cpp
-void foo() {
+void foo() {             // incorrect
 }
-```
-**good**
-```cpp
-void food()
-{
+void foo()
+{                        // correct
 }
-```
-However, some exception. Initializer list.
-
-**bad**
-```cpp
 std::vector<std::string> names = 
-{
-  "Marc",
-  "David",
-  "Pierre"
+{                        // incorrect
+};
+std::string names[] = {  // correct
 };
 ```
-**good**
-```cpp
-std::string names[] = {
-  "Marc",
-  "David",
-  "Pierre"
-};
-```
-They are not function, but a continuity of the previous line.
 
 ##Comments
 There are no strict rules regarding comments. Put them where necessary. Rules for Doxygen has not been set yet. Public headers, you can doxygen them or not.
 If a piece of code is very complicated, please put comments. When code is obvious, comments are not necessary, but not prohibited neither!
 
-##auto/decltype
-Use `auto` and `decltype` to stay type agnostic as much as possible.
-
-**bad**
-```cpp
-std::string key = "ENTITY";
-std::string name = pPlayer->getName();
-std::chrono::duration elapsed = std::chrono::seconds(1);
-```
-**good**
-```cpp
-auto key = "ENTITY";
-auto name = pPlayer->getName();
-auto elapsed = std::chrono::seconds(1);
-```
+##auto
+Use of `auto` is encouraged, but shouldn't be used in the public interface. Unless of an utility templated class that requires it.
 
 ##Hungarian
-Hungarian notation should be avoided, but for a few exceptions. Types should be typed def where it make sense, and everything be given a contextual name.
+Hungarian notation should be avoided, but for a few exceptions (pointers, members). Types should be typed def where it make sense, and everything be given a contextual name.
+```cpp
+int nHealth;    // incorrect
+uint32_t uId;   // incorrect
+int health;     // correct
+uint32_t id;    // correct
 
-**bad**
-```cpp
-int nHealth;
-uint32_t uId;
-```
-**good**
-```cpp
-int health;
-uint32_t id;
-```
-**ideal**
-```cpp
 using Health = int;
-using PlayerID = uint32_t;
-
-Health health;
-PlayerID id;
+Health health;  // ideal
 ```
 Same goes with time values. Do not sufix with **uS**, **mS**, **S**, etc. Instead, use `std::chrono` types to store time values.
-
-**bad**
 ```cpp
-uint64_t elapsedMS = 1000; // 1 second in miliseconds
+uint64_t elapsedMS = 1000;              // incorrect
+auto elapsed = std::chrono::seconds(1); // correct
 ```
-**good**
-```cpp
-auto elapsed = std::chrono::seconds(1);
-```
-There are a few exceptions that are explained elsewhere in the guidelines. As examples:
-* **m_** for members
-* **p** for pointers
 
 ##Class members
 Public members are only allowed in utility classes. Like `Vector2`, `Color`, etc. Otherwise accessors should be defined and implemented in the source file.
 
 Private members should start with the hungarian **m_** notation.
 
-**bad**
-```cpp
-class Player
-{
-public:
-    int health;
-    Vector2 position;
-};
-```
-**good**
-```cpp
-class Player
-{
-public:
-    int getHealth() const;
-    void setHealth(int health);
-    
-private:
-    int m_health = 100;
-    Vector2 m_position;
-};
-```
-
-Members should be initialized to their default values in the header file if possible. This avoid scenario with multiple constructors and some have forgotten to initialize all members. If members have to be initialized in the constructor, because they are constructed from arguments. They must be initialized in the same order they are declared in the header.
-
-**bad**
-```cpp
-class Player
-{
-public:
-    Player(const Vector2& startPosition, const Color& color) 
-        : m_health(100) // Should be initialized in definition
-        , m_name("John Doe") // Should be initialized in definition
-        , m_position(startPosition) // Should come after m_color
-        , m_color(color)
-    {}
-    
-private:
-    std::string m_name;
-    int m_health;
-    Color m_color;
-    Vector2 m_position;
-};
-```
-**good**
-```cpp
-class Player
-{
-public:
-    Player(const Vector2& startPosition, const Color& color)
-        : m_color(color)
-        , m_position(startPosition)
-    {}
-    
-private:
-    std::string m_name = "John Doe";
-    int m_health = 100;
-    Color m_color;
-    Vector2 m_position;
-};
-```
+Members should be initialized to their default values in the header file if possible.
 
 ##Pointers
 All pointers should be prefixed with **p**. Double pointers with **pp** and so on. This makes it easier for the programmer to know if he should be using `.` or `->` to access its members.
-
-**bad**
 ```cpp
-Player* player;
-void** data;
-```
-**good**
-```cpp
-Player* pPlayer;
-void** ppData;
+Player* player;  // incorrect
+Player* pPlayer; // correct
+void** data;     // incorrect
+void** pData;    // incorrect
+void** ppData;   // correct
 ```
 
 ##Templates
-Use them sparsingly. They are very useful. But once you start, they get everywhere. It makes it hard to newcomers to understand templated the code. Even for experienced programmers. _Currently onut is a template nightmare. It will be fixed in due time._
-
-**bad** Current implementation in onut
-```cpp
-class Texture {};
-class ContentManager
-{
-    template<typename Tresource>
-    Tresource* getResource(const std::string& name) {}
-};
-```
-**good**
-```cpp
-class Resource {};
-class Texture : public Resource {};
-class ContentManager
-{
-    Resource* getResource(const std::string& name) {}
-};
-```
-Having the user to write their type as template argument, or in a cast on the returned value is no extra effort.
+Use them sparsingly. They are very useful, but once you start, they get everywhere. It makes it hard to newcomers to understand templated the code. Even for experienced programmers. _Currently onut is a template nightmare. It will be fixed in due time._
 
 ##Include guards
 `#pragma once` should be used at the top of every header files
 
-**bad**
-```cpp
-#ifndef _A_H_INCLUDED_
-#define _A_H_INCLUDED_
-
-class A {};
-
-#endif
-```
-**good**
-```cpp
-#pragma once
-
-class A {};
-```
-
 ##Namespace
 Everything in the engine should be put in the `onut` namespace. If 2 classes are in the same file, they should be placed in different namespace block for clarity.
 
-**bad**
-```cpp
-class A {};
-class B {};
-```
-**good**
-```cpp
-namespace onut
-{
-    class A {};
-}
-
-namespace onut
-{
-    class B {};
-}
-```
-Same goes of its source file.
-
 We allow `using` statement outside of namespaces for simplicity of use of the engine. Each public class should define one at the end of their header. They must start with the letter `O` (for Onut) followed by the class name.
 ```cpp
-#pragma once
-
-namespace onut
-{
-    class Texture {};
-}
-
-using OTexture = onut::Texture;
+using OClassName = onut::ClassName;
 ```
 
 ##Using namespace
 `using namespace` is prohibited. Even for `std`.
 
-**bad**
-```cpp
-using namespace std;
-string name = "Marc";
-```
-**good**
-```cpp
-std::string name = "David";
-```
-
 ##Enums
-All enums should be strongly typed using the `class`keyword. And enum name should start with a capital letter just like a class. It is a type. Same goes with its values.
-
-**bad**
+All enums should be strongly typed using the `class` keyword. It is a type.
 ```cpp
-enum TWEEN
+enum TWEEN         // incorrect
 {
     LINEAR,
     EASE_OUT,
     EASE_IN,
     EASE_BOTH
 };
-```
-**good**
-```cpp
-enum class Tween
+enum class Tween   // correct
 {
     Linear,
     EaseOut,
@@ -285,24 +206,16 @@ enum class Tween
     EaseBoth
 };
 ```
-We allow `using` statement for simplicity of use of the engine. Only on the enum type, not on its values.
+We allow `using` statement for simplicity of use of the engine. Public enums should defined one at the end of their header. They must start with `O`.
 ```cpp
-using OTween = onut::Tween;
+using OEnumName = onut::EnumName;
 ```
 
 ##Constants
-Constants should use UpperCamelCase. Avoid using `#define` for constants.
-
-**bad**
+Constants should use UPPER_CASE. Avoid using `#define` for constants.
 ```cpp
-#define MaxSpeed 5
-static const float MAX_ACCEL = 25.f;
-```
-**good**
-```cpp
-static const float MaxSpeed = 5.f;
-static const float MaxAccel = 25.f;
+#define MAX_SPEED 5                   // incorrect
+static const float MAX_SPEED = 25.f;  // correct
 ```
 Constants shouldn't be exposed to public API, but reside inside source files. If needed to be exposed, they should be part of an enum.
 
-*... to be continued*
