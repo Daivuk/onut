@@ -157,9 +157,15 @@ auto elapsed = std::chrono::seconds(1); // correct
 ##Class members
 Public members are only allowed in utility classes. Like `Vector2`, `Color`, etc. Otherwise accessors should be defined and implemented in the source file.
 
-Private members should start with the hungarian **m_** notation.
-
 Members should be initialized to their default values in the header file if possible.
+```cpp
+class A
+{
+private:
+    int health;             // incorrect
+    int m_health = 100;     // correct
+};
+```
 
 ##Pointers
 All pointers should be prefixed with **p**. Double pointers with **pp** and so on. This makes it easier for the programmer to know if he should be using `.` or `->` to access its members.
