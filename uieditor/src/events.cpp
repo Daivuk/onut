@@ -183,6 +183,15 @@ void onCreateTextBox(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     createControlAction(pBtn, pParent);
 }
 
+void onCreateTreeView(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+{
+    auto pParent = getCreateParent();
+    auto pTreeView = new onut::UITreeView();
+
+    pTreeView->rect = {{0, 0}, {64, 24}};
+    createControlAction(pTreeView, pParent);
+}
+
 bool g_bSelected = false;
 
 void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
@@ -2010,6 +2019,7 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     pUIScreen->getChild("btnCreateImage")->onClick = onCreateImage;
     pUIScreen->getChild("btnCreateCheckBox")->onClick = onCreateCheckBox;
     pUIScreen->getChild("btnCreateTextBox")->onClick = onCreateTextBox;
+    pUIScreen->getChild("btnCreateTreeView")->onClick = onCreateTreeView;
 
     // View
     pUIScreen->getChild("pnlView")->onMouseDown = onSelect;

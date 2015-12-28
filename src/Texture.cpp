@@ -90,7 +90,9 @@ namespace onut
             pData[2] = pData[2] * pData[3] / 255;
         }
 
-        return createFromData(size, &(image[0]), generateMipmaps);
+        pRet = createFromData(size, &(image[0]), generateMipmaps);
+        pRet->m_name = filename.substr(filename.find_last_of("/\\") + 1);
+        return pRet;
     }
 
     Texture* Texture::createFromFileData(const std::vector<uint8_t>& data, bool in_generateMipmaps)

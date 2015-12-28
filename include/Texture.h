@@ -34,6 +34,7 @@ namespace onut
 
         void setData(const uint8_t *in_pData);
 
+        const std::string&          getName() const { return m_name; }
         void                        resizeTarget(const sSize& size);
         void                        bind(int slot = 0);
         void                        bindRenderTarget();
@@ -73,6 +74,7 @@ namespace onut
         ID3D11ShaderResourceView*   m_pTextureViewFX = nullptr;
         ID3D11RenderTargetView*     m_pRenderTargetViewFX = nullptr;
         bool                        m_isScreenRenderTarget = false;
+        std::string                 m_name;
     };
 }
 
