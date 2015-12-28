@@ -113,8 +113,41 @@ namespace onut
 ##Memory management
 Don't use `std::shared_ptr` and such, as they come with an overhead. Try to pool as much as possible using `OPool` object. The less the memory moves around, the better the engine works.
 
-##4 spaces instead of tabs
+##Formatting
 4 spaces should used instead of tabs
+```cpp
+int myFunction( int param1 )    // incorrect
+int myFunction(int param1)      // correct
+int myFunction( )               // incorrect
+int myFunction()                // correct
+if ( i == 0 )                   // incorrect
+if (i == 0)                     // correct
+C = ( 3 + 4 ) * ( 2 + 7 );      // incorrect
+C = (3 + 4) * (2 + 7);          // correct
+int i=2;                        // incorrect
+int i = 2;                      // correct
+int i=5+7;                      // incorrect
+int i = 5 + 7;                  // correct
+for (y>0)                       // incorrect
+for (y > 0)                     // correct
+f(a , b , c);                   // incorrect
+f(a, b, c);                     // correct
+for (y = nHeight;y > 0;y--)     // incorrect
+for (y = nHeight; y > 0; y--)   // correct
+for (y = nHeight; y > 0; y --)  // incorrect
+for (y = nHeight; y > 0; y--)   // correct
+if(a + b)                       // incorrect
+if (a + b)                      // correct
+C = 3 + 4 * 2 + 7;              // incorrect
+C = (3 + 4) * (2 + 7);          // correct
+char *pPtr1;                    // incorrect
+char* pPtr1;                    // correct
+char *Foo();                    // incorrect
+char* foo();                    // correct
+const string & s;               // incorrect
+const string &s;                // incorrect
+const string& s;                // correct
+```
 
 ##Curly braces
 ```cpp
