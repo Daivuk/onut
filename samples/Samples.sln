@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoPlayer", "VideoPlayer\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigation", "Navigation\project\win\Navigation.vcxproj", "{258D8040-8AFB-4456-87A1-5CC819B0F6FE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AsyncLoading", "AsyncLoading\project\win\AsyncLoading.vcxproj", "{AD4E263E-D44A-4508-A91C-AED463F95259}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -113,6 +115,10 @@ Global
 		{258D8040-8AFB-4456-87A1-5CC819B0F6FE}.Debug|Win32.Build.0 = Debug|Win32
 		{258D8040-8AFB-4456-87A1-5CC819B0F6FE}.Release|Win32.ActiveCfg = Release|Win32
 		{258D8040-8AFB-4456-87A1-5CC819B0F6FE}.Release|Win32.Build.0 = Release|Win32
+		{AD4E263E-D44A-4508-A91C-AED463F95259}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AD4E263E-D44A-4508-A91C-AED463F95259}.Debug|Win32.Build.0 = Debug|Win32
+		{AD4E263E-D44A-4508-A91C-AED463F95259}.Release|Win32.ActiveCfg = Release|Win32
+		{AD4E263E-D44A-4508-A91C-AED463F95259}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,5 +140,6 @@ Global
 		{99F7BC4D-ED9C-4A43-AA1C-DBF2C0810DD2} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{931FFF90-F473-40AD-981C-F5E605A20F5E} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{258D8040-8AFB-4456-87A1-5CC819B0F6FE} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{AD4E263E-D44A-4508-A91C-AED463F95259} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal

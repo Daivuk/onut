@@ -114,14 +114,39 @@ inline OSoundCue* OGetSoundCue(const char* pName)
     return OContentManager->getResource<OSoundCue>(pName);
 }
 
-inline OSoundInstance* OCreateSoundInstance(const char* pName)
-{
-    return OGetSound(pName)->createInstance();
-}
-
 inline OPfx* OGetPFX(const char* pName)
 {
     return OContentManager->getResource<OPfx>(pName);
+}
+
+inline void OLoadTexture(const char* pName)
+{
+    OContentManager->addResource<OTexture>(pName);
+}
+
+inline void OLoadBMFont(const char* pName)
+{
+    OContentManager->addResource<OFont>(pName);
+}
+
+inline void OLoadSound(const char* pName)
+{
+    OContentManager->addResource<OSound>(pName);
+}
+
+inline void OLoadSoundCue(const char* pName)
+{
+    OContentManager->addResource<OSoundCue>(pName);
+}
+
+inline void OLoadPFX(const char* pName)
+{
+    OContentManager->addResource<OPfx>(pName);
+}
+
+inline OSoundInstance* OCreateSoundInstance(const char* pName)
+{
+    return OGetSound(pName)->createInstance();
 }
 
 inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ) -> decltype(OParticles->emit(nullptr, position, dir))
