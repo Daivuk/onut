@@ -623,6 +623,114 @@ namespace onut
         fclose(pFile);
     }
 
+    bool UIControl::visit(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        auto worldRect = getWorldRect(parentRect);
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visit(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool UIControl::visitChildrenFirst(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        auto worldRect = getWorldRect(parentRect);
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitChildrenFirst(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool UIControl::visitEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isEnabled) return true;
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitEnabled(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool UIControl::visitChildrenFirstEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isEnabled) return true;
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitChildrenFirstEnabled(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool UIControl::visitVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitVisible(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool UIControl::visitChildrenFirstVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitChildrenFirstVisible(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        return true;
+    }
+
     void UIControl::load(const rapidjson::Value& jsonNode)
     {
         rect.position.x = getJsonFloat(jsonNode["x"]);
@@ -1057,7 +1165,44 @@ namespace onut
         }
     }
 
-    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down)
+    bool isObstructed(UIContext& context, UIControl* pRoot, UIControl* pControl, const sUIRect& worldRect)
+    {
+        sUIRect parentRect = {{0, 0}, context.getScreenSize()};
+        bool passedUs = false;
+        return !pRoot->visitVisible([&worldRect, &passedUs, pControl](UIControl* pOther, const sUIRect& rect)
+        {
+            if (pOther == pControl)
+            {
+                passedUs = true;
+                return true;
+            }
+            if (!pOther->isClickThrough && passedUs)
+            {
+                if (rect.position.x + rect.size.x >= worldRect.position.x &&
+                    rect.position.x <= worldRect.position.x + worldRect.size.x &&
+                    rect.position.y + rect.size.y >= worldRect.position.y &&
+                    rect.position.y <= worldRect.position.y + worldRect.size.y)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }, parentRect);
+    }
+
+    bool isReallyVisible(UIControl* pControl)
+    {
+        if (!pControl) return true;
+        return pControl->isVisible && isReallyVisible(pControl->getParent());
+    }
+
+    bool isReallyEnabled(UIControl* pControl)
+    {
+        if (!pControl) return true;
+        return pControl->isEnabled && isReallyEnabled(pControl->getParent());
+    }
+
+    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down, bool bNavL, bool bNavR, bool bNavU, bool bNavD)
     {
         retain();
 
@@ -1078,7 +1223,141 @@ namespace onut
         context.m_pHoverControl = nullptr;
 
         // Update UIs
-        updateInternal(context, parentRect);
+        if (context.useNavigation && context.m_pLastHoverControl)
+        {
+            if (!isReallyEnabled(context.m_pLastHoverControl) ||
+                !isReallyVisible(context.m_pLastHoverControl) ||
+                context.m_pLastHoverControl->isClickThrough ||
+                isObstructed(context, this, context.m_pLastHoverControl, context.m_pLastHoverControl->getWorldRect(context)))
+            {
+                context.m_pLastHoverControl->release();
+                context.m_pLastHoverControl = nullptr;
+            }
+        }
+        if (context.useNavigation)
+        {
+            if (!context.m_pLastHoverControl)
+            {
+                // Find the first unobstructed navigable
+                visitChildrenFirstEnabled([this, &context](UIControl* pControl, const sUIRect& rect) -> bool
+                {
+                    if (!pControl->isNavigatable()) return true;
+                    if (!isObstructed(context, this, pControl, rect))
+                    {
+                        context.m_pHoverControl = pControl;
+                        return false;
+                    }
+                    return true;
+                }, parentRect);
+            }
+        }
+        else
+        {
+            updateInternal(context, parentRect);
+        }
+        if (context.useNavigation)
+        {
+            if (!context.m_pHoverControl)
+            {
+                context.m_pHoverControl = context.m_pLastHoverControl;
+            }
+            if (context.m_pHoverControl && 
+                (bNavR || bNavL || bNavU || bNavD))
+            {
+                auto worldRect = context.m_pHoverControl->getWorldRect(context);
+                auto pPreviousHover = context.m_pHoverControl;
+                float closest = 10000.f;
+                float closestH = 10000.f;
+
+                // Navigation
+                if (bNavR)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        if (rect.position.y > worldRect.position.y + worldRect.size.y) return true;
+                        if (rect.position.y + rect.size.y < worldRect.position.y) return true;
+                        float distance = rect.position.x - worldRect.position.x;
+                        if (distance < closest && distance > 0.f)
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+                else if (bNavL)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        if (rect.position.y > worldRect.position.y + worldRect.size.y) return true;
+                        if (rect.position.y + rect.size.y < worldRect.position.y) return true;
+                        float distance = worldRect.position.x - rect.position.x;
+                        if (distance < closest && distance > 0.f)
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+                else if (bNavD)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        float distance = rect.position.y - (worldRect.position.y + worldRect.size.y);
+                        float distanceH = std::abs(rect.position.x - worldRect.position.x);
+                        if ((distance < closest - 16.f && distance > 0.f) ||
+                            (distance < closest + 16.f && distance > 0.f && distanceH < closestH))
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                closestH = distanceH;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+                else if (bNavU)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        float distance = worldRect.position.y - (rect.position.y + rect.size.y);
+                        float distanceH = std::abs(rect.position.x - worldRect.position.x);
+                        if ((distance < closest - 16.f && distance > 0.f) ||
+                            (distance < closest + 16.f && distance > 0.f && distanceH < closestH))
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                closestH = distanceH;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+            }
+        }
 
         // Resolve
         context.resolve();
@@ -1180,8 +1459,9 @@ namespace onut
         }
         if (m_pHoverControl)
         {
-            if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
-                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
+            if (!useNavigation &&
+                (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
+                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y))
             {
                 m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
                 if (m_pHoverControl->onMouseMove)
@@ -1272,7 +1552,7 @@ namespace onut
 
                     // Check for double click events
                     auto now = std::chrono::steady_clock::now();
-                    if (now - m_clickTimes[i] <= doubleClickTime &&
+                    if (now - m_clickTimes[i] <= doubleClickTime && !useNavigation &&
                         m_clicksPos[i].x > m_mouseEvents[i].mousePos.x - 3 &&
                         m_clicksPos[i].y > m_mouseEvents[i].mousePos.y - 3 &&
                         m_clicksPos[i].x < m_mouseEvents[i].mousePos.x + 3 &&
@@ -1546,11 +1826,21 @@ namespace onut
         sUIRect worldRect = getWorldRect(parentRect);
 
         // Do children first, inverted
-        auto itend = m_children.rend();
-        for (auto it = m_children.rbegin(); it != itend; ++it)
+        if (context.useNavigation)
         {
-            auto pChild = *it;
-            pChild->updateInternal(context, worldRect);
+            for (auto pChild : m_children)
+            {
+                pChild->updateInternal(context, worldRect);
+            }
+        }
+        else
+        {
+            auto itend = m_children.rend();
+            for (auto it = m_children.rbegin(); it != itend; ++it)
+            {
+                auto pChild = *it;
+                pChild->updateInternal(context, worldRect);
+            }
         }
 
         if (!context.m_pHoverControl && !isClickThrough)

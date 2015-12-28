@@ -54,6 +54,8 @@ namespace onut
 
     Renderer::~Renderer()
     {
+        delete m_renderTarget;
+
         if (m_pWorldMatrixBuffer) m_pWorldMatrixBuffer->Release();
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
         if (m_pKernelSizeBuffer) m_pKernelSizeBuffer->Release();
@@ -317,7 +319,9 @@ namespace onut
     void Renderer::beginFrame()
     {
         // Bind render target
-        m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
+        //m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
+        if (!m_renderTarget) m_renderTarget = OTexture::createScreenRenderTarget(true);
+        m_renderTarget->bindRenderTarget();
 
         // Set viewport
         auto viewport = CD3D11_VIEWPORT(0.f, 0.f, (float)m_backBufferDesc.Width, (float)m_backBufferDesc.Height);
@@ -329,6 +333,11 @@ namespace onut
 
     void Renderer::endFrame()
     {
+        m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
+        OSB->begin();
+        OSB->drawRect(m_renderTarget, ORectFullScreen);
+        OSB->end();
+
         // Swap the buffer!
         m_swapChain->Present(1, 0);
     }
@@ -341,7 +350,8 @@ namespace onut
         }
         else
         {
-            m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
+            m_renderTarget->bindRenderTarget();
+            //m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
         }
     }
 
@@ -362,7 +372,8 @@ namespace onut
 
     void Renderer::clear(const Color& color)
     {
-        m_deviceContext->ClearRenderTargetView(m_renderTargetView, &color.x);
+        m_renderTarget->clearRenderTarget(color);
+        //m_deviceContext->ClearRenderTargetView(m_renderTargetView, &color.x);
     }
 
     void Renderer::resetState()

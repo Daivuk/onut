@@ -43,6 +43,7 @@ namespace onut
         ID3D11Device*           getDevice();
         ID3D11DeviceContext*    getDeviceContext();
         ID3D11PixelShader*      create2DShader(const std::string& filename);
+        Texture*                getRenderTarget() const { return m_renderTarget; }
 
         // For effects
         void                    setKernelSize(const Vector2& kernelSize);
@@ -81,6 +82,7 @@ namespace onut
         // Render target
         ID3D11RenderTargetView*     m_renderTargetView = nullptr;
         D3D11_TEXTURE2D_DESC        m_backBufferDesc;
+        Texture*                    m_renderTarget = nullptr;
 
         // Render states
         ID3D11DepthStencilState*    m_pDs2D = nullptr;

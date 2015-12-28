@@ -390,6 +390,8 @@ namespace onut
 
         std::chrono::steady_clock::duration doubleClickTime = std::chrono::milliseconds(500);
 
+        bool useNavigation = false;
+
     private:
         void resolve();
         void dispatchEvents();
@@ -489,6 +491,7 @@ namespace onut
         void save(const std::string& filename) const;
 
         virtual eUIType getType() const { return eUIType::UI_CONTROL; }
+        virtual bool isNavigatable() const { return false; }
 
         // Child methods
         void add(UIControl* pChild);
@@ -519,7 +522,7 @@ namespace onut
         void release();
         int32_t getRefCount() const { return m_refCount; }
 
-        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false);
+        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false, bool bNavL = false, bool bNavR = false, bool bNavU = false, bool bNavD = false);
         void render(UIContext& context);
 
         sUIRect getWorldRect(const UIContext& context) const;
@@ -564,6 +567,13 @@ namespace onut
 
         using TfnKeyEvent = std::function<void(UIControl*, const UIKeyEvent&)>;
         TfnKeyEvent onKeyDown;
+
+        bool visit(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitChildrenFirst(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitChildrenFirstEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitChildrenFirstVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
 
     protected:
         friend UIContext;
@@ -610,6 +620,7 @@ namespace onut
         UIButton(const UIButton& other);
 
         virtual eUIType getType() const override { return eUIType::UI_BUTTON; }
+        bool isNavigatable() const override { return true; }
 
         sUIScale9Component  scale9Component;
         sUITextComponent    textComponent;
@@ -690,6 +701,7 @@ namespace onut
 
         bool getIsChecked() const { return m_isChecked; }
         void setIsChecked(bool in_isChecked);
+        bool isNavigatable() const override { return true; }
 
         std::function<void(UICheckBox*, const UICheckEvent&)> onCheckChanged;
 
@@ -816,6 +828,7 @@ namespace onut
         const std::string::size_type* getSelectedTextRegion() const { return m_selectedTextRegion; }
         std::string::size_type getCursorPos() const { return m_cursorPos; }
         bool isCursorVisible() const;
+        bool isNavigatable() const override { return true; }
 
         std::function<void(UITextBox*, const UITextBoxEvent&)> onTextChanged;
 

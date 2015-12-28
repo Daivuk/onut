@@ -177,6 +177,14 @@ namespace onut
         {
             OUIContext->keyDown(key);
         };
+
+        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+        {
+            OSB->end();
+            ORenderer->getRenderTarget()->blur();
+            OSB->begin();
+            OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .5f));
+        });
     }
 
     void createServices()
@@ -345,7 +353,18 @@ namespace onut
                 {
                     gamePad->update();
                 }
-                OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3));
+                if (OUIContext->useNavigation)
+                {
+                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OGamePadPressed(OABtn), false, false, 
+                                OGamePadJustPressed(OLeftBtn) || OGamePadJustPressed(OLLeftBtn),
+                                OGamePadJustPressed(ORightBtn) || OGamePadJustPressed(OLRightBtn),
+                                OGamePadJustPressed(OUpBtn) || OGamePadJustPressed(OLUpBtn),
+                                OGamePadJustPressed(ODownBtn) || OGamePadJustPressed(OLDownBtn));
+                }
+                else
+                {
+                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3));
+                }
                 AnimManager::getGlobalManager()->update();
                 OEvent->processEvents();
                 OParticles->update();
