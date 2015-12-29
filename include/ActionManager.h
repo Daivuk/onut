@@ -23,8 +23,9 @@ namespace onut
     class ActionGroup : public IAction
     {
     public:
-        ActionGroup(const std::string& name, const std::vector<IAction*>& actions);
+        ActionGroup(const std::string& name, const std::vector<IAction*>& actions = {});
         virtual ~ActionGroup();
+        void addAction(IAction* pAction);
         void undo() override;
         void redo() override;
 
