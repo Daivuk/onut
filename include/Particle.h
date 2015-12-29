@@ -30,7 +30,6 @@ namespace onut
 
         bool isAlive() const { return life > 0.f; }
 
-        Particle*               pNext = nullptr;
         sEmitterDesc*           pDesc;
         float                   life;
         float                   delta;

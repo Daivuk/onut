@@ -33,7 +33,7 @@ namespace onut
     private:
         Particle* spawnParticle();
 
-        Particle*               m_pParticles;
+        std::vector<Particle*>  m_particles;
         IParticleSystemManager* m_pParticleSystemManager;
         bool                    m_isAlive = false;
         Matrix                  m_transform;

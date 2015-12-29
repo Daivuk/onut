@@ -103,7 +103,7 @@ namespace onut
             FALSE,
             {{
                     TRUE,
-                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_SRC_ALPHA,
                     D3D11_BLEND_ONE,
                     D3D11_BLEND_OP_ADD,
                     D3D11_BLEND_ONE,

@@ -11,7 +11,7 @@ namespace onut
     {
     public:
         virtual Particle* allocParticle() = 0;
-        virtual Particle* deallocParticle(Particle* pParticle) = 0;
+        virtual void deallocParticle(Particle* pParticle) = 0;
         virtual void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) = 0;
     };
 
@@ -217,11 +217,9 @@ namespace onut
             return m_particlePool.alloc<Particle>();
         }
 
-        Particle* deallocParticle(Particle* pParticle) override
+        void deallocParticle(Particle* pParticle) override
         {
-            auto pRet = pParticle->pNext;
             m_particlePool.dealloc(pParticle);
-            return pRet;
         }
 
         void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override

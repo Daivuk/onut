@@ -453,7 +453,7 @@ namespace onut
             }
             else
             {
-                emitter.textures.push_back(OGetTexture(pex.texture.c_str()));
+                emitter.textures.push_back(loadTextureFn(pex.texture.c_str()));
             }
             emitter.spread = pex.angleVariance;
             emitter.speed.from = pex.speed - pex.speedVariance;
@@ -479,9 +479,10 @@ namespace onut
 
             emitter.gravity = Vector3(pex.gravity, 0);
 
-            emitter.size.value.from = std::max<>(0.f, pex.startParticleSize  - pex.startParticleSizeVariance);
+            auto textureSize = emitter.textures.front()->getSizef();
+            emitter.size.value.from = std::max<>(0.f, pex.startParticleSize - pex.startParticleSizeVariance);
             emitter.size.value.to = std::max<>(0.f, pex.startParticleSize + pex.startParticleSizeVariance);
-            emitter.size.finalValue.from = std::max<>(0.f, pex.finishParticleSize  - pex.finishParticleSizeVariance);
+            emitter.size.finalValue.from = std::max<>(0.f, pex.finishParticleSize - pex.finishParticleSizeVariance);
             emitter.size.finalValue.to = std::max<>(0.f, pex.finishParticleSize + pex.finishParticleSizeVariance);
             emitter.size.finalSpecified = true;
 
@@ -493,8 +494,8 @@ namespace onut
             emitter.rotation.value.from = pex.rotatePerSecond - pex.rotatePerSecondVariance;
             emitter.rotation.value.to = pex.rotatePerSecond + pex.rotatePerSecondVariance;
 
-            emitter.life.from = pex.particleLifeSpan - pex.particleLifespanVariance;
-            emitter.life.to = pex.particleLifeSpan + pex.particleLifespanVariance;
+            emitter.life.from = std::max<>(0.01f, pex.particleLifeSpan - pex.particleLifespanVariance);
+            emitter.life.to = std::max<>(0.01f, pex.particleLifeSpan + pex.particleLifespanVariance);
 
             emitter.position.from = Vector3(pex.sourcePosition - pex.sourcePositionVariance, 0);
             emitter.position.to = Vector3(pex.sourcePosition + pex.sourcePositionVariance, 0);

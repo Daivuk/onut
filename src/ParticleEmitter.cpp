@@ -26,11 +26,11 @@ namespace onut
 
     ParticleEmitter::~ParticleEmitter()
     {
-        auto pParticle = m_pParticles;
-        while (pParticle)
+        for (auto pParticle : m_particles)
         {
-            pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
+            m_pParticleSystemManager->deallocParticle(pParticle);
         }
+        m_particles.clear();
     }
 
     void ParticleEmitter::stop()
@@ -41,22 +41,17 @@ namespace onut
     void ParticleEmitter::update()
     {
         // Update current particles
-        for (auto pParticle = m_pParticles; pParticle; )
+        for (decltype(m_particles.size()) i = 0; i < m_particles.size();)
         {
+            auto pParticle = m_particles[i];
             pParticle->update();
             if (!pParticle->isAlive())
             {
-                if (m_pParticles == pParticle)
-                {
-                    pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
-                }
-                else
-                {
-                    m_pParticles = pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
-                }
+                m_pParticleSystemManager->deallocParticle(pParticle);
+                m_particles.erase(m_particles.begin() + i);
                 continue;
             }
-            pParticle = pParticle->pNext;
+            ++i;
         }
 
         // Spawn at rate
@@ -73,7 +68,7 @@ namespace onut
 
         if (m_pDesc->type == eEmitterType::CONTINOUS && m_isStopped)
         {
-            if (!m_pParticles) m_isAlive = false;
+            if (m_particles.empty()) m_isAlive = false;
         }
 
         if (m_pDesc->type == eEmitterType::FINITE && m_pDesc->rate > 0 && !m_isStopped && m_duration > 0.f)
@@ -90,11 +85,11 @@ namespace onut
 
         if (m_pDesc->type == eEmitterType::FINITE && (m_isStopped || m_duration <= 0.f))
         {
-            if (!m_pParticles) m_isAlive = false;
+            if (m_particles.empty()) m_isAlive = false;
         }
 
         // Kill self if done
-        if (m_pDesc->type == eEmitterType::BURST && !m_pParticles)
+        if (m_pDesc->type == eEmitterType::BURST && m_particles.empty())
         {
             m_isAlive = false;
         }
@@ -106,9 +101,9 @@ namespace onut
         auto& camUp = ORenderer->getCameraUp();
         auto camRight = camDir.Cross(camUp);
 
-        for (auto pParticle = m_pParticles; pParticle; pParticle = pParticle->pNext)
+        for (decltype(m_particles.size()) i = 0; i < m_particles.size(); ++i)
         {
-            m_pParticleSystemManager->renderParticle(pParticle, camRight, camUp);
+            m_pParticleSystemManager->renderParticle(m_particles[i], camRight, camUp);
         }
     }
 
@@ -175,21 +170,7 @@ namespace onut
             pParticle->life = 1.f;
             pParticle->delta = 1.f / m_pDesc->life.generate();
 
-            if (m_pParticles)
-            {
-                for (auto pAliveParticle = m_pParticles; pAliveParticle; pAliveParticle = pAliveParticle->pNext)
-                {
-                    if (!pAliveParticle->pNext)
-                    {
-                        pAliveParticle->pNext = pParticle;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                m_pParticles = pParticle;
-            }
+            m_particles.push_back(pParticle);
         }
         return pParticle;
     }
