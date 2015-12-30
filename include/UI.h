@@ -231,6 +231,14 @@ namespace onut
         UIContext*                      pContext = nullptr;
     };
 
+    class UITreeViewMoveEvent
+    {
+    public:
+        std::vector<UITreeViewItem*>*   pSelectedItems = nullptr;
+        UITreeViewItem*                 pTarget = nullptr;
+        UIContext*                      pContext = nullptr;
+    };
+
     class UITextBoxEvent
     {
     public:
@@ -377,6 +385,7 @@ namespace onut
         UIControl* getFocusControl() const { return m_pFocus; }
 
         std::function<sUIVector2(const onut::UITextBox* pTextBox, const std::string &text)> textSize = nullptr;
+        std::function<void(const onut::sUIRect& rect)> drawInsert = nullptr;
 
         std::function<void(UIControl*, const sUIRect&, const sUIColor&)> drawRect = 
             [](UIControl*, const sUIRect&, const sUIColor&){};
@@ -735,8 +744,11 @@ namespace onut
         float expandedXOffset = 16.f;
         float expandClickWidth = 18.f;
         float itemHeight = 18.f;
+        bool allowReorder = false;
 
         void addItem(UITreeViewItem* pItem);
+        void addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore);
+        void addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter);
         void removeItem(UITreeViewItem* pItem);
         void clear();
 
@@ -747,22 +759,34 @@ namespace onut
         void expandTo(UITreeViewItem* pItem);
 
         std::function<void(UITreeView*, const UITreeViewSelectEvent&)> onSelectionChanged;
+        std::function<void(UITreeView*, const UITreeViewMoveEvent&)> onMoveItemInto;
+        std::function<void(UITreeView*, const UITreeViewMoveEvent&)> onMoveItemBefore;
+        std::function<void(UITreeView*, const UITreeViewMoveEvent&)> onMoveItemAfter;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
         virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseMoveInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseUpInternal(const UIMouseEvent& evt) override;
         virtual void onMouseScrollInternal(const UIMouseEvent& evt) override;
 
     private:
-        UITreeViewItem* getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton = nullptr) const;
-        UITreeViewItem* getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton = nullptr) const;
+        UITreeViewItem* getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton = nullptr, sUIRect* pItemRect = nullptr) const;
+        UITreeViewItem* getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton = nullptr, sUIRect* pItemRect = nullptr) const;
         float getTotalHeight(UITreeViewItem* pItem = nullptr) const;
 
         std::vector<UITreeViewItem*>    m_items;
         std::vector<UITreeViewItem*>    m_selectedItems;
         float                           m_scroll = 0.f;
+        bool                            m_isDragging = false;
+        sUIVector2                      m_mousePosOnDragStart;
+        sUIVector2                      m_dragMousePos;
+        UITreeViewItem*                 m_dragHoverItem = nullptr;
+        UITreeViewItem*                 m_dragBeforeItem = nullptr;
+        UITreeViewItem*                 m_dragAfterItem = nullptr;
+        sUIRect                         m_dragInBetweenRect;
     };
 
     class UITreeViewItem
@@ -777,10 +801,13 @@ namespace onut
         bool        isExpanded = false;
         std::string text;
         void*       pUserData = nullptr;
+        float       opacity = 1.f;
 
         UITreeViewItem* getParent() const { return m_pParent; }
 
         void addItem(UITreeViewItem* pItem);
+        void addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore);
+        void addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter);
         void removeItem(UITreeViewItem* pItem);
 
         UITreeView* getTreeView() const { return m_pTreeView; }
@@ -788,6 +815,10 @@ namespace onut
         const std::vector<UITreeViewItem*>& getItems() const { return m_items; }
 
         bool getIsSelected() const { return m_isSelected; }
+
+        void retain();
+        void release();
+        int32_t getRefCount() const { return m_refCount; }
 
     private:
         template<typename TfnCallback>
@@ -812,10 +843,22 @@ namespace onut
             }
         }
 
+        template<typename TfnCallback>
+        void renderDrag(const TfnCallback& itemCallback, const UITreeView* pTreeView, const sUIRect& treeViewRect, sUIRect& rect)
+        {
+            auto isSelected = m_isSelected;
+            m_isSelected = false;
+            opacity = .5f;
+            itemCallback->render(this, rect);
+            opacity = 1.f;
+            m_isSelected = isSelected;
+        }
+
         std::vector<UITreeViewItem*>    m_items;
         UITreeView*                     m_pTreeView = nullptr;
         bool                            m_isSelected = false;
         UITreeViewItem*                 m_pParent = nullptr;
+        int32_t                         m_refCount = 0;
     };
 
     class UITextBox : public UIControl

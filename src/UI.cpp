@@ -2108,8 +2108,62 @@ namespace onut
         {
             if (pMyItem == pItem) return;
         }
+        pItem->retain();
+        auto pParent = pItem->getParent();
+        if (pParent) pParent->removeItem(pItem);
         pItem->m_pTreeView = this;
         m_items.push_back(pItem);
+    }
+
+    void UITreeView::addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore)
+    {
+        if (!pBefore)
+        {
+            addItem(pItem);
+            return;
+        }
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->retain();
+        auto pParent = pItem->getParent();
+        if (pParent) pParent->removeItem(pItem);
+        pItem->m_pTreeView = this;
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pBefore)
+            {
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
+    }
+
+    void UITreeView::addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter)
+    {
+        if (!pAfter)
+        {
+            addItem(pItem);
+            return;
+        }
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->retain();
+        auto pParent = pItem->getParent();
+        if (pParent) pParent->removeItem(pItem);
+        pItem->m_pTreeView = this;
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pAfter)
+            {
+                ++it;
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
     }
 
     void UITreeView::removeItem(UITreeViewItem* pItem)
@@ -2120,7 +2174,8 @@ namespace onut
             if (m_items[i] == pItem)
             {
                 m_items.erase(m_items.begin() + i);
-                delete pItem;
+                pItem->m_pParent = nullptr;
+                pItem->release();
                 return;
             }
         }
@@ -2143,14 +2198,14 @@ namespace onut
         m_items.clear();
     }
 
-    UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton) const
+    UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton, sUIRect* pItemRect) const
     {
         // Render it's items
         sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
         itemRect.position.y -= m_scroll;
         for (auto pItem : m_items)
         {
-            auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton);
+            auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton, pItemRect);
             if (pRet)
             {
                 return pRet;
@@ -2182,7 +2237,7 @@ namespace onut
         return ret;
     }
 
-    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton) const
+    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton, sUIRect* pItemRect) const
     {
         if (pos.y >= rect.position.y &&
             pos.y <= rect.position.y + rect.size.y)
@@ -2190,10 +2245,12 @@ namespace onut
             if (pos.x >= rect.position.x + expandClickWidth ||
                 pos.x <= rect.position.x)
             {
+                if (pItemRect) *pItemRect = rect;
                 return pItem;
             }
             else if (pPickedExpandButton)
             {
+                if (pItemRect) *pItemRect = rect;
                 *pPickedExpandButton = true;
                 return pItem;
             }
@@ -2208,7 +2265,7 @@ namespace onut
                 rect.size.x -= xOffset;
                 for (auto pHisItem : pItem->m_items)
                 {
-                    auto pRet = getItemAtPosition(pHisItem, pos, rect, pPickedExpandButton);
+                    auto pRet = getItemAtPosition(pHisItem, pos, rect, pPickedExpandButton, pItemRect);
                     if (pRet)
                     {
                         return pRet;
@@ -2261,9 +2318,76 @@ namespace onut
         {
             if (pMyItem == pItem) return;
         }
+        pItem->retain();
+        if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
         pItem->m_pTreeView = m_pTreeView;
         m_items.push_back(pItem);
+    }
+
+    void UITreeViewItem::addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore)
+    {
+        if (!pBefore)
+        {
+            addItem(pItem);
+            return;
+        }
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->retain();
+        if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
+        pItem->m_pParent = this;
+        pItem->m_pTreeView = m_pTreeView;
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pBefore)
+            {
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
+    }
+
+    void UITreeViewItem::addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter)
+    {
+        if (!pAfter)
+        {
+            addItem(pItem);
+            return;
+        }
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->retain();
+        if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
+        pItem->m_pParent = this;
+        pItem->m_pTreeView = m_pTreeView;
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pAfter)
+            {
+                ++it;
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
+    }
+
+    void UITreeViewItem::retain()
+    {
+        ++m_refCount;
+    }
+
+    void UITreeViewItem::release()
+    {
+        --m_refCount;
+        if (m_refCount <= 0)
+        {
+            delete this;
+        }
     }
 
     void UITreeViewItem::removeItem(UITreeViewItem* pItem)
@@ -2274,7 +2398,8 @@ namespace onut
             if (m_items[i] == pItem)
             {
                 m_items.erase(m_items.begin() + i);
-                delete pItem;
+                pItem->m_pParent = nullptr;
+                pItem->release();
                 return;
             }
         }
@@ -2720,6 +2845,22 @@ namespace onut
                 pItem->render(itemCallback, this, rect, itemRect);
             }
         }
+
+        if (allowReorder && m_isDragging && !m_selectedItems.empty())
+        {
+            auto pItem = m_selectedItems.front();
+            itemRect.position = m_dragMousePos;
+            itemRect.position.y += 8.f;
+            itemRect.position.x += 8.f;
+            pItem->renderDrag(itemCallback, this, rect, itemRect);
+            if (m_dragAfterItem || m_dragBeforeItem)
+            {
+                if (context.drawInsert)
+                {
+                    context.drawInsert(m_dragInBetweenRect);
+                }
+            }
+        }
     }
 
     void UITextBox::renderControl(const UIContext& context, const sUIRect& rect)
@@ -2894,6 +3035,142 @@ namespace onut
                     myEvt.pSelectedItems = &m_selectedItems;
                     onSelectionChanged(this, myEvt);
                 }
+            }
+        }
+        if (allowReorder)
+        {
+            m_mousePosOnDragStart = evt.mousePos;
+        }
+    }
+
+    void UITreeView::onMouseMoveInternal(const UIMouseEvent& evt)
+    {
+        if (hasFocus(*evt.pContext) && evt.isMouseDown)
+        {
+            if (allowReorder)
+            {
+                if (!m_isDragging)
+                {
+                    if (std::abs(m_mousePosOnDragStart.y - evt.mousePos.y) >= 3)
+                    {
+                        m_isDragging = true;
+                    }
+                }
+                else
+                {
+                    m_dragMousePos = evt.mousePos;
+                    auto worldRect = getWorldRect(*evt.pContext);
+                    bool pickedExpandButton = false;
+                    m_dragBeforeItem = nullptr;
+                    m_dragAfterItem = nullptr;
+                    auto pPicked = getItemAtPosition(evt.mousePos, worldRect, &pickedExpandButton, &m_dragInBetweenRect);
+                    if (pPicked)
+                    {
+                        if (m_dragHoverItem)
+                        {
+                            m_dragHoverItem->m_isSelected = false;
+                            m_dragHoverItem = nullptr;
+                        }
+                        if (evt.mousePos.y - m_dragInBetweenRect.position.y < itemHeight / 4)
+                        {
+                            m_dragBeforeItem = pPicked;
+                            m_dragInBetweenRect.size.y = 2.f;
+                            m_dragInBetweenRect.position.y -= 1.f;
+                        }
+                        else if (evt.mousePos.y > m_dragInBetweenRect.position.y + m_dragInBetweenRect.size.y - itemHeight / 4)
+                        {
+                            m_dragAfterItem = pPicked;
+                            m_dragInBetweenRect.position.y += m_dragInBetweenRect.size.y - 1.f;
+                            m_dragInBetweenRect.size.y = 2.f;
+                        }
+                        if (!pPicked->getIsSelected() && !m_dragBeforeItem && !m_dragAfterItem)
+                        {
+                            m_dragHoverItem = pPicked;
+                            m_dragHoverItem->m_isSelected = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void UITreeView::onMouseUpInternal(const UIMouseEvent& evt)
+    {
+        if (!m_isDragging) return;
+
+        auto dragHover = m_dragHoverItem;
+        auto dragBefore = m_dragBeforeItem;
+        auto dragAfter = m_dragAfterItem;
+
+        m_isDragging = false;
+        if (m_dragHoverItem)
+        {
+            m_dragHoverItem->m_isSelected = false;
+        }
+        m_dragHoverItem = nullptr;
+        m_dragBeforeItem = nullptr;
+        m_dragAfterItem = nullptr;
+
+        if (dragHover)
+        {
+            for (auto pItem : m_selectedItems)
+            {
+                dragHover->addItem(pItem);
+            }
+            dragHover->isExpanded = true;
+            if (onMoveItemInto)
+            {
+                UITreeViewMoveEvent myEvt;
+                myEvt.pContext = evt.pContext;
+                myEvt.pTarget = dragHover;
+                myEvt.pSelectedItems = &m_selectedItems;
+                onMoveItemInto(this, myEvt);
+            }
+        }
+        else if (dragBefore)
+        {
+            for (auto pItem : m_selectedItems)
+            {
+                if (dragBefore->m_pParent)
+                {
+                    dragBefore->m_pParent->addItemBefore(pItem, dragBefore);
+                }
+                //else
+                //{
+                //    addItemBefore(pItem, dragBefore);
+                //}
+            }
+            dragBefore->isExpanded = true;
+            if (onMoveItemBefore)
+            {
+                UITreeViewMoveEvent myEvt;
+                myEvt.pContext = evt.pContext;
+                myEvt.pTarget = dragBefore;
+                myEvt.pSelectedItems = &m_selectedItems;
+                onMoveItemBefore(this, myEvt);
+            }
+        }
+        else if (dragAfter)
+        {
+            for (auto pItem : m_selectedItems)
+            {
+                if (dragAfter->m_pParent)
+                {
+                    dragAfter->m_pParent->addItemAfter(pItem, dragAfter);
+                }
+                //else
+                //{
+                //    addItemAfter(pItem, dragAfter);
+                //}
+            }
+            dragAfter->isExpanded = true;
+            if (onMoveItemAfter)
+            {
+                UITreeViewMoveEvent myEvt;
+                myEvt.pContext = evt.pContext;
+                myEvt.pTarget = dragAfter;
+                myEvt.pSelectedItems = &m_selectedItems;
+                onMoveItemAfter(this, myEvt);
             }
         }
     }
