@@ -1202,7 +1202,7 @@ namespace onut
         return pControl->isEnabled && isReallyEnabled(pControl->getParent());
     }
 
-    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down, bool bNavL, bool bNavR, bool bNavU, bool bNavD)
+    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down, bool bNavL, bool bNavR, bool bNavU, bool bNavD, bool bControl, float scroll)
     {
         retain();
 
@@ -1212,14 +1212,20 @@ namespace onut
         context.m_mouseEvents[0].isMouseDown = bMouse1Down;
         context.m_mouseEvents[0].pContext = &context;
         context.m_mouseEvents[0].button = 1;
+        context.m_mouseEvents[0].isCtrlDown = bControl;
+        context.m_mouseEvents[0].scroll = scroll;
         context.m_mouseEvents[1].mousePos = mousePos;
         context.m_mouseEvents[1].isMouseDown = bMouse2Down;
         context.m_mouseEvents[1].pContext = &context;
         context.m_mouseEvents[1].button = 2;
+        context.m_mouseEvents[1].isCtrlDown = bControl;
+        context.m_mouseEvents[1].scroll = scroll;
         context.m_mouseEvents[2].mousePos = mousePos;
         context.m_mouseEvents[2].isMouseDown = bMouse3Down;
         context.m_mouseEvents[2].pContext = &context;
         context.m_mouseEvents[2].button = 3;
+        context.m_mouseEvents[2].isCtrlDown = bControl;
+        context.m_mouseEvents[2].scroll = scroll;
         context.m_pHoverControl = nullptr;
 
         // Update UIs
@@ -1459,14 +1465,20 @@ namespace onut
         }
         if (m_pHoverControl)
         {
-            if (!useNavigation &&
-                (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
-                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y))
+            if (!useNavigation)
             {
-                m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
-                if (m_pHoverControl->onMouseMove)
+                if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
+                    m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
                 {
-                    m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
+                    m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
+                    if (m_pHoverControl->onMouseMove)
+                    {
+                        m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
+                    }
+                }
+                if (m_mouseEvents[0].scroll != 0)
+                {
+                    m_pHoverControl->onMouseScrollInternal(m_mouseEvents[0]);
                 }
             }
         }
@@ -2135,6 +2147,7 @@ namespace onut
     {
         // Render it's items
         sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
+        itemRect.position.y -= m_scroll;
         for (auto pItem : m_items)
         {
             auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton);
@@ -2144,6 +2157,29 @@ namespace onut
             }
         }
         return nullptr;
+    }
+
+    float UITreeView::getTotalHeight(UITreeViewItem* pItem) const
+    {
+        float ret = itemHeight;
+        if (pItem)
+        {
+            if (pItem->isExpanded)
+            {
+                for (auto pChild : pItem->getItems())
+                {
+                    ret += getTotalHeight(pChild);
+                }
+            }
+        }
+        else
+        {
+            for (auto pChild : m_items)
+            {
+                ret += getTotalHeight(pChild);
+            }
+        }
+        return ret;
     }
 
     UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton) const
@@ -2675,6 +2711,7 @@ namespace onut
 
         // Render it's items
         sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
+        itemRect.position.y -= m_scroll;
         const auto& itemCallback = context.getStyle<UITreeViewItem>(getStyle());
         if (itemCallback)
         {
@@ -2827,8 +2864,29 @@ namespace onut
             }
             else
             {
-                unselectAll();
-                addSelectedItem(pPicked);
+                if (!evt.isCtrlDown)
+                {
+                    unselectAll();
+                    addSelectedItem(pPicked);
+                }
+                else
+                {
+                    bool found = false;
+                    for (auto it = m_selectedItems.begin(); it != m_selectedItems.end(); ++it)
+                    {
+                        auto pItem = *it;
+                        if (pItem == pPicked)
+                        {
+                            m_selectedItems.erase(it);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        addSelectedItem(pPicked);
+                    }
+                }
                 if (onSelectionChanged)
                 {
                     UITreeViewSelectEvent myEvt;
@@ -2838,6 +2896,16 @@ namespace onut
                 }
             }
         }
+    }
+
+    void UITreeView::onMouseScrollInternal(const UIMouseEvent& evt)
+    {
+        m_scroll -= evt.scroll;
+        auto contentSize = getTotalHeight();
+        auto worldRect = getWorldRect(*evt.pContext);
+        auto scrollMaxSize = contentSize - worldRect.size.y;
+        if (m_scroll > scrollMaxSize) m_scroll = scrollMaxSize;
+        if (m_scroll < 0) m_scroll = 0.f;
     }
 
     void UITextBox::onGainFocusInternal(const UIFocusEvent& evt)

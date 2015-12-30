@@ -192,6 +192,8 @@ namespace onut
         bool        isMouseDown = false;
         UIContext*  pContext;
         int         button = 1;
+        bool        isCtrlDown = false;
+        float       scroll = 0.f;
     };
 
     static const uintptr_t KEY_END = 0x23;
@@ -522,7 +524,7 @@ namespace onut
         void release();
         int32_t getRefCount() const { return m_refCount; }
 
-        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false, bool bNavL = false, bool bNavR = false, bool bNavU = false, bool bNavD = false);
+        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false, bool bNavL = false, bool bNavR = false, bool bNavU = false, bool bNavD = false, bool bControl = false, float scroll = 0.f);
         void render(UIContext& context);
 
         sUIRect getWorldRect(const UIContext& context) const;
@@ -588,6 +590,7 @@ namespace onut
         virtual void onClickInternal(const UIMouseEvent& evt) {}
         virtual void onMouseDownInternal(const UIMouseEvent& evt) {}
         virtual void onMouseMoveInternal(const UIMouseEvent& evt) {}
+        virtual void onMouseScrollInternal(const UIMouseEvent& evt) {}
         virtual void onMouseUpInternal(const UIMouseEvent& evt) {}
         virtual void onGainFocusInternal(const UIFocusEvent& evt) {}
         virtual void onLoseFocusInternal(const UIFocusEvent& evt) {}
@@ -722,7 +725,7 @@ namespace onut
         friend UIControl;
 
     public:
-        UITreeView() {}
+        UITreeView() { }
         UITreeView(const UITreeView& other);
         virtual ~UITreeView();
 
@@ -750,13 +753,16 @@ namespace onut
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
         virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseScrollInternal(const UIMouseEvent& evt) override;
 
     private:
         UITreeViewItem* getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton = nullptr) const;
         UITreeViewItem* getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton = nullptr) const;
+        float getTotalHeight(UITreeViewItem* pItem = nullptr) const;
 
         std::vector<UITreeViewItem*>    m_items;
         std::vector<UITreeViewItem*>    m_selectedItems;
+        float                           m_scroll = 0.f;
     };
 
     class UITreeViewItem

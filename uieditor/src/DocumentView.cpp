@@ -73,8 +73,8 @@ DocumentView::DocumentView(const std::string& filename)
     if (!curSIZENS) curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
     if (!curSIZEALL) curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
 
-    pUIContextUserStyle = new onut::UIContext(onut::sUIVector2{640, 480});
-    pUIContextEditorStyle = new onut::UIContext(onut::sUIVector2{640, 480});
+    pUIContextUserStyle = new onut::UIContext(onut::sUIVector2{800, 600});
+    pUIContextEditorStyle = new onut::UIContext(onut::sUIVector2{800, 600});
     createViewUIStyles(pUIContextUserStyle);
     createUIStyles(pUIContextEditorStyle);
 

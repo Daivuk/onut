@@ -359,11 +359,14 @@ namespace onut
                                 OGamePadJustPressed(OLeftBtn) || OGamePadJustPressed(OLLeftBtn),
                                 OGamePadJustPressed(ORightBtn) || OGamePadJustPressed(OLRightBtn),
                                 OGamePadJustPressed(OUpBtn) || OGamePadJustPressed(OLUpBtn),
-                                OGamePadJustPressed(ODownBtn) || OGamePadJustPressed(OLDownBtn));
+                                OGamePadJustPressed(ODownBtn) || OGamePadJustPressed(OLDownBtn),
+                                0.f);
                 }
                 else
                 {
-                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3));
+                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3),
+                                false, false, false, false, 
+                                OPressed(OINPUT_LCONTROL), OInput->getStateValue(OINPUT_MOUSEZ));
                 }
                 AnimManager::getGlobalManager()->update();
                 OEvent->processEvents();
