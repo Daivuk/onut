@@ -625,8 +625,8 @@ namespace onut
     {
         if (!pTexture) pTexture = m_pTexWhite;
         auto sizef = pTexture->getSizef();
-        sizef.x *= (uvs.z - uvs.x);
-        sizef.y *= (uvs.w - uvs.y);
+        sizef.x *= std::abs((uvs.z - uvs.x));
+        sizef.y *= std::abs((uvs.w - uvs.y));
 
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
