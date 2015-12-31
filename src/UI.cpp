@@ -2314,10 +2314,6 @@ namespace onut
 
     void UITreeViewItem::addItem(UITreeViewItem* pItem)
     {
-        for (auto pMyItem : m_items)
-        {
-            if (pMyItem == pItem) return;
-        }
         pItem->retain();
         if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
@@ -2332,10 +2328,6 @@ namespace onut
             addItem(pItem);
             return;
         }
-        for (auto pMyItem : m_items)
-        {
-            if (pMyItem == pItem) return;
-        }
         pItem->retain();
         if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
@@ -2348,6 +2340,7 @@ namespace onut
                 return;
             }
         }
+        pItem->release();
     }
 
     void UITreeViewItem::addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter)
@@ -2357,10 +2350,6 @@ namespace onut
             addItem(pItem);
             return;
         }
-        for (auto pMyItem : m_items)
-        {
-            if (pMyItem == pItem) return;
-        }
         pItem->retain();
         if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
@@ -2369,11 +2358,11 @@ namespace onut
         {
             if (*it == pAfter)
             {
-                ++it;
-                m_items.insert(it, pItem);
+                m_items.insert(it + 1, pItem);
                 return;
             }
         }
+        pItem->release();
     }
 
     void UITreeViewItem::retain()
@@ -3129,19 +3118,18 @@ namespace onut
         }
         else if (dragBefore)
         {
+            int modified = 0;
             for (auto pItem : m_selectedItems)
             {
+                if (pItem == dragBefore) continue;
                 if (dragBefore->m_pParent)
                 {
                     dragBefore->m_pParent->addItemBefore(pItem, dragBefore);
+                    ++modified;
                 }
-                //else
-                //{
-                //    addItemBefore(pItem, dragBefore);
-                //}
             }
             dragBefore->isExpanded = true;
-            if (onMoveItemBefore)
+            if (onMoveItemBefore && modified)
             {
                 UITreeViewMoveEvent myEvt;
                 myEvt.pContext = evt.pContext;
@@ -3152,19 +3140,18 @@ namespace onut
         }
         else if (dragAfter)
         {
+            int modified = 0;
             for (auto pItem : m_selectedItems)
             {
+                if (pItem == dragAfter) continue;
                 if (dragAfter->m_pParent)
                 {
                     dragAfter->m_pParent->addItemAfter(pItem, dragAfter);
+                    ++modified;
                 }
-                //else
-                //{
-                //    addItemAfter(pItem, dragAfter);
-                //}
             }
             dragAfter->isExpanded = true;
-            if (onMoveItemAfter)
+            if (onMoveItemAfter && modified)
             {
                 UITreeViewMoveEvent myEvt;
                 myEvt.pContext = evt.pContext;
