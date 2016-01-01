@@ -144,7 +144,7 @@ namespace onut
         allowMipMaps = allowMipMaps && in_generateMipmaps;
         if (allowMipMaps)
         {
-            UINT biggest = max(w2, h2);
+            UINT biggest = std::max<>(w2, h2);
             UINT w2t = w2;
             UINT h2t = h2;
             UINT totalSize = w2t * h2t * 4;
