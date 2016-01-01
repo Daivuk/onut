@@ -2126,7 +2126,7 @@ namespace onut
         pItem->retain();
         auto pParent = pItem->getParent();
         if (pParent) pParent->removeItem(pItem);
-        pItem->m_pTreeView = this;
+        pItem->setTreeView(this);
         m_items.push_back(pItem);
     }
 
@@ -2144,7 +2144,7 @@ namespace onut
         pItem->retain();
         auto pParent = pItem->getParent();
         if (pParent) pParent->removeItem(pItem);
-        pItem->m_pTreeView = this;
+        pItem->setTreeView(this);
         for (auto it = m_items.begin(); it != m_items.end(); ++it)
         {
             if (*it == pBefore)
@@ -2169,7 +2169,7 @@ namespace onut
         pItem->retain();
         auto pParent = pItem->getParent();
         if (pParent) pParent->removeItem(pItem);
-        pItem->m_pTreeView = this;
+        pItem->setTreeView(this);
         for (auto it = m_items.begin(); it != m_items.end(); ++it)
         {
             if (*it == pAfter)
@@ -2190,6 +2190,7 @@ namespace onut
             {
                 m_items.erase(m_items.begin() + i);
                 pItem->m_pParent = nullptr;
+                pItem->setTreeView(nullptr);
                 pItem->release();
                 return;
             }
@@ -2327,6 +2328,15 @@ namespace onut
         }
     }
 
+    void UITreeViewItem::setTreeView(UITreeView* pTreeView)
+    {
+        m_pTreeView = pTreeView;
+        for (auto pItem : m_items)
+        {
+            pItem->setTreeView(pTreeView);
+        }
+    }
+
     void UITreeViewItem::addItem(UITreeViewItem* pItem)
     {
         pItem->retain();
@@ -2346,7 +2356,7 @@ namespace onut
         pItem->retain();
         if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
-        pItem->m_pTreeView = m_pTreeView;
+        pItem->setTreeView(m_pTreeView);
         for (auto it = m_items.begin(); it != m_items.end(); ++it)
         {
             if (*it == pBefore)
@@ -2368,7 +2378,7 @@ namespace onut
         pItem->retain();
         if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
-        pItem->m_pTreeView = m_pTreeView;
+        pItem->setTreeView(m_pTreeView);
         for (auto it = m_items.begin(); it != m_items.end(); ++it)
         {
             if (*it == pAfter)
@@ -2402,6 +2412,7 @@ namespace onut
             if (m_items[i] == pItem)
             {
                 m_items.erase(m_items.begin() + i);
+                pItem->setTreeView(nullptr);
                 pItem->m_pParent = nullptr;
                 pItem->release();
                 return;
