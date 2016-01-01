@@ -1467,15 +1467,6 @@ namespace onut
         {
             if (!useNavigation)
             {
-                if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
-                    m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
-                {
-                    m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
-                    if (m_pHoverControl->onMouseMove)
-                    {
-                        m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
-                    }
-                }
                 if (m_mouseEvents[0].scroll != 0)
                 {
                     m_pHoverControl->onMouseScrollInternal(m_mouseEvents[0]);
@@ -1619,6 +1610,30 @@ namespace onut
                 if (m_pFocus->onGainFocus)
                 {
                     m_pFocus->onGainFocus(m_pFocus);
+                }
+            }
+        }
+
+        if (!useNavigation)
+        {
+            if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
+                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
+            {
+                if (m_pDownControls[0])
+                {
+                    m_pDownControls[0]->onMouseMoveInternal(m_mouseEvents[0]);
+                    if (m_pDownControls[0]->onMouseMove)
+                    {
+                        m_pDownControls[0]->onMouseMove(m_pDownControls[0], m_mouseEvents[0]);
+                    }
+                }
+                else if (m_pHoverControl)
+                {
+                    m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
+                    if (m_pHoverControl->onMouseMove)
+                    {
+                        m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
+                    }
                 }
             }
         }
@@ -2412,6 +2427,8 @@ namespace onut
             {
                 value = 0.f;
             }
+            if (value < min) value = min;
+            if (value > max) value = max;
             std::stringstream ssOut;
             ssOut << std::fixed << std::setprecision(static_cast<std::streamsize>(m_decimalPrecision)) << value;
             textComponent.text = ssOut.str();
@@ -3203,30 +3220,83 @@ namespace onut
     void UITextBox::onMouseDownInternal(const UIMouseEvent& evt)
     {
         m_isSelecting = true;
-        const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
-        if (callback)
+        if (getIsNumerical())
         {
-            auto caretPos = callback->getCaretPos(this, evt.localMousePos);
-            m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = caretPos;
+            m_mousePosOnDown = evt.mousePos.y;
+            m_valueOnDown = getFloat();
+        }
+        else
+        {
+            const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
+            if (callback)
+            {
+                auto caretPos = callback->getCaretPos(this, evt.localMousePos);
+                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = caretPos;
+            }
         }
     }
 
     void UITextBox::onMouseMoveInternal(const UIMouseEvent& evt)
     {
         if (!m_isSelecting) return; // Don't care
-        const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
-        if (callback)
+        if (getIsNumerical())
         {
-            auto caretPos = callback->getCaretPos(this, evt.localMousePos);
-            m_cursorPos = caretPos;
-            m_selectedTextRegion[0] = std::min<>(m_cursorPos, m_selectedTextRegion[0]);
-            m_selectedTextRegion[1] = std::max<>(m_cursorPos, m_selectedTextRegion[1]);
+            if (!m_isSpinning)
+            {
+                auto mouseDiff = evt.mousePos.y - m_mousePosOnDown;
+                if (std::abs(mouseDiff) >= 3.f)
+                {
+                    m_isSpinning = true;
+                    m_mousePosOnDown = evt.mousePos.y;
+                    if (onNumberSpinStart)
+                    {
+                        UITextBoxEvent evt2;
+                        evt2.pContext = evt.pContext;
+                        onNumberSpinStart(this, evt2);
+                    }
+                }
+            }
+            if (m_isSpinning)
+            {
+                auto mouseDiff = evt.mousePos.y - m_mousePosOnDown;
+                auto valueDiff = mouseDiff * -step;
+                setFloat(m_valueOnDown + valueDiff);
+                selectAll();
+                if (onTextChanged)
+                {
+                    UITextBoxEvent evt2;
+                    evt2.pContext = evt.pContext;
+                    onTextChanged(this, evt2);
+                }
+            }
+        }
+        else
+        {
+            const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
+            if (callback)
+            {
+                auto caretPos = callback->getCaretPos(this, evt.localMousePos);
+                m_cursorPos = caretPos;
+                m_selectedTextRegion[0] = std::min<>(m_cursorPos, m_selectedTextRegion[0]);
+                m_selectedTextRegion[1] = std::max<>(m_cursorPos, m_selectedTextRegion[1]);
+            }
         }
     }
 
     void UITextBox::onMouseUpInternal(const UIMouseEvent& evt)
     {
         m_isSelecting = false;
+        if (m_isSpinning)
+        {
+            m_isSpinning = false;
+            if (onNumberSpinEnd)
+            {
+                UITextBoxEvent evt2;
+                evt2.pContext = evt.pContext;
+                onNumberSpinEnd(this, evt2);
+                evt.pContext->focus(nullptr);
+            }
+        }
     }
 
     void UITextBox::selectAll()

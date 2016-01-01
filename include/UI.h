@@ -7,6 +7,15 @@
 #include <unordered_map>
 #include <vector>
 
+#ifdef WIN32
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+#endif
+
 // Forward delcare needed rapidjson classes.
 namespace rapidjson
 {
@@ -873,6 +882,9 @@ namespace onut
 
         sUITextComponent textComponent;
         sUIScale9Component scale9Component;
+        float min = -std::numeric_limits<float>::max();
+        float max = std::numeric_limits<float>::max();
+        float step = 1.f;
 
         const std::string::size_type* getSelectedTextRegion() const { return m_selectedTextRegion; }
         std::string::size_type getCursorPos() const { return m_cursorPos; }
@@ -880,6 +892,8 @@ namespace onut
         bool isNavigatable() const override { return true; }
 
         std::function<void(UITextBox*, const UITextBoxEvent&)> onTextChanged;
+        std::function<void(UITextBox*, const UITextBoxEvent&)> onNumberSpinStart;
+        std::function<void(UITextBox*, const UITextBoxEvent&)> onNumberSpinEnd;
 
         void selectAll();
 
@@ -916,5 +930,8 @@ namespace onut
         bool                                    m_isTextChanged = false;
         bool                                    m_isNumerical = false;
         int                                     m_decimalPrecision = 0;
+        float                                   m_mousePosOnDown;
+        float                                   m_valueOnDown;
+        bool                                    m_isSpinning = false;
     };
 }
