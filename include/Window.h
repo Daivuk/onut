@@ -9,6 +9,7 @@ namespace onut
         Window(const POINT& resolution, bool isResizable = false);
         HWND getHandle();
         void setCursor(HCURSOR cursor);
+        void setCaption(const std::string& newName);
 
         std::function<void(char)>       onWrite;
         std::function<void(uintptr_t)>  onKey;
