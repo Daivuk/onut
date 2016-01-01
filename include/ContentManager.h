@@ -227,7 +227,7 @@ namespace onut
             std::string filename;
             for (auto& path : m_searchPaths)
             {
-                filename = findFile<false>(name, path, false);
+                filename = findFile<false>(name, path, true);
                 if (!filename.empty())
                 {
                     break;

@@ -141,4 +141,9 @@ namespace onut
     {
         m_cursor = cursor;
     }
+
+    void Window::setCaption(const std::string& newName)
+    {
+        SetWindowTextA(m_handle, newName.c_str());
+    }
 }
