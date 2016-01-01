@@ -820,6 +820,7 @@ namespace onut
         void removeItem(UITreeViewItem* pItem);
 
         UITreeView* getTreeView() const { return m_pTreeView; }
+        void setTreeView(UITreeView* pTreeView);
 
         const std::vector<UITreeViewItem*>& getItems() const { return m_items; }
 
