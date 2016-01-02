@@ -25,4 +25,35 @@ namespace onut
 
     // Once supported, use constexpr here
     int                         hash(const char* pStr);
+
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
+    template<typename Tsize>
+    Tsize max(Tsize a, Tsize b)
+    {
+        return std::max<Tsize>(a, b);
+    }
+
+    template<typename Tsize, typename ... Targs>
+    Tsize max(Tsize a, Tsize b, Targs ... args)
+    {
+        return std::max<Tsize>(a, max(b, args...));
+    }
+
+    template<typename Tsize>
+    Tsize min(Tsize a, Tsize b)
+    {
+        return std::min<Tsize>(a, b);
+    }
+
+    template<typename Tsize, typename ... Targs>
+    Tsize min(Tsize a, Tsize b, Targs ... args)
+    {
+        return std::min<Tsize>(a, min(b, args...));
+    }
 }
