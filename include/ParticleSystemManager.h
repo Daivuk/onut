@@ -24,9 +24,9 @@ namespace onut
         class EmitterInstance
         {
         public:
-            void setTransform(const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
+            void setTransform(const Vector3& pos, const Vector3& dir = Vector3::UnitY, const Vector3& up = Vector3::UnitZ)
             {
-                Matrix transform = Matrix::CreateBillboard(pos, pos + dir, Vector3::UnitY);
+                Matrix transform = Matrix::CreateBillboard(pos, pos + up, dir);
                 setTransform(transform);
             }
 
