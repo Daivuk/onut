@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cinttypes>
 #include <functional>
+#include <memory>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
@@ -810,6 +811,7 @@ namespace onut
         bool        isExpanded = false;
         std::string text;
         void*       pUserData = nullptr;
+        std::shared_ptr<void> pSharedUserData = nullptr;
         float       opacity = 1.f;
 
         UITreeViewItem* getParent() const { return m_pParent; }
