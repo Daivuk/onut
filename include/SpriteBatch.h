@@ -54,6 +54,8 @@ namespace onut
         void changeBlendMode(eBlendMode blendMode);
         void changeFiltering(eFiltering filtering);
 
+        const Matrix& getTransform() const { return m_currentTransform; }
+
         bool isInBatch() const { return m_isDrawing; };
 
     private:
