@@ -192,52 +192,19 @@ namespace onut
         return pos;
     }
 
-    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, Align align, bool snapPixels)
+    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, const Vector2& align, bool snapPixels)
     {
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);
         ret.z = dim.x;
         ret.w = dim.y;
-        switch (align)
-        {
-            case Align::TOP_LEFT:
-                pos.y -= m_common.lineHeight - m_common.base;
-                break;
-            case Align::TOP:
-                pos.x -= dim.x * .5f;
-                pos.y -= m_common.lineHeight - m_common.base;
-                break;
-            case Align::TOP_RIGHT:
-                pos.x -= dim.x;
-                pos.y -= m_common.lineHeight - m_common.base;
-                break;
-            case Align::LEFT:
-                pos.y -= dim.y * .5f;
-                break;
-            case Align::CENTER:
-                pos.x -= dim.x * .5f;
-                pos.y -= dim.y * .5f;
-                break;
-            case Align::RIGHT:
-                pos.x -= dim.x;
-                pos.y -= dim.y * .5f;
-                break;
-            case Align::BOTTOM_LEFT:
-                pos.y -= dim.y;
-                pos.y += m_common.lineHeight - m_common.base;
-                break;
-            case Align::BOTTOM:
-                pos.x -= dim.x * .5f;
-                pos.y -= dim.y;
-                pos.y += m_common.lineHeight - m_common.base;
-                break;
-            case Align::BOTTOM_RIGHT:
-                pos.x -= dim.x;
-                pos.y -= dim.y;
-                pos.y += m_common.lineHeight - m_common.base;
-                break;
-        }
+
+        Vector2 posFrom = {pos.x, pos.y - (m_common.lineHeight - m_common.base)};
+        Vector2 posTo = {pos.x - dim.x, pos.y - dim.y + (m_common.lineHeight - m_common.base)};
+
+        pos.x = posFrom.x + (posTo.x - posFrom.x) * align.x;
+        pos.y = posFrom.y + (posTo.y - posFrom.y) * align.y;
 
         if (snapPixels)
         {
