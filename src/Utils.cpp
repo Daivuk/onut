@@ -230,4 +230,17 @@ namespace onut
         std::vector<uint8_t> data = {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
         return std::move(data);
     }
+
+    bool fileExists(const std::string& filename)
+    {
+        WIN32_FIND_DATAA FindFileData;
+        HANDLE handle = FindFirstFileA(filename.c_str(), &FindFileData);
+        bool found = handle != INVALID_HANDLE_VALUE;
+        if (found)
+        {
+            //FindClose(&handle); this will crash
+            FindClose(handle);
+        }
+        return found;
+    }
 }
