@@ -21,6 +21,7 @@ namespace onut
     std::string                 makeRelativePath(const std::string& path, const std::string& relativeTo);
 
     std::vector<uint8_t>        getFileData(const std::string& filename);
+    bool                        fileExists(const std::string& filename);
 
     // Once supported, use constexpr here
     int                         hash(const char* pStr);
