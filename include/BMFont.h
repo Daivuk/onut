@@ -72,6 +72,8 @@ namespace onut
             return drawInternal(text, pos, color, pSpriteBatch, align, false);
         }
 
+        const std::string& getName() const { return m_name; }
+
     private:
         struct fntCommon
         {
@@ -121,6 +123,7 @@ namespace onut
         fntPage**                           m_pages = nullptr;
         int                                 m_charsCount = 0;
         std::unordered_map<int, fntChar*>   m_chars;
+        std::string                         m_name;
     };
 }
 

@@ -92,6 +92,8 @@ namespace onut
         }
         in.close();
 
+        pFont->m_name = filename.substr(filename.find_last_of("/\\") + 1);
+
         return pFont;
     }
 
