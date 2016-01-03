@@ -15,10 +15,11 @@ namespace onut
         void setCursor(HCURSOR cursor);
         void setCaption(const std::string& newName);
 
-        std::function<void(char)>               onWrite;
-        std::function<void(uintptr_t)>          onKey;
-        std::function<void(UINT)>               onMenu;
-        std::function<void(const std::string&)> onDrop;
+        std::function<void(char)>                   onWrite;
+        std::function<void(uintptr_t)>              onKey;
+        std::function<void(UINT)>                   onMenu;
+        std::function<void(const std::string&)>     onDrop;
+        std::function<void(const POINT& newSize)>   onResize;
 
     private:
         friend LRESULT CALLBACK WinProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);

@@ -5,8 +5,6 @@
 
 namespace onut
 {
-    Window* pWindow = nullptr;
-
     LRESULT CALLBACK WinProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         if (msg == WM_DESTROY ||
@@ -25,13 +23,20 @@ namespace onut
             {
                 OUIContext->resize(sUIVector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
             }
+            if (OWindow)
+            {
+                if (OWindow->onResize)
+                {
+                    OWindow->onResize(POINT{LOWORD(lparam), HIWORD(lparam)});
+                }
+            }
             return 0;
         }
         else if (msg == WM_SETCURSOR)
         {
-            if (pWindow->m_cursor)
+            if (OWindow->m_cursor)
             {
-                SetCursor(pWindow->m_cursor);
+                SetCursor(OWindow->m_cursor);
                 return 0;
             }
         }
@@ -99,8 +104,6 @@ namespace onut
     Window::Window(const POINT& resolution, bool isResizable) :
         m_cursor(0)
     {
-        pWindow = this;
-
         auto bIsFullscreen = OSettings->getBorderlessFullscreen();
 
         // Define window style
