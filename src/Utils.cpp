@@ -167,6 +167,13 @@ namespace onut
         return path.substr(pos + 1);
     }
 
+    std::string getExtension(const std::string& filename)
+    {
+        auto pos = filename.find_last_of('.');
+        if (pos == std::string::npos) return "";
+        return toUpper(filename.substr(pos + 1));
+    }
+
     std::string makeRelativePath(const std::string& in_path, const std::string& in_relativeTo)
     {
         auto path = in_path;

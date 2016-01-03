@@ -20,8 +20,8 @@ namespace onut
             if (ORenderer)
             {
                 ORenderer->onResize();
+                return 0;
             }
-            return 0;
         }
         else if (msg == WM_SETCURSOR)
         {
@@ -44,24 +44,49 @@ namespace onut
             if (OWindow->onWrite)
             {
                 OWindow->onWrite(c);
+                return 0;
             }
-            return 0;
         }
         else if (msg == WM_KEYDOWN)
         {
             if (OWindow->onKey)
             {
                 OWindow->onKey(static_cast<uintptr_t>(wparam));
+                return 0;
             }
-            return 0;
         }
         else if (msg == WM_COMMAND)
         {
             if (OWindow->onMenu)
             {
                 OWindow->onMenu(LOWORD(wparam));
+                return 0;
             }
-            return 0;
+        }
+        else if (msg == WM_DROPFILES)
+        {
+            if (OWindow->onDrop)
+            {
+                char lpszFile[MAX_PATH] = {0};
+                UINT uFile = 0;
+                HDROP hDrop = (HDROP)wparam;
+
+                uFile = DragQueryFileA(hDrop, 0xFFFFFFFF, NULL, NULL);
+                if (uFile != 1)
+                {
+                    MessageBoxA(handle, "Dropping multiple files is not supported.", NULL, MB_ICONERROR);
+                    DragFinish(hDrop);
+                    return 0;
+                }
+                lpszFile[0] = '\0';
+                if (DragQueryFileA(hDrop, 0, lpszFile, MAX_PATH))
+                {
+                    OWindow->onDrop(lpszFile);
+                }
+
+                DragFinish(hDrop);
+                return 0;
+            }
         }
 
         return DefWindowProc(handle, msg, wparam, lparam);
@@ -130,6 +155,12 @@ namespace onut
             posY = (screenH - newH) / 2;
             SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
         }
+
+        DragAcceptFiles(m_handle, TRUE);
+    }
+
+    Window::~Window()
+    {
     }
 
     HWND Window::getHandle()
