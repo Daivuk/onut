@@ -319,14 +319,30 @@ namespace onut
         MSG msg = {0};
         while (true)
         {
-            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+            if (OSettings->getIsEditorMode())
             {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-
-                if (msg.message == WM_QUIT)
+                if (GetMessage(&msg, 0, 0, 0) >= 0)
                 {
-                    break;
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+
+                    if (msg.message == WM_QUIT)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+
+                    if (msg.message == WM_QUIT)
+                    {
+                        break;
+                    }
                 }
             }
 

@@ -94,6 +94,12 @@ namespace onut
         m_isFixedStep = isFixedStep;
     }
 
+    void Settings::setIsEditorMode(bool isEditorMode)
+    {
+        m_isFixedStep = isEditorMode ? true : m_isFixedStep;
+        m_isEditorMode = isEditorMode;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         auto it = m_userSettings.find(key);

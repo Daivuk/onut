@@ -188,6 +188,20 @@ namespace onut
             updateEmitters();
         }
 
+        bool hasAliveParticles() const
+        {
+            auto len = m_emitterPool.size();
+            for (decltype(len) i = 0; i < len; ++i)
+            {
+                auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
+                if (m_emitterPool.isUsed(pEmitter))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         void render()
         {
             OSpriteBatch->begin();
