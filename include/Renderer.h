@@ -36,7 +36,7 @@ namespace onut
         Vector3                 getCameraUp() const { return m_cameraUp; }
 
         POINT                   getResolution() const;
-        void                    onResize();
+        void                    onResize(const POINT& newSize);
 
         void                    bindRenderTarget(Texture *pTexture = nullptr);
 

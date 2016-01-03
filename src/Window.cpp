@@ -19,9 +19,13 @@ namespace onut
         {
             if (ORenderer)
             {
-                ORenderer->onResize();
-                return 0;
+                ORenderer->onResize(POINT{LOWORD(lparam), HIWORD(lparam)});
             }
+            if (OUIContext)
+            {
+                OUIContext->resize(sUIVector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
+            }
+            return 0;
         }
         else if (msg == WM_SETCURSOR)
         {
@@ -154,9 +158,9 @@ namespace onut
             posX = (screenW - newW) / 2;
             posY = (screenH - newH) / 2;
             SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
-        }
 
-        DragAcceptFiles(m_handle, TRUE);
+            DragAcceptFiles(m_handle, TRUE);
+        }
     }
 
     Window::~Window()

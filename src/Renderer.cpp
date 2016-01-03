@@ -99,6 +99,7 @@ namespace onut
         swapChainDesc.OutputWindow = window.getHandle();
         swapChainDesc.SampleDesc.Count = 1;
         swapChainDesc.Windowed = true;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
         // Create the swap chain, device and device context
         auto result = D3D11CreateDeviceAndSwapChain(
@@ -140,12 +141,16 @@ namespace onut
         backBuffer->Release();
     }
 
-    void Renderer::onResize()
+    void Renderer::onResize(const POINT& newSize)
     {
+        resetState();
+        m_deviceContext->Flush();
         m_deviceContext->ClearState();
-        m_renderTargetView->Release();
+
+        if (m_renderTargetView) m_renderTargetView->Release();
         m_renderTargetView = nullptr;
-        auto ret = m_swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+        auto ret = m_swapChain->ResizeBuffers(0, newSize.x, newSize.y, DXGI_FORMAT_UNKNOWN, 0);
         createRenderTarget();
     }
 
@@ -320,7 +325,7 @@ namespace onut
     {
         // Bind render target
         //m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
-        if (!m_renderTarget) m_renderTarget = OTexture::createScreenRenderTarget(true);
+        if (!m_renderTarget) m_renderTarget = OTexture::createScreenRenderTarget(false);
         m_renderTarget->bindRenderTarget();
 
         // Set viewport

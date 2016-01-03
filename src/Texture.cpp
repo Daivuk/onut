@@ -295,28 +295,30 @@ namespace onut
                 if (m_size.x != OScreenW ||
                     m_size.y != OScreenH)
                 {
+                    m_size = {OScreenW, OScreenH};
+
                     // Release
                     if (m_pTexture) m_pTexture->Release();
+                    m_pTexture = nullptr;
                     if (m_pTextureView) m_pTextureView->Release();
+                    m_pTextureView = nullptr;
                     if (m_pRenderTargetView)
                     {
                         m_pRenderTargetView->Release();
-                        m_pTexture = nullptr;
-                        m_pTextureView = nullptr;
                         m_pRenderTargetView = nullptr;
                         createRenderTargetViews(m_pTexture, m_pTextureView, m_pRenderTargetView);
                     }
 
                     if (m_pTextureFX) m_pTextureFX->Release();
+                    m_pTextureFX = nullptr;
                     if (m_pTextureViewFX) m_pTextureViewFX->Release();
+                    m_pTextureViewFX = nullptr;
                     if (m_pRenderTargetViewFX)
                     {
                         m_pRenderTargetViewFX->Release();
-                        m_pTextureFX = nullptr;
-                        m_pTextureViewFX = nullptr;
-                        m_pRenderTargetViewFX = nullptr;
                         createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
                     }
+                    m_pRenderTargetViewFX = nullptr;
                 }
             }
             ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
