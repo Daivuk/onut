@@ -18,6 +18,7 @@ namespace onut
         void setVolume(float volume);
 
         bool isPlaying() const { return m_isPlaying; }
+        bool isDone();
 
     private:
         Mp3* m_pMp3 = nullptr;
