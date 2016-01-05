@@ -31,11 +31,13 @@ namespace onut
 
         void init(HWND handle) override;
         void init(Texture* pRenderTarget) override;
+        bool isPlaying() const override;
         void pause() override;
         void play() override;
         void setLoop(bool bLoop) override;
         void setPlayRate(double playRate) override;
         void setSource(const std::string& url) override;
+        void setVolume(float volume) override;
         void togglePlayPause() override;
         void update() override;
 
@@ -45,6 +47,7 @@ namespace onut
         IMFMediaEngine *m_pMediaEngine = nullptr;
         MFPlayerNotify *m_pPlayerNodify = nullptr;
         Texture* m_pRenderTarget = nullptr;
+        bool m_isPlaying = false;
     };
 }
 
