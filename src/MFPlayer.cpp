@@ -70,6 +70,11 @@ namespace onut
                 m_pRenderTarget->resizeTarget({videoWidth, videoHeight});
             }
         }
+        else if (event == MF_MEDIA_ENGINE_EVENT_ENDED ||
+                 event == MF_MEDIA_ENGINE_EVENT_ERROR)
+        {
+            m_isPlaying = false;
+        }
     }
 
     Player* Player::Create()
@@ -184,11 +189,13 @@ namespace onut
     void MFPlayer::pause()
     {
         m_pMediaEngine->Pause();
+        m_isPlaying = false;
     }
 
     void MFPlayer::play()
     {
         m_pMediaEngine->Play();
+        m_isPlaying = true;
     }
 
     void MFPlayer::setLoop(bool bLoop)
@@ -201,10 +208,12 @@ namespace onut
         if (m_pMediaEngine->IsPaused())
         {
             m_pMediaEngine->Play();
+            m_isPlaying = true;
         }
         else
         {
             m_pMediaEngine->Pause();
+            m_isPlaying = false;
         }
     }
 
@@ -219,6 +228,20 @@ namespace onut
         BSTR bs = SysAllocStringLen(ws.data(), ws.size());
         auto ret = m_pMediaEngine->SetSource(bs);
         assert(ret == S_OK);
+    }
+
+    void MFPlayer::setVolume(float volume)
+    {
+        if (m_pMediaEngine)
+        {
+            m_pMediaEngine->SetVolume(static_cast<double>(volume));
+        }
+    }
+
+    bool MFPlayer::isPlaying() const
+    {
+        if (!m_pMediaEngine) return false;
+        return m_isPlaying;
     }
 
     void MFPlayer::update()
