@@ -24,6 +24,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
                               std::stoi(OSettings->getUserSetting("height"))});
     OSettings->setGameName("Oak Nut UI Editor");
     OSettings->setIsResizableWindow(true);
+    OSettings->setIsEditorMode(true);
 
     onut::run(init, update, render);
 

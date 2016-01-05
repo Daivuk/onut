@@ -146,7 +146,9 @@ inline void OLoadPFX(const char* pName)
 
 inline OSoundInstance* OCreateSoundInstance(const char* pName)
 {
-    return OGetSound(pName)->createInstance();
+    auto pSound = OGetSound(pName);
+    if (!pSound) return nullptr;
+    return pSound->createInstance();
 }
 
 inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ) -> decltype(OParticles->emit(nullptr, position, dir))
