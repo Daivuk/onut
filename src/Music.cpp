@@ -24,7 +24,7 @@ namespace onut
 
         auto cmd = utf8ToUtf16("../../assets/musics/" + filename);
         m_pMp3->Load(cmd.c_str());
-        m_pMp3->SetVolume(static_cast<long>((m_volume - 1) * 10000));
+        setVolume(m_volume);
         m_pMp3->Play();
 
         m_isPlaying = true;
@@ -32,7 +32,11 @@ namespace onut
 
     void Music::setVolume(float volume)
     {
-        m_pMp3->SetVolume(static_cast<long>((m_volume - 1) * 10000));
+        float decibelDenominator = 4000.f;
+        if (volume < 0.1f)
+            decibelDenominator = 10000.f;
+        m_volume = volume;
+        m_pMp3->SetVolume(static_cast<long>((m_volume - 1.f) * decibelDenominator));
     }
 
     void Music::stop()
@@ -57,5 +61,20 @@ namespace onut
             m_isPlaying = true;
             m_pMp3->Play();
         }
+    }
+
+    bool Music::isDone()
+    {
+        if (m_isPlaying)
+        {
+            long evCode;
+            bool donePlaying = m_pMp3->WaitForCompletion(0, &evCode);
+            if (donePlaying)
+            {
+                m_isPlaying = false;
+            }
+            return donePlaying;
+        }
+        return false;
     }
 }
