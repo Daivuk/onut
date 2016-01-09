@@ -43,6 +43,21 @@ namespace onut
             m_searchPaths.clear();
         }
 
+        // Find the file
+        std::string find(const std::string& name)
+        {
+            std::string filename;
+            for (auto& path : m_searchPaths)
+            {
+                filename = findFile<false>(name, path, true);
+                if (!filename.empty())
+                {
+                    break;
+                }
+            }
+            return filename;
+        }
+
         /**
         Get a resource by name
         */

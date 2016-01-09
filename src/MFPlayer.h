@@ -48,6 +48,7 @@ namespace onut
         MFPlayerNotify *m_pPlayerNodify = nullptr;
         Texture* m_pRenderTarget = nullptr;
         bool m_isPlaying = false;
+        IMFDXGIDeviceManager* m_pDXGIManager = nullptr;
     };
 }
 
