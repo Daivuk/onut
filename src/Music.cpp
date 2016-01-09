@@ -1,6 +1,7 @@
 #include "Music.h"
 #include "Utils.h"
 #include "Mp3.h"
+#include "onut.h"
 
 #include <cassert>
 #include <Windows.h>
@@ -22,10 +23,16 @@ namespace onut
         m_pMp3->Stop();
         m_pMp3->Cleanup();
 
-        auto cmd = utf8ToUtf16("../../assets/musics/" + filename);
-        m_pMp3->Load(cmd.c_str());
+        auto cmd = utf8ToUtf16(OContentManager->find(filename));
+        if (!m_pMp3->Load(cmd.c_str()))
+        {
+            return;
+        }
         setVolume(m_volume);
-        m_pMp3->Play();
+        if (!m_pMp3->Play())
+        {
+            return;
+        }
 
         m_isPlaying = true;
     }

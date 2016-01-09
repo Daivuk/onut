@@ -84,12 +84,17 @@ namespace onut
 
     MFPlayer::~MFPlayer()
     {
+        if (m_pDXGIManager)
+        {
+            m_pDXGIManager->Release();
+        }
         if (m_pPlayerNodify)
         {
             m_pPlayerNodify->Release();
         }
         if (m_pMediaEngine)
         {
+            m_pMediaEngine->Shutdown();
             m_pMediaEngine->Release();
         }
     }
@@ -165,13 +170,11 @@ namespace onut
         pMultithread->Release();
 
         UINT resetToken = 0;
-        IMFDXGIDeviceManager* pDXGIManager;
-        ret = MFCreateDXGIDeviceManager(&resetToken, &pDXGIManager);
+        ret = MFCreateDXGIDeviceManager(&resetToken, &m_pDXGIManager);
         assert(ret == S_OK);
-        ret = pDXGIManager->ResetDevice(ORenderer->getDevice(), resetToken);
+        ret = m_pDXGIManager->ResetDevice(ORenderer->getDevice(), resetToken);
         assert(ret == S_OK);
-        ret = pAttributes->SetUnknown(MF_MEDIA_ENGINE_DXGI_MANAGER, pDXGIManager);
-        pDXGIManager->AddRef();
+        ret = pAttributes->SetUnknown(MF_MEDIA_ENGINE_DXGI_MANAGER, m_pDXGIManager);
         assert(ret == S_OK);
 
         ret = pAttributes->SetUINT32(MF_MEDIA_ENGINE_VIDEO_OUTPUT_FORMAT, DXGI_FORMAT_R8G8B8A8_UNORM);

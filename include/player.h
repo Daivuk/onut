@@ -14,6 +14,8 @@ namespace onut
     public:
         static Player* Create();
 
+        virtual ~Player() {}
+
 #if defined(WIN32)
         virtual void init(HWND handle) = 0;
 #endif
