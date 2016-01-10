@@ -459,6 +459,44 @@ namespace onut
             m_retValue(rvalue),
             m_pAnimManager(pAnimManager)
         {}
+        Anim(const Anim& other)
+            : m_isPlaying(other.m_isPlaying)
+            , m_value(other.m_value)
+            , m_retValue(other.m_retValue)
+            , m_startTime(other.m_startTime)
+            , m_oldTime(other.m_oldTime)
+            , m_keyFrames(other.m_keyFrames)
+            , m_loop(other.m_loop)
+            , m_isPingPonging(other.m_isPingPonging)
+            , m_cachedCallback(other.m_cachedCallback)
+            , m_pAnimManager(other.m_pAnimManager)
+        {
+            if (m_isPlaying)
+            {
+                m_pAnimManager->registerAnim(this);
+            }
+        }
+        Anim& operator=(const Anim& other)
+        {
+            if (m_isPlaying)
+            {
+                m_pAnimManager->unregisterAnim(this);
+            }
+            m_isPlaying(other.m_isPlaying)
+            m_value(other.m_value)
+            m_retValue(other.m_retValue)
+            m_startTime(other.m_startTime)
+            m_oldTime(other.m_oldTime)
+            m_keyFrames(other.m_keyFrames)
+            m_loop(other.m_loop)
+            m_isPingPonging(other.m_isPingPonging)
+            m_cachedCallback(other.m_cachedCallback)
+            m_pAnimManager(other.m_pAnimManager)
+            if (m_isPlaying)
+            {
+                m_pAnimManager->registerAnim(this);
+            }
+        }
 
         /**
         Destructor. It will unregister itself from the AnimManager if it's currently playing
