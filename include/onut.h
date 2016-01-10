@@ -45,6 +45,7 @@ extern onut::UIContext*                 OUIContext;
 extern onut::Music*                     OMusic;
 extern onut::ContentManager*            OContentManager;
 
+using OAnimb = onut::Anim<bool, float, onut::lerpBool>;
 using OAnimf = onut::Anim<float>;
 using OAnimi = onut::Anim<int>;
 using OAnim2 = onut::Anim<Vector2>;

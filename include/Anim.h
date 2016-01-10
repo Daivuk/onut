@@ -364,6 +364,15 @@ namespace onut
         ret = round(ret);
         return std::move(static_cast<Ttype>(ret));
     }
+    template<typename Tprecision = float, typename TtypePrecision = float>
+    bool lerpBool(const bool& from, const bool& to, Tprecision t)
+    {
+        auto ret = static_cast<TtypePrecision>(from)+
+            (static_cast<TtypePrecision>(to)-static_cast<TtypePrecision>(from)) *
+            static_cast<TtypePrecision>(t);
+        ret = round(ret);
+        return static_cast<int>(ret) ? true : false;
+    }
     template<typename Ttype,
         typename Tprecision = float,
         typename TtypePrecision = float,
