@@ -482,20 +482,21 @@ namespace onut
             {
                 m_pAnimManager->unregisterAnim(this);
             }
-            m_isPlaying(other.m_isPlaying)
-            m_value(other.m_value)
-            m_retValue(other.m_retValue)
-            m_startTime(other.m_startTime)
-            m_oldTime(other.m_oldTime)
-            m_keyFrames(other.m_keyFrames)
-            m_loop(other.m_loop)
-            m_isPingPonging(other.m_isPingPonging)
-            m_cachedCallback(other.m_cachedCallback)
-            m_pAnimManager(other.m_pAnimManager)
+            m_isPlaying = other.m_isPlaying;
+            m_value = other.m_value;
+            m_retValue = other.m_retValue;
+            m_startTime = other.m_startTime;
+            m_oldTime = other.m_oldTime;
+            m_keyFrames = other.m_keyFrames;
+            m_loop = other.m_loop;
+            m_isPingPonging = other.m_isPingPonging;
+            m_cachedCallback = other.m_cachedCallback;
+            m_pAnimManager = other.m_pAnimManager;
             if (m_isPlaying)
             {
                 m_pAnimManager->registerAnim(this);
             }
+            return *this;
         }
 
         /**
