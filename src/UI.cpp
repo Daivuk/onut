@@ -2342,7 +2342,7 @@ namespace onut
         pItem->retain();
         if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
-        pItem->m_pTreeView = m_pTreeView;
+        pItem->setTreeView(m_pTreeView);
         m_items.push_back(pItem);
     }
 
