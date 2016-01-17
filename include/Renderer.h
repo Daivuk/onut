@@ -30,6 +30,8 @@ namespace onut
         Matrix                  build2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
 
         void                    setScissor(bool enabled, const Rect& rect);
+        bool                    getScissorEnabled() const { return m_scissorEnabled; }
+        const Rect&             getScissor() const { return m_scissor; }
 
         Vector3                 getCameraPos() const { return m_cameraPos; }
         Vector3                 getCameraDir() const { return m_cameraDir; }
@@ -120,5 +122,8 @@ namespace onut
         Vector3                     m_cameraDir;
         Vector3                     m_cameraUp;
         Matrix                      m_2dViewProj;
+
+        bool                        m_scissorEnabled = false;
+        Rect                        m_scissor;
     };
 }

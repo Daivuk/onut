@@ -473,6 +473,8 @@ namespace onut
 
     void Renderer::setScissor(bool enabled, const Rect& rect)
     {
+        m_scissorEnabled = enabled;
+        m_scissor = rect;
         if (enabled)
         {
             D3D11_RECT dxRect[1] = {
