@@ -59,6 +59,11 @@ namespace onut
             assert(szImageFilename);
             auto filename = getPath(map) + "/" + szImageFilename;
             pTileSet.pTexture = pContentManager->getResource<Texture>(filename);
+            if (!pTileSet.pTexture)
+            {
+                filename = getFilename(szImageFilename);
+                pTileSet.pTexture = pContentManager->getResource<Texture>(filename);
+            }
 
             ++m_tilesetCount;
         }
@@ -295,6 +300,54 @@ namespace onut
         return nullptr;
     }
 
+    static RECT getScreenRECTFromTransform(const Matrix& transform, const POINT& tileSize)
+    {
+        auto invTransform = transform.Invert();
+        Vector2 localScreenPos[4] =
+        {
+            Vector2::Transform(Vector2::Zero, invTransform),
+            Vector2::Transform(Vector2(0.f, OScreenHf), invTransform),
+            Vector2::Transform(OScreenf, invTransform),
+            Vector2::Transform(Vector2(OScreenWf, 0.f), invTransform)
+        };
+        Vector2 boundingBox[2] = 
+        {
+            Vector2(onut::min(localScreenPos[0].x, localScreenPos[1].x, localScreenPos[2].x, localScreenPos[3].x),
+                    onut::min(localScreenPos[0].y, localScreenPos[1].y, localScreenPos[2].y, localScreenPos[3].y)),
+            Vector2(onut::max(localScreenPos[0].x, localScreenPos[1].x, localScreenPos[2].x, localScreenPos[3].x),
+                    onut::max(localScreenPos[0].y, localScreenPos[1].y, localScreenPos[2].y, localScreenPos[3].y))
+        };
+        return RECT{
+            static_cast<LONG>(boundingBox[0].x) / tileSize.x,
+            static_cast<LONG>(boundingBox[0].y) / tileSize.y,
+            static_cast<LONG>(boundingBox[1].x) / tileSize.x,
+            static_cast<LONG>(boundingBox[1].y) / tileSize.y};
+    }
+
+    void TiledMap::render()
+    {
+        if (!m_tileSets) return;
+        render(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}));
+    }
+
+    void TiledMap::renderLayer(int index)
+    {
+        if (!m_tileSets) return;
+        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), index);
+    }
+
+    void TiledMap::renderLayer(const std::string &name)
+    {
+        if (!m_tileSets) return;
+        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), name);
+    }
+
+    void TiledMap::renderLayer(sLayer *pLayer)
+    {
+        if (!m_tileSets) return;
+        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), pLayer);
+    }
+
     void TiledMap::render(const RECT &rect)
     {
         for (int i = 0; i < m_layerCount; ++i)
@@ -326,7 +379,8 @@ namespace onut
         rect.right = std::min<>(static_cast<LONG>(m_width - 1), rect.right);
         rect.bottom = std::min<>(static_cast<LONG>(m_height - 1), rect.bottom);
 
-        OSB->begin();
+        bool manageSB = !OSB->isInBatch();
+        if (manageSB) OSB->begin(getTransform());
         for (LONG y = rect.top; y <= rect.bottom; ++y)
         {
             sTile *pTile = pLayer->tiles + y * m_width + rect.left;
@@ -336,7 +390,7 @@ namespace onut
                 OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
             }
         }
-        OSB->end();
+        if (manageSB) OSB->end();
     }
 
     onut::Texture *TiledMap::getMinimap()

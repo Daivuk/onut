@@ -54,6 +54,10 @@ namespace onut
         int getWidth() const { return m_width; }
         int getHeight() const { return m_height; }
 
+        void render();
+        void renderLayer(int index);
+        void renderLayer(const std::string &name);
+        void renderLayer(sLayer *pLayer);
         void render(const RECT &rect);
         void renderLayer(const RECT &rect, int index);
         void renderLayer(const RECT &rect, const std::string &name);
