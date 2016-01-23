@@ -14,9 +14,6 @@ namespace onut
     class SpriteAnimDefinition
     {
     public:
-        static SpriteAnimDefinition* createFromFile(const std::string& filename, onut::ContentManager* pContentManager);
-        virtual ~SpriteAnimDefinition();
-
         struct Frame
         {
             Texture* pTexture = nullptr;
@@ -32,12 +29,19 @@ namespace onut
             bool loop = false;
         };
 
+        static SpriteAnimDefinition* createFromFile(const std::string& filename, onut::ContentManager* pContentManager);
+        virtual ~SpriteAnimDefinition();
+
+        void addAnim(const Anim& anim);
         Anim* getAnim(const std::string& name);
+        std::vector<std::string> getAnimNames() const;
+        std::string getFilename() const { return m_filename; }
 
     private:
         SpriteAnimDefinition();
 
         std::unordered_map<std::string, Anim> m_anims;
+        std::string m_filename;
     };
 }
 
@@ -56,6 +60,8 @@ namespace onut
         bool isPlaying() const;
 
         int getFrameId() const;
+        SpriteAnimDefinition* getDefinition() const { return m_pDefinition; }
+        SpriteAnimDefinition::Anim* getCurrentAnim() const { return m_pCurrentAnim; }
 
         Texture* getTexture() const;
         const Vector4& getUVs() const;

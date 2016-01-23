@@ -21,42 +21,51 @@ void init()
 
 void update()
 {
-    if (OGamePadJustPressed(OABtn))
+}
+
+void drawController(int index, const Vector2& position)
+{
+    if (!OGamePad(index)->isConnected())
     {
-        OPlaySound("sound1.wav");
+        OSB->drawSprite(OGetTexture("gamepad.png"), position, Color(.5f));
     }
-    if (OGamePadJustPressed(OBBtn))
+    else
     {
-        OPlaySound("sound2.wav");
-    }
-    if (OGamePadJustPressed(OXBtn))
-    {
-        OPlaySound("sound3.wav");
-    }
-    if (OGamePadJustPressed(OYBtn))
-    {
-        OPlaySound("sound4.wav");
+        OSB->drawSprite(OGetTexture(("gamepad" + std::to_string(index) + ".png").c_str()), position);
+        OSB->drawSprite(OGetTexture("lthumb.png"), position + OLThumb(index) * 12.f);
+        OSB->drawSprite(OGetTexture("rthumb.png"), position + ORThumb(index) * 12.f);
+        if (OGamePadPressed(OLThumbBtn, index)) OSB->drawSprite(OGetTexture("lthumbPress.png"), position + OLThumb(index) * 12.f);
+        if (OGamePadPressed(ORThumbBtn, index)) OSB->drawSprite(OGetTexture("rthumbPress.png"), position + ORThumb(index) * 12.f);
+        if (OGamePadPressed(ORBBtn, index)) OSB->drawSprite(OGetTexture("rb.png"), position);
+        if (OGamePadPressed(OLBBtn, index)) OSB->drawSprite(OGetTexture("lb.png"), position);
+        if (OGamePadPressed(ORBBtn, index)) OSB->drawSprite(OGetTexture("rb.png"), position);
+        if (OGamePadPressed(OBackBtn, index)) OSB->drawSprite(OGetTexture("back.png"), position);
+        if (OGamePadPressed(OStartBtn, index)) OSB->drawSprite(OGetTexture("start.png"), position);
+        if (OGamePadPressed(OABtn, index)) OSB->drawSprite(OGetTexture("a.png"), position);
+        if (OGamePadPressed(OBBtn, index)) OSB->drawSprite(OGetTexture("b.png"), position);
+        if (OGamePadPressed(OXBtn, index)) OSB->drawSprite(OGetTexture("x.png"), position);
+        if (OGamePadPressed(OYBtn, index)) OSB->drawSprite(OGetTexture("y.png"), position);
+        if (OGamePadPressed(OLeftBtn, index)) OSB->drawSprite(OGetTexture("dleft.png"), position);
+        if (OGamePadPressed(ORightBtn, index)) OSB->drawSprite(OGetTexture("dright.png"), position);
+        if (OGamePadPressed(OUpBtn, index)) OSB->drawSprite(OGetTexture("dup.png"), position);
+        if (OGamePadPressed(ODownBtn, index)) OSB->drawSprite(OGetTexture("ddown.png"), position);
+        if (OGamePadPressed(OLTBtn, index)) OSB->drawSprite(OGetTexture("lt.png"), position);
+        if (OGamePadPressed(ORTBtn, index)) OSB->drawSprite(OGetTexture("rt.png"), position);
     }
 }
 
 void render()
 {
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    ORenderer->clear(Color::Black);
 
     // Begin a batch
-    OSpriteBatch->begin(onut::SpriteBatch::eBlendMode::Add);
+    OSpriteBatch->begin();
 
-    Vector2 Lpos(OScreenCenterXf - 150.f, OScreenCenterYf);
-    Vector2 Rpos(OScreenCenterXf + 150.f, OScreenCenterYf);
-
-    // Player 1
-    OSB->drawSprite(nullptr, Lpos + OLThumb(0) * 200.f, Color(1, 0, 0, 1), 0.f, 32.f);
-    OSB->drawSprite(nullptr, Lpos + ORThumb(0) * 200.f, Color(0, 0, 1, 1), 0.f, 32.f);
-
-    // Player 2
-    OSB->drawSprite(nullptr, Rpos + OLThumb(1) * 200.f, Color(1, 0, 0, 1), 0.f, 32.f);
-    OSB->drawSprite(nullptr, Rpos + ORThumb(1) * 200.f, Color(0, 0, 1, 1), 0.f, 32.f);
+    drawController(0, Vector2(OScreenWf * .3f, OScreenHf * .3f));
+    drawController(1, Vector2(OScreenWf * .7f, OScreenHf * .3f));
+    drawController(2, Vector2(OScreenWf * .3f, OScreenHf * .7f));
+    drawController(3, Vector2(OScreenWf * .7f, OScreenHf * .7f));
 
     // End and flush the batch
     OSpriteBatch->end();

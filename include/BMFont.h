@@ -131,18 +131,18 @@ namespace onut
             pos = {std::round(pos.x), std::round(pos.y)};
             if (Tcheap)
             {
-                drawInternal(text, pos + Vector2{-outlineSize *0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize * 0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{0, outlineSize}, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{-outlineSize *0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize * 0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{0, outlineSize}, outlineColor, pSpriteBatch, alignf, false);
             }
             else
             {
-                drawInternal(text, pos + Vector2{-outlineSize *0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize * 0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{-outlineSize, 0}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize, 0}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{-outlineSize *0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize * 0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{-outlineSize *0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize * 0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{-outlineSize, 0}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize, 0}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{-outlineSize *0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize * 0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
             }
             return drawInternal(text, pos, color, pSpriteBatch, alignf, false);
         }

@@ -9,8 +9,14 @@ namespace onut
     {
         SpriteAnimDefinition* pRet = new SpriteAnimDefinition();
 
+        pRet->m_filename = pContentManager->find(filename);
+        if (pRet->m_filename.empty())
+        {
+            pRet->m_filename = filename;
+        }
+
         tinyxml2::XMLDocument doc;
-        doc.LoadFile(filename.c_str());
+        doc.LoadFile(pRet->m_filename.c_str());
         auto pXMLSheet = doc.FirstChildElement("sheet");
         assert(pXMLSheet);
         std::string textureName = pXMLSheet->Attribute("texture");
@@ -62,11 +68,26 @@ namespace onut
         return pRet;
     }
 
+    void SpriteAnimDefinition::addAnim(const Anim& anim)
+    {
+        m_anims[anim.name] = anim;
+    }
+
     SpriteAnimDefinition::Anim* SpriteAnimDefinition::getAnim(const std::string& name)
     {
         auto it = m_anims.find(name);
         if (it == m_anims.end()) return nullptr;
         return &it->second;
+    }
+
+    std::vector<std::string> SpriteAnimDefinition::getAnimNames() const
+    {
+        std::vector<std::string> anims;
+        for (auto& kv : m_anims)
+        {
+            anims.push_back(kv.first);
+        }
+        return std::move(anims);
     }
 
     SpriteAnimDefinition::SpriteAnimDefinition()
@@ -126,6 +147,7 @@ namespace onut
     {
         m_frame.stop();
         if (reset) m_frame = 0.f;
+        m_pCurrentAnim = nullptr;
     }
 
     bool SpriteAnim::isPlaying() const
