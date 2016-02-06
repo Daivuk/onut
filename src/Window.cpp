@@ -1,12 +1,10 @@
 ﻿#include "onut.h"
-#include "StringUtils.h"
+#include "Utils.h"
 #include "Window.h"
 #include <windowsx.h>
 
 namespace onut
 {
-    Window* pWindow = nullptr;
-
     LRESULT CALLBACK WinProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         if (msg == WM_DESTROY ||
@@ -19,15 +17,26 @@ namespace onut
         {
             if (ORenderer)
             {
-                ORenderer->onResize();
+                ORenderer->onResize(POINT{LOWORD(lparam), HIWORD(lparam)});
+            }
+            if (OUIContext)
+            {
+                OUIContext->resize(sUIVector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
+            }
+            if (OWindow)
+            {
+                if (OWindow->onResize)
+                {
+                    OWindow->onResize(POINT{LOWORD(lparam), HIWORD(lparam)});
+                }
             }
             return 0;
         }
         else if (msg == WM_SETCURSOR)
         {
-            if (pWindow->m_cursor)
+            if (OWindow->m_cursor)
             {
-                SetCursor(pWindow->m_cursor);
+                SetCursor(OWindow->m_cursor);
                 return 0;
             }
         }
@@ -44,24 +53,49 @@ namespace onut
             if (OWindow->onWrite)
             {
                 OWindow->onWrite(c);
+                return 0;
             }
-            return 0;
         }
         else if (msg == WM_KEYDOWN)
         {
             if (OWindow->onKey)
             {
                 OWindow->onKey(static_cast<uintptr_t>(wparam));
+                return 0;
             }
-            return 0;
         }
         else if (msg == WM_COMMAND)
         {
             if (OWindow->onMenu)
             {
                 OWindow->onMenu(LOWORD(wparam));
+                return 0;
             }
-            return 0;
+        }
+        else if (msg == WM_DROPFILES)
+        {
+            if (OWindow->onDrop)
+            {
+                char lpszFile[MAX_PATH] = {0};
+                UINT uFile = 0;
+                HDROP hDrop = (HDROP)wparam;
+
+                uFile = DragQueryFileA(hDrop, 0xFFFFFFFF, NULL, NULL);
+                if (uFile != 1)
+                {
+                    MessageBoxA(handle, "Dropping multiple files is not supported.", NULL, MB_ICONERROR);
+                    DragFinish(hDrop);
+                    return 0;
+                }
+                lpszFile[0] = '\0';
+                if (DragQueryFileA(hDrop, 0, lpszFile, MAX_PATH))
+                {
+                    OWindow->onDrop(lpszFile);
+                }
+
+                DragFinish(hDrop);
+                return 0;
+            }
         }
 
         return DefWindowProc(handle, msg, wparam, lparam);
@@ -70,8 +104,6 @@ namespace onut
     Window::Window(const POINT& resolution, bool isResizable) :
         m_cursor(0)
     {
-        pWindow = this;
-
         auto bIsFullscreen = OSettings->getBorderlessFullscreen();
 
         // Define window style
@@ -129,7 +161,13 @@ namespace onut
             posX = (screenW - newW) / 2;
             posY = (screenH - newH) / 2;
             SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
+
+            DragAcceptFiles(m_handle, TRUE);
         }
+    }
+
+    Window::~Window()
+    {
     }
 
     HWND Window::getHandle()
@@ -140,5 +178,10 @@ namespace onut
     void Window::setCursor(HCURSOR cursor)
     {
         m_cursor = cursor;
+    }
+
+    void Window::setCaption(const std::string& newName)
+    {
+        SetWindowTextA(m_handle, newName.c_str());
     }
 }

@@ -6,7 +6,6 @@ namespace onut
 {
     SpriteBatch::SpriteBatch()
     {
-#ifndef EASY_GRAPHIX
         auto pDevice = ORenderer->getDevice();
         auto pDeviceContext = ORenderer->getDeviceContext();
 
@@ -62,7 +61,95 @@ namespace onut
         ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
         assert(ret == S_OK);
 
-        ret = pDevice->CreateBlendState(&(D3D11_BLEND_DESC{
+        // Blend modes
+        D3D11_BLEND_DESC blendDesc;
+        blendDesc = D3D11_BLEND_DESC
+        {
+            FALSE,
+            FALSE,
+            {{
+                    FALSE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ZERO,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ZERO,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Opaque)]);
+        assert(ret == S_OK);
+        blendDesc = D3D11_BLEND_DESC
+        {
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_SRC_ALPHA,
+                    D3D11_BLEND_INV_SRC_ALPHA,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Alpha)]);
+        assert(ret == S_OK);
+        blendDesc = D3D11_BLEND_DESC
+        {
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_SRC_ALPHA,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Add)]);
+        assert(ret == S_OK);
+        blendDesc = D3D11_BLEND_DESC
+        {
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_INV_SRC_ALPHA,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::PreMultiplied)]);
+        assert(ret == S_OK);
+        blendDesc = D3D11_BLEND_DESC
+        {
+            FALSE,
+            FALSE,
+            {{
+                    TRUE,
+                    D3D11_BLEND_DEST_COLOR,
+                    D3D11_BLEND_INV_SRC_ALPHA,
+                    D3D11_BLEND_OP_ADD,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_ONE,
+                    D3D11_BLEND_OP_ADD,
+                    D3D10_COLOR_WRITE_ENABLE_ALL
+                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Multiplied)]);
+        assert(ret == S_OK);
+        blendDesc = D3D11_BLEND_DESC
+        {
             FALSE,
             FALSE,
             {{
@@ -75,83 +162,97 @@ namespace onut
                     D3D11_BLEND_OP_ADD,
                     D3D10_COLOR_WRITE_ENABLE_ALL
                 }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        }), &m_pForceWriteBlend);
+        };
+        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::ForceWrite)]);
         assert(ret == S_OK);
-#endif /* !EASY_GRAPHIX */
+
+        // Samplers
+        D3D11_SAMPLER_DESC samplerDesc;
+        samplerDesc = D3D11_SAMPLER_DESC
+        {
+            D3D11_FILTER_MIN_MAG_MIP_POINT,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            0.f,
+            1,
+            D3D11_COMPARISON_ALWAYS,
+            {0, 0, 0, 0},
+            0,
+            D3D11_FLOAT32_MAX
+        };
+        ret = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplers[static_cast<int>(eFiltering::Nearest)]);
+        assert(ret == S_OK);
+        samplerDesc = D3D11_SAMPLER_DESC
+        {
+            D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            0.f,
+            1,
+            D3D11_COMPARISON_ALWAYS,
+            {0, 0, 0, 0},
+            0,
+            D3D11_FLOAT32_MAX
+        };
+        ret = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplers[static_cast<int>(eFiltering::Linear)]);
+        assert(ret == S_OK);
     }
 
     SpriteBatch::~SpriteBatch()
     {
-#ifndef EASY_GRAPHIX
-        if (m_pForceWriteBlend) m_pForceWriteBlend->Release();
+        for (int i = 0; i < static_cast<int>(eBlendMode::BlendModeCount); ++i)
+        {
+            m_pBlendStates[i]->Release();
+        }
+        for (int i = 0; i < static_cast<int>(eFiltering::FilteringCount); ++i)
+        {
+            m_pSamplers[i]->Release();
+        }
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
         delete m_pTexWhite;
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::begin(eBlendMode blendMode)
     {
-#ifdef EASY_GRAPHIX
-        ORenderer->setupFor2D();
-        m_pTexture = nullptr;
-        m_spriteCount = 0;
-#else /* EASY_GRAPHIX */
+        begin(Matrix::Identity, blendMode);
+    }
+
+    void SpriteBatch::begin(const Matrix& transform, eBlendMode blendMode)
+    {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
-        ORenderer->setupFor2D();
+        m_currentTransform = transform;
+        ORenderer->setupFor2D(transform);
         m_curBlendMode = blendMode;
-        if (m_curBlendMode == eBlendMode::FORCE_WRITE)
-        {
-            ORenderer->getDeviceContext()->OMSetBlendState(m_pForceWriteBlend, NULL, 0xffffffff);
-        }
+        ORenderer->getDeviceContext()->OMSetBlendState(m_pBlendStates[static_cast<int>(blendMode)], NULL, 0xffffffff);
+        ORenderer->getDeviceContext()->PSSetSamplers(0, 1, &m_pSamplers[static_cast<int>(m_curFiltering)]);
         m_pTexture = nullptr;
         m_isDrawing = true;
         ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
-#endif /* !EASY_GRAPHIX */
+    }
+
+    void SpriteBatch::changeBlendMode(eBlendMode blendMode)
+    {
+        if (!isInBatch()) return;
+        if (m_curBlendMode == blendMode) return;
+        end();
+        begin(m_currentTransform, blendMode);
+    }
+
+    void SpriteBatch::changeFiltering(eFiltering filtering)
+    {
+        if (m_curFiltering == filtering) return;
+        auto bManageBatch = isInBatch();
+        if (bManageBatch) end();
+        m_curFiltering = filtering;
+        if (bManageBatch) begin(m_currentTransform, m_curBlendMode);
     }
 
     void SpriteBatch::drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(colors[0].x, colors[0].y, colors[0].z, colors[0].w);
-        egTexCoord(0, 0);
-        egPosition2(rect.x, rect.y);
-
-        egColor4(colors[1].x, colors[1].y, colors[1].z, colors[1].w);
-        egTexCoord(0, 1);
-        egPosition2(rect.x, rect.y + rect.w);
-
-        egColor4(colors[2].x, colors[2].y, colors[2].z, colors[2].w);
-        egTexCoord(1, 1);
-        egPosition2(rect.x + rect.z, rect.y + rect.w);
-
-        egColor4(colors[3].x, colors[3].y, colors[3].z, colors[3].w);
-        egTexCoord(1, 0);
-        egPosition2(rect.x + rect.z, rect.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
@@ -185,7 +286,6 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::drawAbsoluteRect(Texture* pTexture, const Rect& rect, const Color& color)
@@ -195,42 +295,6 @@ namespace onut
 
     void SpriteBatch::drawRect(Texture* pTexture, const Rect& rect, const Color& color)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(color.x, color.y, color.z, color.w);
-        egTexCoord(0, 0);
-        egPosition2(rect.x, rect.y);
-
-        egTexCoord(0, 1);
-        egPosition2(rect.x, rect.y + rect.w);
-
-        egTexCoord(1, 1);
-        egPosition2(rect.x + rect.z, rect.y + rect.w);
-
-        egTexCoord(1, 0);
-        egPosition2(rect.x + rect.z, rect.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -263,31 +327,13 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::drawRectScaled9(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
-#endif /* !EASY_GRAPHIX */
 
         auto textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
@@ -327,26 +373,9 @@ namespace onut
 
     void SpriteBatch::drawRectScaled9RepeatCenters(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
-#endif /* !EASY_GRAPHIX */
 
         auto textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
@@ -422,42 +451,6 @@ namespace onut
 
     void SpriteBatch::drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio, const Color& color)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(color.x, color.y, color.z, color.w);
-        egTexCoord(0, 0);
-        egPosition2(rect.x, rect.y);
-
-        egTexCoord(0, 1);
-        egPosition2(rect.x + inclinedRatio * rect.w, rect.y + rect.w);
-
-        egTexCoord(1, 1);
-        egPosition2(rect.x + rect.z + inclinedRatio * rect.w, rect.y + rect.w);
-
-        egTexCoord(1, 0);
-        egPosition2(rect.x + rect.z, rect.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -490,47 +483,10 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(color.x, color.y, color.z, color.w);
-        egTexCoord(uvs.x, uvs.y);
-        egPosition2(rect.x, rect.y);
-
-        egTexCoord(uvs.x, uvs.w);
-        egPosition2(rect.x, rect.y + rect.w);
-
-        egTexCoord(uvs.z, uvs.w);
-        egPosition2(rect.x + rect.z, rect.y + rect.w);
-
-        egTexCoord(uvs.z, uvs.y);
-        egPosition2(rect.x + rect.z, rect.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
 
         if (!pTexture) pTexture = m_pTexWhite;
@@ -563,50 +519,10 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(colors[0].x, colors[0].y, colors[0].z, colors[0].w);
-        egTexCoord(uvs.x, uvs.y);
-        egPosition2(rect.x, rect.y);
-
-        egColor4(colors[1].x, colors[1].y, colors[1].z, colors[1].w);
-        egTexCoord(uvs.x, uvs.w);
-        egPosition2(rect.x, rect.y + rect.w);
-
-        egColor4(colors[2].x, colors[2].y, colors[2].z, colors[2].w);
-        egTexCoord(uvs.z, uvs.w);
-        egPosition2(rect.x + rect.z, rect.y + rect.w);
-
-        egColor4(colors[3].x, colors[3].y, colors[3].z, colors[3].w);
-        egTexCoord(uvs.z, uvs.y);
-        egPosition2(rect.x + rect.z, rect.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
@@ -640,29 +556,11 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::draw4Corner(Texture* pTexture, const Rect& rect, const Color& color)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-#else /* EASY_GRAPHIX */
         if (!pTexture) pTexture = m_pTexWhite;
-#endif /* !EASY_GRAPHIX */
 
         auto textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
@@ -674,86 +572,21 @@ namespace onut
         drawRectWithUVs(pTexture, rect.BottomRight(cornerRect), {.5f, .5f, 1, 1}, color);
     }
 
-    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color)
+    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, const Vector2& origin)
     {
-        if (!pTexture) return;
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-#else /* EASY_GRAPHIX */
         if (!pTexture) pTexture = m_pTexWhite;
-#endif /* !EASY_GRAPHIX */
 
         auto& textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
-        drawRect(pTexture, {position.x - sizexf * .5f, position.y - sizeyf * .5f, sizexf, sizeyf}, color);
+        drawRect(pTexture, {position.x - sizexf * origin.x, position.y - sizeyf * origin.y, sizexf, sizeyf}, color);
     }
 
-    void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale)
+    void SpriteBatch::drawSprite(Texture* pTexture, const Matrix& transform, const Color& color, const Vector2& origin)
     {
-        if (!pTexture) return;
-        auto textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
-        sizexf *= (uvs.z - uvs.x);
-        sizeyf *= (uvs.w - uvs.y);
-        auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
-        auto radTheta = DirectX::XMConvertToRadians(rotation);
-        auto sinTheta = std::sin(radTheta);
-        auto cosTheta = std::cos(radTheta);
+        if (!pTexture) pTexture = m_pTexWhite;
+        auto sizef = pTexture->getSizef();
 
-        Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
-        Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
-
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(color.x, color.y, color.z, color.w);
-        egTexCoord(uvs.x, uvs.y);
-        egPosition2(position.x - right.x - down.x, position.y - right.y - down.y);
-
-        egTexCoord(uvs.x, uvs.w);
-        egPosition2(position.x - right.x + down.x, position.y - right.y + down.y);
-
-        egTexCoord(uvs.z, uvs.w);
-        egPosition2(position.x + right.x + down.x, position.y + right.y + down.y);
-
-        egTexCoord(uvs.z, uvs.y);
-        egPosition2(position.x + right.x - down.x, position.y + right.y - down.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
         {
@@ -761,28 +594,22 @@ namespace onut
         }
         m_pTexture = pTexture;
 
+        auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
+
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
-        pVerts[0].position = position;
-        pVerts[0].position -= right;
-        pVerts[0].position -= down;
+        pVerts[0].position = Vector2::Transform(Vector2(-sizef.x * origin.x, -sizef.y * origin.y), transform);
         pVerts[0].texCoord = {0, 0};
         pVerts[0].color = color;
 
-        pVerts[1].position = position;
-        pVerts[1].position -= right;
-        pVerts[1].position += down;
+        pVerts[1].position = Vector2::Transform(Vector2(-sizef.x * origin.x, sizef.y * invOrigin.y), transform);
         pVerts[1].texCoord = {0, 1};
         pVerts[1].color = color;
 
-        pVerts[2].position = position;
-        pVerts[2].position += right;
-        pVerts[2].position += down;
+        pVerts[2].position = Vector2::Transform(Vector2(sizef.x * invOrigin.x, sizef.y * invOrigin.y), transform);
         pVerts[2].texCoord = {1, 1};
         pVerts[2].color = color;
 
-        pVerts[3].position = position;
-        pVerts[3].position += right;
-        pVerts[3].position -= down;
+        pVerts[3].position = Vector2::Transform(Vector2(sizef.x * invOrigin.x, -sizef.y * origin.y), transform);
         pVerts[3].texCoord = {1, 0};
         pVerts[3].color = color;
 
@@ -792,47 +619,40 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
-    void SpriteBatch::drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset, float uScale)
+    void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin)
     {
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
+        if (!pTexture) pTexture = m_pTexWhite;
+        auto sizef = pTexture->getSizef();
+        sizef.x *= std::abs(uvs.z - uvs.x);
+        sizef.y *= std::abs(uvs.w - uvs.y);
+
+        if (!pTexture) pTexture = m_pTexWhite;
+        if (pTexture != m_pTexture)
         {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
+            flush();
         }
+        m_pTexture = pTexture;
 
-        auto texSize = pTexture->getSizef();
-        Vector2 dir = to - from;
-        float len = dir.Length();
-        if (len == 0) return;
-        dir /= len;
-        Vector2 right{-dir.y, dir.x};
-        right *= size * .5f;
+        auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
 
-        egColor4(color.x, color.y, color.z, color.w);
-        egTexCoord(uOffset, 0);
-        egPosition2(from.x - right.x, from.y - right.y);
+        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        pVerts[0].position = Vector2::Transform(Vector2(-sizef.x * origin.x, -sizef.y * origin.y), transform);
+        pVerts[0].texCoord = {uvs.x, uvs.y};
+        pVerts[0].color = color;
 
-        egTexCoord(uOffset, 1);
-        egPosition2(from.x + right.x, from.y + right.y);
+        pVerts[1].position = Vector2::Transform(Vector2(-sizef.x * origin.x, sizef.y * invOrigin.y), transform);
+        pVerts[1].texCoord = {uvs.x, uvs.w};
+        pVerts[1].color = color;
 
-        egTexCoord(uOffset + len * uScale / texSize.x, 1);
-        egPosition2(to.x + right.x, to.y + right.y);
+        pVerts[2].position = Vector2::Transform(Vector2(sizef.x * invOrigin.x, sizef.y * invOrigin.y), transform);
+        pVerts[2].texCoord = {uvs.z, uvs.w};
+        pVerts[2].color = color;
 
-        egTexCoord(uOffset + len * uScale / texSize.x, 0);
-        egPosition2(to.x - right.x, to.y - right.y);
+        pVerts[3].position = Vector2::Transform(Vector2(sizef.x * invOrigin.x, -sizef.y * origin.y), transform);
+        pVerts[3].texCoord = {uvs.z, uvs.y};
+        pVerts[3].color = color;
 
         ++m_spriteCount;
 
@@ -840,7 +660,67 @@ namespace onut
         {
             flush();
         }
-#else
+    }
+
+    void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale, const Vector2& origin)
+    {
+        if (!pTexture) pTexture = m_pTexWhite;
+        auto textureSize = pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
+        sizexf *= (uvs.z - uvs.x);
+        sizeyf *= (uvs.w - uvs.y);
+        auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
+        auto radTheta = DirectX::XMConvertToRadians(rotation);
+        auto sinTheta = std::sin(radTheta);
+        auto cosTheta = std::cos(radTheta);
+        auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y) * 2.f;
+
+        Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
+        Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
+
+        if (!pTexture) pTexture = m_pTexWhite;
+        if (pTexture != m_pTexture)
+        {
+            flush();
+        }
+        m_pTexture = pTexture;
+
+        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        pVerts[0].position = position;
+        pVerts[0].position -= right * origin.x * 2.f;
+        pVerts[0].position -= down * origin.y * 2.f;
+        pVerts[0].texCoord = {uvs.x, uvs.y};
+        pVerts[0].color = color;
+
+        pVerts[1].position = position;
+        pVerts[1].position -= right * origin.x * 2.f;
+        pVerts[1].position += down * invOrigin.y;
+        pVerts[1].texCoord = {uvs.x, uvs.w};
+        pVerts[1].color = color;
+
+        pVerts[2].position = position;
+        pVerts[2].position += right * invOrigin.x;
+        pVerts[2].position += down * invOrigin.y;
+        pVerts[2].texCoord = {uvs.z, uvs.w};
+        pVerts[2].color = color;
+
+        pVerts[3].position = position;
+        pVerts[3].position += right * invOrigin.x;
+        pVerts[3].position -= down * origin.y * 2.f;
+        pVerts[3].texCoord = {uvs.z, uvs.y};
+        pVerts[3].color = color;
+
+        ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
+    }
+
+    void SpriteBatch::drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset, float uScale)
+    {
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
         {
@@ -879,12 +759,17 @@ namespace onut
         {
             flush();
         }
-#endif
     }
 
-    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale)
+    void SpriteBatch::drawCross(const Vector2& position, float size, const Color& color, float thickness)
     {
-        if (!pTexture) return;
+        drawRect(nullptr, {position.x - thickness * .5f, position.y - size, thickness, size * 2.f}, color);
+        drawRect(nullptr, {position.x - size, position.y - thickness * .5f, size * 2.f, thickness}, color);
+    }
+
+    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale, const Vector2& origin)
+    {
+        if (!pTexture) pTexture = m_pTexWhite;
         auto textureSize = pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
@@ -892,46 +777,11 @@ namespace onut
         auto radTheta = DirectX::XMConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);
         auto cosTheta = std::cos(radTheta);
+        auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y) * 2.f;
 
         Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
         Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
 
-#ifdef EASY_GRAPHIX
-        if (pTexture != m_pTexture) flush();
-        m_pTexture = pTexture;
-        if (!m_spriteCount)
-        {
-            if (m_pTexture)
-            {
-                m_pTexture->bind();
-            }
-            else
-            {
-                egBindDiffuse(0);
-            }
-            egBegin(EG_QUADS);
-        }
-
-        egColor4(color.x, color.y, color.z, color.w);
-        egTexCoord(0, 0);
-        egPosition2(position.x - right.x - down.x, position.y - right.y - down.y);
-
-        egTexCoord(0, 1);
-        egPosition2(position.x - right.x + down.x, position.y - right.y + down.y);
-
-        egTexCoord(1, 1);
-        egPosition2(position.x + right.x + down.x, position.y + right.y + down.y);
-
-        egTexCoord(1, 0);
-        egPosition2(position.x + right.x - down.x, position.y + right.y - down.y);
-
-        ++m_spriteCount;
-
-        if (m_spriteCount == MAX_SPRITE_COUNT)
-        {
-            flush();
-        }
-#else /* EASY_GRAPHIX */
         if (!pTexture) pTexture = m_pTexWhite;
         if (pTexture != m_pTexture)
         {
@@ -941,26 +791,26 @@ namespace onut
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = position;
-        pVerts[0].position -= right;
-        pVerts[0].position -= down;
+        pVerts[0].position -= right * origin.x * 2.f;
+        pVerts[0].position -= down * origin.y * 2.f;
         pVerts[0].texCoord = {0, 0};
         pVerts[0].color = color;
 
         pVerts[1].position = position;
-        pVerts[1].position -= right;
-        pVerts[1].position += down;
+        pVerts[1].position -= right * origin.x * 2.f;
+        pVerts[1].position += down * invOrigin.y;
         pVerts[1].texCoord = {0, 1};
         pVerts[1].color = color;
 
         pVerts[2].position = position;
-        pVerts[2].position += right;
-        pVerts[2].position += down;
+        pVerts[2].position += right * invOrigin.x;
+        pVerts[2].position += down * invOrigin.y;
         pVerts[2].texCoord = {1, 1};
         pVerts[2].color = color;
 
         pVerts[3].position = position;
-        pVerts[3].position += right;
-        pVerts[3].position -= down;
+        pVerts[3].position += right * invOrigin.x;
+        pVerts[3].position -= down * origin.y * 2.f;
         pVerts[3].texCoord = {1, 0};
         pVerts[3].color = color;
 
@@ -970,14 +820,10 @@ namespace onut
         {
             flush();
         }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::end()
     {
-#ifdef EASY_GRAPHIX
-        flush();
-#else /* EASY_GRAPHIX */
         assert(m_isDrawing); // Should call begin() before calling end()
 
         m_isDrawing = false;
@@ -986,12 +832,6 @@ namespace onut
             flush();
         }
         ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
-
-        if (m_curBlendMode == eBlendMode::FORCE_WRITE)
-        {
-            ORenderer->resetState();
-        }
-#endif /* !EASY_GRAPHIX */
     }
 
     void SpriteBatch::flush()
@@ -1000,14 +840,11 @@ namespace onut
         {
             return; // Nothing to flush
         }
-#ifdef EASY_GRAPHIX
-        egEnd();
-#else /* EASY_GRAPHIX */
         auto pDeviceContext = ORenderer->getDeviceContext();
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        auto textureView = m_pTexture->getResource();
+        auto textureView = m_pTexture->getResourceView();
         pDeviceContext->PSSetShaderResources(0, 1, &textureView);
         pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);
@@ -1015,7 +852,6 @@ namespace onut
         pDeviceContext->DrawIndexed(6 * m_spriteCount, 0, 0);
 
         pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
-#endif /* !EASY_GRAPHIX */
 
         m_spriteCount = 0;
         m_pTexture = nullptr;

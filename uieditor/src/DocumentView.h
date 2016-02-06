@@ -25,7 +25,7 @@ public:
     onut::UIContext*            pUIContextEditorStyle = nullptr;
     onut::UIControl*            pUIScreen = nullptr;
     onut::UIControl*            pSelected = nullptr;
-    onut::ContentManager<false> contentManager;
+    onut::ContentManager        contentManager;
 
     void onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);

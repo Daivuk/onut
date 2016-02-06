@@ -685,8 +685,10 @@ struct Color : public XMFLOAT4
     Color() : XMFLOAT4(0, 0, 0, 1.f) {}
     Color(float _rgba) : XMFLOAT4(_rgba, _rgba, _rgba, _rgba) {}
     Color( float _r, float _g, float _b ) : XMFLOAT4(_r, _g, _b, 1.f) {}
-    Color( float _r, float _g, float _b, float _a ) : XMFLOAT4(_r, _g, _b, _a) {}
-    explicit Color( const Vector3& clr ) : XMFLOAT4( clr.x, clr.y, clr.z, 1.f ) {}
+    Color(float _r, float _g, float _b, float _a) : XMFLOAT4(_r, _g, _b, _a) {}
+    Color(const Color& rgb, float _a) : XMFLOAT4(rgb.x, rgb.y, rgb.z, _a) {}
+    Color(const Vector3& rgb, float _a) : XMFLOAT4(rgb.x, rgb.y, rgb.z, _a) {}
+    explicit Color(const Vector3& clr) : XMFLOAT4(clr.x, clr.y, clr.z, 1.f) {}
     explicit Color( const Vector4& clr ) : XMFLOAT4( clr.x, clr.y, clr.z, clr.w ) {}
     explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Color(FXMVECTOR V) { XMStoreFloat4( this, V ); }

@@ -23,7 +23,9 @@
     <ClInclude Include="..\..\include\http.h" />
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\List.h" />
+    <ClInclude Include="..\..\include\Log.h" />
     <ClInclude Include="..\..\include\micropather.h" />
+    <ClInclude Include="..\..\include\Music.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut.h" />
@@ -32,6 +34,7 @@
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystem.h" />
     <ClInclude Include="..\..\include\ParticleSystemManager.h" />
+    <ClInclude Include="..\..\include\player.h" />
     <ClInclude Include="..\..\include\Pool.h" />
     <ClInclude Include="..\..\include\PrimitiveBatch.h" />
     <ClInclude Include="..\..\include\Random.h" />
@@ -41,10 +44,11 @@
     <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
     <ClInclude Include="..\..\include\Sound.h" />
+    <ClInclude Include="..\..\include\SpriteAnim.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\State.h" />
     <ClInclude Include="..\..\include\StateManager.h" />
-    <ClInclude Include="..\..\include\StringUtils.h" />
+    <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TiledMap.h" />
@@ -55,8 +59,8 @@
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\include\Window.h" />
-    <ClInclude Include="..\..\src\_2dps.cso.h" />
-    <ClInclude Include="..\..\src\_2dvs.cso.h" />
+    <ClInclude Include="..\..\src\MFPlayer.h" />
+    <ClInclude Include="..\..\src\Mp3.h" />
     <ClInclude Include="..\..\src\Audio.h" />
     <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
@@ -91,13 +95,18 @@
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
+    <ClCompile Include="..\..\src\Log.cpp" />
+    <ClCompile Include="..\..\src\MFPlayer.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
+    <ClCompile Include="..\..\src\Mp3.cpp" />
+    <ClCompile Include="..\..\src\Music.cpp" />
     <ClCompile Include="..\..\src\NavMesh.cpp" />
     <ClCompile Include="..\..\src\object.cpp" />
     <ClCompile Include="..\..\src\Particle.cpp" />
     <ClCompile Include="..\..\src\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\src\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\ParticleSystemManager.cpp" />
+    <ClCompile Include="..\..\src\player.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
@@ -109,8 +118,9 @@
     <ClCompile Include="..\..\src\SoundCommon.cpp" />
     <ClCompile Include="..\..\src\SoundEffect.cpp" />
     <ClCompile Include="..\..\src\SoundEffectInstance.cpp" />
+    <ClCompile Include="..\..\src\SpriteAnim.cpp" />
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
-    <ClCompile Include="..\..\src\StringUtils.cpp" />
+    <ClCompile Include="..\..\src\Utils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\TiledMap.cpp" />
     <ClCompile Include="..\..\src\tinyxml2.cpp" />
@@ -134,6 +144,36 @@
     <ClCompile Include="..\..\src\zlib\trees.c" />
     <ClCompile Include="..\..\src\zlib\uncompr.c" />
     <ClCompile Include="..\..\src\zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\cartoon.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\src\crt.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\src\sepia.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\src\vignette.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}</ProjectGuid>
@@ -171,11 +211,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ONUT;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson;$(DXSDK_DIR)Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;ONUT;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalOptions>/D_WIN32_WINNT=0x0601 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -185,7 +224,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput9_1_0.lib;x3daudio.lib;xapofx.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -197,9 +236,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>ONUT;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson;$(DXSDK_DIR)Include</AdditionalIncludeDirectories>
-      <AdditionalOptions>/D_WIN32_WINNT=0x0601 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>NOMINMAX;ONUT;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../include;../../src;../../include/rapidjson</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -213,7 +251,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;xinput9_1_0.lib;x3daudio.lib;xapofx.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

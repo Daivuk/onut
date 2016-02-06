@@ -29,6 +29,9 @@ namespace onut
         bool                getIsFixedStep() const { return m_isFixedStep; }
         void                setIsFixedStep(bool isFixedStep);
 
+        bool                getIsEditorMode() const { return m_isEditorMode; }
+        void                setIsEditorMode(bool isEditorMode);
+
         void                setUserSettingDefault(const std::string& key, const std::string& value);
         void                setUserSetting(const std::string& key, const std::string& value);
         const std::string&  getUserSetting(const std::string& key) const;
@@ -39,6 +42,7 @@ namespace onut
         bool                m_isResizableWindow = false;
         bool                m_isFixedStep = true;
         bool                m_isBorderLessFullscreen = false;
+        bool                m_isEditorMode = false;
 
         std::atomic<bool>   m_isDirty = false;
         std::atomic<bool>   m_requestShutdown = false;

@@ -31,7 +31,7 @@ namespace onut
         */
         void start(Tprecision duration, const std::function<void()>& callback = nullptr)
         {
-            m_anim.start(static_cast<Tprecision>(0.0), {duration, duration, TweenType::LINEAR, callback});
+            m_anim.startKeyframed(static_cast<Tprecision>(0.0), {{duration, duration, TweenType::LINEAR, callback}});
         }
 
         /**
@@ -72,9 +72,10 @@ extern float ODT;
 Sleep the current thread for an amount of miliseconds
 @param ms Miliseconds count
 */
-template<typename TtimeType,
-         typename std::enable_if<std::is_integral<TtimeType>::value, TtimeType>::type* = nullptr>
-         inline void OSleep(const TtimeType& ms)
+template<typename Tduration>
+inline void OSleep(const Tduration& duration)
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+    std::this_thread::sleep_for(duration);
 }
+
+using OTimer = onut::Timer<float>;

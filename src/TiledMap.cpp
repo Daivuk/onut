@@ -25,7 +25,7 @@ namespace onut
         if (tiles) delete[] tiles;
     }
 
-    TiledMap::TiledMap(const std::string &map, onut::ContentManager<> *pContentManager)
+    TiledMap::TiledMap(const std::string &map, onut::ContentManager *pContentManager)
     {
         tinyxml2::XMLDocument doc;
         doc.LoadFile(map.c_str());
@@ -59,6 +59,11 @@ namespace onut
             assert(szImageFilename);
             auto filename = getPath(map) + "/" + szImageFilename;
             pTileSet.pTexture = pContentManager->getResource<Texture>(filename);
+            if (!pTileSet.pTexture)
+            {
+                filename = getFilename(szImageFilename);
+                pTileSet.pTexture = pContentManager->getResource<Texture>(filename);
+            }
 
             ++m_tilesetCount;
         }
@@ -295,6 +300,54 @@ namespace onut
         return nullptr;
     }
 
+    static RECT getScreenRECTFromTransform(const Matrix& transform, const POINT& tileSize)
+    {
+        auto invTransform = transform.Invert();
+        Vector2 localScreenPos[4] =
+        {
+            Vector2::Transform(Vector2::Zero, invTransform),
+            Vector2::Transform(Vector2(0.f, OScreenHf), invTransform),
+            Vector2::Transform(OScreenf, invTransform),
+            Vector2::Transform(Vector2(OScreenWf, 0.f), invTransform)
+        };
+        Vector2 boundingBox[2] = 
+        {
+            Vector2(onut::min(localScreenPos[0].x, localScreenPos[1].x, localScreenPos[2].x, localScreenPos[3].x),
+                    onut::min(localScreenPos[0].y, localScreenPos[1].y, localScreenPos[2].y, localScreenPos[3].y)),
+            Vector2(onut::max(localScreenPos[0].x, localScreenPos[1].x, localScreenPos[2].x, localScreenPos[3].x),
+                    onut::max(localScreenPos[0].y, localScreenPos[1].y, localScreenPos[2].y, localScreenPos[3].y))
+        };
+        return RECT{
+            static_cast<LONG>(boundingBox[0].x) / tileSize.x,
+            static_cast<LONG>(boundingBox[0].y) / tileSize.y,
+            static_cast<LONG>(boundingBox[1].x) / tileSize.x,
+            static_cast<LONG>(boundingBox[1].y) / tileSize.y};
+    }
+
+    void TiledMap::render()
+    {
+        if (!m_tileSets) return;
+        render(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}));
+    }
+
+    void TiledMap::renderLayer(int index)
+    {
+        if (!m_tileSets) return;
+        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), index);
+    }
+
+    void TiledMap::renderLayer(const std::string &name)
+    {
+        if (!m_tileSets) return;
+        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), name);
+    }
+
+    void TiledMap::renderLayer(sLayer *pLayer)
+    {
+        if (!m_tileSets) return;
+        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), pLayer);
+    }
+
     void TiledMap::render(const RECT &rect)
     {
         for (int i = 0; i < m_layerCount; ++i)
@@ -315,7 +368,6 @@ namespace onut
 
     void TiledMap::renderLayer(const RECT &in_rect, sLayer *in_pLayer)
     {
-#if defined(EASY_GRAPHIX)
         if (!in_pLayer->isVisible) return;
 
         auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
@@ -327,12 +379,8 @@ namespace onut
         rect.right = std::min<>(static_cast<LONG>(m_width - 1), rect.right);
         rect.bottom = std::min<>(static_cast<LONG>(m_height - 1), rect.bottom);
 
-        egModelPush();
-        egModelIdentity();
-        egModelMult(&m_transform._11);
-
-        OSB->begin();
-        egFilter(EG_FILTER_NEAREST);
+        bool manageSB = !OSB->isInBatch();
+        if (manageSB) OSB->begin(getTransform());
         for (LONG y = rect.top; y <= rect.bottom; ++y)
         {
             sTile *pTile = pLayer->tiles + y * m_width + rect.left;
@@ -342,61 +390,32 @@ namespace onut
                 OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
             }
         }
-        OSB->end();
-
-        egModelPop();
-#else
-        if (!in_pLayer->isVisible) return;
-
-        auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
-        if (!pLayer) return;
-
-        RECT rect = in_rect;
-        rect.left = std::max<>(0l, rect.left);
-        rect.top = std::max<>(0l, rect.top);
-        rect.right = std::min<>(static_cast<LONG>(m_width - 1), rect.right);
-        rect.bottom = std::min<>(static_cast<LONG>(m_height - 1), rect.bottom);
-
-        OSB->begin();
-        for (LONG y = rect.top; y <= rect.bottom; ++y)
-        {
-            sTile *pTile = pLayer->tiles + y * m_width + rect.left;
-            for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
-            {
-                if (!pTile->pTileset) continue;
-                OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
-            }
-        }
-        OSB->end();
-#endif
+        if (manageSB) OSB->end();
     }
 
     onut::Texture *TiledMap::getMinimap()
     {
-#if defined(EASY_GRAPHIX)
-        //if (pMinimap) return pMinimap;
-        if (!m_tilesetCount) return nullptr;
-
-        pMinimap = OTexture::createRenderTarget({m_width, m_height});
-        ORenderer->bindRenderTarget(pMinimap);
-
-        auto tileWidth = m_tileSets[0].tileWidth;
-
-        setTransform(Matrix::CreateScale(1.f / static_cast<float>(tileWidth)));
-        egStatePush();
-        egFilter(EG_FILTER_TRILINEAR);
-        auto h = 32768 / m_width / 4;
-        for (auto y = 0; y < m_height; y += h)
-        {
-            render({0, y, m_width, std::min<>(y + h, m_height)});
-        }
-        egPostProcess();
-        egStatePop();
-
-        ORenderer->bindRenderTarget(nullptr);
-        return pMinimap;
-#else
+//        //if (pMinimap) return pMinimap;
+//        if (!m_tilesetCount) return nullptr;
+//
+//        pMinimap = OTexture::createRenderTarget({m_width, m_height});
+//        ORenderer->bindRenderTarget(pMinimap);
+//
+//        auto tileWidth = m_tileSets[0].tileWidth;
+//
+//        setTransform(Matrix::CreateScale(1.f / static_cast<float>(tileWidth)));
+//        egStatePush();
+//        egFilter(EG_FILTER_TRILINEAR);
+//        auto h = 32768 / m_width / 4;
+//        for (auto y = 0; y < m_height; y += h)
+//        {
+//            render({0, y, m_width, std::min<>(y + h, m_height)});
+//        }
+//        egPostProcess();
+//        egStatePop();
+//
+//        ORenderer->bindRenderTarget(nullptr);
+//        return pMinimap;
         return nullptr;
-#endif
     }
 };

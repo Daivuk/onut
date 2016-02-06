@@ -623,6 +623,114 @@ namespace onut
         fclose(pFile);
     }
 
+    bool UIControl::visit(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        auto worldRect = getWorldRect(parentRect);
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visit(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool UIControl::visitChildrenFirst(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        auto worldRect = getWorldRect(parentRect);
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitChildrenFirst(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool UIControl::visitEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isEnabled) return true;
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitEnabled(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool UIControl::visitChildrenFirstEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isEnabled) return true;
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitChildrenFirstEnabled(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool UIControl::visitVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitVisible(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool UIControl::visitChildrenFirstVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    {
+        if (!isVisible) return true;
+        auto worldRect = getWorldRect(parentRect);
+        for (auto& pChild : m_children)
+        {
+            if (!pChild->visitChildrenFirstVisible(callback, worldRect))
+            {
+                return false;
+            }
+        }
+        if (!callback(this, worldRect))
+        {
+            return false;
+        }
+        return true;
+    }
+
     void UIControl::load(const rapidjson::Value& jsonNode)
     {
         rect.position.x = getJsonFloat(jsonNode["x"]);
@@ -1057,7 +1165,44 @@ namespace onut
         }
     }
 
-    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down)
+    bool isObstructed(UIContext& context, UIControl* pRoot, UIControl* pControl, const sUIRect& worldRect)
+    {
+        sUIRect parentRect = {{0, 0}, context.getScreenSize()};
+        bool passedUs = false;
+        return !pRoot->visitVisible([&worldRect, &passedUs, pControl](UIControl* pOther, const sUIRect& rect)
+        {
+            if (pOther == pControl)
+            {
+                passedUs = true;
+                return true;
+            }
+            if (!pOther->isClickThrough && passedUs)
+            {
+                if (rect.position.x + rect.size.x >= worldRect.position.x &&
+                    rect.position.x <= worldRect.position.x + worldRect.size.x &&
+                    rect.position.y + rect.size.y >= worldRect.position.y &&
+                    rect.position.y <= worldRect.position.y + worldRect.size.y)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }, parentRect);
+    }
+
+    bool isReallyVisible(UIControl* pControl)
+    {
+        if (!pControl) return true;
+        return pControl->isVisible && isReallyVisible(pControl->getParent());
+    }
+
+    bool isReallyEnabled(UIControl* pControl)
+    {
+        if (!pControl) return true;
+        return pControl->isEnabled && isReallyEnabled(pControl->getParent());
+    }
+
+    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down, bool bNavL, bool bNavR, bool bNavU, bool bNavD, bool bControl, float scroll)
     {
         retain();
 
@@ -1067,18 +1212,158 @@ namespace onut
         context.m_mouseEvents[0].isMouseDown = bMouse1Down;
         context.m_mouseEvents[0].pContext = &context;
         context.m_mouseEvents[0].button = 1;
+        context.m_mouseEvents[0].isCtrlDown = bControl;
+        context.m_mouseEvents[0].scroll = scroll;
         context.m_mouseEvents[1].mousePos = mousePos;
         context.m_mouseEvents[1].isMouseDown = bMouse2Down;
         context.m_mouseEvents[1].pContext = &context;
         context.m_mouseEvents[1].button = 2;
+        context.m_mouseEvents[1].isCtrlDown = bControl;
+        context.m_mouseEvents[1].scroll = scroll;
         context.m_mouseEvents[2].mousePos = mousePos;
         context.m_mouseEvents[2].isMouseDown = bMouse3Down;
         context.m_mouseEvents[2].pContext = &context;
         context.m_mouseEvents[2].button = 3;
+        context.m_mouseEvents[2].isCtrlDown = bControl;
+        context.m_mouseEvents[2].scroll = scroll;
         context.m_pHoverControl = nullptr;
 
         // Update UIs
-        updateInternal(context, parentRect);
+        if (context.useNavigation && context.m_pLastHoverControl)
+        {
+            if (!isReallyEnabled(context.m_pLastHoverControl) ||
+                !isReallyVisible(context.m_pLastHoverControl) ||
+                context.m_pLastHoverControl->isClickThrough ||
+                isObstructed(context, this, context.m_pLastHoverControl, context.m_pLastHoverControl->getWorldRect(context)))
+            {
+                context.m_pLastHoverControl->release();
+                context.m_pLastHoverControl = nullptr;
+            }
+        }
+        if (context.useNavigation)
+        {
+            if (!context.m_pLastHoverControl)
+            {
+                // Find the first unobstructed navigable
+                visitChildrenFirstEnabled([this, &context](UIControl* pControl, const sUIRect& rect) -> bool
+                {
+                    if (!pControl->isNavigatable()) return true;
+                    if (!isObstructed(context, this, pControl, rect))
+                    {
+                        context.m_pHoverControl = pControl;
+                        return false;
+                    }
+                    return true;
+                }, parentRect);
+            }
+        }
+        else
+        {
+            updateInternal(context, parentRect);
+        }
+        if (context.useNavigation)
+        {
+            if (!context.m_pHoverControl)
+            {
+                context.m_pHoverControl = context.m_pLastHoverControl;
+            }
+            if (context.m_pHoverControl && 
+                (bNavR || bNavL || bNavU || bNavD))
+            {
+                auto worldRect = context.m_pHoverControl->getWorldRect(context);
+                auto pPreviousHover = context.m_pHoverControl;
+                float closest = 10000.f;
+                float closestH = 10000.f;
+
+                // Navigation
+                if (bNavR)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        if (rect.position.y > worldRect.position.y + worldRect.size.y) return true;
+                        if (rect.position.y + rect.size.y < worldRect.position.y) return true;
+                        float distance = rect.position.x - worldRect.position.x;
+                        if (distance < closest && distance > 0.f)
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+                else if (bNavL)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        if (rect.position.y > worldRect.position.y + worldRect.size.y) return true;
+                        if (rect.position.y + rect.size.y < worldRect.position.y) return true;
+                        float distance = worldRect.position.x - rect.position.x;
+                        if (distance < closest && distance > 0.f)
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+                else if (bNavD)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        float distance = rect.position.y - (worldRect.position.y + worldRect.size.y);
+                        float distanceH = std::abs(rect.position.x - worldRect.position.x);
+                        if ((distance < closest - 16.f && distance > 0.f) ||
+                            (distance < closest + 16.f && distance > 0.f && distanceH < closestH))
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                closestH = distanceH;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+                else if (bNavU)
+                {
+                    // Find closest down navigable
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const sUIRect& rect) -> bool
+                    {
+                        if (!pControl->isNavigatable()) return true;
+                        if (pControl == pPreviousHover) return true;
+                        float distance = worldRect.position.y - (rect.position.y + rect.size.y);
+                        float distanceH = std::abs(rect.position.x - worldRect.position.x);
+                        if ((distance < closest - 16.f && distance > 0.f) ||
+                            (distance < closest + 16.f && distance > 0.f && distanceH < closestH))
+                        {
+                            if (!isObstructed(context, this, pControl, rect))
+                            {
+                                closest = distance;
+                                closestH = distanceH;
+                                context.m_pHoverControl = pControl;
+                            }
+                        }
+                        return true;
+                    }, parentRect);
+                }
+            }
+        }
 
         // Resolve
         context.resolve();
@@ -1180,13 +1465,11 @@ namespace onut
         }
         if (m_pHoverControl)
         {
-            if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
-                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
+            if (!useNavigation)
             {
-                m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
-                if (m_pHoverControl->onMouseMove)
+                if (m_mouseEvents[0].scroll != 0)
                 {
-                    m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
+                    m_pHoverControl->onMouseScrollInternal(m_mouseEvents[0]);
                 }
             }
         }
@@ -1272,7 +1555,7 @@ namespace onut
 
                     // Check for double click events
                     auto now = std::chrono::steady_clock::now();
-                    if (now - m_clickTimes[i] <= doubleClickTime &&
+                    if (now - m_clickTimes[i] <= doubleClickTime && !useNavigation &&
                         m_clicksPos[i].x > m_mouseEvents[i].mousePos.x - 3 &&
                         m_clicksPos[i].y > m_mouseEvents[i].mousePos.y - 3 &&
                         m_clicksPos[i].x < m_mouseEvents[i].mousePos.x + 3 &&
@@ -1327,6 +1610,30 @@ namespace onut
                 if (m_pFocus->onGainFocus)
                 {
                     m_pFocus->onGainFocus(m_pFocus);
+                }
+            }
+        }
+
+        if (!useNavigation)
+        {
+            if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
+                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
+            {
+                if (m_pDownControls[0])
+                {
+                    m_pDownControls[0]->onMouseMoveInternal(m_mouseEvents[0]);
+                    if (m_pDownControls[0]->onMouseMove)
+                    {
+                        m_pDownControls[0]->onMouseMove(m_pDownControls[0], m_mouseEvents[0]);
+                    }
+                }
+                else if (m_pHoverControl)
+                {
+                    m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
+                    if (m_pHoverControl->onMouseMove)
+                    {
+                        m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
+                    }
                 }
             }
         }
@@ -1546,11 +1853,21 @@ namespace onut
         sUIRect worldRect = getWorldRect(parentRect);
 
         // Do children first, inverted
-        auto itend = m_children.rend();
-        for (auto it = m_children.rbegin(); it != itend; ++it)
+        if (context.useNavigation)
         {
-            auto pChild = *it;
-            pChild->updateInternal(context, worldRect);
+            for (auto pChild : m_children)
+            {
+                pChild->updateInternal(context, worldRect);
+            }
+        }
+        else
+        {
+            auto itend = m_children.rend();
+            for (auto it = m_children.rbegin(); it != itend; ++it)
+            {
+                auto pChild = *it;
+                pChild->updateInternal(context, worldRect);
+            }
         }
 
         if (!context.m_pHoverControl && !isClickThrough)
@@ -1806,8 +2123,62 @@ namespace onut
         {
             if (pMyItem == pItem) return;
         }
-        pItem->m_pTreeView = this;
+        pItem->retain();
+        auto pParent = pItem->getParent();
+        if (pParent) pParent->removeItem(pItem);
+        pItem->setTreeView(this);
         m_items.push_back(pItem);
+    }
+
+    void UITreeView::addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore)
+    {
+        if (!pBefore)
+        {
+            addItem(pItem);
+            return;
+        }
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->retain();
+        auto pParent = pItem->getParent();
+        if (pParent) pParent->removeItem(pItem);
+        pItem->setTreeView(this);
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pBefore)
+            {
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
+    }
+
+    void UITreeView::addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter)
+    {
+        if (!pAfter)
+        {
+            addItem(pItem);
+            return;
+        }
+        for (auto pMyItem : m_items)
+        {
+            if (pMyItem == pItem) return;
+        }
+        pItem->retain();
+        auto pParent = pItem->getParent();
+        if (pParent) pParent->removeItem(pItem);
+        pItem->setTreeView(this);
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pAfter)
+            {
+                ++it;
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
     }
 
     void UITreeView::removeItem(UITreeViewItem* pItem)
@@ -1818,7 +2189,9 @@ namespace onut
             if (m_items[i] == pItem)
             {
                 m_items.erase(m_items.begin() + i);
-                delete pItem;
+                pItem->m_pParent = nullptr;
+                pItem->setTreeView(nullptr);
+                pItem->release();
                 return;
             }
         }
@@ -1841,13 +2214,14 @@ namespace onut
         m_items.clear();
     }
 
-    UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton) const
+    UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton, sUIRect* pItemRect) const
     {
         // Render it's items
         sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
+        itemRect.position.y -= m_scroll;
         for (auto pItem : m_items)
         {
-            auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton);
+            auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton, pItemRect);
             if (pRet)
             {
                 return pRet;
@@ -1856,7 +2230,30 @@ namespace onut
         return nullptr;
     }
 
-    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton) const
+    float UITreeView::getTotalHeight(UITreeViewItem* pItem) const
+    {
+        float ret = itemHeight;
+        if (pItem)
+        {
+            if (pItem->isExpanded)
+            {
+                for (auto pChild : pItem->getItems())
+                {
+                    ret += getTotalHeight(pChild);
+                }
+            }
+        }
+        else
+        {
+            for (auto pChild : m_items)
+            {
+                ret += getTotalHeight(pChild);
+            }
+        }
+        return ret;
+    }
+
+    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton, sUIRect* pItemRect) const
     {
         if (pos.y >= rect.position.y &&
             pos.y <= rect.position.y + rect.size.y)
@@ -1864,10 +2261,12 @@ namespace onut
             if (pos.x >= rect.position.x + expandClickWidth ||
                 pos.x <= rect.position.x)
             {
+                if (pItemRect) *pItemRect = rect;
                 return pItem;
             }
             else if (pPickedExpandButton)
             {
+                if (pItemRect) *pItemRect = rect;
                 *pPickedExpandButton = true;
                 return pItem;
             }
@@ -1882,7 +2281,7 @@ namespace onut
                 rect.size.x -= xOffset;
                 for (auto pHisItem : pItem->m_items)
                 {
-                    auto pRet = getItemAtPosition(pHisItem, pos, rect, pPickedExpandButton);
+                    auto pRet = getItemAtPosition(pHisItem, pos, rect, pPickedExpandButton, pItemRect);
                     if (pRet)
                     {
                         return pRet;
@@ -1929,15 +2328,80 @@ namespace onut
         }
     }
 
+    void UITreeViewItem::setTreeView(UITreeView* pTreeView)
+    {
+        m_pTreeView = pTreeView;
+        for (auto pItem : m_items)
+        {
+            pItem->setTreeView(pTreeView);
+        }
+    }
+
     void UITreeViewItem::addItem(UITreeViewItem* pItem)
     {
-        for (auto pMyItem : m_items)
-        {
-            if (pMyItem == pItem) return;
-        }
+        pItem->retain();
+        if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
         pItem->m_pParent = this;
-        pItem->m_pTreeView = m_pTreeView;
+        pItem->setTreeView(m_pTreeView);
         m_items.push_back(pItem);
+    }
+
+    void UITreeViewItem::addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore)
+    {
+        if (!pBefore)
+        {
+            addItem(pItem);
+            return;
+        }
+        pItem->retain();
+        if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
+        pItem->m_pParent = this;
+        pItem->setTreeView(m_pTreeView);
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pBefore)
+            {
+                m_items.insert(it, pItem);
+                return;
+            }
+        }
+        pItem->release();
+    }
+
+    void UITreeViewItem::addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter)
+    {
+        if (!pAfter)
+        {
+            addItem(pItem);
+            return;
+        }
+        pItem->retain();
+        if (pItem->m_pParent) pItem->m_pParent->removeItem(pItem);
+        pItem->m_pParent = this;
+        pItem->setTreeView(m_pTreeView);
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            if (*it == pAfter)
+            {
+                m_items.insert(it + 1, pItem);
+                return;
+            }
+        }
+        pItem->release();
+    }
+
+    void UITreeViewItem::retain()
+    {
+        ++m_refCount;
+    }
+
+    void UITreeViewItem::release()
+    {
+        --m_refCount;
+        if (m_refCount <= 0)
+        {
+            delete this;
+        }
     }
 
     void UITreeViewItem::removeItem(UITreeViewItem* pItem)
@@ -1948,7 +2412,9 @@ namespace onut
             if (m_items[i] == pItem)
             {
                 m_items.erase(m_items.begin() + i);
-                delete pItem;
+                pItem->setTreeView(nullptr);
+                pItem->m_pParent = nullptr;
+                pItem->release();
                 return;
             }
         }
@@ -1972,6 +2438,8 @@ namespace onut
             {
                 value = 0.f;
             }
+            if (value < min) value = min;
+            if (value > max) value = max;
             std::stringstream ssOut;
             ssOut << std::fixed << std::setprecision(static_cast<std::streamsize>(m_decimalPrecision)) << value;
             textComponent.text = ssOut.str();
@@ -2385,12 +2853,29 @@ namespace onut
 
         // Render it's items
         sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
+        itemRect.position.y -= m_scroll;
         const auto& itemCallback = context.getStyle<UITreeViewItem>(getStyle());
         if (itemCallback)
         {
             for (auto pItem : m_items)
             {
                 pItem->render(itemCallback, this, rect, itemRect);
+            }
+        }
+
+        if (allowReorder && m_isDragging && !m_selectedItems.empty())
+        {
+            auto pItem = m_selectedItems.front();
+            itemRect.position = m_dragMousePos;
+            itemRect.position.y += 8.f;
+            itemRect.position.x += 8.f;
+            pItem->renderDrag(itemCallback, this, rect, itemRect);
+            if (m_dragAfterItem || m_dragBeforeItem)
+            {
+                if (context.drawInsert)
+                {
+                    context.drawInsert(m_dragInBetweenRect);
+                }
             }
         }
     }
@@ -2537,8 +3022,29 @@ namespace onut
             }
             else
             {
-                unselectAll();
-                addSelectedItem(pPicked);
+                if (!evt.isCtrlDown)
+                {
+                    unselectAll();
+                    addSelectedItem(pPicked);
+                }
+                else
+                {
+                    bool found = false;
+                    for (auto it = m_selectedItems.begin(); it != m_selectedItems.end(); ++it)
+                    {
+                        auto pItem = *it;
+                        if (pItem == pPicked)
+                        {
+                            m_selectedItems.erase(it);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        addSelectedItem(pPicked);
+                    }
+                }
                 if (onSelectionChanged)
                 {
                     UITreeViewSelectEvent myEvt;
@@ -2548,6 +3054,150 @@ namespace onut
                 }
             }
         }
+        if (allowReorder)
+        {
+            m_mousePosOnDragStart = evt.mousePos;
+        }
+    }
+
+    void UITreeView::onMouseMoveInternal(const UIMouseEvent& evt)
+    {
+        if (hasFocus(*evt.pContext) && evt.isMouseDown)
+        {
+            if (allowReorder)
+            {
+                if (!m_isDragging)
+                {
+                    if (std::abs(m_mousePosOnDragStart.y - evt.mousePos.y) >= 3)
+                    {
+                        m_isDragging = true;
+                    }
+                }
+                else
+                {
+                    m_dragMousePos = evt.mousePos;
+                    auto worldRect = getWorldRect(*evt.pContext);
+                    bool pickedExpandButton = false;
+                    m_dragBeforeItem = nullptr;
+                    m_dragAfterItem = nullptr;
+                    auto pPicked = getItemAtPosition(evt.mousePos, worldRect, &pickedExpandButton, &m_dragInBetweenRect);
+                    if (pPicked)
+                    {
+                        if (m_dragHoverItem)
+                        {
+                            m_dragHoverItem->m_isSelected = false;
+                            m_dragHoverItem = nullptr;
+                        }
+                        if (evt.mousePos.y - m_dragInBetweenRect.position.y < itemHeight / 4)
+                        {
+                            m_dragBeforeItem = pPicked;
+                            m_dragInBetweenRect.size.y = 2.f;
+                            m_dragInBetweenRect.position.y -= 1.f;
+                        }
+                        else if (evt.mousePos.y > m_dragInBetweenRect.position.y + m_dragInBetweenRect.size.y - itemHeight / 4)
+                        {
+                            m_dragAfterItem = pPicked;
+                            m_dragInBetweenRect.position.y += m_dragInBetweenRect.size.y - 1.f;
+                            m_dragInBetweenRect.size.y = 2.f;
+                        }
+                        if (!pPicked->getIsSelected() && !m_dragBeforeItem && !m_dragAfterItem)
+                        {
+                            m_dragHoverItem = pPicked;
+                            m_dragHoverItem->m_isSelected = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void UITreeView::onMouseUpInternal(const UIMouseEvent& evt)
+    {
+        if (!m_isDragging) return;
+
+        auto dragHover = m_dragHoverItem;
+        auto dragBefore = m_dragBeforeItem;
+        auto dragAfter = m_dragAfterItem;
+
+        m_isDragging = false;
+        if (m_dragHoverItem)
+        {
+            m_dragHoverItem->m_isSelected = false;
+        }
+        m_dragHoverItem = nullptr;
+        m_dragBeforeItem = nullptr;
+        m_dragAfterItem = nullptr;
+
+        if (dragHover)
+        {
+            for (auto pItem : m_selectedItems)
+            {
+                dragHover->addItem(pItem);
+            }
+            dragHover->isExpanded = true;
+            if (onMoveItemInto)
+            {
+                UITreeViewMoveEvent myEvt;
+                myEvt.pContext = evt.pContext;
+                myEvt.pTarget = dragHover;
+                myEvt.pSelectedItems = &m_selectedItems;
+                onMoveItemInto(this, myEvt);
+            }
+        }
+        else if (dragBefore)
+        {
+            int modified = 0;
+            for (auto pItem : m_selectedItems)
+            {
+                if (pItem == dragBefore) continue;
+                if (dragBefore->m_pParent)
+                {
+                    dragBefore->m_pParent->addItemBefore(pItem, dragBefore);
+                    ++modified;
+                }
+            }
+            dragBefore->isExpanded = true;
+            if (onMoveItemBefore && modified)
+            {
+                UITreeViewMoveEvent myEvt;
+                myEvt.pContext = evt.pContext;
+                myEvt.pTarget = dragBefore;
+                myEvt.pSelectedItems = &m_selectedItems;
+                onMoveItemBefore(this, myEvt);
+            }
+        }
+        else if (dragAfter)
+        {
+            int modified = 0;
+            for (auto pItem : m_selectedItems)
+            {
+                if (pItem == dragAfter) continue;
+                if (dragAfter->m_pParent)
+                {
+                    dragAfter->m_pParent->addItemAfter(pItem, dragAfter);
+                    ++modified;
+                }
+            }
+            dragAfter->isExpanded = true;
+            if (onMoveItemAfter && modified)
+            {
+                UITreeViewMoveEvent myEvt;
+                myEvt.pContext = evt.pContext;
+                myEvt.pTarget = dragAfter;
+                myEvt.pSelectedItems = &m_selectedItems;
+                onMoveItemAfter(this, myEvt);
+            }
+        }
+    }
+
+    void UITreeView::onMouseScrollInternal(const UIMouseEvent& evt)
+    {
+        m_scroll -= evt.scroll;
+        auto contentSize = getTotalHeight();
+        auto worldRect = getWorldRect(*evt.pContext);
+        auto scrollMaxSize = contentSize - worldRect.size.y;
+        if (m_scroll > scrollMaxSize) m_scroll = scrollMaxSize;
+        if (m_scroll < 0) m_scroll = 0.f;
     }
 
     void UITextBox::onGainFocusInternal(const UIFocusEvent& evt)
@@ -2581,30 +3231,83 @@ namespace onut
     void UITextBox::onMouseDownInternal(const UIMouseEvent& evt)
     {
         m_isSelecting = true;
-        const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
-        if (callback)
+        if (getIsNumerical())
         {
-            auto caretPos = callback->getCaretPos(this, evt.localMousePos);
-            m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = caretPos;
+            m_mousePosOnDown = evt.mousePos.y;
+            m_valueOnDown = getFloat();
+        }
+        else
+        {
+            const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
+            if (callback)
+            {
+                auto caretPos = callback->getCaretPos(this, evt.localMousePos);
+                m_cursorPos = m_selectedTextRegion[0] = m_selectedTextRegion[1] = caretPos;
+            }
         }
     }
 
     void UITextBox::onMouseMoveInternal(const UIMouseEvent& evt)
     {
         if (!m_isSelecting) return; // Don't care
-        const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
-        if (callback)
+        if (getIsNumerical())
         {
-            auto caretPos = callback->getCaretPos(this, evt.localMousePos);
-            m_cursorPos = caretPos;
-            m_selectedTextRegion[0] = std::min<>(m_cursorPos, m_selectedTextRegion[0]);
-            m_selectedTextRegion[1] = std::max<>(m_cursorPos, m_selectedTextRegion[1]);
+            if (!m_isSpinning)
+            {
+                auto mouseDiff = evt.mousePos.y - m_mousePosOnDown;
+                if (std::abs(mouseDiff) >= 3.f)
+                {
+                    m_isSpinning = true;
+                    m_mousePosOnDown = evt.mousePos.y;
+                    if (onNumberSpinStart)
+                    {
+                        UITextBoxEvent evt2;
+                        evt2.pContext = evt.pContext;
+                        onNumberSpinStart(this, evt2);
+                    }
+                }
+            }
+            if (m_isSpinning)
+            {
+                auto mouseDiff = evt.mousePos.y - m_mousePosOnDown;
+                auto valueDiff = mouseDiff * -step;
+                setFloat(m_valueOnDown + valueDiff);
+                selectAll();
+                if (onTextChanged)
+                {
+                    UITextBoxEvent evt2;
+                    evt2.pContext = evt.pContext;
+                    onTextChanged(this, evt2);
+                }
+            }
+        }
+        else
+        {
+            const auto& callback = evt.pContext->getTextCaretSolver<UITextBox>(getStyle());
+            if (callback)
+            {
+                auto caretPos = callback->getCaretPos(this, evt.localMousePos);
+                m_cursorPos = caretPos;
+                m_selectedTextRegion[0] = std::min<>(m_cursorPos, m_selectedTextRegion[0]);
+                m_selectedTextRegion[1] = std::max<>(m_cursorPos, m_selectedTextRegion[1]);
+            }
         }
     }
 
     void UITextBox::onMouseUpInternal(const UIMouseEvent& evt)
     {
         m_isSelecting = false;
+        if (m_isSpinning)
+        {
+            m_isSpinning = false;
+            if (onNumberSpinEnd)
+            {
+                UITextBoxEvent evt2;
+                evt2.pContext = evt.pContext;
+                onNumberSpinEnd(this, evt2);
+                evt.pContext->focus(nullptr);
+            }
+        }
     }
 
     void UITextBox::selectAll()

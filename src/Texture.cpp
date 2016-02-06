@@ -7,85 +7,30 @@
 
 namespace onut
 {
-    Texture* Texture::createRenderTarget(const sSize& size)
+    Texture* Texture::createRenderTarget(const sSize& size, bool willUseFX)
     {
-#ifdef EASY_GRAPHIX
         auto pRet = new Texture();
-        pRet->m_pTextureView = egCreateTexture2D(static_cast<uint32_t>(size.x),
-                                                 static_cast<uint32_t>(size.y),
-                                                 nullptr, 0, EG_RENDER_TARGET);
         pRet->m_size = size;
+        pRet->createRenderTargetViews(pRet->m_pTexture, pRet->m_pTextureView, pRet->m_pRenderTargetView);
+        if (willUseFX)
+        {
+            pRet->createRenderTargetViews(pRet->m_pTextureFX, pRet->m_pTextureViewFX, pRet->m_pRenderTargetViewFX);
+        }
         return pRet;
-#else
-        auto pDevice = ORenderer->getDevice();
+    }
 
-        auto pRet = new Texture();
-
-        D3D11_TEXTURE2D_DESC textureDesc = {0};
-        HRESULT result;
-        D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-        D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-        memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
-        memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
-
-        pRet->m_size = size;
-
-        // Setup the render target texture description.
-        textureDesc.Width = size.x;
-        textureDesc.Height = size.y;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-        textureDesc.CPUAccessFlags = 0;
-        textureDesc.MiscFlags = 0;
-
-        // Create the render target texture.
-        result = pDevice->CreateTexture2D(&textureDesc, NULL, &pRet->m_pTexture);
-        if (result != S_OK)
+    Texture* Texture::createScreenRenderTarget(bool willBeUsedInEffects)
+    {
+        auto pRet = createRenderTarget({OScreenW, OScreenH}, willBeUsedInEffects);
+        if (pRet)
         {
-            assert(false && "Failed CreateTexture2D");
-            return nullptr;
+            pRet->m_isScreenRenderTarget = true;
         }
-
-        // Setup the description of the render target view.
-        renderTargetViewDesc.Format = textureDesc.Format;
-        renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-        // Create the render target view.
-        result = pDevice->CreateRenderTargetView(pRet->m_pTexture, &renderTargetViewDesc, &pRet->m_pRenderTargetView);
-        if (result != S_OK)
-        {
-            assert(false && "Failed CreateRenderTargetView");
-            return nullptr;
-        }
-
-        // Setup the description of the shader resource view.
-        shaderResourceViewDesc.Format = textureDesc.Format;
-        shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-        shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-        // Create the shader resource view.
-        result = pDevice->CreateShaderResourceView(pRet->m_pTexture, &shaderResourceViewDesc, &pRet->m_pTextureView);
-        if (result != S_OK)
-        {
-            assert(false && "Failed CreateShaderResourceView");
-            return nullptr;
-        }
-
         return pRet;
-#endif /* !EASY_GRAPHIX */
     }
 
     Texture* Texture::createDynamic(const sSize& size)
     {
-#ifdef EASY_GRAPHIX
-        return nullptr;
-#else /* EASY_GRAPHIX */
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
         auto pRet = new Texture();
@@ -113,7 +58,6 @@ namespace onut
         pRet->m_pTexture = pTexture;
 
         return pRet;
-#endif /* !EASY_GRAPHIX */
     }
 
     void Texture::setData(const uint8_t *in_pData)
@@ -146,7 +90,14 @@ namespace onut
             pData[2] = pData[2] * pData[3] / 255;
         }
 
-        return createFromData(size, &(image[0]), generateMipmaps);
+        pRet = createFromData(size, &(image[0]), generateMipmaps);
+        pRet->m_name = filename.substr(filename.find_last_of("/\\") + 1);
+        return pRet;
+    }
+
+    Texture* Texture::createFromFileData(const std::vector<uint8_t>& data, bool in_generateMipmaps)
+    {
+        return createFromFileData(data.data(), data.size(), in_generateMipmaps);
     }
 
     Texture* Texture::createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps)
@@ -175,15 +126,6 @@ namespace onut
 
     Texture* Texture::createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps)
     {
-#ifdef EASY_GRAPHIX
-        auto pRet = new Texture();
-        pRet->m_pTextureView = egCreateTexture2D(static_cast<uint32_t>(size.x),
-                                                 static_cast<uint32_t>(size.y),
-                                                 in_pData, EG_U8 | EG_RGBA, 
-                                                 in_generateMipmaps ? EG_GENERATE_MIPMAPS : static_cast<EG_TEXTURE_FLAGS>(0));
-        pRet->m_size = size;
-        return pRet;
-#else /* EASY_GRAPHIX */
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
         auto pRet = new Texture();
@@ -202,7 +144,7 @@ namespace onut
         allowMipMaps = allowMipMaps && in_generateMipmaps;
         if (allowMipMaps)
         {
-            UINT biggest = max(w2, h2);
+            UINT biggest = std::max<>(w2, h2);
             UINT w2t = w2;
             UINT h2t = h2;
             UINT totalSize = w2t * h2t * 4;
@@ -299,44 +241,86 @@ namespace onut
         pRet->m_pTextureView = pTextureView;
 
         return pRet;
-#endif /* EASY_GRAPHIX */
     }
 
     Texture::~Texture()
     {
-#ifdef EASY_GRAPHIX
-        egDestroyTexture(&m_pTextureView);
-#else
         if (m_pTextureView) m_pTextureView->Release();
         if (m_pTexture) m_pTexture->Release();
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
-#endif
+        if (m_pTextureViewFX) m_pTextureViewFX->Release();
+        if (m_pTextureFX) m_pTextureFX->Release();
+        if (m_pRenderTargetViewFX) m_pRenderTargetViewFX->Release();
     }
 
     void Texture::bind(int slot)
     {
-#ifdef EASY_GRAPHIX
-        switch (slot)
-        {
-            case 0:
-                egBindDiffuse(m_pTextureView);
-                break;
-            case 1:
-                egBindNormal(m_pTextureView);
-                break;
-            case 2:
-                egBindMaterial(m_pTextureView);
-                break;
-        }
-#else
         ORenderer->getDeviceContext()->PSSetShaderResources(slot, 1, &m_pTextureView);
-#endif
+    }
+
+    void Texture::resizeTarget(const sSize& size)
+    {
+        m_size = size;
+
+        // Release
+        if (m_pTexture) m_pTexture->Release();
+        if (m_pTextureView) m_pTextureView->Release();
+        if (m_pRenderTargetView)
+        {
+            m_pRenderTargetView->Release();
+            m_pTexture = nullptr;
+            m_pTextureView = nullptr;
+            m_pRenderTargetView = nullptr;
+            createRenderTargetViews(m_pTexture, m_pTextureView, m_pRenderTargetView);
+        }
+
+        if (m_pTextureFX) m_pTextureFX->Release();
+        if (m_pTextureViewFX) m_pTextureViewFX->Release();
+        if (m_pRenderTargetViewFX)
+        {
+            m_pRenderTargetViewFX->Release();
+            m_pTextureFX = nullptr;
+            m_pTextureViewFX = nullptr;
+            m_pRenderTargetViewFX = nullptr;
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
     }
 
     void Texture::bindRenderTarget()
     {
         if (m_pRenderTargetView)
         {
+            if (m_isScreenRenderTarget)
+            {
+                if (m_size.x != OScreenW ||
+                    m_size.y != OScreenH)
+                {
+                    m_size = {OScreenW, OScreenH};
+
+                    // Release
+                    if (m_pTexture) m_pTexture->Release();
+                    m_pTexture = nullptr;
+                    if (m_pTextureView) m_pTextureView->Release();
+                    m_pTextureView = nullptr;
+                    if (m_pRenderTargetView)
+                    {
+                        m_pRenderTargetView->Release();
+                        m_pRenderTargetView = nullptr;
+                        createRenderTargetViews(m_pTexture, m_pTextureView, m_pRenderTargetView);
+                    }
+
+                    if (m_pTextureFX) m_pTextureFX->Release();
+                    m_pTextureFX = nullptr;
+                    if (m_pTextureViewFX) m_pTextureViewFX->Release();
+                    m_pTextureViewFX = nullptr;
+                    if (m_pRenderTargetViewFX)
+                    {
+                        m_pRenderTargetViewFX->Release();
+                        createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+                    }
+                    m_pRenderTargetViewFX = nullptr;
+                }
+            }
             ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
         }
     }
@@ -349,5 +333,253 @@ namespace onut
     void Texture::clearRenderTarget(const Color& color)
     {
         ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, &color.x);
+    }
+
+    void Texture::blur(float amount)
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        int i = 0;
+        while (amount > 0.f)
+        {
+            ORenderer->setKernelSize({
+                1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
+                1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
+            });
+            amount -= 6.f;
+
+            ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+            ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+            ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+            ORenderer->drawBlurH();
+
+            ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+            ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+            ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureViewFX);
+            ORenderer->drawBlurV();
+            i += 1;
+        }
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+
+    void Texture::sepia(const Vector3& tone, float saturation, float sepiaAmount)
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+        ORenderer->setSepia(tone, saturation, sepiaAmount);
+        ORenderer->drawSepia();
+
+        std::swap(m_pTexture, m_pTextureFX);
+        std::swap(m_pTextureView, m_pTextureViewFX);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+
+    void Texture::crt()
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+        ORenderer->setCRT(getSizef());
+        ORenderer->drawCRT();
+
+        std::swap(m_pTexture, m_pTextureFX);
+        std::swap(m_pTextureView, m_pTextureViewFX);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+
+    void Texture::cartoon(const Vector3& tone)
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+        ORenderer->setCartoon(tone);
+        ORenderer->drawCartoon();
+
+        std::swap(m_pTexture, m_pTextureFX);
+        std::swap(m_pTextureView, m_pTextureViewFX);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+        
+    void Texture::vignette(float amount)
+    {
+        if (!m_pRenderTargetView) return; // Not a render target
+        if (!m_pRenderTargetViewFX)
+        {
+            createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
+        }
+
+        ID3D11RenderTargetView* pPrevRT = nullptr;
+        const FLOAT clearColor[] = {0, 0, 0, 0};
+
+        ORenderer->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
+        UINT prevViewportCount = 1;
+        D3D11_VIEWPORT pPrevViewports[8];
+        ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
+
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
+        ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
+        ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
+        ORenderer->setVignette({
+            1.f / static_cast<float>(m_size.x),
+            1.f / static_cast<float>(m_size.y)
+        }, amount);
+        ORenderer->drawVignette();
+
+        std::swap(m_pTexture, m_pTextureFX);
+        std::swap(m_pTextureView, m_pTextureViewFX);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+
+        ORenderer->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
+        ORenderer->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+
+        ORenderer->resetState();
+    }
+
+    void Texture::createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView)
+    {
+        auto pDevice = ORenderer->getDevice();
+
+        D3D11_TEXTURE2D_DESC textureDesc = {0};
+        HRESULT result;
+        D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+        D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+        memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
+        memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
+
+        // Setup the render target texture description.
+        textureDesc.Width = m_size.x;
+        textureDesc.Height = m_size.y;
+        textureDesc.MipLevels = 1;
+        textureDesc.ArraySize = 1;
+        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        textureDesc.SampleDesc.Count = 1;
+        textureDesc.Usage = D3D11_USAGE_DEFAULT;
+        textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        textureDesc.CPUAccessFlags = 0;
+        textureDesc.MiscFlags = 0;
+
+        // Create the render target texture.
+        result = pDevice->CreateTexture2D(&textureDesc, NULL, &pTexture);
+        if (result != S_OK)
+        {
+            assert(false && "Failed CreateTexture2D");
+            return;
+        }
+
+        // Setup the description of the render target view.
+        renderTargetViewDesc.Format = textureDesc.Format;
+        renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+        // Create the render target view.
+        result = pDevice->CreateRenderTargetView(pTexture, &renderTargetViewDesc, &pRenderTargetView);
+        if (result != S_OK)
+        {
+            assert(false && "Failed CreateRenderTargetView");
+            return;
+        }
+
+        // Setup the description of the shader resource view.
+        shaderResourceViewDesc.Format = textureDesc.Format;
+        shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+        shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+        // Create the shader resource view.
+        result = pDevice->CreateShaderResourceView(pTexture, &shaderResourceViewDesc, &pTextureView);
+        if (result != S_OK)
+        {
+            assert(false && "Failed CreateShaderResourceView");
+            return;
+        }
     }
 }

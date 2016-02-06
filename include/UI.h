@@ -2,10 +2,20 @@
 #include <chrono>
 #include <cinttypes>
 #include <functional>
+#include <memory>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
+
+#ifdef WIN32
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+#endif
 
 // Forward delcare needed rapidjson classes.
 namespace rapidjson
@@ -192,6 +202,8 @@ namespace onut
         bool        isMouseDown = false;
         UIContext*  pContext;
         int         button = 1;
+        bool        isCtrlDown = false;
+        float       scroll = 0.f;
     };
 
     static const uintptr_t KEY_END = 0x23;
@@ -226,6 +238,14 @@ namespace onut
     {
     public:
         std::vector<UITreeViewItem*>*   pSelectedItems = nullptr;
+        UIContext*                      pContext = nullptr;
+    };
+
+    class UITreeViewMoveEvent
+    {
+    public:
+        std::vector<UITreeViewItem*>*   pSelectedItems = nullptr;
+        UITreeViewItem*                 pTarget = nullptr;
         UIContext*                      pContext = nullptr;
     };
 
@@ -375,6 +395,7 @@ namespace onut
         UIControl* getFocusControl() const { return m_pFocus; }
 
         std::function<sUIVector2(const onut::UITextBox* pTextBox, const std::string &text)> textSize = nullptr;
+        std::function<void(const onut::sUIRect& rect)> drawInsert = nullptr;
 
         std::function<void(UIControl*, const sUIRect&, const sUIColor&)> drawRect = 
             [](UIControl*, const sUIRect&, const sUIColor&){};
@@ -389,6 +410,8 @@ namespace onut
             [](bool enableClipping, const sUIRect& rect){};
 
         std::chrono::steady_clock::duration doubleClickTime = std::chrono::milliseconds(500);
+
+        bool useNavigation = false;
 
     private:
         void resolve();
@@ -489,6 +512,7 @@ namespace onut
         void save(const std::string& filename) const;
 
         virtual eUIType getType() const { return eUIType::UI_CONTROL; }
+        virtual bool isNavigatable() const { return false; }
 
         // Child methods
         void add(UIControl* pChild);
@@ -519,7 +543,7 @@ namespace onut
         void release();
         int32_t getRefCount() const { return m_refCount; }
 
-        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false);
+        void update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down = false, bool bMouse3Down = false, bool bNavL = false, bool bNavR = false, bool bNavU = false, bool bNavD = false, bool bControl = false, float scroll = 0.f);
         void render(UIContext& context);
 
         sUIRect getWorldRect(const UIContext& context) const;
@@ -565,6 +589,13 @@ namespace onut
         using TfnKeyEvent = std::function<void(UIControl*, const UIKeyEvent&)>;
         TfnKeyEvent onKeyDown;
 
+        bool visit(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitChildrenFirst(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitChildrenFirstEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+        bool visitChildrenFirstVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect);
+
     protected:
         friend UIContext;
 
@@ -578,6 +609,7 @@ namespace onut
         virtual void onClickInternal(const UIMouseEvent& evt) {}
         virtual void onMouseDownInternal(const UIMouseEvent& evt) {}
         virtual void onMouseMoveInternal(const UIMouseEvent& evt) {}
+        virtual void onMouseScrollInternal(const UIMouseEvent& evt) {}
         virtual void onMouseUpInternal(const UIMouseEvent& evt) {}
         virtual void onGainFocusInternal(const UIFocusEvent& evt) {}
         virtual void onLoseFocusInternal(const UIFocusEvent& evt) {}
@@ -610,6 +642,7 @@ namespace onut
         UIButton(const UIButton& other);
 
         virtual eUIType getType() const override { return eUIType::UI_BUTTON; }
+        bool isNavigatable() const override { return true; }
 
         sUIScale9Component  scale9Component;
         sUITextComponent    textComponent;
@@ -690,6 +723,7 @@ namespace onut
 
         bool getIsChecked() const { return m_isChecked; }
         void setIsChecked(bool in_isChecked);
+        bool isNavigatable() const override { return true; }
 
         std::function<void(UICheckBox*, const UICheckEvent&)> onCheckChanged;
 
@@ -710,7 +744,7 @@ namespace onut
         friend UIControl;
 
     public:
-        UITreeView() {}
+        UITreeView() { }
         UITreeView(const UITreeView& other);
         virtual ~UITreeView();
 
@@ -720,8 +754,11 @@ namespace onut
         float expandedXOffset = 16.f;
         float expandClickWidth = 18.f;
         float itemHeight = 18.f;
+        bool allowReorder = false;
 
         void addItem(UITreeViewItem* pItem);
+        void addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore);
+        void addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter);
         void removeItem(UITreeViewItem* pItem);
         void clear();
 
@@ -732,19 +769,34 @@ namespace onut
         void expandTo(UITreeViewItem* pItem);
 
         std::function<void(UITreeView*, const UITreeViewSelectEvent&)> onSelectionChanged;
+        std::function<void(UITreeView*, const UITreeViewMoveEvent&)> onMoveItemInto;
+        std::function<void(UITreeView*, const UITreeViewMoveEvent&)> onMoveItemBefore;
+        std::function<void(UITreeView*, const UITreeViewMoveEvent&)> onMoveItemAfter;
 
     protected:
         virtual void load(const rapidjson::Value& jsonNode) override;
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
         virtual void renderControl(const UIContext& context, const sUIRect& rect) override;
         virtual void onMouseDownInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseMoveInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseUpInternal(const UIMouseEvent& evt) override;
+        virtual void onMouseScrollInternal(const UIMouseEvent& evt) override;
 
     private:
-        UITreeViewItem* getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton = nullptr) const;
-        UITreeViewItem* getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton = nullptr) const;
+        UITreeViewItem* getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton = nullptr, sUIRect* pItemRect = nullptr) const;
+        UITreeViewItem* getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton = nullptr, sUIRect* pItemRect = nullptr) const;
+        float getTotalHeight(UITreeViewItem* pItem = nullptr) const;
 
         std::vector<UITreeViewItem*>    m_items;
         std::vector<UITreeViewItem*>    m_selectedItems;
+        float                           m_scroll = 0.f;
+        bool                            m_isDragging = false;
+        sUIVector2                      m_mousePosOnDragStart;
+        sUIVector2                      m_dragMousePos;
+        UITreeViewItem*                 m_dragHoverItem = nullptr;
+        UITreeViewItem*                 m_dragBeforeItem = nullptr;
+        UITreeViewItem*                 m_dragAfterItem = nullptr;
+        sUIRect                         m_dragInBetweenRect;
     };
 
     class UITreeViewItem
@@ -759,17 +811,26 @@ namespace onut
         bool        isExpanded = false;
         std::string text;
         void*       pUserData = nullptr;
+        std::shared_ptr<void> pSharedUserData = nullptr;
+        float       opacity = 1.f;
 
         UITreeViewItem* getParent() const { return m_pParent; }
 
         void addItem(UITreeViewItem* pItem);
+        void addItemBefore(UITreeViewItem* pItem, UITreeViewItem* pBefore);
+        void addItemAfter(UITreeViewItem* pItem, UITreeViewItem* pAfter);
         void removeItem(UITreeViewItem* pItem);
 
         UITreeView* getTreeView() const { return m_pTreeView; }
+        void setTreeView(UITreeView* pTreeView);
 
         const std::vector<UITreeViewItem*>& getItems() const { return m_items; }
 
         bool getIsSelected() const { return m_isSelected; }
+
+        void retain();
+        void release();
+        int32_t getRefCount() const { return m_refCount; }
 
     private:
         template<typename TfnCallback>
@@ -794,10 +855,22 @@ namespace onut
             }
         }
 
+        template<typename TfnCallback>
+        void renderDrag(const TfnCallback& itemCallback, const UITreeView* pTreeView, const sUIRect& treeViewRect, sUIRect& rect)
+        {
+            auto isSelected = m_isSelected;
+            m_isSelected = false;
+            opacity = .5f;
+            itemCallback->render(this, rect);
+            opacity = 1.f;
+            m_isSelected = isSelected;
+        }
+
         std::vector<UITreeViewItem*>    m_items;
         UITreeView*                     m_pTreeView = nullptr;
         bool                            m_isSelected = false;
         UITreeViewItem*                 m_pParent = nullptr;
+        int32_t                         m_refCount = 0;
     };
 
     class UITextBox : public UIControl
@@ -812,12 +885,18 @@ namespace onut
 
         sUITextComponent textComponent;
         sUIScale9Component scale9Component;
+        float min = -std::numeric_limits<float>::max();
+        float max = std::numeric_limits<float>::max();
+        float step = 1.f;
 
         const std::string::size_type* getSelectedTextRegion() const { return m_selectedTextRegion; }
         std::string::size_type getCursorPos() const { return m_cursorPos; }
         bool isCursorVisible() const;
+        bool isNavigatable() const override { return true; }
 
         std::function<void(UITextBox*, const UITextBoxEvent&)> onTextChanged;
+        std::function<void(UITextBox*, const UITextBoxEvent&)> onNumberSpinStart;
+        std::function<void(UITextBox*, const UITextBoxEvent&)> onNumberSpinEnd;
 
         void selectAll();
 
@@ -854,5 +933,8 @@ namespace onut
         bool                                    m_isTextChanged = false;
         bool                                    m_isNumerical = false;
         int                                     m_decimalPrecision = 0;
+        float                                   m_mousePosOnDown;
+        float                                   m_valueOnDown;
+        bool                                    m_isSpinning = false;
     };
 }

@@ -17,7 +17,7 @@ onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 onut::GamePad*                      g_gamePads[4] = {nullptr};
 onut::EventManager*                 OEvent = nullptr;
-onut::ContentManager<>*             OContentManager = nullptr;
+onut::ContentManager*               OContentManager = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous<onut::Pool<>>     g_mainSync;
@@ -27,6 +27,7 @@ onut::InputDevice*                  g_inputDevice = nullptr;
 onut::Input*                        OInput = nullptr;
 onut::UIContext*                    OUIContext = nullptr;
 onut::UIControl*                    OUI = nullptr;
+onut::Music*                        OMusic = nullptr;
 
 
 // So commonly used stuff
@@ -48,19 +49,6 @@ namespace onut
             ORenderer->setScissor(enabled, onut::UI2Onut(rect));
             OSB->begin();
         };
-
-#if EASY_GRAPHIX
-        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pControl, const onut::sUIRect& rect)
-        {
-            OSB->end();
-            egEnable(EG_BLUR);
-            egBlur(32.f);
-            egPostProcess();
-            ORenderer->resetState();
-            OSB->begin();
-            OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .35f));
-        });
-#endif
 
         auto getTextureForState = [](onut::UIControl *pControl, const std::string &filename)
         {
@@ -189,6 +177,14 @@ namespace onut
         {
             OUIContext->keyDown(key);
         };
+
+        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+        {
+            OSB->end();
+            ORenderer->getRenderTarget()->blur();
+            OSB->begin();
+            OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .5f));
+        });
     }
 
     void createServices()
@@ -210,7 +206,7 @@ namespace onut
         OPB = new PrimitiveBatch();
 
         // Content
-        OContentManager = new ContentManager<>();
+        OContentManager = new ContentManager();
         OContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
@@ -278,10 +274,14 @@ namespace onut
 
         // UI Context
         createUI();
+
+        // Music
+        OMusic = new onut::Music();
     }
 
     void cleanup()
     {
+        delete OMusic;
         delete OUIContext;
         delete OParticles;
         delete g_pAudioEngine;
@@ -319,14 +319,30 @@ namespace onut
         MSG msg = {0};
         while (true)
         {
-            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+            if (OSettings->getIsEditorMode())
             {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-
-                if (msg.message == WM_QUIT)
+                if (GetMessage(&msg, 0, 0, 0) >= 0)
                 {
-                    break;
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+
+                    if (msg.message == WM_QUIT)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+
+                    if (msg.message == WM_QUIT)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -353,7 +369,21 @@ namespace onut
                 {
                     gamePad->update();
                 }
-                OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3));
+                if (OUIContext->useNavigation)
+                {
+                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OGamePadPressed(OABtn), false, false, 
+                                OGamePadJustPressed(OLeftBtn) || OGamePadJustPressed(OLLeftBtn),
+                                OGamePadJustPressed(ORightBtn) || OGamePadJustPressed(OLRightBtn),
+                                OGamePadJustPressed(OUpBtn) || OGamePadJustPressed(OLUpBtn),
+                                OGamePadJustPressed(ODownBtn) || OGamePadJustPressed(OLDownBtn),
+                                0.f);
+                }
+                else
+                {
+                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3),
+                                false, false, false, false, 
+                                OPressed(OINPUT_LCONTROL), OInput->getStateValue(OINPUT_MOUSEZ));
+                }
                 AnimManager::getGlobalManager()->update();
                 OEvent->processEvents();
                 OParticles->update();

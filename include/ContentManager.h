@@ -1,14 +1,13 @@
 #pragma once
-#include <unordered_map>
-#include <mutex>
-#include <string>
-
 #include "Asynchronous.h"
-#include "StringUtils.h"
+#include "Log.h"
+#include "Utils.h"
+
+#include <string>
+#include <unordered_map>
 
 namespace onut
 {
-    template<bool TuseAssert = true>
     class ContentManager
     {
     public:
@@ -42,6 +41,21 @@ namespace onut
         void clearSearchPaths()
         {
             m_searchPaths.clear();
+        }
+
+        // Find the file
+        std::string find(const std::string& name)
+        {
+            std::string filename;
+            for (auto& path : m_searchPaths)
+            {
+                filename = findFile<false>(name, path, true);
+                if (!filename.empty())
+                {
+                    break;
+                }
+            }
+            return filename;
         }
 
         /**
@@ -119,6 +133,42 @@ namespace onut
         }
 
         /**
+        Add a resource by name
+        */
+        template <typename Ttype>
+        void addResource(const std::string& name)
+        {
+            if (m_threadId == std::this_thread::get_id())
+            {
+                auto it = m_resources.find(name);
+                if (it == m_resources.end())
+                {
+                    // Load it
+                    auto pResource = load<Ttype>(name);
+                    m_resources[name] = pResource;
+                    return;
+                }
+            }
+            else
+            {
+                auto pResource = load<Ttype>(name);
+                OSync([name, this, pResource]
+                {
+                    auto it = m_resources.find(name);
+                    if (it == m_resources.end())
+                    {
+                        // Load it
+                        m_resources[name] = pResource;
+                    }
+                    else
+                    {
+                        delete pResource;
+                    }
+                });
+            }
+        }
+
+        /**
         Delete all content loaded by this ContentManager
         */
         void clear()
@@ -192,7 +242,7 @@ namespace onut
             std::string filename;
             for (auto& path : m_searchPaths)
             {
-                filename = findFile<false>(name, path, false);
+                filename = findFile<false>(name, path, true);
                 if (!filename.empty())
                 {
                     break;
@@ -205,6 +255,7 @@ namespace onut
 
             // Create it
             Ttype* pResource = Ttype::createFromFile(filename, this);
+            OLog("Loaded " + filename);
 
             // Put it in our map
             ResourceHolder<Ttype>* pResourceHolder = new ResourceHolder<Ttype>(pResource);

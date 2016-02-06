@@ -5,12 +5,15 @@ namespace onut
 {
     ParticleEmitter::ParticleEmitter(sEmitterDesc* pEmitterDesc,
                                      IParticleSystemManager* pParticleSystemManager, 
-                                     const Matrix& transform) :
+                                     const Matrix& transform,
+                                     uint32_t instanceId) :
         m_pDesc(pEmitterDesc),
         m_pParticleSystemManager(pParticleSystemManager),
         m_transform(transform),
-        m_isAlive(true)
+        m_isAlive(true),
+        m_instanceId(instanceId)
     {
+        m_duration = m_pDesc->duration.generate();
         if (m_pDesc->type == eEmitterType::BURST)
         {
             // Spawn them all!
@@ -23,36 +26,70 @@ namespace onut
 
     ParticleEmitter::~ParticleEmitter()
     {
-        auto pParticle = m_pParticles;
-        while (pParticle)
+        for (auto pParticle : m_particles)
         {
-            pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
+            m_pParticleSystemManager->deallocParticle(pParticle);
         }
+        m_particles.clear();
+    }
+
+    void ParticleEmitter::stop()
+    {
+        m_isStopped = true;
     }
 
     void ParticleEmitter::update()
     {
         // Update current particles
-        for (auto pParticle = m_pParticles; pParticle; )
+        for (decltype(m_particles.size()) i = 0; i < m_particles.size();)
         {
+            auto pParticle = m_particles[i];
             pParticle->update();
             if (!pParticle->isAlive())
             {
-                if (m_pParticles == pParticle)
-                {
-                    pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
-                }
-                else
-                {
-                    m_pParticles = pParticle = m_pParticleSystemManager->deallocParticle(pParticle);
-                }
+                m_pParticleSystemManager->deallocParticle(pParticle);
+                m_particles.erase(m_particles.begin() + i);
                 continue;
             }
-            pParticle = pParticle->pNext;
+            ++i;
+        }
+
+        // Spawn at rate
+        if (m_pDesc->type == eEmitterType::CONTINOUS && m_pDesc->rate > 0 && !m_isStopped)
+        {
+            m_rateProgress += ODT;
+            auto rate = 1.0f / m_pDesc->rate;
+            while (m_rateProgress >= rate)
+            {
+                m_rateProgress -= rate;
+                spawnParticle();
+            }
+        }
+
+        if (m_pDesc->type == eEmitterType::CONTINOUS && m_isStopped)
+        {
+            if (m_particles.empty()) m_isAlive = false;
+        }
+
+        if (m_pDesc->type == eEmitterType::FINITE && m_pDesc->rate > 0 && !m_isStopped && m_duration > 0.f)
+        {
+            m_duration -= ODT;
+            m_rateProgress += ODT;
+            auto rate = 1.0f / m_pDesc->rate;
+            while (m_rateProgress >= rate)
+            {
+                m_rateProgress -= rate;
+                spawnParticle();
+            }
+        }
+
+        if (m_pDesc->type == eEmitterType::FINITE && (m_isStopped || m_duration <= 0.f))
+        {
+            if (m_particles.empty()) m_isAlive = false;
         }
 
         // Kill self if done
-        if (m_pDesc->type == eEmitterType::BURST && !m_pParticles)
+        if (m_pDesc->type == eEmitterType::BURST && m_particles.empty())
         {
             m_isAlive = false;
         }
@@ -64,10 +101,20 @@ namespace onut
         auto& camUp = ORenderer->getCameraUp();
         auto camRight = camDir.Cross(camUp);
 
-        for (auto pParticle = m_pParticles; pParticle; pParticle = pParticle->pNext)
+        for (decltype(m_particles.size()) i = 0; i < m_particles.size(); ++i)
         {
-            m_pParticleSystemManager->renderParticle(pParticle, camRight, camUp);
+            m_pParticleSystemManager->renderParticle(m_particles[i], camRight, camUp);
         }
+    }
+
+    void ParticleEmitter::setTransform(const Matrix& transform)
+    {
+        m_transform = transform;
+    }
+
+    void ParticleEmitter::setRenderEnabled(bool renderEnabled)
+    {
+        m_renderEnabled = renderEnabled;
     }
 
     Particle* ParticleEmitter::spawnParticle()
@@ -87,22 +134,43 @@ namespace onut
 
             up = Vector3::Transform(up, rotX);
             up = Vector3::Transform(up, rotZ);
+            if (m_pDesc->dir.LengthSquared() != 0)
+            {
+                Matrix rotDir = Matrix::CreateFromAxisAngle(Vector3(m_pDesc->dir.y, m_pDesc->dir.x, 0), DirectX::XMConvertToRadians(90));
+                up = Vector3::Transform(up, rotDir);
+            }
 
             pParticle->pDesc = m_pDesc;
+            pParticle->pEmitter = this;
 
-            pParticle->position = spawnPos;
+            pParticle->position = spawnPos + m_pDesc->position.generate();
             pParticle->velocity = up * m_pDesc->speed.generate();
 
             pParticle->color.to = m_pDesc->color.generateTo(pParticle->color.from = m_pDesc->color.generateFrom());
             pParticle->angle.to = m_pDesc->angle.generateTo(pParticle->angle.from = m_pDesc->angle.generateFrom());
             pParticle->size.to = m_pDesc->size.generateTo(pParticle->size.from = m_pDesc->size.generateFrom());
             pParticle->image_index.to = m_pDesc->image_index.generateTo(pParticle->image_index.from = m_pDesc->image_index.generateFrom());
+            pParticle->rotation.to = m_pDesc->rotation.generateTo(pParticle->rotation.from = m_pDesc->rotation.generateFrom());
+            pParticle->radialAccel.to = m_pDesc->radialAccel.generateTo(pParticle->radialAccel.from = m_pDesc->radialAccel.generateFrom());
+            pParticle->tangentAccel.to = m_pDesc->tangentAccel.generateTo(pParticle->tangentAccel.from = m_pDesc->tangentAccel.generateFrom());
+
+            pParticle->color.update(0);
+            pParticle->angle.update(0);
+            pParticle->size.update(0);
+            pParticle->image_index.update(0);
+            pParticle->rotation.update(0);
+            pParticle->radialAccel.update(0);
+            pParticle->tangentAccel.update(0);
+
+            if (!pParticle->pDesc->textures.empty())
+            {
+                pParticle->pTexture = pParticle->pDesc->textures[static_cast<decltype(pParticle->pDesc->textures.size())>(pParticle->image_index.value)];
+            }
 
             pParticle->life = 1.f;
             pParticle->delta = 1.f / m_pDesc->life.generate();
 
-            pParticle->pNext = m_pParticles;
-            m_pParticles = pParticle;
+            m_particles.push_back(pParticle);
         }
         return pParticle;
     }

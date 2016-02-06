@@ -13,9 +13,6 @@
     <ClInclude Include="..\..\include\Renderer.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\StringUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\LodePNG.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -190,11 +187,26 @@
     <ClInclude Include="..\..\include\List.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\_2dps.cso.h">
-      <Filter>src\shaders</Filter>
+    <ClInclude Include="..\..\include\Music.h">
+      <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\_2dvs.cso.h">
-      <Filter>src\shaders</Filter>
+    <ClInclude Include="..\..\src\Mp3.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\SpriteAnim.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\player.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MFPlayer.h">
+      <Filter>src\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -211,9 +223,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\StringUtils.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\LodePNG.cpp">
@@ -366,6 +375,27 @@
     <ClCompile Include="..\..\src\micropather.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Music.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Mp3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteAnim.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\player.cpp">
+      <Filter>src\player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MFPlayer.cpp">
+      <Filter>src\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -398,5 +428,22 @@
     <Filter Include="src\shaders">
       <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\player">
+      <UniqueIdentifier>{d7b7008c-d864-461a-a895-d340743846e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\crt.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\sepia.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\cartoon.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\vignette.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

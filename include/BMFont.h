@@ -12,7 +12,11 @@ namespace onut
 {
     class Texture;
     class SpriteBatch;
+}
+extern onut::SpriteBatch* OSpriteBatch;
 
+namespace onut
+{
     class BMFont
     {
     public:
@@ -39,6 +43,46 @@ namespace onut
                   onut::SpriteBatch* pSpriteBatch = OSpriteBatch,
                   Align align = Talign)
         {
+            Vector2 alignf;
+            switch (align)
+            {
+                case Align::TOP_LEFT:
+                    alignf = {0, 0};
+                    break;
+                case Align::TOP:
+                    alignf = {.5f, 0};
+                    break;
+                case Align::TOP_RIGHT:
+                    alignf = {1, 0};
+                    break;
+                case Align::LEFT:
+                    alignf = {0, .5f};
+                    break;
+                case Align::CENTER:
+                    alignf = {.5f, .5f};
+                    break;
+                case Align::RIGHT:
+                    alignf = {1, .5f};
+                    break;
+                case Align::BOTTOM_LEFT:
+                    alignf = {0, 1};
+                    break;
+                case Align::BOTTOM:
+                    alignf = {.5f, 1};
+                    break;
+                case Align::BOTTOM_RIGHT:
+                    alignf = {1, 1};
+                    break;
+            }
+            return drawInternal(text, pos, color, pSpriteBatch, alignf);
+        }
+
+        Rect draw(const std::string& text,
+                  const Vector2& pos,
+                  const Color& color = Color::White,
+                  onut::SpriteBatch* pSpriteBatch = OSpriteBatch,
+                  const Vector2& align = Vector2::Zero)
+        {
             return drawInternal(text, pos, color, pSpriteBatch, align);
         }
 
@@ -52,25 +96,58 @@ namespace onut
             onut::SpriteBatch* pSpriteBatch = OSpriteBatch,
             Align align = Talign)
         {
+            Vector2 alignf;
+            switch (align)
+            {
+                case Align::TOP_LEFT:
+                    alignf = {0, 0};
+                    break;
+                case Align::TOP:
+                    alignf = {.5f, 0};
+                    break;
+                case Align::TOP_RIGHT:
+                    alignf = {1, 0};
+                    break;
+                case Align::LEFT:
+                    alignf = {0, .5f};
+                    break;
+                case Align::CENTER:
+                    alignf = {.5f, .5f};
+                    break;
+                case Align::RIGHT:
+                    alignf = {1, .5f};
+                    break;
+                case Align::BOTTOM_LEFT:
+                    alignf = {0, 1};
+                    break;
+                case Align::BOTTOM:
+                    alignf = {.5f, 1};
+                    break;
+                case Align::BOTTOM_RIGHT:
+                    alignf = {1, 1};
+                    break;
+            }
             outlineColor.w *= color.w;
             pos = {std::round(pos.x), std::round(pos.y)};
             if (Tcheap)
             {
-                drawInternal(text, pos + Vector2{-outlineSize *0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize * 0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{0, outlineSize}, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{-outlineSize *0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize * 0.86602540378443864676372317075294f, -outlineSize *0.5f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{0, outlineSize}, outlineColor, pSpriteBatch, alignf, false);
             }
             else
             {
-                drawInternal(text, pos + Vector2{-outlineSize *0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize * 0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{-outlineSize, 0}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize, 0}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{-outlineSize *0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
-                drawInternal(text, pos + Vector2{outlineSize * 0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, align, false);
+                drawInternal(text, pos + Vector2{-outlineSize *0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize * 0.5f, -outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{-outlineSize, 0}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize, 0}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{-outlineSize *0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
+                drawInternal(text, pos + Vector2{outlineSize * 0.5f, outlineSize *0.86602540378443864676372317075294f}, outlineColor, pSpriteBatch, alignf, false);
             }
-            return drawInternal(text, pos, color, pSpriteBatch, align, false);
+            return drawInternal(text, pos, color, pSpriteBatch, alignf, false);
         }
+
+        const std::string& getName() const { return m_name; }
 
     private:
         struct fntCommon
@@ -114,13 +191,14 @@ namespace onut
                           const Vector2& pos,
                           const Color& color,
                           onut::SpriteBatch* pSpriteBatch,
-                          Align align,
+                          const Vector2& align,
                           bool snapPixels = true);
 
         fntCommon                           m_common;
         fntPage**                           m_pages = nullptr;
         int                                 m_charsCount = 0;
         std::unordered_map<int, fntChar*>   m_chars;
+        std::string                         m_name;
     };
 }
 

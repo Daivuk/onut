@@ -26,6 +26,11 @@ namespace onut
         }
     }
 
+    void ActionGroup::addAction(IAction* pAction)
+    {
+        m_actions.push_back(pAction);
+    }
+
     void ActionGroup::undo()
     {
         for (auto it = m_actions.rbegin(); it != m_actions.rend(); ++it)

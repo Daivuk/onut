@@ -6,6 +6,7 @@ using namespace DirectX::SimpleMath;
 namespace onut
 {
     class Texture;
+    class ParticleEmitter;
     class ParticleSystem;
     struct sEmitterDesc;
 
@@ -29,10 +30,10 @@ namespace onut
 
         bool isAlive() const { return life > 0.f; }
 
-        Particle*               pNext = nullptr;
         sEmitterDesc*           pDesc;
         float                   life;
         float                   delta;
+        ParticleEmitter*        pEmitter = nullptr;
 
         Vector3                 position;
         Vector3                 velocity;
@@ -41,6 +42,9 @@ namespace onut
         sParticleRange<float>           angle;
         sParticleRange<float>           size;
         sParticleRange<unsigned int>    image_index;
+        sParticleRange<float>           rotation;
+        sParticleRange<float>           radialAccel;
+        sParticleRange<float>           tangentAccel;
 
         Texture*                        pTexture = nullptr;
     };

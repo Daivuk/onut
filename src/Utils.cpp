@@ -1,9 +1,11 @@
 ﻿#include <algorithm>
 #include <codecvt>
 #include <cassert>
+#include <fstream>
 #include <sstream>
+
 #include "dirent.h"
-#include "StringUtils.h"
+#include "Utils.h"
 
 namespace onut
 {
@@ -158,6 +160,20 @@ namespace onut
         return filename.substr(0, filename.find_last_of("\\/"));
     }
 
+    std::string getFilename(const std::string& path)
+    {
+        auto pos = path.find_last_of("\\/");
+        if (pos == std::string::npos) return path;
+        return path.substr(pos + 1);
+    }
+
+    std::string getExtension(const std::string& filename)
+    {
+        auto pos = filename.find_last_of('.');
+        if (pos == std::string::npos) return "";
+        return toUpper(filename.substr(pos + 1));
+    }
+
     std::string makeRelativePath(const std::string& in_path, const std::string& in_relativeTo)
     {
         auto path = in_path;
@@ -189,5 +205,49 @@ namespace onut
             ss << folder;
         }
         return std::move(ss.str());
+    }
+
+    std::string removeChars(const std::string& str, const std::string& charsToRemove)
+    {
+        auto ret = str;
+        for (decltype(charsToRemove.size()) i = 0; i < charsToRemove.size(); ++i)
+        {
+            ret.erase(remove(ret.begin(), ret.end(), charsToRemove[i]), ret.end());
+        }
+        return ret;
+    }
+
+    std::string toUpper(const std::string& str)
+    {
+        auto ret = str;
+        std::transform(ret.begin(), ret.end(), ret.begin(), ::toupper);
+        return ret;
+    }
+
+    std::string toLower(const std::string& str)
+    {
+        auto ret = str;
+        std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
+        return ret;
+    }
+
+    std::vector<uint8_t> getFileData(const std::string& filename)
+    {
+        std::ifstream file(filename, std::ios::binary);
+        std::vector<uint8_t> data = {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+        return std::move(data);
+    }
+
+    bool fileExists(const std::string& filename)
+    {
+        WIN32_FIND_DATAA FindFileData;
+        HANDLE handle = FindFirstFileA(filename.c_str(), &FindFileData);
+        bool found = handle != INVALID_HANDLE_VALUE;
+        if (found)
+        {
+            //FindClose(&handle); this will crash
+            FindClose(handle);
+        }
+        return found;
     }
 }

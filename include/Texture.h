@@ -1,9 +1,7 @@
 #pragma once
-#ifdef EASY_GRAPHIX
-#include "eg.h"
-#else
 #include <d3d11.h>
-#endif
+#include <vector>
+
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
@@ -18,7 +16,8 @@ namespace onut
             uint32_t y;
         };
 
-        static Texture* createRenderTarget(const sSize& size);
+        static Texture* createRenderTarget(const sSize& size = {1, 1}, bool willBeUsedInEffects = false);
+        static Texture* createScreenRenderTarget(bool willBeUsedInEffects = false);
         static Texture* createDynamic(const sSize& size);
         template<typename TcontentManagerType>
         static Texture* createFromFile(const std::string& filename, TcontentManagerType* pContentManager, bool generateMipmaps = true)
@@ -26,14 +25,17 @@ namespace onut
             return Texture::createFromFile(filename, generateMipmaps);
         }
         static Texture* createFromFile(const std::string& filename, bool generateMipmaps = true);
+        static Texture* createFromFileData(const std::vector<uint8_t>& data, bool in_generateMipmaps = true);
         static Texture* createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps = true);
         static Texture* createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps = true);
-
-        void setData(const uint8_t *in_pData);
 
         Texture() {}
         virtual ~Texture();
 
+        void setData(const uint8_t *in_pData);
+
+        const std::string&          getName() const { return m_name; }
+        void                        resizeTarget(const sSize& size);
         void                        bind(int slot = 0);
         void                        bindRenderTarget();
         void                        unbindRenderTarget();
@@ -48,21 +50,31 @@ namespace onut
             return std::move(Vector4{0, 0, static_cast<float>(m_size.x), static_cast<float>(m_size.y)});
         }
 
-#ifdef EASY_GRAPHIX
-        EGTexture                   getResource() const { return m_pTextureView; }
-#else
-        ID3D11ShaderResourceView*   getResource() const { return m_pTextureView; }
-#endif
+        ID3D11Texture2D*            getResource() const { return m_pTexture; }
+        ID3D11ShaderResourceView*   getResourceView() const { return m_pTextureView; }
+        ID3D11RenderTargetView*     getRenderTargetResource() const { return m_pRenderTargetView; }
+
+        // Apply effects. It will only work if the texture is a render target
+        void blur(float amount = 16.f); // Blur radius
+        void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
+                   float saturation = 0, // 0 - 1
+                   float sepiaAmount = .75f); // 0 - 1
+        void crt();
+        void cartoon(const Vector3& tone = Vector3(2, 5, 1)); // Values range from 1 to infinite
+        void vignette(float amount = .5f); // 0 - 1
 
     private:
-#ifdef EASY_GRAPHIX
-        EGTexture                   m_pTextureView = 0;
-#else
+        void createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView);
+
+        sSize                       m_size;
         ID3D11Texture2D*            m_pTexture = nullptr;
         ID3D11ShaderResourceView*   m_pTextureView = nullptr;
         ID3D11RenderTargetView*     m_pRenderTargetView = nullptr;
-#endif
-        sSize                       m_size;
+        ID3D11Texture2D*            m_pTextureFX = nullptr;
+        ID3D11ShaderResourceView*   m_pTextureViewFX = nullptr;
+        ID3D11RenderTargetView*     m_pRenderTargetViewFX = nullptr;
+        bool                        m_isScreenRenderTarget = false;
+        std::string                 m_name;
     };
 }
 
