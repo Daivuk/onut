@@ -12,7 +12,7 @@ namespace onut
     /*!
         Thread safe resource management class.
     */
-    class ContentManager
+    class ContentManager : public std::enable_shared_from_this<ContentManager>
     {
     public:
         static OContentManagerRef create();
@@ -26,6 +26,7 @@ namespace onut
         size_t size();
         void clear();
         OResourceRef getResource(const std::string& name);
+        template<typename Tresource> std::shared_ptr<Tresource> getResourceAs(const std::string& name);
 
         // Search Paths
         void addDefaultSearchPaths();
@@ -41,6 +42,21 @@ namespace onut
         SearchPaths m_searchPaths;
         std::mutex m_mutex;
     };
+
+    template<typename Tresource>
+    inline std::shared_ptr<Tresource> ContentManager::getResourceAs(const std::string& name)
+    {
+        auto pRet = std::dynamic_pointer_cast<Tresource>(getResource(name));
+        if (!pRet)
+        {
+            auto filename = findResourceFile(name);
+            pRet = Tresource::createFromFile(filename, shared_from_this());
+            pRet->setName(name);
+            pRet->setFilename(filename);
+            addResource(name, pRet);
+        }
+        return pRet;
+    }
 }
 
 extern OContentManagerRef oContentManager;

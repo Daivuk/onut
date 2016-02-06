@@ -1,4 +1,4 @@
-#include "onut.h"
+#include "onut_old.h"
 #include <sstream>
 #include <fstream>
 #include "Utils.h"
@@ -65,7 +65,7 @@ namespace onut
                 pFont->m_pages[pNewPage->id] = pNewPage;
 
                 // Load its texture
-                pNewPage->pTexture = OTexture::get(pNewPage->file, pContentManager);
+                pNewPage->pTexture = pContentManager->getResourceAs<OTexture>(pNewPage->file);
             }
             else if (command == "chars")
             {

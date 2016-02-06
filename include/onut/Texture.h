@@ -1,18 +1,18 @@
 #pragma once
+#include "onut/Maths.h"
 #include "onut/Resource.h"
-#include "SimpleMath.h"
 
+#if defined(WIN32)
 #include <d3d11.h>
+#endif
 
 #include "onut/forward_declaration.h"
 OForwardDeclare(Texture);
 OForwardDeclare(ContentManager);
 
-using namespace DirectX::SimpleMath;
-
 namespace onut
 {
-    class Texture : public Resource
+    class Texture final : public Resource
     {
     public:
         struct Size
@@ -21,15 +21,14 @@ namespace onut
             int height;
         };
 
-        static OTextureRef get(const std::string& name, const OContentManagerRef& pContentManager);
-        static OTextureRef createFromFile(const std::string& filename, bool generateMipmaps = true);
+        static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = true);
         static OTextureRef createFromFileData(const uint8_t* pData, uint32_t size, bool generateMipmaps = true);
         static OTextureRef createFromData(const uint8_t* pData, const Size& size, bool generateMipmaps = true);
         static OTextureRef createRenderTarget(const Size& size, bool willBeUsedInEffects = false);
         static OTextureRef createScreenRenderTarget(bool willBeUsedInEffects = false);
         static OTextureRef createDynamic(const Size& size);
 
-        virtual ~Texture();
+        ~Texture();
 
         const Size& getSize() const;
         Vector2 getSizef() const;
@@ -84,5 +83,3 @@ namespace onut
         bool m_isScreenRenderTarget = false;
     };
 }
-
-OTextureRef OGetTexture(const std::string& name);

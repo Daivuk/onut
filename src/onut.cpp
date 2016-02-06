@@ -4,8 +4,10 @@
 
 #include "Audio.h"
 #include "InputDevice.h"
-#include "onut.h"
+#include "onut_old.h"
 #include "Window.h"
+
+#include "onut/onut.h"
 #include "onut/Texture.h"
 
 using namespace DirectX;
@@ -446,4 +448,9 @@ namespace onut
         }
         OSB->end();
     }
+}
+
+OTextureRef OGetTexture(const std::string& name)
+{
+    return oContentManager->getResourceAs<OTexture>(name);
 }

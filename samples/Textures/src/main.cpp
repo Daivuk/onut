@@ -2,18 +2,18 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut_old.h"
 #include "Utils.h"
 
 void init();
 void update();
 void render();
 
-OTextureRef pTextureFromFile = nullptr;
-OTextureRef pTextureFromFileData = nullptr;
-OTextureRef pTextureFromData = nullptr;
-OTextureRef pRenderTarget = nullptr;
-OTextureRef pDynamic = nullptr;
+OTextureRef pTextureFromFile;
+OTextureRef pTextureFromFileData;
+OTextureRef pTextureFromData;
+OTextureRef pRenderTarget;
+OTextureRef pDynamic;
 
 uint8_t dynamicData[128 * 128 * 4];
 OAnimi dynamicAnim = 0;

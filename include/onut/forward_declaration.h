@@ -1,5 +1,5 @@
 #pragma once
-#include <memory> \
+#include <memory>
 
 #define OForwardDeclare(__class__) \
 namespace onut \

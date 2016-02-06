@@ -27,10 +27,12 @@
     <ClInclude Include="..\..\include\Music.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
-    <ClInclude Include="..\..\include\onut.h" />
+    <ClInclude Include="..\..\include\onut\onut.h" />
+    <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
     <ClInclude Include="..\..\include\onut\ContentManager.h" />
     <ClInclude Include="..\..\include\onut\forward_declaration.h" />
+    <ClInclude Include="..\..\include\onut\Maths.h" />
     <ClInclude Include="..\..\include\onut\Resource.h" />
     <ClInclude Include="..\..\include\onut\Texture.h" />
     <ClInclude Include="..\..\include\Particle.h" />

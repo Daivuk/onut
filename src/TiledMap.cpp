@@ -1,6 +1,6 @@
 #include <cassert>
 #include "tinyxml2.h"
-#include "onut.h"
+#include "onut_old.h"
 #include "crypto.h"
 #include "zlib/zlib.h"
 #include "Utils.h"
@@ -60,12 +60,7 @@ namespace onut
             auto szImageFilename = pXMLImage->Attribute("source");
             assert(szImageFilename);
             auto filename = getPath(map) + "/" + szImageFilename;
-            pTileSet.pTexture = OTexture::get(filename, pContentManager);
-            if (!pTileSet.pTexture)
-            {
-                filename = getFilename(szImageFilename);
-                pTileSet.pTexture = OTexture::get(filename, pContentManager);
-            }
+            pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(getFilename(szImageFilename));
 
             ++m_tilesetCount;
         }

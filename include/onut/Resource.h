@@ -11,16 +11,17 @@ namespace onut
     public:
         virtual ~Resource();
 
+        void setName(const std::string& name);
         const std::string& getName() const;
 
+        void setFilename(const std::string& filename);
+        const std::string& getFilename() const;
+
     protected:
-        friend class ContentManager;
-
         Resource();
-
-        void setName(const std::string& name);
 
     private:
         std::string m_name;
+        std::string m_filename;
     };
 };

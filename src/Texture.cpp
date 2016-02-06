@@ -1,6 +1,9 @@
-#include "LodePNG.h"
+#include "onut_old.h"
+
+#include "onut/ContentManager.h"
 #include "onut/Texture.h"
-#include "onut.h"
+
+#include "LodePNG.h"
 #include "Utils.h"
 
 #include <cassert>
@@ -72,7 +75,7 @@ namespace onut
         return pRet;
     }
 
-    OTextureRef Texture::createFromFile(const std::string& filename, bool generateMipmaps)
+    OTextureRef Texture::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager, bool generateMipmaps)
     {
         auto pRet = std::make_shared<Texture>();
 
@@ -93,7 +96,7 @@ namespace onut
         }
 
         pRet = createFromData(image.data(), size, generateMipmaps);
-        pRet->setName(getFilename(filename));
+        pRet->setName(onut::getFilename(filename));
         pRet->m_type = Type::Static;
         return pRet;
     }
@@ -616,22 +619,4 @@ namespace onut
             return;
         }
     }
-
-    OTextureRef Texture::get(const std::string& name, const OContentManagerRef& pContentManager)
-    {
-        auto pRet = std::dynamic_pointer_cast<OTexture>(pContentManager->getResource(name));
-        if (!pRet)
-        {
-            auto filename = pContentManager->findResourceFile(name);
-            pRet = OTexture::createFromFile(filename);
-            pRet->setName(name);
-            pContentManager->addResource(name, pRet);
-        }
-        return pRet;
-    }
-}
-
-OTextureRef OGetTexture(const std::string& name)
-{
-    return OTexture::get(name, oContentManager);
 }

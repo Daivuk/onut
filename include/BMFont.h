@@ -3,10 +3,8 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-#include "SimpleMath.h"
 #include "onut/Texture.h"
 #include "Typedefs.h"
-using namespace DirectX::SimpleMath;
 
 namespace onut
 {

@@ -1,6 +1,6 @@
 #if defined(WIN32)
 #include "MFPlayer.h"
-#include "onut.h"
+#include "onut_old.h"
 #include "Utils.h"
 
 #include <cassert>

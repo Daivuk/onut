@@ -19,4 +19,14 @@ namespace onut
     {
         m_name = name;
     }
+
+    const std::string& Resource::getFilename() const
+    {
+        return m_filename;
+    }
+
+    void Resource::setFilename(const std::string& filename)
+    {
+        m_filename = filename;
+    }
 };

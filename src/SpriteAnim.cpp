@@ -20,7 +20,7 @@ namespace onut
         auto pXMLSheet = doc.FirstChildElement("sheet");
         assert(pXMLSheet);
         std::string textureName = pXMLSheet->Attribute("texture");
-        auto pTexture = OTexture::get(textureName, pContentManager);
+        auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
         assert(pTexture);
         int spriteW = pTexture->getSize().width;
         int spriteH = pTexture->getSize().height;
