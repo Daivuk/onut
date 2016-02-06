@@ -16,9 +16,6 @@
     <ClInclude Include="..\..\src\LodePNG.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Texture.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\SpriteBatch.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -44,9 +41,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Anim.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\ContentManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\dirent.h">
@@ -208,6 +202,18 @@
     <ClInclude Include="..\..\src\MFPlayer.h">
       <Filter>src\player</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Resource.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Texture.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\ContentManager.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\forward_declaration.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -226,9 +232,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\LodePNG.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Texture.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteBatch.cpp">
@@ -396,6 +399,15 @@
     <ClCompile Include="..\..\src\MFPlayer.cpp">
       <Filter>src\player</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Resource.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Texture.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ContentManager.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -430,6 +442,18 @@
     </Filter>
     <Filter Include="src\player">
       <UniqueIdentifier>{d7b7008c-d864-461a-a895-d340743846e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{df7d4196-d4d0-4c6a-a6ea-bbf5f5ea3d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties">
+      <UniqueIdentifier>{224e6497-d7e1-4e6b-83bc-4e3993bd76fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="services">
+      <UniqueIdentifier>{524c9168-2061-4eec-8abc-f5fd17672f34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utilities">
+      <UniqueIdentifier>{6f3f3796-61df-448a-ba0d-ac196efa581a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

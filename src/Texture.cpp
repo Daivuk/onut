@@ -1,43 +1,52 @@
 #include "LodePNG.h"
+#include "onut/Texture.h"
 #include "onut.h"
-#include "Texture.h"
+#include "Utils.h"
 
 #include <cassert>
 #include <vector>
 
 namespace onut
 {
-    Texture* Texture::createRenderTarget(const sSize& size, bool willUseFX)
+    OTextureRef Texture::createRenderTarget(const Size& size, bool willUseFX)
     {
-        auto pRet = new Texture();
+        auto pRet = std::make_shared<Texture>();
         pRet->m_size = size;
+#if defined(WIN32)
         pRet->createRenderTargetViews(pRet->m_pTexture, pRet->m_pTextureView, pRet->m_pRenderTargetView);
         if (willUseFX)
         {
             pRet->createRenderTargetViews(pRet->m_pTextureFX, pRet->m_pTextureViewFX, pRet->m_pRenderTargetViewFX);
         }
+#else
+#error
+#endif
+        pRet->m_type = Type::RenderTarget;
         return pRet;
     }
 
-    Texture* Texture::createScreenRenderTarget(bool willBeUsedInEffects)
+    OTextureRef Texture::createScreenRenderTarget(bool willBeUsedInEffects)
     {
         auto pRet = createRenderTarget({OScreenW, OScreenH}, willBeUsedInEffects);
         if (pRet)
         {
             pRet->m_isScreenRenderTarget = true;
         }
+        pRet->m_type = Type::ScreenRenderTarget;
         return pRet;
     }
 
-    Texture* Texture::createDynamic(const sSize& size)
+    OTextureRef Texture::createDynamic(const Size& size)
     {
+        auto pRet = std::make_shared<Texture>();
+
+#if defined(WIN32)
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
-        auto pRet = new Texture();
 
         D3D11_TEXTURE2D_DESC desc;
-        desc.Width = size.x;
-        desc.Height = size.y;
+        desc.Width = static_cast<UINT>(size.width);
+        desc.Height = static_cast<UINT>(size.height);
         desc.MipLevels = desc.ArraySize = 1;
         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         desc.SampleDesc.Count = 1;
@@ -56,98 +65,87 @@ namespace onut
         pRet->m_size = size;
         pRet->m_pTextureView = pTextureView;
         pRet->m_pTexture = pTexture;
-
+#else
+#error
+#endif
+        pRet->m_type = Type::Dynamic;
         return pRet;
     }
 
-    void Texture::setData(const uint8_t *in_pData)
+    OTextureRef Texture::createFromFile(const std::string& filename, bool generateMipmaps)
     {
-        auto pDeviceContext = ORenderer->getDeviceContext();
+        auto pRet = std::make_shared<Texture>();
 
-        D3D11_MAPPED_SUBRESOURCE data;
-        pDeviceContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-        memcpy(data.pData, in_pData, m_size.x * m_size.y * 4);
-        pDeviceContext->Unmap(m_pTexture, 0);
-    }
-
-    Texture* Texture::createFromFile(const std::string& filename, bool generateMipmaps)
-    {
-        Texture* pRet = NULL;
-
-        std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
+        std::vector<uint8_t> image; //the raw pixels (holy crap that must be slow)
         unsigned int w, h;
         auto ret = lodepng::decode(image, w, h, filename);
         assert(!ret);
-        sSize size{w, h};
-        byte* pData = &(image[0]);
-        ULONG len = size.x * size.y;
+        Size size{static_cast<int>(w), static_cast<int>(h)};
 
         // Pre multiplied
-        for (ULONG i = 0; i < len; ++i, pData += 4)
+        uint8_t* pImageData = &(image[0]);
+        auto len = size.width * size.height;
+        for (decltype(len) i = 0; i < len; ++i, pImageData += 4)
         {
-            pData[0] = pData[0] * pData[3] / 255;
-            pData[1] = pData[1] * pData[3] / 255;
-            pData[2] = pData[2] * pData[3] / 255;
+            pImageData[0] = pImageData[0] * pImageData[3] / 255;
+            pImageData[1] = pImageData[1] * pImageData[3] / 255;
+            pImageData[2] = pImageData[2] * pImageData[3] / 255;
         }
 
-        pRet = createFromData(size, &(image[0]), generateMipmaps);
-        pRet->m_name = filename.substr(filename.find_last_of("/\\") + 1);
+        pRet = createFromData(image.data(), size, generateMipmaps);
+        pRet->setName(getFilename(filename));
+        pRet->m_type = Type::Static;
         return pRet;
     }
 
-    Texture* Texture::createFromFileData(const std::vector<uint8_t>& data, bool in_generateMipmaps)
+    OTextureRef Texture::createFromFileData(const uint8_t* pData, uint32_t dataSize, bool generateMipmaps)
     {
-        return createFromFileData(data.data(), data.size(), in_generateMipmaps);
-    }
-
-    Texture* Texture::createFromFileData(const unsigned char* in_pData, uint32_t in_size, bool in_generateMipmaps)
-    {
-        Texture* pRet = NULL;
-
-        std::vector<unsigned char> image; //the raw pixels (holy crap that must be slow)
+        std::vector<uint8_t> image; //the raw pixels (holy crap that must be slow)
         unsigned int w, h;
         lodepng::State state;
-        auto ret = lodepng::decode(image, w, h, state, in_pData, in_size);
+        auto ret = lodepng::decode(image, w, h, state, pData, dataSize);
         assert(!ret);
-        sSize size{w, h};
-        byte* pData = &(image[0]);
-        ULONG len = size.x * size.y;
+        Size size{static_cast<int>(w), static_cast<int>(h)};
 
         // Pre multiplied
-        for (ULONG i = 0; i < len; ++i, pData += 4)
+        uint8_t* pImageData = image.data();
+        auto len = size.width * size.height;
+        for (int i = 0; i < len; ++i, pImageData += 4)
         {
-            pData[0] = pData[0] * pData[3] / 255;
-            pData[1] = pData[1] * pData[3] / 255;
-            pData[2] = pData[2] * pData[3] / 255;
+            pImageData[0] = pImageData[0] * pImageData[3] / 255;
+            pImageData[1] = pImageData[1] * pImageData[3] / 255;
+            pImageData[2] = pImageData[2] * pImageData[3] / 255;
         }
 
-        return createFromData(size, &(image[0]), in_generateMipmaps);
+        return createFromData(image.data(), size, generateMipmaps);
     }
 
-    Texture* Texture::createFromData(const sSize& size, const unsigned char* in_pData, bool in_generateMipmaps)
+    OTextureRef Texture::createFromData(const uint8_t* pData, const Size& size, bool generateMipmaps)
     {
+        auto pRet = std::make_shared<Texture>();
+
+#if defined(WIN32)
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
-        auto pRet = new Texture();
 
         // Manually generate mip levels
         bool allowMipMaps = true;
-        UINT w2 = 1;
-        UINT h2 = 1;
-        while (w2 < (UINT)size.x) w2 *= 2;
-        if (size.x != w2) allowMipMaps = false;
-        while (h2 < (UINT)size.y) h2 *= 2;
-        if (size.y != h2) allowMipMaps = false;
+        int w2 = 1;
+        int h2 = 1;
+        while (w2 < size.width) w2 *= 2;
+        if (size.width != w2) allowMipMaps = false;
+        while (h2 < size.height) h2 *= 2;
+        if (size.height != h2) allowMipMaps = false;
         unsigned char* pMipMaps = NULL;
         int mipLevels = 1;
         D3D11_SUBRESOURCE_DATA* mipsData = NULL;
-        allowMipMaps = allowMipMaps && in_generateMipmaps;
+        allowMipMaps = allowMipMaps && generateMipmaps;
         if (allowMipMaps)
         {
-            UINT biggest = std::max<>(w2, h2);
-            UINT w2t = w2;
-            UINT h2t = h2;
-            UINT totalSize = w2t * h2t * 4;
+            int biggest = std::max<>(w2, h2);
+            int w2t = w2;
+            int h2t = h2;
+            int totalSize = w2t * h2t * 4;
             while (!(w2t == 1 && h2t == 1))
             {
                 ++mipLevels;
@@ -158,7 +156,7 @@ namespace onut
                 totalSize += w2t * h2t * 4;
             }
             pMipMaps = new byte[totalSize];
-            memcpy(pMipMaps, in_pData, size.x * size.y * 4);
+            memcpy(pMipMaps, pData, size.width * size.height * 4);
 
             mipsData = new D3D11_SUBRESOURCE_DATA[mipLevels];
 
@@ -188,11 +186,11 @@ namespace onut
                 // Generate the mips
                 int multX = w2 / w2t;
                 int multY = h2 / h2t;
-                for (UINT y = 0; y < h2t; ++y)
+                for (int y = 0; y < h2t; ++y)
                 {
-                    for (UINT x = 0; x < w2t; ++x)
+                    for (int x = 0; x < w2t; ++x)
                     {
-                        for (UINT k = 0; k < 4; ++k)
+                        for (int k = 0; k < 4; ++k)
                         {
                             accum = 0;
                             accum += prev[(y * multY * w2 + x * multX) * 4 + k];
@@ -210,8 +208,8 @@ namespace onut
         }
 
         D3D11_TEXTURE2D_DESC desc;
-        desc.Width = size.x;
-        desc.Height = size.y;
+        desc.Width = static_cast<UINT>(size.width);
+        desc.Height = static_cast<UINT>(size.height);
         desc.MipLevels = mipLevels;
         desc.ArraySize = 1;
         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -223,8 +221,8 @@ namespace onut
         desc.MiscFlags = 0;
 
         D3D11_SUBRESOURCE_DATA data;
-        data.pSysMem = (pMipMaps) ? pMipMaps : in_pData;
-        data.SysMemPitch = size.x * 4;
+        data.pSysMem = (pMipMaps) ? pMipMaps : pData;
+        data.SysMemPitch = size.width * 4;
         data.SysMemSlicePitch = 0;
 
         auto pDevice = ORenderer->getDevice();
@@ -239,8 +237,24 @@ namespace onut
 
         pRet->m_size = size;
         pRet->m_pTextureView = pTextureView;
+#else
+#error
+#endif
 
+        pRet->m_type = Type::Static;
         return pRet;
+    }
+
+    void Texture::setData(const uint8_t* pData)
+    {
+        assert(isDynamic()); // Only dynamic texture can be set data
+
+        auto pDeviceContext = ORenderer->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE data;
+        pDeviceContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+        memcpy(data.pData, pData, m_size.width * m_size.height * 4);
+        pDeviceContext->Unmap(m_pTexture, 0);
     }
 
     Texture::~Texture()
@@ -253,12 +267,32 @@ namespace onut
         if (m_pRenderTargetViewFX) m_pRenderTargetViewFX->Release();
     }
 
+    const Texture::Size& Texture::getSize() const
+    {
+        return m_size;
+    }
+
+    Vector2 Texture::getSizef() const
+    {
+        return Vector2(static_cast<float>(m_size.width), static_cast<float>(m_size.height));
+    }
+
+    bool Texture::isRenderTarget() const
+    {
+        return m_type == Type::RenderTarget || m_type == Type::ScreenRenderTarget;
+    }
+
+    bool Texture::isDynamic() const
+    {
+        return m_type == Type::Dynamic;
+    }
+
     void Texture::bind(int slot)
     {
         ORenderer->getDeviceContext()->PSSetShaderResources(slot, 1, &m_pTextureView);
     }
 
-    void Texture::resizeTarget(const sSize& size)
+    void Texture::resizeTarget(const Size& size)
     {
         m_size = size;
 
@@ -292,8 +326,8 @@ namespace onut
         {
             if (m_isScreenRenderTarget)
             {
-                if (m_size.x != OScreenW ||
-                    m_size.y != OScreenH)
+                if (m_size.width != OScreenW ||
+                    m_size.height != OScreenH)
                 {
                     m_size = {OScreenW, OScreenH};
 
@@ -351,15 +385,15 @@ namespace onut
         D3D11_VIEWPORT pPrevViewports[8];
         ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
 
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.width, (FLOAT)m_size.height, 0, 1};
         ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
 
         int i = 0;
         while (amount > 0.f)
         {
             ORenderer->setKernelSize({
-                1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
-                1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
+                1.f / static_cast<float>(m_size.width) * ((float)i + amount) / 6,
+                1.f / static_cast<float>(m_size.height) * ((float)i + amount) / 6
             });
             amount -= 6.f;
 
@@ -397,7 +431,7 @@ namespace onut
         D3D11_VIEWPORT pPrevViewports[8];
         ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
 
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.width, (FLOAT)m_size.height, 0, 1};
         ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
 
         ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
@@ -432,7 +466,7 @@ namespace onut
         D3D11_VIEWPORT pPrevViewports[8];
         ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
 
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.width, (FLOAT)m_size.height, 0, 1};
         ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
 
         ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
@@ -467,7 +501,7 @@ namespace onut
         D3D11_VIEWPORT pPrevViewports[8];
         ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
 
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.width, (FLOAT)m_size.height, 0, 1};
         ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
 
         ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
@@ -502,15 +536,15 @@ namespace onut
         D3D11_VIEWPORT pPrevViewports[8];
         ORenderer->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
 
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
+        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.width, (FLOAT)m_size.height, 0, 1};
         ORenderer->getDeviceContext()->RSSetViewports(1, &viewport);
 
         ORenderer->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
         ORenderer->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
         ORenderer->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
         ORenderer->setVignette({
-            1.f / static_cast<float>(m_size.x),
-            1.f / static_cast<float>(m_size.y)
+            1.f / static_cast<float>(m_size.width),
+            1.f / static_cast<float>(m_size.height)
         }, amount);
         ORenderer->drawVignette();
 
@@ -536,8 +570,8 @@ namespace onut
         memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
 
         // Setup the render target texture description.
-        textureDesc.Width = m_size.x;
-        textureDesc.Height = m_size.y;
+        textureDesc.Width = m_size.width;
+        textureDesc.Height = m_size.height;
         textureDesc.MipLevels = 1;
         textureDesc.ArraySize = 1;
         textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -582,4 +616,22 @@ namespace onut
             return;
         }
     }
+
+    OTextureRef Texture::get(const std::string& name, const OContentManagerRef& pContentManager)
+    {
+        auto pRet = std::dynamic_pointer_cast<OTexture>(pContentManager->getResource(name));
+        if (!pRet)
+        {
+            auto filename = pContentManager->findResourceFile(name);
+            pRet = OTexture::createFromFile(filename);
+            pRet->setName(name);
+            pContentManager->addResource(name, pRet);
+        }
+        return pRet;
+    }
+}
+
+OTextureRef OGetTexture(const std::string& name)
+{
+    return OTexture::get(name, oContentManager);
 }

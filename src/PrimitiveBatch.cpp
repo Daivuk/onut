@@ -1,13 +1,15 @@
 #include "PrimitiveBatch.h"
 #include "onut.h"
 
+#include "onut/Texture.h"
+
 namespace onut
 {
     PrimitiveBatch::PrimitiveBatch()
     {
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = {255, 255, 255, 255};
-        m_pTexWhite = Texture::createFromData({1, 1}, white, false);
+        m_pTexWhite = OTexture::createFromData(white, {1, 1}, false);
 
         auto pDevice = ORenderer->getDevice();
         auto pDeviceContext = ORenderer->getDeviceContext();
@@ -36,15 +38,14 @@ namespace onut
     PrimitiveBatch::~PrimitiveBatch()
     {
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
-        delete m_pTexWhite;
     }
 
-	void PrimitiveBatch::begin(ePrimitiveType primitiveType, Texture* pTexture, const Matrix& transform)
+    void PrimitiveBatch::begin(ePrimitiveType primitiveType, const OTextureRef& pTexture, const Matrix& transform)
     {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
-        if (!pTexture) pTexture = m_pTexWhite;
-        m_pTexture = pTexture;
+        if (!pTexture) m_pTexture = m_pTexWhite;
+        else m_pTexture = pTexture;
 
         m_primitiveType = primitiveType;
 		ORenderer->setupFor2D(transform);
@@ -103,8 +104,7 @@ namespace onut
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        auto textureView = m_pTexture->getResourceView();
-        pDeviceContext->PSSetShaderResources(0, 1, &textureView);
+        m_pTexture->bind();
         switch (m_primitiveType)
         {
             case ePrimitiveType::POINTS:

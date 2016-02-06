@@ -214,7 +214,7 @@ namespace onut
             unsigned int count = 1;
             float rate;
         };
-        std::vector<Texture*>   textures;
+        std::vector<OTextureRef>   textures;
         sPfxValue<float>        spread = 0;
         Vector3                 dir = Vector3(0, 0, 0);
         sPfxRange<float>        speed = 0;
@@ -248,7 +248,7 @@ namespace onut
                 return pContentManager->getResource<Texture>(pFilename);
             });
         }
-        static ParticleSystem* createFromFile(const std::string& filename, std::function<Texture*(const char*)> loadTextureFn);
+        static ParticleSystem* createFromFile(const std::string& filename, std::function<OTextureRef(const char*)> loadTextureFn);
 
         ParticleSystem();
         virtual ~ParticleSystem();

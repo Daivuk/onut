@@ -262,6 +262,7 @@ namespace onut
     public:
         virtual void render(const void* pControl, const sUIRect& rect) const = 0;
     };
+    using IUIRenderCallbackRef = std::shared_ptr<IUIRenderCallback>;
 
     template<typename TobjType, typename TcallbackType>
     class UIRenderCallback : public IUIRenderCallback
@@ -283,6 +284,7 @@ namespace onut
     public:
         virtual decltype(std::string().size()) getCaretPos(const void* pControl, const sUIVector2& localPos) const = 0;
     };
+    using IUITextCaretCallbackRef = std::shared_ptr<IUITextCaretCallback>;
 
     template<typename TobjType, typename TcallbackType>
     class UITextCaretCallback : public IUITextCaretCallback
@@ -316,12 +318,7 @@ namespace onut
         {
             auto styleId = uiHash(szStyle);
             auto& m = m_callbacks[std::type_index(typeid(TobjType))];
-            auto& it = m.find(styleId);
-            if (it != m.end())
-            {
-                delete it->second;
-            }
-            m[styleId] = new UIRenderCallback<TobjType, TcallbackType>(renderCallback);
+            m[styleId] = std::make_shared<UIRenderCallback<TobjType, TcallbackType>>(renderCallback);
         }
 
         template<typename TobjType, typename TcallbackType>
@@ -329,16 +326,11 @@ namespace onut
         {
             auto styleId = uiHash(szStyle);
             auto& m = m_textCaretSolvers[std::type_index(typeid(TobjType))];
-            auto& it = m.find(styleId);
-            if (it != m.end())
-            {
-                delete it->second;
-            }
-            m[styleId] = new UITextCaretCallback<TobjType, TcallbackType>(callback);
+            m[styleId] = std::make_shared<UITextCaretCallback<TobjType, TcallbackType>>(callback);
         }
 
         template<typename TobjType>
-        const IUIRenderCallback* getStyle(unsigned int styleId) const
+        const IUIRenderCallbackRef getStyle(unsigned int styleId) const
         {
             auto& mIt = m_callbacks.find(std::type_index(typeid(TobjType)));
             if (mIt == m_callbacks.end())
@@ -362,7 +354,7 @@ namespace onut
         }
 
         template<typename TobjType>
-        const IUITextCaretCallback* getTextCaretSolver(unsigned int styleId) const
+        const IUITextCaretCallbackRef getTextCaretSolver(unsigned int styleId) const
         {
             auto& mIt = m_textCaretSolvers.find(std::type_index(typeid(TobjType)));
             if (mIt == m_textCaretSolvers.end())
@@ -420,8 +412,8 @@ namespace onut
         void pushClip(const sUIRect& rect);
         void popClip();
 
-        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUIRenderCallback*>>       m_callbacks;
-        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUITextCaretCallback*>>    m_textCaretSolvers;
+        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUIRenderCallbackRef>>       m_callbacks;
+        std::unordered_map<std::type_index, std::unordered_map<unsigned int, IUITextCaretCallbackRef>>    m_textCaretSolvers;
 
         UIMouseEvent    m_mouseEvents[3];
         UIMouseEvent    m_lastMouseEvents[3];

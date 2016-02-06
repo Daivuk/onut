@@ -23,7 +23,7 @@ namespace onut
         m_pMp3->Stop();
         m_pMp3->Cleanup();
 
-        auto cmd = utf8ToUtf16(OContentManager->find(filename));
+        auto cmd = utf8ToUtf16(oContentManager->findResourceFile(filename));
         if (!m_pMp3->Load(cmd.c_str()))
         {
             return;

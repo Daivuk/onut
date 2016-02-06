@@ -1,10 +1,8 @@
 #pragma once
-#include "ContentManager.h"
+#include "onut/ContentManager.h"
 
 #include <string>
 #include <unordered_map>
-
-extern onut::ContentManager* OContentManager;
 
 namespace onut
 {
@@ -45,7 +43,7 @@ namespace onut
             sObject *pObjects = nullptr;
         };
 
-        TiledMap(const std::string &map, onut::ContentManager *pContentManager = OContentManager);
+        TiledMap(const std::string &map, const OContentManagerRef& pContentManager = oContentManager);
         virtual ~TiledMap();
 
         const Matrix &getTransform() const { return m_transform; }
@@ -75,7 +73,7 @@ namespace onut
             int firstId;
             int tileWidth;
             int tileHeight;
-            onut::Texture *pTexture;
+            OTextureRef pTexture;
             std::string name;
         };
 

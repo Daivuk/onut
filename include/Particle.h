@@ -3,9 +3,11 @@
 #include "SimpleMath.h"
 using namespace DirectX::SimpleMath;
 
+#include "onut/forward_declaration.h"
+OForwardDeclare(Texture);
+
 namespace onut
 {
-    class Texture;
     class ParticleEmitter;
     class ParticleSystem;
     struct sEmitterDesc;
@@ -46,6 +48,6 @@ namespace onut
         sParticleRange<float>           radialAccel;
         sParticleRange<float>           tangentAccel;
 
-        Texture*                        pTexture = nullptr;
+        OTextureRef                        pTexture = nullptr;
     };
 }

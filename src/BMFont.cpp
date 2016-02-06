@@ -1,6 +1,7 @@
 #include "onut.h"
 #include <sstream>
 #include <fstream>
+#include "Utils.h"
 
 namespace onut
 {
@@ -28,12 +29,12 @@ namespace onut
         return "";
     }
 
-    BMFont* BMFont::createFromFile(const std::string& filename, std::function<OTexture*(const char*)> loadTextureFn)
+    OBMFontRef BMFont::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
         std::ifstream in(filename);
         assert(!in.fail());
 
-        auto pFont = new BMFont();
+        auto pFont = std::make_shared<OBMFont>();
 
         std::string line;
         std::getline(in, line);
@@ -64,7 +65,7 @@ namespace onut
                 pFont->m_pages[pNewPage->id] = pNewPage;
 
                 // Load its texture
-                pNewPage->pTexture = loadTextureFn(pNewPage->file.c_str());
+                pNewPage->pTexture = OTexture::get(pNewPage->file, pContentManager);
             }
             else if (command == "chars")
             {
@@ -267,4 +268,22 @@ namespace onut
 
         return std::move(ret);
     }
+
+    OBMFontRef OBMFont::get(const std::string& name, const OContentManagerRef& pContentManager)
+    {
+        auto pRet = std::dynamic_pointer_cast<OBMFont>(pContentManager->getResource(name));
+        if (!pRet)
+        {
+            auto filename = pContentManager->findResourceFile(name);
+            pRet = OBMFont::createFromFile(filename, pContentManager);
+            pRet->setName(name);
+            pContentManager->addResource(name, pRet);
+        }
+        return pRet;
+    }
+}
+
+OBMFontRef OGetBMFont(const std::string& name)
+{
+    return OBMFont::get(name, oContentManager);
 }

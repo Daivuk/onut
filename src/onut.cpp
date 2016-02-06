@@ -6,6 +6,7 @@
 #include "InputDevice.h"
 #include "onut.h"
 #include "Window.h"
+#include "onut/Texture.h"
 
 using namespace DirectX;
 
@@ -17,7 +18,6 @@ onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 onut::GamePad*                      g_gamePads[4] = {nullptr};
 onut::EventManager*                 OEvent = nullptr;
-onut::ContentManager*               OContentManager = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous<onut::Pool<>>     g_mainSync;
@@ -54,7 +54,7 @@ namespace onut
         {
             static std::string stateFilename;
             stateFilename = filename;
-            OTexture *pTexture;
+            OTextureRef pTexture;
             switch (pControl->getState(*OUIContext))
             {
                 case onut::eUIState::NORMAL:
@@ -94,7 +94,7 @@ namespace onut
         OUIContext->drawScale9Rect = [=](onut::UIControl* pControl, const onut::sUIRect& rect, const onut::sUIScale9Component& scale9)
         {
             const std::string &filename = scale9.image.filename;
-            OTexture *pTexture;
+            OTextureRef pTexture;
             switch (pControl->getState(*OUIContext))
             {
                 case onut::eUIState::NORMAL:
@@ -206,8 +206,8 @@ namespace onut
         OPB = new PrimitiveBatch();
 
         // Content
-        OContentManager = new ContentManager();
-        OContentManager->addDefaultSearchPaths();
+        oContentManager = std::make_shared<ContentManager>();
+        oContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
         g_inputDevice = new InputDevice(OWindow);
@@ -291,7 +291,7 @@ namespace onut
         }
         delete OInput;
         delete g_inputDevice;
-        delete OContentManager;
+        oContentManager = nullptr;
         delete OPB;
         delete OSB;
         delete ORenderer;
@@ -421,7 +421,7 @@ namespace onut
         return g_timeInfo;
     }
 
-    void drawPal(const OPal& pal, OFont* pFont)
+    void drawPal(const OPal& pal, OBMFont* pFont)
     {
         static const float H = 32.f;
         float i = 0;

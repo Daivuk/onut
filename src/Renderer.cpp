@@ -54,8 +54,6 @@ namespace onut
 
     Renderer::~Renderer()
     {
-        delete m_renderTarget;
-
         if (m_pWorldMatrixBuffer) m_pWorldMatrixBuffer->Release();
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
         if (m_pKernelSizeBuffer) m_pKernelSizeBuffer->Release();

@@ -1,5 +1,6 @@
 #include <cmath>
 #include "onut.h"
+#include "onut/Texture.h"
 #include "SpriteBatch.h"
 
 namespace onut
@@ -11,7 +12,7 @@ namespace onut
 
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = {255, 255, 255, 255};
-        m_pTexWhite = Texture::createFromData({1, 1}, white, false);
+        m_pTexWhite = Texture::createFromData(white, {1, 1}, false);
 
         SVertexP2T2C4 vertices[MAX_SPRITE_COUNT * 4];
         unsigned short indices[MAX_SPRITE_COUNT * 6];
@@ -212,7 +213,6 @@ namespace onut
         }
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
-        delete m_pTexWhite;
     }
 
     void SpriteBatch::begin(eBlendMode blendMode)
@@ -251,17 +251,12 @@ namespace onut
         if (bManageBatch) begin(m_currentTransform, m_curBlendMode);
     }
 
-    void SpriteBatch::drawRectWithColors(Texture* pTexture, const Rect& rect, const std::vector<Color>& colors)
+    void SpriteBatch::drawRectWithColors(const OTextureRef& pTexture, const Rect& rect, const std::vector<Color>& colors)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
+        changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
@@ -288,21 +283,16 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawAbsoluteRect(Texture* pTexture, const Rect& rect, const Color& color)
+    void SpriteBatch::drawAbsoluteRect(const OTextureRef& pTexture, const Rect& rect, const Color& color)
     {
         drawRect(pTexture, {rect.x, rect.y, rect.z - rect.x, rect.w - rect.y}, color);
     }
 
-    void SpriteBatch::drawRect(Texture* pTexture, const Rect& rect, const Color& color)
+    void SpriteBatch::drawRect(const OTextureRef& pTexture, const Rect& rect, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
+        changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
@@ -329,70 +319,70 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawRectScaled9(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color)
+    void SpriteBatch::drawRectScaled9(const OTextureRef& pTexture, const Rect& rect, const Vector4& padding, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
-        if (!pTexture) pTexture = m_pTexWhite;
+        changeTexture(pTexture);
 
-        auto textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
+        auto textureSize = m_pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.width);
+        auto sizeyf = static_cast<float>(textureSize.height);
         const Vector4 paddingUVs{padding.x / sizexf, padding.y / sizeyf, padding.z / sizexf, padding.w / sizeyf};
 
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x, rect.y, padding.x, padding.y},
             {0.f, 0.f, paddingUVs.x, paddingUVs.y}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + padding.x, rect.y, rect.z - padding.x - padding.z, padding.y},
             {paddingUVs.x, 0.f, 1.f - paddingUVs.z, paddingUVs.y}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + rect.z - padding.z, rect.y, padding.z, padding.y},
             {1.f - paddingUVs.z, 0.f, 1.f, paddingUVs.y}, color);
 
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x, rect.y + padding.y, padding.x, rect.w - padding.y - padding.w},
             {0.f, paddingUVs.y, paddingUVs.x, 1.f - paddingUVs.w}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + padding.x, rect.y + padding.y, rect.z - padding.x - padding.z, rect.w - padding.y - padding.w},
             {paddingUVs.x, paddingUVs.y, 1.f - paddingUVs.z, 1.f - paddingUVs.w}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + rect.z - padding.z, rect.y + padding.y, padding.z, rect.w - padding.y - padding.w},
             {1.f - paddingUVs.z, paddingUVs.y, 1.f, 1.f - paddingUVs.w}, color);
 
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x, rect.y + rect.w - padding.w, padding.x, padding.w},
             {0.f, 1.f - paddingUVs.w, paddingUVs.x, 1.f}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + padding.x, rect.y + rect.w - padding.w, rect.z - padding.x - padding.z, padding.w},
             {paddingUVs.x, 1.f - paddingUVs.w, 1.f - paddingUVs.z, 1.f}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + rect.z - padding.z, rect.y + rect.w - padding.z, padding.w, padding.w},
             {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
     }
 
-    void SpriteBatch::drawRectScaled9RepeatCenters(Texture* pTexture, const Rect& rect, const Vector4& padding, const Color& color)
+    void SpriteBatch::drawRectScaled9RepeatCenters(const OTextureRef& pTexture, const Rect& rect, const Vector4& padding, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
-        if (!pTexture) pTexture = m_pTexWhite;
+        changeTexture(pTexture);
 
-        auto textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
+        auto textureSize = m_pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.width);
+        auto sizeyf = static_cast<float>(textureSize.height);
         const Vector4 paddingUVs{padding.x / sizexf, padding.y / sizeyf, padding.z / sizexf, padding.w / sizeyf};
 
         // Corners
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x, rect.y, padding.x, padding.y},
             {0.f, 0.f, paddingUVs.x, paddingUVs.y}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + rect.z - padding.z, rect.y, padding.z, padding.y},
             {1.f - paddingUVs.z, 0.f, 1.f, paddingUVs.y}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x, rect.y + rect.w - padding.w, padding.x, padding.w},
             {0.f, 1.f - paddingUVs.w, paddingUVs.x, 1.f}, color);
-        drawRectWithUVs(pTexture,
+        drawRectWithUVs(m_pTexture,
             {rect.x + rect.z - padding.z, rect.y + rect.w - padding.w, padding.z, padding.w},
             {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
 
@@ -410,11 +400,11 @@ namespace onut
 
         for (int x = 0; x < xCount; ++x)
         {
-            drawRectWithUVs(pTexture,
+            drawRectWithUVs(m_pTexture,
                 {rect.x + padding.x + static_cast<float>(x)* xPartLen,
                 rect.y, xPartLen, padding.y},
                 {paddingUVs.x, 0.f, 1.f - paddingUVs.z, paddingUVs.y}, color);
-            drawRectWithUVs(pTexture,
+            drawRectWithUVs(m_pTexture,
                 {rect.x + padding.x + static_cast<float>(x)* xPartLen, 
                 rect.y + rect.w - padding.w, xPartLen, padding.w},
                 {paddingUVs.x, 1.f - paddingUVs.w, 1.f - paddingUVs.z, 1.f}, color);
@@ -422,12 +412,12 @@ namespace onut
 
         for (int y = 0; y < yCount; ++y)
         {
-            drawRectWithUVs(pTexture,
+            drawRectWithUVs(m_pTexture,
                 {rect.x, 
                 rect.y + padding.y + static_cast<float>(y)* yPartLen,
                 padding.x, yPartLen},
                 {0.f, paddingUVs.y, paddingUVs.x, 1.f - paddingUVs.w}, color);
-            drawRectWithUVs(pTexture,
+            drawRectWithUVs(m_pTexture,
                 {rect.x + rect.z - padding.z, 
                 rect.y + padding.y + static_cast<float>(y)* yPartLen,
                 padding.z, yPartLen},
@@ -439,7 +429,7 @@ namespace onut
             for (int x = 0; x < xCount; ++x)
             {
                 // The middle part
-                drawRectWithUVs(pTexture,
+                drawRectWithUVs(m_pTexture,
                 {rect.x + padding.x + static_cast<float>(x)* xPartLen,
                 rect.y + padding.y + static_cast<float>(y)* yPartLen,
                 xPartLen,
@@ -449,16 +439,11 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawInclinedRect(Texture* pTexture, const Rect& rect, float inclinedRatio, const Color& color)
+    void SpriteBatch::drawInclinedRect(const OTextureRef& pTexture, const Rect& rect, float inclinedRatio, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
+        changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
@@ -485,16 +470,11 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawRectWithUVs(Texture* pTexture, const Rect& rect, const Vector4& uvs, const Color& color)
+    void SpriteBatch::drawRectWithUVs(const OTextureRef& pTexture, const Rect& rect, const Vector4& uvs, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
+        changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
@@ -521,17 +501,12 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawRectWithUVsColors(Texture* pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors)
+    void SpriteBatch::drawRectWithUVsColors(const OTextureRef& pTexture, const Rect& rect, const Vector4& uvs, const std::vector<Color>& colors)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
+        changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
@@ -558,41 +533,45 @@ namespace onut
         }
     }
 
-    void SpriteBatch::draw4Corner(Texture* pTexture, const Rect& rect, const Color& color)
+    void SpriteBatch::changeTexture(const OTextureRef& pTexture)
     {
-        if (!pTexture) pTexture = m_pTexWhite;
-
-        auto textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
-        Rect cornerRect{0, 0, sizexf * .5f, sizeyf * .5f};
-        drawRectWithUVs(pTexture, rect.TopLeft(cornerRect), {0, 0, .5f, .5f}, color);
-        drawRectWithUVs(pTexture, rect.TopRight(cornerRect), {.5f, 0, 1, .5f}, color);
-        drawRectWithUVs(pTexture, rect.BottomLeft(cornerRect), {0, .5f, .5f, 1}, color);
-        drawRectWithUVs(pTexture, rect.BottomRight(cornerRect), {.5f, .5f, 1, 1}, color);
-    }
-
-    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, const Vector2& origin)
-    {
-        if (!pTexture) pTexture = m_pTexWhite;
-
-        auto& textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
-        drawRect(pTexture, {position.x - sizexf * origin.x, position.y - sizeyf * origin.y, sizexf, sizeyf}, color);
-    }
-
-    void SpriteBatch::drawSprite(Texture* pTexture, const Matrix& transform, const Color& color, const Vector2& origin)
-    {
-        if (!pTexture) pTexture = m_pTexWhite;
-        auto sizef = pTexture->getSizef();
-
-        if (!pTexture) pTexture = m_pTexWhite;
+        if (!pTexture && m_pTexture == m_pTexWhite) return;
         if (pTexture != m_pTexture)
         {
             flush();
+            if (!pTexture) m_pTexture = m_pTexWhite;
+            else m_pTexture = pTexture;
         }
-        m_pTexture = pTexture;
+    }
+
+    void SpriteBatch::draw4Corner(const OTextureRef& pTexture, const Rect& rect, const Color& color)
+    {
+        changeTexture(pTexture);
+
+        auto textureSize = m_pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.width);
+        auto sizeyf = static_cast<float>(textureSize.height);
+        Rect cornerRect{0, 0, sizexf * .5f, sizeyf * .5f};
+        drawRectWithUVs(m_pTexture, rect.TopLeft(cornerRect), {0, 0, .5f, .5f}, color);
+        drawRectWithUVs(m_pTexture, rect.TopRight(cornerRect), {.5f, 0, 1, .5f}, color);
+        drawRectWithUVs(m_pTexture, rect.BottomLeft(cornerRect), {0, .5f, .5f, 1}, color);
+        drawRectWithUVs(m_pTexture, rect.BottomRight(cornerRect), {.5f, .5f, 1, 1}, color);
+    }
+
+    void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, const Vector2& origin)
+    {
+        changeTexture(pTexture);
+
+        auto& textureSize = m_pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.width);
+        auto sizeyf = static_cast<float>(textureSize.height);
+        drawRect(m_pTexture, {position.x - sizexf * origin.x, position.y - sizeyf * origin.y, sizexf, sizeyf}, color);
+    }
+
+    void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Color& color, const Vector2& origin)
+    {
+        changeTexture(pTexture);
+        auto sizef = m_pTexture->getSizef();
 
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
 
@@ -621,19 +600,12 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin)
+    void SpriteBatch::drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin)
     {
-        if (!pTexture) pTexture = m_pTexWhite;
-        auto sizef = pTexture->getSizef();
+        changeTexture(pTexture);
+        auto sizef = m_pTexture->getSizef();
         sizef.x *= std::abs(uvs.z - uvs.x);
         sizef.y *= std::abs(uvs.w - uvs.y);
-
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
 
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
 
@@ -662,12 +634,12 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawSpriteWithUVs(Texture* pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale, const Vector2& origin)
+    void SpriteBatch::drawSpriteWithUVs(const OTextureRef& pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale, const Vector2& origin)
     {
-        if (!pTexture) pTexture = m_pTexWhite;
-        auto textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
+        changeTexture(pTexture);
+        auto textureSize = m_pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.width);
+        auto sizeyf = static_cast<float>(textureSize.height);
         sizexf *= (uvs.z - uvs.x);
         sizeyf *= (uvs.w - uvs.y);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
@@ -678,13 +650,6 @@ namespace onut
 
         Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
         Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
-
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = position;
@@ -719,14 +684,9 @@ namespace onut
         }
     }
 
-    void SpriteBatch::drawBeam(Texture* pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset, float uScale)
+    void SpriteBatch::drawBeam(const OTextureRef& pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset, float uScale)
     {
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
+        changeTexture(pTexture);
 
         auto texSize = m_pTexture->getSizef();
         Vector2 dir = to - from;
@@ -767,12 +727,13 @@ namespace onut
         drawRect(nullptr, {position.x - size, position.y - thickness * .5f, size * 2.f, thickness}, color);
     }
 
-    void SpriteBatch::drawSprite(Texture* pTexture, const Vector2& position, const Color& color, float rotation, float scale, const Vector2& origin)
+    void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, float rotation, float scale, const Vector2& origin)
     {
-        if (!pTexture) pTexture = m_pTexWhite;
-        auto textureSize = pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.x);
-        auto sizeyf = static_cast<float>(textureSize.y);
+        changeTexture(pTexture);
+
+        auto textureSize = m_pTexture->getSize();
+        auto sizexf = static_cast<float>(textureSize.width);
+        auto sizeyf = static_cast<float>(textureSize.height);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
         auto radTheta = DirectX::XMConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);
@@ -781,13 +742,6 @@ namespace onut
 
         Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
         Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
-
-        if (!pTexture) pTexture = m_pTexWhite;
-        if (pTexture != m_pTexture)
-        {
-            flush();
-        }
-        m_pTexture = pTexture;
 
         SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
         pVerts[0].position = position;
@@ -844,7 +798,7 @@ namespace onut
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        auto textureView = m_pTexture->getResourceView();
+        auto textureView = m_pTexture->getD3DResourceView();
         pDeviceContext->PSSetShaderResources(0, 1, &textureView);
         pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);

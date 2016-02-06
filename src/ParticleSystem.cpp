@@ -4,6 +4,7 @@
 #include "rapidjson/filestream.h"
 #include "tinyxml2.h"
 #include "zlib/zlib.h"
+#include "Utils.h"
 
 #define PFX_READ_ENUM(__node__, __target__, __name__, __enumType__, ...) \
 { \
@@ -359,7 +360,7 @@ namespace onut
         return std::move(pex);
     }
 
-    ParticleSystem* ParticleSystem::createFromFile(const std::string& filename, std::function<Texture*(const char*)> loadTextureFn)
+    ParticleSystem* ParticleSystem::createFromFile(const std::string& filename, std::function<OTextureRef(const char*)> loadTextureFn)
     {
         auto extPos = filename.find_last_of('.');
         if (extPos == std::string::npos)

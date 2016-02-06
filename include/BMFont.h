@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include "SimpleMath.h"
-#include "Texture.h"
+#include "onut/Texture.h"
 #include "Typedefs.h"
 using namespace DirectX::SimpleMath;
 
@@ -15,20 +15,20 @@ namespace onut
 }
 extern onut::SpriteBatch* OSpriteBatch;
 
+#include "onut/ContentManager.h"
+#include "onut/Texture.h"
+#include "onut/Resource.h"
+
+#include "onut/forward_declaration.h"
+OForwardDeclare(BMFont)
+
 namespace onut
 {
-    class BMFont
+    class BMFont : public Resource
     {
     public:
-        template<typename TcontentManagerType>
-        static BMFont* createFromFile(const std::string& filename, TcontentManagerType* pContentManager)
-        {
-            return BMFont::createFromFile(filename, [pContentManager](const char* pFilename)
-            {
-                return pContentManager->getResource<Texture>(pFilename);
-            });
-        }
-        static BMFont* createFromFile(const std::string& filename, std::function<Texture*(const char*)> loadTextureFn);
+        static OBMFontRef get(const std::string& name, const OContentManagerRef& pContentManager);
+        static OBMFontRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = oContentManager);
 
         BMFont();
         virtual ~BMFont();
@@ -163,7 +163,7 @@ namespace onut
         {
             int         id = 0;
             std::string file;
-            Texture*    pTexture = nullptr;
+            OTextureRef pTexture;
         };
         struct fntChars
         {
@@ -202,4 +202,4 @@ namespace onut
     };
 }
 
-typedef onut::BMFont OFont;
+OBMFontRef OGetBMFont(const std::string& name);

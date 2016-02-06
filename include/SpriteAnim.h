@@ -1,13 +1,16 @@
 #pragma once
 #include "Anim.h"
-#include "ContentManager.h"
-#include "Texture.h"
+#include "onut/ContentManager.h"
+#include "onut/Resource.h"
+#include "onut/Texture.h"
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-extern onut::ContentManager* OContentManager;
+#include "onut/forward_declaration.h"
+OForwardDeclare(SpriteAnimDefinition);
+OForwardDeclare(SpriteAnim);
 
 namespace onut
 {
@@ -16,7 +19,7 @@ namespace onut
     public:
         struct Frame
         {
-            Texture* pTexture = nullptr;
+            OTextureRef pTexture;
             Vector4 UVs = {0, 0, 1, 1};
             Vector2 origin = {.5f, .5f};
         };
@@ -29,7 +32,7 @@ namespace onut
             bool loop = false;
         };
 
-        static SpriteAnimDefinition* createFromFile(const std::string& filename, onut::ContentManager* pContentManager);
+        static SpriteAnimDefinition* createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = oContentManager);
         virtual ~SpriteAnimDefinition();
 
         void addAnim(const Anim& anim);
@@ -52,7 +55,7 @@ namespace onut
     public:
         SpriteAnim();
         SpriteAnim(SpriteAnimDefinition* pDefinition);
-        SpriteAnim(const std::string& definitionFilename, ContentManager* pContentManager = OContentManager);
+        SpriteAnim(const std::string& definitionFilename, const OContentManagerRef& pContentManager = oContentManager);
 
         void start(const std::string& animName);
         void startBackward(const std::string& animName);
@@ -60,10 +63,10 @@ namespace onut
         bool isPlaying() const;
 
         int getFrameId() const;
-        SpriteAnimDefinition* getDefinition() const { return m_pDefinition; }
+        OSpriteAnimDefinition* getDefinition() const { return m_pDefinition; }
         SpriteAnimDefinition::Anim* getCurrentAnim() const { return m_pCurrentAnim; }
 
-        Texture* getTexture() const;
+        OTextureRef getTexture() const;
         const Vector4& getUVs() const;
         const Vector2& getOrigin() const;
 

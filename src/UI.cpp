@@ -412,13 +412,6 @@ namespace onut
 
     UIContext::~UIContext()
     {
-        for (auto& kv : m_callbacks)
-        {
-            for (auto& kv2 : kv.second)
-            {
-                delete kv2.second;
-            }
-        }
     }
 
     void UIContext::resize(const sUIVector2& screenSize)

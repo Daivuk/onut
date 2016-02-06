@@ -6,6 +6,8 @@
 #include "Utils.h"
 #include "Asynchronous.h"
 
+#include "onut/Texture.h"
+
 std::string OHTTPGet(const std::string &url,
                      std::function<void(long, std::string)> onError)
 {
@@ -131,7 +133,7 @@ std::string OHTTPPost(const std::string &url,
     }
 }
 
-OTexture* OHTTPGetTexture(const std::string &url,
+OTextureRef OHTTPGetTexture(const std::string &url,
                                std::function<void(long, std::string)> onError)
 {
     HRESULT hr;
@@ -190,7 +192,7 @@ OTexture* OHTTPGetTexture(const std::string &url,
 }
 
 void OHTTPGetTextureAsync(const std::string &url,
-                          std::function<void(OTexture*)> onSuccess,
+                          std::function<void(OTextureRef)> onSuccess,
                           std::function<void(long, std::string)> onError)
 {
     OAsync([url, onSuccess, onError]

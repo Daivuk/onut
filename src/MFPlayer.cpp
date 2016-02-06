@@ -1,6 +1,7 @@
 #if defined(WIN32)
 #include "MFPlayer.h"
 #include "onut.h"
+#include "Utils.h"
 
 #include <cassert>
 #include <codecvt>
@@ -263,8 +264,8 @@ namespace onut
                 RECT targetRect;
                 targetRect.left = 0;
                 targetRect.top = 0;
-                targetRect.right = static_cast<LONG>(m_pRenderTarget->getSize().x);
-                targetRect.bottom = static_cast<LONG>(m_pRenderTarget->getSize().y);
+                targetRect.right = static_cast<LONG>(m_pRenderTarget->getSize().width);
+                targetRect.bottom = static_cast<LONG>(m_pRenderTarget->getSize().height);
 
                 MFARGB borderColor;
                 borderColor.rgbRed = 0;
@@ -272,7 +273,7 @@ namespace onut
                 borderColor.rgbBlue = 0;
                 borderColor.rgbAlpha = 255;
 
-                m_pMediaEngine->TransferVideoFrame(m_pRenderTarget->getResource(), &videoRect, &targetRect, &borderColor);
+                m_pMediaEngine->TransferVideoFrame(m_pRenderTarget->getD3DTexture(), &videoRect, &targetRect, &borderColor);
             }
         }
     }

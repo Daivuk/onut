@@ -15,7 +15,6 @@
     <ClInclude Include="..\..\include\Anim.h" />
     <ClInclude Include="..\..\include\Asynchronous.h" />
     <ClInclude Include="..\..\include\BMFont.h" />
-    <ClInclude Include="..\..\include\ContentManager.h" />
     <ClInclude Include="..\..\include\crypto.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
@@ -30,6 +29,10 @@
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
+    <ClInclude Include="..\..\include\onut\ContentManager.h" />
+    <ClInclude Include="..\..\include\onut\forward_declaration.h" />
+    <ClInclude Include="..\..\include\onut\Resource.h" />
+    <ClInclude Include="..\..\include\onut\Texture.h" />
     <ClInclude Include="..\..\include\Particle.h" />
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystem.h" />
@@ -50,7 +53,6 @@
     <ClInclude Include="..\..\include\StateManager.h" />
     <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
-    <ClInclude Include="..\..\include\Texture.h" />
     <ClInclude Include="..\..\include\TiledMap.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
@@ -86,6 +88,7 @@
     <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\AudioEngine.cpp" />
     <ClCompile Include="..\..\src\BMFont.cpp" />
+    <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\crypto.cpp" />
     <ClCompile Include="..\..\src\DefineHelpers.cpp" />
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
@@ -111,6 +114,7 @@
     <ClCompile Include="..\..\src\Random.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
     <ClCompile Include="..\..\src\onut.cpp" />
+    <ClCompile Include="..\..\src\Resource.cpp" />
     <ClCompile Include="..\..\src\RTS.cpp" />
     <ClCompile Include="..\..\src\Settings.cpp" />
     <ClCompile Include="..\..\src\SimpleMath.cpp" />

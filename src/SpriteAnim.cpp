@@ -5,11 +5,11 @@
 
 namespace onut
 {
-    SpriteAnimDefinition* SpriteAnimDefinition::createFromFile(const std::string& filename, onut::ContentManager* pContentManager)
+    SpriteAnimDefinition* SpriteAnimDefinition::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
         SpriteAnimDefinition* pRet = new SpriteAnimDefinition();
 
-        pRet->m_filename = pContentManager->find(filename);
+        pRet->m_filename = pContentManager->findResourceFile(filename);
         if (pRet->m_filename.empty())
         {
             pRet->m_filename = filename;
@@ -20,10 +20,10 @@ namespace onut
         auto pXMLSheet = doc.FirstChildElement("sheet");
         assert(pXMLSheet);
         std::string textureName = pXMLSheet->Attribute("texture");
-        onut::Texture* pTexture = pContentManager->getResource<onut::Texture>(textureName);
+        auto pTexture = OTexture::get(textureName, pContentManager);
         assert(pTexture);
-        int spriteW = pTexture->getSize().x;
-        int spriteH = pTexture->getSize().y;
+        int spriteW = pTexture->getSize().width;
+        int spriteH = pTexture->getSize().height;
         int originX = 0;
         int originY = 0;
         pXMLSheet->QueryAttribute("spriteWidth", &spriteW);
@@ -47,15 +47,15 @@ namespace onut
                 int id = 0;
                 pXMLFrame->QueryAttribute("id", &id);
                 pXMLFrame->QueryAttribute("repeat", &repeat);
-                int col = id % (pTexture->getSize().x / spriteW);
-                int row = id / (pTexture->getSize().x / spriteW);
+                int col = id % (pTexture->getSize().width / spriteW);
+                int row = id / (pTexture->getSize().width / spriteW);
                 col *= spriteW;
                 row *= spriteH;
                 frame.UVs = Vector4(
-                    (float)col / (float)pTexture->getSize().x,
-                    (float)row / (float)pTexture->getSize().y,
-                    (float)(col + spriteW) / (float)pTexture->getSize().x,
-                    (float)(row + spriteH) / (float)pTexture->getSize().y);
+                    (float)col / (float)pTexture->getSize().width,
+                    (float)row / (float)pTexture->getSize().height,
+                    (float)(col + spriteW) / (float)pTexture->getSize().width,
+                    (float)(row + spriteH) / (float)pTexture->getSize().height);
                 for (auto i = 0; i < repeat; ++i)
                 {
                     anim.frames.push_back(frame);
@@ -106,13 +106,13 @@ namespace onut
     }
 
     SpriteAnim::SpriteAnim(SpriteAnimDefinition* pDefinition)
+        : m_pDefinition(pDefinition)
     {
-        m_pDefinition = pDefinition;
     }
 
-    SpriteAnim::SpriteAnim(const std::string& definitionFilename, ContentManager* pContentManager)
+    SpriteAnim::SpriteAnim(const std::string& definitionFilename, const OContentManagerRef& pContentManager)
     {
-        m_pDefinition = pContentManager->getResource<SpriteAnimDefinition>(definitionFilename);
+        m_pDefinition = SpriteAnimDefinition::createFromFile(definitionFilename, pContentManager);
     }
 
     void SpriteAnim::start(const std::string& animName)
@@ -164,7 +164,7 @@ namespace onut
         return 0;
     }
 
-    onut::Texture* SpriteAnim::getTexture() const
+    OTextureRef SpriteAnim::getTexture() const
     {
         if (m_pCurrentAnim)
         {

@@ -1,7 +1,16 @@
 #pragma once
 #include "SimpleMath.h"
-#include "Texture.h"
+#include "onut/Texture.h"
 using namespace DirectX::SimpleMath;
+
+#include <memory>
+
+// Forward declares
+namespace onut
+{
+    class Texture;
+};
+using OTextureRef = std::shared_ptr<onut::Texture>;
 
 namespace onut
 {
@@ -19,7 +28,7 @@ namespace onut
         PrimitiveBatch();
         virtual ~PrimitiveBatch();
 
-        void begin(ePrimitiveType primitiveType, Texture* pTexture = nullptr, const Matrix& transform = Matrix::Identity);
+        void begin(ePrimitiveType primitiveType, const OTextureRef& pTexture = nullptr, const Matrix& transform = Matrix::Identity);
         void draw(const Vector2& position, const Color& color = Color::White, const Vector2& texCoord = Vector2::Zero);
         void end();
 
@@ -44,8 +53,8 @@ namespace onut
 
         bool                        m_isDrawing = false;
 
-        Texture*                    m_pTexWhite = nullptr;
-        Texture*                    m_pTexture = nullptr;
+        OTextureRef m_pTexWhite;
+        OTextureRef m_pTexture;
 
         ePrimitiveType              m_primitiveType;
     };

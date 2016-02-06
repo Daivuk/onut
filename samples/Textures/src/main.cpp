@@ -3,16 +3,17 @@
 
 // Oak Nut include
 #include "onut.h"
+#include "Utils.h"
 
 void init();
 void update();
 void render();
 
-OTexture* pTextureFromFile = nullptr;
-OTexture* pTextureFromFileData = nullptr;
-OTexture* pTextureFromData = nullptr;
-OTexture* pRenderTarget = nullptr;
-OTexture* pDynamic = nullptr;
+OTextureRef pTextureFromFile = nullptr;
+OTextureRef pTextureFromFileData = nullptr;
+OTextureRef pTextureFromData = nullptr;
+OTextureRef pRenderTarget = nullptr;
+OTextureRef pDynamic = nullptr;
 
 uint8_t dynamicData[128 * 128 * 4];
 OAnimi dynamicAnim = 0;
@@ -31,7 +32,7 @@ void init()
 
     // From file data
     auto fileData = onut::getFileData("../../assets/textures/onutLogo.png");
-    pTextureFromFileData = OTexture::createFromFileData(fileData);
+    pTextureFromFileData = OTexture::createFromFileData(fileData.data(), fileData.size());
 
     // From raw data
     const uint8_t rawData[] = {
@@ -40,7 +41,7 @@ void init()
         150, 150, 150, 255,
         255, 0, 255, 255
     };
-    pTextureFromData = OTexture::createFromData({2, 2}, rawData);
+    pTextureFromData = OTexture::createFromData(rawData, {2, 2});
 
     // Create a render target
     pRenderTarget = OTexture::createRenderTarget({256, 256});
@@ -105,12 +106,12 @@ void render()
     OSB->drawRect(pTextureFromData, {256, 0, 128, 128});
     OSB->drawRect(pRenderTarget, {384, 0, 128, 128});
     OSB->drawRect(pDynamic, {512, 0, 128, 128});
-
+    
     pFont->draw<OCenter>("From File", {64, 140});
     pFont->draw<OCenter>("From File Data", {64 + 128, 140});
     pFont->draw<OCenter>("From Data", {64 + 256, 140});
     pFont->draw<OCenter>("Render Target", {64 + 384, 140});
     pFont->draw<OCenter>("Dynamic", {64 + 512, 140});
-
+    
     OSpriteBatch->end();
 }

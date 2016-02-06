@@ -1,6 +1,7 @@
 #include "Audio.h"
 #include "onut.h"
 #include "tinyxml2.h"
+#include "Utils.h"
 using namespace DirectX;
 
 extern AudioEngine* g_pAudioEngine;
