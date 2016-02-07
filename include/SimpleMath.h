@@ -54,6 +54,14 @@ struct Matrix;
 struct Quaternion;
 struct Plane;
 
+struct iRect
+{
+    int left;
+    int top;
+    int right;
+    int bottom;
+};
+
 //------------------------------------------------------------------------------
 // 2D vector
 struct Vector2 : public XMFLOAT2

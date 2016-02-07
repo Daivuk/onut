@@ -121,9 +121,6 @@
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\TiledMap.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\tinyxml2.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -214,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\ForwardDeclaration.h">
       <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\TiledMap.h">
+      <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

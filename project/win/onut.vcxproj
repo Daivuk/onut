@@ -29,6 +29,7 @@
     <ClInclude Include="..\..\include\onut\Music.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\Sound.h" />
+    <ClInclude Include="..\..\include\onut\TiledMap.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
@@ -55,7 +56,6 @@
     <ClInclude Include="..\..\include\StateManager.h" />
     <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
-    <ClInclude Include="..\..\include\TiledMap.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\tinyxml2.h" />

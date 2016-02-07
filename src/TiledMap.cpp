@@ -1,36 +1,45 @@
-#include <cassert>
+#include "onut/ContentManager.h"
+#include "onut/Texture.h"
+#include "onut/TiledMap.h"
+
 #include "tinyxml2.h"
 #include "onut_old.h"
 #include "crypto.h"
 #include "zlib/zlib.h"
 #include "Utils.h"
-#include "onut/Texture.h"
+
+#include <cassert>
 
 namespace onut
 {
-    TiledMap::sLayer::~sLayer()
+    TiledMap::Layer::~Layer()
     {
     }
 
-    TiledMap::sTileLayer::~sTileLayer()
+    TiledMap::TileLayer::~TileLayer()
     {
         if (tileIds) delete[] tileIds;
     }
 
-    TiledMap::sObjectLayer::~sObjectLayer()
+    TiledMap::ObjectLayer::~ObjectLayer()
     {
         if (pObjects) delete[] pObjects;
     }
 
-    TiledMap::sTileLayerInternal::~sTileLayerInternal()
+    TiledMap::TileLayerInternal::~TileLayerInternal()
     {
         if (tiles) delete[] tiles;
     }
 
-    TiledMap::TiledMap(const std::string &map, const OContentManagerRef& pContentManager)
+    OTiledMapRef TiledMap::createFromFile(const std::string &filename, const OContentManagerRef& in_pContentManager)
     {
+        OContentManagerRef pContentManager = in_pContentManager;
+        if (!pContentManager) pContentManager = oContentManager;
+
+        auto pRet = std::make_shared<OTiledMap>();
+
         tinyxml2::XMLDocument doc;
-        doc.LoadFile(map.c_str());
+        doc.LoadFile(filename.c_str());
         assert(!doc.Error());
         auto pXMLMap = doc.FirstChildElement("map");
         assert(pXMLMap);
@@ -38,14 +47,14 @@ namespace onut
         // Tilesets
         for (auto pXMLTileset = pXMLMap->FirstChildElement("tileset"); pXMLTileset; pXMLTileset = pXMLTileset->NextSiblingElement("tileset"))
         {
-            ++m_tilesetCount;
+            pRet->m_tilesetCount++;
         }
-        assert(m_tilesetCount);
-        m_tileSets = new sTileSet[m_tilesetCount];
-        m_tilesetCount = 0;
+        assert(pRet->m_tilesetCount);
+        pRet->m_tileSets = new TileSet[pRet->m_tilesetCount];
+        pRet->m_tilesetCount = 0;
         for (auto pXMLTileset = pXMLMap->FirstChildElement("tileset"); pXMLTileset; pXMLTileset = pXMLTileset->NextSiblingElement("tileset"))
         {
-            auto &pTileSet = m_tileSets[m_tilesetCount];
+            auto &pTileSet = pRet->m_tileSets[pRet->m_tilesetCount];
 
             pTileSet.name = pXMLTileset->Attribute("name");
             pTileSet.firstId = pXMLTileset->IntAttribute("firstgid");
@@ -59,10 +68,9 @@ namespace onut
             assert(pXMLImage);
             auto szImageFilename = pXMLImage->Attribute("source");
             assert(szImageFilename);
-            auto filename = getPath(map) + "/" + szImageFilename;
-            pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(getFilename(szImageFilename));
+            pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
 
-            ++m_tilesetCount;
+            pRet->m_tilesetCount++;
         }
 
         // Layers
@@ -71,18 +79,18 @@ namespace onut
             if (!strcmp(pXMLLayer->Name(), "layer") ||
                 !strcmp(pXMLLayer->Name(), "objectgroup"))
             {
-                ++m_layerCount;
+                pRet->m_layerCount++;
             }
         }
-        assert(m_layerCount);
-        m_layers = new sLayer*[m_layerCount];
-        m_layerCount = 0;
+        assert(pRet->m_layerCount);
+        pRet->m_layers = new Layer*[pRet->m_layerCount];
+        pRet->m_layerCount = 0;
         for (auto pXMLLayer = pXMLMap->FirstChildElement(); pXMLLayer; pXMLLayer = pXMLLayer->NextSiblingElement())
         {
             if (!strcmp(pXMLLayer->Name(), "layer"))
             {
-                m_layers[m_layerCount] = new sTileLayerInternal();
-                auto &pLayer = *(sTileLayerInternal*)m_layers[m_layerCount];
+                pRet->m_layers[pRet->m_layerCount] = new TileLayerInternal();
+                auto &pLayer = *(TileLayerInternal*)pRet->m_layers[pRet->m_layerCount];
 
                 pLayer.name = pXMLLayer->Attribute("name");
                 if (pXMLLayer->Attribute("visible"))
@@ -94,8 +102,8 @@ namespace onut
                 assert(pLayer.width);
                 pLayer.height = pXMLLayer->IntAttribute("height");
                 assert(pLayer.height);
-                m_width = std::max<>(m_width, pLayer.width);
-                m_height = std::max<>(m_height, pLayer.height);
+                pRet->m_width = std::max<>(pRet->m_width, pLayer.width);
+                pRet->m_height = std::max<>(pRet->m_height, pLayer.height);
                 auto len = pLayer.width * pLayer.height;
                 pLayer.tileIds = new uint32_t[len];
 
@@ -193,7 +201,7 @@ namespace onut
                 }
 
                 // Resolve the tiles to tilesets
-                pLayer.tiles = new sTile[len];
+                pLayer.tiles = new Tile[len];
                 for (int i = 0; i < len; ++i)
                 {
                     auto pTile = pLayer.tiles + i;
@@ -202,8 +210,8 @@ namespace onut
                     {
                         continue;
                     }
-                    auto pTileSet = m_tileSets;
-                    for (int j = 0; j < m_tilesetCount; ++j, pTileSet)
+                    auto pTileSet = pRet->m_tileSets;
+                    for (int j = 0; j < pRet->m_tilesetCount; ++j, pTileSet)
                     {
                         if (pTileSet->firstId > static_cast<int>(tileId)) break;
                     }
@@ -222,12 +230,12 @@ namespace onut
                     pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
                 }
 
-                ++m_layerCount;
+                pRet->m_layerCount++;
             }
             else if (!strcmp(pXMLLayer->Name(), "objectgroup"))
             {
-                m_layers[m_layerCount] = new sObjectLayer();
-                auto &pLayer = *(sObjectLayer*)m_layers[m_layerCount];
+                pRet->m_layers[pRet->m_layerCount] = new ObjectLayer();
+                auto &pLayer = *(ObjectLayer*)pRet->m_layers[pRet->m_layerCount];
 
                 pLayer.name = pXMLLayer->Attribute("name");
                 if (pXMLLayer->Attribute("visible"))
@@ -239,13 +247,13 @@ namespace onut
                 {
                     pLayer.objectCount++;
                 }
-                pLayer.pObjects = new sObject[pLayer.objectCount];
+                pLayer.pObjects = new Object[pLayer.objectCount];
                 pLayer.objectCount = 0;
                 for (auto pXMLObject = pXMLLayer->FirstChildElement("object"); pXMLObject; pXMLObject = pXMLObject->NextSiblingElement("object"))
                 {
                     auto &object = pLayer.pObjects[pLayer.objectCount];
                     pLayer.objectCount++;
-                    
+
                     object.id = pXMLObject->IntAttribute("id");
                     if (pXMLObject->Attribute("name")) object.name = pXMLObject->Attribute("name");
                     if (pXMLObject->Attribute("type")) object.type = pXMLObject->Attribute("type");
@@ -268,11 +276,12 @@ namespace onut
                     }
                 }
 
-                ++m_layerCount;
+                pRet->m_layerCount++;
             }
         }
 
         //TODO: Compile the graphics by batch of 16x16 terrain chunks
+        return pRet;
     }
 
     TiledMap::~TiledMap()
@@ -288,7 +297,7 @@ namespace onut
         if (m_tileSets) delete[] m_tileSets;
     }
 
-    TiledMap::sLayer *TiledMap::getLayer(const std::string &name) const
+    TiledMap::Layer *TiledMap::getLayer(const std::string &name) const
     {
         for (int i = 0; i < m_layerCount; ++i)
         {
@@ -297,7 +306,7 @@ namespace onut
         return nullptr;
     }
 
-    static RECT getScreenRECTFromTransform(const Matrix& transform, const POINT& tileSize)
+    static iRect getScreenRECTFromTransform(const Matrix& transform, const POINT& tileSize)
     {
         auto invTransform = transform.Invert();
         Vector2 localScreenPos[4] =
@@ -314,7 +323,7 @@ namespace onut
             Vector2(onut::max(localScreenPos[0].x, localScreenPos[1].x, localScreenPos[2].x, localScreenPos[3].x),
                     onut::max(localScreenPos[0].y, localScreenPos[1].y, localScreenPos[2].y, localScreenPos[3].y))
         };
-        return RECT{
+        return iRect{
             static_cast<LONG>(boundingBox[0].x) / tileSize.x,
             static_cast<LONG>(boundingBox[0].y) / tileSize.y,
             static_cast<LONG>(boundingBox[1].x) / tileSize.x,
@@ -339,13 +348,13 @@ namespace onut
         renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), name);
     }
 
-    void TiledMap::renderLayer(sLayer *pLayer)
+    void TiledMap::renderLayer(Layer *pLayer)
     {
         if (!m_tileSets) return;
         renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), pLayer);
     }
 
-    void TiledMap::render(const RECT &rect)
+    void TiledMap::render(const iRect &rect)
     {
         for (int i = 0; i < m_layerCount; ++i)
         {
@@ -353,34 +362,34 @@ namespace onut
         }
     }
 
-    void TiledMap::renderLayer(const RECT &rect, int index)
+    void TiledMap::renderLayer(const iRect &rect, int index)
     {
         renderLayer(rect, m_layers[index]);
     }
 
-    void TiledMap::renderLayer(const RECT &rect, const std::string &name)
+    void TiledMap::renderLayer(const iRect &rect, const std::string &name)
     {
         renderLayer(rect, getLayer(name));
     }
 
-    void TiledMap::renderLayer(const RECT &in_rect, sLayer *in_pLayer)
+    void TiledMap::renderLayer(const iRect &in_rect, Layer *in_pLayer)
     {
         if (!in_pLayer->isVisible) return;
 
-        auto pLayer = dynamic_cast<sTileLayerInternal*>(in_pLayer);
+        auto pLayer = dynamic_cast<TileLayerInternal*>(in_pLayer);
         if (!pLayer) return;
 
-        RECT rect = in_rect;
-        rect.left = std::max<>(0l, rect.left);
-        rect.top = std::max<>(0l, rect.top);
-        rect.right = std::min<>(static_cast<LONG>(m_width - 1), rect.right);
-        rect.bottom = std::min<>(static_cast<LONG>(m_height - 1), rect.bottom);
+        iRect rect = in_rect;
+        rect.left = std::max<>(0, rect.left);
+        rect.top = std::max<>(0, rect.top);
+        rect.right = std::min<>((m_width - 1), rect.right);
+        rect.bottom = std::min<>((m_height - 1), rect.bottom);
 
         bool manageSB = !OSB->isInBatch();
         if (manageSB) OSB->begin(getTransform());
         for (LONG y = rect.top; y <= rect.bottom; ++y)
         {
-            sTile *pTile = pLayer->tiles + y * m_width + rect.left;
+            Tile *pTile = pLayer->tiles + y * m_width + rect.left;
             for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
             {
                 if (!pTile->pTileset) continue;
@@ -390,7 +399,7 @@ namespace onut
         if (manageSB) OSB->end();
     }
 
-    onut::Texture *TiledMap::getMinimap()
+    const OTextureRef& TiledMap::getMinimap()
     {
 //        //if (pMinimap) return pMinimap;
 //        if (!m_tilesetCount) return nullptr;
@@ -413,6 +422,11 @@ namespace onut
 //
 //        ORenderer->bindRenderTarget(nullptr);
 //        return pMinimap;
-        return nullptr;
+        return m_pMinimap;
     }
 };
+
+OTiledMapRef OGetTiledMap(const std::string& name)
+{
+    return oContentManager->getResourceAs<OTiledMap>(name);
+}
