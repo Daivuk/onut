@@ -2,7 +2,8 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut/Font.h"
+#include "onut_old.h"
 
 void init();
 void update();
@@ -28,8 +29,8 @@ void render()
     // Clear to dark gray
     ORenderer->clear({.35f, .35f, .35f, 1});
 
-    auto pFont = OGetBMFont("main.fnt");
-    auto pFontBig = OGetBMFont("mainBig.fnt");
+    auto pFont = OGetFont("main.fnt");
+    auto pFontBig = OGetFont("mainBig.fnt");
 
     // Normal text
     pFont->draw("Lorem ipsum dolor sit amet.", {10, 10});
@@ -42,13 +43,13 @@ void render()
     pFont->draw("^933Sed ^993do ^393eiusmod ^399tempor ^339incididunt ^939ut ^111labore ^222et ^444dolore ^666magna ^888aliqua", {10, 200});
 
     // Alignment
-    pFont->draw<OLeft>("Left aligned", {10, 300});
-    pFont->draw<OCenter>("Center aligned", {OScreenWf / 2, 300});
-    pFont->draw<ORight>("Right aligned", {OScreenWf - 10, 300});
+    pFont->draw("Left aligned", {10, 300}, OLeft);
+    pFont->draw("Center aligned", {OScreenWf / 2, 300}, OCenter);
+    pFont->draw("Right aligned", {OScreenWf - 10, 300}, ORight);
 
     // Cheap outline
     pFont->drawOutlined("Duis aute irure dolor in reprehenderit - Cheap oulines", {10, 400});
 
     // Pretty outline
-    pFont->drawOutlined<OTopLeft, false>("Duis aute irure dolor in reprehenderit - Better outlines", {10, 450});
+    pFont->drawOutlined("Duis aute irure dolor in reprehenderit - Better outlines", {10, 450}, OTopLeft, Color::White, Color(0, 0, 0, .75f), 2.f, false);
 }

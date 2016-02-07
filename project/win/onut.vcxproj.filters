@@ -172,12 +172,6 @@
     <ClInclude Include="..\..\include\List.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Music.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Mp3.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Log.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -213,6 +207,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\Font.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Mp3.h">
+      <Filter>thirdparties\mp3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Music.h">
       <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
@@ -376,12 +376,6 @@
     <ClCompile Include="..\..\src\micropather.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Music.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Mp3.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -407,6 +401,12 @@
       <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Font.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Mp3.cpp">
+      <Filter>thirdparties\mp3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Music.cpp">
       <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -455,6 +455,9 @@
     </Filter>
     <Filter Include="utilities">
       <UniqueIdentifier>{6f3f3796-61df-448a-ba0d-ac196efa581a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\mp3">
+      <UniqueIdentifier>{8ae2cd80-f6c8-4d22-9f7a-a91220c501ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

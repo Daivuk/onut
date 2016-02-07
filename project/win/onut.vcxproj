@@ -23,10 +23,10 @@
     <ClInclude Include="..\..\include\List.h" />
     <ClInclude Include="..\..\include\Log.h" />
     <ClInclude Include="..\..\include\micropather.h" />
-    <ClInclude Include="..\..\include\Music.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
+    <ClInclude Include="..\..\include\onut\Music.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onutUI.h" />

@@ -51,8 +51,11 @@ namespace onut
         {
             auto filename = findResourceFile(name);
             pRet = Tresource::createFromFile(filename, shared_from_this());
-            pRet->setName(name);
-            pRet->setFilename(filename);
+            if (pRet)
+            {
+                pRet->setName(name);
+                pRet->setFilename(filename);
+            }
             addResource(name, pRet);
         }
         return pRet;

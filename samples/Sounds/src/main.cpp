@@ -2,13 +2,16 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut/Font.h"
+#include "onut/Music.h"
+#include "onut_old.h"
 
 void init();
 void update();
 void render();
 
-OSoundInstance* pLoopingSound = nullptr;
+//OSoundInstance* pLoopingSound = nullptr;
+OMusicRef pMusic;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -19,8 +22,9 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
-    pLoopingSound = OCreateSoundInstance("looping.wav");
-    pLoopingSound->setLoop(true);
+    pMusic = OGetMusic("music.mp3");
+    //pLoopingSound = OCreateSoundInstance("looping.wav");
+    //pLoopingSound->setLoop(true);
 }
 
 void update()
@@ -31,53 +35,53 @@ void update()
     if (OPressed(OINPUT_LEFT)) balance -= 1.f;
     if (OPressed(OINPUT_RIGHT)) balance += 1.f;
 
-    if (OJustPressed(OINPUT_1))
-    {
-        OPlaySound("sound1.wav", volume, balance);
-    }
-    if (OJustPressed(OINPUT_2))
-    {
-        OPlaySound("sound1.wav", volume, balance, .5f);
-    }
-    if (OJustPressed(OINPUT_3))
-    {
-        OPlaySound("sound1.wav", volume, balance, 2.f);
-    }
-    if (OJustPressed(OINPUT_4))
-    {
-        OPlayRandomSound({"sound1.wav", "sound2.wav", "sound3.wav", "sound4.wav", "sound5.wav"}, 
-                         volume, balance);
-    }
-    if (OJustPressed(OINPUT_5))
-    {
-        OPlaySound("sound5.wav", volume, balance);
-    }
-    if (OJustPressed(OINPUT_6))
-    {
-        if (pLoopingSound->isPlaying())
-        {
-            pLoopingSound->pause();
-        }
-        else
-        {
-            pLoopingSound->play();
-        }
-    }
-    if (OJustPressed(OINPUT_7))
-    {
-        OPlaySoundCue("soundCue.xml", volume, balance);
-    }
+    //if (OJustPressed(OINPUT_1))
+    //{
+    //    OPlaySound("sound1.wav", volume, balance);
+    //}
+    //if (OJustPressed(OINPUT_2))
+    //{
+    //    OPlaySound("sound1.wav", volume, balance, .5f);
+    //}
+    //if (OJustPressed(OINPUT_3))
+    //{
+    //    OPlaySound("sound1.wav", volume, balance, 2.f);
+    //}
+    //if (OJustPressed(OINPUT_4))
+    //{
+    //    OPlayRandomSound({"sound1.wav", "sound2.wav", "sound3.wav", "sound4.wav", "sound5.wav"}, 
+    //                     volume, balance);
+    //}
+    //if (OJustPressed(OINPUT_5))
+    //{
+    //    OPlaySound("sound5.wav", volume, balance);
+    //}
+    //if (OJustPressed(OINPUT_6))
+    //{
+    //    if (pLoopingSound->isPlaying())
+    //    {
+    //        pLoopingSound->pause();
+    //    }
+    //    else
+    //    {
+    //        pLoopingSound->play();
+    //    }
+    //}
+    //if (OJustPressed(OINPUT_7))
+    //{
+    //    OPlaySoundCue("soundCue.xml", volume, balance);
+    //}
     if (OJustPressed(OINPUT_8))
     {
-        if (OMusic->isPlaying())
+        if (pMusic->isPlaying())
         {
             OLog("Stop Music");
-            OMusic->stop();
+            pMusic->stop();
         }
         else
         {
             OLog("Start Music");
-            OMusic->play("music.mp3");
+            pMusic->play();
         }
     }
 }
@@ -88,7 +92,7 @@ void render()
     ORenderer->clear({0, 0, 0, 1});
 
     // Draw info
-    auto pFont = OGetBMFont("font.fnt");
+    auto pFont = OGetFont("font.fnt");
 
     OSB->begin();
 
@@ -97,14 +101,14 @@ void render()
     pFont->draw("Press ^9903^999 to play sound1 at 200% speed", {10, 50});
     pFont->draw("Press ^9904^999 to play a random sound", {10, 70});
     pFont->draw("Press ^9905^999 to play sound5", {10, 90});
-    if (pLoopingSound->isPlaying())
-    {
-        pFont->draw("Press ^9906^999 to start/stop looping sound (^099Playing^999)", {10, 110});
-    }
-    else
-    {
-        pFont->draw("Press ^9906^999 to start/stop looping sound", {10, 110});
-    }
+    //if (pLoopingSound->isPlaying())
+    //{
+    //    pFont->draw("Press ^9906^999 to start/stop looping sound (^099Playing^999)", {10, 110});
+    //}
+    //else
+    //{
+    //    pFont->draw("Press ^9906^999 to start/stop looping sound", {10, 110});
+    //}
     pFont->draw("Press ^9907^999 to play cue file", {10, 130});
     pFont->draw("Press ^9908^999 to play/stop music", {10, 150});
 

@@ -284,7 +284,7 @@ namespace onut
                 continue;
             }
             auto pDatChar = m_chars[charId];
-            auto pTexture = m_pages[pDatChar->page]->pTexture;
+            auto& pTexture = m_pages[pDatChar->page]->pTexture;
 
             // Draw it here
             pSpriteBatch->drawRectWithUVs(

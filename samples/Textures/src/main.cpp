@@ -3,6 +3,7 @@
 
 // Oak Nut include
 #include "onut/Font.h"
+#include "onut/Texture.h"
 #include "onut_old.h"
 #include "Utils.h"
 

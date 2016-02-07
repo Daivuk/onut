@@ -1,33 +1,43 @@
-#include "Music.h"
-#include "Utils.h"
 #include "Mp3.h"
-#include "onut_old.h"
+#include "onut/ContentManager.h"
+#include "onut/Music.h"
+
+#include "Utils.h"
 
 #include <cassert>
-#include <Windows.h>
 
 namespace onut
 {
+    OMusicRef Music::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+    {
+        auto pRet = std::make_shared<OMusic>();
+
+        auto cmd = utf8ToUtf16(filename);
+        if (!pRet->m_pMp3->Load(cmd.c_str()))
+        {
+            return nullptr;
+        }
+
+        return pRet;
+    }
+
+    OMusicRef Music::create()
+    {
+        return std::make_shared<OMusic>();
+    }
+
     Music::Music()
     {
-        m_pMp3 = new Mp3();
+#if defined(WIN32)
+        m_pMp3 = std::make_shared<Mp3>();
+#endif
     }
 
-    Music::~Music()
+    void Music::play()
     {
-        delete m_pMp3;
-    }
+#if defined(WIN32)
+        if (m_isPlaying) return;
 
-    void Music::play(const std::string& filename)
-    {
-        m_pMp3->Stop();
-        m_pMp3->Cleanup();
-
-        auto cmd = utf8ToUtf16(oContentManager->findResourceFile(filename));
-        if (!m_pMp3->Load(cmd.c_str()))
-        {
-            return;
-        }
         setVolume(m_volume);
         if (!m_pMp3->Play())
         {
@@ -35,43 +45,53 @@ namespace onut
         }
 
         m_isPlaying = true;
+#endif
     }
 
     void Music::setVolume(float volume)
     {
+#if defined(WIN32)
         float decibelDenominator = 4000.f;
         if (volume < 0.1f)
             decibelDenominator = 10000.f;
         m_volume = volume;
         m_pMp3->SetVolume(static_cast<long>((m_volume - 1.f) * decibelDenominator));
+#endif
     }
 
     void Music::stop()
     {
+#if defined(WIN32)
         m_isPlaying = false;
         m_pMp3->Stop();
+#endif
     }
 
     void Music::pause()
     {
+#if defined(WIN32)
         if (m_isPlaying)
         {
             m_isPlaying = false;
             m_pMp3->Pause();
         }
+#endif
     }
 
     void Music::resume()
     {
+#if defined(WIN32)
         if (!m_isPlaying)
         {
             m_isPlaying = true;
             m_pMp3->Play();
         }
+#endif
     }
 
     bool Music::isDone()
     {
+#if defined(WIN32)
         if (m_isPlaying)
         {
             long evCode;
@@ -82,6 +102,24 @@ namespace onut
             }
             return donePlaying;
         }
+#endif
         return false;
     }
+}
+
+OMusicRef OGetMusic(const std::string& name)
+{
+    return oContentManager->getResourceAs<OMusic>(name);
+}
+
+void OPlayMusic(const std::string& name)
+{
+    auto pMusic = OGetMusic(name);
+    if (pMusic) pMusic->play();
+}
+
+void OStopMusic(const std::string& name)
+{
+    auto pMusic = OGetMusic(name);
+    if (pMusic) pMusic->stop();
 }

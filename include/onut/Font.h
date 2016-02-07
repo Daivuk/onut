@@ -13,12 +13,12 @@ namespace onut
 {
     class SpriteBatch;
 
-    class Font : public Resource
+    class Font final : public Resource
     {
     public:
         static OFontRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);
 
-        virtual ~Font();
+        ~Font();
 
         Vector2 measure(const std::string& text);
         size_t caretPos(const std::string& text, float at);
@@ -51,7 +51,7 @@ namespace onut
         };
         struct fntPage
         {
-            int         id = 0;
+            int id = 0;
             std::string file;
             OTextureRef pTexture;
         };

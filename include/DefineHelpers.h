@@ -75,17 +75,6 @@ inline Rect ORectFit(const TparentRect& parentRect, const Tsize& size)
 #define OGradientH(left, right)                 {left, left, right, right}
 #define OGradientV(top, bottom)                 {top, bottom, bottom, top}
 
-// Alignment
-#define OTopLeft                                onut::Align::TopLeft
-#define OTop                                    onut::Align::Top
-#define OTopRight                               onut::Align::TopRight
-#define OLeft                                   onut::Align::Left
-#define OCenter                                 onut::Align::Center
-#define ORight                                  onut::Align::Right
-#define OBottomLeft                             onut::Align::BottomLeft
-#define OBottom                                 onut::Align::Bottom
-#define OBottomRight                            onut::Align::BottomRight
-
 // Loops
 #define ODontLoop                               onut::LoopType::NONE
 #define OLoop                                   onut::LoopType::LOOP

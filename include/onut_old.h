@@ -10,7 +10,6 @@
 #include "GamePad.h"
 #include "List.h"
 #include "Log.h"
-#include "Music.h"
 #include "NavMesh.h"
 #include "onutUI.h"
 #include "ParticleSystemManager.h"
@@ -42,7 +41,6 @@ extern onut::Input*                     OInput;
 extern onut::Window*                    OWindow;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;
-extern onut::Music*                     OMusic;
 
 using OAnimb = onut::Anim<bool, float, onut::lerpBool>;
 using OAnimf = onut::Anim<float>;
