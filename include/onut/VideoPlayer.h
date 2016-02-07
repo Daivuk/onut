@@ -1,25 +1,25 @@
 #pragma once
-#include "onut/Texture.h"
-
-#include <memory>
 #include <string>
 #if defined(WIN32)
 #include <Windows.h>
 #endif
 
+#include "onut/forward_declaration.h"
+OForwardDeclare(Texture);
+OForwardDeclare(VideoPlayer);
+
 namespace onut
 {
-    class Player
+    class VideoPlayer
     {
     public:
-        static Player* Create();
-
-        virtual ~Player() {}
-
 #if defined(WIN32)
-        virtual void init(HWND handle) = 0;
+        static OVideoPlayerRef createWithWindowHandle(HWND handle);
 #endif
-        virtual void init(Texture* pRenderTarget) = 0;
+        static OVideoPlayerRef createWithRenderTarget(const OTextureRef& pRenderTarget);
+
+        virtual ~VideoPlayer();
+
         virtual bool isPlaying() const = 0;
         virtual void pause() = 0;
         virtual void play() = 0;
@@ -31,5 +31,3 @@ namespace onut
         virtual void update() = 0;
     };
 }
-
-using OPlayer = onut::Player;

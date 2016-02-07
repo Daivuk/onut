@@ -17,8 +17,16 @@ namespace onut
     public:
         struct Size
         {
-            int width;
-            int height;
+            union
+            {
+                int width;
+                int x;
+            };
+            union
+            {
+                int height;
+                int y;
+            };
         };
 
         static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = true);

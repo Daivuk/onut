@@ -1,18 +1,17 @@
 #if defined(WIN32)
 #pragma once
-
-#include "player.h"
+#include "onut/VideoPlayer.h"
 
 #include <Mfmediaengine.h>
 
+OForwardDeclare(MFPlayer);
+
 namespace onut
 {
-    class MFPlayer;
-
     class MFPlayerNotify final : public IMFMediaEngineNotify
     {
     public:
-        MFPlayerNotify(MFPlayer* pPlayer);
+        MFPlayerNotify(const OMFPlayerRef& pPlayer);
 
         HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject) override;
         ULONG STDMETHODCALLTYPE AddRef(void) override;
@@ -21,16 +20,14 @@ namespace onut
 
     private:
         ULONG m_ref = 1;
-        MFPlayer* m_pPlayer = nullptr;
+        OMFPlayerWeak m_pPlayer;
     };
 
-    class MFPlayer final : public Player
+    class MFPlayer final : public VideoPlayer, public std::enable_shared_from_this<MFPlayer>
     {
     public:
         ~MFPlayer();
 
-        void init(HWND handle) override;
-        void init(Texture* pRenderTarget) override;
         bool isPlaying() const override;
         void pause() override;
         void play() override;
@@ -44,9 +41,14 @@ namespace onut
         void OnEvent(DWORD event, DWORD_PTR param1, DWORD param2);
 
     private:
-        IMFMediaEngine *m_pMediaEngine = nullptr;
-        MFPlayerNotify *m_pPlayerNodify = nullptr;
-        Texture* m_pRenderTarget = nullptr;
+        friend class VideoPlayer;
+
+        void init(HWND handle);
+        void init(const OTextureRef& pRenderTarget);
+
+        IMFMediaEngine* m_pMediaEngine = nullptr;
+        MFPlayerNotify* m_pPlayerNodify;
+        OTextureRef m_pRenderTarget = nullptr;
         bool m_isPlaying = false;
         IMFDXGIDeviceManager* m_pDXGIManager = nullptr;
     };

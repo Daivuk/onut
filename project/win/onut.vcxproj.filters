@@ -178,12 +178,6 @@
     <ClInclude Include="..\..\include\SpriteAnim.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\player.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\MFPlayer.h">
-      <Filter>src\player</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Resource.h">
       <Filter>resources</Filter>
     </ClInclude>
@@ -214,6 +208,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Sound.h">
       <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\VideoPlayer.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MFPlayer.h">
+      <Filter>services</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -382,12 +382,6 @@
     <ClCompile Include="..\..\src\SpriteAnim.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\player.cpp">
-      <Filter>src\player</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\MFPlayer.cpp">
-      <Filter>src\player</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Resource.cpp">
       <Filter>resources</Filter>
     </ClCompile>
@@ -408,6 +402,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\VideoPlayer.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MFPlayer.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

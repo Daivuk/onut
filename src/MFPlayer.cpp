@@ -1,7 +1,9 @@
 #if defined(WIN32)
 #include "MFPlayer.h"
-#include "onut_old.h"
+#include "onut/Texture.h"
+
 #include "Utils.h"
+#include "onut_old.h"
 
 #include <cassert>
 #include <codecvt>
@@ -9,7 +11,7 @@
 
 namespace onut
 {
-    MFPlayerNotify::MFPlayerNotify(MFPlayer* pPlayer)
+    MFPlayerNotify::MFPlayerNotify(const OMFPlayerRef& pPlayer)
         : m_pPlayer(pPlayer)
     {
     }
@@ -52,7 +54,10 @@ namespace onut
 
     HRESULT STDMETHODCALLTYPE MFPlayerNotify::EventNotify(_In_ DWORD event, _In_ DWORD_PTR param1, _In_  DWORD param2)
     {
-        m_pPlayer->OnEvent(event, param1, param2);
+        if (!m_pPlayer.expired())
+        {
+            m_pPlayer.lock()->OnEvent(event, param1, param2);
+        }
         return S_OK;
     }
 
@@ -78,9 +83,18 @@ namespace onut
         }
     }
 
-    Player* Player::Create()
+    OVideoPlayerRef VideoPlayer::createWithWindowHandle(HWND handle)
     {
-        return new MFPlayer();
+        auto pRet = std::make_shared<MFPlayer>();
+        pRet->init(handle);
+        return pRet;
+    }
+
+    OVideoPlayerRef VideoPlayer::createWithRenderTarget(const OTextureRef& pRenderTarget)
+    {
+        auto pRet = std::make_shared<MFPlayer>();
+        pRet->init(pRenderTarget);
+        return pRet;
     }
 
     MFPlayer::~MFPlayer()
@@ -89,14 +103,14 @@ namespace onut
         {
             m_pDXGIManager->Release();
         }
-        if (m_pPlayerNodify)
-        {
-            m_pPlayerNodify->Release();
-        }
         if (m_pMediaEngine)
         {
             m_pMediaEngine->Shutdown();
             m_pMediaEngine->Release();
+        }
+        if (m_pPlayerNodify)
+        {
+            m_pPlayerNodify->Release();
         }
     }
 
@@ -116,7 +130,7 @@ namespace onut
         assert(ret == S_OK);
 
         // Create notify
-        m_pPlayerNodify = new MFPlayerNotify(this);
+        m_pPlayerNodify = new MFPlayerNotify(shared_from_this());
 
         // Create attributes
         IMFAttributes *pAttributes = nullptr;
@@ -136,7 +150,7 @@ namespace onut
         pMediaEngineClassFactory->Release();
     }
 
-    void MFPlayer::init(Texture* pRenderTarget)
+    void MFPlayer::init(const OTextureRef& pRenderTarget)
     {
         m_pRenderTarget = pRenderTarget;
 
@@ -154,7 +168,7 @@ namespace onut
         assert(ret == S_OK);
 
         // Create notify
-        m_pPlayerNodify = new MFPlayerNotify(this);
+        m_pPlayerNodify = new MFPlayerNotify(shared_from_this());
 
         // Create attributes
         IMFAttributes *pAttributes = nullptr;
