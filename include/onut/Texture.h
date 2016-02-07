@@ -6,7 +6,7 @@
 #include <d3d11.h>
 #endif
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(Texture);
 OForwardDeclare(ContentManager);
 

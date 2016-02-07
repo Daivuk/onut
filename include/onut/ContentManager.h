@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(ContentManager);
 OForwardDeclare(Resource);
 

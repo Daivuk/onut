@@ -1,7 +1,7 @@
 #pragma once
 #include "onut/Resource.h"
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(ContentManager)
 OForwardDeclare(Music)
 

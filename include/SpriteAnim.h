@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(SpriteAnimDefinition);
 OForwardDeclare(SpriteAnim);
 

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(ContentManager);
 OForwardDeclare(Sound);
 OForwardDeclare(SoundCue);

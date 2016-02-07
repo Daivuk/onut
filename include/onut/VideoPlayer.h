@@ -4,7 +4,7 @@
 #include <Windows.h>
 #endif
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(Texture);
 OForwardDeclare(VideoPlayer);
 

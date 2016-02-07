@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(Resource);
 
 namespace onut

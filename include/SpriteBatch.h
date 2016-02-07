@@ -3,7 +3,7 @@
 #include "onut/Texture.h"
 using namespace DirectX::SimpleMath;
 
-#include "onut/forward_declaration.h"
+#include "onut/ForwardDeclaration.h"
 OForwardDeclare(Texture);
 
 namespace onut

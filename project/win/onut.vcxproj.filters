@@ -187,9 +187,6 @@
     <ClInclude Include="..\..\include\onut\ContentManager.h">
       <Filter>services</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\forward_declaration.h">
-      <Filter>utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Maths.h">
       <Filter>utilities</Filter>
     </ClInclude>
@@ -214,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\MFPlayer.h">
       <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\ForwardDeclaration.h">
+      <Filter>utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
