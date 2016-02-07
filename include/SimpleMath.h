@@ -23,6 +23,22 @@
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
 
+namespace onut
+{
+    enum class Align
+    {
+        TopLeft,
+        Top,
+        TopRight,
+        Left,
+        Center,
+        Right,
+        BottomLeft,
+        Bottom,
+        BottomRight
+    };
+}
+
 namespace DirectX
 {
 
@@ -48,6 +64,39 @@ struct Vector2 : public XMFLOAT2
     Vector2(const Vector3& v3);
     explicit Vector2(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
     Vector2(FXMVECTOR V) { XMStoreFloat2( this, V ); }
+    Vector2(onut::Align align)
+    {
+        switch (align)
+        {
+            case onut::Align::TopLeft:
+                x = 0; y = 0;
+                break;
+            case onut::Align::Top:
+                x = .5f; y = 0;
+                break;
+            case onut::Align::TopRight:
+                x = 1; y = 0;
+                break;
+            case onut::Align::Left:
+                x = 0; y = .5f;
+                break;
+            case onut::Align::Center:
+                x = .5f; y = .5f;
+                break;
+            case onut::Align::Right:
+                x = 1; y = .5f;
+                break;
+            case onut::Align::BottomLeft:
+                x = 0; y = 1;
+                break;
+            case onut::Align::Bottom:
+                x = .5f; y = 1;
+                break;
+            case onut::Align::BottomRight:
+                x = 1; y = 1;
+                break;
+        }
+    }
 
     operator XMVECTOR() const { return XMLoadFloat2( this ); }
 
@@ -133,6 +182,41 @@ struct Vector2 : public XMFLOAT2
     static const Vector2 One;
     static const Vector2 UnitX;
     static const Vector2 UnitY;
+
+    inline Vector2& operator=(onut::Align align)
+    {
+        switch (align)
+        {
+            case onut::Align::TopLeft:
+                x = 0; y = 0;
+                break;
+            case onut::Align::Top:
+                x = .5f; y = 0;
+                break;
+            case onut::Align::TopRight:
+                x = 1; y = 0;
+                break;
+            case onut::Align::Left:
+                x = 0; y = .5f;
+                break;
+            case onut::Align::Center:
+                x = .5f; y = .5f;
+                break;
+            case onut::Align::Right:
+                x = 1; y = .5f;
+                break;
+            case onut::Align::BottomLeft:
+                x = 0; y = 1;
+                break;
+            case onut::Align::Bottom:
+                x = .5f; y = 1;
+                break;
+            case onut::Align::BottomRight:
+                x = 1; y = 1;
+                break;
+        }
+        return *this;
+    }
 };
 
 // Binary operators

@@ -83,3 +83,5 @@ namespace onut
         bool m_isScreenRenderTarget = false;
     };
 }
+
+OTextureRef OGetTexture(const std::string& name);

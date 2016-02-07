@@ -620,3 +620,8 @@ namespace onut
         }
     }
 }
+
+OTextureRef OGetTexture(const std::string& name)
+{
+    return oContentManager->getResourceAs<OTexture>(name);
+}

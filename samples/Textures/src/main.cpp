@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include "onut/Font.h"
 #include "onut_old.h"
 #include "Utils.h"
 
@@ -97,7 +98,7 @@ void render()
     pDynamic->setData(dynamicData);
 
     // Draw out resulted textures
-    auto pFont = OGetBMFont("font.fnt");
+    auto pFont = OGetFont("font.fnt");
     OSpriteBatch->begin(Matrix::CreateTranslation(80, 212, 0));
     OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Nearest);
 
@@ -107,11 +108,11 @@ void render()
     OSB->drawRect(pRenderTarget, {384, 0, 128, 128});
     OSB->drawRect(pDynamic, {512, 0, 128, 128});
     
-    pFont->draw<OCenter>("From File", {64, 140});
-    pFont->draw<OCenter>("From File Data", {64 + 128, 140});
-    pFont->draw<OCenter>("From Data", {64 + 256, 140});
-    pFont->draw<OCenter>("Render Target", {64 + 384, 140});
-    pFont->draw<OCenter>("Dynamic", {64 + 512, 140});
+    pFont->draw("From File", {64, 140}, OCenter);
+    pFont->draw("From File Data", {64 + 128, 140}, OCenter);
+    pFont->draw("From Data", {64 + 256, 140}, OCenter);
+    pFont->draw("Render Target", {64 + 384, 140}, OCenter);
+    pFont->draw("Dynamic", {64 + 512, 140}, OCenter);
     
     OSpriteBatch->end();
 }

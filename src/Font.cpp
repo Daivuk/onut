@@ -1,20 +1,24 @@
+#include "onut/ContentManager.h"
+#include "onut/Font.h"
+
+#include "Utils.h"
 #include "onut_old.h"
+
 #include <sstream>
 #include <fstream>
-#include "Utils.h"
 
 namespace onut
 {
-    int BMFont::parseInt(const std::string& arg, const std::vector<std::string>& lineSplit)
+    int Font::parseInt(const std::string& arg, const std::vector<std::string>& lineSplit)
     {
         std::stringstream ss;
-        ss << BMFont::parseString(arg, lineSplit);
+        ss << Font::parseString(arg, lineSplit);
         int theInt = 0;
         if (!(ss >> theInt)) return 0;
         return theInt;
     }
 
-    std::string BMFont::parseString(const std::string& arg, const std::vector<std::string>& lineSplit)
+    std::string Font::parseString(const std::string& arg, const std::vector<std::string>& lineSplit)
     {
         for (unsigned int i = 1; i < lineSplit.size(); ++i)
         {
@@ -29,12 +33,12 @@ namespace onut
         return "";
     }
 
-    OBMFontRef BMFont::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+    OFontRef Font::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
         std::ifstream in(filename);
         assert(!in.fail());
 
-        auto pFont = std::make_shared<OBMFont>();
+        auto pFont = std::make_shared<OFont>();
 
         std::string line;
         std::getline(in, line);
@@ -93,15 +97,10 @@ namespace onut
         }
         in.close();
 
-        pFont->m_name = filename.substr(filename.find_last_of("/\\") + 1);
-
         return pFont;
     }
 
-    BMFont::BMFont()
-    {}
-
-    BMFont::~BMFont()
+    Font::~Font()
     {
         for (int i = 0; i < m_common.pages; ++i)
         {
@@ -116,7 +115,7 @@ namespace onut
         }
     }
 
-    Vector2 BMFont::measure(const std::string& in_text)
+    Vector2 Font::measure(const std::string& in_text)
     {
         Vector2 result;
 
@@ -160,7 +159,7 @@ namespace onut
         return result;
     }
 
-    decltype(std::string().size()) BMFont::caretPos(const std::string& in_text, float at)
+    decltype(std::string().size()) Font::caretPos(const std::string& in_text, float at)
     {
         decltype(std::string().size()) pos = 0;
 
@@ -193,8 +192,46 @@ namespace onut
         return pos;
     }
 
-    Rect BMFont::drawInternal(const std::string& text, const Vector2& in_pos, const Color& color, onut::SpriteBatch* pSpriteBatch, const Vector2& align, bool snapPixels)
+    Rect Font::drawOutlined(const std::string& text,
+                            const Vector2& in_pos,
+                            const Vector2& align,
+                            const Color& color,
+                            const Color& outlineColor,
+                            float outlineSize,
+                            bool cheap,
+                            bool snapPixels,
+                            onut::SpriteBatch* pSpriteBatch)
     {
+        Color outlineColorFinal = outlineColor;
+        outlineColorFinal.w *= color.w;
+
+        Vector2 pos = in_pos;
+        if (snapPixels)
+        {
+            pos = {std::round(pos.x), std::round(pos.y)};
+        }
+
+        if (cheap)
+        {
+            draw(text, pos + Vector2{-outlineSize *0.86602540378443864676372317075294f, -outlineSize *0.5f}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{outlineSize * 0.86602540378443864676372317075294f, -outlineSize *0.5f}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{0, outlineSize}, align, outlineColorFinal, false, pSpriteBatch);
+        }
+        else
+        {
+            draw(text, pos + Vector2{-outlineSize *0.5f, -outlineSize *0.86602540378443864676372317075294f}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{outlineSize * 0.5f, -outlineSize *0.86602540378443864676372317075294f}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{-outlineSize, 0}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{outlineSize, 0}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{-outlineSize *0.5f, outlineSize *0.86602540378443864676372317075294f}, align, outlineColorFinal, false, pSpriteBatch);
+            draw(text, pos + Vector2{outlineSize * 0.5f, outlineSize *0.86602540378443864676372317075294f}, align, outlineColorFinal, false, pSpriteBatch);
+        }
+        return draw(text, pos, align, color, false, pSpriteBatch);
+    }
+
+    Rect Font::draw(const std::string& text, const Vector2& in_pos, const Vector2& align, const Color& color, bool snapPixels, onut::SpriteBatch* pSpriteBatch)
+    {
+        if (!pSpriteBatch) pSpriteBatch = OSpriteBatch;
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);
@@ -268,22 +305,9 @@ namespace onut
 
         return std::move(ret);
     }
-
-    OBMFontRef OBMFont::get(const std::string& name, const OContentManagerRef& pContentManager)
-    {
-        auto pRet = std::dynamic_pointer_cast<OBMFont>(pContentManager->getResource(name));
-        if (!pRet)
-        {
-            auto filename = pContentManager->findResourceFile(name);
-            pRet = OBMFont::createFromFile(filename, pContentManager);
-            pRet->setName(name);
-            pContentManager->addResource(name, pRet);
-        }
-        return pRet;
-    }
 }
 
-OBMFontRef OGetBMFont(const std::string& name)
+OFontRef OGetFont(const std::string& name)
 {
-    return OBMFont::get(name, oContentManager);
+    return oContentManager->getResourceAs<OFont>(name);
 }

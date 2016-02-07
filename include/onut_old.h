@@ -1,6 +1,6 @@
 #pragma once
 #include "Asynchronous.h"
-#include "BMFont.h"
+#include "onut/Font.h"
 #include "onut/ContentManager.h"
 #include "crypto.h"
 #include "DefineHelpers.h"
@@ -88,16 +88,16 @@ namespace onut
     /**
     Debug tool to draw a palette and show it's index in it
     */
-    void drawPal(const OPal& pal, OBMFont* pFont = nullptr);
+    void drawPal(const OPal& pal, OFont* pFont = nullptr);
 }
 
 #define ORun onut::run
 
 //--- Resource shortcuts
 /*
-inline OBMFontRef OGetBMFont(const std::string& name)
+inline OFontRef OGetBMFont(const std::string& name)
 {
-    return oContentManager->getResourceAs<OBMFont>(name);
+    return oContentManager->getResourceAs<OFont>(name);
 }
 
 inline OSound* OGetSound(const std::string& name)

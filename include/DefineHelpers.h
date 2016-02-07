@@ -1,5 +1,5 @@
 #pragma once
-#include "Typedefs.h"
+#include "onut/onut.h"
 
 #define OAnim               onut::Anim
 
@@ -76,15 +76,15 @@ inline Rect ORectFit(const TparentRect& parentRect, const Tsize& size)
 #define OGradientV(top, bottom)                 {top, bottom, bottom, top}
 
 // Alignment
-#define OTopLeft                                onut::Align::TOP_LEFT
-#define OTop                                    onut::Align::TOP
-#define OTopRight                               onut::Align::TOP_RIGHT
-#define OLeft                                   onut::Align::LEFT
-#define OCenter                                 onut::Align::CENTER
-#define ORight                                  onut::Align::RIGHT
-#define OBottomLeft                             onut::Align::BOTTOM_LEFT
-#define OBottom                                 onut::Align::BOTTOM
-#define OBottomRight                            onut::Align::BOTTOM_RIGHT
+#define OTopLeft                                onut::Align::TopLeft
+#define OTop                                    onut::Align::Top
+#define OTopRight                               onut::Align::TopRight
+#define OLeft                                   onut::Align::Left
+#define OCenter                                 onut::Align::Center
+#define ORight                                  onut::Align::Right
+#define OBottomLeft                             onut::Align::BottomLeft
+#define OBottom                                 onut::Align::Bottom
+#define OBottomRight                            onut::Align::BottomRight
 
 // Loops
 #define ODontLoop                               onut::LoopType::NONE

@@ -19,13 +19,7 @@
     <ClInclude Include="..\..\include\DefineHelpers.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Typedefs.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Random.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\BMFont.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\GamePad.h">
@@ -218,6 +212,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\onut.h" />
+    <ClInclude Include="..\..\include\onut\Font.h">
+      <Filter>resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -242,9 +239,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Random.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\BMFont.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GamePad.cpp">
@@ -411,6 +405,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ContentManager.cpp">
       <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Font.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

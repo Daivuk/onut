@@ -136,7 +136,7 @@ namespace onut
             if (text.text.empty()) return;
             auto align = onut::UI2Onut(text.font.align);
             auto oRect = onut::UI2Onut(rect);
-            auto pFont = OGetBMFont(text.font.typeFace.c_str());
+            auto pFont = OGetFont(text.font.typeFace.c_str());
             auto oColor = onut::UI2Onut(text.font.color);
             if (pControl->getState(*OUIContext) == onut::eUIState::DISABLED)
             {
@@ -154,18 +154,18 @@ namespace onut
                     {
                         pwd.back() = '_';
                     }
-                    pFont->draw<>(pwd, ORectAlign<>(oRect, align), oColor, OSB, align);
+                    pFont->draw(pwd, ORectAlign<>(oRect, align), Vector2(align), oColor);
                 }
                 else
                 {
-                    pFont->draw<>(text.text, ORectAlign<>(oRect, align), oColor, OSB, align);
+                    pFont->draw(text.text, ORectAlign<>(oRect, align), Vector2(align), oColor);
                 }
             }
         };
 
         OUIContext->addTextCaretSolver<onut::UITextBox>("", [=](const onut::UITextBox* pTextBox, const onut::sUIVector2& localPos) -> decltype(std::string().size())
         {
-            auto pFont = OGetBMFont(pTextBox->textComponent.font.typeFace.c_str());
+            auto pFont = OGetFont(pTextBox->textComponent.font.typeFace.c_str());
             if (!pFont) return 0;
             auto& text = pTextBox->textComponent.text;
             return pFont->caretPos(text, localPos.x - 4);
@@ -423,7 +423,7 @@ namespace onut
         return g_timeInfo;
     }
 
-    void drawPal(const OPal& pal, OBMFont* pFont)
+    void drawPal(const OPal& pal, OFont* pFont)
     {
         static const float H = 32.f;
         float i = 0;
@@ -441,16 +441,11 @@ namespace onut
             {
                 std::stringstream ss;
                 ss << index;
-                pFont->draw<OCenter>(ss.str(), Rect{0, i, H * GOLDEN_RATIO, H}.Center(), Color::Black);
+                pFont->draw(ss.str(), Rect{0, i, H * GOLDEN_RATIO, H}.Center(), OCenter, Color::Black);
                 i += H;
                 ++index;
             }
         }
         OSB->end();
     }
-}
-
-OTextureRef OGetTexture(const std::string& name)
-{
-    return oContentManager->getResourceAs<OTexture>(name);
 }

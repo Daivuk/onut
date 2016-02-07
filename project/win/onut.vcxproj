@@ -14,7 +14,6 @@
     <ClInclude Include="..\..\include\ActionManager.h" />
     <ClInclude Include="..\..\include\Anim.h" />
     <ClInclude Include="..\..\include\Asynchronous.h" />
-    <ClInclude Include="..\..\include\BMFont.h" />
     <ClInclude Include="..\..\include\crypto.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
@@ -27,6 +26,7 @@
     <ClInclude Include="..\..\include\Music.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
+    <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
@@ -59,7 +59,6 @@
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\tinyxml2.h" />
-    <ClInclude Include="..\..\include\Typedefs.h" />
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\include\Window.h" />
@@ -89,12 +88,12 @@
     <ClCompile Include="..\..\src\ActionManager.cpp" />
     <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\AudioEngine.cpp" />
-    <ClCompile Include="..\..\src\BMFont.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\crypto.cpp" />
     <ClCompile Include="..\..\src\DefineHelpers.cpp" />
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
+    <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\http.cpp" />
     <ClCompile Include="..\..\src\input.cpp" />

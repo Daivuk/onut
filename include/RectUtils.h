@@ -7,54 +7,54 @@ namespace onut
     /**
     Rect alignement helper
     */
-    template<Align Talign = Align::TOP_LEFT>
+    template<Align Talign = Align::TopLeft>
     Rect alignedRect(float xOffset, float yOffset, float width, float height, float padding = 0, Align align = Talign)
     {
         switch (align)
         {
-            case Align::TOP_LEFT:
+            case Align::TopLeft:
                 xOffset += padding;
                 yOffset += padding;
                 width -= padding * 1.5f;
                 height -= padding * 1.5f;
                 return std::move(Rect{xOffset, yOffset, width, height});
-            case Align::TOP:
+            case Align::Top:
                 yOffset += padding;
                 width -= padding;
                 height -= padding * 1.5f;
                 return std::move(Rect{OScreenCenterXf - width * .5f + xOffset, yOffset, width, height});
-            case Align::TOP_RIGHT:
+            case Align::TopRight:
                 xOffset += padding;
                 yOffset += padding;
                 width -= padding * 1.5f;
                 height -= padding * 1.5f;
                 return std::move(Rect{OScreenWf - xOffset - width, yOffset, width, height});
-            case Align::LEFT:
+            case Align::Left:
                 xOffset += padding;
                 width -= padding * 1.5f;
                 height -= padding;
                 return std::move(Rect{xOffset, OScreenCenterYf - height * .5f + yOffset, width, height});
-            case Align::CENTER:
+            case Align::Center:
                 width -= padding;
                 height -= padding;
                 return std::move(Rect{OScreenCenterXf - width * .5f + xOffset, OScreenCenterYf - height * .5f + yOffset, width, height});
-            case Align::RIGHT:
+            case Align::Right:
                 xOffset += padding;
                 width -= padding * 1.5f;
                 height -= padding;
                 return std::move(Rect{OScreenWf - xOffset - width, OScreenCenterYf - height * .5f + yOffset, width, height});
-            case Align::BOTTOM_LEFT:
+            case Align::BottomLeft:
                 xOffset += padding;
                 yOffset += padding;
                 width -= padding * 1.5f;
                 height -= padding * 1.5f;
                 return std::move(Rect{xOffset, OScreenHf - yOffset - height, width, height});
-            case Align::BOTTOM:
+            case Align::Bottom:
                 yOffset += padding;
                 width -= padding;
                 height -= padding * 1.5f;
                 return std::move(Rect{OScreenCenterXf - width * .5f + xOffset, OScreenHf - yOffset - height, width, height});
-            case Align::BOTTOM_RIGHT:
+            case Align::BottomRight:
                 xOffset += padding;
                 yOffset += padding;
                 width -= padding * 1.5f;
@@ -64,45 +64,45 @@ namespace onut
         return std::move(Rect());
     }
 
-    template<Align Talign = Align::TOP_LEFT>
+    template<Align Talign = Align::TopLeft>
     Vector2 alignedRect(const Rect& rect, Align align = Talign)
     {
         Vector2 ret;
         switch (align)
         {
-            case Align::TOP_LEFT:
+            case Align::TopLeft:
                 ret.x = rect.x;
                 ret.y = rect.y;
                 break;
-            case Align::TOP:
+            case Align::Top:
                 ret.x = rect.x + rect.z * .5f;
                 ret.y = rect.y;
                 break;
-            case Align::TOP_RIGHT:
+            case Align::TopRight:
                 ret.x = rect.x + rect.z;
                 ret.y = rect.y;
                 break;
-            case Align::LEFT:
+            case Align::Left:
                 ret.x = rect.x;
                 ret.y = rect.y + rect.w * .5f;
                 break;
-            case Align::CENTER:
+            case Align::Center:
                 ret.x = rect.x + rect.z * .5f;
                 ret.y = rect.y + rect.w * .5f;
                 break;
-            case Align::RIGHT:
+            case Align::Right:
                 ret.x = rect.x + rect.z;
                 ret.y = rect.y + rect.w * .5f;
                 break;
-            case Align::BOTTOM_LEFT:
+            case Align::BottomLeft:
                 ret.x = rect.x;
                 ret.y = rect.y + rect.w;
                 break;
-            case Align::BOTTOM:
+            case Align::Bottom:
                 ret.x = rect.x + rect.z * .5f;
                 ret.y = rect.y + rect.w;
                 break;
-            case Align::BOTTOM_RIGHT:
+            case Align::BottomRight:
                 ret.x = rect.x + rect.z;
                 ret.y = rect.y + rect.w;
                 break;
@@ -110,19 +110,19 @@ namespace onut
         return std::move(ret);
     }
 
-    template<Align Talign = Align::TOP_LEFT>
+    template<Align Talign = Align::TopLeft>
     Rect alignedRect(const Rect& rect, float padding = 0, Align align = Talign)
     {
         return alignedRect(rect.x, rect.y, rect.z, rect.w, padding, align);
     }
 
-    template<Align Talign = Align::TOP_LEFT>
+    template<Align Talign = Align::TopLeft>
     Rect alignedRect(float width, float height, float padding = 0, Align align = Talign)
     {
         return alignedRect(0, 0, width, height, padding, align);
     }
 
-    template<Align Talign = Align::TOP_LEFT>
+    template<Align Talign = Align::TopLeft>
     Rect alignedRect(float size, float padding = 0, Align align = Talign)
     {
         return alignedRect(0, 0, size, size, padding, align);
