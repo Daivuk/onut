@@ -37,9 +37,6 @@
     <ClInclude Include="..\..\src\dirent.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Sound.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\pch.h">
       <Filter>src\audio</Filter>
     </ClInclude>
@@ -215,6 +212,9 @@
     <ClInclude Include="..\..\include\onut\Music.h">
       <Filter>resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Sound.h">
+      <Filter>resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -248,9 +248,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Anim.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SoundCommon.cpp">
@@ -407,6 +404,9 @@
       <Filter>thirdparties\mp3</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Music.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>

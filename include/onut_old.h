@@ -19,7 +19,6 @@
 #include "Renderer.h"
 #include "RTS.h"
 #include "Settings.h"
-#include "Sound.h"
 #include "SpriteAnim.h"
 #include "SpriteBatch.h"
 #include "StateManager.h"

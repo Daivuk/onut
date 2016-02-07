@@ -1,3 +1,7 @@
+#include "onut/ContentManager.h"
+#include "onut/Sound.h"
+
+#include "Random.h"
 #include "Audio.h"
 #include "onut_old.h"
 #include "tinyxml2.h"
@@ -8,22 +12,17 @@ extern AudioEngine* g_pAudioEngine;
 
 namespace onut
 {
-    Sound* Sound::createFromFile(const std::string& filename)
+    OSoundRef Sound::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
-        auto pRet = new Sound();
         if (g_pAudioEngine)
         {
-            pRet->m_pSound = new SoundEffect(g_pAudioEngine, utf8ToUtf16(filename).c_str());
+            auto pRet = std::make_shared<OSound>();
+            pRet->m_pSound = std::make_shared<SoundEffect>(g_pAudioEngine, utf8ToUtf16(filename).c_str());
+            return pRet;
         }
-        return pRet;
-    }
-
-    Sound::~Sound()
-    {
-        if (m_pSound)
+        else
         {
-            delete m_pSound;
-            m_pSound = nullptr;
+            return nullptr;
         }
     }
 
@@ -31,7 +30,8 @@ namespace onut
     {
         if (m_pSound)
         {
-            std::shared_ptr<DirectX::SoundEffectInstance> pInst = nullptr;
+            // Find a free instance
+            DXSoundEffectInstanceRef pInst = nullptr;
             for (auto &inst : m_instances)
             {
                 if (inst->GetState() == SoundState::STOPPED)
@@ -44,12 +44,17 @@ namespace onut
             {
                 if (m_maxInstance != -1)
                 {
-                    if (static_cast<int>(m_instances.size()) >= m_maxInstance) return;
+                    if (static_cast<int>(m_instances.size()) >= m_maxInstance)
+                    {
+                        return; // We have reach max instance count
+                    }
                 }
-                std::shared_ptr<DirectX::SoundEffectInstance> inst = m_pSound->CreateInstance();
+                DXSoundEffectInstanceRef inst = m_pSound->CreateInstance();
                 m_instances.push_back(inst);
                 pInst = inst;
             }
+
+            // Play it
             pInst->SetVolume(volume);
             if (m_pSound->GetFormat()->nChannels == 1)
             {
@@ -65,76 +70,120 @@ namespace onut
     }
 
     void Sound::stop()
-    {}
-
-    SoundInstance* Sound::createInstance() const
     {
-        auto pInstance = new SoundInstance();
+        for (auto &inst : m_instances)
+        {
+            if (inst->GetState() != SoundState::STOPPED)
+            {
+                inst->Stop(true);
+            }
+        }
+    }
+
+    OSoundInstanceRef Sound::createInstance()
+    {
+        auto pInstance = std::make_shared<SoundInstance>();
         pInstance->m_pSound = m_pSound;
-        pInstance->m_instance = m_pSound->CreateInstance();
-        pInstance->setVolume(1.f);
-        pInstance->setBalance(0.f);
-        pInstance->setPitch(1.f);
+        pInstance->m_pInstance = m_pSound->CreateInstance();
         return pInstance;
     }
 
-    void SoundInstance::setLoop(bool bLoop)
+    void SoundInstance::setLoop(bool loop)
     {
-        m_isLooping = bLoop;
+        m_loop = loop;
     }
 
     void SoundInstance::setVolume(float volume)
     {
-        m_instance->SetVolume(volume);
+        m_volume = volume;
+        m_pInstance->SetVolume(m_volume);
     }
 
     void SoundInstance::setBalance(float balance)
     {
+        m_balance = balance;
+        if (m_balance < -1) m_balance = -1;
+        if (m_balance > 1) m_balance = 1;
         if (m_pSound->GetFormat()->nChannels == 1)
         {
-            m_instance->SetPan(balance);
+            m_pInstance->SetPan(m_balance);
         }
     }
 
     void SoundInstance::setPitch(float pitch)
     {
-        if (pitch < (1.f / 1024.0f)) pitch = (1.f / 1024.0f);
-        m_instance->SetPitch(pitch);
+        m_pitch = pitch;
+        if (m_pitch < (1.f / 1024.0f)) m_pitch = (1.f / 1024.0f);
+        if (m_pitch > 2.f) m_pitch = 2.f;
+        m_pInstance->SetPitch(m_pitch);
     }
 
     void SoundInstance::play()
     {
         if (m_isPaused)
         {
-            m_instance->Resume();
+            m_pInstance->Resume();
+            m_isPaused = false;
         }
         else
         {
-            m_instance->Play(m_isLooping);
+            m_pInstance->SetVolume(m_volume);
+            if (m_pSound->GetFormat()->nChannels == 1)
+            {
+                m_pInstance->SetPan(m_balance);
+            }
+            m_pInstance->SetPitch(m_pitch);
+            m_pInstance->Play(m_loop);
         }
     }
 
     void SoundInstance::pause()
     {
         m_isPaused = true;
-        m_instance->Pause();
+        m_pInstance->Pause();
     }
 
     void SoundInstance::stop()
     {
         m_isPaused = false;
-        m_instance->Stop();
+        m_pInstance->Stop();
     }
 
     bool SoundInstance::isPlaying() const
     {
-        return m_instance->GetState() == DirectX::SoundState::PLAYING;
+        return m_pInstance->GetState() == DirectX::SoundState::PLAYING;
     }
 
-    SoundCue* SoundCue::createFromFile(const std::string& filename, 
-                                       const std::function<Sound*(const char*)>& getSound)
+    bool SoundInstance::isPaused() const
     {
-        auto pSoundCue = new SoundCue();
+        return m_isPaused;
+    }
+
+    bool SoundInstance::getLoop() const
+    {
+        return m_loop;
+    }
+
+    float SoundInstance::getVolume() const
+    {
+        return m_volume;
+    }
+
+    float SoundInstance::getBalance() const
+    {
+        return m_balance;
+    }
+
+    float SoundInstance::getPitch() const
+    {
+        return m_pitch;
+    }
+
+    OSoundCueRef SoundCue::createFromFile(const std::string& filename, const OContentManagerRef& in_pContentManager)
+    {
+        OContentManagerRef pContentManager = in_pContentManager;
+        if (!pContentManager) pContentManager = oContentManager;
+        auto pSoundCue = std::make_shared<OSoundCue>();
 
         tinyxml2::XMLDocument doc;
         doc.LoadFile(filename.c_str());
@@ -144,11 +193,11 @@ namespace onut
 
         for (auto pXmlPlay = pXmlCue->FirstChildElement("play"); pXmlPlay; pXmlPlay = pXmlPlay->NextSiblingElement("play"))
         {
-            sPlay play;
+            Play play;
             for (auto pXmlSound = pXmlPlay->FirstChildElement("sound"); pXmlSound; pXmlSound = pXmlSound->NextSiblingElement("sound"))
             {
-                sSound sound;
-                sound.pSound = getSound(pXmlSound->Attribute("name"));
+                Sound sound;
+                sound.pSound = oContentManager->getResourceAs<OSound>(pXmlSound->Attribute("name"));
                 pXmlSound->QueryFloatAttribute("balance", &sound.balance);
                 pXmlSound->QueryFloatAttribute("volume", &sound.volume);
                 pXmlSound->QueryFloatAttribute("pitch", &sound.pitch);
@@ -197,5 +246,48 @@ namespace onut
                 }   
             }
         }
+    }
+}
+
+OSoundRef OGetSound(const std::string& name)
+{
+    return oContentManager->getResourceAs<OSound>(name);
+}
+
+void OPlaySound(const std::string& name, float volume, float balance, float pitch)
+{
+    auto pSound = OGetSound(name);
+    if (pSound)
+    {
+        pSound->play(volume, balance, pitch);
+    }
+}
+
+void OPlayRandomSound(const std::vector<std::string>& sounds, float volume, float balance, float pitch)
+{
+    OPlaySound(onut::randv(sounds), volume, balance, pitch);
+}
+
+OSoundInstanceRef OCreateSoundInstance(const std::string& name)
+{
+    auto pSound = OGetSound(name);
+    if (pSound)
+    {
+        return pSound->createInstance();
+    }
+    return nullptr;
+}
+
+OSoundCueRef OGetSoundCue(const std::string& name)
+{
+    return oContentManager->getResourceAs<OSoundCue>(name);
+}
+
+void OPlaySoundCue(const std::string& name, float volume, float balance, float pitch)
+{
+    auto pSoundCue = OGetSoundCue(name);
+    if (pSoundCue)
+    {
+        pSoundCue->play(volume, balance, pitch);
     }
 }
