@@ -14,7 +14,7 @@ OTiledMapRef pTiledMap;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Tiled Map Sample");
+    oSettings->setGameName("Tiled Map Sample");
     ORun(init, update, render);
 }
 

@@ -12,7 +12,7 @@ void render();
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Text Sample");
+    oSettings->setGameName("Text Sample");
     ORun(init, update, render);
 }
 

@@ -1,4 +1,5 @@
-﻿#include "onut_old.h"
+﻿#include "onut/Point.h"
+#include "onut_old.h"
 #include "Utils.h"
 #include "Window.h"
 #include <windowsx.h>
@@ -101,10 +102,10 @@ namespace onut
         return DefWindowProc(handle, msg, wparam, lparam);
     }
 
-    Window::Window(const POINT& resolution, bool isResizable) :
+    Window::Window(const Point& resolution, bool isResizable) :
         m_cursor(0)
     {
-        auto bIsFullscreen = OSettings->getBorderlessFullscreen();
+        auto bIsFullscreen = oSettings->getBorderlessFullscreen();
 
         // Define window style
         WNDCLASS wc = {0};
@@ -120,11 +121,11 @@ namespace onut
 
         if (bIsFullscreen)
         {
-            OSettings->setResolution({screenW, screenH});
+            oSettings->setResolution({screenW, screenH});
             long posX = 0;
             long posY = 0;
             m_handle = CreateWindow(L"OakNutWindow",
-                                    utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                    utf8ToUtf16(oSettings->getGameName()).c_str(),
                                     WS_POPUP | WS_VISIBLE,
                                     posX, posY, screenW, screenH,
                                     nullptr, nullptr, nullptr, nullptr);
@@ -138,7 +139,7 @@ namespace onut
             if (!isResizable)
             {
                 m_handle = CreateWindow(L"OakNutWindow",
-                                        utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                        utf8ToUtf16(oSettings->getGameName()).c_str(),
                                         WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
                                         posX, posY, resolution.x, resolution.y,
                                         nullptr, nullptr, nullptr, nullptr);
@@ -146,7 +147,7 @@ namespace onut
             else
             {
                 m_handle = CreateWindow(L"OakNutWindow",
-                                        utf8ToUtf16(OSettings->getGameName()).c_str(),
+                                        utf8ToUtf16(oSettings->getGameName()).c_str(),
                                         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                         posX, posY, resolution.x, resolution.y,
                                         nullptr, nullptr, nullptr, nullptr);

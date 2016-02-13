@@ -3,6 +3,7 @@
 #include "onut/Font.h"
 #include "onut/ContentManager.h"
 #include "onut/ParticleSystem.h"
+#include "onut/Settings.h"
 
 #include "crypto.h"
 #include "DefineHelpers.h"
@@ -16,7 +17,6 @@
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"
 #include "Renderer.h"
-#include "Settings.h"
 #include "SpriteAnim.h"
 #include "SpriteBatch.h"
 #include "Synchronous.h"
@@ -27,7 +27,6 @@
 extern onut::Renderer*                  ORenderer;
 extern onut::SpriteBatch*               OSpriteBatch;
 extern onut::PrimitiveBatch*            OPrimitiveBatch;
-extern onut::Settings*                  OSettings;
 extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;

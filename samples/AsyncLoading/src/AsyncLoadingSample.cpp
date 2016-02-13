@@ -16,7 +16,7 @@ bool loaded = false;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Async Loading Sample");
+    oSettings->setGameName("Async Loading Sample");
     ORun(init, update, render);
 }
 

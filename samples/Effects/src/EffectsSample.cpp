@@ -19,7 +19,7 @@ OTextureRef pVignette = nullptr;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Sprites Sample");
+    oSettings->setGameName("Sprites Sample");
     ORun(init, update, render);
 }
 

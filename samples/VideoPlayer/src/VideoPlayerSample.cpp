@@ -16,7 +16,7 @@ OTextureRef pVideoTexture;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Sprite Animation Sample");
+    oSettings->setGameName("Sprite Animation Sample");
     ORun(init, update, render);
 }
 

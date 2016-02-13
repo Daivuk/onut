@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\..\include\Settings.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Renderer.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -203,15 +200,18 @@
     <ClInclude Include="..\..\include\onut\Random.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Settings.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Point.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Settings.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp">
@@ -393,6 +393,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Http.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Settings.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

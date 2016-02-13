@@ -18,7 +18,7 @@ OMusicRef pMusic;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Sounds Sample");
+    oSettings->setGameName("Sounds Sample");
     ORun(init, update, render);
 }
 

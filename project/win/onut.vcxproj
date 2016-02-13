@@ -28,7 +28,9 @@
     <ClInclude Include="..\..\include\onut\Music.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\ParticleSystem.h" />
+    <ClInclude Include="..\..\include\onut\Point.h" />
     <ClInclude Include="..\..\include\onut\Random.h" />
+    <ClInclude Include="..\..\include\onut\Settings.h" />
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
@@ -47,7 +49,6 @@
     <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\Renderer.h" />
     <ClInclude Include="..\..\include\RTS.h" />
-    <ClInclude Include="..\..\include\Settings.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
     <ClInclude Include="..\..\include\SpriteAnim.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />

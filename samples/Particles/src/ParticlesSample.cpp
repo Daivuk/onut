@@ -16,7 +16,7 @@ OAnim3 position;
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
-    OSettings->setGameName("Particles Sample");
+    oSettings->setGameName("Particles Sample");
     ORun(init, update, render);
 }
 

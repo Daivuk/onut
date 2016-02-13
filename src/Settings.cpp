@@ -1,45 +1,12 @@
-#include "Settings.h"
-#include "onut/Async.h"
-#include "onut_old.h"
+#include "onut/Settings.h"
+
 #include <fstream>
+
+OSettingsRef oSettings = std::make_shared<OSettings>();
 
 namespace onut
 {
     Settings::Settings()
-        : m_savingThread([this]
-        {
-            while (!m_requestShutdown)
-            {
-                if (!m_isSaving)
-                {
-                    if (m_isDirty)
-                    {
-                        // Wait a little bit more, maybe the user is doing a bunch of transactions at once
-                        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                        m_isSaving = true;
-                        OSync([this]
-                        {
-                            m_isDirty = false;
-                            OAsync([this](std::unordered_map<std::string, std::string> saveData)
-                            {
-                                std::ofstream fic("../../usersettings.cfg");
-                                if (!fic.fail())
-                                {
-                                    for (auto &kv : saveData)
-                                    {
-                                        fic << kv.first << std::endl;
-                                        fic << kv.second << std::endl;
-                                    }
-                                    fic.close();
-                                }
-                                m_isSaving = false;
-                            }, m_userSettings);
-                        });
-                    }
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
-        })
     {
         // Load settings
         std::ifstream in("../../usersettings.cfg");
@@ -63,14 +30,47 @@ namespace onut
             }
             in.close();
         }
+
+        // Start saving thread
+        m_savingThread = std::thread([this]
+        {
+            std::unique_lock<std::mutex> locker(m_mutex);
+            while (m_isRunning)
+            {
+                m_conditionVariable.wait(locker);
+                if (!m_isDirty) continue;
+
+                // Wait a little bit more, maybe the user is doing a bunch of transactions at once
+                locker.unlock();
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                locker.lock();
+
+                // Copy the map so there is not conflics
+                auto userSettings = m_userSettings;
+                locker.unlock();
+                std::ofstream fic("../../usersettings.cfg");
+                if (!fic.fail())
+                {
+                    for (auto &kv : userSettings)
+                    {
+                        fic << kv.first << std::endl;
+                        fic << kv.second << std::endl;
+                    }
+                    fic.close();
+                }
+                locker.lock();
+            }
+        });
     }
 
     Settings::~Settings()
     {
+        m_isRunning = false;
+        m_conditionVariable.notify_all();
         m_savingThread.join();
     }
 
-    void Settings::setResolution(const POINT& resolution)
+    void Settings::setResolution(const Resolution& resolution)
     {
         m_resolution = resolution;
     }
@@ -103,22 +103,27 @@ namespace onut
 
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
+        std::lock_guard<std::mutex> locker(m_mutex);
         auto it = m_userSettings.find(key);
         if (it == m_userSettings.end())
         {
             m_userSettings[key] = value;
             m_isDirty = true;
+            m_conditionVariable.notify_one();
         }
     }
 
     void Settings::setUserSetting(const std::string& key, const std::string& value)
     {
+        std::lock_guard<std::mutex> locker(m_mutex);
         m_userSettings[key] = value;
         m_isDirty = true;
+        m_conditionVariable.notify_one();
     }
 
-    const std::string& Settings::getUserSetting(const std::string& key) const
+    const std::string& Settings::getUserSetting(const std::string& key)
     {
+        std::lock_guard<std::mutex> locker(m_mutex);
         auto it = m_userSettings.find(key);
         if (it == m_userSettings.end())
         {

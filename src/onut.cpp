@@ -15,7 +15,6 @@ using namespace DirectX;
 // Our engine services
 onut::Window*                       OWindow = nullptr;
 onut::Renderer*                     ORenderer = nullptr;
-onut::Settings*                     OSettings = new onut::Settings();
 onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 onut::GamePad*                      g_gamePads[4] = {nullptr};
@@ -201,7 +200,7 @@ namespace onut
         OEvent = new EventManager();
 
         // Window
-        OWindow = new Window(OSettings->getResolution(), OSettings->getIsResizableWindow());
+        OWindow = new Window(oSettings->getResolution(), oSettings->getIsResizableWindow());
 
         // DirectX
         ORenderer = new Renderer(*OWindow);
@@ -320,7 +319,7 @@ namespace onut
         MSG msg = {0};
         while (true)
         {
-            if (OSettings->getIsEditorMode())
+            if (oSettings->getIsEditorMode())
             {
                 if (GetMessage(&msg, 0, 0, 0) >= 0)
                 {
@@ -352,7 +351,7 @@ namespace onut
 
             // Update
             if (g_pAudioEngine) g_pAudioEngine->Update();
-            auto framesToUpdate = g_timeInfo.update(OSettings->getIsFixedStep());
+            auto framesToUpdate = g_timeInfo.update(oSettings->getIsFixedStep());
             ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--)
             {

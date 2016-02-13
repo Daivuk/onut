@@ -3,12 +3,14 @@
 #include <Windows.h>
 #include <string>
 
+struct Point;
+
 namespace onut
 {
     class Window
     {
     public:
-        Window(const POINT& resolution, bool isResizable = false);
+        Window(const Point& resolution, bool isResizable = false);
         virtual ~Window();
 
         HWND getHandle();
