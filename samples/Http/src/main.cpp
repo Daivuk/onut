@@ -3,6 +3,7 @@
 
 // Oak Nut include
 #include "onut_old.h"
+#include "onut/Http.h"
 
 void init();
 void update();
@@ -28,12 +29,12 @@ void update()
     if (OJustPressed(OINPUT_1))
     {
         // Stalls the main loop
-        originIP = OHTTPGet("http://httpbin.org/ip");
+        originIP = OHttpGetString("http://httpbin.org/ip");
     }
     if (OJustPressed(OINPUT_2))
     {
         // Doesn't stall the main loop
-        OHTTPGetAsync("http://httpbin.org/user-agent", [](std::string result)
+        OHttpGetStringAsync("http://httpbin.org/user-agent", [](std::string result)
         {
             userAgent = result;
         });

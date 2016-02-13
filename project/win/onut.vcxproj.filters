@@ -4,9 +4,6 @@
     <ClInclude Include="..\..\include\Settings.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\SimpleMath.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Renderer.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -105,9 +102,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\UI.h">
       <Filter>include\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\http.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\crypto.h">
       <Filter>include</Filter>
@@ -215,15 +209,18 @@
     <ClInclude Include="..\..\include\onut\Log.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\SimpleMath.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Http.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\SimpleMath.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Settings.cpp">
@@ -300,9 +297,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\UI.cpp">
       <Filter>src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\http.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\crypto.cpp">
       <Filter>src</Filter>
@@ -407,6 +401,12 @@
       <Filter>resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SimpleMath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\http_.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
