@@ -400,7 +400,7 @@
     <ClCompile Include="..\..\src\Updater.cpp">
       <Filter>services</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\crypto_.cpp">
+    <ClCompile Include="..\..\src\Crypto.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
