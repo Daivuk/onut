@@ -325,9 +325,6 @@
     <ClCompile Include="..\..\src\Utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\SpriteAnim.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Resource.cpp">
       <Filter>resources</Filter>
     </ClCompile>
@@ -435,6 +432,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp">
       <Filter>thirdparties\simplemath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteAnim.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
