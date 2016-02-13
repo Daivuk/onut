@@ -2,10 +2,11 @@
 #include "onut/Sound.h"
 #include "onut/Random.h"
 
-#include "Audio.h"
 #include "onut_old.h"
-#include "tinyxml2.h"
 #include "Utils.h"
+
+#include "audio/Audio.h"
+#include "tinyxml2/tinyxml2.h"
 using namespace DirectX;
 
 extern AudioEngine* g_pAudioEngine;

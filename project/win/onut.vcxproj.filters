@@ -1,137 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\..\include\Renderer.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\LodePNG.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\SpriteBatch.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\DefineHelpers.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\GamePad.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\EventManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\TimeInfo.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Anim.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\dirent.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\pch.h">
-      <Filter>src\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\SoundCommon.h">
-      <Filter>src\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\WaveBankReader.h">
-      <Filter>src\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\WAVFileReader.h">
-      <Filter>src\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Audio.h">
-      <Filter>src\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\TimingUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Synchronous.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Particle.h">
-      <Filter>include\pfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\ParticleEmitter.h">
-      <Filter>include\pfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\ParticleSystemManager.h">
-      <Filter>include\pfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\PrimitiveBatch.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\InputDevice.h">
-      <Filter>src\inputs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onutUI.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Window.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Input.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\RectUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\ActionManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\UI.h">
-      <Filter>include\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\object.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\RTS.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\tinyxml2.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\zlib\crc32.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\deflate.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\gzguts.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\inffast.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\inffixed.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\inflate.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\inftrees.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\trees.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\zconf.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\zlib.h">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\zlib\zutil.h">
-      <Filter>src\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\micropather.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\List.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Utils.h">
-      <Filter>include</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Resource.h">
       <Filter>resources</Filter>
@@ -145,24 +46,15 @@
     <ClInclude Include="..\..\include\onut\Maths.h">
       <Filter>utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut_old.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\Font.h">
       <Filter>resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Mp3.h">
-      <Filter>thirdparties\mp3</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Music.h">
       <Filter>resources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Sound.h">
       <Filter>resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\VideoPlayer.h">
-      <Filter>services</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\MFPlayer.h">
       <Filter>services</Filter>
@@ -178,9 +70,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Log.h">
       <Filter>utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\SimpleMath.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Http.h">
       <Filter>utilities</Filter>
@@ -209,6 +98,150 @@
     <ClInclude Include="..\..\include\onut\Crypto.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\VideoPlayer.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ActionManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Anim.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DefineHelpers.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EventManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GamePad.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Input.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\object.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut_old.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onutUI.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Particle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ParticleEmitter.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ParticleSystemManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\PrimitiveBatch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\RectUtils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Renderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\RTS.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\SpriteBatch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Synchronous.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\TimeInfo.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\TimingUtils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\UI.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Window.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\InputDevice.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\filewritestream.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\prettywriter.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\rapidjson.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\reader.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\stringbuffer.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\writer.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\document.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\filestream.h">
+      <Filter>thirdparties\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\internal\stack.h">
+      <Filter>thirdparties\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\internal\strfunc.h">
+      <Filter>thirdparties\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rapidjson\internal\pow10.h">
+      <Filter>thirdparties\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\micropather.h">
+      <Filter>thirdparties\micropather</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\list\List.h">
+      <Filter>thirdparties\list</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mp3\Mp3.h">
+      <Filter>thirdparties\mp3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\LodePNG\LodePNG.h">
+      <Filter>thirdparties\lodepng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dirent\dirent.h">
+      <Filter>thirdparties\dirent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\audio\WaveBankReader.h">
+      <Filter>thirdparties\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\audio\WAVFileReader.h">
+      <Filter>thirdparties\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\audio\Audio.h">
+      <Filter>thirdparties\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\audio\pch.h">
+      <Filter>thirdparties\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\audio\SoundCommon.h">
+      <Filter>thirdparties\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h">
+      <Filter>thirdparties\tinyxml2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\simplemath\SimpleMath.h">
+      <Filter>thirdparties\simplemath</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -220,13 +253,7 @@
     <ClCompile Include="..\..\src\onut.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\LodePNG.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\SpriteBatch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Random.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GamePad.cpp">
@@ -238,53 +265,11 @@
     <ClCompile Include="..\..\src\Anim.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\SoundCommon.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\SoundEffect.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\SoundEffectInstance.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\WaveBank.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\WaveBankReader.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\WAVFileReader.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\AudioEngine.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp">
-      <Filter>src\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ParticleSystemManager.cpp">
-      <Filter>src\pfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Particle.cpp">
-      <Filter>src\pfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ParticleEmitter.cpp">
-      <Filter>src\pfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\InputDevice.cpp">
-      <Filter>src\inputs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\input.cpp">
-      <Filter>src\inputs</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ActionManager.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UI.cpp">
-      <Filter>src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\object.cpp">
       <Filter>src</Filter>
@@ -292,56 +277,50 @@
     <ClCompile Include="..\..\src\RTS.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\tinyxml2.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzread.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzwrite.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\infback.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\inffast.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\inflate.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\inftrees.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\trees.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\uncompr.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\zutil.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\adler32.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\compress.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\crc32.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\deflate.c">
-      <Filter>src\zlib</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzclose.c">
-      <Filter>src\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\micropather.cpp">
-      <Filter>src</Filter>
+      <Filter>thirdparties\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Utils.cpp">
       <Filter>src</Filter>
@@ -361,17 +340,11 @@
     <ClCompile Include="..\..\src\Font.cpp">
       <Filter>resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Mp3.cpp">
-      <Filter>thirdparties\mp3</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Music.cpp">
       <Filter>resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\VideoPlayer.cpp">
-      <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\MFPlayer.cpp">
       <Filter>services</Filter>
@@ -384,9 +357,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
       <Filter>utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\SimpleMath.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Http.cpp">
       <Filter>utilities</Filter>
@@ -403,43 +373,76 @@
     <ClCompile Include="..\..\src\Crypto.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\VideoPlayer.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Random.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Particle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ParticleEmitter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ParticleSystemManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UI.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\input.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\InputDevice.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\micropather.cpp">
+      <Filter>thirdparties\micropather</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mp3\Mp3.cpp">
+      <Filter>thirdparties\mp3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp">
+      <Filter>thirdparties\lodepng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\SoundEffect.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\SoundEffectInstance.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\WaveBank.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\WaveBankReader.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\WAVFileReader.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\AudioEngine.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\DynamicSoundEffectInstance.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\audio\SoundCommon.cpp">
+      <Filter>thirdparties\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp">
+      <Filter>thirdparties\tinyxml2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp">
+      <Filter>thirdparties\simplemath</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{88933ea7-d6b7-4f5d-b3f9-73a4224ab68d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{f147408f-9c92-4c54-bcfd-bd3c26c0fc93}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\audio">
-      <UniqueIdentifier>{0fcd117a-dc6b-4505-b51e-c00eb77824fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\pfx">
-      <UniqueIdentifier>{585ba85f-7496-4400-83bb-311318829c75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\pfx">
-      <UniqueIdentifier>{72eb4524-2055-4bee-9ce6-02a211075131}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\inputs">
-      <UniqueIdentifier>{81486c28-1ce5-416d-b670-dd865837256d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\ui">
-      <UniqueIdentifier>{30c4f50d-4aa2-49fe-a815-37d990d2e7a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\ui">
-      <UniqueIdentifier>{c5b83f90-f5da-450a-b71d-24e89f15fcd8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\zlib">
-      <UniqueIdentifier>{f490e9c5-e976-4386-a9e2-78c2d22bc76f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\shaders">
-      <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
-    </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{df7d4196-d4d0-4c6a-a6ea-bbf5f5ea3d3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="thirdparties">
-      <UniqueIdentifier>{224e6497-d7e1-4e6b-83bc-4e3993bd76fc}</UniqueIdentifier>
     </Filter>
     <Filter Include="services">
       <UniqueIdentifier>{524c9168-2061-4eec-8abc-f5fd17672f34}</UniqueIdentifier>
@@ -447,22 +450,41 @@
     <Filter Include="utilities">
       <UniqueIdentifier>{6f3f3796-61df-448a-ba0d-ac196efa581a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="thirdparties\mp3">
-      <UniqueIdentifier>{8ae2cd80-f6c8-4d22-9f7a-a91220c501ab}</UniqueIdentifier>
+    <Filter Include="thirdparties">
+      <UniqueIdentifier>{04c4131f-191f-4473-a06e-a65236b64c83}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\src\crt.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\sepia.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\cartoon.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\vignette.hlsl">
-      <Filter>src\shaders</Filter>
-    </FxCompile>
+    <Filter Include="thirdparties\rapidjson">
+      <UniqueIdentifier>{93438614-4667-42c6-9cd4-11fd8901e677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\rapidjson\internal">
+      <UniqueIdentifier>{0cbaa7a7-e23b-4068-9d31-931021b394a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\micropather">
+      <UniqueIdentifier>{56eda65d-d7c2-4749-92de-a37dd9c9db59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\list">
+      <UniqueIdentifier>{778ed4e5-6fe6-4ee8-8907-4d4d3f1ea7b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\mp3">
+      <UniqueIdentifier>{b402a49c-1b62-4700-8035-cc55ba2238bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\zlib">
+      <UniqueIdentifier>{f490e9c5-e976-4386-a9e2-78c2d22bc76f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\lodepng">
+      <UniqueIdentifier>{b363fb3f-a565-4498-b7be-e56a6e68cb77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\dirent">
+      <UniqueIdentifier>{8fcd1db3-eef8-4c79-8914-ed6365c4b1b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\audio">
+      <UniqueIdentifier>{0fcd117a-dc6b-4505-b51e-c00eb77824fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\tinyxml2">
+      <UniqueIdentifier>{a8654ab6-6ce0-4785-9796-6add1e23f92d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\simplemath">
+      <UniqueIdentifier>{76790f6d-533a-4fc6-8cab-5857fbbe8185}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

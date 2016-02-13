@@ -1,8 +1,8 @@
 #pragma once
+#include "onut/Maths.h"
+
 #define DIRECTINPUT_VERSION 0x0800
-#include "dinput.h"
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
+#include <dinput.h>
 
 #define OINPUT_ESCAPE          0x01
 #define OINPUT_1               0x02

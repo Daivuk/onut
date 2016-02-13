@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "dirent.h"
+#include "dirent/dirent.h"
 #include "Utils.h"
 
 namespace onut

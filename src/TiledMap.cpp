@@ -3,10 +3,11 @@
 #include "onut/Texture.h"
 #include "onut/TiledMap.h"
 
-#include "tinyxml2.h"
 #include "onut_old.h"
-#include "zlib/zlib.h"
 #include "Utils.h"
+
+#include "tinyxml2/tinyxml2.h"
+#include "zlib/zlib.h"
 
 #include <cassert>
 

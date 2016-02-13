@@ -1,15 +1,15 @@
-#include <cassert>
-#include <mutex>
-#include <sstream>
+#include "onut/onut.h"
+#include "onut/Texture.h"
+#include "onut/Updater.h"
 
-#include "Audio.h"
+#include "audio/Audio.h"
 #include "InputDevice.h"
 #include "onut_old.h"
 #include "Window.h"
 
-#include "onut/onut.h"
-#include "onut/Texture.h"
-#include "onut/Updater.h"
+#include <cassert>
+#include <mutex>
+#include <sstream>
 
 using namespace DirectX;
 

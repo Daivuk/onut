@@ -1,6 +1,8 @@
-#include "Mp3.h"
 #include "onut/ContentManager.h"
 #include "onut/Music.h"
+#if defined(WIN32)
+#include "mp3/Mp3.h"
+#endif
 
 #include "Utils.h"
 

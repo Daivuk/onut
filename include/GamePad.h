@@ -1,8 +1,8 @@
 #pragma once
+#include "onut/Maths.h"
+
 #include <Windows.h>
 #include <Xinput.h>
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
 
 namespace onut
 {

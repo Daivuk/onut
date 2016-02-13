@@ -1,7 +1,5 @@
 #pragma once
-#include "SimpleMath.h"
-#include "onut/Texture.h"
-using namespace DirectX::SimpleMath;
+#include "onut/Maths.h"
 
 #include "onut/ForwardDeclaration.h"
 OForwardDeclare(Texture);

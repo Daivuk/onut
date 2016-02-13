@@ -1,6 +1,5 @@
 #pragma once
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
+#include "onut/Maths.h"
 
 namespace onut
 {

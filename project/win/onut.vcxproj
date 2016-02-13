@@ -17,7 +17,7 @@
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\Input.h" />
-    <ClInclude Include="..\..\include\List.h" />
+    <ClInclude Include="..\..\include\list\List.h" />
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
@@ -48,28 +48,39 @@
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystemManager.h" />
     <ClInclude Include="..\..\include\PrimitiveBatch.h" />
+    <ClInclude Include="..\..\include\rapidjson\document.h" />
+    <ClInclude Include="..\..\include\rapidjson\filestream.h" />
+    <ClInclude Include="..\..\include\rapidjson\filewritestream.h" />
+    <ClInclude Include="..\..\include\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\..\include\rapidjson\internal\stack.h" />
+    <ClInclude Include="..\..\include\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="..\..\include\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\..\include\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\..\include\rapidjson\reader.h" />
+    <ClInclude Include="..\..\include\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\..\include\rapidjson\writer.h" />
     <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\Renderer.h" />
     <ClInclude Include="..\..\include\RTS.h" />
-    <ClInclude Include="..\..\include\SimpleMath.h" />
+    <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
+    <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
-    <ClInclude Include="..\..\include\tinyxml2.h" />
     <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\include\Window.h" />
+    <ClInclude Include="..\..\src\audio\Audio.h" />
+    <ClInclude Include="..\..\src\audio\pch.h" />
+    <ClInclude Include="..\..\src\audio\SoundCommon.h" />
+    <ClInclude Include="..\..\src\audio\WaveBankReader.h" />
+    <ClInclude Include="..\..\src\audio\WAVFileReader.h" />
+    <ClInclude Include="..\..\src\dirent\dirent.h" />
+    <ClInclude Include="..\..\src\LodePNG\LodePNG.h" />
     <ClInclude Include="..\..\src\MFPlayer.h" />
-    <ClInclude Include="..\..\src\Mp3.h" />
-    <ClInclude Include="..\..\src\Audio.h" />
-    <ClInclude Include="..\..\src\dirent.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
-    <ClInclude Include="..\..\src\LodePNG.h" />
-    <ClInclude Include="..\..\src\pch.h" />
-    <ClInclude Include="..\..\src\SoundCommon.h" />
-    <ClInclude Include="..\..\src\WaveBankReader.h" />
-    <ClInclude Include="..\..\src\WAVFileReader.h" />
+    <ClInclude Include="..\..\src\mp3\Mp3.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />
     <ClInclude Include="..\..\src\zlib\gzguts.h" />
@@ -85,21 +96,27 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\ActionManager.cpp" />
     <ClCompile Include="..\..\src\Anim.cpp" />
-    <ClCompile Include="..\..\src\AudioEngine.cpp" />
+    <ClCompile Include="..\..\src\audio\AudioEngine.cpp" />
+    <ClCompile Include="..\..\src\audio\DynamicSoundEffectInstance.cpp" />
+    <ClCompile Include="..\..\src\audio\SoundCommon.cpp" />
+    <ClCompile Include="..\..\src\audio\SoundEffect.cpp" />
+    <ClCompile Include="..\..\src\audio\SoundEffectInstance.cpp" />
+    <ClCompile Include="..\..\src\audio\WaveBank.cpp" />
+    <ClCompile Include="..\..\src\audio\WaveBankReader.cpp" />
+    <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
-    <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
-    <ClCompile Include="..\..\src\LodePNG.cpp" />
+    <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
     <ClCompile Include="..\..\src\MFPlayer.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
-    <ClCompile Include="..\..\src\Mp3.cpp" />
+    <ClCompile Include="..\..\src\mp3\Mp3.cpp" />
     <ClCompile Include="..\..\src\Music.cpp" />
     <ClCompile Include="..\..\src\object.cpp" />
     <ClCompile Include="..\..\src\Particle.cpp" />
@@ -107,6 +124,8 @@
     <ClCompile Include="..\..\src\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\src\Pool.cpp" />
+    <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
+    <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="..\..\src\Updater.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
@@ -116,21 +135,13 @@
     <ClCompile Include="..\..\src\Resource.cpp" />
     <ClCompile Include="..\..\src\RTS.cpp" />
     <ClCompile Include="..\..\src\Settings.cpp" />
-    <ClCompile Include="..\..\src\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
-    <ClCompile Include="..\..\src\SoundCommon.cpp" />
-    <ClCompile Include="..\..\src\SoundEffect.cpp" />
-    <ClCompile Include="..\..\src\SoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\SpriteAnim.cpp" />
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
     <ClCompile Include="..\..\src\Utils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\TiledMap.cpp" />
-    <ClCompile Include="..\..\src\tinyxml2.cpp" />
     <ClCompile Include="..\..\src\UI.cpp" />
-    <ClCompile Include="..\..\src\WaveBank.cpp" />
-    <ClCompile Include="..\..\src\WaveBankReader.cpp" />
-    <ClCompile Include="..\..\src\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
     <ClCompile Include="..\..\src\zlib\adler32.c" />
     <ClCompile Include="..\..\src\zlib\compress.c" />
@@ -147,36 +158,6 @@
     <ClCompile Include="..\..\src\zlib\trees.c" />
     <ClCompile Include="..\..\src\zlib\uncompr.c" />
     <ClCompile Include="..\..\src\zlib\zutil.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\src\cartoon.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\src\crt.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\src\sepia.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\src\vignette.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A0E49D2-55F1-4AB5-94F6-D19F308ECC46}</ProjectGuid>

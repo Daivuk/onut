@@ -1,7 +1,7 @@
 #pragma once
+#include "onut/Maths.h"
+
 #include "UI.h"
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
 
 namespace onut
 {

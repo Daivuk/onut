@@ -11,7 +11,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //-------------------------------------------------------------------------------------
 
-#include "SimpleMath.h"
+#include "simplemath/SimpleMath.h"
 
 namespace DirectX
 {

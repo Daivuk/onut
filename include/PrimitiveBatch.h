@@ -1,7 +1,6 @@
 #pragma once
-#include "SimpleMath.h"
+#include "onut/Maths.h"
 #include "onut/Texture.h"
-using namespace DirectX::SimpleMath;
 
 #include <memory>
 

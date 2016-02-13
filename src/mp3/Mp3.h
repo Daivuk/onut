@@ -1,5 +1,6 @@
+#pragma once
+#if defined(WIN32)
 // MP3.h
-
 #include <windows.h>
 #include <mmsystem.h>
 //#include <streams.h>
@@ -58,4 +59,4 @@ private:
 
 };
 
-
+#endif

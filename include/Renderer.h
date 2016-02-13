@@ -1,8 +1,7 @@
 #pragma once
-#include <d3d11.h>
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
+#include "onut/Maths.h"
 
+#include <d3d11.h>
 #include <memory>
 
 // Forward

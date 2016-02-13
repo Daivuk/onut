@@ -2,7 +2,7 @@
 #include "onut/SpriteAnim.h"
 #include "onut/Texture.h"
 
-#include "tinyxml2.h"
+#include "tinyxml2/tinyxml2.h"
 #include "TimingUtils.h"
 
 #include <cassert>

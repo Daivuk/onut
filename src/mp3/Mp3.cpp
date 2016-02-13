@@ -1,6 +1,7 @@
+#if defined(WIN32)
 // MP3.cpp
 #pragma comment(lib, "strmiids.lib")
-#include "Mp3.h"
+#include "mp3/Mp3.h"
 #include <uuids.h>
 
 Mp3::Mp3()
@@ -192,3 +193,4 @@ bool Mp3::SetPositions(__int64* pCurrent, __int64* pStop, bool bAbsolutePosition
 //Alan
 //-----
 //alankemp@bigfoot.com
+#endif

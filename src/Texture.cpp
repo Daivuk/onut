@@ -1,10 +1,10 @@
-#include "onut_old.h"
-
 #include "onut/ContentManager.h"
 #include "onut/Texture.h"
 
-#include "LodePNG.h"
+#include "onut_old.h"
 #include "Utils.h"
+
+#include "lodepng/LodePNG.h"
 
 #include <cassert>
 #include <vector>
