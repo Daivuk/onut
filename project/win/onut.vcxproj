@@ -21,11 +21,11 @@
     <ClInclude Include="..\..\include\http.h" />
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\List.h" />
-    <ClInclude Include="..\..\include\Log.h" />
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
+    <ClInclude Include="..\..\include\onut\Log.h" />
     <ClInclude Include="..\..\include\onut\Music.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\ParticleSystem.h" />

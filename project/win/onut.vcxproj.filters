@@ -163,9 +163,6 @@
     <ClInclude Include="..\..\include\List.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Log.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Utils.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -214,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\ParticleSystem.h">
       <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Log.h">
+      <Filter>utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -367,9 +367,6 @@
     <ClCompile Include="..\..\src\micropather.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Log.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -408,6 +405,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ParticleSystem.cpp">
       <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log.cpp">
+      <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

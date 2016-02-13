@@ -5,31 +5,45 @@
 #include <iostream>
 #endif
 
-#include "Log.h"
-#include <string>
+#include "onut/Log.h"
 
 namespace onut
 {
-    void log(eLogSeverity logSeverity, const std::string& message)
+    void log(LogSeverity logSeverity, const std::string& message)
     {
         std::string output;
         switch (logSeverity)
         {
-            case eLogSeverity::Info:
+            case LogSeverity::Info:
                 output = "onut: ";
                 break;
-            case eLogSeverity::Warning:
+            case LogSeverity::Warning:
                 output = "onut(WARNING): ";
                 break;
-            case eLogSeverity::Error:
+            case LogSeverity::Error:
                 output = "onut(ERROR): ";
                 break;
         }
-#if defined(WIN32)
         output += message + '\n';
+#if defined(WIN32)
         OutputDebugStringA(output.c_str());
 #else
-        std::cout << output << message << std::endl;
+        std::cout << output;
 #endif
     }
 };
+
+void OLog(const std::string& message)
+{
+    onut::log(onut::LogSeverity::Info, message);
+}
+
+void OLogW(const std::string& message)
+{
+    onut::log(onut::LogSeverity::Warning, message);
+}
+
+void OLogE(const std::string& message)
+{
+    onut::log(onut::LogSeverity::Error, message);
+}
