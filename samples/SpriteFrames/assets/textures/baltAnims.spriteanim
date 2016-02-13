@@ -13,7 +13,7 @@
     <frame id="4"/>
     <frame id="3"/>
   </anim>
-  <anim name="attack" fps="24" loop="false">
+  <anim name="attack" fps="24" loop="false" next="idle">
     <frame id="6"/>
     <frame id="2"/>
     <frame id="7" repeat="4"/>

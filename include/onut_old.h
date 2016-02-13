@@ -17,7 +17,6 @@
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"
 #include "Renderer.h"
-#include "SpriteAnim.h"
 #include "SpriteBatch.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"

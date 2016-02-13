@@ -1,13 +1,20 @@
-#include "SpriteAnim.h"
+#include "onut/ContentManager.h"
+#include "onut/SpriteAnim.h"
+#include "onut/Texture.h"
+
 #include "tinyxml2.h"
+#include "TimingUtils.h"
 
 #include <cassert>
 
 namespace onut
 {
-    SpriteAnimDefinition* SpriteAnimDefinition::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+    OSpriteAnimRef SpriteAnim::createFromFile(const std::string& filename, const OContentManagerRef& in_pContentManager)
     {
-        SpriteAnimDefinition* pRet = new SpriteAnimDefinition();
+        auto pContentManager = in_pContentManager;
+        if (!pContentManager) pContentManager = oContentManager;
+
+        auto pRet = std::make_shared<SpriteAnim>();
 
         pRet->m_filename = pContentManager->findResourceFile(filename);
         if (pRet->m_filename.empty())
@@ -35,6 +42,11 @@ namespace onut
         {
             std::string name = pXMLAnim->Attribute("name");
             auto& anim = pRet->m_anims[name];
+            anim.name = name;
+            if (pXMLAnim->Attribute("next"))
+            {
+                anim.next = pXMLAnim->Attribute("next");
+            }
             int fps = 30;
             pXMLAnim->QueryAttribute("fps", &fps);
             pXMLAnim->QueryAttribute("loop", &anim.loop);
@@ -68,19 +80,19 @@ namespace onut
         return pRet;
     }
 
-    void SpriteAnimDefinition::addAnim(const Anim& anim)
+    void SpriteAnim::addAnim(const Anim& anim)
     {
         m_anims[anim.name] = anim;
     }
 
-    SpriteAnimDefinition::Anim* SpriteAnimDefinition::getAnim(const std::string& name)
+    SpriteAnim::Anim* SpriteAnim::getAnim(const std::string& name)
     {
         auto it = m_anims.find(name);
         if (it == m_anims.end()) return nullptr;
         return &it->second;
     }
 
-    std::vector<std::string> SpriteAnimDefinition::getAnimNames() const
+    std::vector<std::string> SpriteAnim::getAnimNames() const
     {
         std::vector<std::string> anims;
         for (auto& kv : m_anims)
@@ -89,82 +101,114 @@ namespace onut
         }
         return std::move(anims);
     }
-
-    SpriteAnimDefinition::SpriteAnimDefinition()
-    {
-    }
-
-    SpriteAnimDefinition::~SpriteAnimDefinition()
-    {
-    }
 }
 
 namespace onut
 {
-    SpriteAnim::SpriteAnim()
+    SpriteAnimInstance::SpriteAnimInstance()
     {
     }
 
-    SpriteAnim::SpriteAnim(SpriteAnimDefinition* pDefinition)
-        : m_pDefinition(pDefinition)
+    SpriteAnimInstance::SpriteAnimInstance(const OSpriteAnimRef& pSpriteAnim)
+        : m_pSpriteAnim(pSpriteAnim)
     {
     }
 
-    SpriteAnim::SpriteAnim(const std::string& definitionFilename, const OContentManagerRef& pContentManager)
+    SpriteAnimInstance::SpriteAnimInstance(const std::string& filename, const OContentManagerRef& in_pContentManager)
     {
-        m_pDefinition = SpriteAnimDefinition::createFromFile(definitionFilename, pContentManager);
+        auto pContentManager = in_pContentManager;
+        if (!pContentManager) pContentManager = oContentManager;
+        m_pSpriteAnim = pContentManager->getResourceAs<SpriteAnim>(filename);
     }
 
-    void SpriteAnim::start(const std::string& animName)
+    void SpriteAnimInstance::play(const std::string& animName)
     {
         stop();
-        if (m_pDefinition)
+        if (m_pSpriteAnim)
         {
-            m_pCurrentAnim = m_pDefinition->getAnim(animName);
+            m_pCurrentAnim = m_pSpriteAnim->getAnim(animName);
             if (m_pCurrentAnim)
             {
-                m_frame.start(0.f, (float)m_pCurrentAnim->frames.size() - 1, m_pCurrentAnim->duration, onut::TweenType::LINEAR,
-                              m_pCurrentAnim->loop ? onut::LoopType::LOOP : onut::LoopType::NONE);
+                if (!m_pCurrentAnim->next.empty())
+                {
+                    m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
+                }
+                m_frame = 0.f;
+                m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
+
+                oUpdater->registerTarget(this);
             }
         }
     }
 
-    void SpriteAnim::startBackward(const std::string& animName)
+    void SpriteAnimInstance::playBackward(const std::string& animName)
     {
         stop();
-        if (m_pDefinition)
+        if (m_pSpriteAnim)
         {
-            m_pCurrentAnim = m_pDefinition->getAnim(animName);
+            m_pCurrentAnim = m_pSpriteAnim->getAnim(animName);
             if (m_pCurrentAnim)
             {
-                m_frame.start((float)m_pCurrentAnim->frames.size() - 1, 0.f, m_pCurrentAnim->duration, onut::TweenType::LINEAR,
-                              m_pCurrentAnim->loop ? onut::LoopType::LOOP : onut::LoopType::NONE);
+                m_frame = static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
+                m_speed = -m_frame / m_pCurrentAnim->duration;
+
+                oUpdater->registerTarget(this);
             }
         }
     }
 
-    void SpriteAnim::stop(bool reset)
+    void SpriteAnimInstance::queueAnim(const std::string& animName)
     {
-        m_frame.stop();
+        m_animQueue.push_back(animName);
+    }
+
+    void SpriteAnimInstance::playNextQueuedAnim()
+    {
+        if (!m_animQueue.empty())
+        {
+            auto animName = m_animQueue.front();
+            m_animQueue.erase(m_animQueue.begin());
+            if (m_pSpriteAnim)
+            {
+                m_pCurrentAnim = m_pSpriteAnim->getAnim(animName);
+                if (m_pCurrentAnim)
+                {
+                    if (!m_pCurrentAnim->next.empty())
+                    {
+                        m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
+                    }
+                    m_frame = 0.f;
+                    m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
+
+                    oUpdater->registerTarget(this);
+                }
+            }
+        }
+    }
+
+    void SpriteAnimInstance::stop(bool reset)
+    {
+        m_animQueue.clear();
+        oUpdater->unregisterTarget(this);
         if (reset) m_frame = 0.f;
         m_pCurrentAnim = nullptr;
     }
 
-    bool SpriteAnim::isPlaying() const
+    bool SpriteAnimInstance::isPlaying() const
     {
-        return m_frame.isPlaying();
+        return isUpdateTargetRegistered();
     }
 
-    int SpriteAnim::getFrameId() const
+    int SpriteAnimInstance::getFrameId() const
     {
         if (m_pCurrentAnim)
         {
-            return (int)m_frame.get();
+            return (int)m_frame;
         }
         return 0;
     }
 
-    OTextureRef SpriteAnim::getTexture() const
+    OTextureRef SpriteAnimInstance::getTexture() const
     {
         if (m_pCurrentAnim)
         {
@@ -173,7 +217,7 @@ namespace onut
         return nullptr;
     }
 
-    const Vector4& SpriteAnim::getUVs() const
+    const Vector4& SpriteAnimInstance::getUVs() const
     {
         if (m_pCurrentAnim)
         {
@@ -183,7 +227,7 @@ namespace onut
         return ret;
     }
 
-    const Vector2& SpriteAnim::getOrigin() const
+    const Vector2& SpriteAnimInstance::getOrigin() const
     {
         if (m_pCurrentAnim)
         {
@@ -192,4 +236,52 @@ namespace onut
         static Vector2 ret(.5f, .5f);
         return ret;
     }
+
+    void SpriteAnimInstance::update()
+    {
+        m_frame += ODT * m_speed;
+        if (m_speed > 0.f)
+        {
+            if (m_frame >= static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f)
+            {
+                if (m_pCurrentAnim->loop)
+                {
+                    m_frame -= static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
+                }
+                else
+                {
+                    m_frame = static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
+                    oUpdater->unregisterTarget(this);
+                    playNextQueuedAnim();
+                }
+            }
+        }
+        else if (m_frame <= 0.f)
+        {
+            if (m_pCurrentAnim->loop)
+            {
+                m_frame += static_cast<float>(m_pCurrentAnim->frames.size());
+            }
+            else
+            {
+                m_frame = 0.f;
+                oUpdater->unregisterTarget(this);
+                playNextQueuedAnim();
+            }
+        }
+    }
+}
+
+OSpriteAnimRef OGetSpriteAnim(const std::string& name)
+{
+    return oContentManager->getResourceAs<OSpriteAnim>(name);
+}
+
+OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName)
+{
+    auto pSpriteAnim = OGetSpriteAnim(filename);
+
+    auto pRet = std::make_shared<OSpriteAnimInstance>(pSpriteAnim);
+    pRet->play(animName);
+    return pRet;
 }

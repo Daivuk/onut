@@ -9,6 +9,7 @@
 
 #include "onut/onut.h"
 #include "onut/Texture.h"
+#include "onut/Updater.h"
 
 using namespace DirectX;
 
@@ -196,6 +197,8 @@ namespace onut
         // Random
         randomizeSeed();
 
+        oUpdater = std::make_shared<OUpdater>();
+
         // Events
         OEvent = new EventManager();
 
@@ -282,6 +285,7 @@ namespace onut
 
     void cleanup()
     {
+        oUpdater = nullptr;
         delete OUIContext;
         delete OParticles;
         delete g_pAudioEngine;
@@ -369,6 +373,7 @@ namespace onut
                 {
                     gamePad->update();
                 }
+                oUpdater->update();
                 if (OUIContext->useNavigation)
                 {
                     OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OGamePadPressed(OABtn), false, false, 

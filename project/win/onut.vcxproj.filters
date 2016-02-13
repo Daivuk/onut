@@ -136,9 +136,6 @@
     <ClInclude Include="..\..\include\Utils.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\SpriteAnim.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Resource.h">
       <Filter>resources</Filter>
     </ClInclude>
@@ -205,6 +202,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Pool.h">
       <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Updater.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SpriteAnim.h">
+      <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -399,6 +402,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Pool.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Updater.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,12 +3,13 @@
 
 // Oak Nut include
 #include "onut_old.h"
+#include "onut/SpriteAnim.h"
 
 void init();
 void update();
 void render();
 
-OSpriteAnim spriteAnim;
+OSpriteAnimInstance spriteAnim;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -19,22 +20,22 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
-    spriteAnim = OSpriteAnim("baltAnims.xml");
+    spriteAnim = OSpriteAnimInstance("baltAnims.spriteanim");
 }
 
 void update()
 {
     if (OJustPressed(OINPUT_1))
     {
-        spriteAnim.start("idle");
+        spriteAnim.play("idle");
     }
     if (OJustPressed(OINPUT_2))
     {
-        spriteAnim.start("run");
+        spriteAnim.play("run");
     }
     if (OJustPressed(OINPUT_3))
     {
-        spriteAnim.start("attack");
+        spriteAnim.play("attack");
     }
 }
 

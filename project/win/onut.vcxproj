@@ -33,7 +33,9 @@
     <ClInclude Include="..\..\include\onut\Random.h" />
     <ClInclude Include="..\..\include\onut\Settings.h" />
     <ClInclude Include="..\..\include\onut\Sound.h" />
+    <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
+    <ClInclude Include="..\..\include\onut\Updater.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
@@ -50,7 +52,6 @@
     <ClInclude Include="..\..\include\Renderer.h" />
     <ClInclude Include="..\..\include\RTS.h" />
     <ClInclude Include="..\..\include\SimpleMath.h" />
-    <ClInclude Include="..\..\include\SpriteAnim.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
@@ -107,6 +108,7 @@
     <ClCompile Include="..\..\src\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\ParticleSystemManager.cpp" />
     <ClCompile Include="..\..\src\Pool.cpp" />
+    <ClCompile Include="..\..\src\Updater.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />
