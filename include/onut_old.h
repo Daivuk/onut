@@ -1,9 +1,9 @@
 #pragma once
+#include "onut/Async.h"
 #include "onut/Font.h"
 #include "onut/ContentManager.h"
 #include "onut/ParticleSystem.h"
 
-#include "Asynchronous.h"
 #include "crypto.h"
 #include "DefineHelpers.h"
 #include "EventManager.h"
@@ -267,4 +267,17 @@ inline void OQuit()
 inline onut::UIControl* OFindUI(const std::string& name)
 {
     return OUI->getChild(name);
+}
+
+/**
+Synchronize back to main thread. This can also be called from the main thread. It will just be delayed until the next frame.
+@param callback Function or your usual lambda
+@param args arguments
+*/
+template<typename Tfn,
+    typename ... Targs>
+    inline void OSync(Tfn callback, Targs... args)
+{
+    extern onut::Synchronous<onut::Pool<>> g_mainSync;
+    g_mainSync.sync(callback, args...);
 }

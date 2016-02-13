@@ -55,9 +55,6 @@
     <ClInclude Include="..\..\include\Synchronous.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Asynchronous.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\State.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -213,6 +210,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Http.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Async.h">
       <Filter>utilities</Filter>
     </ClInclude>
   </ItemGroup>
@@ -406,7 +406,7 @@
     <ClCompile Include="..\..\src\SimpleMath.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\http_.cpp">
+    <ClCompile Include="..\..\src\Http.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>

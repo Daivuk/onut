@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\ActionManager.h" />
     <ClInclude Include="..\..\include\Anim.h" />
-    <ClInclude Include="..\..\include\Asynchronous.h" />
     <ClInclude Include="..\..\include\crypto.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
@@ -23,6 +22,7 @@
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
+    <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\Http.h" />
     <ClInclude Include="..\..\include\onut\Log.h" />
@@ -95,7 +95,7 @@
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
-    <ClCompile Include="..\..\src\http_.cpp" />
+    <ClCompile Include="..\..\src\Http.cpp" />
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\LodePNG.cpp" />
