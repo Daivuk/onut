@@ -1,4 +1,39 @@
-#include "crypto.h"
+#include "onut/Crypto.h"
+
+static bool isCharacter(const char Character)
+{
+    return ((Character >= 'a' && Character <= 'z') || (Character >= 'A' && Character <= 'Z'));
+    //Checks if a Character is a Valid A-Z, a-z Character, based on the ascii value
+}
+
+static bool isNumber(const char Character)
+{
+    return (Character >= '0' && Character <= '9');
+    //Checks if a Character is a Valid 0-9 Number, based on the ascii value
+}
+
+static bool isValidEmailAddress(const char * EmailAddress)
+{
+    if (!EmailAddress) // If cannot read the Email Address...
+        return 0;
+    if (!isCharacter(EmailAddress[0])) // If the First character is not A-Z, a-z
+        return 0;
+    int AtOffset = -1;
+    int DotOffset = -1;
+    unsigned int Length = strlen(EmailAddress); // Length = StringLength (strlen) of EmailAddress
+    for (unsigned int i = 0; i < Length; i++)
+    {
+        if (EmailAddress[i] == '@') // If one of the characters is @, store it's position in AtOffset
+            AtOffset = (int)i;
+        else if (EmailAddress[i] == '.') // Same, but with the dot
+            DotOffset = (int)i;
+    }
+    if (AtOffset == -1 || DotOffset == -1) // If cannot find a Dot or a @
+        return 0;
+    if (AtOffset > DotOffset) // If the @ is after the Dot
+        return 0;
+    return !(DotOffset >= ((int)Length - 1)); //Chech there is some other letters after the Dot
+}
 
 /*
 Copyright (c) 2011, Micael Hildenborg
@@ -38,80 +73,17 @@ namespace sha1
     @param bytelength the number of bytes to hash from the src pointer.
     @param hash should point to a buffer of at least 20 bytes of size for storing the sha1 result in.
     */
-    void calc(const void* src, const int bytelength, unsigned char* hash);
+    static void calc(const void* src, const int bytelength, unsigned char* hash);
 
     /**
     @param hash is 20 bytes of sha1 hash. This is the same data that is the result from the calc function.
     @param hexstring should point to a buffer of at least 41 bytes of size for storing the hexadecimal representation of the hash. A zero will be written at position 40, so the buffer will be a valid zero ended string.
     */
-    void toHexString(const unsigned char* hash, char* hexstring);
+    static void toHexString(const unsigned char* hash, char* hexstring);
 
 } // namespace sha1
 
 #endif // SHA1_DEFINED
-
-bool isCharacter(const char Character)
-{
-    return ((Character >= 'a' && Character <= 'z') || (Character >= 'A' && Character <= 'Z'));
-    //Checks if a Character is a Valid A-Z, a-z Character, based on the ascii value
-}
-
-bool isNumber(const char Character)
-{
-    return (Character >= '0' && Character <= '9');
-    //Checks if a Character is a Valid 0-9 Number, based on the ascii value
-}
-
-bool isValidEmailAddress(const char * EmailAddress)
-{
-    if (!EmailAddress) // If cannot read the Email Address...
-        return 0;
-    if (!isCharacter(EmailAddress[0])) // If the First character is not A-Z, a-z
-        return 0;
-    int AtOffset = -1;
-    int DotOffset = -1;
-    unsigned int Length = strlen(EmailAddress); // Length = StringLength (strlen) of EmailAddress
-    for (unsigned int i = 0; i < Length; i++)
-    {
-        if (EmailAddress[i] == '@') // If one of the characters is @, store it's position in AtOffset
-            AtOffset = (int)i;
-        else if (EmailAddress[i] == '.') // Same, but with the dot
-            DotOffset = (int)i;
-    }
-    if (AtOffset == -1 || DotOffset == -1) // If cannot find a Dot or a @
-        return 0;
-    if (AtOffset > DotOffset) // If the @ is after the Dot
-        return 0;
-    return !(DotOffset >= ((int)Length - 1)); //Chech there is some other letters after the Dot
-}
-
-namespace onut
-{
-    unsigned int hash(const std::string &str, unsigned int seed)
-    {
-        unsigned hash = seed;
-        const char *s = str.c_str();
-        while (*s) hash = hash * 101 + *s++;
-        return hash;
-    }
-
-    std::string sha1(const std::string& str)
-    {
-        unsigned char resultHash[20] = {0};
-        char hexstring[41];
-
-        sha1::calc(str.c_str(), str.size(), resultHash);
-        sha1::toHexString(resultHash, hexstring);
-
-        return hexstring;
-    }
-
-    bool validateEmail(const std::string& email)
-    {
-        return isValidEmailAddress(email.c_str());
-    }
-};
-
 
 /*
 Copyright (c) 2011, Micael Hildenborg
@@ -228,7 +200,7 @@ namespace sha1
         }
     } // namespace
 
-    void calc(const void* src, const int bytelength, unsigned char* hash)
+    static void calc(const void* src, const int bytelength, unsigned char* hash)
     {
         // Init the result array.
         unsigned int result[5] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0};
@@ -284,7 +256,7 @@ namespace sha1
         }
     }
 
-    void toHexString(const unsigned char* hash, char* hexstring)
+    static void toHexString(const unsigned char* hash, char* hexstring)
     {
         const char hexDigits[] = {"0123456789abcdef"};
 
@@ -337,92 +309,125 @@ static inline bool is_base64(uint8_t c)
 
 namespace onut
 {
-    std::string base64_encode(uint8_t const* buf, unsigned int bufLen)
+    namespace crypto
     {
-        std::string ret;
-        int i = 0;
-        int j = 0;
-        uint8_t char_array_3[3];
-        uint8_t char_array_4[4];
-
-        while (bufLen--)
+        std::string base64_encode(uint8_t const* buf, unsigned int bufLen)
         {
-            char_array_3[i++] = *(buf++);
-            if (i == 3)
+            std::string ret;
+            int i = 0;
+            int j = 0;
+            uint8_t char_array_3[3];
+            uint8_t char_array_4[4];
+
+            while (bufLen--)
             {
+                char_array_3[i++] = *(buf++);
+                if (i == 3)
+                {
+                    char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+                    char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+                    char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+                    char_array_4[3] = char_array_3[2] & 0x3f;
+
+                    for (i = 0; (i < 4); i++)
+                        ret += base64_chars[char_array_4[i]];
+                    i = 0;
+                }
+            }
+
+            if (i)
+            {
+                for (j = i; j < 3; j++)
+                    char_array_3[j] = '\0';
+
                 char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
                 char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
                 char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
                 char_array_4[3] = char_array_3[2] & 0x3f;
 
-                for (i = 0; (i < 4); i++)
-                    ret += base64_chars[char_array_4[i]];
-                i = 0;
+                for (j = 0; (j < i + 1); j++)
+                    ret += base64_chars[char_array_4[j]];
+
+                while ((i++ < 3))
+                    ret += '=';
             }
+
+            return ret;
         }
 
-        if (i)
+        std::vector<uint8_t> base64_decode(const std::string& encoded_string)
         {
-            for (j = i; j < 3; j++)
-                char_array_3[j] = '\0';
+            int in_len = encoded_string.size();
+            int i = 0;
+            int j = 0;
+            int in_ = 0;
+            uint8_t char_array_4[4], char_array_3[3];
+            std::vector<uint8_t> ret;
 
-            char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-            char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-            char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-            char_array_4[3] = char_array_3[2] & 0x3f;
-
-            for (j = 0; (j < i + 1); j++)
-                ret += base64_chars[char_array_4[j]];
-
-            while ((i++ < 3))
-                ret += '=';
-        }
-
-        return ret;
-    }
-
-    std::vector<uint8_t> base64_decode(std::string const& encoded_string)
-    {
-        int in_len = encoded_string.size();
-        int i = 0;
-        int j = 0;
-        int in_ = 0;
-        uint8_t char_array_4[4], char_array_3[3];
-        std::vector<uint8_t> ret;
-
-        while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_]))
-        {
-            char_array_4[i++] = encoded_string[in_]; in_++;
-            if (i == 4)
+            while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_]))
             {
-                for (i = 0; i < 4; i++)
-                    char_array_4[i] = base64_chars.find(char_array_4[i]);
+                char_array_4[i++] = encoded_string[in_]; in_++;
+                if (i == 4)
+                {
+                    for (i = 0; i < 4; i++)
+                        char_array_4[i] = base64_chars.find(char_array_4[i]);
+
+                    char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+                    char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+                    char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+                    for (i = 0; (i < 3); i++)
+                        ret.push_back(char_array_3[i]);
+                    i = 0;
+                }
+            }
+
+            if (i)
+            {
+                for (j = i; j < 4; j++)
+                    char_array_4[j] = 0;
+
+                for (j = 0; j < 4; j++)
+                    char_array_4[j] = base64_chars.find(char_array_4[j]);
 
                 char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
                 char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
                 char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
 
-                for (i = 0; (i < 3); i++)
-                    ret.push_back(char_array_3[i]);
-                i = 0;
+                for (j = 0; (j < i - 1); j++) ret.push_back(char_array_3[j]);
             }
+
+            return ret;
         }
-
-        if (i)
-        {
-            for (j = i; j < 4; j++)
-                char_array_4[j] = 0;
-
-            for (j = 0; j < 4; j++)
-                char_array_4[j] = base64_chars.find(char_array_4[j]);
-
-            char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-            char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-            char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-            for (j = 0; (j < i - 1); j++) ret.push_back(char_array_3[j]);
-        }
-
-        return ret;
     }
 }
+
+namespace onut
+{
+    namespace crypto
+    {
+        uint32_t hash(const std::string &str, unsigned int seed)
+        {
+            unsigned hash = seed;
+            const char *s = str.c_str();
+            while (*s) hash = hash * 101 + *s++;
+            return hash;
+        }
+
+        std::string sha1(const std::string& str)
+        {
+            unsigned char resultHash[20] = {0};
+            char hexstring[41];
+
+            sha1::calc(str.c_str(), str.size(), resultHash);
+            sha1::toHexString(resultHash, hexstring);
+
+            return hexstring;
+        }
+
+        bool validateEmail(const std::string& email)
+        {
+            return isValidEmailAddress(email.c_str());
+        }
+    }
+};

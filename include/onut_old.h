@@ -5,7 +5,6 @@
 #include "onut/ParticleSystem.h"
 #include "onut/Settings.h"
 
-#include "crypto.h"
 #include "DefineHelpers.h"
 #include "EventManager.h"
 #include "Input.h"

@@ -82,9 +82,6 @@
     <ClInclude Include="..\..\include\UI.h">
       <Filter>include\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\crypto.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\object.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -209,6 +206,9 @@
     <ClInclude Include="..\..\include\onut\SpriteAnim.h">
       <Filter>resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Crypto.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -262,9 +262,6 @@
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp">
       <Filter>src\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\DefineHelpers.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ParticleSystemManager.cpp">
       <Filter>src\pfx</Filter>
     </ClCompile>
@@ -288,9 +285,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\UI.cpp">
       <Filter>src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\crypto.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\object.cpp">
       <Filter>src</Filter>
@@ -406,6 +400,9 @@
     <ClCompile Include="..\..\src\Updater.cpp">
       <Filter>services</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\crypto_.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -437,9 +434,6 @@
     </Filter>
     <Filter Include="src\shaders">
       <UniqueIdentifier>{b83d01a0-51e8-4be2-b5ee-673cd64f3207}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\player">
-      <UniqueIdentifier>{d7b7008c-d864-461a-a895-d340743846e1}</UniqueIdentifier>
     </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{df7d4196-d4d0-4c6a-a6ea-bbf5f5ea3d3c}</UniqueIdentifier>

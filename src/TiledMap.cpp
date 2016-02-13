@@ -1,10 +1,10 @@
 #include "onut/ContentManager.h"
+#include "onut/Crypto.h"
 #include "onut/Texture.h"
 #include "onut/TiledMap.h"
 
 #include "tinyxml2.h"
 #include "onut_old.h"
-#include "crypto.h"
 #include "zlib/zlib.h"
 #include "Utils.h"
 
@@ -149,7 +149,7 @@ namespace onut
                     }
                     else if (!strcmp(szEncoding, "base64"))
                     {
-                        auto decoded = base64_decode(szData);
+                        auto decoded = onut::crypto::base64_decode(szData);
                         if (!szCompression)
                         {
                             assert(static_cast<int>(decoded.size()) == len * 4);

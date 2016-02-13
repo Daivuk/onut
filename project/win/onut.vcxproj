@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\ActionManager.h" />
     <ClInclude Include="..\..\include\Anim.h" />
-    <ClInclude Include="..\..\include\crypto.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
@@ -22,6 +21,7 @@
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
+    <ClInclude Include="..\..\include\onut\Crypto.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\Http.h" />
     <ClInclude Include="..\..\include\onut\Log.h" />
@@ -87,8 +87,7 @@
     <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\AudioEngine.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
-    <ClCompile Include="..\..\src\crypto.cpp" />
-    <ClCompile Include="..\..\src\DefineHelpers.cpp" />
+    <ClCompile Include="..\..\src\crypto_.cpp" />
     <ClCompile Include="..\..\src\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
