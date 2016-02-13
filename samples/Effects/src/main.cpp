@@ -2,17 +2,19 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut_old.h"
+#include "onut/Font.h"
+#include "onut/Texture.h"
 
 void init();
 void update();
 void render();
 
-OTexture* pBlured = nullptr;
-OTexture* pSepia = nullptr;
-OTexture* pCRT = nullptr;
-OTexture* pCartoon = nullptr;
-OTexture* pVignette = nullptr;
+OTextureRef pBlured = nullptr;
+OTextureRef pSepia = nullptr;
+OTextureRef pCRT = nullptr;
+OTextureRef pCartoon = nullptr;
+OTextureRef pVignette = nullptr;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -37,7 +39,7 @@ void update()
 void render()
 {
     auto pLandscape = OGetTexture("landscape.png");
-    auto drawLandscapeToRenderTarget = [=](OTexture* pRenderTarget)
+    auto drawLandscapeToRenderTarget = [=](const OTextureRef& pRenderTarget)
     {
         pRenderTarget->bindRenderTarget();
         OSB->begin();
@@ -64,7 +66,7 @@ void render()
     pVignette->vignette();
 
     // Draw out resulted textures
-    auto pFont = OGetBMFont("font.fnt");
+    auto pFont = OGetFont("font.fnt");
     OSpriteBatch->begin();
 
     OSB->drawRect(pLandscape, {0, 0, 256, 256});
@@ -74,12 +76,12 @@ void render()
     OSB->drawRect(pCartoon, {256, 288, 256, 256});
     OSB->drawRect(pVignette, {512, 288, 256, 256});
 
-    pFont->draw<OCenter>("Original", {128 + 0, 256 + 8});
-    pFont->draw<OCenter>("Blur", {128 + 256, 256 + 8});
-    pFont->draw<OCenter>("Sepia", {128 + 512, 256 + 8});
-    pFont->draw<OCenter>("CRT", {128 + 0, 288 + 256 + 8});
-    pFont->draw<OCenter>("Cartoon", {128 + 256, 288 + 256 + 8});
-    pFont->draw<OCenter>("Vignette", {128 + 512, 288 + 256 + 8});
+    pFont->draw("Original", {128 + 0, 256 + 8}, OCenter);
+    pFont->draw("Blur", {128 + 256, 256 + 8}, OCenter);
+    pFont->draw("Sepia", {128 + 512, 256 + 8}, OCenter);
+    pFont->draw("CRT", {128 + 0, 288 + 256 + 8}, OCenter);
+    pFont->draw("Cartoon", {128 + 256, 288 + 256 + 8}, OCenter);
+    pFont->draw("Vignette", {128 + 512, 288 + 256 + 8}, OCenter);
 
     OSpriteBatch->end();
 }

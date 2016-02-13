@@ -542,6 +542,7 @@ namespace onut
             if (!pTexture) m_pTexture = m_pTexWhite;
             else m_pTexture = pTexture;
         }
+        if (!m_pTexture) m_pTexture = m_pTexWhite;
     }
 
     void SpriteBatch::draw4Corner(const OTextureRef& pTexture, const Rect& rect, const Color& color)
