@@ -2,7 +2,8 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut_old.h"
+#include "onut/Sound.h"
 
 void init();
 void update();

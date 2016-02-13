@@ -94,6 +94,8 @@ namespace onut
         OUIContext->drawScale9Rect = [=](onut::UIControl* pControl, const onut::sUIRect& rect, const onut::sUIScale9Component& scale9)
         {
             const std::string &filename = scale9.image.filename;
+            static std::string stateFilename;
+            stateFilename = filename;
             OTextureRef pTexture;
             switch (pControl->getState(*OUIContext))
             {
@@ -101,15 +103,18 @@ namespace onut
                     pTexture = OGetTexture(filename.c_str());
                     break;
                 case onut::eUIState::DISABLED:
-                    pTexture = OGetTexture((filename + "_disabled").c_str());
+                    stateFilename.insert(filename.size() - 4, "_disabled");
+                    pTexture = OGetTexture(stateFilename.c_str());
                     if (!pTexture) pTexture = OGetTexture(filename.c_str());
                     break;
                 case onut::eUIState::HOVER:
-                    pTexture = OGetTexture((filename + "_hover").c_str());
+                    stateFilename.insert(filename.size() - 4, "_hover");
+                    pTexture = OGetTexture(stateFilename.c_str());
                     if (!pTexture) pTexture = OGetTexture(filename.c_str());
                     break;
                 case onut::eUIState::DOWN:
-                    pTexture = OGetTexture((filename + "_down").c_str());
+                    stateFilename.insert(filename.size() - 4, "_down");
+                    pTexture = OGetTexture(stateFilename.c_str());
                     if (!pTexture) pTexture = OGetTexture(filename.c_str());
                     break;
             }

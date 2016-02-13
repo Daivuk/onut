@@ -2,7 +2,9 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut_old.h"
+#include "onut/Font.h"
+#include "onut/Texture.h"
 
 void init();
 void update();
@@ -25,9 +27,9 @@ void init()
     {
         // OGetTexture would also work, but it would sync to main thread for
         // each of them. Making the async loading a bit useless.
-        OLoadTexture("img2.png");
-        OLoadTexture("img3.png");
-        OLoadTexture("img4.png");
+        OGetTexture("img2.png");
+        OGetTexture("img3.png");
+        OGetTexture("img4.png");
         OLog("Loaded!");
 
         // Since this is going to be very fast, force a sleep here so we can see the loading screen
@@ -47,7 +49,7 @@ void update()
 
 void render()
 {
-    auto pFont = OGetBMFont("font.fnt");
+    auto pFont = OGetFont("font.fnt");
 
     // Clear
     ORenderer->clear(OColorHex(1d232d));
@@ -58,14 +60,14 @@ void render()
     if (!loaded)
     {
         OSB->drawSprite(OGetTexture("img1.png"), OScreenCenterf, Color::White, loadingRotation);
-        pFont->draw<OCenter>("Loading", Vector2(OScreenCenterXf, OScreenCenterYf + 96.f));
+        pFont->draw("Loading", Vector2(OScreenCenterXf, OScreenCenterYf + 96.f), OCenter);
     }
     else
     {
         OSB->drawSprite(OGetTexture("img2.png"), Vector2(OScreenCenterXf - 128.f, OScreenCenterYf));
         OSB->drawSprite(OGetTexture("img3.png"), OScreenCenterf);
         OSB->drawSprite(OGetTexture("img4.png"), Vector2(OScreenCenterXf + 128.f, OScreenCenterYf));
-        pFont->draw<OCenter>("Loaded!", Vector2(OScreenCenterXf, OScreenCenterYf + 96.f));
+        pFont->draw("Loaded!", Vector2(OScreenCenterXf, OScreenCenterYf + 96.f), OCenter);
     }
 
     // End and flush the batch

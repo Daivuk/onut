@@ -49,12 +49,21 @@ namespace onut
         auto pRet = std::dynamic_pointer_cast<Tresource>(getResource(name));
         if (!pRet)
         {
-            auto filename = findResourceFile(name);
-            pRet = Tresource::createFromFile(filename, shared_from_this());
-            if (pRet)
+            auto searchName = name;
+            auto pos = name.find_last_of("\\/");
+            if (pos != std::string::npos)
             {
-                pRet->setName(name);
-                pRet->setFilename(filename);
+                searchName = name.substr(pos + 1);
+            }
+            auto filename = findResourceFile(searchName);
+            if (!filename.empty())
+            {
+                pRet = Tresource::createFromFile(filename, shared_from_this());
+                if (pRet)
+                {
+                    pRet->setName(name);
+                    pRet->setFilename(filename);
+                }
             }
             addResource(name, pRet);
         }
