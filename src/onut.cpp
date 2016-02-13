@@ -421,30 +421,4 @@ namespace onut
     {
         return g_timeInfo;
     }
-
-    void drawPal(const OPal& pal, OFont* pFont)
-    {
-        static const float H = 32.f;
-        float i = 0;
-        OSB->begin();
-        for (auto& color : pal)
-        {
-            OSB->drawRect(nullptr, {0, i, H * GOLDEN_RATIO, H}, color);
-            i += H;
-        }
-        if (pFont)
-        {
-            i = 0;
-            int index = 0;
-            for (auto& color : pal)
-            {
-                std::stringstream ss;
-                ss << index;
-                pFont->draw(ss.str(), Rect{0, i, H * GOLDEN_RATIO, H}.Center(), OCenter, Color::Black);
-                i += H;
-                ++index;
-            }
-        }
-        OSB->end();
-    }
 }

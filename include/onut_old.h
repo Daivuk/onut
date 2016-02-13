@@ -44,7 +44,6 @@ using OAnim3 = onut::Anim<Vector3>;
 using OAnim4 = onut::Anim<Vector4>;
 using OAnimStr = onut::Anim<std::string>;
 using OAnimc = onut::Anim<Color>;
-using OPal = std::vector<Color>;
 
 #define OSB OSpriteBatch
 #define OPB OPrimitiveBatch
@@ -76,11 +75,6 @@ namespace onut
     Get a gamepad for index (0 to 3)
     */
     GamePad* getGamePad(int index);
-
-    /**
-    Debug tool to draw a palette and show it's index in it
-    */
-    void drawPal(const OPal& pal, OFont* pFont = nullptr);
 }
 
 #define ORun onut::run
