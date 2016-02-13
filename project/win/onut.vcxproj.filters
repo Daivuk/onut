@@ -16,9 +16,6 @@
     <ClInclude Include="..\..\include\DefineHelpers.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Random.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\GamePad.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -201,6 +198,9 @@
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Async.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Random.h">
       <Filter>utilities</Filter>
     </ClInclude>
   </ItemGroup>

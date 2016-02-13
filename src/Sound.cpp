@@ -1,7 +1,7 @@
 #include "onut/ContentManager.h"
 #include "onut/Sound.h"
+#include "onut/Random.h"
 
-#include "Random.h"
 #include "Audio.h"
 #include "onut_old.h"
 #include "tinyxml2.h"
@@ -265,7 +265,7 @@ void OPlaySound(const std::string& name, float volume, float balance, float pitc
 
 void OPlayRandomSound(const std::vector<std::string>& sounds, float volume, float balance, float pitch)
 {
-    OPlaySound(onut::randv(sounds), volume, balance, pitch);
+    OPlaySound(ORandVector(sounds), volume, balance, pitch);
 }
 
 OSoundInstanceRef OCreateSoundInstance(const std::string& name)

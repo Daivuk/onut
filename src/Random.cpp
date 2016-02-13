@@ -1,13 +1,15 @@
+#include "onut/Random.h"
+
 #include <stdlib.h>
 #include <time.h>
 
-#include "Random.h"
-
 namespace onut
 {
-    void randomizeSeed()
+    unsigned int randomizeSeed()
     {
-        srand(static_cast<unsigned int>(time(nullptr)));
+        auto seed = static_cast<unsigned int>(time(nullptr));
+        srand(seed);
+        return seed;
     }
 
     int randi()
