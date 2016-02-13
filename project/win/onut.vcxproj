@@ -20,7 +20,6 @@
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\List.h" />
     <ClInclude Include="..\..\include\micropather.h" />
-    <ClInclude Include="..\..\include\NavMesh.h" />
     <ClInclude Include="..\..\include\object.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
@@ -104,7 +103,6 @@
     <ClCompile Include="..\..\src\micropather.cpp" />
     <ClCompile Include="..\..\src\Mp3.cpp" />
     <ClCompile Include="..\..\src\Music.cpp" />
-    <ClCompile Include="..\..\src\NavMesh.cpp" />
     <ClCompile Include="..\..\src\object.cpp" />
     <ClCompile Include="..\..\src\Particle.cpp" />
     <ClCompile Include="..\..\src\ParticleEmitter.cpp" />
