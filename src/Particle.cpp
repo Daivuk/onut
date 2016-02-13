@@ -1,6 +1,7 @@
+#include "onut/ParticleSystem.h"
+
 #include "Particle.h"
 #include "ParticleEmitter.h"
-#include "ParticleSystem.h"
 #include "TimingUtils.h"
 
 namespace onut
@@ -18,7 +19,7 @@ namespace onut
         angle.to += rotation.value * ODT;
 
         // Acceleration
-        if (pEmitter->getDesc()->accelType == sEmitterDesc::AccelType::Gravity)
+        if (pDesc->accelType == OParticleEmitterDesc::AccelType::Gravity)
         {
             auto radial = position - pEmitter->getPosition();
             radial.Normalize();

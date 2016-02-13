@@ -3,7 +3,7 @@
 
 namespace onut
 {
-    ParticleEmitter::ParticleEmitter(sEmitterDesc* pEmitterDesc,
+    ParticleEmitter::ParticleEmitter(const OParticleEmitterDescRef& pEmitterDesc,
                                      IParticleSystemManager* pParticleSystemManager, 
                                      const Matrix& transform,
                                      uint32_t instanceId) :
@@ -14,7 +14,7 @@ namespace onut
         m_instanceId(instanceId)
     {
         m_duration = m_pDesc->duration.generate();
-        if (m_pDesc->type == eEmitterType::BURST)
+        if (m_pDesc->type == ParticleEmitterDesc::Type::BURST)
         {
             // Spawn them all!
             for (decltype(m_pDesc->count) i = 0; i < m_pDesc->count; ++i)
@@ -55,7 +55,7 @@ namespace onut
         }
 
         // Spawn at rate
-        if (m_pDesc->type == eEmitterType::CONTINOUS && m_pDesc->rate > 0 && !m_isStopped)
+        if (m_pDesc->type == ParticleEmitterDesc::Type::CONTINOUS && m_pDesc->rate > 0 && !m_isStopped)
         {
             m_rateProgress += ODT;
             auto rate = 1.0f / m_pDesc->rate;
@@ -66,12 +66,12 @@ namespace onut
             }
         }
 
-        if (m_pDesc->type == eEmitterType::CONTINOUS && m_isStopped)
+        if (m_pDesc->type == ParticleEmitterDesc::Type::CONTINOUS && m_isStopped)
         {
             if (m_particles.empty()) m_isAlive = false;
         }
 
-        if (m_pDesc->type == eEmitterType::FINITE && m_pDesc->rate > 0 && !m_isStopped && m_duration > 0.f)
+        if (m_pDesc->type == ParticleEmitterDesc::Type::FINITE && m_pDesc->rate > 0 && !m_isStopped && m_duration > 0.f)
         {
             m_duration -= ODT;
             m_rateProgress += ODT;
@@ -83,13 +83,13 @@ namespace onut
             }
         }
 
-        if (m_pDesc->type == eEmitterType::FINITE && (m_isStopped || m_duration <= 0.f))
+        if (m_pDesc->type == ParticleEmitterDesc::Type::FINITE && (m_isStopped || m_duration <= 0.f))
         {
             if (m_particles.empty()) m_isAlive = false;
         }
 
         // Kill self if done
-        if (m_pDesc->type == eEmitterType::BURST && m_particles.empty())
+        if (m_pDesc->type == ParticleEmitterDesc::Type::BURST && m_particles.empty())
         {
             m_isAlive = false;
         }

@@ -1,53 +1,54 @@
 #pragma once
+#include "onut/Maths.h"
+#include "onut/ParticleSystem.h"
+
 #include "Anim.h"
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
 
 #include "onut/ForwardDeclaration.h"
+OForwardDeclare(ParticleEmitterDesc);
+OForwardDeclare(ParticleSystem);
 OForwardDeclare(Texture);
 
 namespace onut
 {
     class ParticleEmitter;
-    class ParticleSystem;
-    struct sEmitterDesc;
 
-    template<typename Ttype>
-    struct sParticleRange
-    {
-        Ttype from;
-        Ttype to;
-        Ttype value;
-
-        void update(float t)
-        {
-            value = lerp(from, to, t);
-        }
-    };
-
-    class Particle
+    class Particle final
     {
     public:
+        template<typename Ttype>
+        struct Range
+        {
+            Ttype from;
+            Ttype to;
+            Ttype value;
+
+            void update(float t)
+            {
+                value = lerp(from, to, t);
+            }
+        };
+
         void update();
 
         bool isAlive() const { return life > 0.f; }
 
-        sEmitterDesc*           pDesc;
-        float                   life;
-        float                   delta;
-        ParticleEmitter*        pEmitter = nullptr;
+        OParticleEmitterDescRef pDesc;
+        float life;
+        float delta;
+        ParticleEmitter* pEmitter = nullptr;
 
-        Vector3                 position;
-        Vector3                 velocity;
+        Vector3 position;
+        Vector3 velocity;
 
-        sParticleRange<Color>           color;
-        sParticleRange<float>           angle;
-        sParticleRange<float>           size;
-        sParticleRange<unsigned int>    image_index;
-        sParticleRange<float>           rotation;
-        sParticleRange<float>           radialAccel;
-        sParticleRange<float>           tangentAccel;
+        Range<Color> color;
+        Range<float> angle;
+        Range<float> size;
+        Range<unsigned int> image_index;
+        Range<float> rotation;
+        Range<float> radialAccel;
+        Range<float> tangentAccel;
 
-        OTextureRef                        pTexture = nullptr;
+        OTextureRef pTexture;
     };
 }

@@ -2,7 +2,9 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut/ParticleSystem.h"
+#include "onut/Font.h"
+#include "onut_old.h"
 
 void init();
 void update();
@@ -55,7 +57,7 @@ void render()
     OSB->begin();
 
     // Draw info
-    auto pFont = OGetBMFont("font.fnt");
+    auto pFont = OGetFont("font.fnt");
     pFont->draw("Press ^9901^999 to spawn particles from an onut PFX file", {10, 10});
     pFont->draw("Press ^9902^999 to spawn particles from PEX file", {10, 30});
 

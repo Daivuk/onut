@@ -1,7 +1,9 @@
 #pragma once
-#include "Asynchronous.h"
 #include "onut/Font.h"
 #include "onut/ContentManager.h"
+#include "onut/ParticleSystem.h"
+
+#include "Asynchronous.h"
 #include "crypto.h"
 #include "DefineHelpers.h"
 #include "EventManager.h"
@@ -141,13 +143,13 @@ inline OSoundInstance* OCreateSoundInstance(const char* pName)
     if (!pSound) return nullptr;
     return pSound->createInstance();
 }
-
+*/
 inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ) -> decltype(OParticles->emit(nullptr, position, dir))
 {
-    auto pPfx = OGetPFX(pName);
+    auto pPfx = OGetParticleSystem(pName);
     return OParticles->emit(pPfx, position, dir);
 }
-*/
+
 using OEmitterInstance = onut::ParticleSystemManager<>::EmitterInstance;
 
 inline onut::UIControl* OLoadUI(const std::string& name)

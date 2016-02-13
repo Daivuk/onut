@@ -2,7 +2,7 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include "onut_old.h"
 
 void init();
 void update();
@@ -41,7 +41,7 @@ void update()
 void render()
 {
     auto pBaltPng = OGetTexture("balt.png");
-    auto pFont = OGetBMFont("font.fnt");
+    auto pFont = OGetFont("font.fnt");
 
     // Clear
     ORenderer->clear(OColorHex(1d232d));
@@ -59,9 +59,9 @@ void render()
     OSpriteBatch->end();
 
     OSpriteBatch->begin();
-    pFont->draw<OLeft>("Sheet", Vector2(8, 8));
-    pFont->draw<OLeft>("Press ^9901^999 to play ^991idle^999 anim", Vector2(8, 300));
-    pFont->draw<OLeft>("Press ^9902^999 to play ^991run^999 anim", Vector2(8, 320));
-    pFont->draw<OLeft>("Press ^9903^999 to play ^991attack^999 anim", Vector2(8, 340));
+    pFont->draw("Sheet", Vector2(8, 8), OLeft);
+    pFont->draw("Press ^9901^999 to play ^991idle^999 anim", Vector2(8, 300), OLeft);
+    pFont->draw("Press ^9902^999 to play ^991run^999 anim", Vector2(8, 320), OLeft);
+    pFont->draw("Press ^9903^999 to play ^991attack^999 anim", Vector2(8, 340), OLeft);
     OSpriteBatch->end();
 }

@@ -1,5 +1,5 @@
 #pragma once
-#if defined(_WIN32)
+#if defined(WIN32)
 #include <Windows.h>
 #else
 #include <iostream>
@@ -25,7 +25,7 @@ namespace onut
                 output = "onut(ERROR): ";
                 break;
         }
-#if defined(_WIN32)
+#if defined(WIN32)
         output += message + '\n';
         OutputDebugStringA(output.c_str());
 #else

@@ -1,8 +1,8 @@
 #pragma once
 #include "Particle.h"
 #include "ParticleEmitter.h"
-#include "ParticleSystem.h"
 #include "Pool.h"
+#include "onut/ParticleSystem.h"
 #include "onut/Texture.h"
 
 namespace onut
@@ -159,7 +159,7 @@ namespace onut
             bool m_bStopped = false;
         };
 
-        EmitterInstance emit(ParticleSystem* pParticleSystem, const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
+        EmitterInstance emit(const OParticleSystemRef& pParticleSystem, const Vector3& pos, const Vector3& dir = Vector3::UnitZ)
         {
             static uint32_t nextId = 1;
             EmitterInstance instance;
@@ -167,9 +167,10 @@ namespace onut
             instance.m_pParticleSystemManager = this;
 
             Matrix transform = Matrix::CreateBillboard(pos, pos + dir, Vector3::UnitY);
-            for (auto& emitter : pParticleSystem->emitters)
+            auto& emitters = pParticleSystem->getEmitters();
+            for (auto& emitter : emitters)
             {
-                auto pEmitter = m_emitterPool.alloc<ParticleEmitter>(&emitter, this, transform, instance.m_id);
+                auto pEmitter = m_emitterPool.alloc<ParticleEmitter>(emitter, this, transform, instance.m_id);
                 // Update the first frame right away
                 pEmitter->update();
             }

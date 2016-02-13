@@ -23,11 +23,12 @@ namespace onut
             Vector4 UVs = {0, 0, 1, 1};
             Vector2 origin = {.5f, .5f};
         };
+        using Frames = std::vector<Frame>;
 
         struct Anim
         {
             std::string name;
-            std::vector<Frame> frames;
+            Frames frames;
             float duration = 1.f;
             bool loop = false;
         };
@@ -76,5 +77,3 @@ namespace onut
         Anim<float> m_frame = 0.f;
     };
 };
-
-using OSpriteAnim = onut::SpriteAnim;

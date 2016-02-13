@@ -1,20 +1,33 @@
 #pragma once
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include "onut/Maths.h"
+#include "onut/Resource.h"
+using namespace DirectX::SimpleMath;
+
 #include "Anim.h"
 #include "Random.h"
 #include "rapidjson/document.h"
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
+
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "onut/ForwardDeclaration.h"
+OForwardDeclare(ContentManager);
+OForwardDeclare(ParticleEmitterDesc);
+OForwardDeclare(ParticleSystem);
+OForwardDeclare(Texture);
 
 namespace onut
 {
-    class IParticleSystemManager;
-    class Texture;
+    enum class PfxFinalValueType
+    {
+        MULT,
+        ADD,
+        NORMAL
+    };
 
     template<typename Ttype>
-    void pfxReadUint(Ttype& out, const rapidjson::Value& node)
+    static void pfxReadUint(Ttype& out, const rapidjson::Value& node)
     {
         if (!node.IsNull())
         {
@@ -23,7 +36,7 @@ namespace onut
     }
 
     template<typename Ttype>
-    void pfxReadFloat(Ttype& out, const rapidjson::Value& node)
+    static void pfxReadFloat(Ttype& out, const rapidjson::Value& node)
     {
         if (!node.IsNull())
         {
@@ -32,27 +45,13 @@ namespace onut
     }
 
     template<typename TenumType>
-    void pfxReadEnum(TenumType& out, const rapidjson::Value& node, const std::unordered_map<std::string, TenumType>& enumMap)
+    static void pfxReadEnum(TenumType& out, const rapidjson::Value& node, const std::unordered_map<std::string, TenumType>& enumMap)
     {
         if (!node.IsNull())
         {
             out = enumMap.find(node.GetString())->second;
         }
     }
-
-    enum class eEmitterType
-    {
-        BURST,
-        FINITE,
-        CONTINOUS
-    };
-
-    enum class ePfxFinalValueType
-    {
-        MULT,
-        ADD,
-        NORMAL
-    };
 
     template<typename Ttype>
     struct sPfxValueUtils
@@ -112,11 +111,11 @@ namespace onut
     template<typename Ttype>
     struct sPfxValue
     {
-        sPfxRange<Ttype>    value;
-        sPfxRange<Ttype>    finalValue;
-        bool                finalSpecified = false;
-        TweenType           tween = TweenType::LINEAR;
-        ePfxFinalValueType  finalValueType = ePfxFinalValueType::NORMAL;
+        sPfxRange<Ttype> value;
+        sPfxRange<Ttype> finalValue;
+        bool finalSpecified = false;
+        TweenType tween = TweenType::LINEAR;
+        PfxFinalValueType finalValueType = PfxFinalValueType::NORMAL;
 
         sPfxValue(const Ttype& other) :
             value(other),
@@ -146,11 +145,11 @@ namespace onut
             {
                 switch (finalValueType)
                 {
-                    case ePfxFinalValueType::MULT:
+                    case PfxFinalValueType::MULT:
                         return from * generateTo();
-                    case ePfxFinalValueType::ADD:
+                    case PfxFinalValueType::ADD:
                         return from + generateTo();
-                    case ePfxFinalValueType::NORMAL:
+                    case PfxFinalValueType::NORMAL:
                         return generateTo();
                 }
                 return Ttype();
@@ -187,10 +186,10 @@ namespace onut
                                 {"SPRING_IN", TweenType::SPRING_IN},
                                 {"SPRING_OUT", TweenType::SPRING_OUT}
                             });
-                            pfxReadEnum<ePfxFinalValueType>(finalValueType, finalNode["type"], {
-                                {"MULT", ePfxFinalValueType::MULT},
-                                {"ADD", ePfxFinalValueType::ADD},
-                                {"NORMAL", ePfxFinalValueType::NORMAL}
+                            pfxReadEnum<PfxFinalValueType>(finalValueType, finalNode["type"], {
+                                {"MULT", PfxFinalValueType::MULT},
+                                {"ADD", PfxFinalValueType::ADD},
+                                {"NORMAL", PfxFinalValueType::NORMAL}
                             });
                         }
                     }
@@ -200,63 +199,58 @@ namespace onut
         }
     };
 
-    struct sEmitterDesc
+    class ParticleEmitterDesc final
     {
-        enum AccelType
+    public:
+        enum class Type
+        {
+            BURST,
+            FINITE,
+            CONTINOUS
+        };
+
+        enum class AccelType
         {
             Gravity,
             Radial
         };
 
-        eEmitterType type = eEmitterType::FINITE;
-        union
-        {
-            unsigned int count = 1;
-            float rate;
-        };
-        std::vector<OTextureRef>   textures;
-        sPfxValue<float>        spread = 0;
-        Vector3                 dir = Vector3(0, 0, 0);
-        sPfxRange<float>        speed = 0;
-        sPfxValue<Color>        color = Color::White;
-        sPfxValue<float>        angle = 0;
-        sPfxValue<float>        size = 1;
-        sPfxValue<unsigned int> image_index = 0;
-        sPfxRange<float>        life = 1;
-        sPfxRange<Vector3>      position = Vector3(0, 0, 0);
-        Vector3                 gravity = Vector3(0, 0, 0);
-        sPfxRange<float>        duration = 0;
-        sPfxValue<float>        rotation = 0;
-        sPfxValue<float>        radialAccel = 0;
-        sPfxValue<float>        tangentAccel = 0;
-        AccelType               accelType = AccelType::Gravity;
-    };
+        using Textures = std::vector<OTextureRef>;
 
-    struct sParticleSystemDesc
-    {
+        Type type = Type::FINITE;
+        unsigned int count = 1;
+        float rate;
         unsigned int capacity = 100;
+        Textures textures;
+        sPfxValue<float> spread = 0;
+        Vector3 dir = Vector3(0, 0, 0);
+        sPfxRange<float> speed = 0;
+        sPfxValue<Color> color = Color::White;
+        sPfxValue<float> angle = 0;
+        sPfxValue<float> size = 1;
+        sPfxValue<unsigned int> image_index = 0;
+        sPfxRange<float> life = 1;
+        sPfxRange<Vector3> position = Vector3(0, 0, 0);
+        Vector3 gravity = Vector3(0, 0, 0);
+        sPfxRange<float> duration = 0;
+        sPfxValue<float> rotation = 0;
+        sPfxValue<float> radialAccel = 0;
+        sPfxValue<float> tangentAccel = 0;
+        AccelType accelType = AccelType::Gravity;
     };
 
-    class ParticleSystem
+    class ParticleSystem final : public Resource
     {
     public:
-        template<typename TcontentManagerType>
-        static ParticleSystem* createFromFile(const std::string& filename, TcontentManagerType* pContentManager)
-        {
-            return ParticleSystem::createFromFile(filename, [pContentManager](const char* pFilename)
-            {
-                return pContentManager->getResource<Texture>(pFilename);
-            });
-        }
-        static ParticleSystem* createFromFile(const std::string& filename, std::function<OTextureRef(const char*)> loadTextureFn);
+        static OParticleSystemRef createFromFile(const std::string& filename, const OContentManagerRef &pContentManager = nullptr);
 
-        ParticleSystem();
-        virtual ~ParticleSystem();
+        using Emitters = std::vector<OParticleEmitterDescRef>;
 
-    public:
-        sParticleSystemDesc         desc;
-        std::vector<sEmitterDesc>   emitters;
+        const Emitters& getEmitters() const;
+
+    private:
+        Emitters m_emitters;
     };
 }
 
-typedef onut::ParticleSystem OPfx;
+OParticleSystemRef OGetParticleSystem(const std::string& name);

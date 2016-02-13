@@ -1,6 +1,8 @@
-#include "onut_old.h"
-#include "ParticleSystem.h"
-#include "rapidjson/document.h"
+#include "Log.h"
+#include "onut/ContentManager.h"
+#include "onut/ParticleSystem.h"
+#include "onut/Texture.h"
+
 #include "rapidjson/filestream.h"
 #include "tinyxml2.h"
 #include "zlib/zlib.h"
@@ -360,8 +362,11 @@ namespace onut
         return std::move(pex);
     }
 
-    ParticleSystem* ParticleSystem::createFromFile(const std::string& filename, std::function<OTextureRef(const char*)> loadTextureFn)
+    OParticleSystemRef ParticleSystem::createFromFile(const std::string& filename, const OContentManagerRef &in_pContentManager)
     {
+        OContentManagerRef pContentManager = in_pContentManager;
+        if (!pContentManager) pContentManager = oContentManager;
+
         auto extPos = filename.find_last_of('.');
         if (extPos == std::string::npos)
         {
@@ -370,7 +375,7 @@ namespace onut
         auto extension = filename.substr(extPos + 1);
         if (toUpper(extension) == "PFX")
         {
-            ParticleSystem* pRet = new ParticleSystem();
+            auto pRet = std::make_shared<OParticleSystem>();
 
             FILE* pFile = nullptr;
             auto fopenRet = fopen_s(&pFile, filename.c_str(), "r");
@@ -379,35 +384,33 @@ namespace onut
             rapidjson::Document doc;
             doc.ParseStream<0>(is);
 
-            pfxReadUint(pRet->desc.capacity, doc["capacity"]);
-
             const auto& jonsEmitters = doc["emitters"];
-            pRet->emitters.resize(static_cast<decltype(pRet->emitters.size())>(jonsEmitters.Size()));
             for (decltype(jonsEmitters.Size()) i = 0; i < jonsEmitters.Size(); ++i)
             {
                 const auto& jsonEmitter = jonsEmitters[i];
-                auto& emitter = pRet->emitters[static_cast<decltype(pRet->emitters.size())>(i)];
+                OParticleEmitterDescRef pEmitter = std::make_shared<OParticleEmitterDesc>();
+                pRet->m_emitters.push_back(pEmitter);
 
-                pfxReadEnum<eEmitterType>(emitter.type, jsonEmitter["type"], {
-                    {"BURST", eEmitterType::BURST},
-                    {"FINITE", eEmitterType::FINITE},
-                    {"CONTINOUS", eEmitterType::CONTINOUS}});
-                pfxReadUint(emitter.count, jsonEmitter["count"]);
-                pfxReadFloat(emitter.rate, jsonEmitter["rate"]);
-                emitter.spread = jsonEmitter["spread"];
-                emitter.speed = jsonEmitter["speed"];
-                emitter.color = jsonEmitter["color"];
-                emitter.angle = jsonEmitter["angle"];
-                emitter.size = jsonEmitter["size"];
-                emitter.image_index = jsonEmitter["image_index"];
-                emitter.life = jsonEmitter["life"];
-                emitter.position = jsonEmitter["position"];
+                pfxReadEnum<ParticleEmitterDesc::Type>(pEmitter->type, jsonEmitter["type"], {
+                    {"BURST", ParticleEmitterDesc::Type::BURST},
+                    {"FINITE", ParticleEmitterDesc::Type::FINITE},
+                    {"CONTINOUS", ParticleEmitterDesc::Type::CONTINOUS}});
+                pfxReadUint(pEmitter->count, jsonEmitter["count"]);
+                pfxReadFloat(pEmitter->rate, jsonEmitter["rate"]);
+                pEmitter->spread = jsonEmitter["spread"];
+                pEmitter->speed = jsonEmitter["speed"];
+                pEmitter->color = jsonEmitter["color"];
+                pEmitter->angle = jsonEmitter["angle"];
+                pEmitter->size = jsonEmitter["size"];
+                pEmitter->image_index = jsonEmitter["image_index"];
+                pEmitter->life = jsonEmitter["life"];
+                pEmitter->position = jsonEmitter["position"];
                 const auto& images = jsonEmitter["images"];
                 for (decltype(images.Size()) j = 0; j < images.Size(); ++j)
                 {
                     const auto& jsonImage = images[j];
                     assert(jsonImage.IsString());
-                    emitter.textures.push_back(loadTextureFn(jsonImage.GetString()));
+                    pEmitter->textures.push_back(pContentManager->getResourceAs<OTexture>(jsonImage.GetString()));
                 }
             }
 
@@ -419,115 +422,90 @@ namespace onut
         {
             auto pex = loadPEXFile(filename);
 
-            ParticleSystem* pRet = new ParticleSystem();
-            pRet->emitters.resize(1);
-            auto& emitter = pRet->emitters.front();
+            auto pRet = std::make_shared<OParticleSystem>();
+            OParticleEmitterDescRef pEmitter = std::make_shared<OParticleEmitterDesc>();
+            pRet->m_emitters.push_back(pEmitter);
 
             if (pex.hasTextureData)
             {
-                assert(false);
-                //auto imageData = base64_decode(pex.texture);
-
-                //int err;
-                //z_stream d_stream; // decompression stream
-
-                //d_stream.zalloc = (alloc_func)0;
-                //d_stream.zfree = (free_func)0;
-                //d_stream.opaque = (voidpf)0;
-
-                //static uint8_t inflatedData[1024 * 1024 * 4]; // 4 meg
-
-                //d_stream.next_in = reinterpret_cast<Bytef*>(imageData.data()); // where deflated is a pointer the the compressed data buffer
-                //d_stream.avail_in = static_cast<uInt>(imageData.size()); // where deflatedLen is the length of the compressed data
-                //d_stream.next_out = reinterpret_cast<Bytef*>(inflatedData); // where inflated is a pointer to the resulting uncompressed data buffer
-                //d_stream.avail_out = static_cast<uInt>(1024 * 1024 * 4); // where inflatedLen is the size of the uncompressed data buffer
-
-                //err = inflateInit2(&d_stream, 15 + 32);
-                //assert(err == Z_OK);
-                //err = inflate(&d_stream, Z_FINISH);
-                //assert(err == Z_STREAM_END);
-                //err = inflateEnd(&d_stream);
-                //assert(err == Z_OK);
-
-                //auto pTexture = OTexture::createFromFileData(inflatedData, 1024 * 1024 * 4);
-                //emitter.textures.push_back(pTexture);
+                assert(false); // We don't support their embedded texture format.
             }
             else
             {
-                emitter.textures.push_back(loadTextureFn(pex.texture.c_str()));
+                pEmitter->textures.push_back(pContentManager->getResourceAs<OTexture>(pex.texture.c_str()));
             }
-            emitter.spread = pex.angleVariance;
-            emitter.speed.from = pex.speed - pex.speedVariance;
-            emitter.speed.to = pex.speed + pex.speedVariance;
+            pEmitter->spread = pex.angleVariance;
+            pEmitter->speed.from = pex.speed - pex.speedVariance;
+            pEmitter->speed.to = pex.speed + pex.speedVariance;
 
-            emitter.dir = Vector3(
+            pEmitter->dir = Vector3(
                 cosf(DirectX::XMConvertToRadians(pex.angle)),
                 -sinf(DirectX::XMConvertToRadians(pex.angle)),
                 0);
 
             pex.startColor.Premultiply();
-            emitter.color.value.from = pex.startColor - pex.startColorVariance;
-            emitter.color.value.to = pex.startColor + pex.startColorVariance;
-            emitter.color.finalValue.from = pex.finishColor - pex.finishColorVariance;
-            emitter.color.finalValue.to = pex.finishColor + pex.finishColorVariance;
-            emitter.color.finalSpecified = true;
+            pEmitter->color.value.from = pex.startColor - pex.startColorVariance;
+            pEmitter->color.value.to = pex.startColor + pex.startColorVariance;
+            pEmitter->color.finalValue.from = pex.finishColor - pex.finishColorVariance;
+            pEmitter->color.finalValue.to = pex.finishColor + pex.finishColorVariance;
+            pEmitter->color.finalSpecified = true;
 
-            emitter.angle.value.from = pex.rotationStart - pex.rotationStartVariance;
-            emitter.angle.value.to = pex.rotationStart + pex.rotationStartVariance;
-            emitter.angle.finalValue.from = pex.rotationEnd - pex.rotationEndVariance;
-            emitter.angle.finalValue.to = pex.rotationEnd + pex.rotationEndVariance;
-            emitter.angle.finalSpecified = true;
+            pEmitter->angle.value.from = pex.rotationStart - pex.rotationStartVariance;
+            pEmitter->angle.value.to = pex.rotationStart + pex.rotationStartVariance;
+            pEmitter->angle.finalValue.from = pex.rotationEnd - pex.rotationEndVariance;
+            pEmitter->angle.finalValue.to = pex.rotationEnd + pex.rotationEndVariance;
+            pEmitter->angle.finalSpecified = true;
 
-            emitter.gravity = Vector3(pex.gravity, 0);
+            pEmitter->gravity = Vector3(pex.gravity, 0);
 
-            auto textureSize = emitter.textures.front()->getSizef();
-            emitter.size.value.from = std::max<>(0.f, pex.startParticleSize - pex.startParticleSizeVariance);
-            emitter.size.value.to = std::max<>(0.f, pex.startParticleSize + pex.startParticleSizeVariance);
-            emitter.size.finalValue.from = std::max<>(0.f, pex.finishParticleSize - pex.finishParticleSizeVariance);
-            emitter.size.finalValue.to = std::max<>(0.f, pex.finishParticleSize + pex.finishParticleSizeVariance);
-            emitter.size.finalSpecified = true;
+            auto textureSize = pEmitter->textures.front()->getSizef();
+            pEmitter->size.value.from = std::max<>(0.f, pex.startParticleSize - pex.startParticleSizeVariance);
+            pEmitter->size.value.to = std::max<>(0.f, pex.startParticleSize + pex.startParticleSizeVariance);
+            pEmitter->size.finalValue.from = std::max<>(0.f, pex.finishParticleSize - pex.finishParticleSizeVariance);
+            pEmitter->size.finalValue.to = std::max<>(0.f, pex.finishParticleSize + pex.finishParticleSizeVariance);
+            pEmitter->size.finalSpecified = true;
 
-            emitter.radialAccel.value.from = pex.radialAcceleration - pex.radialAccelVariance;
-            emitter.radialAccel.value.to = pex.radialAcceleration + pex.radialAccelVariance;
-            emitter.tangentAccel.value.from = pex.tangentialAcceleration - pex.tangentialAccelVariance;
-            emitter.tangentAccel.value.to = pex.tangentialAcceleration + pex.tangentialAccelVariance;
+            pEmitter->radialAccel.value.from = pex.radialAcceleration - pex.radialAccelVariance;
+            pEmitter->radialAccel.value.to = pex.radialAcceleration + pex.radialAccelVariance;
+            pEmitter->tangentAccel.value.from = pex.tangentialAcceleration - pex.tangentialAccelVariance;
+            pEmitter->tangentAccel.value.to = pex.tangentialAcceleration + pex.tangentialAccelVariance;
 
-            emitter.rotation.value.from = pex.rotatePerSecond - pex.rotatePerSecondVariance;
-            emitter.rotation.value.to = pex.rotatePerSecond + pex.rotatePerSecondVariance;
+            pEmitter->rotation.value.from = pex.rotatePerSecond - pex.rotatePerSecondVariance;
+            pEmitter->rotation.value.to = pex.rotatePerSecond + pex.rotatePerSecondVariance;
 
-            emitter.life.from = std::max<>(0.01f, pex.particleLifeSpan - pex.particleLifespanVariance);
-            emitter.life.to = std::max<>(0.01f, pex.particleLifeSpan + pex.particleLifespanVariance);
+            pEmitter->life.from = std::max<>(0.01f, pex.particleLifeSpan - pex.particleLifespanVariance);
+            pEmitter->life.to = std::max<>(0.01f, pex.particleLifeSpan + pex.particleLifespanVariance);
 
-            emitter.position.from = Vector3(pex.sourcePosition - pex.sourcePositionVariance, 0);
-            emitter.position.to = Vector3(pex.sourcePosition + pex.sourcePositionVariance, 0);
+            pEmitter->position.from = Vector3(pex.sourcePosition - pex.sourcePositionVariance, 0);
+            pEmitter->position.to = Vector3(pex.sourcePosition + pex.sourcePositionVariance, 0);
 
-            emitter.duration = pex.duration;
+            pEmitter->duration = pex.duration;
 
             switch (pex.type)
             {
                 case sPEX::Type::Gravity:
-                    emitter.accelType = sEmitterDesc::AccelType::Gravity;
+                    pEmitter->accelType = ParticleEmitterDesc::AccelType::Gravity;
                     break;
                 case sPEX::Type::Radial:
                     assert(false); // Unsupported for now
-                    emitter.accelType = sEmitterDesc::AccelType::Radial;
+                    pEmitter->accelType = ParticleEmitterDesc::AccelType::Radial;
                     break;
             }
 
             if (pex.duration == -1)
             {
-                emitter.rate = (static_cast<float>(pex.maxParticles) / pex.particleLifeSpan);
-                emitter.type = eEmitterType::CONTINOUS;
+                pEmitter->rate = (static_cast<float>(pex.maxParticles) / pex.particleLifeSpan);
+                pEmitter->type = ParticleEmitterDesc::Type::CONTINOUS;
             }
             else if (pex.duration == 0)
             {
-                emitter.count = pex.maxParticles;
-                emitter.type = eEmitterType::BURST;
+                pEmitter->count = pex.maxParticles;
+                pEmitter->type = ParticleEmitterDesc::Type::BURST;
             }
             else
             {
-                emitter.rate = (static_cast<float>(pex.maxParticles) / pex.particleLifeSpan);
-                emitter.type = eEmitterType::FINITE;
+                pEmitter->rate = (static_cast<float>(pex.maxParticles) / pex.particleLifeSpan);
+                pEmitter->type = ParticleEmitterDesc::Type::FINITE;
             }
 
             return pRet;
@@ -536,11 +514,13 @@ namespace onut
         return nullptr;
     }
 
-    ParticleSystem::ParticleSystem()
+    const ParticleSystem::Emitters& ParticleSystem::getEmitters() const
     {
+        return m_emitters;
     }
+}
 
-    ParticleSystem::~ParticleSystem()
-    {
-    }
+OParticleSystemRef OGetParticleSystem(const std::string& name)
+{
+    return oContentManager->getResourceAs<OParticleSystem>(name);
 }
