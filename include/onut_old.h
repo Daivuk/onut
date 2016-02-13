@@ -16,14 +16,12 @@
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"
 #include "Renderer.h"
-//#include "RTS.h"
 #include "Settings.h"
 #include "SpriteAnim.h"
 #include "SpriteBatch.h"
 #include "StateManager.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
-#include "UINodeNav.h"
 #include "Window.h"
 
 // For quick stuff, we have shortcuts outside of the namespace

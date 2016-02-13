@@ -59,7 +59,6 @@
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\tinyxml2.h" />
     <ClInclude Include="..\..\include\UI.h" />
-    <ClInclude Include="..\..\include\UINodeNav.h" />
     <ClInclude Include="..\..\include\Window.h" />
     <ClInclude Include="..\..\src\MFPlayer.h" />
     <ClInclude Include="..\..\src\Mp3.h" />
