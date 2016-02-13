@@ -1,8 +1,8 @@
 #pragma once
 #include "Particle.h"
 #include "ParticleEmitter.h"
-#include "Pool.h"
 #include "onut/ParticleSystem.h"
+#include "onut/Pool.h"
 #include "onut/Texture.h"
 
 namespace onut
@@ -21,6 +21,12 @@ namespace onut
     class ParticleSystemManager : public IParticleSystemManager
     {
     public:
+        ParticleSystemManager()
+        {
+            m_pEmitterPool = OPool::create(sizeof(ParticleEmitter), TmaxPFX);
+            m_pParticlePool = OPool::create(sizeof(Particle), TmaxParticles);
+        }
+
         class EmitterInstance
         {
         public:
@@ -34,11 +40,11 @@ namespace onut
             {
                 if (m_pParticleSystemManager)
                 {
-                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
-                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
-                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        auto pEmitter = m_pParticleSystemManager->m_pEmitterPool->at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_pEmitterPool->isUsed(pEmitter))
                         {
                             if (pEmitter->getInstanceId() == m_id)
                             {
@@ -53,11 +59,11 @@ namespace onut
             {
                 if (m_pParticleSystemManager)
                 {
-                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
-                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
-                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        auto pEmitter = m_pParticleSystemManager->m_pEmitterPool->at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_pEmitterPool->isUsed(pEmitter))
                         {
                             if (pEmitter->getInstanceId() == m_id)
                             {
@@ -72,11 +78,11 @@ namespace onut
             {
                 if (m_pParticleSystemManager)
                 {
-                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
-                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
-                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        auto pEmitter = m_pParticleSystemManager->m_pEmitterPool->at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_pEmitterPool->isUsed(pEmitter))
                         {
                             if (pEmitter->getInstanceId() == m_id)
                             {
@@ -93,11 +99,11 @@ namespace onut
                 if (m_bStopped) return false;
                 if (m_pParticleSystemManager)
                 {
-                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
-                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
-                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        auto pEmitter = m_pParticleSystemManager->m_pEmitterPool->at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_pEmitterPool->isUsed(pEmitter))
                         {
                             if (pEmitter->getInstanceId() == m_id)
                             {
@@ -113,11 +119,11 @@ namespace onut
             {
                 if (m_pParticleSystemManager)
                 {
-                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
-                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
-                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        auto pEmitter = m_pParticleSystemManager->m_pEmitterPool->at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_pEmitterPool->isUsed(pEmitter))
                         {
                             if (pEmitter->getInstanceId() == m_id)
                             {
@@ -135,11 +141,11 @@ namespace onut
                 {
                     bool bManageBatch = !OSpriteBatch->isInBatch();
                     if (bManageBatch) OSpriteBatch->begin();
-                    auto len = m_pParticleSystemManager->m_emitterPool.size();
+                    auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
-                        auto pEmitter = m_pParticleSystemManager->m_emitterPool.at<ParticleEmitter>(i);
-                        if (m_pParticleSystemManager->m_emitterPool.isUsed(pEmitter))
+                        auto pEmitter = m_pParticleSystemManager->m_pEmitterPool->at<ParticleEmitter>(i);
+                        if (m_pParticleSystemManager->m_pEmitterPool->isUsed(pEmitter))
                         {
                             if (pEmitter->getInstanceId() == m_id)
                             {
@@ -170,9 +176,9 @@ namespace onut
             auto& emitters = pParticleSystem->getEmitters();
             for (auto& emitter : emitters)
             {
-                auto pEmitter = m_emitterPool.alloc<ParticleEmitter>(emitter, this, transform, instance.m_id);
+                auto pEmitter = m_pEmitterPool->alloc<ParticleEmitter>(emitter, this, transform, instance.m_id);
                 // Update the first frame right away
-                pEmitter->update();
+                if (pEmitter) pEmitter->update();
             }
 
             return instance;
@@ -194,8 +200,8 @@ namespace onut
             auto len = m_emitterPool.size();
             for (decltype(len) i = 0; i < len; ++i)
             {
-                auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
-                if (m_emitterPool.isUsed(pEmitter))
+                auto pEmitter = m_pEmitterPool->at<ParticleEmitter>(i);
+                if (m_pEmitterPool->isUsed(pEmitter))
                 {
                     return true;
                 }
@@ -211,11 +217,11 @@ namespace onut
             }
             else
             {
-                auto len = m_emitterPool.size();
+                auto len = m_pEmitterPool->size();
                 for (decltype(len) i = 0; i < len; ++i)
                 {
-                    auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
-                    if (m_emitterPool.isUsed(pEmitter))
+                    auto pEmitter = m_pEmitterPool->at<ParticleEmitter>(i);
+                    if (m_pEmitterPool->isUsed(pEmitter))
                     {
                         if (pEmitter->getRenderEnabled())
                         {
@@ -229,12 +235,12 @@ namespace onut
 
         Particle* allocParticle() override
         {
-            return m_particlePool.alloc<Particle>();
+            return m_pParticlePool->alloc<Particle>();
         }
 
         void deallocParticle(Particle* pParticle) override
         {
-            m_particlePool.dealloc(pParticle);
+            m_pParticlePool->dealloc(pParticle);
         }
 
         void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override
@@ -248,30 +254,30 @@ namespace onut
 
         void updateEmitters()
         {
-            auto len = m_emitterPool.size();
+            auto len = m_pEmitterPool->size();
             for (decltype(len) i = 0; i < len; ++i)
             {
-                auto pEmitter = m_emitterPool.at<ParticleEmitter>(i);
-                if (m_emitterPool.isUsed(pEmitter))
+                auto pEmitter = m_pEmitterPool->at<ParticleEmitter>(i);
+                if (m_pEmitterPool->isUsed(pEmitter))
                 {
                     if (pEmitter->isAlive())
                     {
                         pEmitter->update();
                         if (!pEmitter->isAlive())
                         {
-                            m_emitterPool.dealloc(pEmitter);
+                            m_pEmitterPool->dealloc(pEmitter);
                         }
                     }
                     else
                     {
-                        m_emitterPool.dealloc(pEmitter);
+                        m_pEmitterPool->dealloc(pEmitter);
                     }
                 }
             }
         }
 
-        StaticPool<sizeof(ParticleEmitter), TmaxPFX, sizeof(uintptr_t), false> m_emitterPool;
-        StaticPool<sizeof(Particle), TmaxParticles, sizeof(uintptr_t), false> m_particlePool;
+        OPoolRef m_pEmitterPool;
+        OPoolRef m_pParticlePool;
         Vector3 m_camRight;
         Vector3 m_camUp;
     };

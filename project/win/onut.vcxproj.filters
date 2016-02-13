@@ -73,9 +73,6 @@
     <ClInclude Include="..\..\include\Input.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Pool.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\RectUtils.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -204,6 +201,9 @@
       <Filter>services</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Point.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Pool.h">
       <Filter>utilities</Filter>
     </ClInclude>
   </ItemGroup>
@@ -396,6 +396,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Settings.cpp">
       <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Pool.cpp">
+      <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

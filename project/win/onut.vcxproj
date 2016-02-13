@@ -29,6 +29,7 @@
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\ParticleSystem.h" />
     <ClInclude Include="..\..\include\onut\Point.h" />
+    <ClInclude Include="..\..\include\onut\Pool.h" />
     <ClInclude Include="..\..\include\onut\Random.h" />
     <ClInclude Include="..\..\include\onut\Settings.h" />
     <ClInclude Include="..\..\include\onut\Sound.h" />
@@ -44,7 +45,6 @@
     <ClInclude Include="..\..\include\Particle.h" />
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystemManager.h" />
-    <ClInclude Include="..\..\include\Pool.h" />
     <ClInclude Include="..\..\include\PrimitiveBatch.h" />
     <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\Renderer.h" />
@@ -106,6 +106,7 @@
     <ClCompile Include="..\..\src\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\src\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\ParticleSystemManager.cpp" />
+    <ClCompile Include="..\..\src\Pool.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />

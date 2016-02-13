@@ -2,38 +2,18 @@
 #include <mutex>
 #include <queue>
 
+#include "onut/Pool.h"
+
 namespace onut
 {
-    /**
-    Default allocator for Synchronous class.
-    */
-    class SynchronousDefaultAllocator
-    {
-    public:
-        template<typename Ttype,
-            typename ... Targs>
-            Ttype* alloc(Targs... args) const
-        {
-            return new Ttype(args...);
-        }
-
-        void dealloc(void* pObj) const
-        {
-            delete pObj;
-        }
-    };
-
-    /**
-    Helper class to run function callbacks back to the calling thread. This also can use a custom allocator
-    template arguments:
-    - Tallocator: Allocator used for callbacks. Each time a callback is set, it's allocated. And destroyed after called. It could be beneficial for a game to use a pool. As long as your custom allocator defines alloc<T>() and dealloc() method, you should be good.
-    - TmutexType: Mutex type to be used. Default std::mutex.
-    */
-    template<typename Tallocator = SynchronousDefaultAllocator,
-        typename TmutexType = std::mutex>
     class Synchronous
     {
     public:
+        Synchronous()
+        {
+            m_pAllocator = OPool::create();
+        }
+
         /**
         Synchronise to the calling thread.
         The function and arguments passed here, will be queued and called next time invokeQueue() is called.
@@ -45,7 +25,7 @@ namespace onut
             void sync(Tfn callback, Targs... args)
         {
             m_mutex.lock();
-            auto pCallback = m_allocator.alloc<Callback<Tfn, Targs...>>(callback, args...);
+            auto pCallback = m_pAllocator->alloc<Callback<Tfn, Targs...>>(callback, args...);
             syncCallback(pCallback);
             m_mutex.unlock();
         }
@@ -65,7 +45,7 @@ namespace onut
                 m_mutex.unlock();
                 pCallback->call();
                 m_mutex.lock();
-                m_allocator.dealloc(pCallback);
+                m_pAllocator->dealloc(pCallback);
             }
             m_mutex.unlock();
         }
@@ -114,7 +94,7 @@ namespace onut
             m_callbackQueue.push(pCallback);
         }
 
-        TmutexType  m_mutex;
-        Tallocator  m_allocator;
+        std::mutex m_mutex;
+        OPoolRef m_pAllocator;
     };
 }

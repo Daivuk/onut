@@ -267,6 +267,6 @@ template<typename Tfn,
     typename ... Targs>
     inline void OSync(Tfn callback, Targs... args)
 {
-    extern onut::Synchronous<onut::Pool<>> g_mainSync;
+    extern onut::Synchronous g_mainSync;
     g_mainSync.sync(callback, args...);
 }

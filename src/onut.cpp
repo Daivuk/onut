@@ -21,7 +21,7 @@ onut::GamePad*                      g_gamePads[4] = {nullptr};
 onut::EventManager*                 OEvent = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
-onut::Synchronous<onut::Pool<>>     g_mainSync;
+onut::Synchronous                   g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
 Vector2                             OMousePos;
 onut::InputDevice*                  g_inputDevice = nullptr;

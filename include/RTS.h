@@ -165,7 +165,7 @@ namespace onut
         std::vector<RTSPeer *> m_peers;
         std::thread *m_pRecvThread = nullptr;
         std::atomic<bool> m_isRecvThreadValid = false;
-        Synchronous<> m_sync;
+        Synchronous m_sync;
         uint8_t m_currentTurn = 0;
         uint32_t m_realTurn = 0;
         bool m_isStarted = false;
