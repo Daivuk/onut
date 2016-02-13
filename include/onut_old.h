@@ -19,7 +19,6 @@
 #include "Settings.h"
 #include "SpriteAnim.h"
 #include "SpriteBatch.h"
-#include "StateManager.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
 #include "Window.h"

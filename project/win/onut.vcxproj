@@ -51,8 +51,6 @@
     <ClInclude Include="..\..\include\SimpleMath.h" />
     <ClInclude Include="..\..\include\SpriteAnim.h" />
     <ClInclude Include="..\..\include\SpriteBatch.h" />
-    <ClInclude Include="..\..\include\State.h" />
-    <ClInclude Include="..\..\include\StateManager.h" />
     <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />

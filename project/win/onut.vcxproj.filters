@@ -55,9 +55,6 @@
     <ClInclude Include="..\..\include\Synchronous.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\State.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Particle.h">
       <Filter>include\pfx</Filter>
     </ClInclude>
@@ -66,9 +63,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\ParticleSystemManager.h">
       <Filter>include\pfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\StateManager.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\PrimitiveBatch.h">
       <Filter>include</Filter>
