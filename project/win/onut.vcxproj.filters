@@ -430,7 +430,7 @@
     <ClCompile Include="..\..\src\InputDevice.cpp">
       <Filter>services</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\input_.cpp">
+    <ClCompile Include="..\..\src\Input.cpp">
       <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>

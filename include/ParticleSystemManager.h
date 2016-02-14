@@ -245,7 +245,7 @@ namespace onut
 
         void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override
         {
-            float dim = static_cast<float>(std::max<decltype(pParticle->pTexture->getSize().width)>(pParticle->pTexture->getSize().width, pParticle->pTexture->getSize().height));
+            float dim = static_cast<float>(std::max<decltype(pParticle->pTexture->getSize().x)>(pParticle->pTexture->getSize().x, pParticle->pTexture->getSize().y));
             OSpriteBatch->drawSprite(pParticle->pTexture, pParticle->position, pParticle->color.value, pParticle->angle.value, pParticle->size.value / dim);
         }
 

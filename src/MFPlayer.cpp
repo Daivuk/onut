@@ -73,7 +73,7 @@ namespace onut
             m_pMediaEngine->GetNativeVideoSize(&videoWidth, &videoHeight);
             if (m_pRenderTarget)
             {
-                m_pRenderTarget->resizeTarget({videoWidth, videoHeight});
+                m_pRenderTarget->resizeTarget({static_cast<int>(videoWidth), static_cast<int>(videoHeight)});
             }
         }
         else if (event == MF_MEDIA_ENGINE_EVENT_ENDED ||
@@ -278,8 +278,8 @@ namespace onut
                 RECT targetRect;
                 targetRect.left = 0;
                 targetRect.top = 0;
-                targetRect.right = static_cast<LONG>(m_pRenderTarget->getSize().width);
-                targetRect.bottom = static_cast<LONG>(m_pRenderTarget->getSize().height);
+                targetRect.right = static_cast<LONG>(m_pRenderTarget->getSize().x);
+                targetRect.bottom = static_cast<LONG>(m_pRenderTarget->getSize().y);
 
                 MFARGB borderColor;
                 borderColor.rgbRed = 0;

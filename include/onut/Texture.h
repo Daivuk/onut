@@ -1,5 +1,6 @@
 #pragma once
 #include "onut/Maths.h"
+#include "onut/Point.h"
 #include "onut/Resource.h"
 
 #if defined(WIN32)
@@ -15,30 +16,16 @@ namespace onut
     class Texture final : public Resource
     {
     public:
-        struct Size
-        {
-            union
-            {
-                int width;
-                int x;
-            };
-            union
-            {
-                int height;
-                int y;
-            };
-        };
-
         static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = true);
         static OTextureRef createFromFileData(const uint8_t* pData, uint32_t size, bool generateMipmaps = true);
-        static OTextureRef createFromData(const uint8_t* pData, const Size& size, bool generateMipmaps = true);
-        static OTextureRef createRenderTarget(const Size& size, bool willBeUsedInEffects = false);
+        static OTextureRef createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps = true);
+        static OTextureRef createRenderTarget(const Point& size, bool willBeUsedInEffects = false);
         static OTextureRef createScreenRenderTarget(bool willBeUsedInEffects = false);
-        static OTextureRef createDynamic(const Size& size);
+        static OTextureRef createDynamic(const Point& size);
 
         ~Texture();
 
-        const Size& getSize() const;
+        const Point& getSize() const;
         Vector2 getSizef() const;
         void bind(int slot = 0);
         void setData(const uint8_t* pData);
@@ -47,7 +34,7 @@ namespace onut
 
         void bindRenderTarget();
         void unbindRenderTarget();
-        void resizeTarget(const Size& size);
+        void resizeTarget(const Point& size);
         void clearRenderTarget(const Color& color);
 
 #if defined(WIN32)
@@ -78,7 +65,7 @@ namespace onut
         void createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView);
 #endif
 
-        Size m_size;
+        Point m_size;
         Type m_type;
 #if defined(WIN32)
         ID3D11Texture2D* m_pTexture = nullptr;

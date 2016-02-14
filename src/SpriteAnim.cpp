@@ -29,8 +29,8 @@ namespace onut
         std::string textureName = pXMLSheet->Attribute("texture");
         auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
         assert(pTexture);
-        int spriteW = pTexture->getSize().width;
-        int spriteH = pTexture->getSize().height;
+        int spriteW = pTexture->getSize().x;
+        int spriteH = pTexture->getSize().y;
         int originX = 0;
         int originY = 0;
         pXMLSheet->QueryAttribute("spriteWidth", &spriteW);
@@ -59,15 +59,15 @@ namespace onut
                 int id = 0;
                 pXMLFrame->QueryAttribute("id", &id);
                 pXMLFrame->QueryAttribute("repeat", &repeat);
-                int col = id % (pTexture->getSize().width / spriteW);
-                int row = id / (pTexture->getSize().width / spriteW);
+                int col = id % (pTexture->getSize().x / spriteW);
+                int row = id / (pTexture->getSize().x / spriteW);
                 col *= spriteW;
                 row *= spriteH;
                 frame.UVs = Vector4(
-                    (float)col / (float)pTexture->getSize().width,
-                    (float)row / (float)pTexture->getSize().height,
-                    (float)(col + spriteW) / (float)pTexture->getSize().width,
-                    (float)(row + spriteH) / (float)pTexture->getSize().height);
+                    (float)col / (float)pTexture->getSize().x,
+                    (float)row / (float)pTexture->getSize().y,
+                    (float)(col + spriteW) / (float)pTexture->getSize().x,
+                    (float)(row + spriteH) / (float)pTexture->getSize().y);
                 for (auto i = 0; i < repeat; ++i)
                 {
                     anim.frames.push_back(frame);

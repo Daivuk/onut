@@ -326,8 +326,8 @@ namespace onut
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.width);
-        auto sizeyf = static_cast<float>(textureSize.height);
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
         const Vector4 paddingUVs{padding.x / sizexf, padding.y / sizeyf, padding.z / sizexf, padding.w / sizeyf};
 
         drawRectWithUVs(m_pTexture,
@@ -368,8 +368,8 @@ namespace onut
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.width);
-        auto sizeyf = static_cast<float>(textureSize.height);
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
         const Vector4 paddingUVs{padding.x / sizexf, padding.y / sizeyf, padding.z / sizexf, padding.w / sizeyf};
 
         // Corners
@@ -550,8 +550,8 @@ namespace onut
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.width);
-        auto sizeyf = static_cast<float>(textureSize.height);
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
         Rect cornerRect{0, 0, sizexf * .5f, sizeyf * .5f};
         drawRectWithUVs(m_pTexture, rect.TopLeft(cornerRect), {0, 0, .5f, .5f}, color);
         drawRectWithUVs(m_pTexture, rect.TopRight(cornerRect), {.5f, 0, 1, .5f}, color);
@@ -564,8 +564,8 @@ namespace onut
         changeTexture(pTexture);
 
         auto& textureSize = m_pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.width);
-        auto sizeyf = static_cast<float>(textureSize.height);
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
         drawRect(m_pTexture, {position.x - sizexf * origin.x, position.y - sizeyf * origin.y, sizexf, sizeyf}, color);
     }
 
@@ -639,8 +639,8 @@ namespace onut
     {
         changeTexture(pTexture);
         auto textureSize = m_pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.width);
-        auto sizeyf = static_cast<float>(textureSize.height);
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
         sizexf *= (uvs.z - uvs.x);
         sizeyf *= (uvs.w - uvs.y);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
@@ -733,8 +733,8 @@ namespace onut
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
-        auto sizexf = static_cast<float>(textureSize.width);
-        auto sizeyf = static_cast<float>(textureSize.height);
+        auto sizexf = static_cast<float>(textureSize.x);
+        auto sizeyf = static_cast<float>(textureSize.y);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
         auto radTheta = DirectX::XMConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);

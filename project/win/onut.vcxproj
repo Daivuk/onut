@@ -108,7 +108,7 @@
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />
-    <ClCompile Include="..\..\src\input_.cpp" />
+    <ClCompile Include="..\..\src\Input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\Curve.cpp" />
     <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp" />
