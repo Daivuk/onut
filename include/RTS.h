@@ -6,12 +6,24 @@
 #include <thread>
 #include <atomic>
 #include <unordered_map>
-#include "object.h"
 #include "Synchronous.h"
 
 namespace onut
 {
     static const int packetSize = 1400;
+
+    class Object
+    {
+    public:
+        virtual ~Object() {}
+
+        void retain();
+        void release();
+        int getRefCount() const { return m_refCount; }
+
+    private:
+        int m_refCount = 0;
+    };
 
 #pragma pack (push)
 #pragma pack (1)

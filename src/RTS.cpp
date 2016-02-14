@@ -8,6 +8,20 @@ namespace onut
 {
     static const char signature[4] = {'O', 'R', 'T', '1'};
 
+    void Object::retain()
+    {
+        ++m_refCount;
+    }
+
+    void Object::release()
+    {
+        --m_refCount;
+        if (m_refCount <= 0)
+        {
+            delete this;
+        }
+    }
+
     RTSSocket *natPunchThrough(const std::string& url)
     {
         // Decompose the address

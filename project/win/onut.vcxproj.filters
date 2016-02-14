@@ -113,9 +113,6 @@
     <ClInclude Include="..\..\include\Input.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\object.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut_old.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -266,9 +263,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ActionManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\object.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\RTS.cpp">
