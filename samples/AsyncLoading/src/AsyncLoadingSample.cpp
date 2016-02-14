@@ -2,9 +2,13 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut_old.h"
+#include "onut/Async.h"
 #include "onut/Font.h"
+#include "onut/Log.h"
+#include "onut/Settings.h"
 #include "onut/Texture.h"
+
+#include "onut_old.h"
 
 void init();
 void update();
@@ -25,8 +29,6 @@ void init()
     // Start loading
     OAsync([]
     {
-        // OGetTexture would also work, but it would sync to main thread for
-        // each of them. Making the async loading a bit useless.
         OGetTexture("img2.png");
         OGetTexture("img3.png");
         OGetTexture("img4.png");

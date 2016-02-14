@@ -107,9 +107,6 @@
     <ClInclude Include="..\..\include\DefineHelpers.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\EventManager.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\GamePad.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -263,9 +260,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GamePad.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\EventManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">

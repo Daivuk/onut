@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\ActionManager.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
-    <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
     <ClInclude Include="..\..\include\Input.h" />
     <ClInclude Include="..\..\include\list\List.h" />
@@ -107,7 +106,6 @@
     <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
-    <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />

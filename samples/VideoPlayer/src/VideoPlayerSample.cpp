@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include "onut/Settings.h"
 #include "onut/VideoPlayer.h"
 
 #include "onut_old.h"

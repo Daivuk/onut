@@ -2,8 +2,11 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut_old.h"
+#include "onut/Font.h"
 #include "onut/Http.h"
+#include "onut/Settings.h"
+
+#include "onut_old.h"
 
 void init();
 void update();

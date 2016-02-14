@@ -1,4 +1,7 @@
+#include "onut/ContentManager.h"
+#include "onut/Font.h"
 #include "onut/onut.h"
+#include "onut/Settings.h"
 #include "onut/Texture.h"
 #include "onut/Updater.h"
 
@@ -19,7 +22,6 @@ onut::Renderer*                     ORenderer = nullptr;
 onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 onut::GamePad*                      g_gamePads[4] = {nullptr};
-onut::EventManager*                 OEvent = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous                   g_mainSync;
@@ -199,9 +201,6 @@ namespace onut
 
         oUpdater = std::make_shared<OUpdater>();
 
-        // Events
-        OEvent = new EventManager();
-
         // Window
         OWindow = new Window(oSettings->getResolution(), oSettings->getIsResizableWindow());
 
@@ -245,40 +244,6 @@ namespace onut
         // Particles
         OParticles = new ParticleSystemManager<>();
 
-        // Register a bunch of default events
-        OEvent->addEvent("NavigateLeft", []
-        {
-            return OJustPressed(OLeftBtn) || OJustPressed(OLLeftBtn);
-        });
-        OEvent->addEvent("NavigateRight", []
-        {
-            return OJustPressed(ORightBtn) || OJustPressed(OLRightBtn);
-        });
-        OEvent->addEvent("NavigateUp", []
-        {
-            return OJustPressed(OUpBtn) || OJustPressed(OLUpBtn);
-        });
-        OEvent->addEvent("NavigateDown", []
-        {
-            return OJustPressed(ODownBtn) || OJustPressed(OLDownBtn);
-        });
-        OEvent->addEvent("Accept", []
-        {
-            return OJustPressed(OABtn) || OJustPressed(OStartBtn);
-        });
-        OEvent->addEvent("Cancel", []
-        {
-            return OJustPressed(OBBtn);
-        });
-        OEvent->addEvent("Start", []
-        {
-            return OJustPressed(OStartBtn);
-        });
-        OEvent->addEvent("Back", []
-        {
-            return OJustPressed(OBackBtn) || OJustPressed(OBBtn);
-        });
-
         // UI Context
         createUI();
     }
@@ -300,7 +265,6 @@ namespace onut
         delete OSB;
         delete ORenderer;
         delete OWindow;
-        delete OEvent;
     }
 
     // Start the engine
@@ -389,7 +353,6 @@ namespace onut
                                 false, false, false, false, 
                                 OPressed(OINPUT_LCONTROL), OInput->getStateValue(OINPUT_MOUSEZ));
                 }
-                OEvent->processEvents();
                 OParticles->update();
                 if (updateCallback)
                 {

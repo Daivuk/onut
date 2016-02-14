@@ -1,15 +1,9 @@
 #pragma once
-#include "onut/Async.h"
-#include "onut/Font.h"
-#include "onut/ContentManager.h"
 #include "onut/ParticleSystem.h"
-#include "onut/Settings.h"
 
 #include "DefineHelpers.h"
-#include "EventManager.h"
 #include "Input.h"
 #include "GamePad.h"
-#include "onut/Log.h"
 #include "onutUI.h"
 #include "ParticleSystemManager.h"
 #include "PrimitiveBatch.h"
@@ -24,7 +18,6 @@
 extern onut::Renderer*                  ORenderer;
 extern onut::SpriteBatch*               OSpriteBatch;
 extern onut::PrimitiveBatch*            OPrimitiveBatch;
-extern onut::EventManager*              OEvent;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;
 extern onut::Input*                     OInput;
@@ -66,58 +59,10 @@ namespace onut
 
 #define ORun onut::run
 
-//--- Resource shortcuts
 /*
-inline OFontRef OGetBMFont(const std::string& name)
-{
-    return oContentManager->getResourceAs<OFont>(name);
-}
-
-inline OSound* OGetSound(const std::string& name)
-{
-    return oContentManager->getResourceAs<OSound>(name);
-}
-
-inline OSoundCue* OGetSoundCue(const std::string& name)
-{
-    return oContentManager->getResourceAs<OSoundCue>(name);
-}
-
-inline OPfx* OGetPFX(const std::string& name)
-{
-    return oContentManager->getResourceAs<OPfx>(name);
-}
-
-inline void OLoadTexture(const char* pName)
-{
-    OContentManager->addResource<OTexture>(pName);
-}
-
-inline void OLoadBMFont(const char* pName)
-{
-    OContentManager->addResource<OFont>(pName);
-}
-
-inline void OLoadSound(const char* pName)
-{
-    OContentManager->addResource<OSound>(pName);
-}
-
-inline void OLoadSoundCue(const char* pName)
-{
-    OContentManager->addResource<OSoundCue>(pName);
-}
-
 inline void OLoadPFX(const char* pName)
 {
     OContentManager->addResource<OPfx>(pName);
-}
-
-inline OSoundInstance* OCreateSoundInstance(const char* pName)
-{
-    auto pSound = OGetSound(pName);
-    if (!pSound) return nullptr;
-    return pSound->createInstance();
 }
 */
 inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ) -> decltype(OParticles->emit(nullptr, position, dir))
@@ -133,23 +78,7 @@ inline onut::UIControl* OLoadUI(const std::string& name)
     std::string filename = "../../assets/ui/" + name;
     return new onut::UIControl(filename.c_str());
 }
-/*
-inline void OPlaySound(const char* pName, float volume = 1.0f, float balance = 0.f, float pitch = 1.f)
-{
-    OGetSound(pName)->play(volume, balance, pitch);
-}
 
-inline void OPlayRandomSound(const std::vector<const char*>& sounds, 
-                             float volume = 1.0f, float balance = 0.f, float pitch = 1.f)
-{
-    OPlaySound(onut::randv(sounds), volume, balance, pitch);
-}
-
-inline void OPlaySoundCue(const char* pName, float volume = 1.0f, float balance = 0.f, float pitch = 1.f)
-{
-    OGetSoundCue(pName)->play(volume, balance, pitch);
-}
-*/
 //--- Game pads
 inline onut::GamePad* OGamePad(int index)
 {

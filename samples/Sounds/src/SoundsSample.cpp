@@ -3,7 +3,9 @@
 
 // Oak Nut include
 #include "onut/Font.h"
+#include "onut/Log.h"
 #include "onut/Music.h"
+#include "onut/Settings.h"
 #include "onut/Sound.h"
 
 #include "onut_old.h"

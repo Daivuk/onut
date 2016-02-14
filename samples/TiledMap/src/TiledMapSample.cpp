@@ -2,7 +2,9 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include "onut/Settings.h"
 #include "onut/TiledMap.h"
+
 #include "onut_old.h"
 
 void init();

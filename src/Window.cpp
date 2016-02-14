@@ -1,7 +1,10 @@
 ﻿#include "onut/Point.h"
+#include "onut/Settings.h"
+
 #include "onut_old.h"
 #include "Utils.h"
 #include "Window.h"
+
 #include <windowsx.h>
 
 namespace onut
