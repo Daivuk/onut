@@ -2,8 +2,10 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include "onut/Anim.h"
 #include "onut/Font.h"
 #include "onut/Texture.h"
+
 #include "onut_old.h"
 #include "Utils.h"
 
@@ -18,7 +20,7 @@ OTextureRef pRenderTarget;
 OTextureRef pDynamic;
 
 uint8_t dynamicData[128 * 128 * 4];
-OAnimi dynamicAnim = 0;
+OAnimInt dynamicAnim = 0;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -61,7 +63,7 @@ void init()
             dynamicData[k + 3] = 255;
         }
     }
-    dynamicAnim.start(0, 255, 3.f, OLinear, OLoop);
+    dynamicAnim.play(0, 255, 3.f, OTweenLinear, OLoop);
 }
 
 void update()

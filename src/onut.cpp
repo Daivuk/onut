@@ -389,7 +389,6 @@ namespace onut
                                 false, false, false, false, 
                                 OPressed(OINPUT_LCONTROL), OInput->getStateValue(OINPUT_MOUSEZ));
                 }
-                AnimManager::getGlobalManager()->update();
                 OEvent->processEvents();
                 OParticles->update();
                 if (updateCallback)

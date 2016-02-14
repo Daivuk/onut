@@ -1,8 +1,6 @@
 #pragma once
+#include "onut/Curve.h"
 #include "onut/Maths.h"
-#include "onut/ParticleSystem.h"
-
-#include "Anim.h"
 
 #include "onut/ForwardDeclaration.h"
 OForwardDeclare(ParticleEmitterDesc);
@@ -25,7 +23,7 @@ namespace onut
 
             void update(float t)
             {
-                value = lerp(from, to, t);
+                value = OLerp(from, to, t);
             }
         };
 

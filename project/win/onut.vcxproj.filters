@@ -104,9 +104,6 @@
     <ClInclude Include="..\..\include\ActionManager.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Anim.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\DefineHelpers.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -242,6 +239,15 @@
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h">
       <Filter>thirdparties\simplemath</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Anim.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Tween.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Curve.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -260,9 +266,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\EventManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Anim.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
@@ -435,6 +438,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteAnim.cpp">
       <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Tween.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Curve.cpp">
+      <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

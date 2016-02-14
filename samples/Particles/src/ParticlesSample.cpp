@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include "onut/Anim.h"
 #include "onut/ParticleSystem.h"
 #include "onut/Font.h"
 #include "onut_old.h"
@@ -11,7 +12,7 @@ void update();
 void render();
 
 OEmitterInstance emitter;
-OAnim3 position;
+OAnimVector3 position;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -41,7 +42,7 @@ void update()
         else
         {
             // Animate it back and forth across the screen
-            position.start(Vector3{OScreenWf - 100, OScreenHf / 2, 0}, Vector3{100, OScreenHf / 2, 0}, 2.f, OLinear, OPingPongLoop);
+            position.play(Vector3{OScreenWf - 100, OScreenHf / 2, 0}, Vector3{100, OScreenHf / 2, 0}, 2.f, OTweenLinear, OPingPongLoop);
 
             emitter = OEmitPFX("test2.pex", position);
             emitter.setRenderEnabled(false);

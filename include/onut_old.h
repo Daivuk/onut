@@ -32,15 +32,6 @@ extern onut::Window*                    OWindow;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;
 
-using OAnimb = onut::Anim<bool, float, onut::lerpBool>;
-using OAnimf = onut::Anim<float>;
-using OAnimi = onut::Anim<int>;
-using OAnim2 = onut::Anim<Vector2>;
-using OAnim3 = onut::Anim<Vector3>;
-using OAnim4 = onut::Anim<Vector4>;
-using OAnimStr = onut::Anim<std::string>;
-using OAnimc = onut::Anim<Color>;
-
 #define OSB OSpriteBatch
 #define OPB OPrimitiveBatch
 

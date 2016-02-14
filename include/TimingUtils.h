@@ -1,6 +1,12 @@
 #pragma once
-#include "Anim.h"
+#include "onut/Updater.h"
+
 #include "TimeInfo.h"
+
+/**
+Delta time between current update frame and the previous one
+*/
+extern float ODT;
 
 namespace onut
 {
@@ -15,39 +21,44 @@ namespace onut
     Template arguments:
     - Tprecision: Precision unit. default float
     */
-    template<typename Tprecision = float>
-    class Timer
+    class Timer final : public UpdateTarget
     {
     public:
         /**
         Constructor. This will set the start value to 0
         */
-        Timer() :
-            m_anim(static_cast<Tprecision>(0.0))
-        {}
+        Timer() {}
 
         /**
         Start timed event
         */
-        void start(Tprecision duration, const std::function<void()>& callback = nullptr)
+        void start(float duration, const std::function<void()>& callback = nullptr)
         {
-            m_anim.startKeyframed(static_cast<Tprecision>(0.0), {{duration, duration, TweenType::LINEAR, callback}});
+            m_progress = 0.f;
+            m_duration = duration;
+            m_callback = callback;
+            oUpdater->registerTarget(this);
         }
 
         /**
         Stop. Value will stay where it is. So you can get the time it was stopped by calling: getProgress
         */
-        void stop()
+        void stop(bool callCallback = false)
         {
-            m_anim.stop(false);
+            oUpdater->unregisterTarget(this);
+            if (callCallback)
+            {
+                m_callback();
+            }
+            m_callback = nullptr;
         }
 
         /**
         Get the current time in the timer's progress. In seconds.
         */
-        Tprecision getProgress() const
+        float getProgress() const
         {
-            return m_anim.get();
+            return m_progress;
         }
 
         /**
@@ -55,18 +66,24 @@ namespace onut
         */
         bool isRunning() const
         {
-            return m_anim.isPlaying();
+            return isUpdateTargetRegistered();
         }
 
     private:
-        Anim<Tprecision> m_anim;
+        void update() override
+        {
+            m_progress += ODT;
+            if (m_progress >= m_duration)
+            {
+                stop(true);
+            }
+        }
+
+        float m_progress = 0.f;
+        float m_duration = 1.f;
+        std::function<void()> m_callback;
     };
 }
-
-/**
-Delta time between current update frame and the previous one
-*/
-extern float ODT;
 
 /**
 Sleep the current thread for an amount of miliseconds
@@ -78,4 +95,4 @@ inline void OSleep(const Tduration& duration)
     std::this_thread::sleep_for(duration);
 }
 
-using OTimer = onut::Timer<float>;
+using OTimer = onut::Timer;

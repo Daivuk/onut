@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ActionManager.h" />
-    <ClInclude Include="..\..\include\Anim.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\EventManager.h" />
     <ClInclude Include="..\..\include\GamePad.h" />
@@ -20,10 +19,12 @@
     <ClInclude Include="..\..\include\list\List.h" />
     <ClInclude Include="..\..\include\micropather.h" />
     <ClInclude Include="..\..\include\object.h" />
+    <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\Http.h" />
+    <ClInclude Include="..\..\include\onut\Curve.h" />
     <ClInclude Include="..\..\include\onut\Log.h" />
     <ClInclude Include="..\..\include\onut\Music.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
+    <ClInclude Include="..\..\include\onut\Tween.h" />
     <ClInclude Include="..\..\include\onut\Updater.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
@@ -95,7 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ActionManager.cpp" />
-    <ClCompile Include="..\..\src\Anim.cpp" />
     <ClCompile Include="..\..\src\audio\AudioEngine.cpp" />
     <ClCompile Include="..\..\src\audio\DynamicSoundEffectInstance.cpp" />
     <ClCompile Include="..\..\src\audio\SoundCommon.cpp" />
@@ -112,6 +113,7 @@
     <ClCompile Include="..\..\src\Http.cpp" />
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
+    <ClCompile Include="..\..\src\Curve.cpp" />
     <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
     <ClCompile Include="..\..\src\MFPlayer.cpp" />
@@ -126,6 +128,7 @@
     <ClCompile Include="..\..\src\Pool.cpp" />
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="..\..\src\Tween.cpp" />
     <ClCompile Include="..\..\src\Updater.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />

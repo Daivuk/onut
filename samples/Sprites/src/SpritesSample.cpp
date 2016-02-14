@@ -2,16 +2,18 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut_old.h"
+#include "onut/Anim.h"
 #include "onut/Maths.h"
 #include "onut/Texture.h"
+
+#include "onut_old.h"
 
 void init();
 void update();
 void render();
 
 float g_spriteAngle = 0.f;
-OAnim<Matrix> batchTransform;
+OAnimMatrix batchTransform;
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -31,7 +33,7 @@ void update()
 
     if (OJustPressed(OINPUT_SPACE))
     {
-        batchTransform.startKeyframed(
+        batchTransform.playKeyFrames(
             Matrix::Identity,
             {
                 {
@@ -39,19 +41,19 @@ void update()
                     Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45.f)) *
                     Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
                     1.0f,
-                    OLinear
+                    OTweenLinear
                 },
                 {
                     Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
                     Matrix::CreateRotationZ(DirectX::XMConvertToRadians(-45.f)) *
                     Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
                     2.0f,
-                    OLinear
+                    OTweenLinear
                 },
                 {
                     Matrix::Identity,
                     1.f,
-                    OLinear
+                    OTweenLinear
                 }
             });
     }

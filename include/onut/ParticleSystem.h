@@ -1,10 +1,9 @@
 #pragma once
+#include "onut/Tween.h"
 #include "onut/Maths.h"
 #include "onut/Resource.h"
-using namespace DirectX::SimpleMath;
+#include "onut/Random.h"
 
-#include "Anim.h"
-#include "Random.h"
 #include "rapidjson/document.h"
 
 #include <string>
@@ -114,7 +113,7 @@ namespace onut
         sPfxRange<Ttype> value;
         sPfxRange<Ttype> finalValue;
         bool finalSpecified = false;
-        TweenType tween = TweenType::LINEAR;
+        Tween tween = Tween::Linear;
         PfxFinalValueType finalValueType = PfxFinalValueType::NORMAL;
 
         sPfxValue(const Ttype& other) :
@@ -175,16 +174,16 @@ namespace onut
                         finalValue = finalNode;
                         if (finalNode.IsObject())
                         {
-                            pfxReadEnum<TweenType>(tween, finalNode["tween"], {
-                                {"NONE", TweenType::NONE},
-                                {"LINEAR", TweenType::LINEAR},
-                                {"EASE_IN", TweenType::EASE_IN},
-                                {"EASE_OUT", TweenType::EASE_OUT},
-                                {"EASE_BOTH", TweenType::EASE_BOTH},
-                                {"BOUNCE_IN", TweenType::BOUNCE_IN},
-                                {"BOUNCE_OUT", TweenType::BOUNCE_OUT},
-                                {"SPRING_IN", TweenType::SPRING_IN},
-                                {"SPRING_OUT", TweenType::SPRING_OUT}
+                            pfxReadEnum<Tween>(tween, finalNode["tween"], {
+                                {"NONE", Tween::None},
+                                {"LINEAR", Tween::Linear},
+                                {"EASE_IN", Tween::EaseIn},
+                                {"EASE_OUT", Tween::EaseOut},
+                                {"EASE_BOTH", Tween::EaseBoth},
+                                {"BOUNCE_IN", Tween::BounceIn},
+                                {"BOUNCE_OUT", Tween::BounceOut},
+                                {"SPRING_IN", Tween::SpringIn},
+                                {"SPRING_OUT", Tween::SpringOut}
                             });
                             pfxReadEnum<PfxFinalValueType>(finalValueType, finalNode["type"], {
                                 {"MULT", PfxFinalValueType::MULT},
