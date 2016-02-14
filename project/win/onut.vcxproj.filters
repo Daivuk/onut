@@ -107,12 +107,6 @@
     <ClInclude Include="..\..\include\DefineHelpers.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\GamePad.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Input.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut_old.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -159,9 +153,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Window.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\InputDevice.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h">
@@ -242,6 +233,15 @@
     <ClInclude Include="..\..\include\onut\Curve.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\GamePad.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Input.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\InputDevice.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Renderer.cpp">
@@ -254,9 +254,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteBatch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\GamePad.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
@@ -379,12 +376,6 @@
     <ClCompile Include="..\..\src\UI.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\input.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\InputDevice.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\micropather.cpp">
       <Filter>thirdparties\micropather</Filter>
     </ClCompile>
@@ -432,6 +423,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Curve.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GamePad.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\InputDevice.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\input_.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

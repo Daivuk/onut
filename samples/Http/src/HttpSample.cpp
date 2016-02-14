@@ -4,6 +4,7 @@
 // Oak Nut include
 #include "onut/Font.h"
 #include "onut/Http.h"
+#include "onut/Input.h"
 #include "onut/Settings.h"
 
 #include "onut_old.h"
@@ -29,12 +30,12 @@ void init()
 
 void update()
 {
-    if (OJustPressed(OINPUT_1))
+    if (OInputJustPressed(OKey1))
     {
         // Stalls the main loop
         originIP = OHttpGetString("http://httpbin.org/ip");
     }
-    if (OJustPressed(OINPUT_2))
+    if (OInputJustPressed(OKey2))
     {
         // Doesn't stall the main loop
         OHttpGetStringAsync("http://httpbin.org/user-agent", [](std::string result)
@@ -42,7 +43,7 @@ void update()
             userAgent = result;
         });
     }
-    if (OJustPressed(OINPUT_3))
+    if (OInputJustPressed(OKey3))
     {
         OHTTPGetTextureAsync("https://pbs.twimg.com/profile_images/438501336108113920/KYIwbos1.png", [](OTextureRef pTexture)
         {

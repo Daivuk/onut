@@ -3,6 +3,7 @@
 
 // Oak Nut include
 #include "onut/Font.h"
+#include "onut/Input.h"
 #include "onut/Log.h"
 #include "onut/Music.h"
 #include "onut/Settings.h"
@@ -37,31 +38,31 @@ void update()
     float volume = 1.f;
     float balance = 0.f;
 
-    if (OPressed(OINPUT_LEFT)) balance -= 1.f;
-    if (OPressed(OINPUT_RIGHT)) balance += 1.f;
+    if (OInputPressed(OKeyLeft)) balance -= 1.f;
+    if (OInputPressed(OKeyRight)) balance += 1.f;
 
-    if (OJustPressed(OINPUT_1))
+    if (OInputJustPressed(OKey1))
     {
         OPlaySound("sound1.wav", volume, balance);
     }
-    if (OJustPressed(OINPUT_2))
+    if (OInputJustPressed(OKey2))
     {
         OPlaySound("sound1.wav", volume, balance, .5f);
     }
-    if (OJustPressed(OINPUT_3))
+    if (OInputJustPressed(OKey3))
     {
         OPlaySound("sound1.wav", volume, balance, 2.f);
     }
-    if (OJustPressed(OINPUT_4))
+    if (OInputJustPressed(OKey4))
     {
         OPlayRandomSound({"sound1.wav", "sound2.wav", "sound3.wav", "sound4.wav", "sound5.wav"}, 
                          volume, balance);
     }
-    if (OJustPressed(OINPUT_5))
+    if (OInputJustPressed(OKey5))
     {
         OPlaySound("sound5.wav", volume, balance);
     }
-    if (OJustPressed(OINPUT_6))
+    if (OInputJustPressed(OKey6))
     {
         if (pLoopingSound->isPlaying())
         {
@@ -72,11 +73,11 @@ void update()
             pLoopingSound->play();
         }
     }
-    if (OJustPressed(OINPUT_7))
+    if (OInputJustPressed(OKey7))
     {
         OPlaySoundCue("soundCue.cue", volume, balance);
     }
-    if (OJustPressed(OINPUT_8))
+    if (OInputJustPressed(OKey8))
     {
         if (pMusic->isPlaying())
         {

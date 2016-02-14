@@ -1,16 +1,25 @@
-#include "GamePad.h"
+#include "onut/GamePad.h"
+#include "onut/Input.h"
 
 namespace onut
 {
+    OGamePadRef GamePad::create(int index)
+    {
+        return std::make_shared<OGamePad>(index);
+    }
+
     GamePad::GamePad(int index) :
         m_index(index)
     {
+#if defined(WIN32)
         memset(&m_currentState, 0, sizeof(m_currentState));
         memset(&m_previousState, 0, sizeof(m_previousState));
+#endif
     }
 
     void GamePad::update()
     {
+#if defined(WIN32)
         m_previousState = m_currentState;
         memset(&m_currentState, 0, sizeof(m_currentState));
         auto result = XInputGetState(m_index, &m_currentState);
@@ -56,6 +65,7 @@ namespace onut
                 m_cachedRightThumb *= percent;
             }
         }
+#endif
     }
 
     bool GamePad::isConnected() const
@@ -63,13 +73,14 @@ namespace onut
         return m_isConnected;
     }
 
-    bool GamePad::isPressed(eGamePad button) const
+    bool GamePad::isPressed(Button button) const
     {
         return isPressed(button, m_currentState);
     }
 
-    bool GamePad::isPressed(eGamePad button, const XINPUT_STATE& state) const
+    bool GamePad::isPressed(Button button, const XINPUT_STATE& state) const
     {
+#if defined(WIN32)
         switch (button)
         {
             case A:
@@ -80,57 +91,88 @@ namespace onut
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) ? true : false;
             case Y:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) ? true : false;
-            case DPAD_UP:
+            case DPadUp:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) ? true : false;
-            case DPAD_DOWN:
+            case DPadDown:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) ? true : false;
-            case DPAD_LEFT:
+            case DPadLeft:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) ? true : false;
-            case DPAD_RIGHT:
+            case DPadRight:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) ? true : false;
-            case LT:
+            case LeftTrigger:
                 return (state.Gamepad.bLeftTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
-            case LB:
+            case LeftBumper:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) ? true : false;
-            case RT:
+            case RightTrigger:
                 return (state.Gamepad.bRightTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
-            case RB:
+            case RightBumper:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) ? true : false;
-            case LTHUMB:
+            case LeftThumbStick:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) ? true : false;
-            case RTHUMB:
+            case RightThumbStick:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) ? true : false;
-            case START:
+            case Start:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) ? true : false;
-            case BACK:
+            case Back:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) ? true : false;
-            case LTHUMB_LEFT:
+            case LeftThumbStickLeft:
                 return (state.Gamepad.sThumbLX <= -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-            case LTHUMB_RIGHT:
+            case LeftThumbStickRight:
                 return (state.Gamepad.sThumbLX >= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-            case LTHUMB_UP:
+            case LeftThumbStickUp:
                 return (state.Gamepad.sThumbLY >= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-            case LTHUMB_DOWN:
+            case LeftThumbStickDown:
                 return (state.Gamepad.sThumbLY <= -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-            case RTHUMB_LEFT:
+            case RightThumbStickLeft:
                 return (state.Gamepad.sThumbLX <= -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-            case RTHUMB_RIGHT:
+            case RightThumbStickRight:
                 return (state.Gamepad.sThumbLX >= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-            case RTHUMB_UP:
+            case RightThumbStickUp:
                 return (state.Gamepad.sThumbLY >= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-            case RTHUMB_DOWN:
+            case RightThumbStickDown:
                 return (state.Gamepad.sThumbLY <= -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
         }
+#endif
         return false;
     }
 
-    bool GamePad::isJustPressed(eGamePad button) const
+    bool GamePad::isJustPressed(Button button) const
     {
         return !isPressed(button, m_previousState) && isPressed(button, m_currentState);
     }
 
-    bool GamePad::isJustReleased(eGamePad button) const
+    bool GamePad::isJustReleased(Button button) const
     {
         return isPressed(button, m_previousState) && !isPressed(button, m_currentState);
     }
+}
+
+const OGamePadRef& OGetGamePad(int index)
+{
+    return oInput->getGamePad(index);
+}
+
+bool OGamePadPressed(onut::GamePad::Button button, int gamePadIndex)
+{
+    return OGetGamePad(gamePadIndex)->isPressed(button);
+}
+
+bool OGamePadJustPressed(onut::GamePad::Button button, int gamePadIndex)
+{
+    return OGetGamePad(gamePadIndex)->isJustPressed(button);
+}
+
+bool OGamePadJustReleased(onut::GamePad::Button button, int gamePadIndex)
+{
+    return OGetGamePad(gamePadIndex)->isJustReleased(button);
+}
+
+const Vector2& OGetGamePadLeftThumb(int gamePadIndex)
+{
+    return OGetGamePad(gamePadIndex)->getLeftThumb();
+}
+
+const Vector2& OGetGamePadRightThumb(int gamePadIndex)
+{
+    return OGetGamePad(gamePadIndex)->getRightThumb();
 }

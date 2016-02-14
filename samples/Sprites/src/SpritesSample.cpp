@@ -3,6 +3,7 @@
 
 // Oak Nut include
 #include "onut/Anim.h"
+#include "onut/Input.h"
 #include "onut/Maths.h"
 #include "onut/Settings.h"
 #include "onut/Texture.h"
@@ -32,7 +33,7 @@ void update()
 {
     g_spriteAngle += ODT * 45.f;
 
-    if (OJustPressed(OINPUT_SPACE))
+    if (OInputJustPressed(OKeySpaceBar))
     {
         batchTransform.playKeyFrames(
             Matrix::Identity,

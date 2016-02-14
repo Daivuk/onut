@@ -1,32 +1,6 @@
 #pragma once
 #include "onut/onut.h"
 
-//--- Game pads
-#define OABtn               onut::GamePad::eGamePad::A
-#define OBBtn               onut::GamePad::eGamePad::B
-#define OXBtn               onut::GamePad::eGamePad::X
-#define OYBtn               onut::GamePad::eGamePad::Y
-#define OUpBtn              onut::GamePad::eGamePad::DPAD_UP
-#define ODownBtn            onut::GamePad::eGamePad::DPAD_DOWN
-#define OLeftBtn            onut::GamePad::eGamePad::DPAD_LEFT
-#define ORightBtn           onut::GamePad::eGamePad::DPAD_RIGHT
-#define OLTBtn              onut::GamePad::eGamePad::LT
-#define OLBBtn              onut::GamePad::eGamePad::LB
-#define ORTBtn              onut::GamePad::eGamePad::RT
-#define ORBBtn              onut::GamePad::eGamePad::RB
-#define OLThumbBtn          onut::GamePad::eGamePad::LTHUMB
-#define ORThumbBtn          onut::GamePad::eGamePad::RTHUMB
-#define OStartBtn           onut::GamePad::eGamePad::START
-#define OBackBtn            onut::GamePad::eGamePad::BACK
-#define OLLeftBtn           onut::GamePad::eGamePad::LTHUMB_LEFT
-#define OLRightBtn          onut::GamePad::eGamePad::LTHUMB_RIGHT
-#define OLUpBtn             onut::GamePad::eGamePad::LTHUMB_UP
-#define OLDownBtn           onut::GamePad::eGamePad::LTHUMB_DOWN
-#define ORLeftBtn           onut::GamePad::eGamePad::RTHUMB_LEFT
-#define ORRightBtn          onut::GamePad::eGamePad::RTHUMB_RIGHT
-#define ORUpBtn             onut::GamePad::eGamePad::RTHUMB_UP
-#define ORDownBtn           onut::GamePad::eGamePad::RTHUMB_DOWN
-
 //--- Resolution helpers
 #define OScreen             ORenderer->getResolution()
 #define OScreenf            Vector2{static_cast<float>(ORenderer->getResolution().x), static_cast<float>(ORenderer->getResolution().y)}

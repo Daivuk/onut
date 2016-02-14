@@ -1,18 +1,33 @@
-#include <thread>
+#include "onut/Input.h"
+
 #include "onut_old.h"
 #include "InputDevice.h"
 #include "Window.h"
 
+#if defined(WIN32)
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-
 #define FAIL_DI_WITH_ERROR(__errorMsg__) {MessageBoxA(NULL, __errorMsg__, "DirectInput8 Error", MB_OK); exit(0);}
+#endif
+
+OInputDeviceRef oInputDevice;
 
 namespace onut
 {
-    InputDevice::InputDevice(onut::Window* pWindow)
+    OInputDeviceRef InputDevice::create(OInput* pInput, onut::Window* pWindow)
     {
+        return std::make_shared<OInputDevice>(pInput, pWindow);
+    }
+
+    InputDevice::InputDevice(OInput* pInput, onut::Window* in_pWindow)
+    {
+        auto pWindow = in_pWindow;
+        if (!pWindow) pWindow = OWindow;
+        m_pInput = pInput;
+        if (!m_pInput) m_pInput = oInput.get();
+
+#if defined(WIN32)
         HRESULT result;
 
         // Initialize DirectInput
@@ -66,15 +81,18 @@ namespace onut
         }
 
         memset(&mouseState, 0, sizeof(DIMOUSESTATE));
+#endif
         memset(keyboardState, 0, 256);
         memset(previousKeyboardState, 0, 256);
     }
 
     InputDevice::~InputDevice()
     {
+#if defined(WIN32)
         if (mouse) mouse->Release();
         if (keyboard) keyboard->Release();
         if (directInput) directInput->Release();
+#endif
     }
 
     void InputDevice::update()
@@ -85,6 +103,7 @@ namespace onut
 
     void InputDevice::readKeyboard()
     {
+#if defined(WIN32)
         HRESULT result;
 
         // Read the keyboard device.
@@ -110,18 +129,20 @@ namespace onut
         {
             if (!(previousKeyboardState[i] & 0x80) && (keyboardState[i] & 0x80))
             {
-                OInput->setStateDown(i);
+                m_pInput->setStateDown(static_cast<onut::Input::State>(i));
             }
             else if ((previousKeyboardState[i] & 0x80) && !(keyboardState[i] & 0x80))
             {
-                OInput->setStateUp(i);
+                m_pInput->setStateUp(static_cast<onut::Input::State>(i));
             }
         }
         memcpy(previousKeyboardState, keyboardState, 256);
+#endif
     }
 
     void InputDevice::readMouse()
     {
+#if defined(WIN32)
         HRESULT result;
 
         // Read the mouse device.
@@ -147,16 +168,17 @@ namespace onut
         {
             if (!(previousMouseState.rgbButtons[i] & 0x80) && (mouseState.rgbButtons[i] & 0x80))
             {
-                OInput->setStateDown(OINPUT_MOUSEB1 + i);
+                m_pInput->setStateDown(static_cast<onut::Input::State>(static_cast<int>(OMouse1) + i));
             }
             else if ((previousMouseState.rgbButtons[i] & 0x80) && !(mouseState.rgbButtons[i] & 0x80))
             {
-                OInput->setStateUp(OINPUT_MOUSEB1 + i);
+                m_pInput->setStateUp(static_cast<onut::Input::State>(static_cast<int>(OMouse1) + i));
             }
         }
         memcpy(&previousMouseState, &mouseState, sizeof(DIMOUSESTATE));
-        OInput->setStateValue(OINPUT_MOUSEX, (float)mouseState.lX);
-        OInput->setStateValue(OINPUT_MOUSEY, (float)mouseState.lY);
-        OInput->setStateValue(OINPUT_MOUSEZ, (float)mouseState.lZ);
+        m_pInput->setStateValue(OMouseX, (float)mouseState.lX);
+        m_pInput->setStateValue(OMouseY, (float)mouseState.lY);
+        m_pInput->setStateValue(OMouseZ, (float)mouseState.lZ);
+#endif
     }
 }

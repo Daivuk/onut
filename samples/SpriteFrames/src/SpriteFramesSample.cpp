@@ -3,6 +3,7 @@
 
 // Oak Nut include
 #include "onut/Font.h"
+#include "onut/Input.h"
 #include "onut/Settings.h"
 #include "onut/SpriteAnim.h"
 
@@ -28,15 +29,15 @@ void init()
 
 void update()
 {
-    if (OJustPressed(OINPUT_1))
+    if (OInputJustPressed(OKey1))
     {
         spriteAnim.play("idle");
     }
-    if (OJustPressed(OINPUT_2))
+    if (OInputJustPressed(OKey2))
     {
         spriteAnim.play("run");
     }
-    if (OJustPressed(OINPUT_3))
+    if (OInputJustPressed(OKey3))
     {
         spriteAnim.play("attack");
     }

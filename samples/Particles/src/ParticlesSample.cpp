@@ -5,6 +5,7 @@
 #include "onut/Anim.h"
 #include "onut/ParticleSystem.h"
 #include "onut/Font.h"
+#include "onut/Input.h"
 #include "onut/Settings.h"
 
 #include "onut_old.h"
@@ -31,11 +32,11 @@ void update()
 {
     emitter.setTransform(position);
 
-    if (OJustPressed(OINPUT_1))
+    if (OInputJustPressed(OKey1))
     {
         OEmitPFX("test.pfx", Vector3{OScreenWf / 3, OScreenHf / 2, 0});
     }
-    if (OJustPressed(OINPUT_2))
+    if (OInputJustPressed(OKey2))
     {
         if (emitter.isPlaying())
         {

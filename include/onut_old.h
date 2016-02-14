@@ -2,8 +2,6 @@
 #include "onut/ParticleSystem.h"
 
 #include "DefineHelpers.h"
-#include "Input.h"
-#include "GamePad.h"
 #include "onutUI.h"
 #include "ParticleSystemManager.h"
 #include "PrimitiveBatch.h"
@@ -20,7 +18,6 @@ extern onut::SpriteBatch*               OSpriteBatch;
 extern onut::PrimitiveBatch*            OPrimitiveBatch;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern Vector2                          OMousePos;
-extern onut::Input*                     OInput;
 extern onut::Window*                    OWindow;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;
@@ -50,11 +47,6 @@ namespace onut
             std::bind(&TstateType::update, &stateManager),
             std::bind(&TstateType::render, &stateManager));
     }
-
-    /**
-    Get a gamepad for index (0 to 3)
-    */
-    GamePad* getGamePad(int index);
 }
 
 #define ORun onut::run
@@ -77,57 +69,6 @@ inline onut::UIControl* OLoadUI(const std::string& name)
 {
     std::string filename = "../../assets/ui/" + name;
     return new onut::UIControl(filename.c_str());
-}
-
-//--- Game pads
-inline onut::GamePad* OGamePad(int index)
-{
-    return onut::getGamePad(index);
-}
-
-inline bool OGamePadPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0)
-{
-    return OGamePad(gamePadIndex)->isPressed(button);
-}
-
-inline bool OGamePadJustPressed(onut::GamePad::eGamePad button, int gamePadIndex = 0)
-{
-    return OGamePad(gamePadIndex)->isJustPressed(button);
-}
-
-inline bool OGamePadJustReleased(onut::GamePad::eGamePad button, int gamePadIndex = 0)
-{
-    return OGamePad(gamePadIndex)->isJustReleased(button);
-}
-
-inline const Vector2& OLThumb(int gamePadIndex = 0)
-{
-    return OGamePad(gamePadIndex)->getLeftThumb();
-}
-
-inline const Vector2& ORThumb(int gamePadIndex = 0)
-{
-    return OGamePad(gamePadIndex)->getRightThumb();
-}
-
-inline bool OPressed(int state)
-{
-    return OInput->isStateDown(state);
-}
-
-inline bool OJustPressed(int state)
-{
-    return OInput->isStateJustDown(state);
-}
-
-inline bool OJustReleased(int state)
-{
-    return OInput->isStateJustUp(state);
-}
-
-inline bool OReleased(int state)
-{
-    return OInput->isStateUp(state);
 }
 
 inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent)

@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include "onut/GamePad.h"
 #include "onut/Settings.h"
 
 #include "onut_old.h"
@@ -27,32 +28,31 @@ void update()
 
 void drawController(int index, const Vector2& position)
 {
-    if (!OGamePad(index)->isConnected())
+    if (!OGetGamePad(index)->isConnected())
     {
         OSB->drawSprite(OGetTexture("gamepad.png"), position, Color(.5f));
     }
     else
     {
         OSB->drawSprite(OGetTexture(("gamepad" + std::to_string(index) + ".png").c_str()), position);
-        OSB->drawSprite(OGetTexture("lthumb.png"), position + OLThumb(index) * 12.f);
-        OSB->drawSprite(OGetTexture("rthumb.png"), position + ORThumb(index) * 12.f);
-        if (OGamePadPressed(OLThumbBtn, index)) OSB->drawSprite(OGetTexture("lthumbPress.png"), position + OLThumb(index) * 12.f);
-        if (OGamePadPressed(ORThumbBtn, index)) OSB->drawSprite(OGetTexture("rthumbPress.png"), position + ORThumb(index) * 12.f);
-        if (OGamePadPressed(ORBBtn, index)) OSB->drawSprite(OGetTexture("rb.png"), position);
-        if (OGamePadPressed(OLBBtn, index)) OSB->drawSprite(OGetTexture("lb.png"), position);
-        if (OGamePadPressed(ORBBtn, index)) OSB->drawSprite(OGetTexture("rb.png"), position);
-        if (OGamePadPressed(OBackBtn, index)) OSB->drawSprite(OGetTexture("back.png"), position);
-        if (OGamePadPressed(OStartBtn, index)) OSB->drawSprite(OGetTexture("start.png"), position);
-        if (OGamePadPressed(OABtn, index)) OSB->drawSprite(OGetTexture("a.png"), position);
-        if (OGamePadPressed(OBBtn, index)) OSB->drawSprite(OGetTexture("b.png"), position);
-        if (OGamePadPressed(OXBtn, index)) OSB->drawSprite(OGetTexture("x.png"), position);
-        if (OGamePadPressed(OYBtn, index)) OSB->drawSprite(OGetTexture("y.png"), position);
-        if (OGamePadPressed(OLeftBtn, index)) OSB->drawSprite(OGetTexture("dleft.png"), position);
-        if (OGamePadPressed(ORightBtn, index)) OSB->drawSprite(OGetTexture("dright.png"), position);
-        if (OGamePadPressed(OUpBtn, index)) OSB->drawSprite(OGetTexture("dup.png"), position);
-        if (OGamePadPressed(ODownBtn, index)) OSB->drawSprite(OGetTexture("ddown.png"), position);
-        if (OGamePadPressed(OLTBtn, index)) OSB->drawSprite(OGetTexture("lt.png"), position);
-        if (OGamePadPressed(ORTBtn, index)) OSB->drawSprite(OGetTexture("rt.png"), position);
+        OSB->drawSprite(OGetTexture("lthumb.png"), position + OGetGamePadLeftThumb(index) * 12.f);
+        OSB->drawSprite(OGetTexture("rthumb.png"), position + OGetGamePadRightThumb(index) * 12.f);
+        if (OGamePadPressed(OGamePadLeftThumb, index)) OSB->drawSprite(OGetTexture("lthumbPress.png"), position + OGetGamePadLeftThumb(index) * 12.f);
+        if (OGamePadPressed(OGamePadRightThumb, index)) OSB->drawSprite(OGetTexture("rthumbPress.png"), position + OGetGamePadRightThumb(index) * 12.f);
+        if (OGamePadPressed(OGamePadRightBumper, index)) OSB->drawSprite(OGetTexture("rb.png"), position);
+        if (OGamePadPressed(OGamePadLeftBumper, index)) OSB->drawSprite(OGetTexture("lb.png"), position);
+        if (OGamePadPressed(OGamePadBack, index)) OSB->drawSprite(OGetTexture("back.png"), position);
+        if (OGamePadPressed(OGamePadStart, index)) OSB->drawSprite(OGetTexture("start.png"), position);
+        if (OGamePadPressed(OGamePadA, index)) OSB->drawSprite(OGetTexture("a.png"), position);
+        if (OGamePadPressed(OGamePadB, index)) OSB->drawSprite(OGetTexture("b.png"), position);
+        if (OGamePadPressed(OGamePadX, index)) OSB->drawSprite(OGetTexture("x.png"), position);
+        if (OGamePadPressed(OGamePadY, index)) OSB->drawSprite(OGetTexture("y.png"), position);
+        if (OGamePadPressed(OGamePadDPadLeft, index)) OSB->drawSprite(OGetTexture("dleft.png"), position);
+        if (OGamePadPressed(OGamePadDPadRight, index)) OSB->drawSprite(OGetTexture("dright.png"), position);
+        if (OGamePadPressed(OGamePadDPadUp, index)) OSB->drawSprite(OGetTexture("dup.png"), position);
+        if (OGamePadPressed(OGamePadDPadDown, index)) OSB->drawSprite(OGetTexture("ddown.png"), position);
+        if (OGamePadPressed(OGamePadLeftTrigger, index)) OSB->drawSprite(OGetTexture("lt.png"), position);
+        if (OGamePadPressed(OGamePadRightTrigger, index)) OSB->drawSprite(OGetTexture("rt.png"), position);
     }
 }
 

@@ -1,12 +1,13 @@
 #include "onut/ContentManager.h"
 #include "onut/Font.h"
+#include "onut/GamePad.h"
+#include "onut/Input.h"
 #include "onut/onut.h"
 #include "onut/Settings.h"
 #include "onut/Texture.h"
 #include "onut/Updater.h"
 
 #include "audio/Audio.h"
-#include "InputDevice.h"
 #include "onut_old.h"
 #include "Window.h"
 
@@ -21,14 +22,11 @@ onut::Window*                       OWindow = nullptr;
 onut::Renderer*                     ORenderer = nullptr;
 onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
-onut::GamePad*                      g_gamePads[4] = {nullptr};
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous                   g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
 Vector2                             OMousePos;
-onut::InputDevice*                  g_inputDevice = nullptr;
-onut::Input*                        OInput = nullptr;
 onut::UIContext*                    OUIContext = nullptr;
 onut::UIControl*                    OUI = nullptr;
 
@@ -216,14 +214,7 @@ namespace onut
         oContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
-        g_inputDevice = new InputDevice(OWindow);
-        OInput = new onut::Input(OINPUT_MOUSEZ + 1);
-
-        // Gamepads
-        for (int i = 0; i < 4; ++i)
-        {
-            g_gamePads[i] = new GamePad(i);
-        }
+        oInput = OInput::create();
 
         // Audio
 #ifdef WIN32
@@ -254,12 +245,7 @@ namespace onut
         delete OUIContext;
         delete OParticles;
         delete g_pAudioEngine;
-        for (int i = 0; i < 4; ++i)
-        {
-            delete g_gamePads[i];
-        }
-        delete OInput;
-        delete g_inputDevice;
+        oInput = nullptr;
         oContentManager = nullptr;
         delete OPB;
         delete OSB;
@@ -323,35 +309,31 @@ namespace onut
             ODT = onut::getTimeInfo().getDeltaTime<float>();
             while (framesToUpdate--)
             {
-                g_inputDevice->update();
-                OInput->update();
+                oInput->update();
                 POINT cur;
                 GetCursorPos(&cur);
                 ScreenToClient(OWindow->getHandle(), &cur);
-                OInput->mousePos.x = cur.x;
-                OInput->mousePos.y = cur.y;
-                OInput->mousePosf.x = static_cast<float>(cur.x);
-                OInput->mousePosf.y = static_cast<float>(cur.y);
-                OMousePos = OInput->mousePosf;
-                for (auto& gamePad : g_gamePads)
-                {
-                    gamePad->update();
-                }
+                oInput->mousePos.x = cur.x;
+                oInput->mousePos.y = cur.y;
+                oInput->mousePosf.x = static_cast<float>(cur.x);
+                oInput->mousePosf.y = static_cast<float>(cur.y);
                 oUpdater->update();
+                auto mousePosf = OGetMousePos();
                 if (OUIContext->useNavigation)
                 {
-                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OGamePadPressed(OABtn), false, false, 
-                                OGamePadJustPressed(OLeftBtn) || OGamePadJustPressed(OLLeftBtn),
-                                OGamePadJustPressed(ORightBtn) || OGamePadJustPressed(OLRightBtn),
-                                OGamePadJustPressed(OUpBtn) || OGamePadJustPressed(OLUpBtn),
-                                OGamePadJustPressed(ODownBtn) || OGamePadJustPressed(OLDownBtn),
+                    OUI->update(*OUIContext, sUIVector2(mousePosf.x, mousePosf.y), OGamePadPressed(OGamePadA), false, false,
+                                OGamePadJustPressed(OGamePadDPadLeft) || OGamePadJustPressed(OGamePadLeftThumbLeft),
+                                OGamePadJustPressed(OGamePadDPadRight) || OGamePadJustPressed(OGamePadLeftThumbRight),
+                                OGamePadJustPressed(OGamePadDPadUp) || OGamePadJustPressed(OGamePadLeftThumbUp),
+                                OGamePadJustPressed(OGamePadDPadDown) || OGamePadJustPressed(OGamePadLeftThumbDown),
                                 0.f);
                 }
                 else
                 {
-                    OUI->update(*OUIContext, sUIVector2(OInput->mousePosf.x, OInput->mousePosf.y), OPressed(OINPUT_MOUSEB1), OPressed(OINPUT_MOUSEB2), OPressed(OINPUT_MOUSEB3),
+                    OUI->update(*OUIContext, sUIVector2(mousePosf.x, mousePosf.y), 
+                                OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),
                                 false, false, false, false, 
-                                OPressed(OINPUT_LCONTROL), OInput->getStateValue(OINPUT_MOUSEZ));
+                                OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
                 }
                 OParticles->update();
                 if (updateCallback)
@@ -375,12 +357,6 @@ namespace onut
         }
 
         cleanup();
-    }
-
-    GamePad* getGamePad(int index)
-    {
-        assert(index >= 0 && index <= 3);
-        return g_gamePads[index];
     }
 
     const TimeInfo<>& getTimeInfo()
