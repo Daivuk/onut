@@ -29,7 +29,7 @@ void update()
 void render()
 {
     // Clear to dark gray
-    ORenderer->clear({.35f, .35f, .35f, 1});
+    oRenderer->clear({.35f, .35f, .35f, 1});
 
     auto pFont = OGetFont("main.fnt");
     auto pFontBig = OGetFont("mainBig.fnt");

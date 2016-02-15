@@ -128,9 +128,6 @@
     <ClInclude Include="..\..\include\RectUtils.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Renderer.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -242,11 +239,35 @@
     <ClInclude Include="..\..\src\InputDevice.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Renderer.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\RendererD3D11.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\BlendMode.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SampleMode.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\PrimitiveMode.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Shader.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\VertexBuffer.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\IndexBuffer.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ShaderD3D11.h">
+      <Filter>resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Renderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Window.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -432,6 +453,24 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Input.cpp">
       <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Renderer.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\RendererD3D11.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\IndexBuffer.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Shader.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\VertexBuffer.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ShaderD3D11.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include "onut/Maths.h"
+#include "onut/PrimitiveMode.h"
 #include "onut/Texture.h"
 
 #include <memory>
@@ -13,21 +14,13 @@ using OTextureRef = std::shared_ptr<onut::Texture>;
 
 namespace onut
 {
-    enum class ePrimitiveType
-    {
-        POINTS,
-        LINES,
-        LINE_STRIP,
-        TRIANGLES
-    };
-
     class PrimitiveBatch
     {
     public:
         PrimitiveBatch();
         virtual ~PrimitiveBatch();
 
-        void begin(ePrimitiveType primitiveType, const OTextureRef& pTexture = nullptr, const Matrix& transform = Matrix::Identity);
+        void begin(PrimitiveMode primitiveType, const OTextureRef& pTexture = nullptr, const Matrix& transform = Matrix::Identity);
         void draw(const Vector2& position, const Color& color = Color::White, const Vector2& texCoord = Vector2::Zero);
         void end();
 
@@ -55,6 +48,6 @@ namespace onut
         OTextureRef m_pTexWhite;
         OTextureRef m_pTexture;
 
-        ePrimitiveType              m_primitiveType;
+        PrimitiveMode m_primitiveType;
     };
 }

@@ -6,6 +6,7 @@
 #include "onut/ParticleSystem.h"
 #include "onut/Font.h"
 #include "onut/Input.h"
+#include "onut/Renderer.h"
 #include "onut/Settings.h"
 
 #include "onut_old.h"
@@ -56,7 +57,7 @@ void update()
 void render()
 {
     // Clear to black
-    ORenderer->clear({0, 0, 0, 1});
+    oRenderer->clear({0, 0, 0, 1});
 
     OSB->begin();
 

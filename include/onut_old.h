@@ -6,14 +6,12 @@
 #include "ParticleSystemManager.h"
 #include "PrimitiveBatch.h"
 #include "RectUtils.h"
-#include "Renderer.h"
 #include "SpriteBatch.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
 #include "Window.h"
 
 // For quick stuff, we have shortcuts outside of the namespace
-extern onut::Renderer*                  ORenderer;
 extern onut::SpriteBatch*               OSpriteBatch;
 extern onut::PrimitiveBatch*            OPrimitiveBatch;
 extern onut::ParticleSystemManager<>*   OParticles;

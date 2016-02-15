@@ -77,7 +77,7 @@ void init()
 void render()
 {
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Draw Info
     auto pFont = OGetFont("font.fnt");

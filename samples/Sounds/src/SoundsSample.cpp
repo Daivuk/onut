@@ -95,7 +95,7 @@ void update()
 void render()
 {
     // Clear to black
-    ORenderer->clear({0, 0, 0, 1});
+    oRenderer->clear({0, 0, 0, 1});
 
     // Draw info
     auto pFont = OGetFont("font.fnt");

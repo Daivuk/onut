@@ -54,7 +54,7 @@ void render()
     auto pFont = OGetFont("font.fnt");
 
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Begin a batch
     OSpriteBatch->begin();

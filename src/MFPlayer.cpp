@@ -2,8 +2,9 @@
 #include "MFPlayer.h"
 #include "onut/Texture.h"
 
-#include "Utils.h"
 #include "onut_old.h"
+#include "RendererD3D11.h"
+#include "Utils.h"
 
 #include <cassert>
 #include <codecvt>
@@ -153,6 +154,7 @@ namespace onut
     void MFPlayer::init(const OTextureRef& pRenderTarget)
     {
         m_pRenderTarget = pRenderTarget;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
 
         HRESULT ret;
 
@@ -178,7 +180,7 @@ namespace onut
         assert(ret == S_OK);
 
         ID3D10Multithread *pMultithread = nullptr;
-        ID3D11Device *pDevice = ORenderer->getDevice();
+        ID3D11Device *pDevice = pRendererD3D11->getDevice();
         ret = pDevice->QueryInterface(IID_PPV_ARGS(&pMultithread));
         assert(ret == S_OK);
         pMultithread->SetMultithreadProtected(TRUE);
@@ -187,7 +189,7 @@ namespace onut
         UINT resetToken = 0;
         ret = MFCreateDXGIDeviceManager(&resetToken, &m_pDXGIManager);
         assert(ret == S_OK);
-        ret = m_pDXGIManager->ResetDevice(ORenderer->getDevice(), resetToken);
+        ret = m_pDXGIManager->ResetDevice(pRendererD3D11->getDevice(), resetToken);
         assert(ret == S_OK);
         ret = pAttributes->SetUnknown(MF_MEDIA_ENGINE_DXGI_MANAGER, m_pDXGIManager);
         assert(ret == S_OK);

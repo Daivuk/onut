@@ -97,8 +97,8 @@ namespace onut
 
     void ParticleEmitter::render()
     {
-        auto& camDir = ORenderer->getCameraDir();
-        auto& camUp = ORenderer->getCameraUp();
+        auto camDir = -Vector3::UnitZ;
+        auto camUp = -Vector3::UnitY;
         auto camRight = camDir.Cross(camUp);
 
         for (decltype(m_particles.size()) i = 0; i < m_particles.size(); ++i)

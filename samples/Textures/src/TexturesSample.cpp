@@ -74,7 +74,7 @@ void update()
 void render()
 {
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Draw stuff to our render target
     pRenderTarget->bindRenderTarget();
@@ -104,7 +104,7 @@ void render()
     // Draw out resulted textures
     auto pFont = OGetFont("font.fnt");
     OSpriteBatch->begin(Matrix::CreateTranslation(80, 212, 0));
-    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Nearest);
+    OSpriteBatch->changeFiltering(OFilterNearest);
 
     OSB->drawRect(pTextureFromFile, {0, 0, 128, 128});
     OSB->drawRect(pTextureFromFileData, {128, 0, 128, 128});

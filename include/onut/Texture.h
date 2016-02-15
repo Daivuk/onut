@@ -13,7 +13,7 @@ OForwardDeclare(ContentManager);
 
 namespace onut
 {
-    class Texture final : public Resource
+    class Texture final : public Resource, public std::enable_shared_from_this<Texture>
     {
     public:
         static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = true);

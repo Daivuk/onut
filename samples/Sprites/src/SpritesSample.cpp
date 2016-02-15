@@ -68,7 +68,7 @@ void render()
     auto pChainTexture = OGetTexture("chain.png");
 
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Begin a batch
     OSpriteBatch->begin(batchTransform);
@@ -114,17 +114,17 @@ void render()
     OSpriteBatch->drawBeam(pChainTexture, Vector2(448, 520), Vector2(648, 480), 32.0f, Color::White, g_spriteAngle * .1f);
 
     // Blend modes
-    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Add);
+    OSpriteBatch->changeBlendMode(OBlendAdd);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(400, 50), Color::White, 0, .25f);
-    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Alpha);
+    OSpriteBatch->changeBlendMode(OBlendAlpha);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(450, 50), Color::White, 0, .25f);
-    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::ForceWrite);
+    OSpriteBatch->changeBlendMode(OBlendForceWrite);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(500, 50), Color::White, 0, .25f);
-    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Multiplied);
+    OSpriteBatch->changeBlendMode(OBlendMultiply);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(550, 50), Color::White, 0, .25f);
-    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::Opaque);
+    OSpriteBatch->changeBlendMode(OBlendOpaque);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(600, 50), Color::White, 0, .25f);
-    OSpriteBatch->changeBlendMode(onut::SpriteBatch::eBlendMode::PreMultiplied);
+    OSpriteBatch->changeBlendMode(OBlendPreMultiplied);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(650, 50), Color::White, 0, .25f);
 
     // Origin
@@ -136,9 +136,9 @@ void render()
     OSpriteBatch->drawCross(Vector2(600, 200), 10.f, Color(1, 1, 0, 1));
 
     // Filtering
-    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Nearest);
+    OSpriteBatch->changeFiltering(OFilterNearest);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 100), Color::White, 0.f, 1.5f);
-    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Linear);
+    OSpriteBatch->changeFiltering(OFilterLinear);
     OSpriteBatch->drawSprite(pNutTexture, Vector2(725, 300), Color::White, 0.f, 1.5f);
 
     // End and flush the batch

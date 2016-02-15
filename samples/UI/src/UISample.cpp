@@ -44,5 +44,5 @@ void update()
 void render()
 {
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 }

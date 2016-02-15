@@ -1,5 +1,7 @@
 #pragma once
+#include "onut/BlendMode.h"
 #include "onut/Maths.h"
+#include "onut/SampleMode.h"
 
 #include "onut/ForwardDeclaration.h"
 OForwardDeclare(Texture);
@@ -9,29 +11,11 @@ namespace onut
     class SpriteBatch
     {
     public:
-        enum class eBlendMode
-        {
-            Opaque,
-            Alpha,
-            Add,
-            PreMultiplied,
-            Multiplied,
-            ForceWrite,
-            BlendModeCount
-        };
-
-        enum class eFiltering
-        {
-            Nearest,
-            Linear,
-            FilteringCount
-        };
-
         SpriteBatch();
         virtual ~SpriteBatch();
 
-        void begin(const Matrix& transform = Matrix::Identity, eBlendMode blendMode = eBlendMode::PreMultiplied);
-        void begin(eBlendMode blendMode);
+        void begin(const Matrix& transform = Matrix::Identity, BlendMode blendMode = BlendMode::PreMultiplied);
+        void begin(BlendMode blendMode);
         void drawAbsoluteRect(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
         void drawRect(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
         void drawInclinedRect(const OTextureRef& pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);
@@ -50,8 +34,8 @@ namespace onut
         void drawCross(const Vector2& position, float size, const Color& color = Color::White, float thickness = 2.f);
         void end();
 
-        void changeBlendMode(eBlendMode blendMode);
-        void changeFiltering(eFiltering filtering);
+        void changeBlendMode(BlendMode blendMode);
+        void changeFiltering(sample::Filtering filtering);
 
         const Matrix& getTransform() const { return m_currentTransform; }
 
@@ -81,12 +65,10 @@ namespace onut
         void flush();
         void changeTexture(const OTextureRef& pTexture);
 
-        OTextureRef                 m_pTexture = nullptr;
-        unsigned int                m_spriteCount = 0;
-        eBlendMode                  m_curBlendMode = eBlendMode::PreMultiplied;
-        ID3D11BlendState*           m_pBlendStates[static_cast<int>(eBlendMode::BlendModeCount)];
-        eFiltering                  m_curFiltering = eFiltering::Linear;
-        ID3D11SamplerState*         m_pSamplers[static_cast<int>(eFiltering::FilteringCount)];
-        Matrix                      m_currentTransform;
+        OTextureRef m_pTexture = nullptr;
+        unsigned int m_spriteCount = 0;
+        BlendMode m_curBlendMode = BlendMode::PreMultiplied;
+        sample::Filtering m_curFiltering = sample::Filtering::Linear;
+        Matrix m_currentTransform;
     };
 }

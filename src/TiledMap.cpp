@@ -406,7 +406,7 @@ namespace onut
 //        if (!m_tilesetCount) return nullptr;
 //
 //        pMinimap = OTexture::createRenderTarget({m_width, m_height});
-//        ORenderer->bindRenderTarget(pMinimap);
+//        oRenderer->bindRenderTarget(pMinimap);
 //
 //        auto tileWidth = m_tileSets[0].tileWidth;
 //
@@ -421,7 +421,7 @@ namespace onut
 //        egPostProcess();
 //        egStatePop();
 //
-//        ORenderer->bindRenderTarget(nullptr);
+//        oRenderer->bindRenderTarget(nullptr);
 //        return pMinimap;
         return m_pMinimap;
     }

@@ -1,7 +1,8 @@
+#include "onut/Texture.h"
+
+#include "RendererD3D11.h"
 #include "PrimitiveBatch.h"
 #include "onut_old.h"
-
-#include "onut/Texture.h"
 
 namespace onut
 {
@@ -11,8 +12,9 @@ namespace onut
         unsigned char white[4] = {255, 255, 255, 255};
         m_pTexWhite = OTexture::createFromData(white, {1, 1}, false);
 
-        auto pDevice = ORenderer->getDevice();
-        auto pDeviceContext = ORenderer->getDeviceContext();
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDevice = pRendererD3D11->getDevice();
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
         SVertexP2T2C4 vertices[MAX_VERTEX_COUNT];
 
@@ -40,7 +42,7 @@ namespace onut
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
     }
 
-    void PrimitiveBatch::begin(ePrimitiveType primitiveType, const OTextureRef& pTexture, const Matrix& transform)
+    void PrimitiveBatch::begin(PrimitiveMode primitiveType, const OTextureRef& pTexture, const Matrix& transform)
     {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
@@ -48,9 +50,11 @@ namespace onut
         else m_pTexture = pTexture;
 
         m_primitiveType = primitiveType;
-		ORenderer->setupFor2D(transform);
+		oRenderer->setupFor2D(transform);
         m_isDrawing = true;
-        ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        pRendererD3D11->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
     }
 
     void PrimitiveBatch::draw(const Vector2& position, const Color& color, const Vector2& texCoord)
@@ -64,7 +68,7 @@ namespace onut
 
         if (m_vertexCount == MAX_VERTEX_COUNT)
         {
-            if (m_primitiveType == ePrimitiveType::LINE_STRIP)
+            if (m_primitiveType == OPrimitiveLineStrip)
             {
                 auto lastVert = *pVerts;
 
@@ -90,7 +94,8 @@ namespace onut
         {
             flush();
         }
-        ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        pRendererD3D11->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
     }
 
     void PrimitiveBatch::flush()
@@ -100,26 +105,15 @@ namespace onut
             return; // Nothing to flush
         }
 
-        auto pDeviceContext = ORenderer->getDeviceContext();
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        m_pTexture->bind();
-        switch (m_primitiveType)
-        {
-            case ePrimitiveType::POINTS:
-                pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-                break;
-            case ePrimitiveType::LINES:
-                pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-                break;
-            case ePrimitiveType::LINE_STRIP:
-                pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-                break;
-            case ePrimitiveType::TRIANGLES:
-                pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                break;
-        }
+        *oRenderer = m_pTexture;
+        *oRenderer = m_primitiveType;
+        oRenderer->applyRenderStates();
+
         pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);
         pDeviceContext->Draw(m_vertexCount, 0);
 

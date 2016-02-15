@@ -38,9 +38,9 @@ void update()
 void render()
 {
     // Clear
-    ORenderer->clear(OColorHex(0));
+    oRenderer->clear(OColorHex(0));
 
     OSpriteBatch->begin();
-    OSB->drawRect(pVideoTexture, ORectFit(ORectFullScreen, pVideoTexture->getSize()));
+    OSpriteBatch->drawRect(pVideoTexture, ORectFit(ORectFullScreen, pVideoTexture->getSize()));
     OSpriteBatch->end();
 }

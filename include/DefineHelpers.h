@@ -1,19 +1,6 @@
 #pragma once
 #include "onut/onut.h"
-
-//--- Resolution helpers
-#define OScreen             ORenderer->getResolution()
-#define OScreenf            Vector2{static_cast<float>(ORenderer->getResolution().x), static_cast<float>(ORenderer->getResolution().y)}
-#define OScreenW            ORenderer->getResolution().x
-#define OScreenH            ORenderer->getResolution().y
-#define OScreenWf           static_cast<float>(ORenderer->getResolution().x)
-#define OScreenHf           static_cast<float>(ORenderer->getResolution().y)
-#define OScreenCenter       (ORenderer->getResolution() / 2)
-#define OScreenCenterf      Vector2{static_cast<float>(ORenderer->getResolution().x / 2), static_cast<float>(ORenderer->getResolution().y / 2)}
-#define OScreenCenterX      (ORenderer->getResolution().x / 2)
-#define OScreenCenterY      (ORenderer->getResolution().y / 2)
-#define OScreenCenterXf     static_cast<float>(ORenderer->getResolution().x / 2)
-#define OScreenCenterYf     static_cast<float>(ORenderer->getResolution().y / 2)
+#include "onut/Renderer.h"
 
 //--- Rect helpers for drawing
 // Centered origin sprite
@@ -51,9 +38,3 @@ inline Rect ORectFit(const TparentRect& parentRect, const Tsize& size)
 #define OSequence(T, ...)                       std::vector<onut::Anim<T>::KeyFrame>(__VA_ARGS__)
 #define OAnimWait(val, t)                       {val,t,OTeleport}
 #define OAnimAppleStyleBounce(from, to)         {from,0.f,OTeleport},{to,.25f,OEaseOut},{from,.5f,OBounceOut}
-   
-// Alignement of 1D position
-#define OPosAbsX(x, p)                          ((x) + (p))
-#define OPosAbsY(y, p)                          ((y) + (p))
-#define OPosRelX(x, p)                          (OScreenWf - (x) - (p))
-#define OPosRelY(y, p)                          (OScreenHf - (y) - (p))

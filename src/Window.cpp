@@ -1,4 +1,5 @@
 ﻿#include "onut/Point.h"
+#include "onut/Renderer.h"
 #include "onut/Settings.h"
 
 #include "onut_old.h"
@@ -19,9 +20,9 @@ namespace onut
         }
         else if (msg == WM_SIZE)
         {
-            if (ORenderer)
+            if (oRenderer)
             {
-                ORenderer->onResize(POINT{LOWORD(lparam), HIWORD(lparam)});
+                oRenderer->onResize(Point{LOWORD(lparam), HIWORD(lparam)});
             }
             if (OUIContext)
             {

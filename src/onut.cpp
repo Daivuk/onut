@@ -3,6 +3,7 @@
 #include "onut/GamePad.h"
 #include "onut/Input.h"
 #include "onut/onut.h"
+#include "onut/Renderer.h"
 #include "onut/Settings.h"
 #include "onut/Texture.h"
 #include "onut/Updater.h"
@@ -19,7 +20,6 @@ using namespace DirectX;
 
 // Our engine services
 onut::Window*                       OWindow = nullptr;
-onut::Renderer*                     ORenderer = nullptr;
 onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
@@ -46,7 +46,13 @@ namespace onut
         OUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
         {
             OSB->end();
-            ORenderer->setScissor(enabled, onut::UI2Onut(rect));
+            oRenderer->renderStates.scissorEnabled = enabled;
+            oRenderer->renderStates.scissor = iRect{
+                static_cast<int>(rect.position.x),
+                static_cast<int>(rect.position.y),
+                static_cast<int>(rect.position.x + rect.size.x),
+                static_cast<int>(rect.position.y + rect.size.y)
+            };
             OSB->begin();
         };
 
@@ -186,7 +192,7 @@ namespace onut
         OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
         {
             OSB->end();
-            ORenderer->getRenderTarget()->blur();
+            oRenderer->renderStates.renderTarget.get()->blur();
             OSB->begin();
             OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .5f));
         });
@@ -203,7 +209,8 @@ namespace onut
         OWindow = new Window(oSettings->getResolution(), oSettings->getIsResizableWindow());
 
         // DirectX
-        ORenderer = new Renderer(*OWindow);
+        oRenderer = ORenderer::create(OWindow);
+        oRenderer->init(OWindow);
 
         // SpriteBatch
         OSB = new SpriteBatch();
@@ -249,7 +256,7 @@ namespace onut
         oContentManager = nullptr;
         delete OPB;
         delete OSB;
-        delete ORenderer;
+        oRenderer = nullptr;
         delete OWindow;
     }
 
@@ -344,7 +351,7 @@ namespace onut
 
             // Render
             g_timeInfo.render();
-            ORenderer->beginFrame();
+            oRenderer->beginFrame();
             if (renderCallback)
             {
                 renderCallback();
@@ -353,7 +360,7 @@ namespace onut
             OSB->begin();
             OUI->render(*OUIContext);
             OSB->end();
-            ORenderer->endFrame();
+            oRenderer->endFrame();
         }
 
         cleanup();

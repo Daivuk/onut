@@ -88,7 +88,7 @@ void render()
     auto pFrameTexture = OGetTexture("frameSmall.png");
 
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Draw sprites
     OSpriteBatch->begin();

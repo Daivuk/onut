@@ -59,7 +59,7 @@ void drawController(int index, const Vector2& position)
 void render()
 {
     // Clear
-    ORenderer->clear(Color::Black);
+    oRenderer->clear(Color::Black);
 
     // Begin a batch
     OSpriteBatch->begin();

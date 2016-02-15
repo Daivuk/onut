@@ -51,7 +51,7 @@ void render()
     };
 
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Draw landscape to our render targets
     drawLandscapeToRenderTarget(pBlured);

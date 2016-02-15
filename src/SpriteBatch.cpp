@@ -1,14 +1,18 @@
-#include <cmath>
-#include "onut_old.h"
+#include "onut/PrimitiveMode.h"
 #include "onut/Texture.h"
+#include "onut_old.h"
+#include "RendererD3D11.h"
 #include "SpriteBatch.h"
+
+#include <cmath>
 
 namespace onut
 {
     SpriteBatch::SpriteBatch()
     {
-        auto pDevice = ORenderer->getDevice();
-        auto pDeviceContext = ORenderer->getDeviceContext();
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDevice = pRendererD3D11->getDevice();
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = {255, 255, 255, 255};
@@ -61,180 +65,35 @@ namespace onut
 
         ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
         assert(ret == S_OK);
-
-        // Blend modes
-        D3D11_BLEND_DESC blendDesc;
-        blendDesc = D3D11_BLEND_DESC
-        {
-            FALSE,
-            FALSE,
-            {{
-                    FALSE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ZERO,
-                    D3D11_BLEND_OP_ADD,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ZERO,
-                    D3D11_BLEND_OP_ADD,
-                    D3D10_COLOR_WRITE_ENABLE_ALL
-                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        };
-        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Opaque)]);
-        assert(ret == S_OK);
-        blendDesc = D3D11_BLEND_DESC
-        {
-            FALSE,
-            FALSE,
-            {{
-                    TRUE,
-                    D3D11_BLEND_SRC_ALPHA,
-                    D3D11_BLEND_INV_SRC_ALPHA,
-                    D3D11_BLEND_OP_ADD,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_OP_ADD,
-                    D3D10_COLOR_WRITE_ENABLE_ALL
-                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        };
-        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Alpha)]);
-        assert(ret == S_OK);
-        blendDesc = D3D11_BLEND_DESC
-        {
-            FALSE,
-            FALSE,
-            {{
-                    TRUE,
-                    D3D11_BLEND_SRC_ALPHA,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_OP_ADD,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_OP_ADD,
-                    D3D10_COLOR_WRITE_ENABLE_ALL
-                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        };
-        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Add)]);
-        assert(ret == S_OK);
-        blendDesc = D3D11_BLEND_DESC
-        {
-            FALSE,
-            FALSE,
-            {{
-                    TRUE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_INV_SRC_ALPHA,
-                    D3D11_BLEND_OP_ADD,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_OP_ADD,
-                    D3D10_COLOR_WRITE_ENABLE_ALL
-                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        };
-        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::PreMultiplied)]);
-        assert(ret == S_OK);
-        blendDesc = D3D11_BLEND_DESC
-        {
-            FALSE,
-            FALSE,
-            {{
-                    TRUE,
-                    D3D11_BLEND_DEST_COLOR,
-                    D3D11_BLEND_INV_SRC_ALPHA,
-                    D3D11_BLEND_OP_ADD,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_OP_ADD,
-                    D3D10_COLOR_WRITE_ENABLE_ALL
-                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        };
-        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::Multiplied)]);
-        assert(ret == S_OK);
-        blendDesc = D3D11_BLEND_DESC
-        {
-            FALSE,
-            FALSE,
-            {{
-                    TRUE,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ZERO,
-                    D3D11_BLEND_OP_ADD,
-                    D3D11_BLEND_ONE,
-                    D3D11_BLEND_ZERO,
-                    D3D11_BLEND_OP_ADD,
-                    D3D10_COLOR_WRITE_ENABLE_ALL
-                }, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
-        };
-        ret = pDevice->CreateBlendState(&blendDesc, &m_pBlendStates[static_cast<int>(eBlendMode::ForceWrite)]);
-        assert(ret == S_OK);
-
-        // Samplers
-        D3D11_SAMPLER_DESC samplerDesc;
-        samplerDesc = D3D11_SAMPLER_DESC
-        {
-            D3D11_FILTER_MIN_MAG_MIP_POINT,
-            D3D11_TEXTURE_ADDRESS_WRAP,
-            D3D11_TEXTURE_ADDRESS_WRAP,
-            D3D11_TEXTURE_ADDRESS_WRAP,
-            0.f,
-            1,
-            D3D11_COMPARISON_ALWAYS,
-            {0, 0, 0, 0},
-            0,
-            D3D11_FLOAT32_MAX
-        };
-        ret = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplers[static_cast<int>(eFiltering::Nearest)]);
-        assert(ret == S_OK);
-        samplerDesc = D3D11_SAMPLER_DESC
-        {
-            D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-            D3D11_TEXTURE_ADDRESS_WRAP,
-            D3D11_TEXTURE_ADDRESS_WRAP,
-            D3D11_TEXTURE_ADDRESS_WRAP,
-            0.f,
-            1,
-            D3D11_COMPARISON_ALWAYS,
-            {0, 0, 0, 0},
-            0,
-            D3D11_FLOAT32_MAX
-        };
-        ret = pDevice->CreateSamplerState(&samplerDesc, &m_pSamplers[static_cast<int>(eFiltering::Linear)]);
-        assert(ret == S_OK);
     }
 
     SpriteBatch::~SpriteBatch()
     {
-        for (int i = 0; i < static_cast<int>(eBlendMode::BlendModeCount); ++i)
-        {
-            m_pBlendStates[i]->Release();
-        }
-        for (int i = 0; i < static_cast<int>(eFiltering::FilteringCount); ++i)
-        {
-            m_pSamplers[i]->Release();
-        }
         if (m_pVertexBuffer) m_pVertexBuffer->Release();
         if (m_pIndexBuffer) m_pIndexBuffer->Release();
     }
 
-    void SpriteBatch::begin(eBlendMode blendMode)
+    void SpriteBatch::begin(BlendMode blendMode)
     {
         begin(Matrix::Identity, blendMode);
     }
 
-    void SpriteBatch::begin(const Matrix& transform, eBlendMode blendMode)
+    void SpriteBatch::begin(const Matrix& transform, BlendMode blendMode)
     {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        pRendererD3D11->setupFor2D(transform);
+
         m_currentTransform = transform;
-        ORenderer->setupFor2D(transform);
+        pRendererD3D11->setupFor2D(transform);
         m_curBlendMode = blendMode;
-        ORenderer->getDeviceContext()->OMSetBlendState(m_pBlendStates[static_cast<int>(blendMode)], NULL, 0xffffffff);
-        ORenderer->getDeviceContext()->PSSetSamplers(0, 1, &m_pSamplers[static_cast<int>(m_curFiltering)]);
         m_pTexture = nullptr;
         m_isDrawing = true;
-        ORenderer->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+        pRendererD3D11->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
     }
 
-    void SpriteBatch::changeBlendMode(eBlendMode blendMode)
+    void SpriteBatch::changeBlendMode(BlendMode blendMode)
     {
         if (!isInBatch()) return;
         if (m_curBlendMode == blendMode) return;
@@ -242,7 +101,7 @@ namespace onut
         begin(m_currentTransform, blendMode);
     }
 
-    void SpriteBatch::changeFiltering(eFiltering filtering)
+    void SpriteBatch::changeFiltering(sample::Filtering filtering)
     {
         if (m_curFiltering == filtering) return;
         auto bManageBatch = isInBatch();
@@ -786,7 +645,9 @@ namespace onut
         {
             flush();
         }
-        ORenderer->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
+
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        pRendererD3D11->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
     }
 
     void SpriteBatch::flush()
@@ -795,15 +656,19 @@ namespace onut
         {
             return; // Nothing to flush
         }
-        auto pDeviceContext = ORenderer->getDeviceContext();
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
         pDeviceContext->Unmap(m_pVertexBuffer, 0);
 
-        auto textureView = m_pTexture->getD3DResourceView();
-        pDeviceContext->PSSetShaderResources(0, 1, &textureView);
-        pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        *oRenderer = m_pTexture;
+        *oRenderer = m_curBlendMode;
+        *oRenderer = m_curFiltering;
+        *oRenderer = OPrimitiveTriangleList;
+
         pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);
         pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        oRenderer->applyRenderStates();
         pDeviceContext->DrawIndexed(6 * m_spriteCount, 0, 0);
 
         pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);

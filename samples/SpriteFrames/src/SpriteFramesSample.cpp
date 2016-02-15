@@ -49,10 +49,10 @@ void render()
     auto pFont = OGetFont("font.fnt");
 
     // Clear
-    ORenderer->clear(OColorHex(1d232d));
+    oRenderer->clear(OColorHex(1d232d));
 
     // Draw sprites
-    OSpriteBatch->changeFiltering(onut::SpriteBatch::eFiltering::Nearest);
+    OSpriteBatch->changeFiltering(OFilterNearest);
     OSpriteBatch->begin(Matrix::CreateScale(2.f));
     OSpriteBatch->drawSprite(pBaltPng, Vector2(4, 8), Color::White, Vector2::Zero);
 
