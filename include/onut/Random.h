@@ -1,6 +1,7 @@
 #pragma once
 #include "onut/Maths.h"
 
+#include <algorithm>
 #include <vector>
 
 namespace onut
@@ -50,10 +51,19 @@ namespace onut
     Ttype randt(const Ttype& min, const Ttype& max);
     template<typename Ttype>
     Ttype randt(const Ttype& max);
+
+    template<typename T>
+    void shuffle(std::vector<T>& vec)
+    {
+        std::random_shuffle(vec.begin(), vec.end());
+    }
 }
 
 #define ORandColor onut::randc
 #define ORandBool onut::randb
+#define ORandInt onut::randi
+#define ORandFloat onut::randf
 #define ORandArray onut::randa
 #define ORandVector onut::randv
 #define ORand onut::randt
+#define OShuffle onut::shuffle

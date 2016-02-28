@@ -200,11 +200,13 @@ namespace onut
                     if (m_isPingPonging)
                     {
                         m_value = m_keyFrames.front().value;
+                        m_keyFrames.clear();
                     }
                     else
                     {
                         m_value = m_keyFrames.back().value;
-                        auto& callback = m_keyFrames.back().callback;
+                        auto callback = m_keyFrames.back().callback;
+                        m_keyFrames.clear();
                         if (callback)
                         {
                             callback();
@@ -212,7 +214,6 @@ namespace onut
                     }
                 }
             }
-            m_keyFrames.clear();
         }
 
         void pause()
@@ -358,6 +359,7 @@ using OAnimBool = onut::Anim<bool>;
 using OAnimInt = onut::Anim<int>;
 using OAnimFloat = onut::Anim<float>;
 using OAnimDouble = onut::Anim<double>;
+using OAnimPoint = onut::Anim<Point>;
 using OAnimVector2 = onut::Anim<Vector2>;
 using OAnimVector3 = onut::Anim<Vector3>;
 using OAnimVector4 = onut::Anim<Vector4>;

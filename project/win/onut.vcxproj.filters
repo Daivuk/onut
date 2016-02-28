@@ -185,9 +185,6 @@
     <ClInclude Include="..\..\include\rapidjson\internal\pow10.h">
       <Filter>thirdparties\rapidjson\internal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\micropather.h">
-      <Filter>thirdparties\micropather</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\list\List.h">
       <Filter>thirdparties\list</Filter>
     </ClInclude>
@@ -265,6 +262,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ShaderD3D11.h">
       <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\micropather\micropather.h">
+      <Filter>thirdparties\micropather</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

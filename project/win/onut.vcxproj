@@ -14,7 +14,7 @@
     <ClInclude Include="..\..\include\ActionManager.h" />
     <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\list\List.h" />
-    <ClInclude Include="..\..\include\micropather.h" />
+    <ClInclude Include="..\..\include\micropather\micropather.h" />
     <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />

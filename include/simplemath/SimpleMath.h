@@ -457,6 +457,8 @@ struct Vector4 : public XMFLOAT4
     Vector4 Bottom(const Vector4& rect) const;
     Vector4 BottomRight(const Vector4& rect) const;
 
+    Vector4 Fill(const Vector2& size) const;
+    Vector4 Fill(const Vector4& rect) const;
     Vector4 Fit(const Vector2& size) const;
     Vector4 Fit(const Vector4& rect) const;
 

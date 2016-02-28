@@ -122,7 +122,7 @@ namespace onut
         result.y += (float)m_common.lineHeight;
         float curX = 0;
         unsigned int len = in_text.length();
-        int charId;
+        char charId;
         for (unsigned int i = 0; i < len; ++i)
         {
             charId = in_text[i];
@@ -138,7 +138,7 @@ namespace onut
                 i += 3;
                 continue;
             }
-            const auto& it = m_chars.find(charId);
+            const auto& it = m_chars.find(static_cast<int>(static_cast<unsigned char>(charId)));
             if (it == m_chars.end()) continue;
             auto pDatChar = it->second;
             if (i == len - 1)
@@ -278,12 +278,13 @@ namespace onut
                 i += 4;
                 continue;
             }
-            if (!m_chars.count(charId))
+            auto iCharId = static_cast<int>(static_cast<unsigned char>(charId));
+            if (!m_chars.count(iCharId))
             {
                 ++i;
                 continue;
             }
-            auto pDatChar = m_chars[charId];
+            auto pDatChar = m_chars[iCharId];
             auto& pTexture = m_pages[pDatChar->page]->pTexture;
 
             // Draw it here

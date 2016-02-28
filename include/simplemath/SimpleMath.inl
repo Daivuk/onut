@@ -1520,16 +1520,44 @@ inline Vector2 Vector4::BottomRight(const Vector2& offset) const {
     return std::move(Vector2{ x + z - offset.x, y + w - offset.y });
 }
 
-inline Vector4 Vector4::Fit(const Vector2& size) const
+inline Vector4 Vector4::Fill(const Vector2& size) const
 {
     float maxScale = std::max<float>(z / size.x, w / size.y);
     return std::move(Center({0, 0, size * maxScale}));
 }
 
-inline Vector4 Vector4::Fit(const Vector4& rect) const
+inline Vector4 Vector4::Fill(const Vector4& rect) const
 {
     float maxScale = std::max<float>(z / rect.z, w / rect.w);
     return std::move(Center({0, 0, rect.z * maxScale, rect.w * maxScale}));
+}
+
+inline Vector4 Vector4::Fit(const Vector2& size) const
+{
+    Rect ret;
+
+    float scale = std::min<>(z / size.x, w / size.y);
+
+    ret.x = x + z * .5f - size.x * scale * .5f;
+    ret.y = y + w * .5f - size.y * scale * .5f;
+    ret.z = size.x * scale;
+    ret.w = size.y * scale;
+
+    return std::move(ret);
+}
+
+inline Vector4 Vector4::Fit(const Vector4& rect) const
+{
+    Rect ret;
+
+    float scale = std::min<>(z / rect.z, w / rect.w);
+
+    ret.x = x + z * .5f - rect.z * scale * .5f;
+    ret.y = y + w * .5f - rect.w * scale * .5f;
+    ret.z = rect.z * scale;
+    ret.w = rect.w * scale;
+
+    return std::move(ret);
 }
 
 inline Vector4 Vector4::Grow(float by) const {

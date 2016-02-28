@@ -30,7 +30,7 @@ namespace onut
         void setGameName(const std::string& gameName);
 
         bool getIsResizableWindow() const { return m_isResizableWindow; }
-        void setIsResizableWindow(bool isBorderLessFullscreen);
+        void setIsResizableWindow(bool isResizableWindow);
 
         bool getBorderlessFullscreen() const { return m_isBorderLessFullscreen; }
         void setBorderlessFullscreen(bool m_isBorderLessFullscreen);

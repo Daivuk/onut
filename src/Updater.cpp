@@ -54,7 +54,11 @@ namespace onut
             ++i;
         }
 
-        for (auto& pTarget : m_toAdd) m_targets.push_back(pTarget);
+        for (auto& pTarget : m_toAdd)
+        {
+            if (!pTarget) continue;
+            m_targets.push_back(pTarget);
+        }
         m_toAdd.clear();
     }
 
@@ -77,6 +81,13 @@ namespace onut
         pTarget->m_pUpdater = nullptr;
         pTarget->m_isRegister = false;
 
+        for (size_t i = 0; i < m_toAdd.size(); ++i)
+        {
+            if (m_toAdd[i] == pTarget)
+            {
+                m_toAdd[i] = nullptr;
+            }
+        }
         for (size_t i = 0; i < m_targets.size(); ++i)
         {
             if (m_targets[i] == pTarget)

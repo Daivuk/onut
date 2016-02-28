@@ -11,14 +11,16 @@
 OForwardDeclare(Texture);
 OForwardDeclare(ContentManager);
 
+extern bool oGenerateMipmaps;
+
 namespace onut
 {
     class Texture final : public Resource, public std::enable_shared_from_this<Texture>
     {
     public:
-        static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = true);
-        static OTextureRef createFromFileData(const uint8_t* pData, uint32_t size, bool generateMipmaps = true);
-        static OTextureRef createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps = true);
+        static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = oGenerateMipmaps);
+        static OTextureRef createFromFileData(const uint8_t* pData, uint32_t size, bool generateMipmaps = oGenerateMipmaps);
+        static OTextureRef createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps = oGenerateMipmaps);
         static OTextureRef createRenderTarget(const Point& size, bool willBeUsedInEffects = false);
         static OTextureRef createScreenRenderTarget(bool willBeUsedInEffects = false);
         static OTextureRef createDynamic(const Point& size);

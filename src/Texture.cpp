@@ -10,6 +10,8 @@
 #include <cassert>
 #include <vector>
 
+bool oGenerateMipmaps = true;
+
 namespace onut
 {
     OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX)

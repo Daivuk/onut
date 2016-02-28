@@ -32,6 +32,11 @@ namespace onut
         return from + (to - from) * static_cast<double>(t);
     }
 
+    Point lerp(const Point& from, const Point& to, float t)
+    {
+        return Point(lerp(from.x, to.x, t), lerp(from.y, to.y, t));
+    }
+
     Vector2 lerp(const Vector2& from, const Vector2& to, float t)
     {
         return Vector2::Lerp(from, to, t);
