@@ -26,7 +26,6 @@ AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous                   g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
-Vector2                             OMousePos;
 onut::UIContext*                    OUIContext = nullptr;
 onut::UIControl*                    OUI = nullptr;
 

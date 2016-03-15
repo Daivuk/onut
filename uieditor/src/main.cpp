@@ -5,6 +5,10 @@
 #include "menu.h"
 #include "styles.h"
 
+#include "onut/Input.h"
+#include "onut/Renderer.h"
+#include "onut/Settings.h"
+
 void init();
 void update();
 void render();
@@ -18,13 +22,13 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 {
     auto screenW = GetSystemMetrics(SM_CXSCREEN) * 4 / 5;
     auto screenH = GetSystemMetrics(SM_CYSCREEN) * 4 / 5;
-    OSettings->setUserSettingDefault("width", std::to_string(screenW));
-    OSettings->setUserSettingDefault("height", std::to_string(screenH));
-    OSettings->setResolution({std::stoi(OSettings->getUserSetting("width")), 
-                              std::stoi(OSettings->getUserSetting("height"))});
-    OSettings->setGameName("Oak Nut UI Editor");
-    OSettings->setIsResizableWindow(true);
-    OSettings->setIsEditorMode(true);
+    oSettings->setUserSettingDefault("width", std::to_string(screenW));
+    oSettings->setUserSettingDefault("height", std::to_string(screenH));
+    oSettings->setResolution({std::stoi(oSettings->getUserSetting("width")),
+                             std::stoi(oSettings->getUserSetting("height"))});
+    oSettings->setGameName("Oak Nut UI Editor");
+    oSettings->setIsResizableWindow(true);
+    oSettings->setIsEditorMode(true);
 
     onut::run(init, update, render);
 
@@ -33,13 +37,21 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
-    OContentManager->addSearchPath("../../assets/textures/icons");
+    oContentManager->addSearchPath("../../assets/textures/icons");
 
     g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
     g_pUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
     {
         OSB->end();
-        ORenderer->setScissor(enabled, onut::UI2Onut(rect));
+        oRenderer->renderStates.scissorEnabled = enabled;
+        if (enabled)
+        {
+            oRenderer->renderStates.scissor = {
+                static_cast<int>(rect.position.x), 
+                static_cast<int>(rect.position.y), 
+                static_cast<int>(rect.position.x + rect.size.x),
+                static_cast<int>(rect.position.y + rect.size.y)};
+        }
         OSB->begin();
     };
     createUIStyles(g_pUIContext);
@@ -49,17 +61,22 @@ void init()
         OSB->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
         OSB->end();
 
-        ORenderer->setScissor(true, onut::UI2Onut(rect));
+        oRenderer->renderStates.scissorEnabled = true;
+        oRenderer->renderStates.scissor = {
+            static_cast<int>(rect.position.x),
+            static_cast<int>(rect.position.y),
+            static_cast<int>(rect.position.x + rect.size.x),
+            static_cast<int>(rect.position.y + rect.size.y)};
 
         // Render edited UIs
-        ORenderer->set2DCamera({-rect.position.x, -rect.position.y});
-        OSB->begin();
+        //oRenderer->set2DCamera();
+        OSB->begin(Matrix::CreateTranslation(rect.position.x, rect.position.y, 0.f));
         g_pDocument->render();
         OSB->end();
 
-        ORenderer->setScissor(false, onut::UI2Onut(rect));
+        oRenderer->renderStates.scissorEnabled = false;
 
-        ORenderer->set2DCamera({0, 0});
+        oRenderer->set2DCamera({0, 0});
         OSB->begin();
     });
 
@@ -93,13 +110,13 @@ void update()
     g_pUIContext->resize({OScreenWf, OScreenHf});
 
     // Update.
-    g_pUIScreen->update(*g_pUIContext, {OMousePos.x, OMousePos.y}, OInput->isStateDown(OINPUT_MOUSEB1), OInput->isStateDown(OINPUT_MOUSEB2), OInput->isStateDown(OINPUT_MOUSEB3));
+    g_pUIScreen->update(*g_pUIContext, {oInput->mousePosf.x, oInput->mousePosf.y}, OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3));
     g_pDocument->update();
 }
 
 void render()
 {
-    ORenderer->clear(OColorHex(1e1e1e));
+    oRenderer->clear(OColorHex(1e1e1e));
 
     OSB->begin();
     g_pUIScreen->render(*g_pUIContext);

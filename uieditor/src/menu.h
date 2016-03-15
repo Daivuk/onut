@@ -1,5 +1,5 @@
 #pragma once
-#include "onut.h"
+#include "onut_old.h"
 
 const UINT MENU_FILE_NEW = 101;
 const UINT MENU_FILE_OPEN = 102;

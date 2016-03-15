@@ -1,5 +1,7 @@
 #pragma once
-#include "onut.h"
+#include "onut/ContentManager.h"
+
+#include "onut_old.h"
 
 enum class eDocumentState : uint8_t
 {
@@ -25,7 +27,7 @@ public:
     onut::UIContext*            pUIContextEditorStyle = nullptr;
     onut::UIControl*            pUIScreen = nullptr;
     onut::UIControl*            pSelected = nullptr;
-    onut::ContentManager        contentManager;
+    OContentManagerRef          pContentManager;
 
     void onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);

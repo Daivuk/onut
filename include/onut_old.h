@@ -15,7 +15,6 @@
 extern onut::SpriteBatch*               OSpriteBatch;
 extern onut::PrimitiveBatch*            OPrimitiveBatch;
 extern onut::ParticleSystemManager<>*   OParticles;
-extern Vector2                          OMousePos;
 extern onut::Window*                    OWindow;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;

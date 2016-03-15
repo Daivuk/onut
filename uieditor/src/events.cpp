@@ -2,6 +2,10 @@
 #include "DocumentView.h"
 #include "events.h"
 
+#include "onut/Input.h"
+
+#include "Utils.h"
+
 extern DocumentView*        g_pDocument;
 extern onut::UIContext*     g_pUIContext;
 extern onut::UIControl*     g_pUIScreen;
@@ -55,7 +59,7 @@ onut::UIControl* getCreateParent()
     }
     else
     {
-        if (OInput->isStateDown(DIK_LSHIFT))
+        if (OInputPressed(OKeyLeftShift))
         {
             return pSelected;
         }

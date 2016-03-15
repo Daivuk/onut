@@ -2,6 +2,8 @@
 #include "DocumentView.h"
 #include "menu.h"
 
+#include "onut/Input.h"
+
 extern DocumentView*        g_pDocument;
 extern onut::ActionManager  g_actionManager;
 
@@ -125,7 +127,7 @@ void checkShortCut(uintptr_t key)
 {
     if (g_pMessageBox->getParent()) return;
 
-    if (OInput->isStateDown(DIK_LCONTROL))
+    if (oInput->isStateDown(OKeyLeftControl))
     {
         if (key == static_cast<uintptr_t>('N'))
         {
@@ -137,7 +139,7 @@ void checkShortCut(uintptr_t key)
         }
         else if (key == static_cast<uintptr_t>('S'))
         {
-            if (OInput->isStateDown(DIK_LSHIFT))
+            if (oInput->isStateDown(OKeyLeftShift))
             {
                 onMenu(MENU_FILE_SAVE_AS);
             }
@@ -148,7 +150,7 @@ void checkShortCut(uintptr_t key)
         }
         else if (key == static_cast<uintptr_t>('Z'))
         {
-            if (OInput->isStateDown(DIK_LSHIFT))
+            if (oInput->isStateDown(OKeyLeftShift))
             {
                 onMenu(MENU_EDIT_REDO);
             }

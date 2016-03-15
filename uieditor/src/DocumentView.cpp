@@ -2,6 +2,11 @@
 #include "DocumentView.h"
 #include "viewStyles.h"
 
+#include "onut/Input.h"
+#include "onut/Settings.h"
+
+#include "Utils.h"
+
 extern onut::UIControl*     g_pUIScreen;
 extern onut::UIContext*     g_pUIContext;
 extern onut::ActionManager  g_actionManager;
@@ -58,12 +63,14 @@ static const Color g_panelTitleBGColor = OColorHex(3f3f46);
 
 DocumentView::DocumentView(const std::string& filename)
 {
+    pContentManager = OContentManager::create();
+
     m_filename = filename;
     auto path = onut::getPath(filename);
     if (!path.empty())
     {
-        contentManager.addSearchPath(path);
-        contentManager.addSearchPath(path + "/../fonts");
+        pContentManager->addSearchPath(path);
+        pContentManager->addSearchPath(path + "/../");
     }
 
     if (!curARROW) curARROW = LoadCursor(nullptr, IDC_ARROW);
@@ -705,7 +712,7 @@ void DocumentView::onKeyDown(uintptr_t key)
             if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
             {
                 auto newRect = pSelected->getWorldRect(*pUIContext);
-                float speed = (OInput->isStateDown(DIK_LSHIFT) || OInput->isStateDown(DIK_RSHIFT)) ? 10.f : 1.f;
+                float speed = (OInputPressed(OKeyLeftShift) || OInputPressed(OKeyRightShift)) ? 10.f : 1.f;
                 switch (key)
                 {
                     case VK_LEFT:
@@ -730,13 +737,13 @@ void DocumentView::onKeyDown(uintptr_t key)
 
 void DocumentView::updateMovingGizmo()
 {
-    auto mouseDiff = OMousePos - m_mousePosOnDown;
+    auto mouseDiff = oInput->mousePosf - m_mousePosOnDown;
     if (!m_bStartMoving)
     {
         if (fabsf(mouseDiff.x) < 3 && fabsf(mouseDiff.y) < 3) return;
         m_bStartMoving = true;
     }
-    if (OInput->isStateDown(DIK_LSHIFT))
+    if (OInputPressed(OKeyLeftShift))
     {
         if (std::abs(mouseDiff.x) >= std::abs(mouseDiff.y))
         {
@@ -807,7 +814,7 @@ void DocumentView::updateMovingGizmo()
 
 void DocumentView::updateMovingHandle()
 {
-    auto mouseDiff = OMousePos - m_mousePosOnDown;
+    auto mouseDiff = oInput->mousePosf - m_mousePosOnDown;
     if (!m_bStartMoving)
     {
         if (fabsf(mouseDiff.x) < 3 && fabsf(mouseDiff.y) < 3) return;
@@ -818,7 +825,7 @@ void DocumentView::updateMovingHandle()
     Vector2 invAnchor{1, 1};
 
     // Grow/Shrink on both side equally
-    if (OInput->isStateDown(DIK_LSHIFT) && (
+    if (OInputPressed(OKeyLeftShift) && (
             m_pCurrentHandle == m_gizmoHandles[0] ||
             m_pCurrentHandle == m_gizmoHandles[2] || 
             m_pCurrentHandle == m_gizmoHandles[5] || 
@@ -858,7 +865,7 @@ void DocumentView::updateMovingHandle()
                     newMouseDiffY = newMouseDiffX / ratio;
                 }
             }
-            if (OInput->isStateDown(DIK_LALT))
+            if (OInputPressed(OKeyLeftAlt))
             {
                 newRect.position.x += newMouseDiffX * invAnchor.x - newMouseDiffX * anchor.x;
                 newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
@@ -909,7 +916,7 @@ void DocumentView::updateMovingHandle()
                     newMouseDiffY = -newMouseDiffX / ratio;
                 }
             }
-            if (OInput->isStateDown(DIK_LALT))
+            if (OInputPressed(OKeyLeftAlt))
             {
                 newRect.position.x += newMouseDiffX * anchor.x - newMouseDiffX * invAnchor.x;
                 newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
@@ -959,7 +966,7 @@ void DocumentView::updateMovingHandle()
                     newMouseDiffY = -newMouseDiffX / ratio;
                 }
             }
-            if (OInput->isStateDown(DIK_LALT))
+            if (OInputPressed(OKeyLeftAlt))
             {
                 newRect.position.x += newMouseDiffX * invAnchor.x - newMouseDiffX * anchor.x;
                 newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
@@ -1008,7 +1015,7 @@ void DocumentView::updateMovingHandle()
                     newMouseDiffY = newMouseDiffX / ratio;
                 }
             }
-            if (OInput->isStateDown(DIK_LALT))
+            if (OInputPressed(OKeyLeftAlt))
             {
                 newRect.position.x += newMouseDiffX * anchor.x - newMouseDiffX * invAnchor.x;
                 newRect.position.x = std::min<float>(newRect.position.x, m_controlWorldRectOnDown.position.x + m_controlWorldRectOnDown.size.x * .5f);
@@ -1030,7 +1037,7 @@ void DocumentView::updateMovingHandle()
             }
         }
     }
-    else if (OInput->isStateDown(DIK_LALT))
+    else if (OInputPressed(OKeyLeftAlt))
     {
         if (m_pCurrentHandle == m_gizmoHandles[0] ||
             m_pCurrentHandle == m_gizmoHandles[3] ||
@@ -1361,22 +1368,22 @@ void DocumentView::setDirty(bool isDirty)
     {
         if (m_filename.empty())
         {
-            SetWindowTextA(window, (OSettings->getGameName() + " - Untitle*").c_str());
+            SetWindowTextA(window, (oSettings->getGameName() + " - Untitle*").c_str());
         }
         else
         {
-            SetWindowTextA(window, (OSettings->getGameName() + " - " + m_filename + "*").c_str());
+            SetWindowTextA(window, (oSettings->getGameName() + " - " + m_filename + "*").c_str());
         }
     }
     else
     {
         if (m_filename.empty())
         {
-            SetWindowTextA(window, (OSettings->getGameName() + " - Untitle").c_str()); // That shouldn't be possible
+            SetWindowTextA(window, (oSettings->getGameName() + " - Untitle").c_str()); // That shouldn't be possible
         }
         else
         {
-            SetWindowTextA(window, (OSettings->getGameName() + " - " + m_filename).c_str());
+            SetWindowTextA(window, (oSettings->getGameName() + " - " + m_filename).c_str());
         }
     }
 }
