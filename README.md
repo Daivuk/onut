@@ -1,6 +1,5 @@
 #onut
 ##Oak Nut engine.
----
 2D Game engine focused of development rapidity. Aimed at Game Jams.
 Jam projects using it:
 
@@ -8,7 +7,6 @@ Jam projects using it:
 * Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
 
 ##Recommended folder structure
----
 Before you start. Please take note of the following folder structure. It is highly recommended for minimal setup time.
 
 The default asset search paths are configured for this structure. _But it easy to add more using `oContentManager->addSearchPath`._
@@ -25,12 +23,10 @@ The default asset search paths are configured for this structure. _But it easy t
   * `src\` Your game source code (.h and .cpp)
 
 ##Prerequisites
----
 * Windows 8.1 or higher
 * Visual Studio 2013 for windows Desktop (Express or Community)
 
 ##Setup project
----
 Make sure to follow the recommended folder structure when doing those steps.
 
 ###Step by step
@@ -52,7 +48,6 @@ Make sure to follow the recommended folder structure when doing those steps.
         * For Release, set to `Multi-threaded (/MT)`
 
 ##Main
----
 ```cpp
 // Required for WinMain
 #include <Windows.h>
@@ -70,7 +65,6 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 ```
 
 ##Samples
----
 See the `onut/samples/Samples.sln` folder to learn how to use onut.
 
 Enjoy!
