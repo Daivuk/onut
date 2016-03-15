@@ -1,10 +1,15 @@
 #onut
 ##Oak Nut engine.
-2D Game engine focused of development rapidity. Aimed at Game Jams.
-Jam projects using it:
+2D Game engine focused on rapid development. Aimed at Game Jams.
+
+List of jam projects using it:
 
 * Ottawa Jam 2015 - [Cannon Fodder Commander ](https://www.youtube.com/watch?v=Jac9r32uIv0)
 * Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
+
+##Prerequisites
+* Windows 8.1 or higher
+* Visual Studio 2013 for windows Desktop (Express or Community)
 
 ##Recommended folder structure
 Before you start. Please take note of the following folder structure. It is highly recommended for minimal setup time.
@@ -22,17 +27,13 @@ The default asset search paths are configured for this structure. _But it easy t
       * `YourGame.vcxproj.filters`
   * `src\` Your game source code (.h and .cpp)
 
-##Prerequisites
-* Windows 8.1 or higher
-* Visual Studio 2013 for windows Desktop (Express or Community)
-
 ##Setup project
 Make sure to follow the recommended folder structure when doing those steps.
 
 ###Step by step
 1. Create a new empty win32 solution and project for your game.
 2. Clone onut inside your main directory. as shown in the `Recommended folder structure`
-3. Add onut project to your solution.
+3. Add onut project to your solution.<br />
   * Right click your solution -> Add -> Existing project -> `YourGamePath\onut\project\win\onut.vcxproj`
 4. Add build dependancies for your game to include `onut`.
   * Right click YourGame project -> Build Dependencies -> Project Dependencies -> Check mark `onut`
