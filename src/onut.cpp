@@ -9,6 +9,7 @@
 #include "onut/Settings.h"
 #include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
+#include "onut/TimeInfo.h"
 #include "onut/Updater.h"
 #include "onut/Window.h"
 
@@ -23,13 +24,9 @@ using namespace DirectX;
 
 // Our engine services
 AudioEngine*                        g_pAudioEngine = nullptr;
-onut::TimeInfo<>                    g_timeInfo;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
 onut::UIContext*                    OUIContext = nullptr;
 onut::UIControl*                    OUI = nullptr;
-
-// So commonly used stuff
-float                               ODT = 0.f;
 
 namespace onut
 {
@@ -204,6 +201,9 @@ namespace onut
         // Dispatcher
         oDispatcher = ODispatcher::create();
 
+        // Timing class
+        oTimeInfo = OTimeInfo::create();
+
         // Updater
         oUpdater = OMake<OUpdater>();
 
@@ -315,8 +315,7 @@ namespace onut
 
             // Update
             if (g_pAudioEngine) g_pAudioEngine->Update();
-            auto framesToUpdate = g_timeInfo.update(oSettings->getIsFixedStep());
-            ODT = onut::getTimeInfo().getDeltaTime<float>();
+            auto framesToUpdate = oTimeInfo->update(oSettings->getIsFixedStep());
             while (framesToUpdate--)
             {
                 oInput->update();
@@ -353,7 +352,7 @@ namespace onut
             }
 
             // Render
-            g_timeInfo.render();
+            oTimeInfo->render();
             oRenderer->beginFrame();
             if (renderCallback)
             {
@@ -367,10 +366,5 @@ namespace onut
         }
 
         cleanup();
-    }
-
-    const TimeInfo<>& getTimeInfo()
-    {
-        return g_timeInfo;
     }
 }

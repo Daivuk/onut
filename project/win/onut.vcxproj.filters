@@ -128,9 +128,6 @@
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\TimeInfo.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\TimingUtils.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -264,6 +261,9 @@
       <Filter>services</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Dispatcher.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\TimeInfo.h">
       <Filter>services</Filter>
     </ClInclude>
   </ItemGroup>
@@ -473,6 +473,9 @@
       <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Dispatcher.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TimeInfo.cpp">
       <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>

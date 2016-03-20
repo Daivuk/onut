@@ -1,5 +1,6 @@
 #pragma once
 #include "onut/Curve.h"
+#include "onut/TimeInfo.h"
 #include "onut/Tween.h"
 #include "onut/Updater.h"
 
@@ -235,8 +236,6 @@ namespace onut
     protected:
         void update() override
         {
-            extern float ODT; // TODO: Use timingUtils once it's fixed
-
             // Move progress
             auto lastProgress = m_progress;
             float progress;

@@ -8,6 +8,7 @@
 #include "onut/Input.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/TimeInfo.h"
 
 #include "onut_old.h"
 
@@ -70,7 +71,7 @@ void render()
     // so we can specify in which order it is renderer manually
     emitter.render();
 
-    pFont->draw("FPS: " + std::to_string(onut::getTimeInfo().getFPS()), {10, 50});
+    pFont->draw("FPS: " + std::to_string(oTimeInfo->getFPS()), {10, 50});
 
     oSpriteBatch->end();
 }

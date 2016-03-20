@@ -1,21 +1,9 @@
 #pragma once
+#include "onut/TimeInfo.h"
 #include "onut/Updater.h"
-
-#include "TimeInfo.h"
-
-/**
-Delta time between current update frame and the previous one
-*/
-extern float ODT;
 
 namespace onut
 {
-    /**
-    Get the time info for the current frame
-    @return Reference on the TimeInfo for the game
-    */
-    const TimeInfo<>& getTimeInfo();
-
     /**
     Timer class so you can start timed events. This class uses a Anim<> internally
     Template arguments:
