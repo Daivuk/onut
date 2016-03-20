@@ -1,22 +1,23 @@
 #pragma once
 #include "onut/Maths.h"
 #include "onut/PrimitiveMode.h"
-#include "onut/Texture.h"
 
-#include <memory>
+#if defined(WIN32)
+#include <d3d11.h>
+#endif
 
 // Forward declares
-namespace onut
-{
-    class Texture;
-};
-using OTextureRef = std::shared_ptr<onut::Texture>;
+#include "onut/ForwardDeclaration.h"
+OForwardDeclare(PrimitiveBatch);
+OForwardDeclare(Texture);
 
 namespace onut
 {
     class PrimitiveBatch
     {
     public:
+        static OPrimitiveBatchRef create();
+
         PrimitiveBatch();
         virtual ~PrimitiveBatch();
 
@@ -36,14 +37,14 @@ namespace onut
 
         void flush();
 
-        ID3D11Buffer*               m_pVertexBuffer = nullptr;
-        D3D11_MAPPED_SUBRESOURCE    m_pMappedVertexBuffer;
+        ID3D11Buffer* m_pVertexBuffer = nullptr;
+        D3D11_MAPPED_SUBRESOURCE m_pMappedVertexBuffer;
 
-        static const unsigned int   m_stride = sizeof(SVertexP2T2C4);
-        static const unsigned int   m_offset = 0;
-        unsigned int                m_vertexCount = 0;
+        static const unsigned int m_stride = sizeof(SVertexP2T2C4);
+        static const unsigned int m_offset = 0;
+        unsigned int m_vertexCount = 0;
 
-        bool                        m_isDrawing = false;
+        bool m_isDrawing = false;
 
         OTextureRef m_pTexWhite;
         OTextureRef m_pTexture;
@@ -51,3 +52,5 @@ namespace onut
         PrimitiveMode m_primitiveType;
     };
 }
+
+extern OPrimitiveBatchRef oPrimitiveBatch;

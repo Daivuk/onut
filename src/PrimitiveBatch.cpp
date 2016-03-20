@@ -1,18 +1,24 @@
+#include "onut/PrimitiveBatch.h"
 #include "onut/Texture.h"
 
 #include "RendererD3D11.h"
-#include "PrimitiveBatch.h"
-#include "onut_old.h"
+
+OPrimitiveBatchRef oPrimitiveBatch;
 
 namespace onut
 {
+    OPrimitiveBatchRef PrimitiveBatch::create()
+    {
+        return OMake<PrimitiveBatch>();
+    }
+
     PrimitiveBatch::PrimitiveBatch()
     {
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = {255, 255, 255, 255};
         m_pTexWhite = OTexture::createFromData(white, {1, 1}, false);
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pRendererD3D11 = ODynamicCast<ORendererD3D11>(oRenderer);
         auto pDevice = pRendererD3D11->getDevice();
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
 

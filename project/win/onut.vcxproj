@@ -31,6 +31,7 @@
     <ClInclude Include="..\..\include\onut\ParticleSystem.h" />
     <ClInclude Include="..\..\include\onut\Point.h" />
     <ClInclude Include="..\..\include\onut\Pool.h" />
+    <ClInclude Include="..\..\include\onut\PrimitiveBatch.h" />
     <ClInclude Include="..\..\include\onut\Random.h" />
     <ClInclude Include="..\..\include\onut\Renderer.h" />
     <ClInclude Include="..\..\include\onut\SampleMode.h" />
@@ -56,7 +57,6 @@
     <ClInclude Include="..\..\include\Particle.h" />
     <ClInclude Include="..\..\include\ParticleEmitter.h" />
     <ClInclude Include="..\..\include\ParticleSystemManager.h" />
-    <ClInclude Include="..\..\include\PrimitiveBatch.h" />
     <ClInclude Include="..\..\include\rapidjson\document.h" />
     <ClInclude Include="..\..\include\rapidjson\filestream.h" />
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h" />

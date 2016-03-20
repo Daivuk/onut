@@ -3,6 +3,7 @@
 #include "onut/GamePad.h"
 #include "onut/Input.h"
 #include "onut/onut.h"
+#include "onut/PrimitiveBatch.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
 #include "onut/SpriteBatch.h"
@@ -20,7 +21,6 @@
 using namespace DirectX;
 
 // Our engine services
-onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
 onut::Synchronous                   g_mainSync;
@@ -212,7 +212,7 @@ namespace onut
 
         // SpriteBatch
         oSpriteBatch = SpriteBatch::create();
-        OPB = new PrimitiveBatch();
+        oPrimitiveBatch = PrimitiveBatch::create();
 
         // Content
         oContentManager = std::make_shared<ContentManager>();
@@ -252,7 +252,7 @@ namespace onut
         delete g_pAudioEngine;
         oInput = nullptr;
         oContentManager = nullptr;
-        delete OPB;
+        oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
         oRenderer = nullptr;
         oWindow = nullptr;

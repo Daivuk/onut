@@ -4,18 +4,14 @@
 #include "DefineHelpers.h"
 #include "onutUI.h"
 #include "ParticleSystemManager.h"
-#include "PrimitiveBatch.h"
 #include "RectUtils.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
 
 // For quick stuff, we have shortcuts outside of the namespace
-extern onut::PrimitiveBatch*            OPrimitiveBatch;
 extern onut::ParticleSystemManager<>*   OParticles;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;
-
-#define OPB OPrimitiveBatch
 
 namespace onut
 {
@@ -27,18 +23,6 @@ namespace onut
     @retun This function never returns until the game shutsdown.
     */
     void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback);
-
-    /**
-    * Call run with a State object
-    * Any object that defines an init, update and render call will work also
-    */
-    template<typename TstateType>
-    void run(TstateType& stateManager)
-    {
-        run(std::bind(&TstateType::init, &stateManager),
-            std::bind(&TstateType::update, &stateManager),
-            std::bind(&TstateType::render, &stateManager));
-    }
 }
 
 #define ORun onut::run
