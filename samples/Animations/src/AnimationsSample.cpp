@@ -91,11 +91,11 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
 
     // Draw sprites
-    OSpriteBatch->begin();
-    OSpriteBatch->drawSprite(pNutTexture, Vector2(128, 128), Color::White, angleAnim1);
-    OSpriteBatch->drawSprite(pNutTexture, Vector2(256, 128), Color::White, angleAnim2);
-    OSpriteBatch->drawSprite(pNutTexture, Vector2(384, 128) + bounceAnim, Color::White);
-    OSpriteBatch->drawRectScaled9RepeatCenters(pFrameTexture, frameAnim, Vector4(48, 48, 48, 48));
-    OSpriteBatch->drawSprite(pNutTexture, Vector2(512, 256) + callbackAnim);
-    OSpriteBatch->end();
+    oSpriteBatch->begin();
+    oSpriteBatch->drawSprite(pNutTexture, Vector2(128, 128), Color::White, angleAnim1);
+    oSpriteBatch->drawSprite(pNutTexture, Vector2(256, 128), Color::White, angleAnim2);
+    oSpriteBatch->drawSprite(pNutTexture, Vector2(384, 128) + bounceAnim, Color::White);
+    oSpriteBatch->drawRectScaled9RepeatCenters(pFrameTexture, frameAnim, Vector4(48, 48, 48, 48));
+    oSpriteBatch->drawSprite(pNutTexture, Vector2(512, 256) + callbackAnim);
+    oSpriteBatch->end();
 }

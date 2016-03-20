@@ -1,9 +1,11 @@
 #pragma once
-#include "Particle.h"
-#include "ParticleEmitter.h"
 #include "onut/ParticleSystem.h"
 #include "onut/Pool.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
+
+#include "Particle.h"
+#include "ParticleEmitter.h"
 
 namespace onut
 {
@@ -139,8 +141,8 @@ namespace onut
             {
                 if (m_pParticleSystemManager)
                 {
-                    bool bManageBatch = !OSpriteBatch->isInBatch();
-                    if (bManageBatch) OSpriteBatch->begin();
+                    bool bManageBatch = !oSpriteBatch->isInBatch();
+                    if (bManageBatch) oSpriteBatch->begin();
                     auto len = m_pParticleSystemManager->m_pEmitterPool->size();
                     for (decltype(len) i = 0; i < len; ++i)
                     {
@@ -153,7 +155,7 @@ namespace onut
                             }
                         }
                     }
-                    if (bManageBatch) OSpriteBatch->end();
+                    if (bManageBatch) oSpriteBatch->end();
                 }
             }
 
@@ -211,7 +213,7 @@ namespace onut
 
         void render()
         {
-            OSpriteBatch->begin();
+            oSpriteBatch->begin();
             if (TsortEmitters)
             {
             }
@@ -230,7 +232,7 @@ namespace onut
                     }
                 }
             }
-            OSpriteBatch->end();
+            oSpriteBatch->end();
         }
 
         Particle* allocParticle() override
@@ -246,7 +248,7 @@ namespace onut
         void renderParticle(Particle* pParticle, const Vector3& camRight, const Vector3& camUp) override
         {
             float dim = static_cast<float>(std::max<decltype(pParticle->pTexture->getSize().x)>(pParticle->pTexture->getSize().x, pParticle->pTexture->getSize().y));
-            OSpriteBatch->drawSprite(pParticle->pTexture, pParticle->position, pParticle->color.value, pParticle->angle.value, pParticle->size.value / dim);
+            oSpriteBatch->drawSprite(pParticle->pTexture, pParticle->position, pParticle->color.value, pParticle->angle.value, pParticle->size.value / dim);
         }
 
     private:

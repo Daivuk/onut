@@ -1,13 +1,21 @@
 #include "onut/PrimitiveMode.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
+
 #include "onut_old.h"
 #include "RendererD3D11.h"
-#include "SpriteBatch.h"
 
 #include <cmath>
 
+OSpriteBatchRef oSpriteBatch;
+
 namespace onut
 {
+    OSpriteBatchRef SpriteBatch::create()
+    {
+        return OMake<SpriteBatch>();
+    }
+
     SpriteBatch::SpriteBatch()
     {
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
@@ -86,7 +94,6 @@ namespace onut
         pRendererD3D11->setupFor2D(transform);
 
         m_currentTransform = transform;
-        pRendererD3D11->setupFor2D(transform);
         m_curBlendMode = blendMode;
         m_pTexture = nullptr;
         m_isDrawing = true;

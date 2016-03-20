@@ -386,18 +386,18 @@ namespace onut
         rect.right = std::min<>((m_width - 1), rect.right);
         rect.bottom = std::min<>((m_height - 1), rect.bottom);
 
-        bool manageSB = !OSB->isInBatch();
-        if (manageSB) OSB->begin(getTransform());
+        bool manageSB = !oSpriteBatch->isInBatch();
+        if (manageSB) oSpriteBatch->begin(getTransform());
         for (LONG y = rect.top; y <= rect.bottom; ++y)
         {
             Tile *pTile = pLayer->tiles + y * m_width + rect.left;
             for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
             {
                 if (!pTile->pTileset) continue;
-                OSB->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
+                oSpriteBatch->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
             }
         }
-        if (manageSB) OSB->end();
+        if (manageSB) oSpriteBatch->end();
     }
 
     const OTextureRef& TiledMap::getMinimap()

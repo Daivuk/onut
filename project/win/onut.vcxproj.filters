@@ -131,9 +131,6 @@
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\SpriteBatch.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Synchronous.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -266,15 +263,15 @@
     <ClInclude Include="..\..\include\micropather\micropather.h">
       <Filter>thirdparties\micropather</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\SpriteBatch.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Window.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\SpriteBatch.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
@@ -471,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ShaderD3D11.cpp">
       <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteBatch.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

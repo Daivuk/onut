@@ -82,7 +82,7 @@ void render()
     // Draw Info
     auto pFont = OGetFont("font.fnt");
 
-    OSpriteBatch->begin();
+    oSpriteBatch->begin();
 
     pFont->draw("Original: ", {10, 10});
     pFont->draw(originalText, {200, 10}, OTopLeft, Color(.7f, 1.f));
@@ -108,5 +108,5 @@ void render()
         pos.y += 12;
     }
 
-    OSpriteBatch->end();
+    oSpriteBatch->end();
 }

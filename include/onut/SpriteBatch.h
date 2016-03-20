@@ -3,7 +3,14 @@
 #include "onut/Maths.h"
 #include "onut/SampleMode.h"
 
+#if defined(WIN32)
+#include <d3d11.h>
+#endif
+
+#include <vector>
+
 #include "onut/ForwardDeclaration.h"
+OForwardDeclare(SpriteBatch);
 OForwardDeclare(Texture);
 
 namespace onut
@@ -11,6 +18,8 @@ namespace onut
     class SpriteBatch
     {
     public:
+        static OSpriteBatchRef create();
+
         SpriteBatch();
         virtual ~SpriteBatch();
 
@@ -25,11 +34,11 @@ namespace onut
         void drawRectScaled9(const OTextureRef& pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
         void drawRectScaled9RepeatCenters(const OTextureRef& pTexture, const Rect& rect, const Vector4& padding, const Color& color = Color::White);
         void draw4Corner(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
-        void drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color = Color::White, const Vector2& origin = Vector2(0.5f, 0.5f));
-        void drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Color& color = Color::White, const Vector2& origin = Vector2(0.5f, 0.5f));
-        void drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = Vector2(0.5f, 0.5f));
-        void drawSpriteWithUVs(const OTextureRef& pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = Vector2(0.5f, 0.5f));
-        void drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin = Vector2(0.5f, 0.5f));
+        void drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color = Color::White, const Vector2& origin = OCenter);
+        void drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Color& color = Color::White, const Vector2& origin = OCenter);
+        void drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = OCenter);
+        void drawSpriteWithUVs(const OTextureRef& pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = OCenter);
+        void drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin = OCenter);
         void drawBeam(const OTextureRef& pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
         void drawCross(const Vector2& position, float size, const Color& color = Color::White, float thickness = 2.f);
         void end();
@@ -72,3 +81,5 @@ namespace onut
         Matrix m_currentTransform;
     };
 }
+
+extern OSpriteBatchRef oSpriteBatch;

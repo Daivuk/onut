@@ -60,7 +60,7 @@ void render()
     // Draw Info
     auto pFont = OGetFont("font.fnt");
 
-    OSpriteBatch->begin();
+    oSpriteBatch->begin();
 
     pFont->draw("Press ^9911^999 to GET Origin IP.", {10, 10});
     pFont->draw(originIP, {10, 30}, OTopLeft, Color(.7f, .7f, .7f, 1));
@@ -69,7 +69,7 @@ void render()
     pFont->draw(userAgent, {10, 130}, OTopLeft, Color(.7f, .7f, .7f, 1));
 
     pFont->draw("Press ^9913^999 to download a picture.", {10, 210});
-    OSpriteBatch->drawRect(pDownloadedTexture, Rect(10, 230, 256, 256));
+    oSpriteBatch->drawRect(pDownloadedTexture, Rect(10, 230, 256, 256));
 
-    OSpriteBatch->end();
+    oSpriteBatch->end();
 }

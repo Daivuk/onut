@@ -57,21 +57,21 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
 
     // Begin a batch
-    OSpriteBatch->begin();
+    oSpriteBatch->begin();
 
     if (!loaded)
     {
-        OSB->drawSprite(OGetTexture("img1.png"), OScreenCenterf, Color::White, loadingRotation);
+        oSpriteBatch->drawSprite(OGetTexture("img1.png"), OScreenCenterf, Color::White, loadingRotation);
         pFont->draw("Loading", Vector2(OScreenCenterXf, OScreenCenterYf + 96.f), OCenter);
     }
     else
     {
-        OSB->drawSprite(OGetTexture("img2.png"), Vector2(OScreenCenterXf - 128.f, OScreenCenterYf));
-        OSB->drawSprite(OGetTexture("img3.png"), OScreenCenterf);
-        OSB->drawSprite(OGetTexture("img4.png"), Vector2(OScreenCenterXf + 128.f, OScreenCenterYf));
+        oSpriteBatch->drawSprite(OGetTexture("img2.png"), Vector2(OScreenCenterXf - 128.f, OScreenCenterYf));
+        oSpriteBatch->drawSprite(OGetTexture("img3.png"), OScreenCenterf);
+        oSpriteBatch->drawSprite(OGetTexture("img4.png"), Vector2(OScreenCenterXf + 128.f, OScreenCenterYf));
         pFont->draw("Loaded!", Vector2(OScreenCenterXf, OScreenCenterYf + 96.f), OCenter);
     }
 
     // End and flush the batch
-    OSpriteBatch->end();
+    oSpriteBatch->end();
 }

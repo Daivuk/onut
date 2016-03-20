@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\include\onut\Shader.h" />
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
+    <ClInclude Include="..\..\include\onut\SpriteBatch.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
     <ClInclude Include="..\..\include\onut\PrimitiveMode.h" />
     <ClInclude Include="..\..\include\onut\Tween.h" />
@@ -69,7 +70,6 @@
     <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\RTS.h" />
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
-    <ClInclude Include="..\..\include\SpriteBatch.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\include\Synchronous.h" />

@@ -40,7 +40,7 @@ void render()
     // Clear
     oRenderer->clear(OColorHex(0));
 
-    OSpriteBatch->begin();
-    OSpriteBatch->drawRect(pVideoTexture, ORectFit(ORectFullScreen, pVideoTexture->getSize()));
-    OSpriteBatch->end();
+    oSpriteBatch->begin();
+    oSpriteBatch->drawRect(pVideoTexture, ORectFit(ORectFullScreen, pVideoTexture->getSize()));
+    oSpriteBatch->end();
 }

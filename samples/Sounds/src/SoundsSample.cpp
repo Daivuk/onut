@@ -100,7 +100,7 @@ void render()
     // Draw info
     auto pFont = OGetFont("font.fnt");
 
-    OSB->begin();
+    oSpriteBatch->begin();
 
     pFont->draw("Press ^9901^999 to play sound1 at 100% speed", {10, 10});
     pFont->draw("Press ^9902^999 to play sound1 at 50% speed", {10, 30});
@@ -121,5 +121,5 @@ void render()
     pFont->draw("Hold ^990Left Arrow^999 to on left channel", {10, OScreenHf - 50});
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", {10, OScreenHf - 30});
 
-    OSB->end();
+    oSpriteBatch->end();
 }

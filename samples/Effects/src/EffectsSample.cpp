@@ -44,9 +44,9 @@ void render()
     auto drawLandscapeToRenderTarget = [=](const OTextureRef& pRenderTarget)
     {
         pRenderTarget->bindRenderTarget();
-        OSB->begin();
-        OSB->drawRect(pLandscape, {0, 0, pRenderTarget->getSizef().x, pRenderTarget->getSizef().y});
-        OSB->end();
+        oSpriteBatch->begin();
+        oSpriteBatch->drawRect(pLandscape, {0, 0, pRenderTarget->getSizef().x, pRenderTarget->getSizef().y});
+        oSpriteBatch->end();
         pRenderTarget->unbindRenderTarget();
     };
 
@@ -69,14 +69,14 @@ void render()
 
     // Draw out resulted textures
     auto pFont = OGetFont("font.fnt");
-    OSpriteBatch->begin();
+    oSpriteBatch->begin();
 
-    OSB->drawRect(pLandscape, {0, 0, 256, 256});
-    OSB->drawRect(pBlured, {256, 0, 256, 256});
-    OSB->drawRect(pSepia, {512, 0, 256, 256});
-    OSB->drawRect(pCRT, {0, 288, 256, 256});
-    OSB->drawRect(pCartoon, {256, 288, 256, 256});
-    OSB->drawRect(pVignette, {512, 288, 256, 256});
+    oSpriteBatch->drawRect(pLandscape, {0, 0, 256, 256});
+    oSpriteBatch->drawRect(pBlured, {256, 0, 256, 256});
+    oSpriteBatch->drawRect(pSepia, {512, 0, 256, 256});
+    oSpriteBatch->drawRect(pCRT, {0, 288, 256, 256});
+    oSpriteBatch->drawRect(pCartoon, {256, 288, 256, 256});
+    oSpriteBatch->drawRect(pVignette, {512, 288, 256, 256});
 
     pFont->draw("Original", {128 + 0, 256 + 8}, OCenter);
     pFont->draw("Blur", {128 + 256, 256 + 8}, OCenter);
@@ -85,5 +85,5 @@ void render()
     pFont->draw("Cartoon", {128 + 256, 288 + 256 + 8}, OCenter);
     pFont->draw("Vignette", {128 + 512, 288 + 256 + 8}, OCenter);
 
-    OSpriteBatch->end();
+    oSpriteBatch->end();
 }

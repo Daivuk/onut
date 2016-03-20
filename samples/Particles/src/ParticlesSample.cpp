@@ -59,7 +59,7 @@ void render()
     // Clear to black
     oRenderer->clear({0, 0, 0, 1});
 
-    OSB->begin();
+    oSpriteBatch->begin();
 
     // Draw info
     auto pFont = OGetFont("font.fnt");
@@ -72,5 +72,5 @@ void render()
 
     pFont->draw("FPS: " + std::to_string(onut::getTimeInfo().getFPS()), {10, 50});
 
-    OSB->end();
+    oSpriteBatch->end();
 }

@@ -7,6 +7,7 @@
 #include "onut/ForwardDeclaration.h"
 OForwardDeclare(ContentManager)
 OForwardDeclare(Font)
+OForwardDeclare(SpriteBatch)
 OForwardDeclare(Texture)
 
 namespace onut
@@ -28,7 +29,7 @@ namespace onut
                   const Vector2& align = Vector2(0.f, 0.f), 
                   const Color& color = Color::White, 
                   bool snapPixels = true,
-                  onut::SpriteBatch* pSpriteBatch = nullptr);
+                  const OSpriteBatchRef& pSpriteBatch = nullptr);
         Rect drawOutlined(const std::string& text,
                           const Vector2& pos,
                           const Vector2& align = Vector2(0.f, 0.f),
@@ -37,7 +38,7 @@ namespace onut
                           float outlineSize = 2.f,
                           bool cheap = true,
                           bool snapPixels = true,
-                          onut::SpriteBatch* pSpriteBatch = nullptr);
+                          const OSpriteBatchRef& pSpriteBatch = nullptr);
 
     private:
         struct fntCommon

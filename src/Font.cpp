@@ -1,5 +1,6 @@
 #include "onut/ContentManager.h"
 #include "onut/Font.h"
+#include "onut/SpriteBatch.h"
 
 #include "Utils.h"
 #include "onut_old.h"
@@ -200,7 +201,7 @@ namespace onut
                             float outlineSize,
                             bool cheap,
                             bool snapPixels,
-                            onut::SpriteBatch* pSpriteBatch)
+                            const OSpriteBatchRef& pSpriteBatch)
     {
         Color outlineColorFinal = outlineColor;
         outlineColorFinal.w *= color.w;
@@ -229,9 +230,10 @@ namespace onut
         return draw(text, pos, align, color, false, pSpriteBatch);
     }
 
-    Rect Font::draw(const std::string& text, const Vector2& in_pos, const Vector2& align, const Color& color, bool snapPixels, onut::SpriteBatch* pSpriteBatch)
+    Rect Font::draw(const std::string& text, const Vector2& in_pos, const Vector2& align, const Color& color, bool snapPixels, const OSpriteBatchRef& in_pSpriteBatch)
     {
-        if (!pSpriteBatch) pSpriteBatch = OSpriteBatch;
+        OSpriteBatchRef pSpriteBatch = in_pSpriteBatch;
+        if (!pSpriteBatch) pSpriteBatch = oSpriteBatch;
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);

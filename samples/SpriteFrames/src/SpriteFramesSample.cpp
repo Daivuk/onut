@@ -52,21 +52,21 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
 
     // Draw sprites
-    OSpriteBatch->changeFiltering(OFilterNearest);
-    OSpriteBatch->begin(Matrix::CreateScale(2.f));
-    OSpriteBatch->drawSprite(pBaltPng, Vector2(4, 8), Color::White, Vector2::Zero);
+    oSpriteBatch->changeFiltering(OFilterNearest);
+    oSpriteBatch->begin(Matrix::CreateScale(2.f));
+    oSpriteBatch->drawSprite(pBaltPng, Vector2(4, 8), Color::White, Vector2::Zero);
 
     // Sprite the animation
-    OSpriteBatch->drawSpriteWithUVs(spriteAnim.getTexture(), Vector2(256, 64), spriteAnim.getUVs(), Color::White, 0.f, 2.f, spriteAnim.getOrigin());
+    oSpriteBatch->drawSpriteWithUVs(spriteAnim.getTexture(), Vector2(256, 64), spriteAnim.getUVs(), Color::White, 0.f, 2.f, spriteAnim.getOrigin());
 
     // Draw the origin
-    OSpriteBatch->drawCross(Vector2(256, 64), 5.f, Color(1, 1, 0, 1));
-    OSpriteBatch->end();
+    oSpriteBatch->drawCross(Vector2(256, 64), 5.f, Color(1, 1, 0, 1));
+    oSpriteBatch->end();
 
-    OSpriteBatch->begin();
+    oSpriteBatch->begin();
     pFont->draw("Sheet", Vector2(8, 8), OLeft);
     pFont->draw("Press ^9901^999 to play ^991idle^999 anim", Vector2(8, 300), OLeft);
     pFont->draw("Press ^9902^999 to play ^991run^999 anim", Vector2(8, 320), OLeft);
     pFont->draw("Press ^9903^999 to play ^991attack^999 anim", Vector2(8, 340), OLeft);
-    OSpriteBatch->end();
+    oSpriteBatch->end();
 }

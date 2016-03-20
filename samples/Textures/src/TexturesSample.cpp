@@ -78,12 +78,12 @@ void render()
 
     // Draw stuff to our render target
     pRenderTarget->bindRenderTarget();
-    OSpriteBatch->begin();
-    OSB->drawRect(pTextureFromFile, {0, 0, 128, 128});
-    OSB->drawRect(pTextureFromFile, {128, 0, 128, 128});
-    OSB->drawRect(pTextureFromFile, {0, 128, 128, 128});
-    OSB->drawRect(pTextureFromFile, {128, 128, 128, 128});
-    OSpriteBatch->end();
+    oSpriteBatch->begin();
+    oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
+    oSpriteBatch->drawRect(pTextureFromFile, {128, 0, 128, 128});
+    oSpriteBatch->drawRect(pTextureFromFile, {0, 128, 128, 128});
+    oSpriteBatch->drawRect(pTextureFromFile, {128, 128, 128, 128});
+    oSpriteBatch->end();
     pRenderTarget->unbindRenderTarget();
 
     // Update our dynamic texture
@@ -103,14 +103,14 @@ void render()
 
     // Draw out resulted textures
     auto pFont = OGetFont("font.fnt");
-    OSpriteBatch->begin(Matrix::CreateTranslation(80, 212, 0));
-    OSpriteBatch->changeFiltering(OFilterNearest);
+    oSpriteBatch->begin(Matrix::CreateTranslation(80, 212, 0));
+    oSpriteBatch->changeFiltering(OFilterNearest);
 
-    OSB->drawRect(pTextureFromFile, {0, 0, 128, 128});
-    OSB->drawRect(pTextureFromFileData, {128, 0, 128, 128});
-    OSB->drawRect(pTextureFromData, {256, 0, 128, 128});
-    OSB->drawRect(pRenderTarget, {384, 0, 128, 128});
-    OSB->drawRect(pDynamic, {512, 0, 128, 128});
+    oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
+    oSpriteBatch->drawRect(pTextureFromFileData, {128, 0, 128, 128});
+    oSpriteBatch->drawRect(pTextureFromData, {256, 0, 128, 128});
+    oSpriteBatch->drawRect(pRenderTarget, {384, 0, 128, 128});
+    oSpriteBatch->drawRect(pDynamic, {512, 0, 128, 128});
     
     pFont->draw("From File", {64, 140}, OCenter);
     pFont->draw("From File Data", {64 + 128, 140}, OCenter);
@@ -118,5 +118,5 @@ void render()
     pFont->draw("Render Target", {64 + 384, 140}, OCenter);
     pFont->draw("Dynamic", {64 + 512, 140}, OCenter);
     
-    OSpriteBatch->end();
+    oSpriteBatch->end();
 }

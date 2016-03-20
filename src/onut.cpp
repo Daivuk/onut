@@ -5,6 +5,7 @@
 #include "onut/onut.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 #include "onut/Updater.h"
 
@@ -20,7 +21,6 @@ using namespace DirectX;
 
 // Our engine services
 onut::Window*                       OWindow = nullptr;
-onut::SpriteBatch*                  OSpriteBatch = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
@@ -44,7 +44,7 @@ namespace onut
 
         OUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
         {
-            OSB->end();
+            oSpriteBatch->end();
             oRenderer->renderStates.scissorEnabled = enabled;
             oRenderer->renderStates.scissor = iRect{
                 static_cast<int>(rect.position.x),
@@ -52,7 +52,7 @@ namespace onut
                 static_cast<int>(rect.position.x + rect.size.x),
                 static_cast<int>(rect.position.y + rect.size.y)
             };
-            OSB->begin();
+            oSpriteBatch->begin();
         };
 
         auto getTextureForState = [](onut::UIControl *pControl, const std::string &filename)
@@ -86,12 +86,12 @@ namespace onut
 
         OUIContext->drawRect = [=](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)
         {
-            OSB->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
+            oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
         };
 
         OUIContext->drawTexturedRect = [=](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIImageComponent &image)
         {
-            OSB->drawRect(getTextureForState(pControl, image.filename),
+            oSpriteBatch->drawRect(getTextureForState(pControl, image.filename),
                           onut::UI2Onut(rect),
                           onut::UI2Onut(image.color));
         };
@@ -125,14 +125,14 @@ namespace onut
             }
             if (scale9.isRepeat)
             {
-                OSB->drawRectScaled9RepeatCenters(getTextureForState(pControl, scale9.image.filename),
+                oSpriteBatch->drawRectScaled9RepeatCenters(getTextureForState(pControl, scale9.image.filename),
                                                   onut::UI2Onut(rect),
                                                   onut::UI2Onut(scale9.padding),
                                                   onut::UI2Onut(scale9.image.color));
             }
             else
             {
-                OSB->drawRectScaled9(getTextureForState(pControl, scale9.image.filename),
+                oSpriteBatch->drawRectScaled9(getTextureForState(pControl, scale9.image.filename),
                                      onut::UI2Onut(rect),
                                      onut::UI2Onut(scale9.padding),
                                      onut::UI2Onut(scale9.image.color));
@@ -190,10 +190,10 @@ namespace onut
 
         OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
         {
-            OSB->end();
+            oSpriteBatch->end();
             oRenderer->renderStates.renderTarget.get()->blur();
-            OSB->begin();
-            OSB->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .5f));
+            oSpriteBatch->begin();
+            oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .5f));
         });
     }
 
@@ -212,7 +212,7 @@ namespace onut
         oRenderer->init(OWindow);
 
         // SpriteBatch
-        OSB = new SpriteBatch();
+        oSpriteBatch = SpriteBatch::create();
         OPB = new PrimitiveBatch();
 
         // Content
@@ -254,7 +254,7 @@ namespace onut
         oInput = nullptr;
         oContentManager = nullptr;
         delete OPB;
-        delete OSB;
+        oSpriteBatch = nullptr;
         oRenderer = nullptr;
         delete OWindow;
     }
@@ -356,9 +356,9 @@ namespace onut
                 renderCallback();
             }
             OParticles->render();
-            OSB->begin();
+            oSpriteBatch->begin();
             OUI->render(*OUIContext);
-            OSB->end();
+            oSpriteBatch->end();
             oRenderer->endFrame();
         }
 
