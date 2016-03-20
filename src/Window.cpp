@@ -28,7 +28,7 @@ namespace onut
             }
             if (OUIContext)
             {
-                OUIContext->resize(sUIVector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
+                OUIContext->resize(Vector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
             }
             if (oWindow)
             {

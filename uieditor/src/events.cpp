@@ -203,8 +203,8 @@ void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 {
     auto mousePos = evt.mousePos;
     auto rect = g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext);
-    mousePos.x -= rect.position.x;
-    mousePos.y -= rect.position.y;
+    mousePos.x -= rect.x;
+    mousePos.y -= rect.y;
     auto pPickedControl = g_pDocument->pUIScreen->getChild(*g_pDocument->pUIContext, mousePos, true, false);
     auto pPreviousSelected = g_pDocument->pSelected;
 
@@ -333,7 +333,7 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     ));
 }
 
-void doRectChange(const std::string& actionName, onut::UIControl* pControl, const onut::sUIRect& rect)
+void doRectChange(const std::string& actionName, onut::UIControl* pControl, const Rect& rect)
 {
     if (!pControl) return;
     auto previousRect = pControl->rect;
@@ -361,10 +361,10 @@ void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
-    rect.position.x = pTextBox->getFloat();
+    rect.x = pTextBox->getFloat();
     if (g_pDocument->pSelected->xType == onut::eUIPosType::POS_PERCENTAGE)
     {
-        rect.position.x /= 100.f;
+        rect.x /= 100.f;
     }
     doRectChange("Edit X position", g_pDocument->pSelected, rect);
 }
@@ -372,10 +372,10 @@ void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& 
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
-    rect.position.y = pTextBox->getFloat();
+    rect.y = pTextBox->getFloat();
     if (g_pDocument->pSelected->yType == onut::eUIPosType::POS_PERCENTAGE)
     {
-        rect.position.y /= 100.f;
+        rect.y /= 100.f;
     }
     doRectChange("Edit Y position", g_pDocument->pSelected, rect);
 }
@@ -444,10 +444,10 @@ void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
-    rect.size.x = pTextBox->getFloat();
+    rect.z = pTextBox->getFloat();
     if (g_pDocument->pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE)
     {
-        rect.size.x /= 100.f;
+        rect.z /= 100.f;
     }
     doRectChange("Edit Width", g_pDocument->pSelected, rect);
 }
@@ -456,10 +456,10 @@ void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEv
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
-    rect.size.y = pTextBox->getFloat();
+    rect.w = pTextBox->getFloat();
     if (g_pDocument->pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE)
     {
-        rect.size.y /= 100.f;
+        rect.w /= 100.f;
     }
     doRectChange("Edit Height", g_pDocument->pSelected, rect);
 }
@@ -663,13 +663,13 @@ void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UIC
         auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_PERCENTAGE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.size.x = worldRect.size.x / parentRect.size.x;
+        newRect.z = worldRect.z / parentRect.z;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkWidthRelative->getIsChecked())
     {
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_ABSOLUTE;
-        newRect.size.x = newRect.size.x * parentRect.size.x;
+        newRect.z = newRect.z * parentRect.z;
     }
     g_actionManager.doAction(new onut::Action("Toggle Width percent",
         [=]{
@@ -705,13 +705,13 @@ void onUIControlHeightPercentChanged(onut::UICheckBox* pCheckBox, const onut::UI
         auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_PERCENTAGE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.size.y = worldRect.size.y / parentRect.size.y;
+        newRect.w = worldRect.w / parentRect.w;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkHeightRelative->getIsChecked())
     {
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_ABSOLUTE;
-        newRect.size.y = newRect.size.y * parentRect.size.y;
+        newRect.w = newRect.w * parentRect.w;
     }
     g_actionManager.doAction(new onut::Action("Toggle Height percent",
         [=]{
@@ -747,13 +747,13 @@ void onUIControlWidthRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UI
         auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_RELATIVE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.size.x = worldRect.size.x - parentRect.size.x;
+        newRect.z = worldRect.z - parentRect.z;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkWidthPercent->getIsChecked())
     {
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_ABSOLUTE;
-        newRect.size.x = parentRect.size.x + newRect.size.x;
+        newRect.z = parentRect.z + newRect.z;
     }
     g_actionManager.doAction(new onut::Action("Toggle Width relative",
         [=]{
@@ -789,13 +789,13 @@ void onUIControlHeightRelativeChanged(onut::UICheckBox* pCheckBox, const onut::U
         auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_RELATIVE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.size.y = worldRect.size.y - parentRect.size.y;
+        newRect.w = worldRect.w - parentRect.w;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkHeightPercent->getIsChecked())
     {
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
         newDimType = onut::eUIDimType::DIM_ABSOLUTE;
-        newRect.size.y = parentRect.size.y + newRect.size.y;
+        newRect.w = parentRect.w + newRect.w;
     }
     g_actionManager.doAction(new onut::Action("Toggle Height relative",
         [=]{
@@ -830,13 +830,13 @@ void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
     {
         newType = onut::eUIPosType::POS_PERCENTAGE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.position.x = newRect.position.x / parentRect.size.x;
+        newRect.x = newRect.x / parentRect.z;
     }
     else if (!pCheckBox->getIsChecked() && prevType == onut::eUIPosType::POS_PERCENTAGE)
     {
         newType = onut::eUIPosType::POS_RELATIVE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.position.x = newRect.position.x * parentRect.size.x;
+        newRect.x = newRect.x * parentRect.z;
     }
     g_actionManager.doAction(new onut::Action("Toggle X percent",
         [=]{
@@ -871,13 +871,13 @@ void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
     {
         newType = onut::eUIPosType::POS_PERCENTAGE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.position.y = newRect.position.y / parentRect.size.y;
+        newRect.y = newRect.y / parentRect.w;
     }
     else if (!pCheckBox->getIsChecked() && prevType == onut::eUIPosType::POS_PERCENTAGE)
     {
         newType = onut::eUIPosType::POS_RELATIVE;
         auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newRect.position.y = newRect.position.y * parentRect.size.y;
+        newRect.y = newRect.y * parentRect.w;
     }
     g_actionManager.doAction(new onut::Action("Toggle Y percent",
         [=]{
@@ -904,7 +904,7 @@ void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 {
     if (!g_pDocument->pSelected) return; // Wuuuut?
     auto pSelected = g_pDocument->pSelected;
-    onut::sUIVector2 prevAnchor = pSelected->anchor;
+    auto prevAnchor = pSelected->anchor;
     if (pControl == g_pInspector_UIControl_chkAnchorTOP_LEFT)
     {
         pSelected->setAnchorPercent({0, 0});
@@ -941,7 +941,7 @@ void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     {
         pSelected->setAnchorPercent({1, 1});
     }
-    onut::sUIVector2 newAnchor = pSelected->anchor;
+    auto newAnchor = pSelected->anchor;
 
     g_actionManager.doAction(new onut::Action("Change Anchor",
         [=]{
@@ -970,54 +970,54 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
     auto pSelected = g_pDocument->pSelected;
     auto previousRect = pSelected->rect;
     auto newRect = previousRect;
-    newRect.position.x = 0;
-    newRect.position.y = 0;
+    newRect.x = 0;
+    newRect.y = 0;
     auto previousAnchor = pSelected->anchor;
     auto previousAlign = pSelected->align;
     if (pCheckBox == g_pInspector_UIControl_chkTOP_LEFT)
     {
         pSelected->setAnchorPercent({0, 0});
-        pSelected->align = (onut::eUIAlign::TOP_LEFT);
+        pSelected->align = (OTopLeft);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkTOP)
     {
         pSelected->setAnchorPercent({.5f, 0});
-        pSelected->align = (onut::eUIAlign::TOP);
+        pSelected->align = (OTop);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkTOP_RIGHT)
     {
         pSelected->setAnchorPercent({1, 0});
-        pSelected->align = (onut::eUIAlign::TOP_RIGHT);
+        pSelected->align = (OTopRight);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkLEFT)
     {
         pSelected->setAnchorPercent({0, .5f});
-        pSelected->align = (onut::eUIAlign::LEFT);
+        pSelected->align = (OLeft);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkCENTER)
     {
         pSelected->setAnchorPercent({.5f, .5f});
-        pSelected->align = (onut::eUIAlign::CENTER);
+        pSelected->align = (OCenter);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkRIGHT)
     {
         pSelected->setAnchorPercent({1, .5f});
-        pSelected->align = (onut::eUIAlign::RIGHT);
+        pSelected->align = (ORight);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_LEFT)
     {
         pSelected->setAnchorPercent({0, 1});
-        pSelected->align = (onut::eUIAlign::BOTTOM_LEFT);
+        pSelected->align = (OBottomLeft);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM)
     {
         pSelected->setAnchorPercent({.5f, 1});
-        pSelected->align = (onut::eUIAlign::BOTTOM);
+        pSelected->align = (OBottom);
     }
     else if (pCheckBox == g_pInspector_UIControl_chkBOTTOM_RIGHT)
     {
         pSelected->setAnchorPercent({1, 1});
-        pSelected->align = (onut::eUIAlign::BOTTOM_RIGHT);
+        pSelected->align = (OBottomRight);
     }
     auto newAnchor = pSelected->anchor;
     auto newAlign = pSelected->align;
@@ -1098,7 +1098,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
     pButton->setStyle("colorPicker");
-    pButton->align = (onut::eUIAlign::TOP_RIGHT);
+    pButton->align = (OTopRight);
     pButton->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pButton->rect = {{-4, yPos}, {0.618f, 24}};
     pButton->anchor = {1, 0};
@@ -1107,13 +1107,13 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
 
     pAlphaLabel->textComponent.text = "Alpha:";
     pAlphaLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
-    pAlphaLabel->align = (onut::eUIAlign::TOP_RIGHT);
+    pAlphaLabel->align = (OTopRight);
     pAlphaLabel->rect = {{-4 - 64 - 4, yPos}, {64, 24}};
     pAlphaLabel->anchor = {1, 0};
 
     pAlphaText->setInt(100);
     pAlphaText->setIsNumerical(true);
-    pAlphaText->align = (onut::eUIAlign::TOP_RIGHT);
+    pAlphaText->align = (OTopRight);
     pAlphaText->rect = {{-4, yPos}, {64, 24}};
     pAlphaText->anchor = {1, 0};
 
@@ -1125,7 +1125,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     pPnl->add(pAlphaText);
 
     {
-        auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>
+        auto pBinding = new ControlInspectorBind<Color, TuiType>
             (std::string("Edit ") + name, &pButton->color, getter, setter);
         pBindings->push_back(pBinding);
 
@@ -1133,7 +1133,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
         {
             CHOOSECOLOR colorChooser = {0};
             DWORD rgbCurrent; // initial color selection
-            rgbCurrent = (DWORD)pButton->color.packed;
+            rgbCurrent = (DWORD)pButton->color.pack();
             auto alphaVal = rgbCurrent & 0x000000ff;
             rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
             colorChooser.lStructSize = sizeof(colorChooser);
@@ -1143,10 +1143,9 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
             colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
             if (ChooseColor(&colorChooser) == TRUE)
             {
-                onut::sUIColor color;
+                Color color;
                 rgbCurrent = colorChooser.rgbResult;
-                color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | alphaVal;
-                color.unpack();
+                color.unpack(((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | alphaVal);
                 pButton->color = color;
                 pBinding->updateControl(g_pDocument->pSelected);
             }
@@ -1156,8 +1155,8 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     { // alpha
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             "Alpha", nullptr,
-            [](TuiType* pControl) {return pControl->color.a * 100.f; },
-            [](TuiType* pControl, const float& alpha){pControl->color.a = alpha / 100.f; pControl->color.pack(); },
+            [](TuiType* pControl) {return pControl->color.w * 100.f; },
+            [](TuiType* pControl, const float& alpha){pControl->color.w = alpha / 100.f; pControl->color.pack(); },
             [=]{return pAlphaText->getFloat(); },
             [=](const float& alpha) {pAlphaText->setFloat(alpha); });
         pBindings->push_back(pBinding);
@@ -1196,7 +1195,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     pTxtImage->widthType = (onut::eUIDimType::DIM_RELATIVE);
     pTxtImage->rect = {{4, 4}, {-8 - 32, 24}};
 
-    pBrowseButton->align = (onut::eUIAlign::TOP_RIGHT);
+    pBrowseButton->align = (OTopRight);
     pBrowseButton->anchor = {1, 0};
     pBrowseButton->rect = {{-4, 4}, {32, 24}};
     pBrowseButton->textComponent.text = "...";
@@ -1212,7 +1211,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 
     pBtnFit->textComponent.text = "Fit";
     pBtnFit->anchor = {1, 0};
-    pBtnFit->align = (onut::eUIAlign::TOP_RIGHT);
+    pBtnFit->align = (OTopRight);
     pBtnFit->rect = {{-4, 33}, {32, 24}};
 
     pLblPadding->textComponent.text = "Padding";
@@ -1298,16 +1297,16 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
         };
     }
     { // color
-        auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>(
+        auto pBinding = new ControlInspectorBind<Color, TuiType>(
             actionName, &(pBtnColor->color),
             [](TuiType* pControl) {return pControl->scale9Component.image.color; },
-            [](TuiType* pControl, const onut::sUIColor& color){pControl->scale9Component.image.color = color; });
+            [](TuiType* pControl, const Color& color){pControl->scale9Component.image.color = color; });
         pBindings->push_back(pBinding);
         pBtnColor->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
         {
             CHOOSECOLOR colorChooser = {0};
             DWORD rgbCurrent; // initial color selection
-            rgbCurrent = (DWORD)pBtnColor->color.packed;
+            rgbCurrent = (DWORD)pBtnColor->color.pack();
             rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
             colorChooser.lStructSize = sizeof(colorChooser);
             colorChooser.hwndOwner = oWindow->getHandle();
@@ -1316,10 +1315,9 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
             colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
             if (ChooseColor(&colorChooser) == TRUE)
             {
-                onut::sUIColor color;
+                Color color;
                 rgbCurrent = colorChooser.rgbResult;
-                color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff;
-                color.unpack();
+                color.unpack(((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff);
                 pBtnColor->color = color;
                 pBinding->updateControl(g_pDocument->pSelected);
             }
@@ -1371,8 +1369,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.left
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.left; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.left = padding; },
+            [](TuiType* pControl) {return pControl->scale9Component.padding.x; },
+            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.x = padding; },
             [=]{return pTxtPaddingLeft->getFloat(); },
             [=](const float& padding) {pTxtPaddingLeft->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1384,8 +1382,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.right
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.right; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.right = padding; },
+            [](TuiType* pControl) {return pControl->scale9Component.padding.z; },
+            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.z = padding; },
             [=]{return pTxtPaddingRight->getFloat(); },
             [=](const float& padding) {pTxtPaddingRight->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1397,8 +1395,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.top
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.top; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.top = padding; },
+            [](TuiType* pControl) {return pControl->scale9Component.padding.y; },
+            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.y = padding; },
             [=]{return pTxtPaddingTop->getFloat(); },
             [=](const float& padding) {pTxtPaddingTop->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1410,8 +1408,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.bottom
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.bottom; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.bottom = padding; },
+            [](TuiType* pControl) {return pControl->scale9Component.padding.w; },
+            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.w = padding; },
             [=]{return pTxtPaddingBottom->getFloat(); },
             [=](const float& padding) {pTxtPaddingBottom->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1520,54 +1518,54 @@ void BIND_TEXT_COMPONENT(const std::string& name)
 
     pAlignTL->setStyle("align");
     pAlignTL->rect = {{0, 0}, {18, 18}};
-    pAlignTL->align = onut::eUIAlign::TOP_LEFT;
+    pAlignTL->align = OTopLeft;
     pAlignTL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
 
     pAlignT->setStyle("align");
     pAlignT->rect = {{0, 0}, {18, 18}};
-    pAlignT->align = (onut::eUIAlign::TOP);
+    pAlignT->align = (OTop);
     pAlignT->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignT->anchor = {.5f, 0};
 
     pAlignTR->setStyle("align");
     pAlignTR->rect = {{0, 0}, {18, 18}};
-    pAlignTR->align = (onut::eUIAlign::TOP_RIGHT);
+    pAlignTR->align = (OTopRight);
     pAlignTR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignTR->anchor = {1, 0};
 
     pAlignL->setStyle("align");
     pAlignL->rect = {{0, 0}, {18, 18}};
-    pAlignL->align = (onut::eUIAlign::LEFT);
+    pAlignL->align = (OLeft);
     pAlignL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignL->anchor = {0, .5f};
 
     pAlignC->setStyle("align");
     pAlignC->rect = {{0, 0}, {18, 18}};
-    pAlignC->align = (onut::eUIAlign::CENTER);
+    pAlignC->align = (OCenter);
     pAlignC->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignC->anchor = {.5f, .5f};
 
     pAlignR->setStyle("align");
     pAlignR->rect = {{0, 0}, {18, 18}};
-    pAlignR->align = (onut::eUIAlign::RIGHT);
+    pAlignR->align = (ORight);
     pAlignR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignR->anchor = {1, .5f};
 
     pAlignBL->setStyle("align");
     pAlignBL->rect = {{0, 0}, {18, 18}};
-    pAlignBL->align = (onut::eUIAlign::BOTTOM_LEFT);
+    pAlignBL->align = (OBottomLeft);
     pAlignBL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignBL->anchor = {0, 1};
 
     pAlignB->setStyle("align");
     pAlignB->rect = {{0, 0}, {18, 18}};
-    pAlignB->align = (onut::eUIAlign::BOTTOM);
+    pAlignB->align = (OBottom);
     pAlignB->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignB->anchor = {.5f, 1};
 
     pAlignBR->setStyle("align");
     pAlignBR->rect = {{0, 0}, {18, 18}};
-    pAlignBR->align = (onut::eUIAlign::BOTTOM_RIGHT);
+    pAlignBR->align = (OBottomRight);
     pAlignBR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
     pAlignBR->anchor = {1, 1};
 
@@ -1634,16 +1632,16 @@ void BIND_TEXT_COMPONENT(const std::string& name)
         };
     }
     { // color
-        auto pBinding = new ControlInspectorBind<onut::sUIColor, TuiType>(
+        auto pBinding = new ControlInspectorBind<Color, TuiType>(
             actionName, &(pBtnColor->color),
             [](TuiType* pControl) {return pControl->textComponent.font.color; },
-            [](TuiType* pControl, const onut::sUIColor& color){pControl->textComponent.font.color = color; });
+            [](TuiType* pControl, const Color& color){pControl->textComponent.font.color = color; });
         pBindings->push_back(pBinding);
         pBtnColor->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
         {
             CHOOSECOLOR colorChooser = {0};
             DWORD rgbCurrent; // initial color selection
-            rgbCurrent = (DWORD)pBtnColor->color.packed;
+            rgbCurrent = (DWORD)pBtnColor->color.pack();
             rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
             colorChooser.lStructSize = sizeof(colorChooser);
             colorChooser.hwndOwner = oWindow->getHandle();
@@ -1652,10 +1650,9 @@ void BIND_TEXT_COMPONENT(const std::string& name)
             colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
             if (ChooseColor(&colorChooser) == TRUE)
             {
-                onut::sUIColor color;
+                Color color;
                 rgbCurrent = colorChooser.rgbResult;
-                color.packed = ((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff;
-                color.unpack();
+                color.unpack(((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff);
                 pBtnColor->color = color;
                 pBinding->updateControl(g_pDocument->pSelected);
             }
@@ -1701,8 +1698,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.left
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.left; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.left = padding; },
+            [](TuiType* pControl) {return pControl->textComponent.font.padding.x; },
+            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.x = padding; },
             [=]{return pTxtPaddingLeft->getFloat(); },
             [=](const float& padding) {pTxtPaddingLeft->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1714,8 +1711,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.right
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.right; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.right = padding; },
+            [](TuiType* pControl) {return pControl->textComponent.font.padding.z; },
+            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.z = padding; },
             [=]{return pTxtPaddingRight->getFloat(); },
             [=](const float& padding) {pTxtPaddingRight->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1727,8 +1724,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.top
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.top; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.top = padding; },
+            [](TuiType* pControl) {return pControl->textComponent.font.padding.y; },
+            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.y = padding; },
             [=]{return pTxtPaddingTop->getFloat(); },
             [=](const float& padding) {pTxtPaddingTop->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1740,8 +1737,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.bottom
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.bottom; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.bottom = padding; },
+            [](TuiType* pControl) {return pControl->textComponent.font.padding.w; },
+            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.w = padding; },
             [=]{return pTxtPaddingBottom->getFloat(); },
             [=](const float& padding) {pTxtPaddingBottom->setFloat(padding); });
         pBindings->push_back(pBinding);
@@ -1780,36 +1777,36 @@ void BIND_TEXT_COMPONENT(const std::string& name)
         pChkEllipsis->onCheckChanged = onCheckChanged;
     }
     { // align
-        auto pBinding = new ControlInspectorBind<onut::eUIAlign, TuiType>(
+        auto pBinding = new ControlInspectorBind<onut::Align, TuiType>(
             actionName, nullptr,
             [](TuiType* pControl) {return pControl->textComponent.font.align; },
-            [](TuiType* pControl, const onut::eUIAlign& align){pControl->textComponent.font.align = align; },
+            [](TuiType* pControl, const onut::Align& align){pControl->textComponent.font.align = align; },
             [=]
             {
-                if (pAlignTL->getIsChecked()) return onut::eUIAlign::TOP_LEFT;
-                if (pAlignT->getIsChecked()) return onut::eUIAlign::TOP;
-                if (pAlignTR->getIsChecked()) return onut::eUIAlign::TOP_RIGHT;
-                if (pAlignL->getIsChecked()) return onut::eUIAlign::LEFT;
-                if (pAlignC->getIsChecked()) return onut::eUIAlign::CENTER;
-                if (pAlignR->getIsChecked()) return onut::eUIAlign::RIGHT;
-                if (pAlignBL->getIsChecked()) return onut::eUIAlign::BOTTOM_LEFT;
-                if (pAlignB->getIsChecked()) return onut::eUIAlign::BOTTOM;
-                if (pAlignBR->getIsChecked()) return onut::eUIAlign::BOTTOM_RIGHT;
-                return onut::eUIAlign::TOP_LEFT;
+                if (pAlignTL->getIsChecked()) return OTopLeft;
+                if (pAlignT->getIsChecked()) return OTop;
+                if (pAlignTR->getIsChecked()) return OTopRight;
+                if (pAlignL->getIsChecked()) return OLeft;
+                if (pAlignC->getIsChecked()) return OCenter;
+                if (pAlignR->getIsChecked()) return ORight;
+                if (pAlignBL->getIsChecked()) return OBottomLeft;
+                if (pAlignB->getIsChecked()) return OBottom;
+                if (pAlignBR->getIsChecked()) return OBottomRight;
+                return OTopLeft;
             },
-            [=](const onut::eUIAlign& align)
+            [=](const onut::Align& align)
             {   
                 switch (align)
                 {
-                    case onut::eUIAlign::TOP_LEFT: pAlignTL->setIsChecked(true); break;
-                    case onut::eUIAlign::TOP: pAlignT->setIsChecked(true); break;
-                    case onut::eUIAlign::TOP_RIGHT: pAlignTR->setIsChecked(true); break;
-                    case onut::eUIAlign::LEFT: pAlignL->setIsChecked(true); break;
-                    case onut::eUIAlign::CENTER: pAlignC->setIsChecked(true); break;
-                    case onut::eUIAlign::RIGHT: pAlignR->setIsChecked(true); break;
-                    case onut::eUIAlign::BOTTOM_LEFT: pAlignBL->setIsChecked(true); break;
-                    case onut::eUIAlign::BOTTOM: pAlignB->setIsChecked(true); break;
-                    case onut::eUIAlign::BOTTOM_RIGHT: pAlignBR->setIsChecked(true); break;
+                    case OTopLeft: pAlignTL->setIsChecked(true); break;
+                    case OTop: pAlignT->setIsChecked(true); break;
+                    case OTopRight: pAlignTR->setIsChecked(true); break;
+                    case OLeft: pAlignL->setIsChecked(true); break;
+                    case OCenter: pAlignC->setIsChecked(true); break;
+                    case ORight: pAlignR->setIsChecked(true); break;
+                    case OBottomLeft: pAlignBL->setIsChecked(true); break;
+                    case OBottom: pAlignB->setIsChecked(true); break;
+                    case OBottomRight: pAlignBR->setIsChecked(true); break;
                 }
             });
         pBindings->push_back(pBinding);
@@ -1840,7 +1837,7 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
     pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
-    pTextBox->align = (onut::eUIAlign::TOP_RIGHT);
+    pTextBox->align = (OTopRight);
     pTextBox->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
     pTextBox->anchor = {1, 0};
@@ -1872,7 +1869,7 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
     pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
-    pTextBox->align = (onut::eUIAlign::TOP_RIGHT);
+    pTextBox->align = (OTopRight);
     pTextBox->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
     pTextBox->anchor = {1, 0};
@@ -1939,7 +1936,7 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
-    pContainer->align = (onut::eUIAlign::TOP_RIGHT);
+    pContainer->align = (OTopRight);
     pContainer->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
     pContainer->rect = {{-4, yPos}, {0.618f, 24}};
     pContainer->anchor = {1, 0};
@@ -1947,7 +1944,7 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     pTextBox->widthType = (onut::eUIDimType::DIM_RELATIVE);
     pTextBox->rect = {{0, 0}, {-32, 24}};
 
-    pBrowseButton->align = (onut::eUIAlign::TOP_RIGHT);
+    pBrowseButton->align = (OTopRight);
     pBrowseButton->anchor = {1, 0};
     pBrowseButton->rect = {{0, 0}, {32, 24}};
     pBrowseButton->textComponent.text = "...";
@@ -2146,8 +2143,8 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     // UIPanel
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
     BIND_COLOR_PROPERTY<onut::UIPanel>("Background Color",
-                                       [=](onut::UIPanel* pPanel) -> onut::sUIColor {return pPanel->color; },
-                                       [=](onut::UIPanel* pPanel, const onut::sUIColor& color){ pPanel->color = color; });
+                                       [=](onut::UIPanel* pPanel) -> Color {return pPanel->color; },
+                                       [=](onut::UIPanel* pPanel, const Color& color){ pPanel->color = color; });
 
     // UIButton
     BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");

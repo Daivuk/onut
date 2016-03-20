@@ -52,22 +52,22 @@ private:
     void onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
     void onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent);
 
-    void updateSelectionWithRect(const onut::sUIRect& rect);
+    void updateSelectionWithRect(const Rect& rect);
     void updateGizmoRect();
     void updateMovingHandle();
     void updateMovingGizmo();
     void deleteSelection();
     void setDirty(bool isDirty);
-    void concludeTransform(onut::UIControl* pControl, const onut::sUIRect& previousRect);
+    void concludeTransform(onut::UIControl* pControl, const Rect& previousRect);
 
-    void snapX(float x, float &ret, const onut::sUIRect& rect, float &closest, bool& found);
+    void snapX(float x, float &ret, const Rect& rect, float &closest, bool& found);
     float snapX(onut::UIControl* pControl, float x);
-    void snapY(float y, float &ret, const onut::sUIRect& rect, float &closest, bool& found);
+    void snapY(float y, float &ret, const Rect& rect, float &closest, bool& found);
     float snapY(onut::UIControl* pControl, float y);
-    bool getXAutoGuide(const onut::sUIRect& rect, float& x, bool& side);
-    bool getYAutoGuide(const onut::sUIRect& rect, float& y, bool& side);
-    void xAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& x, bool& side, float& closest);
-    void yAutoGuideAgainst(const onut::sUIRect& otherRect, bool& found, const onut::sUIRect& rect, float& y, bool& side, float& closest);
+    bool getXAutoGuide(const Rect& rect, float& x, bool& side);
+    bool getYAutoGuide(const Rect& rect, float& y, bool& side);
+    void xAutoGuideAgainst(const Rect& otherRect, bool& found, const Rect& rect, float& x, bool& side, float& closest);
+    void yAutoGuideAgainst(const Rect& otherRect, bool& found, const Rect& rect, float& y, bool& side, float& closest);
 
     onut::UIPanel*      m_pGizmo = nullptr;
     onut::UIControl*    m_gizmoHandles[8];
@@ -76,8 +76,8 @@ private:
     onut::UIControl*    m_pClipBoard = nullptr;
     onut::UITreeView*   m_pSceneGraph = nullptr;
     Vector2             m_mousePosOnDown;
-    onut::sUIRect       m_controlRectOnDown;
-    onut::sUIRect       m_controlWorldRectOnDown;
+    Rect m_controlRectOnDown;
+    Rect m_controlWorldRectOnDown;
     eDocumentState      m_state = eDocumentState::IDLE;
     bool                m_autoGuide = true;
     float               m_autoPadding = 8.f;

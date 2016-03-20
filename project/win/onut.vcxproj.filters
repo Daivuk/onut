@@ -110,9 +110,6 @@
     <ClInclude Include="..\..\include\onut_old.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onutUI.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Particle.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -126,9 +123,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\RTS.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\UI.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Utils.h">
@@ -264,6 +258,9 @@
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Timing.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UI.h">
       <Filter>services</Filter>
     </ClInclude>
   </ItemGroup>

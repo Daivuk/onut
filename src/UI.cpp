@@ -1,9 +1,11 @@
-#include "UI.h"
+#include "onut/UI.h"
+
 #include "rapidjson/document.h"
 #include "rapidjson/filestream.h"
 #include "rapidjson/filewritestream.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+
 #include <algorithm>
 #include <functional>
 #include <sstream>
@@ -17,16 +19,16 @@ namespace onut
         {"ELLIPSIS", sUIFont::ELLIPSIS},
         {"WORD_WRAP", sUIFont::WORD_WRAP}
     };
-    static std::unordered_map<std::string, eUIAlign> alignMap = {
-        {"TOP_LEFT", eUIAlign::TOP_LEFT},
-        {"TOP", eUIAlign::TOP},
-        {"TOP_RIGHT", eUIAlign::TOP_RIGHT},
-        {"LEFT", eUIAlign::LEFT},
-        {"CENTER", eUIAlign::CENTER},
-        {"RIGHT", eUIAlign::RIGHT},
-        {"BOTTOM_LEFT", eUIAlign::BOTTOM_LEFT},
-        {"BOTTOM", eUIAlign::BOTTOM},
-        {"BOTTOM_RIGHT", eUIAlign::BOTTOM_RIGHT}
+    static std::unordered_map<std::string, onut::Align> alignMap = {
+        {"TOP_LEFT", onut::Align::TopLeft},
+        {"TOP", onut::Align::Top},
+        {"TOP_RIGHT", onut::Align::TopRight},
+        {"LEFT", onut::Align::Left},
+        {"CENTER", onut::Align::Center},
+        {"RIGHT", onut::Align::Right},
+        {"BOTTOM_LEFT", onut::Align::BottomLeft},
+        {"BOTTOM", onut::Align::Bottom},
+        {"BOTTOM_RIGHT", onut::Align::BottomRight}
     };
     static std::unordered_map<std::string, eUIDimType> dimTypeMap = {
         {"ABSOLUTE", eUIDimType::DIM_ABSOLUTE},
@@ -79,23 +81,6 @@ namespace onut
         }
         static std::string empty;
         return empty;
-    }
-
-    void sUIColor::unpack()
-    {
-        r = (float)((packed >> 24) & 0xff) / 255.f;
-        g = (float)((packed >> 16) & 0xff) / 255.f;
-        b = (float)((packed >> 8) & 0xff) / 255.f;
-        a = (float)(packed & 0xff) / 255.f;
-    }
-
-    void sUIColor::pack()
-    {
-        packed = 0;
-        packed |= ((uint32_t)(r * 255.f) << 24) & 0xff000000;
-        packed |= ((uint32_t)(g * 255.f) << 16) & 0x00ff0000;
-        packed |= ((uint32_t)(b * 255.f) << 8) & 0x0000ff00;
-        packed |= (uint32_t)(a * 255.f) & 0x000000ff;
     }
 
     unsigned int uiHash(const char* s, unsigned int seed)
@@ -163,35 +148,31 @@ namespace onut
 
     static void setJsonColor(rapidjson::Value& jsonNode, 
                              const char* szName, 
-                             const sUIColor& value, 
+                             const Color& value, 
                              rapidjson::Allocator& allocator, 
-                             const sUIColor& default = {1.f, 1.f, 1.f, 1.f})
+                             const Color& default = {1.f, 1.f, 1.f, 1.f})
     {
-        if (value.packed == default.packed) return;
+        if (value.pack() == default.pack()) return;
 
         rapidjson::Value jsonValue;
         char buffer[10];
-        int len = sprintf_s(buffer, "%08x", value.packed); // dynamically created string.
+        int len = sprintf_s(buffer, "%08x", value.pack()); // dynamically created string.
         jsonValue.SetString(buffer, len, allocator);
         jsonNode.AddMember(szName, jsonValue, allocator);
     }
 
-    static sUIColor getJsonColor(const rapidjson::Value& jsonNode, const sUIColor& default = {1.f, 1.f, 1.f, 1.f})
+    static Color getJsonColor(const rapidjson::Value& jsonNode, const Color& default = {1.f, 1.f, 1.f, 1.f})
     {
         if (jsonNode.IsString())
         {
-            sUIColor ret;
+            Color ret;
             auto szStr = jsonNode.GetString();
             auto len = jsonNode.GetStringLength();
             if (len != 8)
             {
                 return default;
             }
-            ret.packed = static_cast<uint32_t>(strtoul(szStr, NULL, 16));
-            ret.r = (float)((ret.packed >> 24) & 0xff) / 255.f;
-            ret.g = (float)((ret.packed >> 16) & 0xff) / 255.f;
-            ret.b = (float)((ret.packed >> 8) & 0xff) / 255.f;
-            ret.a = (float)(ret.packed & 0xff) / 255.f;
+            ret.unpack(static_cast<uint32_t>(strtoul(szStr, NULL, 16)));
             return std::move(ret);
         }
         else
@@ -200,26 +181,26 @@ namespace onut
         }
     }
 
-    static sUIPadding getJsonPadding(const rapidjson::Value& node)
+    static Vector4 getJsonPadding(const rapidjson::Value& node)
     {
-        sUIPadding ret;
+        Vector4 ret;
         if (!node.IsNull())
         {
-            ret.left = getJsonFloat(node["left"]);
-            ret.right = getJsonFloat(node["right"]);
-            ret.top = getJsonFloat(node["top"]);
-            ret.bottom = getJsonFloat(node["bottom"]);
+            ret.x = getJsonFloat(node["left"]);
+            ret.z = getJsonFloat(node["right"]);
+            ret.y = getJsonFloat(node["top"]);
+            ret.w = getJsonFloat(node["bottom"]);
         }
         return std::move(ret);
     }
 
-    static void setJsonPadding(rapidjson::Value& node, const sUIPadding& padding, rapidjson::Allocator& allocator)
+    static void setJsonPadding(rapidjson::Value& node, const Vector4& padding, rapidjson::Allocator& allocator)
     {
         rapidjson::Value paddingNode(rapidjson::kObjectType);
-        setJsonFloat(paddingNode, "left", padding.left, allocator);
-        setJsonFloat(paddingNode, "right", padding.right, allocator);
-        setJsonFloat(paddingNode, "top", padding.top, allocator);
-        setJsonFloat(paddingNode, "bottom", padding.bottom, allocator);
+        setJsonFloat(paddingNode, "left", padding.x, allocator);
+        setJsonFloat(paddingNode, "right", padding.z, allocator);
+        setJsonFloat(paddingNode, "top", padding.y, allocator);
+        setJsonFloat(paddingNode, "bottom", padding.w, allocator);
         node.AddMember("padding", paddingNode, allocator);
     }
 
@@ -291,7 +272,7 @@ namespace onut
         if (!node.IsNull())
         {
             ret.color = getJsonColor(node["color"]);
-            ret.align = getJsonEnum(alignMap, node["align"], eUIAlign::TOP_LEFT);
+            ret.align = getJsonEnum(alignMap, node["align"], onut::Align::TopLeft);
             ret.padding = getJsonPadding(node["padding"]);
             ret.typeFace = getJsonString(node["typeFace"], "Arial");
             ret.size = getJsonFloat(node["size"], 12.f);
@@ -377,11 +358,7 @@ namespace onut
             node.AddMember("scale9Component", scale9Node, allocator);
             return;
         }
-        sUIColor white;
-        if (scale9Component.image.color.r != white.r ||
-            scale9Component.image.color.g != white.g ||
-            scale9Component.image.color.b != white.b ||
-            scale9Component.image.color.a != white.a)
+        if (scale9Component.image.color != Color::White)
         {
             setJsonImageComponent(node, scale9Component.image, allocator);
         }
@@ -399,7 +376,7 @@ namespace onut
         node.AddMember("textComponent", textNode, allocator);
     }
 
-    UIContext::UIContext(const sUIVector2& screenSize) :
+    UIContext::UIContext(const Vector2& screenSize) :
         m_screenSize(screenSize)
     {
         m_pDownControls[0] = nullptr;
@@ -414,12 +391,12 @@ namespace onut
     {
     }
 
-    void UIContext::resize(const sUIVector2& screenSize)
+    void UIContext::resize(const Vector2& screenSize)
     {
         m_screenSize = screenSize;
     }
 
-    void UIContext::pushClip(const sUIRect& rect)
+    void UIContext::pushClip(const Rect& rect)
     {
         m_clips.push_back(rect);
         onClipping(true, rect);
@@ -616,7 +593,7 @@ namespace onut
         fclose(pFile);
     }
 
-    bool UIControl::visit(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    bool UIControl::visit(const std::function<bool(UIControl*, const Rect&)>& callback, const Rect& parentRect)
     {
         auto worldRect = getWorldRect(parentRect);
         if (!callback(this, worldRect))
@@ -633,7 +610,7 @@ namespace onut
         return true;
     }
 
-    bool UIControl::visitChildrenFirst(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    bool UIControl::visitChildrenFirst(const std::function<bool(UIControl*, const Rect&)>& callback, const Rect& parentRect)
     {
         auto worldRect = getWorldRect(parentRect);
         for (auto& pChild : m_children)
@@ -650,7 +627,7 @@ namespace onut
         return true;
     }
 
-    bool UIControl::visitEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    bool UIControl::visitEnabled(const std::function<bool(UIControl*, const Rect&)>& callback, const Rect& parentRect)
     {
         if (!isEnabled) return true;
         if (!isVisible) return true;
@@ -669,7 +646,7 @@ namespace onut
         return true;
     }
 
-    bool UIControl::visitChildrenFirstEnabled(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    bool UIControl::visitChildrenFirstEnabled(const std::function<bool(UIControl*, const Rect&)>& callback, const Rect& parentRect)
     {
         if (!isEnabled) return true;
         if (!isVisible) return true;
@@ -688,7 +665,7 @@ namespace onut
         return true;
     }
 
-    bool UIControl::visitVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    bool UIControl::visitVisible(const std::function<bool(UIControl*, const Rect&)>& callback, const Rect& parentRect)
     {
         if (!isVisible) return true;
         auto worldRect = getWorldRect(parentRect);
@@ -706,7 +683,7 @@ namespace onut
         return true;
     }
 
-    bool UIControl::visitChildrenFirstVisible(const std::function<bool(UIControl*, const sUIRect&)>& callback, const sUIRect& parentRect)
+    bool UIControl::visitChildrenFirstVisible(const std::function<bool(UIControl*, const Rect&)>& callback, const Rect& parentRect)
     {
         if (!isVisible) return true;
         auto worldRect = getWorldRect(parentRect);
@@ -726,14 +703,14 @@ namespace onut
 
     void UIControl::load(const rapidjson::Value& jsonNode)
     {
-        rect.position.x = getJsonFloat(jsonNode["x"]);
-        rect.position.y = getJsonFloat(jsonNode["y"]);
-        rect.size.x = getJsonFloat(jsonNode["width"], 0.f);
-        rect.size.y = getJsonFloat(jsonNode["height"], 0.f);
+        rect.x = getJsonFloat(jsonNode["x"]);
+        rect.y = getJsonFloat(jsonNode["y"]);
+        rect.z = getJsonFloat(jsonNode["width"], 0.f);
+        rect.w = getJsonFloat(jsonNode["height"], 0.f);
         anchor.x = getJsonFloat(jsonNode["xAnchor"]);
         anchor.y = getJsonFloat(jsonNode["yAnchor"]);
 
-        align = getJsonEnum(alignMap, jsonNode["align"], eUIAlign::TOP_LEFT);
+        align = getJsonEnum(alignMap, jsonNode["align"], onut::Align::TopLeft);
         xType = getJsonEnum(posTypeMap, jsonNode["xType"], eUIPosType::POS_RELATIVE);
         yType = getJsonEnum(posTypeMap, jsonNode["yType"], eUIPosType::POS_RELATIVE);
         widthType = getJsonEnum(dimTypeMap, jsonNode["widthType"], eUIDimType::DIM_ABSOLUTE);
@@ -835,10 +812,10 @@ namespace onut
     {
         setJsonString(jsonNode, "type", enumToString(typeMap, getType()), allocator);
 
-        setJsonFloat(jsonNode, "x", rect.position.x, allocator);
-        setJsonFloat(jsonNode, "y", rect.position.y, allocator);
-        setJsonFloat(jsonNode, "width", rect.size.x, allocator);
-        setJsonFloat(jsonNode, "height", rect.size.y, allocator);
+        setJsonFloat(jsonNode, "x", rect.x, allocator);
+        setJsonFloat(jsonNode, "y", rect.y, allocator);
+        setJsonFloat(jsonNode, "width", rect.z, allocator);
+        setJsonFloat(jsonNode, "height", rect.w, allocator);
         setJsonFloat(jsonNode, "xAnchor", anchor.x, allocator);
         setJsonFloat(jsonNode, "yAnchor", anchor.y, allocator);
 
@@ -1087,15 +1064,15 @@ namespace onut
     }
 
     void UIControl::getChild(const UIContext& context, 
-                             const sUIVector2& mousePos, 
+                             const Vector2& mousePos, 
                              bool bSearchSubChildren, 
                              bool bIgnoreClickThrough,
-                             const sUIRect& parentRect, 
+                             const Rect& parentRect, 
                              const UIControl** ppHoverControl) const
     {
         if (!isVisible || isClickThrough && bIgnoreClickThrough) return;
 
-        sUIRect worldRect = getWorldRect(parentRect);
+        Rect worldRect = getWorldRect(parentRect);
         auto itend = m_children.rend();
         for (auto it = m_children.rbegin(); it != itend; ++it)
         {
@@ -1105,10 +1082,10 @@ namespace onut
 
         if (!*ppHoverControl)
         {
-            if (mousePos.x >= worldRect.position.x &&
-                mousePos.y >= worldRect.position.y &&
-                mousePos.x <= worldRect.position.x + worldRect.size.x &&
-                mousePos.y <= worldRect.position.y + worldRect.size.y)
+            if (mousePos.x >= worldRect.x &&
+                mousePos.y >= worldRect.y &&
+                mousePos.x <= worldRect.x + worldRect.z &&
+                mousePos.y <= worldRect.y + worldRect.w)
             {
                 *ppHoverControl = this;
             }
@@ -1116,11 +1093,11 @@ namespace onut
     }
 
     UIControl* UIControl::getChild(const UIContext& context, 
-                                   const sUIVector2& mousePos, 
+                                   const Vector2& mousePos, 
                                    bool bSearchSubChildren,
                                    bool bIgnoreClickThrough) const
     {
-        sUIRect parentWorldRect;
+        Rect parentWorldRect;
         if (getParent())
         {
             parentWorldRect = getParent()->getWorldRect(context);
@@ -1158,11 +1135,11 @@ namespace onut
         }
     }
 
-    bool isObstructed(UIContext& context, UIControl* pRoot, UIControl* pControl, const sUIRect& worldRect)
+    bool isObstructed(UIContext& context, UIControl* pRoot, UIControl* pControl, const Rect& worldRect)
     {
-        sUIRect parentRect = {{0, 0}, context.getScreenSize()};
+        Rect parentRect = {{0, 0}, context.getScreenSize()};
         bool passedUs = false;
-        return !pRoot->visitVisible([&worldRect, &passedUs, pControl](UIControl* pOther, const sUIRect& rect)
+        return !pRoot->visitVisible([&worldRect, &passedUs, pControl](UIControl* pOther, const Rect& rect)
         {
             if (pOther == pControl)
             {
@@ -1171,10 +1148,10 @@ namespace onut
             }
             if (!pOther->isClickThrough && passedUs)
             {
-                if (rect.position.x + rect.size.x >= worldRect.position.x &&
-                    rect.position.x <= worldRect.position.x + worldRect.size.x &&
-                    rect.position.y + rect.size.y >= worldRect.position.y &&
-                    rect.position.y <= worldRect.position.y + worldRect.size.y)
+                if (rect.x + rect.z >= worldRect.x &&
+                    rect.x <= worldRect.x + worldRect.z &&
+                    rect.y + rect.w >= worldRect.y &&
+                    rect.y <= worldRect.y + worldRect.w)
                 {
                     return false;
                 }
@@ -1195,12 +1172,12 @@ namespace onut
         return pControl->isEnabled && isReallyEnabled(pControl->getParent());
     }
 
-    void UIControl::update(UIContext& context, const sUIVector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down, bool bNavL, bool bNavR, bool bNavU, bool bNavD, bool bControl, float scroll)
+    void UIControl::update(UIContext& context, const Vector2& mousePos, bool bMouse1Down, bool bMouse2Down, bool bMouse3Down, bool bNavL, bool bNavR, bool bNavU, bool bNavD, bool bControl, float scroll)
     {
         retain();
 
         // Prepare our data
-        sUIRect parentRect = {{0, 0}, context.getScreenSize()};
+        Rect parentRect = {{0, 0}, context.getScreenSize()};
         context.m_mouseEvents[0].mousePos = mousePos;
         context.m_mouseEvents[0].isMouseDown = bMouse1Down;
         context.m_mouseEvents[0].pContext = &context;
@@ -1238,7 +1215,7 @@ namespace onut
             if (!context.m_pLastHoverControl)
             {
                 // Find the first unobstructed navigable
-                visitChildrenFirstEnabled([this, &context](UIControl* pControl, const sUIRect& rect) -> bool
+                visitChildrenFirstEnabled([this, &context](UIControl* pControl, const Rect& rect) -> bool
                 {
                     if (!pControl->isNavigatable()) return true;
                     if (!isObstructed(context, this, pControl, rect))
@@ -1272,13 +1249,13 @@ namespace onut
                 if (bNavR)
                 {
                     // Find closest down navigable
-                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const sUIRect& rect) -> bool
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const Rect& rect) -> bool
                     {
                         if (!pControl->isNavigatable()) return true;
                         if (pControl == pPreviousHover) return true;
-                        if (rect.position.y > worldRect.position.y + worldRect.size.y) return true;
-                        if (rect.position.y + rect.size.y < worldRect.position.y) return true;
-                        float distance = rect.position.x - worldRect.position.x;
+                        if (rect.y > worldRect.y + worldRect.w) return true;
+                        if (rect.y + rect.w < worldRect.y) return true;
+                        float distance = rect.x - worldRect.x;
                         if (distance < closest && distance > 0.f)
                         {
                             if (!isObstructed(context, this, pControl, rect))
@@ -1293,13 +1270,13 @@ namespace onut
                 else if (bNavL)
                 {
                     // Find closest down navigable
-                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const sUIRect& rect) -> bool
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest](UIControl* pControl, const Rect& rect) -> bool
                     {
                         if (!pControl->isNavigatable()) return true;
                         if (pControl == pPreviousHover) return true;
-                        if (rect.position.y > worldRect.position.y + worldRect.size.y) return true;
-                        if (rect.position.y + rect.size.y < worldRect.position.y) return true;
-                        float distance = worldRect.position.x - rect.position.x;
+                        if (rect.y > worldRect.y + worldRect.w) return true;
+                        if (rect.y + rect.w < worldRect.y) return true;
+                        float distance = worldRect.x - rect.x;
                         if (distance < closest && distance > 0.f)
                         {
                             if (!isObstructed(context, this, pControl, rect))
@@ -1314,12 +1291,12 @@ namespace onut
                 else if (bNavD)
                 {
                     // Find closest down navigable
-                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const sUIRect& rect) -> bool
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const Rect& rect) -> bool
                     {
                         if (!pControl->isNavigatable()) return true;
                         if (pControl == pPreviousHover) return true;
-                        float distance = rect.position.y - (worldRect.position.y + worldRect.size.y);
-                        float distanceH = std::abs(rect.position.x - worldRect.position.x);
+                        float distance = rect.y - (worldRect.y + worldRect.w);
+                        float distanceH = std::abs(rect.x - worldRect.x);
                         if ((distance < closest - 16.f && distance > 0.f) ||
                             (distance < closest + 16.f && distance > 0.f && distanceH < closestH))
                         {
@@ -1336,12 +1313,12 @@ namespace onut
                 else if (bNavU)
                 {
                     // Find closest down navigable
-                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const sUIRect& rect) -> bool
+                    visitChildrenFirstEnabled([this, pPreviousHover, &context, &worldRect, &closest, &closestH](UIControl* pControl, const Rect& rect) -> bool
                     {
                         if (!pControl->isNavigatable()) return true;
                         if (pControl == pPreviousHover) return true;
-                        float distance = worldRect.position.y - (rect.position.y + rect.size.y);
-                        float distanceH = std::abs(rect.position.x - worldRect.position.x);
+                        float distance = worldRect.y - (rect.y + rect.w);
+                        float distanceH = std::abs(rect.x - worldRect.x);
                         if ((distance < closest - 16.f && distance > 0.f) ||
                             (distance < closest + 16.f && distance > 0.f && distanceH < closestH))
                         {
@@ -1707,11 +1684,11 @@ namespace onut
 
     void UIControl::render(UIContext& context)
     {
-        sUIRect parentRect = {{0, 0}, context.getScreenSize() };
+        Rect parentRect = {{0, 0}, context.getScreenSize() };
         renderInternal(context, parentRect);
     }
 
-    sUIRect UIControl::getWorldRect(const UIContext& context) const
+    Rect UIControl::getWorldRect(const UIContext& context) const
     {
         if (m_pParent)
         {
@@ -1719,97 +1696,97 @@ namespace onut
         }
         else
         {        
-            sUIRect parentRect = {{0, 0}, context.getScreenSize()};
+            Rect parentRect = {{0, 0}, context.getScreenSize()};
             return std::move(getWorldRect(parentRect));
         }
     }
 
-    sUIRect UIControl::getWorldRect(const sUIRect& parentRect) const
+    Rect UIControl::getWorldRect(const Rect& parentRect) const
     {
-        sUIRect worldRect;
+        Rect worldRect;
 
         // Generate position and width values first
         switch (xType)
         {
             case eUIPosType::POS_RELATIVE:
-                worldRect.position.x = rect.position.x;
+                worldRect.x = rect.x;
                 break;
             case eUIPosType::POS_PERCENTAGE:
-                worldRect.position.x = parentRect.size.x * rect.position.x;
+                worldRect.x = parentRect.z * rect.x;
                 break;
         }
         switch (yType)
         {
             case eUIPosType::POS_RELATIVE:
-                worldRect.position.y = rect.position.y;
+                worldRect.y = rect.y;
                 break;
             case eUIPosType::POS_PERCENTAGE:
-                worldRect.position.y = parentRect.size.y * rect.position.y;
+                worldRect.y = parentRect.w * rect.y;
                 break;
         }
         switch (widthType)
         {
             case eUIDimType::DIM_ABSOLUTE:
-                worldRect.size.x = rect.size.x;
+                worldRect.z = rect.z;
                 break;
             case eUIDimType::DIM_RELATIVE:
-                worldRect.size.x = parentRect.size.x + rect.size.x;
+                worldRect.z = parentRect.z + rect.z;
                 break;
             case eUIDimType::DIM_PERCENTAGE:
-                worldRect.size.x = parentRect.size.x * rect.size.x;
+                worldRect.z = parentRect.z * rect.z;
                 break;
         }
         switch (heightType)
         {
             case eUIDimType::DIM_ABSOLUTE:
-                worldRect.size.y = rect.size.y;
+                worldRect.w = rect.w;
                 break;
             case eUIDimType::DIM_RELATIVE:
-                worldRect.size.y = parentRect.size.y + rect.size.y;
+                worldRect.w = parentRect.w + rect.w;
                 break;
             case eUIDimType::DIM_PERCENTAGE:
-                worldRect.size.y = parentRect.size.y * rect.size.y;
+                worldRect.w = parentRect.w * rect.w;
                 break;
         }
 
         // Then do alignement
         switch (align)
         {
-            case eUIAlign::TOP_LEFT:
-                worldRect.position.x = parentRect.position.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + worldRect.position.y;
+            case onut::Align::TopLeft:
+                worldRect.x = parentRect.x + worldRect.x;
+                worldRect.y = parentRect.y + worldRect.y;
                 break;
-            case eUIAlign::TOP:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + worldRect.position.y;
+            case onut::Align::Top:
+                worldRect.x = parentRect.x + parentRect.z * .5f + worldRect.x;
+                worldRect.y = parentRect.y + worldRect.y;
                 break;
-            case eUIAlign::TOP_RIGHT:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + worldRect.position.y;
+            case onut::Align::TopRight:
+                worldRect.x = parentRect.x + parentRect.z + worldRect.x;
+                worldRect.y = parentRect.y + worldRect.y;
                 break;
-            case eUIAlign::LEFT:
-                worldRect.position.x = parentRect.position.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f + worldRect.position.y;
+            case onut::Align::Left:
+                worldRect.x = parentRect.x + worldRect.x;
+                worldRect.y = parentRect.y + parentRect.w * .5f + worldRect.y;
                 break;
-            case eUIAlign::CENTER:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f + worldRect.position.y;
+            case onut::Align::Center:
+                worldRect.x = parentRect.x + parentRect.z * .5f + worldRect.x;
+                worldRect.y = parentRect.y + parentRect.w * .5f + worldRect.y;
                 break;
-            case eUIAlign::RIGHT:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y * .5f + worldRect.position.y;
+            case onut::Align::Right:
+                worldRect.x = parentRect.x + parentRect.z + worldRect.x;
+                worldRect.y = parentRect.y + parentRect.w * .5f + worldRect.y;
                 break;
-            case eUIAlign::BOTTOM_LEFT:
-                worldRect.position.x = parentRect.position.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y + worldRect.position.y;
+            case onut::Align::BottomLeft:
+                worldRect.x = parentRect.x + worldRect.x;
+                worldRect.y = parentRect.y + parentRect.w + worldRect.y;
                 break;
-            case eUIAlign::BOTTOM:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x * .5f + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y + worldRect.position.y;
+            case onut::Align::Bottom:
+                worldRect.x = parentRect.x + parentRect.z * .5f + worldRect.x;
+                worldRect.y = parentRect.y + parentRect.w + worldRect.y;
                 break;
-            case eUIAlign::BOTTOM_RIGHT:
-                worldRect.position.x = parentRect.position.x + parentRect.size.x + worldRect.position.x;
-                worldRect.position.y = parentRect.position.y + parentRect.size.y + worldRect.position.y;
+            case onut::Align::BottomRight:
+                worldRect.x = parentRect.x + parentRect.z + worldRect.x;
+                worldRect.y = parentRect.y + parentRect.w + worldRect.y;
                 break;
         }
 
@@ -1817,33 +1794,33 @@ namespace onut
         switch (xAnchorType)
         {
             case eUIAnchorType::ANCHOR_PIXEL:
-                worldRect.position.x -= anchor.x;
+                worldRect.x -= anchor.x;
                 break;
             case eUIAnchorType::ANCHOR_PERCENTAGE:
-                worldRect.position.x -= worldRect.size.x * anchor.x;
+                worldRect.x -= worldRect.z * anchor.x;
                 break;
         }
         switch (yAnchorType)
         {
             case eUIAnchorType::ANCHOR_PIXEL:
-                worldRect.position.y -= anchor.y;
+                worldRect.y -= anchor.y;
                 break;
             case eUIAnchorType::ANCHOR_PERCENTAGE:
-                worldRect.position.y -= worldRect.size.y * anchor.y;
+                worldRect.y -= worldRect.w * anchor.y;
                 break;
         }
 
         // Snap to pixels
-        worldRect.position.x = std::roundf(worldRect.position.x);
-        worldRect.position.y = std::roundf(worldRect.position.y);
+        worldRect.x = std::roundf(worldRect.x);
+        worldRect.y = std::roundf(worldRect.y);
             
         return std::move(worldRect);
     }
 
-    void UIControl::updateInternal(UIContext& context, const sUIRect& parentRect)
+    void UIControl::updateInternal(UIContext& context, const Rect& parentRect)
     {
         if (!isEnabled || !isVisible) return;
-        sUIRect worldRect = getWorldRect(parentRect);
+        Rect worldRect = getWorldRect(parentRect);
 
         // Do children first, inverted
         if (context.useNavigation)
@@ -1866,13 +1843,13 @@ namespace onut
         if (!context.m_pHoverControl && !isClickThrough)
         {
             auto &mouseEvt = context.m_mouseEvents[0];
-            if (mouseEvt.mousePos.x >= worldRect.position.x &&
-                mouseEvt.mousePos.y >= worldRect.position.y &&
-                mouseEvt.mousePos.x <= worldRect.position.x + worldRect.size.x &&
-                mouseEvt.mousePos.y <= worldRect.position.y + worldRect.size.y)
+            if (mouseEvt.mousePos.x >= worldRect.x &&
+                mouseEvt.mousePos.y >= worldRect.y &&
+                mouseEvt.mousePos.x <= worldRect.x + worldRect.z &&
+                mouseEvt.mousePos.y <= worldRect.y + worldRect.w)
             {
-                context.m_mouseEvents[0].localMousePos.x = mouseEvt.mousePos.x - worldRect.position.x;
-                context.m_mouseEvents[0].localMousePos.y = mouseEvt.mousePos.y - worldRect.position.y;
+                context.m_mouseEvents[0].localMousePos.x = mouseEvt.mousePos.x - worldRect.x;
+                context.m_mouseEvents[0].localMousePos.y = mouseEvt.mousePos.y - worldRect.y;
                 context.m_mouseEvents[1].localMousePos = context.m_mouseEvents[0].localMousePos;
                 context.m_mouseEvents[2].localMousePos = context.m_mouseEvents[0].localMousePos;
                 context.m_pHoverControl = this;
@@ -1880,11 +1857,11 @@ namespace onut
         }
     }
 
-    void UIControl::renderInternal(UIContext& context, const sUIRect& parentRect)
+    void UIControl::renderInternal(UIContext& context, const Rect& parentRect)
     {
         if (!isVisible) return;
 
-        sUIRect worldRect = getWorldRect(parentRect);
+        Rect worldRect = getWorldRect(parentRect);
         if (clipChildren)
         {
             context.pushClip(worldRect);
@@ -1900,72 +1877,72 @@ namespace onut
         }
     }
 
-    void UIControl::setWorldRect(const sUIRect& in_rect, const UIContext& context)
+    void UIControl::setWorldRect(const Rect& in_rect, const UIContext& context)
     {
         if (getParent())
         {
             auto parentRect = getParent()->getWorldRect(context);
 
-            sUIRect localRect = in_rect;
+            Rect localRect = in_rect;
 
             // Undo anchoring
             switch (xAnchorType)
             {
                 case eUIAnchorType::ANCHOR_PIXEL:
-                    localRect.position.x += anchor.x;
+                    localRect.x += anchor.x;
                     break;
                 case eUIAnchorType::ANCHOR_PERCENTAGE:
-                    localRect.position.x += localRect.size.x * anchor.x;
+                    localRect.x += localRect.z * anchor.x;
                     break;
             }
             switch (yAnchorType)
             {
                 case eUIAnchorType::ANCHOR_PIXEL:
-                    localRect.position.y += anchor.y;
+                    localRect.y += anchor.y;
                     break;
                 case eUIAnchorType::ANCHOR_PERCENTAGE:
-                    localRect.position.y += localRect.size.y * anchor.y;
+                    localRect.y += localRect.w * anchor.y;
                     break;
             }
 
             // Undo alignement
             switch (align)
             {
-                case eUIAlign::TOP_LEFT:
-                    localRect.position.x = localRect.position.x - parentRect.position.x;
-                    localRect.position.y = localRect.position.y - parentRect.position.y;
+                case onut::Align::TopLeft:
+                    localRect.x = localRect.x - parentRect.x;
+                    localRect.y = localRect.y - parentRect.y;
                     break;
-                case eUIAlign::TOP:
-                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x * .5f;
-                    localRect.position.y = localRect.position.y - parentRect.position.y;
+                case onut::Align::Top:
+                    localRect.x = localRect.x - parentRect.x - parentRect.z * .5f;
+                    localRect.y = localRect.y - parentRect.y;
                     break;
-                case eUIAlign::TOP_RIGHT:
-                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x;
-                    localRect.position.y = localRect.position.y - parentRect.position.y;
+                case onut::Align::TopRight:
+                    localRect.x = localRect.x - parentRect.x - parentRect.z;
+                    localRect.y = localRect.y - parentRect.y;
                     break;
-                case eUIAlign::LEFT:
-                    localRect.position.x = localRect.position.x - parentRect.position.x;
-                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y * .5f;
+                case onut::Align::Left:
+                    localRect.x = localRect.x - parentRect.x;
+                    localRect.y = localRect.y - parentRect.y - parentRect.w * .5f;
                     break;
-                case eUIAlign::CENTER:
-                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x * .5f;
-                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y * .5f;
+                case onut::Align::Center:
+                    localRect.x = localRect.x - parentRect.x - parentRect.z * .5f;
+                    localRect.y = localRect.y - parentRect.y - parentRect.w * .5f;
                     break;
-                case eUIAlign::RIGHT:
-                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x;
-                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y * .5f;
+                case onut::Align::Right:
+                    localRect.x = localRect.x - parentRect.x - parentRect.z;
+                    localRect.y = localRect.y - parentRect.y - parentRect.w * .5f;
                     break;
-                case eUIAlign::BOTTOM_LEFT:
-                    localRect.position.x = localRect.position.x - parentRect.position.x;
-                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y;
+                case onut::Align::BottomLeft:
+                    localRect.x = localRect.x - parentRect.x;
+                    localRect.y = localRect.y - parentRect.y - parentRect.w;
                     break;
-                case eUIAlign::BOTTOM:
-                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x * .5f;
-                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y;
+                case onut::Align::Bottom:
+                    localRect.x = localRect.x - parentRect.x - parentRect.z * .5f;
+                    localRect.y = localRect.y - parentRect.y - parentRect.w;
                     break;
-                case eUIAlign::BOTTOM_RIGHT:
-                    localRect.position.x = localRect.position.x - parentRect.position.x - parentRect.size.x;
-                    localRect.position.y = localRect.position.y - parentRect.position.y - parentRect.size.y;
+                case onut::Align::BottomRight:
+                    localRect.x = localRect.x - parentRect.x - parentRect.z;
+                    localRect.y = localRect.y - parentRect.y - parentRect.w;
                     break;
             }
 
@@ -1973,43 +1950,43 @@ namespace onut
             switch (xType)
             {
                 case eUIPosType::POS_RELATIVE:
-                    localRect.position.x = localRect.position.x;
+                    localRect.x = localRect.x;
                     break;
                 case eUIPosType::POS_PERCENTAGE:
-                    localRect.position.x = localRect.position.x / parentRect.size.x;
+                    localRect.x = localRect.x / parentRect.z;
                     break;
             }
             switch (yType)
             {
                 case eUIPosType::POS_RELATIVE:
-                    localRect.position.y = localRect.position.y;
+                    localRect.y = localRect.y;
                     break;
                 case eUIPosType::POS_PERCENTAGE:
-                    localRect.position.y = localRect.position.y / parentRect.size.y;
+                    localRect.y = localRect.y / parentRect.w;
                     break;
             }
             switch (widthType)
             {
                 case eUIDimType::DIM_ABSOLUTE:
-                    localRect.size.x = localRect.size.x;
+                    localRect.z = localRect.z;
                     break;
                 case eUIDimType::DIM_RELATIVE:
-                    localRect.size.x = localRect.size.x - parentRect.size.x;
+                    localRect.z = localRect.z - parentRect.z;
                     break;
                 case eUIDimType::DIM_PERCENTAGE:
-                    localRect.size.x = localRect.size.x / parentRect.size.x;
+                    localRect.z = localRect.z / parentRect.z;
                     break;
             }
             switch (heightType)
             {
                 case eUIDimType::DIM_ABSOLUTE:
-                    localRect.size.y = localRect.size.y;
+                    localRect.w = localRect.w;
                     break;
                 case eUIDimType::DIM_RELATIVE:
-                    localRect.size.y = localRect.size.y - parentRect.size.y;
+                    localRect.w = localRect.w - parentRect.w;
                     break;
                 case eUIDimType::DIM_PERCENTAGE:
-                    localRect.size.y = localRect.size.y / parentRect.size.y;
+                    localRect.w = localRect.w / parentRect.w;
                     break;
             }
 
@@ -2021,39 +1998,39 @@ namespace onut
         }
     }
 
-    sUIVector2 UIControl::getAnchorInPixel() const
+    Vector2 UIControl::getAnchorInPixel() const
     {
-        sUIVector2 ret = anchor;
+        Vector2 ret = anchor;
         if (xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            ret.x = ret.x * rect.size.x;
+            ret.x = ret.x * rect.z;
         }
         if (yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
         {
-            ret.y = ret.y * rect.size.y;
+            ret.y = ret.y * rect.w;
         }
         return std::move(ret);
     }
 
-    sUIVector2 UIControl::getAnchorInPercentage() const
+    Vector2 UIControl::getAnchorInPercentage() const
     {
-        sUIVector2 ret = anchor;
+        Vector2 ret = anchor;
         if (xAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            ret.x = ret.x / rect.size.x;
+            ret.x = ret.x / rect.z;
         }
         if (yAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            ret.y = ret.y / rect.size.y;
+            ret.y = ret.y / rect.w;
         }
         return std::move(ret);
     }
 
-    void UIControl::setAnchorPercent(const sUIVector2& in_anchor)
+    void UIControl::setAnchorPercent(const Vector2& in_anchor)
     {
         if (xAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            anchor.x = rect.size.x * in_anchor.x;
+            anchor.x = rect.z * in_anchor.x;
         }
         else
         {
@@ -2061,7 +2038,7 @@ namespace onut
         }
         if (yAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
         {
-            anchor.y = rect.size.y * in_anchor.y;
+            anchor.y = rect.w * in_anchor.y;
         }
         else
         {
@@ -2207,11 +2184,11 @@ namespace onut
         m_items.clear();
     }
 
-    UITreeViewItem* UITreeView::getItemAtPosition(const sUIVector2& pos, const sUIRect& rect, bool* pPickedExpandButton, sUIRect* pItemRect) const
+    UITreeViewItem* UITreeView::getItemAtPosition(const Vector2& pos, const Rect& rect, bool* pPickedExpandButton, Rect* pItemRect) const
     {
         // Render it's items
-        sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
-        itemRect.position.y -= m_scroll;
+        Rect itemRect = {rect.x, rect.y, rect.z, itemHeight};
+        itemRect.y -= m_scroll;
         for (auto pItem : m_items)
         {
             auto pRet = getItemAtPosition(pItem, pos, itemRect, pPickedExpandButton, pItemRect);
@@ -2246,13 +2223,13 @@ namespace onut
         return ret;
     }
 
-    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const sUIVector2& pos, sUIRect& rect, bool* pPickedExpandButton, sUIRect* pItemRect) const
+    UITreeViewItem* UITreeView::getItemAtPosition(UITreeViewItem* pItem, const Vector2& pos, Rect& rect, bool* pPickedExpandButton, Rect* pItemRect) const
     {
-        if (pos.y >= rect.position.y &&
-            pos.y <= rect.position.y + rect.size.y)
+        if (pos.y >= rect.y &&
+            pos.y <= rect.y + rect.w)
         {
-            if (pos.x >= rect.position.x + expandClickWidth ||
-                pos.x <= rect.position.x)
+            if (pos.x >= rect.x + expandClickWidth ||
+                pos.x <= rect.x)
             {
                 if (pItemRect) *pItemRect = rect;
                 return pItem;
@@ -2264,14 +2241,14 @@ namespace onut
                 return pItem;
             }
         }
-        rect.position.y += itemHeight;
+        rect.y += itemHeight;
         if (pItem->isExpanded)
         {
             if (!pItem->m_items.empty())
             {
                 auto xOffset = expandedXOffset;
-                rect.position.x += xOffset;
-                rect.size.x -= xOffset;
+                rect.x += xOffset;
+                rect.z -= xOffset;
                 for (auto pHisItem : pItem->m_items)
                 {
                     auto pRet = getItemAtPosition(pHisItem, pos, rect, pPickedExpandButton, pItemRect);
@@ -2280,8 +2257,8 @@ namespace onut
                         return pRet;
                     }
                 }
-                rect.size.x += xOffset;
-                rect.position.x -= xOffset;
+                rect.z += xOffset;
+                rect.x -= xOffset;
             }
         }
         return nullptr;
@@ -2484,12 +2461,12 @@ namespace onut
     //--- Constructors
     UIButton::UIButton()
     {
-        textComponent.font.align = eUIAlign::CENTER;
+        textComponent.font.align = onut::Align::Center;
     }
 
     UILabel::UILabel()
     {
-        textComponent.font.align = eUIAlign::LEFT;
+        textComponent.font.align = onut::Align::Left;
     }
 
     //--- Copy
@@ -2744,7 +2721,7 @@ namespace onut
     }
 
     //--- Renders
-    void renderScale9Component(const UIContext& context, UIControl* pControl, const sUIRect& rect, const sUIScale9Component& scale9Component)
+    void renderScale9Component(const UIContext& context, UIControl* pControl, const Rect& rect, const sUIScale9Component& scale9Component)
     {
         if (scale9Component.image.filename.empty())
         {
@@ -2760,17 +2737,17 @@ namespace onut
         }
     }
 
-    void renderTextComponent(const UIContext& context, UIControl* pControl, const sUIRect& rect, const sUITextComponent& textComponent)
+    void renderTextComponent(const UIContext& context, UIControl* pControl, const Rect& rect, const sUITextComponent& textComponent)
     {
         auto textRect = rect;
-        textRect.position.x += textComponent.font.padding.left;
-        textRect.position.y += textComponent.font.padding.top;
-        textRect.size.x -= textComponent.font.padding.left + textComponent.font.padding.right;
-        textRect.size.y -= textComponent.font.padding.top + textComponent.font.padding.bottom;
+        textRect.x += textComponent.font.padding.x;
+        textRect.y += textComponent.font.padding.y;
+        textRect.z -= textComponent.font.padding.x + textComponent.font.padding.z;
+        textRect.w -= textComponent.font.padding.y + textComponent.font.padding.w;
         context.drawText(pControl, textRect, textComponent);
     }
 
-    void UIButton::renderControl(const UIContext& context, const sUIRect& rect)
+    void UIButton::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UIButton>(getStyle());
         if (callback)
@@ -2784,7 +2761,7 @@ namespace onut
         }
     }
 
-    void UIPanel::renderControl(const UIContext& context, const sUIRect& rect)
+    void UIPanel::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UIPanel>(getStyle());
         if (callback)
@@ -2797,7 +2774,7 @@ namespace onut
         }
     }
 
-    void UILabel::renderControl(const UIContext& context, const sUIRect& rect)
+    void UILabel::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UILabel>(getStyle());
         if (callback)
@@ -2810,7 +2787,7 @@ namespace onut
         }
     }
 
-    void UIImage::renderControl(const UIContext& context, const sUIRect& rect)
+    void UIImage::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UIImage>(getStyle());
         if (callback)
@@ -2823,7 +2800,7 @@ namespace onut
         }
     }
 
-    void UICheckBox::renderControl(const UIContext& context, const sUIRect& rect)
+    void UICheckBox::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UICheckBox>(getStyle());
         if (callback)
@@ -2836,7 +2813,7 @@ namespace onut
         }
     }
 
-    void UITreeView::renderControl(const UIContext& context, const sUIRect& rect)
+    void UITreeView::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UITreeView>(getStyle());
         if (callback)
@@ -2845,8 +2822,8 @@ namespace onut
         }
 
         // Render it's items
-        sUIRect itemRect = {rect.position, {rect.size.x, itemHeight}};
-        itemRect.position.y -= m_scroll;
+        Rect itemRect = {rect.x, rect.y, rect.z, itemHeight};
+        itemRect.y -= m_scroll;
         const auto& itemCallback = context.getStyle<UITreeViewItem>(getStyle());
         if (itemCallback)
         {
@@ -2859,9 +2836,10 @@ namespace onut
         if (allowReorder && m_isDragging && !m_selectedItems.empty())
         {
             auto pItem = m_selectedItems.front();
-            itemRect.position = m_dragMousePos;
-            itemRect.position.y += 8.f;
-            itemRect.position.x += 8.f;
+            itemRect.x = m_dragMousePos.x;
+            itemRect.y = m_dragMousePos.y;
+            itemRect.y += 8.f;
+            itemRect.x += 8.f;
             pItem->renderDrag(itemCallback, this, rect, itemRect);
             if (m_dragAfterItem || m_dragBeforeItem)
             {
@@ -2873,7 +2851,7 @@ namespace onut
         }
     }
 
-    void UITextBox::renderControl(const UIContext& context, const sUIRect& rect)
+    void UITextBox::renderControl(const UIContext& context, const Rect& rect)
     {
         const auto& callback = context.getStyle<UITextBox>(getStyle());
         if (callback)
@@ -3081,17 +3059,17 @@ namespace onut
                             m_dragHoverItem->m_isSelected = false;
                             m_dragHoverItem = nullptr;
                         }
-                        if (evt.mousePos.y - m_dragInBetweenRect.position.y < itemHeight / 4)
+                        if (evt.mousePos.y - m_dragInBetweenRect.y < itemHeight / 4)
                         {
                             m_dragBeforeItem = pPicked;
-                            m_dragInBetweenRect.size.y = 2.f;
-                            m_dragInBetweenRect.position.y -= 1.f;
+                            m_dragInBetweenRect.w = 2.f;
+                            m_dragInBetweenRect.y -= 1.f;
                         }
-                        else if (evt.mousePos.y > m_dragInBetweenRect.position.y + m_dragInBetweenRect.size.y - itemHeight / 4)
+                        else if (evt.mousePos.y > m_dragInBetweenRect.y + m_dragInBetweenRect.w - itemHeight / 4)
                         {
                             m_dragAfterItem = pPicked;
-                            m_dragInBetweenRect.position.y += m_dragInBetweenRect.size.y - 1.f;
-                            m_dragInBetweenRect.size.y = 2.f;
+                            m_dragInBetweenRect.y += m_dragInBetweenRect.w - 1.f;
+                            m_dragInBetweenRect.w = 2.f;
                         }
                         if (!pPicked->getIsSelected() && !m_dragBeforeItem && !m_dragAfterItem)
                         {
@@ -3188,7 +3166,7 @@ namespace onut
         m_scroll -= evt.scroll;
         auto contentSize = getTotalHeight();
         auto worldRect = getWorldRect(*evt.pContext);
-        auto scrollMaxSize = contentSize - worldRect.size.y;
+        auto scrollMaxSize = contentSize - worldRect.w;
         if (m_scroll > scrollMaxSize) m_scroll = scrollMaxSize;
         if (m_scroll < 0) m_scroll = 0.f;
     }
@@ -3358,8 +3336,8 @@ namespace onut
                     {
                         auto childRect = pChild->getWorldRect(context);
                         float dists[2] = {
-                            childRect.position.x - myRect.position.x,
-                            childRect.position.y - myRect.position.y};
+                            childRect.x - myRect.x,
+                            childRect.y - myRect.y};
                         if (dists[0] <= -5.f || dists[1] <= -5.f) continue;
                         if (dists[1] < closest[1])
                         {

@@ -805,6 +805,24 @@ struct Color : public XMFLOAT4
     explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Color(FXMVECTOR V) { XMStoreFloat4( this, V ); }
 
+    void unpack(uint32_t packed)
+    {
+        x = (float)((packed >> 24) & 0xff) / 255.f;
+        y = (float)((packed >> 16) & 0xff) / 255.f;
+        z = (float)((packed >> 8) & 0xff) / 255.f;
+        w = (float)(packed & 0xff) / 255.f;
+    }
+
+    uint32_t pack() const
+    {
+        uint32_t packed = 0;
+        packed |= ((uint32_t)(x * 255.f) << 24) & 0xff000000;
+        packed |= ((uint32_t)(y * 255.f) << 16) & 0x00ff0000;
+        packed |= ((uint32_t)(z * 255.f) << 8) & 0x0000ff00;
+        packed |= (uint32_t)(w * 255.f) & 0x000000ff;
+        return packed;
+    }
+
     static Color fromHexRGB(unsigned int hex) {
         return{
             static_cast<float>((hex & 0xff0000) >> 16) / 255.f,

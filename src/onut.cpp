@@ -32,21 +32,21 @@ namespace onut
 {
     void createUI()
     {
-        OUIContext = new UIContext(sUIVector2(OScreenWf, OScreenHf));
+        OUIContext = new UIContext(Vector2(OScreenWf, OScreenHf));
         OUI = new UIControl();
         OUI->retain();
         OUI->widthType = eUIDimType::DIM_RELATIVE;
         OUI->heightType = eUIDimType::DIM_RELATIVE;
 
-        OUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
+        OUIContext->onClipping = [](bool enabled, const Rect& rect)
         {
             oSpriteBatch->end();
             oRenderer->renderStates.scissorEnabled = enabled;
             oRenderer->renderStates.scissor = iRect{
-                static_cast<int>(rect.position.x),
-                static_cast<int>(rect.position.y),
-                static_cast<int>(rect.position.x + rect.size.x),
-                static_cast<int>(rect.position.y + rect.size.y)
+                static_cast<int>(rect.x),
+                static_cast<int>(rect.y),
+                static_cast<int>(rect.x + rect.z),
+                static_cast<int>(rect.y + rect.w)
             };
             oSpriteBatch->begin();
         };
@@ -80,19 +80,19 @@ namespace onut
             return pTexture;
         };
 
-        OUIContext->drawRect = [=](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)
+        OUIContext->drawRect = [=](onut::UIControl *pControl, const Rect &rect, const Color &color)
         {
-            oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
+            oSpriteBatch->drawRect(nullptr, rect, color);
         };
 
-        OUIContext->drawTexturedRect = [=](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIImageComponent &image)
+        OUIContext->drawTexturedRect = [=](onut::UIControl *pControl, const Rect &rect, const onut::sUIImageComponent &image)
         {
             oSpriteBatch->drawRect(getTextureForState(pControl, image.filename),
-                          onut::UI2Onut(rect),
-                          onut::UI2Onut(image.color));
+                          rect,
+                          image.color);
         };
 
-        OUIContext->drawScale9Rect = [=](onut::UIControl* pControl, const onut::sUIRect& rect, const onut::sUIScale9Component& scale9)
+        OUIContext->drawScale9Rect = [=](onut::UIControl* pControl, const Rect& rect, const onut::sUIScale9Component& scale9)
         {
             const std::string &filename = scale9.image.filename;
             static std::string stateFilename;
@@ -122,26 +122,26 @@ namespace onut
             if (scale9.isRepeat)
             {
                 oSpriteBatch->drawRectScaled9RepeatCenters(getTextureForState(pControl, scale9.image.filename),
-                                                  onut::UI2Onut(rect),
-                                                  onut::UI2Onut(scale9.padding),
-                                                  onut::UI2Onut(scale9.image.color));
+                                                  (rect),
+                                                  (scale9.padding),
+                                                  (scale9.image.color));
             }
             else
             {
                 oSpriteBatch->drawRectScaled9(getTextureForState(pControl, scale9.image.filename),
-                                     onut::UI2Onut(rect),
-                                     onut::UI2Onut(scale9.padding),
-                                     onut::UI2Onut(scale9.image.color));
+                                     (rect),
+                                     (scale9.padding),
+                                     (scale9.image.color));
             }
         };
 
-        OUIContext->drawText = [=](onut::UIControl* pControl, const onut::sUIRect& rect, const onut::sUITextComponent& text)
+        OUIContext->drawText = [=](onut::UIControl* pControl, const Rect& rect, const onut::sUITextComponent& text)
         {
             if (text.text.empty()) return;
-            auto align = onut::UI2Onut(text.font.align);
-            auto oRect = onut::UI2Onut(rect);
+            auto align = (text.font.align);
+            auto oRect = (rect);
             auto pFont = OGetFont(text.font.typeFace.c_str());
-            auto oColor = onut::UI2Onut(text.font.color);
+            auto oColor = (text.font.color);
             if (pControl->getState(*OUIContext) == onut::eUIState::DISABLED)
             {
                 oColor = {.4f, .4f, .4f, 1};
@@ -167,7 +167,7 @@ namespace onut
             }
         };
 
-        OUIContext->addTextCaretSolver<onut::UITextBox>("", [=](const onut::UITextBox* pTextBox, const onut::sUIVector2& localPos) -> decltype(std::string().size())
+        OUIContext->addTextCaretSolver<onut::UITextBox>("", [=](const onut::UITextBox* pTextBox, const Vector2& localPos) -> decltype(std::string().size())
         {
             auto pFont = OGetFont(pTextBox->textComponent.font.typeFace.c_str());
             if (!pFont) return 0;
@@ -184,12 +184,12 @@ namespace onut
             OUIContext->keyDown(key);
         };
 
-        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const Rect& rect)
         {
             oSpriteBatch->end();
             oRenderer->renderStates.renderTarget.get()->blur();
             oSpriteBatch->begin();
-            oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), Color(0, 0, 0, .5f));
+            oSpriteBatch->drawRect(nullptr, (rect), Color(0, 0, 0, .5f));
         });
     }
 
@@ -330,7 +330,7 @@ namespace onut
                 auto mousePosf = OGetMousePos();
                 if (OUIContext->useNavigation)
                 {
-                    OUI->update(*OUIContext, sUIVector2(mousePosf.x, mousePosf.y), OGamePadPressed(OGamePadA), false, false,
+                    OUI->update(*OUIContext, Vector2(mousePosf.x, mousePosf.y), OGamePadPressed(OGamePadA), false, false,
                                 OGamePadJustPressed(OGamePadDPadLeft) || OGamePadJustPressed(OGamePadLeftThumbLeft),
                                 OGamePadJustPressed(OGamePadDPadRight) || OGamePadJustPressed(OGamePadLeftThumbRight),
                                 OGamePadJustPressed(OGamePadDPadUp) || OGamePadJustPressed(OGamePadLeftThumbUp),
@@ -339,7 +339,7 @@ namespace onut
                 }
                 else
                 {
-                    OUI->update(*OUIContext, sUIVector2(mousePosf.x, mousePosf.y), 
+                    OUI->update(*OUIContext, Vector2(mousePosf.x, mousePosf.y), 
                                 OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),
                                 false, false, false, false, 
                                 OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));

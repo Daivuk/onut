@@ -40,38 +40,38 @@ void init()
 {
     oContentManager->addSearchPath("../../assets/textures/icons");
 
-    g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
-    g_pUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
+    g_pUIContext = new onut::UIContext(Vector2{OScreenWf, OScreenHf});
+    g_pUIContext->onClipping = [](bool enabled, const Rect& rect)
     {
         oSpriteBatch->end();
         oRenderer->renderStates.scissorEnabled = enabled;
         if (enabled)
         {
             oRenderer->renderStates.scissor = {
-                static_cast<int>(rect.position.x), 
-                static_cast<int>(rect.position.y), 
-                static_cast<int>(rect.position.x + rect.size.x),
-                static_cast<int>(rect.position.y + rect.size.y)};
+                static_cast<int>(rect.x), 
+                static_cast<int>(rect.y), 
+                static_cast<int>(rect.x + rect.z),
+                static_cast<int>(rect.y + rect.w)};
         }
         oSpriteBatch->begin();
     };
     createUIStyles(g_pUIContext);
 
-    g_pUIContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    g_pUIContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
-        oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
+        oSpriteBatch->drawRect(nullptr, (rect), Color::Black);
         oSpriteBatch->end();
 
         oRenderer->renderStates.scissorEnabled = true;
         oRenderer->renderStates.scissor = {
-            static_cast<int>(rect.position.x),
-            static_cast<int>(rect.position.y),
-            static_cast<int>(rect.position.x + rect.size.x),
-            static_cast<int>(rect.position.y + rect.size.y)};
+            static_cast<int>(rect.x),
+            static_cast<int>(rect.y),
+            static_cast<int>(rect.x + rect.z),
+            static_cast<int>(rect.y + rect.w)};
 
         // Render edited UIs
         //oRenderer->set2DCamera();
-        oSpriteBatch->begin(Matrix::CreateTranslation(rect.position.x, rect.position.y, 0.f));
+        oSpriteBatch->begin(Matrix::CreateTranslation(rect.x, rect.y, 0.f));
         g_pDocument->render();
         oSpriteBatch->end();
 

@@ -46,12 +46,12 @@
     <ClInclude Include="..\..\include\onut\Timing.h" />
     <ClInclude Include="..\..\include\onut\Timer.h" />
     <ClInclude Include="..\..\include\onut\Tween.h" />
+    <ClInclude Include="..\..\include\onut\UI.h" />
     <ClInclude Include="..\..\include\onut\Updater.h" />
     <ClInclude Include="..\..\include\onut\VertexBuffer.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
     <ClInclude Include="..\..\include\onut\Window.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
-    <ClInclude Include="..\..\include\onutUI.h" />
     <ClInclude Include="..\..\include\onut\ContentManager.h" />
     <ClInclude Include="..\..\include\onut\ForwardDeclaration.h" />
     <ClInclude Include="..\..\include\onut\Maths.h" />
@@ -76,7 +76,6 @@
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\include\Utils.h" />
-    <ClInclude Include="..\..\include\UI.h" />
     <ClInclude Include="..\..\src\audio\Audio.h" />
     <ClInclude Include="..\..\src\audio\pch.h" />
     <ClInclude Include="..\..\src\audio\SoundCommon.h" />

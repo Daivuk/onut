@@ -58,22 +58,22 @@ void createUIStyles(onut::UIContext* pContext)
     g_pTexIcoUITextBox = OGetTexture("textfield.png");
     g_dottedLineAnim.play(0.f, -1.f, .5f, OTweenLinear, OLoop);
 
-    pContext->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
-        oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), g_panelBGColor);
+        oSpriteBatch->drawRect(nullptr, (rect), g_panelBGColor);
     });
 
-    pContext->addStyle<onut::UIPanel>("darken", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("darken", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
-        oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), g_panelDarkenBGColor);
+        oSpriteBatch->drawRect(nullptr, (rect), g_panelDarkenBGColor);
     });
 
-    pContext->addStyle<onut::UIPanel>("colorPicker", [pContext](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("colorPicker", [pContext](const onut::UIPanel* pPanel, const Rect& rect)
     {
         auto& color = pPanel->color;
 
         auto state = pPanel->getState(*pContext);
-        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectOutter = (rect);
         const auto rectInnuer = rectOutter.Grow(-1);
         const auto rectColor = rectOutter.Grow(-4);
         switch (state)
@@ -96,38 +96,38 @@ void createUIStyles(onut::UIContext* pContext)
                 break;
         }
 
-        oSpriteBatch->drawRect(nullptr, rectColor, {color.r, color.g, color.b, color.a});
+        oSpriteBatch->drawRect(nullptr, rectColor, color);
     });
 
-    pContext->addStyle<onut::UIPanel>("guide", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("guide", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
-        oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), g_guideColor);
+        oSpriteBatch->drawRect(nullptr, (rect), g_guideColor);
     });
 
-    pContext->addStyle<onut::UIPanel>("group", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("group", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
-        auto orect = onut::UI2Onut(rect);
+        auto orect = (rect);
         oSpriteBatch->drawRect(nullptr, orect, g_groupOutlineColor);
         oSpriteBatch->drawRect(nullptr, orect.Grow(-1), g_panelBGColor);
     });
 
-    pContext->addStyle<onut::UITreeView>("", [](const onut::UITreeView* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UITreeView>("", [](const onut::UITreeView* pPanel, const Rect& rect)
     {
-        auto orect = onut::UI2Onut(rect);
+        auto orect = (rect);
         oSpriteBatch->drawRect(nullptr, orect.Grow(1), g_deepViewOutline);
         oSpriteBatch->drawRect(nullptr, orect, g_deepViewFill);
     });
 
-    pContext->addStyle<onut::UITreeViewItem>("", [pContext](const onut::UITreeViewItem* pItem, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UITreeViewItem>("", [pContext](const onut::UITreeViewItem* pItem, const Rect& rect)
     {
         auto pTreeView = pItem->getTreeView();
-        auto orect = onut::UI2Onut(rect);
+        auto orect = (rect);
         if (pItem->getIsSelected())
         {
             auto selectionRect = orect;
             auto treeViewWorldRect = pTreeView->getWorldRect(*pContext);
-            selectionRect.x = treeViewWorldRect.position.x;
-            selectionRect.z = treeViewWorldRect.size.x;
+            selectionRect.x = treeViewWorldRect.x;
+            selectionRect.z = treeViewWorldRect.z;
             oSpriteBatch->drawRect(nullptr, selectionRect, g_treeItemSelectedBGColor);
         }
         auto expandClickWidth = pTreeView->expandClickWidth;
@@ -223,14 +223,14 @@ void createUIStyles(onut::UIContext* pContext)
         }
     });
 
-    pContext->addStyle<onut::UIImage>("", [](const onut::UIImage* pImage, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIImage>("", [](const onut::UIImage* pImage, const Rect& rect)
     {
-        oSpriteBatch->drawRect(OGetTexture(pImage->scale9Component.image.filename.c_str()), onut::UI2Onut(rect));
+        oSpriteBatch->drawRect(OGetTexture(pImage->scale9Component.image.filename.c_str()), (rect));
     });
 
-    pContext->addStyle<onut::UIImage>("toolBtn", [pContext](const onut::UIImage* pImage, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIImage>("toolBtn", [pContext](const onut::UIImage* pImage, const Rect& rect)
     {
-        auto orect = onut::UI2Onut(rect);
+        auto orect = (rect);
         auto state = pImage->getState(*pContext);
         auto pos = orect.Center();
         pos.x = std::roundf(pos.x);
@@ -254,41 +254,41 @@ void createUIStyles(onut::UIContext* pContext)
         }
     });
     
-    pContext->addStyle<onut::UIPanel>("toolSeparator", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("toolSeparator", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
-        auto orect = onut::UI2Onut(rect);
+        auto orect = (rect);
         auto pos = orect.Center();
         pos.x = std::roundf(pos.x);
         pos.y = std::roundf(pos.y);
         oSpriteBatch->drawSprite(OGetTexture("toolSeparator.png"), pos);
     });
 
-    pContext->addStyle<onut::UIPanel>("view", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("view", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
     });
 
-    pContext->addStyle<onut::UIPanel>("sizeHandle", [](const onut::UIPanel* pLabel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("sizeHandle", [](const onut::UIPanel* pLabel, const Rect& rect)
     {
-        const auto orect = onut::UI2Onut(rect);
+        const auto orect = (rect);
         oSpriteBatch->drawRect(nullptr, orect, g_sizeHandleColor);
     });
 
-    pContext->addStyle<onut::UILabel>("", [](const onut::UILabel* pLabel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UILabel>("", [](const onut::UILabel* pLabel, const Rect& rect)
     {
-        g_pFont->draw(pLabel->textComponent.text, onut::UI2Onut(rect).Left(), OLeft, g_fontColor);
+        g_pFont->draw(pLabel->textComponent.text, (rect).Left(), OLeft, g_fontColor);
     });
 
-    pContext->addStyle<onut::UILabel>("panelTitle", [](const onut::UILabel* pLabel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UILabel>("panelTitle", [](const onut::UILabel* pLabel, const Rect& rect)
     {
-        const auto orect = onut::UI2Onut(rect);
+        const auto orect = (rect);
         oSpriteBatch->drawRect(nullptr, orect, g_panelTitleBGColor);
         g_pFont->draw(pLabel->textComponent.text, orect.Center(), OCenter, g_fontColor);
     });
 
-    pContext->addStyle<onut::UIButton>("", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIButton>("", [pContext](const onut::UIButton* pButton, const Rect& rect)
     {
         auto state = pButton->getState(*pContext);
-        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectOutter = (rect);
         const auto rectInnuer = rectOutter.Grow(-1);
         switch (state)
         {
@@ -315,10 +315,10 @@ void createUIStyles(onut::UIContext* pContext)
         }
     });
 
-    pContext->addStyle<onut::UIButton>("imgButton", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIButton>("imgButton", [pContext](const onut::UIButton* pButton, const Rect& rect)
     {
         auto state = pButton->getState(*pContext);
-        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectOutter = (rect);
         const auto rectInnuer = rectOutter.Grow(-1);
         auto textRect = rectInnuer;
         textRect.x += 24;
@@ -348,7 +348,7 @@ void createUIStyles(onut::UIContext* pContext)
         }
     });
 
-    pContext->addStyle<onut::UIPanel>("gizmo", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIPanel>("gizmo", [](const onut::UIPanel* pPanel, const Rect& rect)
     {
         const Color DOTTED_LINE_COLOR = {1, 1, 1, .5f};
 
@@ -357,30 +357,30 @@ void createUIStyles(onut::UIContext* pContext)
         auto dottedLineOffset = g_dottedLineAnim.get();
 
         oSpriteBatch->drawRectWithUVs(pDottedLineTexture,
-        {rect.position.x, rect.position.y, 1, rect.size.y},
-        {dottedLineOffset, dottedLineOffset, dottedLineOffset + dottedLineScale, dottedLineOffset + rect.size.y * dottedLineScale},
+        {rect.x, rect.y, 1, rect.w},
+        {dottedLineOffset, dottedLineOffset, dottedLineOffset + dottedLineScale, dottedLineOffset + rect.w * dottedLineScale},
         DOTTED_LINE_COLOR);
 
         oSpriteBatch->drawRectWithUVs(pDottedLineTexture,
-        {rect.position.x + rect.size.x - 1, rect.position.y, 1, rect.size.y},
-        {dottedLineOffset, dottedLineOffset, dottedLineOffset + dottedLineScale, dottedLineOffset + rect.size.y * dottedLineScale},
+        {rect.x + rect.z - 1, rect.y, 1, rect.w},
+        {dottedLineOffset, dottedLineOffset, dottedLineOffset + dottedLineScale, dottedLineOffset + rect.w * dottedLineScale},
         DOTTED_LINE_COLOR);
 
         oSpriteBatch->drawRectWithUVs(pDottedLineTexture,
-        {rect.position.x, rect.position.y, rect.size.x, 1},
-        {dottedLineOffset, dottedLineOffset, dottedLineOffset + rect.size.x * dottedLineScale, dottedLineOffset + dottedLineScale},
+        {rect.x, rect.y, rect.z, 1},
+        {dottedLineOffset, dottedLineOffset, dottedLineOffset + rect.z * dottedLineScale, dottedLineOffset + dottedLineScale},
         DOTTED_LINE_COLOR);
 
         oSpriteBatch->drawRectWithUVs(pDottedLineTexture,
-        {rect.position.x, rect.position.y + rect.size.y - 1, rect.size.x, 1},
-        {dottedLineOffset, dottedLineOffset, dottedLineOffset + rect.size.x * dottedLineScale, dottedLineOffset + dottedLineScale},
+        {rect.x, rect.y + rect.w - 1, rect.z, 1},
+        {dottedLineOffset, dottedLineOffset, dottedLineOffset + rect.z * dottedLineScale, dottedLineOffset + dottedLineScale},
         DOTTED_LINE_COLOR);
     });
 
-    pContext->addStyle<onut::UICheckBox>("", [pContext](const onut::UICheckBox* pCheckBox, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UICheckBox>("", [pContext](const onut::UICheckBox* pCheckBox, const Rect& rect)
     {
         auto state = pCheckBox->getState(*pContext);
-        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectOutter = (rect);
         auto rectChk = rectOutter;
         rectChk.x += 4;
         rectChk.y = std::floorf(rectChk.y + rectChk.w / 2 - 6);
@@ -415,64 +415,64 @@ void createUIStyles(onut::UIContext* pContext)
         }
     });
 
-    pContext->addStyle<onut::UICheckBox>("align", [pContext](const onut::UICheckBox* pCheckBox, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UICheckBox>("align", [pContext](const onut::UICheckBox* pCheckBox, const Rect& rect)
     {
-        const auto orect = onut::UI2Onut(rect);
+        const auto orect = (rect);
         auto texture = OGetTexture("align.png");
         Vector4 UVs;
         auto textureSizeX = static_cast<float>(texture->getSize().x);
         auto textureSizeY = static_cast<float>(texture->getSize().y);
         switch (pCheckBox->align)
         {
-            case onut::eUIAlign::TOP_LEFT:
+            case OTopLeft:
                 UVs.x = 0.f;
                 UVs.z = 13.f / textureSizeX;
                 UVs.y = 0.f;
                 UVs.w = 13.f / textureSizeY;
                 break;
-            case onut::eUIAlign::TOP:
+            case OTop:
                 UVs.x = 13.f / textureSizeX;
                 UVs.z = 26.f / textureSizeX;
                 UVs.y = 0.f;
                 UVs.w = 13.f / textureSizeY;
                 break;
-            case onut::eUIAlign::TOP_RIGHT:
+            case OTopRight:
                 UVs.x = 26.f / textureSizeX;
                 UVs.z = 39.f / textureSizeX;
                 UVs.y = 0.f;
                 UVs.w = 13.f / textureSizeY;
                 break;
-            case onut::eUIAlign::LEFT:
+            case OLeft:
                 UVs.x = 0.f;
                 UVs.z = 13.f / textureSizeX;
                 UVs.y = 13.f / textureSizeY;
                 UVs.w = 26.f / textureSizeY;
                 break;
-            case onut::eUIAlign::CENTER:    
+            case OCenter:    
                 UVs.x = 13.f / textureSizeX;
                 UVs.z = 26.f / textureSizeX;
                 UVs.y = 13.f / textureSizeY;
                 UVs.w = 26.f / textureSizeY;
                 break;
-            case onut::eUIAlign::RIGHT:
+            case ORight:
                 UVs.x = 26.f / textureSizeX;
                 UVs.z = 39.f / textureSizeX;
                 UVs.y = 13.f / textureSizeY;
                 UVs.w = 26.f / textureSizeY;
                 break;
-            case onut::eUIAlign::BOTTOM_LEFT:
+            case OBottomLeft:
                 UVs.x = 0.f;
                 UVs.z = 13.f / textureSizeX;
                 UVs.y = 26.f / textureSizeY;
                 UVs.w = 39.f / textureSizeY;
                 break;
-            case onut::eUIAlign::BOTTOM:
+            case OBottom:
                 UVs.x = 13.f / textureSizeX;
                 UVs.z = 26.f / textureSizeX;
                 UVs.y = 26.f / textureSizeY;
                 UVs.w = 39.f / textureSizeY;
                 break;
-            case onut::eUIAlign::BOTTOM_RIGHT:
+            case OBottomRight:
                 UVs.x = 26.f / textureSizeX;
                 UVs.z = 39.f / textureSizeX;
                 UVs.y = 26.f / textureSizeY;
@@ -504,62 +504,62 @@ void createUIStyles(onut::UIContext* pContext)
         oSpriteBatch->drawRectWithUVs(texture, orect, UVs);
     });
 
-    pContext->addStyle<onut::UIButton>("align", [pContext](const onut::UIButton* pButton, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UIButton>("align", [pContext](const onut::UIButton* pButton, const Rect& rect)
     {
-        const auto orect = onut::UI2Onut(rect);
+        const auto orect = (rect);
         auto texture = OGetTexture("align.png");
         Vector4 UVs;
         switch (pButton->align)
         {
-            case onut::eUIAlign::TOP_LEFT:
+            case OTopLeft:
                 UVs.x = 0.f;
                 UVs.z = 13.f / texture->getSizef().x;
                 UVs.y = 0.f;
                 UVs.w = 13.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::TOP:
+            case OTop:
                 UVs.x = 13.f / texture->getSizef().x;
                 UVs.z = 26.f / texture->getSizef().x;
                 UVs.y = 0.f;
                 UVs.w = 13.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::TOP_RIGHT:
+            case OTopRight:
                 UVs.x = 26.f / texture->getSizef().x;
                 UVs.z = 39.f / texture->getSizef().x;
                 UVs.y = 0.f;
                 UVs.w = 13.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::LEFT:
+            case OLeft:
                 UVs.x = 0.f;
                 UVs.z = 13.f / texture->getSizef().x;
                 UVs.y = 13.f / texture->getSizef().y;
                 UVs.w = 26.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::CENTER:    
+            case OCenter:    
                 UVs.x = 13.f / texture->getSizef().x;
                 UVs.z = 26.f / texture->getSizef().x;
                 UVs.y = 13.f / texture->getSizef().y;
                 UVs.w = 26.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::RIGHT:
+            case ORight:
                 UVs.x = 26.f / texture->getSizef().x;
                 UVs.z = 39.f / texture->getSizef().x;
                 UVs.y = 13.f / texture->getSizef().y;
                 UVs.w = 26.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::BOTTOM_LEFT:
+            case OBottomLeft:
                 UVs.x = 0.f;
                 UVs.z = 13.f / texture->getSizef().x;
                 UVs.y = 26.f / texture->getSizef().y;
                 UVs.w = 39.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::BOTTOM:
+            case OBottom:
                 UVs.x = 13.f / texture->getSizef().x;
                 UVs.z = 26.f / texture->getSizef().x;
                 UVs.y = 26.f / texture->getSizef().y;
                 UVs.w = 39.f / texture->getSizef().y;
                 break;
-            case onut::eUIAlign::BOTTOM_RIGHT:
+            case OBottomRight:
                 UVs.x = 26.f / texture->getSizef().x;
                 UVs.z = 39.f / texture->getSizef().x;
                 UVs.y = 26.f / texture->getSizef().y;
@@ -581,16 +581,16 @@ void createUIStyles(onut::UIContext* pContext)
         oSpriteBatch->drawRectWithUVs(texture, orect, UVs);
     });
 
-    pContext->addTextCaretSolver<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const onut::sUIVector2& localPos) -> decltype(std::string().size())
+    pContext->addTextCaretSolver<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const Vector2& localPos) -> decltype(std::string().size())
     {
         auto& text = pTextBox->textComponent.text;
         return g_pFont->caretPos(text, localPos.x - 4);
     });
 
-    pContext->addStyle<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const onut::sUIRect& rect)
+    pContext->addStyle<onut::UITextBox>("", [pContext](const onut::UITextBox* pTextBox, const Rect& rect)
     {
         auto state = pTextBox->getState(*pContext);
-        const auto rectOutter = onut::UI2Onut(rect);
+        const auto rectOutter = (rect);
         const auto rectInnuer = rectOutter.Grow(-1);
         auto hasFocus = pTextBox->hasFocus(*pContext);
         switch (state)
