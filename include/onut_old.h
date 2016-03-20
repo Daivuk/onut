@@ -8,12 +8,10 @@
 #include "RectUtils.h"
 #include "Synchronous.h"
 #include "TimingUtils.h"
-#include "Window.h"
 
 // For quick stuff, we have shortcuts outside of the namespace
 extern onut::PrimitiveBatch*            OPrimitiveBatch;
 extern onut::ParticleSystemManager<>*   OParticles;
-extern onut::Window*                    OWindow;
 extern onut::UIControl*                 OUI;
 extern onut::UIContext*                 OUIContext;
 

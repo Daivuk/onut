@@ -1,12 +1,14 @@
 ﻿#include "onut/Point.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/Window.h"
 
 #include "onut_old.h"
 #include "Utils.h"
-#include "Window.h"
 
 #include <windowsx.h>
+
+OWindowRef oWindow;
 
 namespace onut
 {
@@ -22,26 +24,26 @@ namespace onut
         {
             if (oRenderer)
             {
-                oRenderer->onResize(Point{LOWORD(lparam), HIWORD(lparam)});
+                oRenderer->onResize(Point{static_cast<int>(LOWORD(lparam)), static_cast<int>(HIWORD(lparam))});
             }
             if (OUIContext)
             {
                 OUIContext->resize(sUIVector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
             }
-            if (OWindow)
+            if (oWindow)
             {
-                if (OWindow->onResize)
+                if (oWindow->onResize)
                 {
-                    OWindow->onResize(POINT{LOWORD(lparam), HIWORD(lparam)});
+                    oWindow->onResize(Point{static_cast<int>(LOWORD(lparam)), static_cast<int>(HIWORD(lparam))});
                 }
             }
             return 0;
         }
         else if (msg == WM_SETCURSOR)
         {
-            if (OWindow->m_cursor)
+            if (oWindow->getCursor())
             {
-                SetCursor(OWindow->m_cursor);
+                SetCursor(oWindow->getCursor());
                 return 0;
             }
         }
@@ -55,31 +57,31 @@ namespace onut
         else if (msg == WM_CHAR)
         {
             auto c = (char)wparam;
-            if (OWindow->onWrite)
+            if (oWindow->onWrite)
             {
-                OWindow->onWrite(c);
+                oWindow->onWrite(c);
                 return 0;
             }
         }
         else if (msg == WM_KEYDOWN)
         {
-            if (OWindow->onKey)
+            if (oWindow->onKey)
             {
-                OWindow->onKey(static_cast<uintptr_t>(wparam));
+                oWindow->onKey(static_cast<uintptr_t>(wparam));
                 return 0;
             }
         }
         else if (msg == WM_COMMAND)
         {
-            if (OWindow->onMenu)
+            if (oWindow->onMenu)
             {
-                OWindow->onMenu(LOWORD(wparam));
+                oWindow->onMenu(static_cast<uint32_t>(LOWORD(wparam)));
                 return 0;
             }
         }
         else if (msg == WM_DROPFILES)
         {
-            if (OWindow->onDrop)
+            if (oWindow->onDrop)
             {
                 char lpszFile[MAX_PATH] = {0};
                 UINT uFile = 0;
@@ -95,7 +97,7 @@ namespace onut
                 lpszFile[0] = '\0';
                 if (DragQueryFileA(hDrop, 0, lpszFile, MAX_PATH))
                 {
-                    OWindow->onDrop(lpszFile);
+                    oWindow->onDrop(lpszFile);
                 }
 
                 DragFinish(hDrop);
@@ -104,6 +106,11 @@ namespace onut
         }
 
         return DefWindowProc(handle, msg, wparam, lparam);
+    }
+
+    OWindowRef Window::create(const Point& resolution, bool isResizable)
+    {
+        return OMake<Window>(resolution, isResizable);
     }
 
     Window::Window(const Point& resolution, bool isResizable) :
@@ -183,6 +190,11 @@ namespace onut
     void Window::setCursor(HCURSOR cursor)
     {
         m_cursor = cursor;
+    }
+
+    HCURSOR Window::getCursor() const
+    {
+        return m_cursor;
     }
 
     void Window::setCaption(const std::string& newName)

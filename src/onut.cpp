@@ -8,10 +8,10 @@
 #include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 #include "onut/Updater.h"
+#include "onut/Window.h"
 
 #include "audio/Audio.h"
 #include "onut_old.h"
-#include "Window.h"
 
 #include <cassert>
 #include <mutex>
@@ -20,7 +20,6 @@
 using namespace DirectX;
 
 // Our engine services
-onut::Window*                       OWindow = nullptr;
 onut::PrimitiveBatch*               OPrimitiveBatch = nullptr;
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
@@ -179,11 +178,11 @@ namespace onut
             return pFont->caretPos(text, localPos.x - 4);
         });
 
-        OWindow->onWrite = [](char c)
+        oWindow->onWrite = [](char c)
         {
             OUIContext->write(c);
         };
-        OWindow->onKey = [](uintptr_t key)
+        oWindow->onKey = [](uintptr_t key)
         {
             OUIContext->keyDown(key);
         };
@@ -205,11 +204,11 @@ namespace onut
         oUpdater = std::make_shared<OUpdater>();
 
         // Window
-        OWindow = new Window(oSettings->getResolution(), oSettings->getIsResizableWindow());
+        oWindow = OWindow::create(oSettings->getResolution(), oSettings->getIsResizableWindow());
 
         // DirectX
-        oRenderer = ORenderer::create(OWindow);
-        oRenderer->init(OWindow);
+        oRenderer = ORenderer::create(oWindow);
+        oRenderer->init(oWindow);
 
         // SpriteBatch
         oSpriteBatch = SpriteBatch::create();
@@ -220,7 +219,7 @@ namespace onut
         oContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
-        oInput = OInput::create();
+        oInput = OInput::create(oWindow);
 
         // Audio
 #ifdef WIN32
@@ -256,7 +255,7 @@ namespace onut
         delete OPB;
         oSpriteBatch = nullptr;
         oRenderer = nullptr;
-        delete OWindow;
+        oWindow = nullptr;
     }
 
     // Start the engine
@@ -318,7 +317,7 @@ namespace onut
                 oInput->update();
                 POINT cur;
                 GetCursorPos(&cur);
-                ScreenToClient(OWindow->getHandle(), &cur);
+                ScreenToClient(oWindow->getHandle(), &cur);
                 oInput->mousePos.x = cur.x;
                 oInput->mousePos.y = cur.y;
                 oInput->mousePosf.x = static_cast<float>(cur.x);

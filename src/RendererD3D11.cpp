@@ -3,11 +3,11 @@
 #include "onut/Renderer.h"
 #include "onut/Texture.h"
 #include "onut/VertexBuffer.h"
+#include "onut/Window.h"
 
 #include "onut_old.h"
 #include "RendererD3D11.h"
 #include "ShaderD3D11.h"
-#include "Window.h"
 
 #include <fstream>
 #include <vector>
@@ -24,16 +24,16 @@
 
 namespace onut
 {
-    ORendererRef Renderer::create(Window* pWindow)
+    ORendererRef Renderer::create(const OWindowRef& pWindow)
     {
-        return std::make_shared<ORendererD3D11>(pWindow);
+        return OMake<RendererD3D11>(pWindow);
     }
 
-    RendererD3D11::RendererD3D11(Window* pWindow)
+    RendererD3D11::RendererD3D11(const OWindowRef& pWindow)
     {
     }
 
-    void RendererD3D11::init(Window* pWindow)
+    void RendererD3D11::init(const OWindowRef& pWindow)
     {
         createDevice(pWindow);
         createRenderTarget();
@@ -104,7 +104,7 @@ namespace onut
         }
     }
 
-    void RendererD3D11::createDevice(Window* pWindow)
+    void RendererD3D11::createDevice(const OWindowRef& pWindow)
     {
         // Define our swap chain
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};

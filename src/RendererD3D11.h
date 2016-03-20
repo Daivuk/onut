@@ -12,7 +12,7 @@ namespace onut
     class RendererD3D11 final : public Renderer
     {
     public:
-        RendererD3D11(Window* pWindow);
+        RendererD3D11(const OWindowRef& pWindow);
         ~RendererD3D11();
 
         void clear(const Color& color = {.25f, .5f, 1, 1});
@@ -42,10 +42,10 @@ namespace onut
         void drawVignette();
 
         void applyRenderStates() override;
-        void init(Window* pWindow) override;
+        void init(const OWindowRef& pWindow) override;
 
     private:
-        void createDevice(Window* pWindow);
+        void createDevice(const OWindowRef& pWindow);
         void createRenderTarget();
         void createRenderStates();
         void createUniforms();

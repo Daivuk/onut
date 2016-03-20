@@ -1,8 +1,8 @@
 #include "onut/Input.h"
+#include "onut/Window.h"
 
 #include "onut_old.h"
 #include "InputDevice.h"
-#include "Window.h"
 
 #if defined(WIN32)
 #pragma comment(lib, "dinput8.lib")
@@ -15,15 +15,13 @@ OInputDeviceRef oInputDevice;
 
 namespace onut
 {
-    OInputDeviceRef InputDevice::create(OInput* pInput, onut::Window* pWindow)
+    OInputDeviceRef InputDevice::create(OInput* pInput, const OWindowRef& pWindow)
     {
         return std::make_shared<OInputDevice>(pInput, pWindow);
     }
 
-    InputDevice::InputDevice(OInput* pInput, onut::Window* in_pWindow)
+    InputDevice::InputDevice(OInput* pInput, const OWindowRef& pWindow)
     {
-        auto pWindow = in_pWindow;
-        if (!pWindow) pWindow = OWindow;
         m_pInput = pInput;
         if (!m_pInput) m_pInput = oInput.get();
 

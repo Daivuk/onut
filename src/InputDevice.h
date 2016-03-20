@@ -7,6 +7,7 @@
 #include "onut/ForwardDeclaration.h"
 OForwardDeclare(Input);
 OForwardDeclare(InputDevice);
+OForwardDeclare(Window);
 
 namespace onut
 {
@@ -15,9 +16,9 @@ namespace onut
     class InputDevice final
     {
     public:
-        static OInputDeviceRef create(OInput* pInput, onut::Window* pWindow);
+        static OInputDeviceRef create(OInput* pInput, const OWindowRef& pWindow);
 
-        InputDevice(OInput* pInput, onut::Window* pWindow);
+        InputDevice(OInput* pInput, const OWindowRef& pWindow);
         ~InputDevice();
 
         void update();

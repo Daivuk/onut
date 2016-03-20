@@ -1,9 +1,9 @@
 #include "onut/GamePad.h"
 #include "onut/Input.h"
+#include "onut/Window.h"
 
 #include "onut_old.h"
 #include "InputDevice.h"
-#include "Window.h"
 
 #include <cassert>
 
@@ -11,14 +11,14 @@ OInputRef oInput;
 
 namespace onut
 {
-    OInputRef Input::create(Window* pWindow)
+    OInputRef Input::create(const OWindowRef& pWindow)
     {
         return std::make_shared<OInput>(pWindow);
     }
 
-    Input::Input(Window* in_pWindow)
+    Input::Input(const OWindowRef& pWindow)
     {
-        m_pInputDevice = OInputDevice::create(this, in_pWindow);
+        m_pInputDevice = OInputDevice::create(this, pWindow);
 
         m_prevStates = new InputState[STATE_COUNT];
         m_curStates = new InputState[STATE_COUNT];

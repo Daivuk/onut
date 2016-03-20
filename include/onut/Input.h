@@ -6,6 +6,7 @@
 OForwardDeclare(GamePad);
 OForwardDeclare(Input);
 OForwardDeclare(InputDevice);
+OForwardDeclare(Window);
 
 namespace onut
 {
@@ -184,9 +185,9 @@ namespace onut
         static const int STATE_COUNT = static_cast<int>(State::STATE_COUNT);
         static const int GAME_PAD_COUNT = 4;
 
-        static OInputRef create(Window* pWindow = nullptr);
+        static OInputRef create(const OWindowRef& pWindow);
 
-        Input(Window* pWindow = nullptr);
+        Input(const OWindowRef& pWindow);
         ~Input();
 
         void update();

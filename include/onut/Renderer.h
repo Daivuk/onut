@@ -13,6 +13,7 @@ OForwardDeclare(Renderer)
 OForwardDeclare(Shader)
 OForwardDeclare(Texture)
 OForwardDeclare(VertexBuffer)
+OForwardDeclare(Window)
 
 namespace onut
 {
@@ -114,7 +115,7 @@ namespace onut
     class Renderer
     {
     public:
-        static ORendererRef create(Window* pWindow);
+        static ORendererRef create(const OWindowRef& pWindow);
 
         virtual ~Renderer();
 
@@ -159,7 +160,7 @@ namespace onut
         virtual void drawVignette() = 0;
 
         virtual void applyRenderStates() = 0;
-        virtual void init(Window* pWindow) = 0;
+        virtual void init(const OWindowRef& pWindow) = 0;
 
         RenderStates renderStates;
 

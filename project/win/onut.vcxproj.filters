@@ -146,9 +146,6 @@
     <ClInclude Include="..\..\include\Utils.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Window.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h">
       <Filter>thirdparties\rapidjson</Filter>
     </ClInclude>
@@ -266,11 +263,11 @@
     <ClInclude Include="..\..\include\onut\SpriteBatch.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Window.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -470,6 +467,9 @@
       <Filter>resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteBatch.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Window.cpp">
       <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>

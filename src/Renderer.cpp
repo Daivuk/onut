@@ -3,8 +3,7 @@
 #include "onut/Shader.h"
 #include "onut/Texture.h"
 #include "onut/VertexBuffer.h"
-
-#include "Window.h"
+#include "onut/Window.h"
 
 #include <fstream>
 #include <vector>

@@ -45,6 +45,7 @@
     <ClInclude Include="..\..\include\onut\Updater.h" />
     <ClInclude Include="..\..\include\onut\VertexBuffer.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
+    <ClInclude Include="..\..\include\onut\Window.h" />
     <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onutUI.h" />
     <ClInclude Include="..\..\include\onut\ContentManager.h" />
@@ -76,7 +77,6 @@
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\UI.h" />
-    <ClInclude Include="..\..\include\Window.h" />
     <ClInclude Include="..\..\src\audio\Audio.h" />
     <ClInclude Include="..\..\src\audio\pch.h" />
     <ClInclude Include="..\..\src\audio\SoundCommon.h" />
