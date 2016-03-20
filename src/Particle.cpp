@@ -1,22 +1,23 @@
 #include "onut/ParticleSystem.h"
+#include "onut/Timing.h"
 
 #include "Particle.h"
 #include "ParticleEmitter.h"
-#include "TimingUtils.h"
 
 namespace onut
 {
     void Particle::update()
     {
+        float dt = ODT;
         float t = 1 - life;
-        life -= delta * ODT;
+        life -= delta * dt;
         if (life < 0.f) life = 0.f;
 
         // Animate position with velocity
-        position += velocity * ODT;
-        velocity += pDesc->gravity * ODT;
-        angle.from += rotation.value * ODT;
-        angle.to += rotation.value * ODT;
+        position += velocity * dt;
+        velocity += pDesc->gravity * dt;
+        angle.from += rotation.value * dt;
+        angle.to += rotation.value * dt;
 
         // Acceleration
         if (pDesc->accelType == OParticleEmitterDesc::AccelType::Gravity)
@@ -29,7 +30,7 @@ namespace onut
             tagent *= tangentAccel.value;
 
             auto accel = pDesc->gravity + radial + tagent;
-            velocity += accel * ODT;
+            velocity += accel * dt;
         }
         //else if (pEmitter->getDesc()->accelType == sEmitterDesc::AccelType::Radial)
         //{

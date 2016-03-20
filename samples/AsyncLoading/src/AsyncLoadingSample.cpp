@@ -8,6 +8,7 @@
 #include "onut/Log.h"
 #include "onut/Settings.h"
 #include "onut/Texture.h"
+#include "onut/Timing.h"
 
 #include "onut_old.h"
 
@@ -36,7 +37,7 @@ void init()
         OLog("Loaded!");
 
         // Since this is going to be very fast, force a sleep here so we can see the loading screen
-        OSleep(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(5));
 
         OSync([] // Sync back to main loop
         {

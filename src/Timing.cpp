@@ -1,30 +1,30 @@
 #pragma once
-#include "onut/TimeInfo.h"
+#include "onut/Timing.h"
 
-OTimeInfoRef oTimeInfo;
+OTimingRef oTiming;
 
 namespace onut
 {
     static const int MAX_UPDATE_PER_FRAME = 4;
 
-    OTimeInfoRef TimeInfo::create(uint32_t updateFps)
+    OTimingRef Timing::create(uint32_t updateFps)
     {
-        return OMake<TimeInfo>(updateFps);
+        return OMake<Timing>(updateFps);
     }
 
-    TimeInfo::TimeInfo(uint32_t updateFps)
+    Timing::Timing(uint32_t updateFps)
     {
         setUpdateFps(updateFps);
     }
 
-    void TimeInfo::setUpdateFps(uint32_t updateFps)
+    void Timing::setUpdateFps(uint32_t updateFps)
     {
         m_updateFps = updateFps;
         m_deltaTime = 1.0 / static_cast<double>(updateFps);
         m_timePerFrame = std::chrono::microseconds(1000000) / updateFps;
     }
 
-    int TimeInfo::update(bool fixedStep)
+    int Timing::update(bool fixedStep)
     {
         int framesToUpdate = 0;
 
@@ -67,7 +67,7 @@ namespace onut
         }
     }
 
-    void TimeInfo::render()
+    void Timing::render()
     {
         m_lastRenderTime = m_thisRenderTime;
         ++m_currentFPS;
@@ -80,12 +80,12 @@ namespace onut
         }
     }
 
-    float TimeInfo::getDeltaTime() const
+    float Timing::getDeltaTime() const
     {
         return static_cast<float>(m_deltaTime);
     }
 
-    float TimeInfo::getRenderDeltaTime() const
+    float Timing::getRenderDeltaTime() const
     {
         auto deltaTime =
             static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(m_thisRenderTime - m_lastRenderTime).count()) /
@@ -94,12 +94,12 @@ namespace onut
         return static_cast<float>(deltaTime);
     }
 
-    float TimeInfo::getTotalElapsed() const
+    float Timing::getTotalElapsed() const
     {
         return static_cast<float>(m_totalElapsed);
     }
 
-    int TimeInfo::getFPS() const
+    int Timing::getFPS() const
     {
         return m_fps;
     }

@@ -1,6 +1,6 @@
 #pragma once
 #include "onut/Resource.h"
-#include "TimingUtils.h"
+#include "onut/Timer.h"
 
 #include <vector>
 

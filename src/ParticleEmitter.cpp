@@ -1,3 +1,5 @@
+#include "onut/Timing.h"
+
 #include "onut_old.h"
 #include "ParticleSystemManager.h"
 

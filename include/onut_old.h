@@ -5,7 +5,6 @@
 #include "onutUI.h"
 #include "ParticleSystemManager.h"
 #include "RectUtils.h"
-#include "TimingUtils.h"
 
 // For quick stuff, we have shortcuts outside of the namespace
 extern onut::ParticleSystemManager<>*   OParticles;

@@ -3,16 +3,16 @@
 #include <cinttypes>
 
 #include "onut/ForwardDeclaration.h"
-OForwardDeclare(TimeInfo)
+OForwardDeclare(Timing)
 
 namespace onut
 {
-    class TimeInfo final
+    class Timing final
     {
     public:
-        static OTimeInfoRef create(uint32_t updateFps = 120);
+        static OTimingRef create(uint32_t updateFps = 120);
 
-        TimeInfo(uint32_t updateFps = 120);
+        Timing(uint32_t updateFps = 120);
 
         void setUpdateFps(uint32_t updateFps);
 
@@ -57,7 +57,7 @@ namespace onut
     };
 }
 
-extern OTimeInfoRef oTimeInfo;
+extern OTimingRef oTiming;
 
-#define OGetDeltaTime oTimeInfo->getDeltaTime
+#define OGetDeltaTime oTiming->getDeltaTime
 #define ODT OGetDeltaTime()

@@ -9,7 +9,7 @@
 #include "onut/Settings.h"
 #include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
-#include "onut/TimeInfo.h"
+#include "onut/Timing.h"
 #include "onut/Updater.h"
 #include "onut/Window.h"
 
@@ -202,7 +202,7 @@ namespace onut
         oDispatcher = ODispatcher::create();
 
         // Timing class
-        oTimeInfo = OTimeInfo::create();
+        oTiming = OTiming::create();
 
         // Updater
         oUpdater = OMake<OUpdater>();
@@ -315,7 +315,7 @@ namespace onut
 
             // Update
             if (g_pAudioEngine) g_pAudioEngine->Update();
-            auto framesToUpdate = oTimeInfo->update(oSettings->getIsFixedStep());
+            auto framesToUpdate = oTiming->update(oSettings->getIsFixedStep());
             while (framesToUpdate--)
             {
                 oInput->update();
@@ -352,7 +352,7 @@ namespace onut
             }
 
             // Render
-            oTimeInfo->render();
+            oTiming->render();
             oRenderer->beginFrame();
             if (renderCallback)
             {

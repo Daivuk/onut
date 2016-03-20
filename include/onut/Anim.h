@@ -1,6 +1,6 @@
 #pragma once
 #include "onut/Curve.h"
-#include "onut/TimeInfo.h"
+#include "onut/Timing.h"
 #include "onut/Tween.h"
 #include "onut/Updater.h"
 
