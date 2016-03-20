@@ -19,6 +19,7 @@
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
+    <ClInclude Include="..\..\include\onut\Dispatcher.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\GamePad.h" />
     <ClInclude Include="..\..\include\onut\Http.h" />
@@ -73,7 +74,6 @@
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\include\Utils.h" />
-    <ClInclude Include="..\..\include\Synchronous.h" />
     <ClInclude Include="..\..\include\TimeInfo.h" />
     <ClInclude Include="..\..\include\TimingUtils.h" />
     <ClInclude Include="..\..\include\UI.h" />
@@ -113,6 +113,7 @@
     <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
+    <ClCompile Include="..\..\src\Dispatcher.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />

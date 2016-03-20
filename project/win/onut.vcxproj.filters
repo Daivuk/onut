@@ -128,9 +128,6 @@
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Synchronous.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\TimeInfo.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -264,6 +261,9 @@
       <Filter>services</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\PrimitiveBatch.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Dispatcher.h">
       <Filter>services</Filter>
     </ClInclude>
   </ItemGroup>
@@ -470,6 +470,9 @@
       <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Dispatcher.cpp">
       <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>

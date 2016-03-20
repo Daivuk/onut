@@ -1,5 +1,6 @@
+#include "onut/Dispatcher.h"
+
 #include "RTS.h"
-#include "Synchronous.h"
 #include "Utils.h"
 #include <algorithm>
 #include <thread>
@@ -409,6 +410,8 @@ namespace onut
 
     RTS::RTS()
     {
+        m_pDispatcher = ODispatcher::create();
+
         // Initialise winsock
         WSAStartup(MAKEWORD(2, 2), &m_wsa);
     }
@@ -477,7 +480,7 @@ namespace onut
                     sPacket packet(pBuf, recv_len, si_other);
                     if (validatePacket(packet))
                     {
-                        m_sync.sync([this](sPacket packet)
+                        m_pDispatcher->dispatch([this](sPacket packet)
                         {
                             onPacket(packet);
                         }, packet);
@@ -642,7 +645,7 @@ namespace onut
 
     int RTS::update()
     {
-        m_sync.processQueue();
+        m_pDispatcher->processQueue();
 
         auto now = std::chrono::steady_clock::now();
 

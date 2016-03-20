@@ -3,6 +3,7 @@
 
 // Oak Nut include
 #include "onut/Async.h"
+#include "onut/Dispatcher.h"
 #include "onut/Font.h"
 #include "onut/Log.h"
 #include "onut/Settings.h"

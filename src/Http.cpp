@@ -1,4 +1,5 @@
 #include "onut/Async.h"
+#include "onut/Dispatcher.h"
 #include "onut/Http.h"
 #include "onut/Texture.h"
 

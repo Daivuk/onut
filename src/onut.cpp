@@ -1,4 +1,5 @@
 #include "onut/ContentManager.h"
+#include "onut/Dispatcher.h"
 #include "onut/Font.h"
 #include "onut/GamePad.h"
 #include "onut/Input.h"
@@ -23,7 +24,6 @@ using namespace DirectX;
 // Our engine services
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::TimeInfo<>                    g_timeInfo;
-onut::Synchronous                   g_mainSync;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
 onut::UIContext*                    OUIContext = nullptr;
 onut::UIControl*                    OUI = nullptr;
@@ -201,7 +201,11 @@ namespace onut
         // Random
         randomizeSeed();
 
-        oUpdater = std::make_shared<OUpdater>();
+        // Dispatcher
+        oDispatcher = ODispatcher::create();
+
+        // Updater
+        oUpdater = OMake<OUpdater>();
 
         // Window
         oWindow = OWindow::create(oSettings->getResolution(), oSettings->getIsResizableWindow());
@@ -215,7 +219,7 @@ namespace onut
         oPrimitiveBatch = PrimitiveBatch::create();
 
         // Content
-        oContentManager = std::make_shared<ContentManager>();
+        oContentManager = OMake<ContentManager>();
         oContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
@@ -246,6 +250,7 @@ namespace onut
 
     void cleanup()
     {
+        oDispatcher = nullptr;
         oUpdater = nullptr;
         delete OUIContext;
         delete OParticles;
@@ -306,7 +311,7 @@ namespace onut
             }
 
             // Sync to main callbacks
-            g_mainSync.processQueue();
+            oDispatcher->processQueue();
 
             // Update
             if (g_pAudioEngine) g_pAudioEngine->Update();

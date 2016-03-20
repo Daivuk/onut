@@ -6,7 +6,9 @@
 #include <thread>
 #include <atomic>
 #include <unordered_map>
-#include "Synchronous.h"
+
+#include "onut/ForwardDeclaration.h"
+OForwardDeclare(Dispatcher);
 
 namespace onut
 {
@@ -177,7 +179,7 @@ namespace onut
         std::vector<RTSPeer *> m_peers;
         std::thread *m_pRecvThread = nullptr;
         std::atomic<bool> m_isRecvThreadValid = false;
-        Synchronous m_sync;
+        ODispatcherRef m_pDispatcher;
         uint8_t m_currentTurn = 0;
         uint32_t m_realTurn = 0;
         bool m_isStarted = false;
