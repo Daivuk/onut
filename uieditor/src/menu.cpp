@@ -3,6 +3,7 @@
 #include "menu.h"
 
 #include "onut/Input.h"
+#include "onut/Window.h"
 
 extern DocumentView*        g_pDocument;
 extern onut::ActionManager  g_actionManager;
@@ -11,7 +12,7 @@ onut::UIControl*    g_pMessageBox = nullptr;
 
 void buildMenu()
 {
-    auto window = OWindow->getHandle();
+    auto window = oWindow->getHandle();
     auto menu = CreateMenu();
 
     {
@@ -47,7 +48,7 @@ void buildMenu()
 
 std::string fileOpen()
 {
-    auto window = OWindow->getHandle();
+    auto window = oWindow->getHandle();
     char szFileName[MAX_PATH] = "";
 
     OPENFILENAMEA ofn = {0};

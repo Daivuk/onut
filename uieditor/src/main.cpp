@@ -8,6 +8,7 @@
 #include "onut/Input.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/Window.h"
 
 void init();
 void update();
@@ -42,7 +43,7 @@ void init()
     g_pUIContext = new onut::UIContext(onut::sUIVector2{OScreenWf, OScreenHf});
     g_pUIContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
     {
-        OSB->end();
+        oSpriteBatch->end();
         oRenderer->renderStates.scissorEnabled = enabled;
         if (enabled)
         {
@@ -52,14 +53,14 @@ void init()
                 static_cast<int>(rect.position.x + rect.size.x),
                 static_cast<int>(rect.position.y + rect.size.y)};
         }
-        OSB->begin();
+        oSpriteBatch->begin();
     };
     createUIStyles(g_pUIContext);
 
     g_pUIContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const onut::sUIRect& rect)
     {
-        OSB->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
-        OSB->end();
+        oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), Color::Black);
+        oSpriteBatch->end();
 
         oRenderer->renderStates.scissorEnabled = true;
         oRenderer->renderStates.scissor = {
@@ -70,14 +71,14 @@ void init()
 
         // Render edited UIs
         //oRenderer->set2DCamera();
-        OSB->begin(Matrix::CreateTranslation(rect.position.x, rect.position.y, 0.f));
+        oSpriteBatch->begin(Matrix::CreateTranslation(rect.position.x, rect.position.y, 0.f));
         g_pDocument->render();
-        OSB->end();
+        oSpriteBatch->end();
 
         oRenderer->renderStates.scissorEnabled = false;
 
         oRenderer->set2DCamera({0, 0});
-        OSB->begin();
+        oSpriteBatch->begin();
     });
 
     g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
@@ -88,9 +89,9 @@ void init()
 
     buildMenu();
 
-    OWindow->onMenu = onMenu;
-    OWindow->onWrite = [](char c){g_pUIContext->write(c); };
-    OWindow->onKey = [](uintptr_t key)
+    oWindow->onMenu = onMenu;
+    oWindow->onWrite = [](char c){g_pUIContext->write(c); };
+    oWindow->onKey = [](uintptr_t key)
     {
         if (!g_pDocument->isBusy())
         {
@@ -110,7 +111,9 @@ void update()
     g_pUIContext->resize({OScreenWf, OScreenHf});
 
     // Update.
-    g_pUIScreen->update(*g_pUIContext, {oInput->mousePosf.x, oInput->mousePosf.y}, OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3));
+    g_pUIScreen->update(*g_pUIContext, {oInput->mousePosf.x, oInput->mousePosf.y}, OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),
+                        false, false, false, false,
+                        OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
     g_pDocument->update();
 }
 
@@ -118,7 +121,7 @@ void render()
 {
     oRenderer->clear(OColorHex(1e1e1e));
 
-    OSB->begin();
+    oSpriteBatch->begin();
     g_pUIScreen->render(*g_pUIContext);
-    OSB->end();
+    oSpriteBatch->end();
 }

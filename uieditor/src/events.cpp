@@ -3,6 +3,7 @@
 #include "events.h"
 
 #include "onut/Input.h"
+#include "onut/Window.h"
 
 #include "Utils.h"
 
@@ -1046,7 +1047,7 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
 
 std::string fileOpen(const char* szFilters)
 {
-    auto window = OWindow->getHandle();
+    auto window = oWindow->getHandle();
     char szFileName[MAX_PATH] = "";
 
     OPENFILENAMEA ofn = {0};
@@ -1136,7 +1137,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
             auto alphaVal = rgbCurrent & 0x000000ff;
             rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
             colorChooser.lStructSize = sizeof(colorChooser);
-            colorChooser.hwndOwner = OWindow->getHandle();
+            colorChooser.hwndOwner = oWindow->getHandle();
             colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
             colorChooser.rgbResult = rgbCurrent;
             colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
@@ -1253,8 +1254,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 
     yPos += 174 + 4 - 66;
 
-    auto mouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    auto mouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    auto mouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    auto mouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTxtImage->onMouseEnter = mouseEnter;
     pTxtImage->onMouseLeave = mouseLeave;
     pTxtPaddingLeft->onMouseEnter = mouseEnter;
@@ -1309,7 +1310,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
             rgbCurrent = (DWORD)pBtnColor->color.packed;
             rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
             colorChooser.lStructSize = sizeof(colorChooser);
-            colorChooser.hwndOwner = OWindow->getHandle();
+            colorChooser.hwndOwner = oWindow->getHandle();
             colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
             colorChooser.rgbResult = rgbCurrent;
             colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
@@ -1600,8 +1601,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
 
     yPos += 174 + 4;
 
-    auto mouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    auto mouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    auto mouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    auto mouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTxtText->onMouseEnter = mouseEnter;
     pTxtText->onMouseLeave = mouseLeave;
     pTxtTypeFace->onMouseEnter = mouseEnter;
@@ -1645,7 +1646,7 @@ void BIND_TEXT_COMPONENT(const std::string& name)
             rgbCurrent = (DWORD)pBtnColor->color.packed;
             rgbCurrent = ((rgbCurrent >> 24) & 0x000000ff) | ((rgbCurrent >> 8) & 0x0000ff00) | ((rgbCurrent << 8) & 0x00ff0000);
             colorChooser.lStructSize = sizeof(colorChooser);
-            colorChooser.hwndOwner = OWindow->getHandle();
+            colorChooser.hwndOwner = oWindow->getHandle();
             colorChooser.lpCustColors = (LPDWORD)g_acrCustClr;
             colorChooser.rgbResult = rgbCurrent;
             colorChooser.Flags = CC_FULLOPEN | CC_RGBINIT;
@@ -1853,8 +1854,8 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
@@ -1887,8 +1888,8 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
@@ -1962,8 +1963,8 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
@@ -2049,22 +2050,22 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UITextBox>("txtName");
     g_pInspector_UIControl_txtName->onTextChanged = onUIControlNameChanged;
-    g_pInspector_UIControl_txtName->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtName->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtName->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtName->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
 
     g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UITextBox>("txtStyle");
     g_pInspector_UIControl_txtStyle->onTextChanged = onUIControlStyleChanged;
-    g_pInspector_UIControl_txtStyle->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtStyle->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtStyle->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtStyle->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
 
     g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UITextBox>("txtX");
     g_pInspector_UIControl_txtX->onTextChanged = onUIControlXChanged;
-    g_pInspector_UIControl_txtX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UITextBox>("txtY");
     g_pInspector_UIControl_txtY->onTextChanged = onUIControlYChanged;
-    g_pInspector_UIControl_txtY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
     g_pInspector_UIControl_chkXPercent->onCheckChanged = onUIControlXPercentChanged;
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
@@ -2072,12 +2073,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UITextBox>("txtWidth");
     g_pInspector_UIControl_txtWidth->onTextChanged = onUIControlWidthChanged;
-    g_pInspector_UIControl_txtWidth->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtWidth->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtWidth->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtWidth->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UITextBox>("txtHeight");
     g_pInspector_UIControl_txtHeight->onTextChanged = onUIControlHeightChanged;
-    g_pInspector_UIControl_txtHeight->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtHeight->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtHeight->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtHeight->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkWidthPercent = pUIScreen->getChild<onut::UICheckBox>("chkWidthPercent");
     g_pInspector_UIControl_chkWidthPercent->onCheckChanged = onUIControlWidthPercentChanged;
     g_pInspector_UIControl_chkHeightPercent = pUIScreen->getChild<onut::UICheckBox>("chkHeightPercent");
@@ -2100,12 +2101,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtAnchorX = pUIScreen->getChild<onut::UITextBox>("txtAnchorX");
     g_pInspector_UIControl_txtAnchorX->onTextChanged = onUIControlAnchorXChanged;
-    g_pInspector_UIControl_txtAnchorX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtAnchorX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtAnchorX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtAnchorX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtAnchorY = pUIScreen->getChild<onut::UITextBox>("txtAnchorY");
     g_pInspector_UIControl_txtAnchorY->onTextChanged = onUIControlAnchorYChanged;
-    g_pInspector_UIControl_txtAnchorY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtAnchorY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){OWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtAnchorY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtAnchorY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkXAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkXAnchorPercent");
     g_pInspector_UIControl_chkXAnchorPercent->onCheckChanged = onUIControlXAnchorPercentChanged;
     g_pInspector_UIControl_chkYAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkYAnchorPercent");

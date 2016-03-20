@@ -28,7 +28,7 @@ void createViewUIStyles(onut::UIContext* pContext)
 
     pContext->onClipping = [](bool enabled, const onut::sUIRect& rect)
     {
-        OSB->end();
+        oSpriteBatch->end();
 
         auto regionRect = onut::UI2Onut(g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext));
         auto orect = onut::UI2Onut(rect);
@@ -40,18 +40,18 @@ void createViewUIStyles(onut::UIContext* pContext)
         {
             oRenderer->renderStates.scissor = {static_cast<int>(orect.x), static_cast<int>(orect.y), static_cast<int>(orect.x + orect.z), static_cast<int>(orect.y + orect.w)};
         }
-        OSB->begin();
+        oSpriteBatch->begin();
     };
 
     pContext->drawRect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIColor &color)
     {
-        OSB->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
+        oSpriteBatch->drawRect(nullptr, onut::UI2Onut(rect), onut::UI2Onut(color));
     };
 
     pContext->drawTexturedRect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIImageComponent &image)
     {
         auto pTexture = g_pDocument->pContentManager->getResourceAs<OTexture>(image.filename);
-        OSB->drawRect(pTexture, onut::UI2Onut(rect), onut::UI2Onut(image.color));
+        oSpriteBatch->drawRect(pTexture, onut::UI2Onut(rect), onut::UI2Onut(image.color));
     };
 
     pContext->drawScale9Rect = [pContext](onut::UIControl *pControl, const onut::sUIRect &rect, const onut::sUIScale9Component &scale9Component)
@@ -61,11 +61,11 @@ void createViewUIStyles(onut::UIContext* pContext)
         {
             if (scale9Component.isRepeat)
             {
-                OSB->drawRectScaled9RepeatCenters(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
+                oSpriteBatch->drawRectScaled9RepeatCenters(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
             }
             else
             {
-                OSB->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
+                oSpriteBatch->drawRectScaled9(pTexture, onut::UI2Onut(rect), onut::UI2Onut(scale9Component.padding), onut::UI2Onut(scale9Component.image.color));
             }
         }
     };
