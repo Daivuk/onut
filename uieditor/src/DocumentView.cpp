@@ -5,10 +5,12 @@
 
 #include "onut/Input.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
 #include "onut/UIButton.h"
 #include "onut/Window.h"
 
 #include "Utils.h"
+#include "DefineHelpers.h"
 
 extern OUIControlRef g_pUIScreen;
 extern OUIContextRef g_pUIContext;

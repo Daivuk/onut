@@ -3,6 +3,7 @@
 
 #include "onut/Anim.h"
 #include "onut/Font.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 #include "onut/UIButton.h"
 #include "onut/UICheckBox.h"
@@ -11,6 +12,8 @@
 #include "onut/UIPanel.h"
 #include "onut/UITextBox.h"
 #include "onut/UITreeView.h"
+
+#include "DefineHelpers.h"
 
 static const Color g_panelBGColor = OColorHex(2d2d30);
 static const Color g_panelDarkenBGColor = Color::fromHexRGBA(0x00000066);

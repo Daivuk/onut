@@ -8,10 +8,13 @@
 #include "onut/Input.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
 #include "onut/UIContext.h"
 #include "onut/UIControl.h"
 #include "onut/UIPanel.h"
 #include "onut/Window.h"
+
+#include "DefineHelpers.h"
 
 void init();
 void update();
