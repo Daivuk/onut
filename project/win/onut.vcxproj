@@ -79,7 +79,6 @@
     <ClInclude Include="..\..\include\rapidjson\reader.h" />
     <ClInclude Include="..\..\include\rapidjson\stringbuffer.h" />
     <ClInclude Include="..\..\include\rapidjson\writer.h" />
-    <ClInclude Include="..\..\include\RectUtils.h" />
     <ClInclude Include="..\..\include\RTS.h" />
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />

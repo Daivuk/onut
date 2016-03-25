@@ -8,8 +8,6 @@
 #include "onut/UIControl.h"
 #include "onut/UITextBox.h"
 
-#include "RectUtils.h"
-
 OUIContextRef oUIContext;
 
 namespace onut

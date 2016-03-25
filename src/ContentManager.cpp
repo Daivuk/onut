@@ -46,7 +46,7 @@ namespace onut
         std::unique_lock<std::mutex> locker(m_mutex);
         for (auto& path : m_searchPaths)
         {
-            filename = findFile<false>(name, path, true);
+            filename = findFile(name, path, true);
             if (!filename.empty())
             {
                 break;

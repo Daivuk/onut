@@ -113,9 +113,6 @@
     <ClInclude Include="..\..\include\ParticleSystemManager.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\RectUtils.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>

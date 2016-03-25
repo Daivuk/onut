@@ -6,7 +6,6 @@
 #include "onut/TiledMap.h"
 
 #include "Utils.h"
-#include "RectUtils.h"
 
 #include "tinyxml2/tinyxml2.h"
 #include "zlib/zlib.h"
