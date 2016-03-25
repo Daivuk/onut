@@ -11,7 +11,6 @@
 #include "onut/Texture.h"
 
 #include "Utils.h"
-#include "DefineHelpers.h"
 
 void init();
 void update();

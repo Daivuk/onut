@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ActionManager.h" />
-    <ClInclude Include="..\..\include\DefineHelpers.h" />
     <ClInclude Include="..\..\include\list\List.h" />
     <ClInclude Include="..\..\include\micropather\micropather.h" />
     <ClInclude Include="..\..\include\onut\Anim.h" />

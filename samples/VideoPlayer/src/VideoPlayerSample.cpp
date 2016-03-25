@@ -9,8 +9,6 @@
 #include "onut/Texture.h"
 #include "onut/VideoPlayer.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void update();
 void render();

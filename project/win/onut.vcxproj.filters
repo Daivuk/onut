@@ -104,9 +104,6 @@
     <ClInclude Include="..\..\include\ActionManager.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\DefineHelpers.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Particle.h">
       <Filter>src</Filter>
     </ClInclude>

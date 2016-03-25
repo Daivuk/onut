@@ -13,8 +13,6 @@
 #include "onut/Texture.h"
 #include "onut/Timing.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void update();
 void render();

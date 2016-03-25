@@ -13,8 +13,6 @@
 #include "onut/UITextBox.h"
 #include "onut/UITreeView.h"
 
-#include "DefineHelpers.h"
-
 static const Color g_panelBGColor = OColorHex(2d2d30);
 static const Color g_panelDarkenBGColor = Color::fromHexRGBA(0x00000066);
 static const Color g_groupOutlineColor = OColorHex(3f3f46);

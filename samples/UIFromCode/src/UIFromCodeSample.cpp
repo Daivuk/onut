@@ -9,8 +9,6 @@
 #include "onut/UIImage.h"
 #include "onut/UILabel.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void update();
 void render();

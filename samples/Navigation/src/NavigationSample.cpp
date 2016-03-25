@@ -8,8 +8,6 @@
 #include "onut/UIContext.h"
 #include "onut/UIControl.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void update();
 void render();

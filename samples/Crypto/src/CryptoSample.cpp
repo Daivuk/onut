@@ -9,8 +9,6 @@
 #include "onut/SpriteBatch.h"
 #include "onut/Renderer.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void render();
 

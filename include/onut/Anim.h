@@ -366,3 +366,8 @@ using OAnimRect = onut::Anim<Rect>;
 using OAnimMatrix = onut::Anim<Matrix>;
 using OAnimColor = onut::Anim<Color>;
 using OAnimString = onut::Anim<std::string>;
+
+// Anim helpers
+#define OSequence(T, ...)                       std::vector<onut::Anim<T>::KeyFrame>(__VA_ARGS__)
+#define OAnimWait(val, t)                       {val,t,OTeleport}
+#define OAnimAppleStyleBounce(from, to)         {from,0.f,OTeleport},{to,.25f,OEaseOut},{from,.5f,OBounceOut}

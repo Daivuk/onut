@@ -4,8 +4,6 @@
 #include "onut/Font.h"
 #include "onut/Texture.h"
 
-#include "DefineHelpers.h"
-
 static const Color g_panelBGColor = OColorHex(2d2d30);
 static const Color g_outlineColor = Color::Lerp(OColorHex(ff9933), g_panelBGColor, .75f);
 static const Color g_panelTitleBGColor = OColorHex(3f3f46);

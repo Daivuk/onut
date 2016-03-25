@@ -10,8 +10,6 @@
 #include "onut/Settings.h"
 #include "onut/SpriteBatch.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void update();
 void render();

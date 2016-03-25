@@ -9,8 +9,6 @@
 #include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 
-#include "DefineHelpers.h"
-
 void init();
 void update();
 void render();
