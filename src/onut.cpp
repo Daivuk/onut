@@ -1,3 +1,4 @@
+#include "onut/ActionManager.h"
 #include "onut/ContentManager.h"
 #include "onut/Dispatcher.h"
 #include "onut/Font.h"
@@ -122,10 +123,14 @@ namespace onut
 
         // UI Context
         createUI();
+
+        // Undo/Redo for editors
+        oActionManager = OMake<ActionManager>();
     }
 
     void cleanup()
     {
+        oActionManager = nullptr;
         oDispatcher = nullptr;
         oUpdater = nullptr;
         oUI = nullptr;

@@ -163,7 +163,7 @@ public:
             newVal = m_getInspector();
         }
 
-        g_actionManager.doAction(new onut::Action(m_actionName,
+        oActionManager->doAction(OMake<onut::Action>(m_actionName,
             [=]{
             m_setter(tControl, newVal);
             g_pDocument->updateInspector();

@@ -1,12 +1,11 @@
-#include "ActionManager.h"
 #include "DocumentView.h"
 #include "menu.h"
 
+#include "onut/ActionManager.h"
 #include "onut/Input.h"
 #include "onut/Window.h"
 
 extern DocumentView*        g_pDocument;
-extern onut::ActionManager  g_actionManager;
 
 OUIControlRef    g_pMessageBox = nullptr;
 
@@ -78,7 +77,7 @@ void onMenu(UINT menuId)
         case MENU_FILE_NEW: // New
         {
 //            showMessageBox("New Document", "Save changes?", 
-            g_actionManager.clear();
+            oActionManager->clear();
             delete g_pDocument;
             g_pDocument = new DocumentView("");
             break;
@@ -88,7 +87,7 @@ void onMenu(UINT menuId)
             auto filename = fileOpen();
             if (!filename.empty())
             {
-                g_actionManager.clear();
+                oActionManager->clear();
                 delete g_pDocument;
                 g_pDocument = new DocumentView(filename);
             }
@@ -103,10 +102,10 @@ void onMenu(UINT menuId)
             PostQuitMessage(0);
             break;
         case MENU_EDIT_UNDO:
-            g_actionManager.undo();
+            oActionManager->undo();
             break;
         case MENU_EDIT_REDO:
-            g_actionManager.redo();
+            oActionManager->redo();
             break;
         case MENU_EDIT_CUT:
             g_pDocument->cut();

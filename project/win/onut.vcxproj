@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\ActionManager.h" />
     <ClInclude Include="..\..\include\list\List.h" />
     <ClInclude Include="..\..\include\micropather\micropather.h" />
+    <ClInclude Include="..\..\include\onut\ActionManager.h" />
     <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
@@ -35,6 +35,7 @@
     <ClInclude Include="..\..\include\onut\PrimitiveBatch.h" />
     <ClInclude Include="..\..\include\onut\Random.h" />
     <ClInclude Include="..\..\include\onut\Renderer.h" />
+    <ClInclude Include="..\..\include\onut\RTS.h" />
     <ClInclude Include="..\..\include\onut\SampleMode.h" />
     <ClInclude Include="..\..\include\onut\Settings.h" />
     <ClInclude Include="..\..\include\onut\Shader.h" />
@@ -81,7 +82,6 @@
     <ClInclude Include="..\..\include\rapidjson\reader.h" />
     <ClInclude Include="..\..\include\rapidjson\stringbuffer.h" />
     <ClInclude Include="..\..\include\rapidjson\writer.h" />
-    <ClInclude Include="..\..\include\RTS.h" />
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\src\audio\Audio.h" />

@@ -1,10 +1,10 @@
 #include <Windows.h>
-#include "ActionManager.h"
 #include "DocumentView.h"
 #include "events.h"
 #include "menu.h"
 #include "styles.h"
 
+#include "onut/ActionManager.h"
 #include "onut/Input.h"
 #include "onut/onut.h"
 #include "onut/Renderer.h"
@@ -22,7 +22,6 @@ void render();
 DocumentView*       g_pDocument = nullptr;
 OUIContextRef g_pUIContext = nullptr;
 OUIControlRef g_pUIScreen = nullptr;
-onut::ActionManager g_actionManager;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {

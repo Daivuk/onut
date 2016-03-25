@@ -1,4 +1,6 @@
-#include "ActionManager.h"
+#include "onut/ActionManager.h"
+
+OActionManagerRef oActionManager;
 
 namespace onut
 {
@@ -12,21 +14,13 @@ namespace onut
         return m_name;
     }
 
-    ActionGroup::ActionGroup(const std::string& name, const std::vector<IAction*>& actions) :
+    ActionGroup::ActionGroup(const std::string& name, const Actions& actions) :
         IAction(name),
         m_actions(actions)
     {
     }
 
-    ActionGroup::~ActionGroup()
-    {
-        for (auto pAction : m_actions)
-        {
-            delete pAction;
-        }
-    }
-
-    void ActionGroup::addAction(IAction* pAction)
+    void ActionGroup::addAction(const OIActionRef& pAction)
     {
         m_actions.push_back(pAction);
     }
@@ -48,14 +42,14 @@ namespace onut
     }
 
     Action::Action(const std::string& name,
-                   const std::function<void()>& onRedo,
-                   const std::function<void()>& onUndo,
-                   const std::function<void()>& onInit,
-                   const std::function<void()>& onDestroy) :
-                   IAction(name),
-                   m_onRedo(onRedo),
-                   m_onUndo(onUndo),
-                   m_onDestroy(onDestroy)
+                   const ActionCallBack& onRedo,
+                   const ActionCallBack& onUndo,
+                   const ActionCallBack& onInit,
+                   const ActionCallBack& onDestroy)
+        : IAction(name)
+        , m_onRedo(onRedo)
+        , m_onUndo(onUndo)
+        , m_onDestroy(onDestroy)
     {
         if (onInit)
         {
@@ -93,36 +87,30 @@ namespace onut
         m_position = m_history.begin();
     }
 
-    ActionManager::~ActionManager()
+    void ActionManager::doAction(const OIActionRef& pAction)
     {
-        for (auto pAction : m_history)
-        {
-            delete pAction;
-        }
-    }
-
-    void ActionManager::doAction(IAction* pAction)
-    {
-        for (auto it = m_position; it < m_history.end(); ++it)
-        {
-            delete *it;
-        }
         m_history.resize(m_position - m_history.begin());
         m_history.push_back(pAction);
         if (m_maxHistory)
         {
             while (static_cast<decltype(m_maxHistory)>(m_history.size()) > m_maxHistory)
             {
-                auto pFront = m_history.front();
-                delete pFront;
                 m_history.erase(m_history.begin());
             }
         }
         m_position = m_history.end();
         pAction->redo();
-
     }
-    
+
+    void ActionManager::doAction(const std::string& name,
+                                 const Action::ActionCallBack& onRedo,
+                                 const Action::ActionCallBack& onUndo,
+                                 const Action::ActionCallBack& onInit,
+                                 const Action::ActionCallBack& onDestroy)
+    {
+        doAction(OMake<Action>(name, onRedo, onUndo, onInit, onDestroy));
+    }
+
     bool ActionManager::canRedo() const
     {
         return (m_position != m_history.end());
@@ -133,13 +121,13 @@ namespace onut
         return (m_position != m_history.begin());
     }
 
-    IAction* ActionManager::getRedo() const
+    OIActionRef ActionManager::getRedo() const
     {
         if (!canRedo()) return nullptr;
         return *m_position;
     }
 
-    IAction* ActionManager::getUndo() const
+    OIActionRef ActionManager::getUndo() const
     {
         if (!canUndo()) return nullptr;
         return *(m_position - 1);
@@ -165,10 +153,6 @@ namespace onut
 
     void ActionManager::clear()
     {
-        for (auto pAction : m_history)
-        {
-            delete pAction;
-        }
         m_history.clear();
         m_position = m_history.begin();
     }

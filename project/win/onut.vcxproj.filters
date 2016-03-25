@@ -101,9 +101,6 @@
     <ClInclude Include="..\..\include\onut\VideoPlayer.h">
       <Filter>utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\ActionManager.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Particle.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -111,9 +108,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\ParticleSystemManager.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h">
@@ -290,14 +284,14 @@
     <ClInclude Include="..\..\include\onut\Files.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\RTS.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\ActionManager.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\ActionManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\RTS.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
       <Filter>thirdparties\zlib</Filter>
     </ClCompile>
@@ -532,6 +526,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Files.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\RTS.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ActionManager.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -65,5 +65,7 @@ namespace onut
 #define ORandFloat onut::randf
 #define ORandArray onut::randa
 #define ORandVector onut::randv
+#define ORandVector2 onut::rand2f
+#define ORandVector3 onut::rand3f
+#define ORandVector4 onut::rand4f
 #define ORand onut::randt
-#define OShuffle onut::shuffle

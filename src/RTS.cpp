@@ -1,7 +1,7 @@
 #include "onut/Dispatcher.h"
+#include "onut/RTS.h"
 #include "onut/Strings.h"
 
-#include "RTS.h"
 #include <algorithm>
 #include <thread>
 

@@ -1,8 +1,8 @@
-#include "ActionManager.h"
 #include "DocumentView.h"
 #include "viewStyles.h"
 #include "styles.h"
 
+#include "onut/ActionManager.h"
 #include "onut/Input.h"
 #include "onut/Files.h"
 #include "onut/Settings.h"
@@ -12,7 +12,6 @@
 
 extern OUIControlRef g_pUIScreen;
 extern OUIContextRef g_pUIContext;
-extern onut::ActionManager g_actionManager;
 
 extern OUICheckBoxRef g_pInspector_UIControl_chkEnabled;
 extern OUICheckBoxRef g_pInspector_UIControl_chkVisible;
@@ -249,7 +248,7 @@ void DocumentView::concludeTransform(const OUIControlRef& pControl, const Rect& 
         worldRect.z != previousRect.z ||
         worldRect.w != previousRect.w)
     {
-        g_actionManager.doAction(new onut::Action("Transform",
+        oActionManager->doAction(OMake<onut::Action>("Transform",
             [=]{
             pControl->setWorldRect(worldRect, pUIContext);
             updateSelectionWithRect(worldRect);
@@ -361,7 +360,7 @@ void DocumentView::deleteSelection()
     auto pParent = pSelected->getParent();
     auto pControl = pSelected;
 
-    g_actionManager.doAction(new onut::Action("Delete",
+    oActionManager->doAction(OMake<onut::Action>("Delete",
         [=]{
         pParent->remove(pControl);
         controlDeleted(pControl);

@@ -1,7 +1,7 @@
-#include "ActionManager.h"
 #include "DocumentView.h"
 #include "events.h"
 
+#include "onut/ActionManager.h"
 #include "onut/Files.h"
 #include "onut/Input.h"
 #include "onut/UIButton.h"
@@ -16,7 +16,6 @@
 extern DocumentView* g_pDocument;
 extern OUIContextRef g_pUIContext;
 extern OUIControlRef g_pUIScreen;
-extern onut::ActionManager g_actionManager;
 
 OUICheckBoxRef    g_pInspector_UIControl_chkEnabled;
 OUICheckBoxRef    g_pInspector_UIControl_chkVisible;
@@ -104,7 +103,7 @@ std::string getControlName(const OUIControlRef& pControl)
 void createControlAction(const OUIControlRef& pControl, OUIControlRef pParent)
 {
     auto pSelected = g_pDocument->pSelected;
-    g_actionManager.doAction(new onut::Action("Create " + getControlName(pControl),
+    oActionManager->doAction(OMake<onut::Action>("Create " + getControlName(pControl),
         [=]{
         pParent->add(pControl);
         g_pDocument->controlCreated(pControl, pParent);
@@ -210,7 +209,7 @@ void onSelect(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
         ctrlName = "Select " + getControlName(pControl);
     }
 
-    g_actionManager.doAction(new onut::Action(ctrlName,
+    oActionManager->doAction(OMake<onut::Action>(ctrlName,
         [=]{
         g_pDocument->setSelected(pPickedControl);
     },
@@ -242,7 +241,7 @@ void onSceneGraphSelectionChanged(const OUITreeViewRef& pControl, const onut::UI
     if (evt.selectedItems.empty())
     {
         auto pPreviousSelected = g_pDocument->pSelected;
-        g_actionManager.doAction(new onut::Action("Unselect",
+        oActionManager->doAction(OMake<onut::Action>("Unselect",
             [=]{
             g_pDocument->setSelected(nullptr, true);
         },
@@ -256,7 +255,7 @@ void onSceneGraphSelectionChanged(const OUITreeViewRef& pControl, const onut::UI
         auto pSelected = OStaticCast<OUIControl>(pViewItem->pSharedUserData);
 
         auto pPreviousSelected = g_pDocument->pSelected;
-        g_actionManager.doAction(new onut::Action("Select " + getControlName(pSelected),
+        oActionManager->doAction(OMake<onut::Action>("Select " + getControlName(pSelected),
             [=]{
             g_pDocument->setSelected(pSelected, true);
         },
@@ -274,7 +273,7 @@ void onUIControlNameChanged(const OUITextBoxRef& pTextBox, const onut::UITextBox
     auto pControl = g_pDocument->pSelected;
     auto previousText = pControl->name;
 
-    g_actionManager.doAction(new onut::Action("Rename " + getControlName(pControl) + " to " + text,
+    oActionManager->doAction(OMake<onut::Action>("Rename " + getControlName(pControl) + " to " + text,
         [=]{
         pControl->name = text;
         auto pViewItem = OStaticCast<OUITreeViewItem>(pControl->pSharedUserData);
@@ -299,7 +298,7 @@ void doRectChange(const std::string& actionName, const OUIControlRef& pControl, 
 {
     if (!pControl) return;
     auto previousRect = pControl->rect;
-    g_actionManager.doAction(new onut::Action(actionName, 
+    oActionManager->doAction(OMake<onut::Action>(actionName, 
         [=]{
         pControl->rect = rect;
         g_pDocument->updateSelectedGizmoRect();
@@ -346,7 +345,7 @@ void onUIControlAnchorXChanged(const OUITextBoxRef& pTextBox, const onut::UIText
     {
         newAnchor.x /= 100.f;
     }
-    g_actionManager.doAction(new onut::Action("Edit X anchor",
+    oActionManager->doAction(OMake<onut::Action>("Edit X anchor",
         [=]{
         pSelected->anchor = newAnchor;
         g_pDocument->updateSelectedGizmoRect();
@@ -370,7 +369,7 @@ void onUIControlAnchorYChanged(const OUITextBoxRef& pTextBox, const onut::UIText
     {
         newAnchor.y /= 100.f;
     }
-    g_actionManager.doAction(new onut::Action("Edit Y anchor",
+    oActionManager->doAction(OMake<onut::Action>("Edit Y anchor",
         [=]{
         pSelected->anchor = newAnchor;
         g_pDocument->updateSelectedGizmoRect();
@@ -413,7 +412,7 @@ void onUIControlStyleChanged(const OUITextBoxRef& pTextBox, const onut::UITextBo
     auto pSelected = g_pDocument->pSelected;
     auto prevStyle = pSelected->getStyleName();
     auto newStyle = pTextBox->textComponent.text;
-    g_actionManager.doAction(new onut::Action("Edit Style",
+    oActionManager->doAction(OMake<onut::Action>("Edit Style",
         [=]{
         pSelected->setStyle(newStyle.c_str());
         g_pDocument->updateInspector();
@@ -429,7 +428,7 @@ void onUIControlEnableChanged(const OUICheckBoxRef& pCheckBox, const onut::UIChe
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action("Toggle Enable",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Enable",
         [=]{
         pSelected->isEnabled = bValue;
         g_pDocument->updateInspector();
@@ -445,7 +444,7 @@ void onUIControlVisibleChanged(const OUICheckBoxRef& pCheckBox, const onut::UICh
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action("Toggle Visible", 
+    oActionManager->doAction(OMake<onut::Action>("Toggle Visible", 
         [=]{
         pSelected->isVisible = bValue;
         g_pDocument->updateInspector();
@@ -461,7 +460,7 @@ void onUIControlClickThroughChanged(const OUICheckBoxRef& pCheckBox, const onut:
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action("Toggle ClickThrough", 
+    oActionManager->doAction(OMake<onut::Action>("Toggle ClickThrough", 
         [=]{
         pSelected->isClickThrough = bValue;
         g_pDocument->updateInspector();
@@ -477,7 +476,7 @@ void onUIControlClipChildrenChanged(const OUICheckBoxRef& pCheckBox, const onut:
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     bool bValue = pCheckBox->getIsChecked();
-    g_actionManager.doAction(new onut::Action("Toggle ClipChildren", 
+    oActionManager->doAction(OMake<onut::Action>("Toggle ClipChildren", 
         [=]{
         pSelected->clipChildren = bValue;
         g_pDocument->updateInspector();
@@ -506,7 +505,7 @@ void onUIControlXAnchorPercentChanged(const OUICheckBoxRef& pCheckBox, const onu
         newAnchor.x = pSelected->getAnchorInPixel().x;
         newAnchorType = OUIControl::AnchorType::Pixel;
     }
-    g_actionManager.doAction(new onut::Action("Toggle X anchor percent",
+    oActionManager->doAction(OMake<onut::Action>("Toggle X anchor percent",
         [=]{
         pSelected->anchor = newAnchor;
         pSelected->xAnchorType = newAnchorType;
@@ -537,7 +536,7 @@ void onUIControlYAnchorPercentChanged(const OUICheckBoxRef& pCheckBox, const onu
         newAnchor.y = pSelected->getAnchorInPixel().y;
         newAnchorType = OUIControl::AnchorType::Pixel;
     }
-    g_actionManager.doAction(new onut::Action("Toggle Y anchor percent",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Y anchor percent",
         [=]{
         pSelected->anchor = newAnchor;
         pSelected->yAnchorType = newAnchorType;
@@ -571,7 +570,7 @@ void onUIControlWidthPercentChanged(const OUICheckBoxRef& pCheckBox, const onut:
         newDimType = OUIControl::DimType::Absolute;
         newRect.z = newRect.z * parentRect.z;
     }
-    g_actionManager.doAction(new onut::Action("Toggle Width percent",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Width percent",
         [=]{
         pSelected->widthType = (newDimType);
         pSelected->rect = (newRect);
@@ -607,7 +606,7 @@ void onUIControlHeightPercentChanged(const OUICheckBoxRef& pCheckBox, const onut
         newDimType = OUIControl::DimType::Absolute;
         newRect.w = newRect.w * parentRect.w;
     }
-    g_actionManager.doAction(new onut::Action("Toggle Height percent",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Height percent",
         [=]{
         pSelected->heightType = (newDimType);
         pSelected->rect = (newRect);
@@ -643,7 +642,7 @@ void onUIControlWidthRelativeChanged(const OUICheckBoxRef& pCheckBox, const onut
         newDimType = OUIControl::DimType::Absolute;
         newRect.z = parentRect.z + newRect.z;
     }
-    g_actionManager.doAction(new onut::Action("Toggle Width relative",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Width relative",
         [=]{
         pSelected->widthType = (newDimType);
         pSelected->rect = (newRect);
@@ -679,7 +678,7 @@ void onUIControlHeightRelativeChanged(const OUICheckBoxRef& pCheckBox, const onu
         newDimType = OUIControl::DimType::Absolute;
         newRect.w = parentRect.w + newRect.w;
     }
-    g_actionManager.doAction(new onut::Action("Toggle Height relative",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Height relative",
         [=]{
         pSelected->heightType = (newDimType);
         pSelected->rect = (newRect);
@@ -714,7 +713,7 @@ void onUIControlXPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UIC
         auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.x = newRect.x * parentRect.z;
     }
-    g_actionManager.doAction(new onut::Action("Toggle X percent",
+    oActionManager->doAction(OMake<onut::Action>("Toggle X percent",
         [=]{
         pSelected->xType = (newType);
         pSelected->rect = (newRect);
@@ -749,7 +748,7 @@ void onUIControlYPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UIC
         auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.y = newRect.y * parentRect.w;
     }
-    g_actionManager.doAction(new onut::Action("Toggle Y percent",
+    oActionManager->doAction(OMake<onut::Action>("Toggle Y percent",
         [=]{
         pSelected->yType = (newType);
         pSelected->rect = (newRect);
@@ -807,7 +806,7 @@ void onAnchorClicked(const OUIControlRef& pControl, const onut::UIMouseEvent& ev
     }
     auto newAnchor = pSelected->anchor;
 
-    g_actionManager.doAction(new onut::Action("Change Anchor",
+    oActionManager->doAction(OMake<onut::Action>("Change Anchor",
         [=]{
         pSelected->anchor = (newAnchor);
         g_pDocument->updateSelectedGizmoRect();
@@ -880,7 +879,7 @@ void onAlignChkChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent
     auto newAnchor = pSelected->anchor;
     auto newAlign = pSelected->align;
 
-    g_actionManager.doAction(new onut::Action("Change Align",
+    oActionManager->doAction(OMake<onut::Action>("Change Align",
         [=]{
         pSelected->rect = (newRect);
         pSelected->anchor = (newAnchor);
