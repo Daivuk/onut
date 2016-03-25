@@ -1,9 +1,9 @@
 #include "onut/ContentManager.h"
 #include "onut/Font.h"
 #include "onut/SpriteBatch.h"
+#include "onut/Texture.h"
 
 #include "Utils.h"
-#include "onut_old.h"
 
 #include <sstream>
 #include <fstream>

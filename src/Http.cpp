@@ -4,7 +4,6 @@
 #include "onut/Texture.h"
 
 #include "Utils.h"
-#include "onut_old.h"
 
 #if defined(WIN32)
 #include <atlbase.h>

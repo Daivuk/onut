@@ -61,7 +61,6 @@
     <ClInclude Include="..\..\include\onut\VertexBuffer.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
     <ClInclude Include="..\..\include\onut\Window.h" />
-    <ClInclude Include="..\..\include\onut_old.h" />
     <ClInclude Include="..\..\include\onut\ContentManager.h" />
     <ClInclude Include="..\..\include\onut\ForwardDeclaration.h" />
     <ClInclude Include="..\..\include\onut\Maths.h" />

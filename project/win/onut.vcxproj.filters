@@ -107,9 +107,6 @@
     <ClInclude Include="..\..\include\DefineHelpers.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut_old.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Particle.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -298,9 +295,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\onut.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ActionManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -538,6 +532,7 @@
     <ClCompile Include="..\..\src\UIJson.cpp">
       <Filter>services</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\onut.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

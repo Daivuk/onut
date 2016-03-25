@@ -6,11 +6,14 @@
 #include "onut/Dispatcher.h"
 #include "onut/Font.h"
 #include "onut/Log.h"
+#include "onut/onut.h"
+#include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 #include "onut/Timing.h"
 
-#include "onut_old.h"
+#include "DefineHelpers.h"
 
 void init();
 void update();

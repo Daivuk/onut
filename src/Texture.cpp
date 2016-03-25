@@ -1,7 +1,6 @@
 #include "onut/ContentManager.h"
 #include "onut/Texture.h"
 
-#include "onut_old.h"
 #include "RendererD3D11.h"
 #include "Utils.h"
 

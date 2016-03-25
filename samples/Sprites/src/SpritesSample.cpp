@@ -5,10 +5,13 @@
 #include "onut/Anim.h"
 #include "onut/Input.h"
 #include "onut/Maths.h"
+#include "onut/onut.h"
+#include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 
-#include "onut_old.h"
+#include "DefineHelpers.h"
 
 void init();
 void update();

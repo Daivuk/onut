@@ -1,7 +1,6 @@
 #include "onut/Input.h"
 #include "onut/Window.h"
 
-#include "onut_old.h"
 #include "InputDevice.h"
 
 #if defined(WIN32)

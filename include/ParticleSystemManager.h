@@ -284,3 +284,20 @@ namespace onut
         Vector3 m_camUp;
     };
 }
+
+// For quick stuff, we have shortcuts outside of the namespace
+extern onut::ParticleSystemManager<>*   OParticles;
+
+/*
+inline void OLoadPFX(const char* pName)
+{
+OContentManager->addResource<OPfx>(pName);
+}
+*/
+inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ) -> decltype(OParticles->emit(nullptr, position, dir))
+{
+    auto pPfx = OGetParticleSystem(pName);
+    return OParticles->emit(pPfx, position, dir);
+}
+
+using OEmitterInstance = onut::ParticleSystemManager<>::EmitterInstance;

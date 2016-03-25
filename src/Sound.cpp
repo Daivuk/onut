@@ -2,7 +2,6 @@
 #include "onut/Sound.h"
 #include "onut/Random.h"
 
-#include "onut_old.h"
 #include "Utils.h"
 
 #include "audio/Audio.h"

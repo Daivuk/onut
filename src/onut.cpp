@@ -18,7 +18,8 @@
 #include "onut/Window.h"
 
 #include "audio/Audio.h"
-#include "onut_old.h"
+
+#include "ParticleSystemManager.h"
 
 #include <cassert>
 #include <mutex>
@@ -242,5 +243,10 @@ namespace onut
         }
 
         cleanup();
+    }
+
+    void quit()
+    {
+        PostQuitMessage(0);
     }
 }

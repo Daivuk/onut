@@ -4,9 +4,12 @@
 // Oak Nut include
 #include "onut/Crypto.h"
 #include "onut/Font.h"
+#include "onut/onut.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
+#include "onut/Renderer.h"
 
-#include "onut_old.h"
+#include "DefineHelpers.h"
 
 void init();
 void render();

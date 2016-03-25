@@ -5,7 +5,6 @@
 #include "onut/VertexBuffer.h"
 #include "onut/Window.h"
 
-#include "onut_old.h"
 #include "RendererD3D11.h"
 #include "ShaderD3D11.h"
 
