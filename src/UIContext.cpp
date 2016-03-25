@@ -1,3 +1,4 @@
+#include "onut/ContentManager.h"
 #include "onut/Font.h"
 #include "onut/Renderer.h"
 #include "onut/SpriteBatch.h"
@@ -22,6 +23,7 @@ namespace onut
     UIContext::UIContext(const Vector2& screenSize) :
         m_screenSize(screenSize)
     {
+        pContentManager = oContentManager;
         m_pDownControls[0] = nullptr;
         m_pDownControls[1] = nullptr;
         m_pDownControls[2] = nullptr;
@@ -406,22 +408,22 @@ namespace onut
         switch (pControl->getState(OThis))
         {
             case UIControl::State::Normal:
-                pTexture = OGetTexture(filename.c_str());
+                pTexture = pContentManager->getResourceAs<OTexture>(filename.c_str());
                 break;
             case UIControl::State::Disabled:
                 stateFilename.insert(filename.size() - 4, "_disabled");
-                pTexture = OGetTexture(stateFilename.c_str());
-                if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                pTexture = pContentManager->getResourceAs<OTexture>(stateFilename.c_str());
+                if (!pTexture) pTexture = pContentManager->getResourceAs<OTexture>(filename.c_str());
                 break;
             case UIControl::State::Hover:
                 stateFilename.insert(filename.size() - 4, "_hover");
-                pTexture = OGetTexture(stateFilename.c_str());
-                if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                pTexture = pContentManager->getResourceAs<OTexture>(stateFilename.c_str());
+                if (!pTexture) pTexture = pContentManager->getResourceAs<OTexture>(filename.c_str());
                 break;
             case UIControl::State::Down:
                 stateFilename.insert(filename.size() - 4, "_down");
-                pTexture = OGetTexture(stateFilename.c_str());
-                if (!pTexture) pTexture = OGetTexture(filename.c_str());
+                pTexture = pContentManager->getResourceAs<OTexture>(stateFilename.c_str());
+                if (!pTexture) pTexture = pContentManager->getResourceAs<OTexture>(filename.c_str());
                 break;
         }
         return pTexture;
@@ -462,7 +464,7 @@ namespace onut
         if (textComponent.text.empty()) return;
         auto align = (textComponent.font.align);
         auto oRect = (rect);
-        auto pFont = OGetFont(textComponent.font.typeFace.c_str());
+        auto pFont = pContentManager->getResourceAs<OFont>(textComponent.font.typeFace.c_str());
         auto oColor = (textComponent.font.color);
         if (pControl->getState(OThis) == UIControl::State::Disabled)
         {

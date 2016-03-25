@@ -1,55 +1,57 @@
 #include "ActionManager.h"
 #include "DocumentView.h"
 #include "viewStyles.h"
+#include "styles.h"
 
 #include "onut/Input.h"
 #include "onut/Settings.h"
+#include "onut/UIButton.h"
 #include "onut/Window.h"
 
 #include "Utils.h"
 
-extern onut::UIControl*     g_pUIScreen;
-extern onut::UIContext*     g_pUIContext;
-extern onut::ActionManager  g_actionManager;
+extern OUIControlRef g_pUIScreen;
+extern OUIContextRef g_pUIContext;
+extern onut::ActionManager g_actionManager;
 
-extern onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkClipChildren;
-extern onut::UITextBox*     g_pInspector_UIControl_txtName;
-extern onut::UITextBox*     g_pInspector_UIControl_txtStyle;
-extern onut::UITextBox*     g_pInspector_UIControl_txtX;
-extern onut::UITextBox*     g_pInspector_UIControl_txtY;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkYPercent;
-extern onut::UITextBox*     g_pInspector_UIControl_txtWidth;
-extern onut::UITextBox*     g_pInspector_UIControl_txtHeight;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkWidthPercent;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkHeightPercent;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkWidthRelative;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkHeightRelative;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkTOP_LEFT;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkTOP;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkTOP_RIGHT;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkLEFT;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkCENTER;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkRIGHT;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_LEFT;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_RIGHT;
-extern onut::UITextBox*     g_pInspector_UIControl_txtAnchorX;
-extern onut::UITextBox*     g_pInspector_UIControl_txtAnchorY;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkXAnchorPercent;
-extern onut::UICheckBox*    g_pInspector_UIControl_chkYAnchorPercent;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_LEFT;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_RIGHT;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorLEFT;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorCENTER;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorRIGHT;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM;
-extern onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
+extern OUICheckBoxRef g_pInspector_UIControl_chkEnabled;
+extern OUICheckBoxRef g_pInspector_UIControl_chkVisible;
+extern OUICheckBoxRef g_pInspector_UIControl_chkClickThrough;
+extern OUICheckBoxRef g_pInspector_UIControl_chkClipChildren;
+extern OUITextBoxRef g_pInspector_UIControl_txtName;
+extern OUITextBoxRef g_pInspector_UIControl_txtStyle;
+extern OUITextBoxRef g_pInspector_UIControl_txtX;
+extern OUITextBoxRef g_pInspector_UIControl_txtY;
+extern OUICheckBoxRef g_pInspector_UIControl_chkXPercent;
+extern OUICheckBoxRef g_pInspector_UIControl_chkYPercent;
+extern OUITextBoxRef g_pInspector_UIControl_txtWidth;
+extern OUITextBoxRef g_pInspector_UIControl_txtHeight;
+extern OUICheckBoxRef g_pInspector_UIControl_chkWidthPercent;
+extern OUICheckBoxRef g_pInspector_UIControl_chkHeightPercent;
+extern OUICheckBoxRef g_pInspector_UIControl_chkWidthRelative;
+extern OUICheckBoxRef g_pInspector_UIControl_chkHeightRelative;
+extern OUICheckBoxRef g_pInspector_UIControl_chkTOP_LEFT;
+extern OUICheckBoxRef g_pInspector_UIControl_chkTOP;
+extern OUICheckBoxRef g_pInspector_UIControl_chkTOP_RIGHT;
+extern OUICheckBoxRef g_pInspector_UIControl_chkLEFT;
+extern OUICheckBoxRef g_pInspector_UIControl_chkCENTER;
+extern OUICheckBoxRef g_pInspector_UIControl_chkRIGHT;
+extern OUICheckBoxRef g_pInspector_UIControl_chkBOTTOM_LEFT;
+extern OUICheckBoxRef g_pInspector_UIControl_chkBOTTOM;
+extern OUICheckBoxRef g_pInspector_UIControl_chkBOTTOM_RIGHT;
+extern OUITextBoxRef g_pInspector_UIControl_txtAnchorX;
+extern OUITextBoxRef g_pInspector_UIControl_txtAnchorY;
+extern OUICheckBoxRef g_pInspector_UIControl_chkXAnchorPercent;
+extern OUICheckBoxRef g_pInspector_UIControl_chkYAnchorPercent;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorTOP_LEFT;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorTOP;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorTOP_RIGHT;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorLEFT;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorCENTER;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorRIGHT;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorBOTTOM;
+extern OUIButtonRef g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
 
 static HCURSOR curARROW = nullptr;
 static HCURSOR curSIZENWSE = nullptr;
@@ -58,7 +60,6 @@ static HCURSOR curSIZEWE = nullptr;
 static HCURSOR curSIZENS = nullptr;
 static HCURSOR curSIZEALL = nullptr;
 
-extern void createUIStyles(onut::UIContext* pContext);
 static const Color g_panelBGColor = OColorHex(2d2d30);
 static const Color g_panelTitleBGColor = OColorHex(3f3f46);
 
@@ -82,19 +83,20 @@ DocumentView::DocumentView(const std::string& filename)
     if (!curSIZENS) curSIZENS = LoadCursor(nullptr, IDC_SIZENS);
     if (!curSIZEALL) curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
 
-    pUIContextUserStyle = new onut::UIContext(Vector2{800, 600});
-    pUIContextEditorStyle = new onut::UIContext(Vector2{800, 600});
+    pUIContextUserStyle = onut::UIContext::create(Vector2{800, 600});
+    pUIContextEditorStyle = onut::UIContext::create(Vector2{800, 600});
+    pUIContextUserStyle->pContentManager = pContentManager;
     createViewUIStyles(pUIContextUserStyle);
     createUIStyles(pUIContextEditorStyle);
 
-    pUIContextEditorStyle->addStyle<onut::UIPanel>("", [](const onut::UIPanel* pPanel, const Rect& rect)
+    pUIContextEditorStyle->addStyle<onut::UIPanel>("", [](const OUIPanelRef pPanel, const Rect& rect)
     {
         oSpriteBatch->drawRect(nullptr, (rect), g_panelTitleBGColor);
         oSpriteBatch->drawRect(nullptr, (rect).Grow(-1), g_panelBGColor);
     });
 
     // We don't render controls
-    //pUIContextEditorStyle->addStyle<onut::UIControl>("", [](const onut::UIControl* pPanel, const Rect& rect)
+    //pUIContextEditorStyle->addStyle<onut::UIControl>("", [](const OUIControlRef pPanel, const Rect& rect)
     //{
     //    oSpriteBatch->drawRect(nullptr, {rect.x, rect.y, rect.z, 1}, g_panelTitleBGColor);
     //    oSpriteBatch->drawRect(nullptr, {rect.x, rect.y, 1, rect.w}, g_panelTitleBGColor);
@@ -106,16 +108,15 @@ DocumentView::DocumentView(const std::string& filename)
     
     if (m_filename.empty())
     {
-        pUIScreen = new onut::UIControl(/*"../../assets/ui/editor.json"*/);
+        pUIScreen = onut::UIControl::create(/*"../../assets/ui/editor.json"*/);
     }
     else
     {
-        pUIScreen = new onut::UIControl(m_filename.c_str());
+        pUIScreen = onut::UIControl::createFromFile(m_filename.c_str(), pContentManager);
     }
-    pUIScreen->retain();
     pUIScreen->name = "Root";
-    pUIScreen->widthType = onut::eUIDimType::DIM_RELATIVE;
-    pUIScreen->heightType = onut::eUIDimType::DIM_RELATIVE;
+    pUIScreen->widthType = OUIControl::DimType::Relative;
+    pUIScreen->heightType = OUIControl::DimType::Relative;
 
     m_guides[0] = g_pUIScreen->getChild("hGuide");
     m_guides[1] = g_pUIScreen->getChild("vGuide");
@@ -133,22 +134,22 @@ DocumentView::DocumentView(const std::string& filename)
     m_gizmoHandles[7] = m_pGizmo->getChild("bottomRightHandle");
     m_pGizmo->onMouseDown = std::bind(&DocumentView::onGizmoStart, this, std::placeholders::_1, std::placeholders::_2);
     m_pGizmo->onMouseUp = std::bind(&DocumentView::onGizmoEnd, this, std::placeholders::_1, std::placeholders::_2);
-    m_pGizmo->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEALL); };
-    m_pGizmo->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    m_pGizmo->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEALL); };
+    m_pGizmo->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     for (auto& pGizmoHandle : m_gizmoHandles)
     {
         pGizmoHandle->onMouseDown = std::bind(&DocumentView::onGizmoHandleStart, this, std::placeholders::_1, std::placeholders::_2);
         pGizmoHandle->onMouseUp = std::bind(&DocumentView::onGizmoHandleEnd, this, std::placeholders::_1, std::placeholders::_2);
-        pGizmoHandle->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+        pGizmoHandle->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     }
-    m_gizmoHandles[0]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENWSE); };
-    m_gizmoHandles[1]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENS); };
-    m_gizmoHandles[2]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENESW); };
-    m_gizmoHandles[3]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEWE); };
-    m_gizmoHandles[4]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEWE); };
-    m_gizmoHandles[5]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENESW); };
-    m_gizmoHandles[6]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENS); };
-    m_gizmoHandles[7]->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENWSE); };
+    m_gizmoHandles[0]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENWSE); };
+    m_gizmoHandles[1]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENS); };
+    m_gizmoHandles[2]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENESW); };
+    m_gizmoHandles[3]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEWE); };
+    m_gizmoHandles[4]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEWE); };
+    m_gizmoHandles[5]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENESW); };
+    m_gizmoHandles[6]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENS); };
+    m_gizmoHandles[7]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENWSE); };
 
     // Add some dummy nodes in the scene graph for show
     m_pSceneGraph = g_pUIScreen->getChild<onut::UITreeView>("sceneGraph");
@@ -159,7 +160,7 @@ DocumentView::DocumentView(const std::string& filename)
     m_pChkSnapMargins = g_pUIScreen->getChild<onut::UICheckBox>("chkSnapMargins");
     m_pTxtSnapMargins = g_pUIScreen->getChild<onut::UITextBox>("txtSnapMargins");
     m_autoPadding = m_pTxtSnapMargins->getFloat();
-    m_pTxtSnapMargins->onTextChanged = [this](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    m_pTxtSnapMargins->onTextChanged = [this](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
     {
         m_autoPadding = m_pTxtSnapMargins->getFloat();
     };
@@ -175,20 +176,16 @@ DocumentView::DocumentView(const std::string& filename)
 
 DocumentView::~DocumentView()
 {
-    if (m_pClipBoard) m_pClipBoard->release();
-    pUIScreen->release();
-    delete pUIContextUserStyle;
-    delete pUIContextEditorStyle;
 }
 
-void DocumentView::controlCreated(onut::UIControl* pControl, onut::UIControl* pParent)
+void DocumentView::controlCreated(const OUIControlRef& pControl, const OUIControlRef& pParent)
 {
     repopulateTreeView(pControl);
 }
 
-void DocumentView::controlDeleted(onut::UIControl* pControl)
+void DocumentView::controlDeleted(const OUIControlRef& pControl)
 {
-    auto pItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
+    auto pItem = OStaticCast<OUITreeViewItem>(pControl->pSharedUserData);
     if (pItem->getParent())
     {
         pItem->getParent()->removeItem(pItem);
@@ -204,11 +201,11 @@ void DocumentView::updateSelectedGizmoRect()
     m_pGizmo->isVisible = (pSelected != nullptr);
     if (pSelected)
     {
-        m_pGizmo->rect = (pSelected->getWorldRect(*pUIContext));
+        m_pGizmo->rect = (pSelected->getWorldRect(pUIContext));
     }
 }
 
-void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneGraph)
+void DocumentView::setSelected(const OUIControlRef& in_pSelected, bool bUpdateSceneGraph)
 { 
     if (bUpdateSceneGraph)
     {
@@ -227,26 +224,26 @@ void DocumentView::setSelected(onut::UIControl* in_pSelected, bool bUpdateSceneG
     {
         if (bUpdateSceneGraph)
         {
-            auto pItem = static_cast<onut::UITreeViewItem*>(pSelected->pUserData);
+            auto pItem = OStaticCast<OUITreeViewItem>(pSelected->pSharedUserData);
             m_pSceneGraph->addSelectedItem(pItem);
         }
     }
     updateInspector();
 }
 
-void DocumentView::onGizmoHandleStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+void DocumentView::onGizmoHandleStart(const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
 {
     m_state = eDocumentState::MOVING_HANDLE;
     m_bStartMoving = false;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_pCurrentHandle = pControl;
     m_controlRectOnDown = pSelected->rect;
-    m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
+    m_controlWorldRectOnDown = pSelected->getWorldRect(pUIContext);
 }
 
-void DocumentView::concludeTransform(onut::UIControl* pControl, const Rect& previousRect)
+void DocumentView::concludeTransform(const OUIControlRef& pControl, const Rect& previousRect)
 {
-    auto worldRect = pControl->getWorldRect(*pUIContext);
+    auto worldRect = pControl->getWorldRect(pUIContext);
     if (worldRect.x != previousRect.x ||
         worldRect.y != previousRect.y ||
         worldRect.z != previousRect.z ||
@@ -254,26 +251,19 @@ void DocumentView::concludeTransform(onut::UIControl* pControl, const Rect& prev
     {
         g_actionManager.doAction(new onut::Action("Transform",
             [=]{
-            pControl->setWorldRect(worldRect, *pUIContext);
+            pControl->setWorldRect(worldRect, pUIContext);
             updateSelectionWithRect(worldRect);
             updateInspector();
         },
             [=]{
-            pControl->setWorldRect(previousRect, *pUIContext);
+            pControl->setWorldRect(previousRect, pUIContext);
             updateSelectionWithRect(previousRect);
             updateInspector();
-        },
-            [=]{
-            pControl->retain();
-        },
-            [=]{
-            pControl->release();
-        }
-        ));
+        }));
     }
 }
 
-void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+void DocumentView::onGizmoHandleEnd(const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
 {
     concludeTransform(pSelected, m_controlWorldRectOnDown);
 
@@ -283,7 +273,7 @@ void DocumentView::onGizmoHandleEnd(onut::UIControl* pControl, const onut::UIMou
     m_state = eDocumentState::IDLE;
 }
 
-void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+void DocumentView::onGizmoStart(const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
 {
     static HCURSOR curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
     oWindow->setCursor(curSIZEALL);
@@ -291,10 +281,10 @@ void DocumentView::onGizmoStart(onut::UIControl* pControl, const onut::UIMouseEv
     m_bStartMoving = false;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};
     m_controlRectOnDown = pSelected->rect;
-    m_controlWorldRectOnDown = pSelected->getWorldRect(*pUIContext);
+    m_controlWorldRectOnDown = pSelected->getWorldRect(pUIContext);
 }
 
-void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+void DocumentView::onGizmoEnd(const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
 {
     concludeTransform(pSelected, m_controlWorldRectOnDown);
 
@@ -306,13 +296,11 @@ void DocumentView::onGizmoEnd(onut::UIControl* pControl, const onut::UIMouseEven
 
 void DocumentView::cut()
 {
-    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == OUIControl::Type::TextBox))
     {
         if (pSelected)
         {
-            if (m_pClipBoard) m_pClipBoard->release();
             m_pClipBoard = pSelected;
-            if (m_pClipBoard) m_pClipBoard->retain();
             deleteSelection();
         }
     }
@@ -320,23 +308,21 @@ void DocumentView::cut()
 
 void DocumentView::copy()
 {
-    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == OUIControl::Type::TextBox))
     {
         if (pSelected)
         {
-            if (m_pClipBoard) m_pClipBoard->release();
             m_pClipBoard = pSelected->copy();
-            if (m_pClipBoard) m_pClipBoard->retain();
         }
     }
 }
 
-extern void createControlAction(onut::UIControl* pControl, onut::UIControl* pParent);
-extern onut::UIControl* getCreateParent();
+extern void createControlAction(const OUIControlRef& pControl, OUIControlRef pParent);
+extern OUIControlRef getCreateParent();
 
 void DocumentView::paste()
 {
-    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX))
+    if (!(g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == OUIControl::Type::TextBox))
     {
         if (m_pClipBoard)
         {
@@ -370,7 +356,7 @@ void DocumentView::deleteSelection()
     if (!pSelected) return;
     if (!pSelected->getParent()) return; // huh?
     if (m_state != eDocumentState::IDLE) return;
-    if ((g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == onut::eUIType::UI_TEXTBOX)) return;
+    if ((g_pUIContext->getFocusControl() && g_pUIContext->getFocusControl()->getType() == OUIControl::Type::TextBox)) return;
 
     auto pParent = pSelected->getParent();
     auto pControl = pSelected;
@@ -386,27 +372,19 @@ void DocumentView::deleteSelection()
         pParent->add(pControl);
         controlCreated(pControl, pParent);
         setSelected(pControl);
-    },
-        [=]{
-        pParent->retain();
-        pControl->retain();
-    },
-        [=]{
-        pParent->release();
-        pControl->release();
     }));
 }
 
 void DocumentView::updateSelectionWithRect(const Rect& rect)
 {
     if (!pSelected) return;
-    pSelected->setWorldRect(rect, *pUIContext);
+    pSelected->setWorldRect(rect, pUIContext);
     updateGizmoRect();
 }
 
 void DocumentView::updateGizmoRect()
 {
-    auto rct = pSelected->getWorldRect(*pUIContext);
+    auto rct = pSelected->getWorldRect(pUIContext);
     rct.x = std::roundf(rct.x);
     rct.y = std::roundf(rct.y);
     m_pGizmo->rect = (rct);
@@ -565,7 +543,7 @@ void DocumentView::snapX(float x, float &ret, const Rect& rect, float &closest, 
     }
 }
 
-float DocumentView::snapX(onut::UIControl* pControl, float x)
+float DocumentView::snapX(const OUIControlRef& pControl, float x)
 {
     if (!m_pChkSnap->getIsChecked())
     {
@@ -579,9 +557,9 @@ float DocumentView::snapX(onut::UIControl* pControl, float x)
     for (auto pChild : pParent->getChildren())
     {
         if (pChild == pControl) continue;
-        snapX(x, ret, pChild->getWorldRect(*pUIContext), closest, found);
+        snapX(x, ret, pChild->getWorldRect(pUIContext), closest, found);
     }
-    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    auto& parentRect = pParent->getWorldRect(pUIContext);
     snapX(x, ret, {parentRect.x, parentRect.y, 0, parentRect.w}, closest, found);
     snapX(x, ret, {parentRect.x + parentRect.z, parentRect.y, 0, parentRect.w}, closest, found);
 
@@ -637,7 +615,7 @@ void DocumentView::snapY(float y, float &ret, const Rect& rect, float &closest, 
     }
 }
 
-float DocumentView::snapY(onut::UIControl* pControl, float y)
+float DocumentView::snapY(const OUIControlRef& pControl, float y)
 {
     if (!m_pChkSnap->getIsChecked())
     {
@@ -651,9 +629,9 @@ float DocumentView::snapY(onut::UIControl* pControl, float y)
     for (auto pChild : pParent->getChildren())
     {
         if (pChild == pControl) continue;
-        snapY(y, ret, pChild->getWorldRect(*pUIContext), closest, found);
+        snapY(y, ret, pChild->getWorldRect(pUIContext), closest, found);
     }
-    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    auto& parentRect = pParent->getWorldRect(pUIContext);
     snapY(y, ret, {parentRect.x, parentRect.y, parentRect.z, 0}, closest, found);
     snapY(y, ret, {parentRect.x, parentRect.y + parentRect.w, parentRect.z, 0}, closest, found);
 
@@ -680,9 +658,9 @@ bool DocumentView::getXAutoGuide(const Rect& rect, float& x, bool& side)
     for (auto pChild : pParent->getChildren())
     {
         if (pChild == pSelected) continue;
-        xAutoGuideAgainst(pChild->getWorldRect(*pUIContext), found, rect, x, side, closest);
+        xAutoGuideAgainst(pChild->getWorldRect(pUIContext), found, rect, x, side, closest);
     }
-    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    auto& parentRect = pParent->getWorldRect(pUIContext);
     xAutoGuideAgainst({parentRect.x, parentRect.y, 0, parentRect.w}, found, rect, x, side, closest);
     xAutoGuideAgainst({parentRect.x + parentRect.z, parentRect.y, 0, parentRect.w}, found, rect, x, side, closest);
     return found;
@@ -697,9 +675,9 @@ bool DocumentView::getYAutoGuide(const Rect& rect, float& y, bool& side)
     for (auto pChild : pParent->getChildren())
     {
         if (pChild == pSelected) continue;
-        yAutoGuideAgainst(pChild->getWorldRect(*pUIContext), found, rect, y, side, closest);
+        yAutoGuideAgainst(pChild->getWorldRect(pUIContext), found, rect, y, side, closest);
     }
-    auto& parentRect = pParent->getWorldRect(*pUIContext);
+    auto& parentRect = pParent->getWorldRect(pUIContext);
     yAutoGuideAgainst({parentRect.x, parentRect.y, parentRect.z, 0}, found, rect, y, side, closest);
     yAutoGuideAgainst({parentRect.x, parentRect.y + parentRect.w, parentRect.z, 0}, found, rect, y, side, closest);
     return found;
@@ -711,9 +689,9 @@ void DocumentView::onKeyDown(uintptr_t key)
     {
         if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN)
         {
-            if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
+            if (!ODynamicCast<OUITextBox>(g_pUIContext->getFocusControl()))
             {
-                auto newRect = pSelected->getWorldRect(*pUIContext);
+                auto newRect = pSelected->getWorldRect(pUIContext);
                 float speed = (OInputPressed(OKeyLeftShift) || OInputPressed(OKeyRightShift)) ? 10.f : 1.f;
                 switch (key)
                 {
@@ -1130,18 +1108,18 @@ void DocumentView::updateMovingHandle()
 
 void DocumentView::render()
 {
-    auto rect = pUIScreen->getWorldRect(*pUIContext);
+    auto rect = pUIScreen->getWorldRect(pUIContext);
 
-    pUIScreen->render(*pUIContext);
+    pUIScreen->render(pUIContext);
 }
 
-void DocumentView::repopulateTreeView(onut::UIControl* pControl)
+void DocumentView::repopulateTreeView(const OUIControlRef& pControl)
 {
-    auto pItem = new onut::UITreeViewItem();
-    pItem->pUserData = pControl;
+    auto pItem = onut::UITreeViewItem::create();
+    pItem->pSharedUserData = pControl;
     pItem->text = pControl->name;
-    pControl->pUserData = pItem;
-    auto pParentItem = static_cast<onut::UITreeViewItem*>(pControl->getParent() ? pControl->getParent()->pUserData : nullptr);
+    pControl->pSharedUserData = pItem;
+    auto pParentItem = OStaticCast<OUITreeViewItem>(pControl->getParent() ? pControl->getParent()->pSharedUserData : nullptr);
     if (pParentItem)
     {
         pParentItem->addItem(pItem);
@@ -1156,9 +1134,9 @@ void DocumentView::repopulateTreeView(onut::UIControl* pControl)
     }
 }
 
-std::unordered_map<onut::eUIType, onut::UIControl*> g_controlInspectorMap;
-std::unordered_map<onut::eUIType, std::vector<IControlInspectorBind*>> g_inspectorBindings;
-void updateControlInspector(onut::UIControl* pControl)
+std::unordered_map<OUIControl::Type, OUIControlRef> g_controlInspectorMap;
+std::unordered_map<OUIControl::Type, std::vector<IControlInspectorBind*>> g_inspectorBindings;
+void updateControlInspector(const OUIControlRef& pControl)
 {
     for (auto& kv : g_controlInspectorMap)
     {
@@ -1229,7 +1207,7 @@ void DocumentView::updateInspector()
         g_pInspector_UIControl_chkClipChildren->setIsChecked(pSelected->clipChildren);
         g_pInspector_UIControl_txtName->textComponent.text = pSelected->name;
         g_pInspector_UIControl_txtStyle->textComponent.text = pSelected->getStyleName();
-        if (pSelected->xType == onut::eUIPosType::POS_PERCENTAGE)
+        if (pSelected->xType == OUIControl::PosType::Percentage)
         {
             g_pInspector_UIControl_txtX->setFloat(pSelected->rect.x * 100.f);
         }
@@ -1237,7 +1215,7 @@ void DocumentView::updateInspector()
         {
             g_pInspector_UIControl_txtX->setFloat(pSelected->rect.x);
         }
-        if (pSelected->yType == onut::eUIPosType::POS_PERCENTAGE)
+        if (pSelected->yType == OUIControl::PosType::Percentage)
         {
             g_pInspector_UIControl_txtY->setFloat(pSelected->rect.y * 100.f);
         }
@@ -1245,9 +1223,9 @@ void DocumentView::updateInspector()
         {
             g_pInspector_UIControl_txtY->setFloat(pSelected->rect.y);
         }
-        g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->xType == onut::eUIPosType::POS_PERCENTAGE);
-        g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->yType == onut::eUIPosType::POS_PERCENTAGE);
-        if (pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE)
+        g_pInspector_UIControl_chkXPercent->setIsChecked(pSelected->xType == OUIControl::PosType::Percentage);
+        g_pInspector_UIControl_chkYPercent->setIsChecked(pSelected->yType == OUIControl::PosType::Percentage);
+        if (pSelected->widthType == OUIControl::DimType::Percentage)
         {
             g_pInspector_UIControl_txtWidth->setFloat(pSelected->rect.z * 100.f);
         }
@@ -1255,7 +1233,7 @@ void DocumentView::updateInspector()
         {
             g_pInspector_UIControl_txtWidth->setFloat(pSelected->rect.z);
         }
-        if (pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE)
+        if (pSelected->heightType == OUIControl::DimType::Percentage)
         {
             g_pInspector_UIControl_txtHeight->setFloat(pSelected->rect.w * 100.f);
         }
@@ -1263,10 +1241,10 @@ void DocumentView::updateInspector()
         {
             g_pInspector_UIControl_txtHeight->setFloat(pSelected->rect.w);
         }
-        g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE);
-        g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE);
-        g_pInspector_UIControl_chkWidthRelative->setIsChecked(pSelected->widthType == onut::eUIDimType::DIM_RELATIVE);
-        g_pInspector_UIControl_chkHeightRelative->setIsChecked(pSelected->heightType == onut::eUIDimType::DIM_RELATIVE);
+        g_pInspector_UIControl_chkWidthPercent->setIsChecked(pSelected->widthType == OUIControl::DimType::Percentage);
+        g_pInspector_UIControl_chkHeightPercent->setIsChecked(pSelected->heightType == OUIControl::DimType::Percentage);
+        g_pInspector_UIControl_chkWidthRelative->setIsChecked(pSelected->widthType == OUIControl::DimType::Relative);
+        g_pInspector_UIControl_chkHeightRelative->setIsChecked(pSelected->heightType == OUIControl::DimType::Relative);
         switch (pSelected->align)
         {
             case OTopLeft:
@@ -1297,7 +1275,7 @@ void DocumentView::updateInspector()
                 g_pInspector_UIControl_chkBOTTOM_RIGHT->setIsChecked(true);
                 break;
         }
-        if (pSelected->xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        if (pSelected->xAnchorType == OUIControl::AnchorType::Percentage)
         {
             g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->anchor.x * 100.f);
         }
@@ -1305,7 +1283,7 @@ void DocumentView::updateInspector()
         {
             g_pInspector_UIControl_txtAnchorX->setFloat(pSelected->anchor.x);
         }
-        if (pSelected->yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+        if (pSelected->yAnchorType == OUIControl::AnchorType::Percentage)
         {
             g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->anchor.y * 100.f);
         }
@@ -1313,8 +1291,8 @@ void DocumentView::updateInspector()
         {
             g_pInspector_UIControl_txtAnchorY->setFloat(pSelected->anchor.y);
         }
-        g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
-        g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE);
+        g_pInspector_UIControl_chkXAnchorPercent->setIsChecked(pSelected->xAnchorType == OUIControl::AnchorType::Percentage);
+        g_pInspector_UIControl_chkYAnchorPercent->setIsChecked(pSelected->yAnchorType == OUIControl::AnchorType::Percentage);
     }
     else
     {

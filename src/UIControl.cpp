@@ -216,11 +216,13 @@ namespace onut
         return OMake<UIControl>();
     }
 
-    OUIControlRef UIControl::createFromFile(const std::string& in_filename)
+    OUIControlRef UIControl::createFromFile(const std::string& in_filename, OContentManagerRef pContentManager)
     {
         auto pControl = OMake<UIControl>();
 
+        if (!pContentManager) pContentManager = oContentManager;
         auto filename = oContentManager->findResourceFile(in_filename);
+        if (filename.empty()) filename = in_filename;
 
         // Open json file
         FILE* pFile = nullptr;
@@ -534,6 +536,7 @@ namespace onut
         anchor = other.anchor;
         name = other.name;
         pUserData = other.pUserData;
+        pSharedUserData = other.pSharedUserData;
         m_properties = other.m_properties;
         m_style = other.m_style;
         m_styleName = other.m_styleName;

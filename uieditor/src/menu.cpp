@@ -8,7 +8,7 @@
 extern DocumentView*        g_pDocument;
 extern onut::ActionManager  g_actionManager;
 
-onut::UIControl*    g_pMessageBox = nullptr;
+OUIControlRef    g_pMessageBox = nullptr;
 
 void buildMenu()
 {
@@ -42,8 +42,7 @@ void buildMenu()
     SetMenu(window, menu);
     UpdateWindow(window);
 
-    g_pMessageBox = new onut::UIControl("../../assets/ui/messageBox.json");
-    g_pMessageBox->retain();
+    g_pMessageBox = onut::UIControl::createFromFile("messageBox.json");
 }
 
 std::string fileOpen()

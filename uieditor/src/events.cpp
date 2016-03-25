@@ -3,55 +3,62 @@
 #include "events.h"
 
 #include "onut/Input.h"
+#include "onut/UIButton.h"
+#include "onut/UICheckBox.h"
+#include "onut/UILabel.h"
+#include "onut/UIImage.h"
+#include "onut/UIPanel.h"
+#include "onut/UITextBox.h"
+#include "onut/UITreeView.h"
 #include "onut/Window.h"
 
 #include "Utils.h"
 
-extern DocumentView*        g_pDocument;
-extern onut::UIContext*     g_pUIContext;
-extern onut::UIControl*     g_pUIScreen;
-extern onut::ActionManager  g_actionManager;
+extern DocumentView* g_pDocument;
+extern OUIContextRef g_pUIContext;
+extern OUIControlRef g_pUIScreen;
+extern onut::ActionManager g_actionManager;
 
-onut::UICheckBox*    g_pInspector_UIControl_chkEnabled;
-onut::UICheckBox*    g_pInspector_UIControl_chkVisible;
-onut::UICheckBox*    g_pInspector_UIControl_chkClickThrough;
-onut::UICheckBox*    g_pInspector_UIControl_chkClipChildren;
-onut::UITextBox*     g_pInspector_UIControl_txtName;
-onut::UITextBox*     g_pInspector_UIControl_txtStyle;
-onut::UITextBox*     g_pInspector_UIControl_txtX;
-onut::UITextBox*     g_pInspector_UIControl_txtY;
-onut::UICheckBox*    g_pInspector_UIControl_chkXPercent;
-onut::UICheckBox*    g_pInspector_UIControl_chkYPercent;
-onut::UITextBox*     g_pInspector_UIControl_txtWidth;
-onut::UITextBox*     g_pInspector_UIControl_txtHeight;
-onut::UICheckBox*    g_pInspector_UIControl_chkWidthPercent;
-onut::UICheckBox*    g_pInspector_UIControl_chkHeightPercent;
-onut::UICheckBox*    g_pInspector_UIControl_chkWidthRelative;
-onut::UICheckBox*    g_pInspector_UIControl_chkHeightRelative;
-onut::UICheckBox*    g_pInspector_UIControl_chkTOP_LEFT;
-onut::UICheckBox*    g_pInspector_UIControl_chkTOP;
-onut::UICheckBox*    g_pInspector_UIControl_chkTOP_RIGHT;
-onut::UICheckBox*    g_pInspector_UIControl_chkLEFT;
-onut::UICheckBox*    g_pInspector_UIControl_chkCENTER;
-onut::UICheckBox*    g_pInspector_UIControl_chkRIGHT;
-onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_LEFT;
-onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM;
-onut::UICheckBox*    g_pInspector_UIControl_chkBOTTOM_RIGHT;
-onut::UITextBox*     g_pInspector_UIControl_txtAnchorX;
-onut::UITextBox*     g_pInspector_UIControl_txtAnchorY;
-onut::UICheckBox*    g_pInspector_UIControl_chkXAnchorPercent;
-onut::UICheckBox*    g_pInspector_UIControl_chkYAnchorPercent;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_LEFT;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorTOP_RIGHT;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorLEFT;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorCENTER;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorRIGHT;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM;
-onut::UIButton*      g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
+OUICheckBoxRef    g_pInspector_UIControl_chkEnabled;
+OUICheckBoxRef    g_pInspector_UIControl_chkVisible;
+OUICheckBoxRef    g_pInspector_UIControl_chkClickThrough;
+OUICheckBoxRef    g_pInspector_UIControl_chkClipChildren;
+OUITextBoxRef     g_pInspector_UIControl_txtName;
+OUITextBoxRef     g_pInspector_UIControl_txtStyle;
+OUITextBoxRef     g_pInspector_UIControl_txtX;
+OUITextBoxRef     g_pInspector_UIControl_txtY;
+OUICheckBoxRef    g_pInspector_UIControl_chkXPercent;
+OUICheckBoxRef    g_pInspector_UIControl_chkYPercent;
+OUITextBoxRef     g_pInspector_UIControl_txtWidth;
+OUITextBoxRef     g_pInspector_UIControl_txtHeight;
+OUICheckBoxRef    g_pInspector_UIControl_chkWidthPercent;
+OUICheckBoxRef    g_pInspector_UIControl_chkHeightPercent;
+OUICheckBoxRef    g_pInspector_UIControl_chkWidthRelative;
+OUICheckBoxRef    g_pInspector_UIControl_chkHeightRelative;
+OUICheckBoxRef    g_pInspector_UIControl_chkTOP_LEFT;
+OUICheckBoxRef    g_pInspector_UIControl_chkTOP;
+OUICheckBoxRef    g_pInspector_UIControl_chkTOP_RIGHT;
+OUICheckBoxRef    g_pInspector_UIControl_chkLEFT;
+OUICheckBoxRef    g_pInspector_UIControl_chkCENTER;
+OUICheckBoxRef    g_pInspector_UIControl_chkRIGHT;
+OUICheckBoxRef    g_pInspector_UIControl_chkBOTTOM_LEFT;
+OUICheckBoxRef    g_pInspector_UIControl_chkBOTTOM;
+OUICheckBoxRef    g_pInspector_UIControl_chkBOTTOM_RIGHT;
+OUITextBoxRef     g_pInspector_UIControl_txtAnchorX;
+OUITextBoxRef     g_pInspector_UIControl_txtAnchorY;
+OUICheckBoxRef    g_pInspector_UIControl_chkXAnchorPercent;
+OUICheckBoxRef    g_pInspector_UIControl_chkYAnchorPercent;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorTOP_LEFT;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorTOP;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorTOP_RIGHT;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorLEFT;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorCENTER;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorRIGHT;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorBOTTOM_LEFT;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorBOTTOM;
+OUIButtonRef      g_pInspector_UIControl_chkAnchorBOTTOM_RIGHT;
 
-onut::UIControl* getCreateParent()
+OUIControlRef getCreateParent()
 {
     auto pSelected = g_pDocument->pSelected;
     if (!pSelected)
@@ -75,27 +82,27 @@ onut::UIControl* getCreateParent()
     }
 }
 
-std::string getControlName(onut::UIControl* pControl)
+std::string getControlName(const OUIControlRef& pControl)
 {
     std::string ret = pControl->name;
     if (ret.empty())
     {
         switch (pControl->getType())
         {
-            case onut::eUIType::UI_BUTTON: return "UIButton";
-            case onut::eUIType::UI_CHECKBOX: return "UICheckBox";
-            case onut::eUIType::UI_CONTROL: return "UIControl";
-            case onut::eUIType::UI_IMAGE: return "UIImage";
-            case onut::eUIType::UI_LABEL: return "UILabel";
-            case onut::eUIType::UI_PANEL: return "UIPanel";
-            case onut::eUIType::UI_TEXTBOX: return "UITextBox";
-            case onut::eUIType::UI_TREEVIEW: return "UITreeView";
+            case OUIControl::Type::Button: return "UIButton";
+            case OUIControl::Type::CheckBox: return "UICheckBox";
+            case OUIControl::Type::Control: return "UIControl";
+            case OUIControl::Type::Image: return "UIImage";
+            case OUIControl::Type::Label: return "UILabel";
+            case OUIControl::Type::Panel: return "UIPanel";
+            case OUIControl::Type::TextBox: return "UITextBox";
+            case OUIControl::Type::TreeView: return "UITreeView";
         }
     }
     return std::move(ret);
 }
 
-void createControlAction(onut::UIControl* pControl, onut::UIControl* pParent)
+void createControlAction(const OUIControlRef& pControl, OUIControlRef pParent)
 {
     auto pSelected = g_pDocument->pSelected;
     g_actionManager.doAction(new onut::Action("Create " + getControlName(pControl),
@@ -108,90 +115,80 @@ void createControlAction(onut::UIControl* pControl, onut::UIControl* pParent)
         g_pDocument->setSelected(pSelected);
         pParent->remove(pControl);
         g_pDocument->controlDeleted(pControl);
-    },
-        [=]{
-        if (pSelected) pSelected->retain();
-        pParent->retain();
-        pControl->retain();
-    },
-        [=]{
-        if (pSelected) pSelected->release();
-        pParent->release();
-        pControl->release();
     }));
 }
 
-void onCreateControl(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateControl(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pCtrl = new onut::UIControl();
+    auto pCtrl = onut::UIControl::create();
 
     pCtrl->rect = {{0, 0}, {100, 100}};
     createControlAction(pCtrl, pParent);
 }
 
-void onCreatePanel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreatePanel(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pPanel = new onut::UIPanel();
+    auto pPanel = onut::UIPanel::create();
 
     pPanel->rect = {{0, 0}, {100, 100}};
     createControlAction(pPanel, pParent);
 }
 
-void onCreateButton(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateButton(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pBtn = new onut::UIButton();
+    auto pBtn = onut::UIButton::create();
 
     pBtn->textComponent.text = "Button";
     pBtn->rect = {{0, 0}, {64, 24}};
     createControlAction(pBtn, pParent);
 }
 
-void onCreateLabel(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateLabel(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pLbl = new onut::UILabel();
+    auto pLbl = onut::UILabel::create();
 
     pLbl->textComponent.text = "Label";
     pLbl->rect = {{0, 0}, {64, 20}};
     createControlAction(pLbl, pParent);
 }
 
-void onCreateImage(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateImage(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pImg = new onut::UIImage();
+    auto pImg = onut::UIImage::create();
 
     pImg->rect = {{0, 0}, {32, 32}};
     createControlAction(pImg, pParent);
 }
 
-void onCreateCheckBox(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateCheckBox(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pBtn = new onut::UICheckBox();
+    auto pBtn = onut::UICheckBox::create();
 
     pBtn->textComponent.text = "CheckBox";
     pBtn->rect = {{0, 0}, {64, 24}};
     createControlAction(pBtn, pParent);
 }
 
-void onCreateTextBox(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateTextBox(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pBtn = new onut::UITextBox();
+    auto pBtn = onut::UITextBox::create();
 
     pBtn->textComponent.text = "";
     pBtn->rect = {{0, 0}, {64, 24}};
     createControlAction(pBtn, pParent);
 }
 
-void onCreateTreeView(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onCreateTreeView(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto pParent = getCreateParent();
-    auto pTreeView = new onut::UITreeView();
+    auto pTreeView = onut::UITreeView::create();
 
     pTreeView->rect = {{0, 0}, {64, 24}};
     createControlAction(pTreeView, pParent);
@@ -199,13 +196,13 @@ void onCreateTreeView(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
 
 bool g_bSelected = false;
 
-void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onSelect(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     auto mousePos = evt.mousePos;
-    auto rect = g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext);
+    auto rect = g_pUIScreen->getChild("pnlRegion")->getWorldRect(g_pUIContext);
     mousePos.x -= rect.x;
     mousePos.y -= rect.y;
-    auto pPickedControl = g_pDocument->pUIScreen->getChild(*g_pDocument->pUIContext, mousePos, true, false);
+    auto pPickedControl = g_pDocument->pUIScreen->getChild(g_pDocument->pUIContext, mousePos, true, false);
     auto pPreviousSelected = g_pDocument->pSelected;
 
     std::string ctrlName = "Unselect";
@@ -220,16 +217,7 @@ void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     },
         [=]{
         g_pDocument->setSelected(pPreviousSelected);
-    },
-        [=]{
-        if (pPreviousSelected) pPreviousSelected->retain();
-        if (pPickedControl) pPickedControl->retain();
-    },
-        [=]{
-        if (pPreviousSelected) pPreviousSelected->release();
-        if (pPickedControl) pPickedControl->release();
-    }
-    ));
+    }));
 
     if (pPickedControl)
     {
@@ -238,7 +226,7 @@ void onSelect(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     }
 }
 
-void onSelectUp(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onSelectUp(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     if (g_bSelected)
     {
@@ -250,9 +238,9 @@ void onSelectUp(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
     }
 }
 
-void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITreeViewSelectEvent& evt)
+void onSceneGraphSelectionChanged(const OUITreeViewRef& pControl, const onut::UITreeViewSelectEvent& evt)
 {
-    if (evt.pSelectedItems->empty())
+    if (evt.selectedItems.empty())
     {
         auto pPreviousSelected = g_pDocument->pSelected;
         g_actionManager.doAction(new onut::Action("Unselect",
@@ -261,19 +249,12 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
         },
             [=]{
             g_pDocument->setSelected(pPreviousSelected, true);
-        },
-            [=]{
-            if (pPreviousSelected) pPreviousSelected->retain();
-        },
-            [=]{
-            if (pPreviousSelected) pPreviousSelected->release();
-        }
-        ));
+        }));
     }
     else
     {
-        auto pViewItem = evt.pSelectedItems->front();
-        auto pSelected = static_cast<onut::UIControl*>(pViewItem->pUserData);
+        auto pViewItem = evt.selectedItems.front();
+        auto pSelected = OStaticCast<OUIControl>(pViewItem->pSharedUserData);
 
         auto pPreviousSelected = g_pDocument->pSelected;
         g_actionManager.doAction(new onut::Action("Select " + getControlName(pSelected),
@@ -282,20 +263,11 @@ void onSceneGraphSelectionChanged(onut::UITreeView* pControl, const onut::UITree
         },
             [=]{
             g_pDocument->setSelected(pPreviousSelected, true);
-        },
-            [=]{
-            if (pSelected) pSelected->retain();
-            if (pPreviousSelected) pPreviousSelected->retain();
-        },
-            [=]{
-            if (pSelected) pSelected->release();
-            if (pPreviousSelected) pPreviousSelected->release();
-        }
-        ));
+        }));
     }
 }
 
-void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlNameChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
 
@@ -306,7 +278,7 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     g_actionManager.doAction(new onut::Action("Rename " + getControlName(pControl) + " to " + text,
         [=]{
         pControl->name = text;
-        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
+        auto pViewItem = OStaticCast<OUITreeViewItem>(pControl->pSharedUserData);
         if (pViewItem)
         {
             pViewItem->text = text;
@@ -315,25 +287,16 @@ void onUIControlNameChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEven
     },
         [=]{
         pControl->name = previousText;
-        auto pViewItem = static_cast<onut::UITreeViewItem*>(pControl->pUserData);
+        auto pViewItem = OStaticCast<OUITreeViewItem>(pControl->pSharedUserData);
         if (pViewItem)
         {
             pViewItem->text  =previousText;
         }
         g_pDocument->updateInspector();
-    },
-        [=]{
-        if (pTextBox) pTextBox->retain();
-        if (pControl) pControl->retain();
-    },
-        [=]{
-        if (pTextBox) pTextBox->release();
-        if (pControl) pControl->release();
-    }
-    ));
+    }));
 }
 
-void doRectChange(const std::string& actionName, onut::UIControl* pControl, const Rect& rect)
+void doRectChange(const std::string& actionName, const OUIControlRef& pControl, const Rect& rect)
 {
     if (!pControl) return;
     auto previousRect = pControl->rect;
@@ -347,47 +310,40 @@ void doRectChange(const std::string& actionName, onut::UIControl* pControl, cons
         pControl->rect = previousRect;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pControl->retain();
-    },
-        [=]{
-        pControl->release();
-    }
-    ));
+    }));
 }
 
-void onUIControlXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlXChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
     rect.x = pTextBox->getFloat();
-    if (g_pDocument->pSelected->xType == onut::eUIPosType::POS_PERCENTAGE)
+    if (g_pDocument->pSelected->xType == OUIControl::PosType::Percentage)
     {
         rect.x /= 100.f;
     }
     doRectChange("Edit X position", g_pDocument->pSelected, rect);
 }
-void onUIControlYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlYChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
     rect.y = pTextBox->getFloat();
-    if (g_pDocument->pSelected->yType == onut::eUIPosType::POS_PERCENTAGE)
+    if (g_pDocument->pSelected->yType == OUIControl::PosType::Percentage)
     {
         rect.y /= 100.f;
     }
     doRectChange("Edit Y position", g_pDocument->pSelected, rect);
 }
 
-void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlAnchorXChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     auto prevAnchor = g_pDocument->pSelected->anchor;
     auto newAnchor = prevAnchor;
     newAnchor.x = pTextBox->getFloat();
-    if (g_pDocument->pSelected->xAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    if (g_pDocument->pSelected->xAnchorType == OUIControl::AnchorType::Percentage)
     {
         newAnchor.x /= 100.f;
     }
@@ -401,23 +357,17 @@ void onUIControlAnchorXChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
         pSelected->anchor = prevAnchor;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlAnchorYChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
     auto prevAnchor = g_pDocument->pSelected->anchor;
     auto newAnchor = prevAnchor;
     newAnchor.y = pTextBox->getFloat();
-    if (g_pDocument->pSelected->yAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    if (g_pDocument->pSelected->yAnchorType == OUIControl::AnchorType::Percentage)
     {
         newAnchor.y /= 100.f;
     }
@@ -431,40 +381,34 @@ void onUIControlAnchorYChanged(onut::UITextBox* pTextBox, const onut::UITextBoxE
         pSelected->anchor = prevAnchor;
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlWidthChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlWidthChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
     rect.z = pTextBox->getFloat();
-    if (g_pDocument->pSelected->widthType == onut::eUIDimType::DIM_PERCENTAGE)
+    if (g_pDocument->pSelected->widthType == OUIControl::DimType::Percentage)
     {
         rect.z /= 100.f;
     }
     doRectChange("Edit Width", g_pDocument->pSelected, rect);
 }
 
-void onUIControlHeightChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlHeightChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto rect = g_pDocument->pSelected->rect;
     rect.w = pTextBox->getFloat();
-    if (g_pDocument->pSelected->heightType == onut::eUIDimType::DIM_PERCENTAGE)
+    if (g_pDocument->pSelected->heightType == OUIControl::DimType::Percentage)
     {
         rect.w /= 100.f;
     }
     doRectChange("Edit Height", g_pDocument->pSelected, rect);
 }
 
-void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+void onUIControlStyleChanged(const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -478,17 +422,10 @@ void onUIControlStyleChanged(onut::UITextBox* pTextBox, const onut::UITextBoxEve
         [=]{
         pSelected->setStyle(prevStyle.c_str());
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
-    }
-    ));
+    }));
 }
 
-void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlEnableChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -501,16 +438,10 @@ void onUIControlEnableChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEv
         [=]{
         pSelected->isEnabled = !bValue;
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlVisibleChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlVisibleChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -523,16 +454,10 @@ void onUIControlVisibleChanged(onut::UICheckBox* pCheckBox, const onut::UICheckE
         [=]{
         pSelected->isVisible = !bValue;
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlClickThroughChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -545,16 +470,10 @@ void onUIControlClickThroughChanged(onut::UICheckBox* pCheckBox, const onut::UIC
         [=]{
         pSelected->isClickThrough = !bValue;
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlClipChildrenChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlClipChildrenChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -567,16 +486,10 @@ void onUIControlClipChildrenChanged(onut::UICheckBox* pCheckBox, const onut::UIC
         [=]{
         pSelected->clipChildren = !bValue;
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlXAnchorPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -584,15 +497,15 @@ void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
     auto prevAnchorType = pSelected->xAnchorType;
     auto newAnchor = prevAnchor;
     auto newAnchorType = prevAnchorType;
-    if (pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
+    if (pCheckBox->getIsChecked() && prevAnchorType == OUIControl::AnchorType::Pixel)
     {
         newAnchor.x = pSelected->getAnchorInPercentage().x;
-        newAnchorType = onut::eUIAnchorType::ANCHOR_PERCENTAGE;
+        newAnchorType = OUIControl::AnchorType::Percentage;
     }
-    else if (!pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    else if (!pCheckBox->getIsChecked() && prevAnchorType == OUIControl::AnchorType::Percentage)
     {
         newAnchor.x = pSelected->getAnchorInPixel().x;
-        newAnchorType = onut::eUIAnchorType::ANCHOR_PIXEL;
+        newAnchorType = OUIControl::AnchorType::Pixel;
     }
     g_actionManager.doAction(new onut::Action("Toggle X anchor percent",
         [=]{
@@ -604,16 +517,10 @@ void onUIControlXAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
         pSelected->anchor = prevAnchor;
         pSelected->xAnchorType = prevAnchorType;
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlYAnchorPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -621,15 +528,15 @@ void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
     auto prevAnchorType = pSelected->yAnchorType;
     auto newAnchor = prevAnchor;
     auto newAnchorType = prevAnchorType;
-    if (pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PIXEL)
+    if (pCheckBox->getIsChecked() && prevAnchorType == OUIControl::AnchorType::Pixel)
     {
         newAnchor.y = pSelected->getAnchorInPercentage().y;
-        newAnchorType = onut::eUIAnchorType::ANCHOR_PERCENTAGE;
+        newAnchorType = OUIControl::AnchorType::Percentage;
     }
-    else if (!pCheckBox->getIsChecked() && prevAnchorType == onut::eUIAnchorType::ANCHOR_PERCENTAGE)
+    else if (!pCheckBox->getIsChecked() && prevAnchorType == OUIControl::AnchorType::Percentage)
     {
         newAnchor.y = pSelected->getAnchorInPixel().y;
-        newAnchorType = onut::eUIAnchorType::ANCHOR_PIXEL;
+        newAnchorType = OUIControl::AnchorType::Pixel;
     }
     g_actionManager.doAction(new onut::Action("Toggle Y anchor percent",
         [=]{
@@ -641,16 +548,10 @@ void onUIControlYAnchorPercentChanged(onut::UICheckBox* pCheckBox, const onut::U
         pSelected->anchor = prevAnchor;
         pSelected->yAnchorType = prevAnchorType;
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlWidthPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -658,17 +559,17 @@ void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UIC
     auto prevDimType = pSelected->widthType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
-    if (pCheckBox->getIsChecked() && prevDimType != onut::eUIDimType::DIM_PERCENTAGE)
+    if (pCheckBox->getIsChecked() && prevDimType != OUIControl::DimType::Percentage)
     {
-        auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_PERCENTAGE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        auto worldRect = pSelected->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Percentage;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.z = worldRect.z / parentRect.z;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkWidthRelative->getIsChecked())
     {
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_ABSOLUTE;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Absolute;
         newRect.z = newRect.z * parentRect.z;
     }
     g_actionManager.doAction(new onut::Action("Toggle Width percent",
@@ -683,16 +584,10 @@ void onUIControlWidthPercentChanged(onut::UICheckBox* pCheckBox, const onut::UIC
         pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlHeightPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlHeightPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -700,17 +595,17 @@ void onUIControlHeightPercentChanged(onut::UICheckBox* pCheckBox, const onut::UI
     auto prevDimType = pSelected->heightType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
-    if (pCheckBox->getIsChecked() && prevDimType != onut::eUIDimType::DIM_PERCENTAGE)
+    if (pCheckBox->getIsChecked() && prevDimType != OUIControl::DimType::Percentage)
     {
-        auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_PERCENTAGE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        auto worldRect = pSelected->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Percentage;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.w = worldRect.w / parentRect.w;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkHeightRelative->getIsChecked())
     {
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_ABSOLUTE;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Absolute;
         newRect.w = newRect.w * parentRect.w;
     }
     g_actionManager.doAction(new onut::Action("Toggle Height percent",
@@ -725,16 +620,10 @@ void onUIControlHeightPercentChanged(onut::UICheckBox* pCheckBox, const onut::UI
         pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlWidthRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlWidthRelativeChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -742,17 +631,17 @@ void onUIControlWidthRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UI
     auto prevDimType = pSelected->widthType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
-    if (pCheckBox->getIsChecked() && pSelected->widthType != onut::eUIDimType::DIM_RELATIVE)
+    if (pCheckBox->getIsChecked() && pSelected->widthType != OUIControl::DimType::Relative)
     {
-        auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_RELATIVE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        auto worldRect = pSelected->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Relative;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.z = worldRect.z - parentRect.z;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkWidthPercent->getIsChecked())
     {
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_ABSOLUTE;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Absolute;
         newRect.z = parentRect.z + newRect.z;
     }
     g_actionManager.doAction(new onut::Action("Toggle Width relative",
@@ -767,16 +656,10 @@ void onUIControlWidthRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UI
         pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlHeightRelativeChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlHeightRelativeChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -784,17 +667,17 @@ void onUIControlHeightRelativeChanged(onut::UICheckBox* pCheckBox, const onut::U
     auto prevDimType = pSelected->heightType;
     auto newRect = prevRect;
     auto newDimType = prevDimType;
-    if (pCheckBox->getIsChecked() && pSelected->heightType != onut::eUIDimType::DIM_RELATIVE)
+    if (pCheckBox->getIsChecked() && pSelected->heightType != OUIControl::DimType::Relative)
     {
-        auto worldRect = pSelected->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_RELATIVE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        auto worldRect = pSelected->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Relative;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.w = worldRect.w - parentRect.w;
     }
     else if (!pCheckBox->getIsChecked() && !g_pInspector_UIControl_chkHeightPercent->getIsChecked())
     {
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
-        newDimType = onut::eUIDimType::DIM_ABSOLUTE;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
+        newDimType = OUIControl::DimType::Absolute;
         newRect.w = parentRect.w + newRect.w;
     }
     g_actionManager.doAction(new onut::Action("Toggle Height relative",
@@ -809,16 +692,10 @@ void onUIControlHeightRelativeChanged(onut::UICheckBox* pCheckBox, const onut::U
         pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlXPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -826,16 +703,16 @@ void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
     auto prevRect = pSelected->rect;
     auto newType = prevType;
     auto newRect = prevRect;
-    if (pCheckBox->getIsChecked() && prevType != onut::eUIPosType::POS_PERCENTAGE)
+    if (pCheckBox->getIsChecked() && prevType != OUIControl::PosType::Percentage)
     {
-        newType = onut::eUIPosType::POS_PERCENTAGE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        newType = OUIControl::PosType::Percentage;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.x = newRect.x / parentRect.z;
     }
-    else if (!pCheckBox->getIsChecked() && prevType == onut::eUIPosType::POS_PERCENTAGE)
+    else if (!pCheckBox->getIsChecked() && prevType == OUIControl::PosType::Percentage)
     {
-        newType = onut::eUIPosType::POS_RELATIVE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        newType = OUIControl::PosType::Relative;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.x = newRect.x * parentRect.z;
     }
     g_actionManager.doAction(new onut::Action("Toggle X percent",
@@ -850,16 +727,10 @@ void onUIControlXPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
         pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onUIControlYPercentChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!g_pDocument->pSelected) return;
     auto pSelected = g_pDocument->pSelected;
@@ -867,16 +738,16 @@ void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
     auto prevRect = pSelected->rect;
     auto newType = prevType;
     auto newRect = prevRect;
-    if (pCheckBox->getIsChecked() && prevType != onut::eUIPosType::POS_PERCENTAGE)
+    if (pCheckBox->getIsChecked() && prevType != OUIControl::PosType::Percentage)
     {
-        newType = onut::eUIPosType::POS_PERCENTAGE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        newType = OUIControl::PosType::Percentage;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.y = newRect.y / parentRect.w;
     }
-    else if (!pCheckBox->getIsChecked() && prevType == onut::eUIPosType::POS_PERCENTAGE)
+    else if (!pCheckBox->getIsChecked() && prevType == OUIControl::PosType::Percentage)
     {
-        newType = onut::eUIPosType::POS_RELATIVE;
-        auto& parentRect = pSelected->getParent()->getWorldRect(*g_pDocument->pUIContext);
+        newType = OUIControl::PosType::Relative;
+        auto& parentRect = pSelected->getParent()->getWorldRect(g_pDocument->pUIContext);
         newRect.y = newRect.y * parentRect.w;
     }
     g_actionManager.doAction(new onut::Action("Toggle Y percent",
@@ -891,16 +762,10 @@ void onUIControlYPercentChanged(onut::UICheckBox* pCheckBox, const onut::UICheck
         pSelected->rect = (prevRect);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+void onAnchorClicked(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
 {
     if (!g_pDocument->pSelected) return; // Wuuuut?
     auto pSelected = g_pDocument->pSelected;
@@ -953,16 +818,10 @@ void onAnchorClicked(onut::UIControl* pControl, const onut::UIMouseEvent& evt)
         pSelected->anchor = (prevAnchor);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
-void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& evt)
+void onAlignChkChanged(const OUICheckBoxRef& pCheckBox, const onut::UICheckEvent& evt)
 {
     if (!evt.isChecked) return; // Don't care
     if (!g_pDocument->pSelected) return; // Wuuuut?
@@ -1036,12 +895,6 @@ void onAlignChkChanged(onut::UICheckBox* pCheckBox, const onut::UICheckEvent& ev
         pSelected->align = (previousAlign);
         g_pDocument->updateSelectedGizmoRect();
         g_pDocument->updateInspector();
-    },
-        [=]{
-        pSelected->retain();
-    },
-        [=]{
-        pSelected->release();
     }));
 }
 
@@ -1067,15 +920,15 @@ std::string fileOpen(const char* szFilters)
     return ofn.lpstrFile;
 }
 
-extern std::unordered_map<onut::eUIType, onut::UIControl*> g_controlInspectorMap;
-extern std::unordered_map<onut::eUIType, std::vector<IControlInspectorBind*>> g_inspectorBindings;
+extern std::unordered_map<OUIControl::Type, OUIControlRef> g_controlInspectorMap;
+extern std::unordered_map<OUIControl::Type, std::vector<IControlInspectorBind*>> g_inspectorBindings;
 float yPos;
 std::vector<IControlInspectorBind*>* pBindings;
-onut::UIPanel* pPnl;
+OUIPanelRef pPnl;
 static HCURSOR curARROW;
 static HCURSOR curIBEAM;
 
-void BEGIN_BINDINGS(onut::UIControl* pUIScreen, onut::eUIType type, const std::string& name)
+void BEGIN_BINDINGS(OUIControlRef pUIScreen, OUIControl::Type type, const std::string& name)
 {
     pPnl = pUIScreen->getChild<onut::UIPanel>(name);
     g_controlInspectorMap[type] = pPnl;
@@ -1088,25 +941,25 @@ static COLORREF g_acrCustClr[16]; // array of custom colors
 template<typename TuiType, typename Tgetter, typename Tsetter>
 void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
 {
-    auto pLabel = new onut::UILabel();
-    auto pButton = new onut::UIPanel();
-    auto pAlphaLabel = new onut::UILabel();
-    auto pAlphaText = new onut::UITextBox();
+    auto pLabel = onut::UILabel::create();
+    auto pButton = onut::UIPanel::create();
+    auto pAlphaLabel = onut::UILabel::create();
+    auto pAlphaText = onut::UITextBox::create();
 
     pLabel->textComponent.text = name;
-    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->widthType = (OUIControl::DimType::Percentage);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
     pButton->setStyle("colorPicker");
     pButton->align = (OTopRight);
-    pButton->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pButton->widthType = (OUIControl::DimType::Percentage);
     pButton->rect = {{-4, yPos}, {0.618f, 24}};
     pButton->anchor = {1, 0};
 
     yPos += 24 + 4;
 
     pAlphaLabel->textComponent.text = "Alpha:";
-    pAlphaLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pAlphaLabel->widthType = (OUIControl::DimType::Percentage);
     pAlphaLabel->align = (OTopRight);
     pAlphaLabel->rect = {{-4 - 64 - 4, yPos}, {64, 24}};
     pAlphaLabel->anchor = {1, 0};
@@ -1129,7 +982,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
             (std::string("Edit ") + name, &pButton->color, getter, setter);
         pBindings->push_back(pBinding);
 
-        pButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+        pButton->onClick = [=](const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
         {
             CHOOSECOLOR colorChooser = {0};
             DWORD rgbCurrent; // initial color selection
@@ -1155,13 +1008,13 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     { // alpha
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             "Alpha", nullptr,
-            [](TuiType* pControl) {return pControl->color.w * 100.f; },
-            [](TuiType* pControl, const float& alpha){pControl->color.w = alpha / 100.f; pControl->color.pack(); },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->color.w * 100.f; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& alpha){pControl->color.w = alpha / 100.f; pControl->color.pack(); },
             [=]{return pAlphaText->getFloat(); },
             [=](const float& alpha) {pAlphaText->setFloat(alpha); });
         pBindings->push_back(pBinding);
 
-        pAlphaText->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pAlphaText->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1171,28 +1024,28 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
 template<typename TuiType>
 void BIND_SCALE9_COMPONENT(const std::string& name)
 {
-    auto pLabel = new onut::UILabel();
-    auto pContainer = new onut::UIPanel();
-    auto pTxtImage = new onut::UITextBox();
-    auto pBrowseButton = new onut::UIButton();
-    auto pBtnColor = new onut::UIPanel();
-    auto pChkScale9 = new onut::UICheckBox();
-    auto pChkRepeat = new onut::UICheckBox();
-    auto pBtnFit = new onut::UIButton();
-    auto pLblPadding = new onut::UILabel();
-    auto pTxtPaddingLeft = new onut::UITextBox();
-    auto pTxtPaddingRight = new onut::UITextBox();
-    auto pTxtPaddingTop = new onut::UITextBox();
-    auto pTxtPaddingBottom = new onut::UITextBox();
+    auto pLabel = onut::UILabel::create();
+    auto pContainer = onut::UIPanel::create();
+    auto pTxtImage = onut::UITextBox::create();
+    auto pBrowseButton = onut::UIButton::create();
+    auto pBtnColor = onut::UIPanel::create();
+    auto pChkScale9 = onut::UICheckBox::create();
+    auto pChkRepeat = onut::UICheckBox::create();
+    auto pBtnFit = onut::UIButton::create();
+    auto pLblPadding = onut::UILabel::create();
+    auto pTxtPaddingLeft = onut::UITextBox::create();
+    auto pTxtPaddingRight = onut::UITextBox::create();
+    auto pTxtPaddingTop = onut::UITextBox::create();
+    auto pTxtPaddingBottom = onut::UITextBox::create();
 
     pLabel->textComponent.text = name;
     pLabel->rect = {{4, yPos}, {58, 174 - 66}};
 
     pContainer->setStyle("group");
-    pContainer->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pContainer->widthType = (OUIControl::DimType::Relative);
     pContainer->rect = {{66, yPos}, {-70, 174 - 66}};
 
-    pTxtImage->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pTxtImage->widthType = (OUIControl::DimType::Relative);
     pTxtImage->rect = {{4, 4}, {-8 - 32, 24}};
 
     pBrowseButton->align = (OTopRight);
@@ -1253,8 +1106,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 
     yPos += 174 + 4 - 66;
 
-    auto mouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    auto mouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    auto mouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    auto mouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTxtImage->onMouseEnter = mouseEnter;
     pTxtImage->onMouseLeave = mouseLeave;
     pTxtPaddingLeft->onMouseEnter = mouseEnter;
@@ -1270,15 +1123,15 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // image
         auto pBinding = new ControlInspectorBind<std::string, TuiType>(
             actionName, &(pTxtImage->textComponent.text),
-            [](TuiType* pControl) {return pControl->scale9Component.image.filename; },
-            [](TuiType* pControl, const std::string& filename){pControl->scale9Component.image.filename = filename; });
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.image.filename; },
+            [](const std::shared_ptr<TuiType>& pControl, const std::string& filename){pControl->scale9Component.image.filename = filename; });
         pBindings->push_back(pBinding);
-        pTxtImage->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtImage->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
         // Browse
-        pBrowseButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+        pBrowseButton->onClick = [=](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
         {
             std::string file = fileOpen("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0");
             if (!file.empty())
@@ -1299,10 +1152,10 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // color
         auto pBinding = new ControlInspectorBind<Color, TuiType>(
             actionName, &(pBtnColor->color),
-            [](TuiType* pControl) {return pControl->scale9Component.image.color; },
-            [](TuiType* pControl, const Color& color){pControl->scale9Component.image.color = color; });
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.image.color; },
+            [](const std::shared_ptr<TuiType>& pControl, const Color& color){pControl->scale9Component.image.color = color; });
         pBindings->push_back(pBinding);
-        pBtnColor->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+        pBtnColor->onClick = [=](const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
         {
             CHOOSECOLOR colorChooser = {0};
             DWORD rgbCurrent; // initial color selection
@@ -1326,8 +1179,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // isScale9
         auto pBinding = new ControlInspectorBind<bool, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.isScaled9; },
-            [](TuiType* pControl, const bool& isScaled9){pControl->scale9Component.isScaled9 = isScaled9; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.isScaled9; },
+            [](const std::shared_ptr<TuiType>& pControl, const bool& isScaled9){pControl->scale9Component.isScaled9 = isScaled9; },
             [=]
             {
                 return pChkScale9->getIsChecked();
@@ -1342,7 +1195,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
                 pTxtPaddingBottom->isEnabled = isScaled9;
             });
         pBindings->push_back(pBinding);
-        pChkScale9->onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
+        pChkScale9->onCheckChanged = [=](const OUICheckBoxRef& pTextBox, const onut::UICheckEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1350,8 +1203,8 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // repeat
         auto pBinding = new ControlInspectorBind<bool, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.isRepeat; },
-            [](TuiType* pControl, const bool& isRepeat){pControl->scale9Component.isRepeat = isRepeat; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.isRepeat; },
+            [](const std::shared_ptr<TuiType>& pControl, const bool& isRepeat){pControl->scale9Component.isRepeat = isRepeat; },
             [=]
             {
                 return pChkRepeat->getIsChecked();
@@ -1361,7 +1214,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
                 pChkRepeat->setIsChecked(isScaled9);
             });
         pBindings->push_back(pBinding);
-        pChkRepeat->onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
+        pChkRepeat->onCheckChanged = [=](const OUICheckBoxRef& pTextBox, const onut::UICheckEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1369,12 +1222,12 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.left
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.x; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.x = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.padding.x; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->scale9Component.padding.x = padding; },
             [=]{return pTxtPaddingLeft->getFloat(); },
             [=](const float& padding) {pTxtPaddingLeft->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingLeft->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingLeft->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1382,12 +1235,12 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.right
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.z; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.z = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.padding.z; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->scale9Component.padding.z = padding; },
             [=]{return pTxtPaddingRight->getFloat(); },
             [=](const float& padding) {pTxtPaddingRight->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingRight->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingRight->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1395,12 +1248,12 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.top
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.y; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.y = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.padding.y; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->scale9Component.padding.y = padding; },
             [=]{return pTxtPaddingTop->getFloat(); },
             [=](const float& padding) {pTxtPaddingTop->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingTop->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingTop->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1408,12 +1261,12 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
     { // padding.bottom
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->scale9Component.padding.w; },
-            [](TuiType* pControl, const float& padding){pControl->scale9Component.padding.w = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->scale9Component.padding.w; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->scale9Component.padding.w = padding; },
             [=]{return pTxtPaddingBottom->getFloat(); },
             [=](const float& padding) {pTxtPaddingBottom->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingBottom->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingBottom->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1423,42 +1276,42 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 template<typename TuiType>
 void BIND_TEXT_COMPONENT(const std::string& name)
 {
-    auto pLabel = new onut::UILabel();
-    auto pContainer = new onut::UIPanel();
-    auto pTxtText = new onut::UITextBox();
-    auto pBtnColor = new onut::UIPanel();
-    auto pTxtTypeFace = new onut::UITextBox();
-    auto pLblSize = new onut::UILabel();
-    auto pTxtSize = new onut::UITextBox();
-    auto pLblMinSize = new onut::UILabel();
-    auto pTxtMinSize = new onut::UITextBox();
-    auto pChkWordWrap = new onut::UICheckBox();
-    auto pChkAutoFit = new onut::UICheckBox();
-    auto pChkEllipsis = new onut::UICheckBox();
-    auto pLblPadding = new onut::UILabel();
-    auto pTxtPaddingLeft = new onut::UITextBox();
-    auto pTxtPaddingRight = new onut::UITextBox();
-    auto pTxtPaddingTop = new onut::UITextBox();
-    auto pTxtPaddingBottom = new onut::UITextBox();
-    auto pAlign = new onut::UIControl();
-    auto pAlignTL = new onut::UICheckBox();
-    auto pAlignT = new onut::UICheckBox();
-    auto pAlignTR = new onut::UICheckBox();
-    auto pAlignL = new onut::UICheckBox();
-    auto pAlignC = new onut::UICheckBox();
-    auto pAlignR = new onut::UICheckBox();
-    auto pAlignBL = new onut::UICheckBox();
-    auto pAlignB = new onut::UICheckBox();
-    auto pAlignBR = new onut::UICheckBox();
+    auto pLabel = onut::UILabel::create();
+    auto pContainer = onut::UIPanel::create();
+    auto pTxtText = onut::UITextBox::create();
+    auto pBtnColor = onut::UIPanel::create();
+    auto pTxtTypeFace = onut::UITextBox::create();
+    auto pLblSize = onut::UILabel::create();
+    auto pTxtSize = onut::UITextBox::create();
+    auto pLblMinSize = onut::UILabel::create();
+    auto pTxtMinSize = onut::UITextBox::create();
+    auto pChkWordWrap = onut::UICheckBox::create();
+    auto pChkAutoFit = onut::UICheckBox::create();
+    auto pChkEllipsis = onut::UICheckBox::create();
+    auto pLblPadding = onut::UILabel::create();
+    auto pTxtPaddingLeft = onut::UITextBox::create();
+    auto pTxtPaddingRight = onut::UITextBox::create();
+    auto pTxtPaddingTop = onut::UITextBox::create();
+    auto pTxtPaddingBottom = onut::UITextBox::create();
+    auto pAlign = onut::UIControl::create();
+    auto pAlignTL = onut::UICheckBox::create();
+    auto pAlignT = onut::UICheckBox::create();
+    auto pAlignTR = onut::UICheckBox::create();
+    auto pAlignL = onut::UICheckBox::create();
+    auto pAlignC = onut::UICheckBox::create();
+    auto pAlignR = onut::UICheckBox::create();
+    auto pAlignBL = onut::UICheckBox::create();
+    auto pAlignB = onut::UICheckBox::create();
+    auto pAlignBR = onut::UICheckBox::create();
 
     pLabel->textComponent.text = name;
     pLabel->rect = {{4, yPos}, {58, 174}};
 
     pContainer->setStyle("group");
-    pContainer->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pContainer->widthType = (OUIControl::DimType::Relative);
     pContainer->rect = {{66, yPos}, {-70, 174}};
 
-    pTxtText->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pTxtText->widthType = (OUIControl::DimType::Relative);
     pTxtText->rect = {{4, 4}, {-8, 24}};
 
     pBtnColor->setStyle("colorPicker");
@@ -1519,54 +1372,54 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     pAlignTL->setStyle("align");
     pAlignTL->rect = {{0, 0}, {18, 18}};
     pAlignTL->align = OTopLeft;
-    pAlignTL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignTL->behavior = OUICheckBox::CheckBehavior::Exclusive;
 
     pAlignT->setStyle("align");
     pAlignT->rect = {{0, 0}, {18, 18}};
     pAlignT->align = (OTop);
-    pAlignT->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignT->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignT->anchor = {.5f, 0};
 
     pAlignTR->setStyle("align");
     pAlignTR->rect = {{0, 0}, {18, 18}};
     pAlignTR->align = (OTopRight);
-    pAlignTR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignTR->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignTR->anchor = {1, 0};
 
     pAlignL->setStyle("align");
     pAlignL->rect = {{0, 0}, {18, 18}};
     pAlignL->align = (OLeft);
-    pAlignL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignL->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignL->anchor = {0, .5f};
 
     pAlignC->setStyle("align");
     pAlignC->rect = {{0, 0}, {18, 18}};
     pAlignC->align = (OCenter);
-    pAlignC->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignC->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignC->anchor = {.5f, .5f};
 
     pAlignR->setStyle("align");
     pAlignR->rect = {{0, 0}, {18, 18}};
     pAlignR->align = (ORight);
-    pAlignR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignR->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignR->anchor = {1, .5f};
 
     pAlignBL->setStyle("align");
     pAlignBL->rect = {{0, 0}, {18, 18}};
     pAlignBL->align = (OBottomLeft);
-    pAlignBL->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignBL->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignBL->anchor = {0, 1};
 
     pAlignB->setStyle("align");
     pAlignB->rect = {{0, 0}, {18, 18}};
     pAlignB->align = (OBottom);
-    pAlignB->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignB->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignB->anchor = {.5f, 1};
 
     pAlignBR->setStyle("align");
     pAlignBR->rect = {{0, 0}, {18, 18}};
     pAlignBR->align = (OBottomRight);
-    pAlignBR->behavior = onut::eUICheckBehavior::EXCLUSIVE;
+    pAlignBR->behavior = OUICheckBox::CheckBehavior::Exclusive;
     pAlignBR->anchor = {1, 1};
 
     pPnl->add(pLabel);
@@ -1599,8 +1452,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
 
     yPos += 174 + 4;
 
-    auto mouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    auto mouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    auto mouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    auto mouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     pTxtText->onMouseEnter = mouseEnter;
     pTxtText->onMouseLeave = mouseLeave;
     pTxtTypeFace->onMouseEnter = mouseEnter;
@@ -1623,10 +1476,10 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // text
         auto pBinding = new ControlInspectorBind<std::string, TuiType>(
             actionName, &(pTxtText->textComponent.text),
-            [](TuiType* pControl) {return pControl->textComponent.text; },
-            [](TuiType* pControl, const std::string& text){pControl->textComponent.text = text; });
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.text; },
+            [](const std::shared_ptr<TuiType>& pControl, const std::string& text){pControl->textComponent.text = text; });
         pBindings->push_back(pBinding);
-        pTxtText->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtText->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1634,10 +1487,10 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // color
         auto pBinding = new ControlInspectorBind<Color, TuiType>(
             actionName, &(pBtnColor->color),
-            [](TuiType* pControl) {return pControl->textComponent.font.color; },
-            [](TuiType* pControl, const Color& color){pControl->textComponent.font.color = color; });
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.color; },
+            [](const std::shared_ptr<TuiType>& pControl, const Color& color){pControl->textComponent.font.color = color; });
         pBindings->push_back(pBinding);
-        pBtnColor->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& evt)
+        pBtnColor->onClick = [=](const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
         {
             CHOOSECOLOR colorChooser = {0};
             DWORD rgbCurrent; // initial color selection
@@ -1661,10 +1514,10 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // typeFace
         auto pBinding = new ControlInspectorBind<std::string, TuiType>(
             actionName, &(pTxtTypeFace->textComponent.text),
-            [](TuiType* pControl) {return pControl->textComponent.font.typeFace; },
-            [](TuiType* pControl, const std::string& typeFace){pControl->textComponent.font.typeFace = typeFace; });
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.typeFace; },
+            [](const std::shared_ptr<TuiType>& pControl, const std::string& typeFace){pControl->textComponent.font.typeFace = typeFace; });
         pBindings->push_back(pBinding);
-        pTxtTypeFace->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtTypeFace->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1672,12 +1525,12 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // size
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.size; },
-            [](TuiType* pControl, const float& size){pControl->textComponent.font.size = size; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.size; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& size){pControl->textComponent.font.size = size; },
             [=]{return pTxtSize->getFloat(); },
             [=](const float& size) {pTxtSize->setFloat(size); });
         pBindings->push_back(pBinding);
-        pTxtSize->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtSize->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1685,12 +1538,12 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // minSize
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.minSize; },
-            [](TuiType* pControl, const float& minSize){pControl->textComponent.font.minSize = minSize; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.minSize; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& minSize){pControl->textComponent.font.minSize = minSize; },
             [=]{return pTxtMinSize->getFloat(); },
             [=](const float& minSize) {pTxtMinSize->setFloat(minSize); });
         pBindings->push_back(pBinding);
-        pTxtMinSize->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtMinSize->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1698,12 +1551,12 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.left
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.x; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.x = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.padding.x; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->textComponent.font.padding.x = padding; },
             [=]{return pTxtPaddingLeft->getFloat(); },
             [=](const float& padding) {pTxtPaddingLeft->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingLeft->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingLeft->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1711,12 +1564,12 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.right
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.z; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.z = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.padding.z; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->textComponent.font.padding.z = padding; },
             [=]{return pTxtPaddingRight->getFloat(); },
             [=](const float& padding) {pTxtPaddingRight->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingRight->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingRight->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1724,12 +1577,12 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.top
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.y; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.y = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.padding.y; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->textComponent.font.padding.y = padding; },
             [=]{return pTxtPaddingTop->getFloat(); },
             [=](const float& padding) {pTxtPaddingTop->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingTop->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingTop->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1737,12 +1590,12 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // padding.bottom
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.padding.w; },
-            [](TuiType* pControl, const float& padding){pControl->textComponent.font.padding.w = padding; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.padding.w; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->textComponent.font.padding.w = padding; },
             [=]{return pTxtPaddingBottom->getFloat(); },
             [=](const float& padding) {pTxtPaddingBottom->setFloat(padding); });
         pBindings->push_back(pBinding);
-        pTxtPaddingBottom->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+        pTxtPaddingBottom->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1750,25 +1603,25 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // flags
         auto pBinding = new ControlInspectorBind<uint8_t, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.flags; },
-            [](TuiType* pControl, const uint8_t& flags){pControl->textComponent.font.flags = flags; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.flags; },
+            [](const std::shared_ptr<TuiType>& pControl, const uint8_t& flags){pControl->textComponent.font.flags = flags; },
             [=]
             {
                 uint8_t flags = 0;
-                if (pChkWordWrap->getIsChecked()) flags |= onut::sUIFont::WORD_WRAP;
-                if (pChkAutoFit->getIsChecked()) flags |= onut::sUIFont::AUTO_FIT_SIZE;
-                if (pChkEllipsis->getIsChecked()) flags |= onut::sUIFont::ELLIPSIS;
+                if (pChkWordWrap->getIsChecked()) flags |= onut::UIFontComponent::WordWrap;
+                if (pChkAutoFit->getIsChecked()) flags |= onut::UIFontComponent::AutoFitSize;
+                if (pChkEllipsis->getIsChecked()) flags |= onut::UIFontComponent::Ellipsis;
                 return flags;
             },
             [=](const uint8_t& flags)
             {
-                pChkWordWrap->setIsChecked(flags & onut::sUIFont::WORD_WRAP ? true : false);
-                pChkAutoFit->setIsChecked(flags & onut::sUIFont::AUTO_FIT_SIZE ? true : false);
-                pChkEllipsis->setIsChecked(flags & onut::sUIFont::ELLIPSIS ? true : false);
-                pTxtMinSize->isEnabled = flags & onut::sUIFont::AUTO_FIT_SIZE ? true : false;
+                pChkWordWrap->setIsChecked(flags & onut::UIFontComponent::WordWrap ? true : false);
+                pChkAutoFit->setIsChecked(flags & onut::UIFontComponent::AutoFitSize ? true : false);
+                pChkEllipsis->setIsChecked(flags & onut::UIFontComponent::Ellipsis ? true : false);
+                pTxtMinSize->isEnabled = flags & onut::UIFontComponent::AutoFitSize ? true : false;
             });
         pBindings->push_back(pBinding);
-        auto onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
+        auto onCheckChanged = [=](const OUICheckBoxRef& pTextBox, const onut::UICheckEvent& evt)
         {
             pBinding->updateControl(g_pDocument->pSelected);
         };
@@ -1779,8 +1632,8 @@ void BIND_TEXT_COMPONENT(const std::string& name)
     { // align
         auto pBinding = new ControlInspectorBind<onut::Align, TuiType>(
             actionName, nullptr,
-            [](TuiType* pControl) {return pControl->textComponent.font.align; },
-            [](TuiType* pControl, const onut::Align& align){pControl->textComponent.font.align = align; },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->textComponent.font.align; },
+            [](const std::shared_ptr<TuiType>& pControl, const onut::Align& align){pControl->textComponent.font.align = align; },
             [=]
             {
                 if (pAlignTL->getIsChecked()) return OTopLeft;
@@ -1810,7 +1663,7 @@ void BIND_TEXT_COMPONENT(const std::string& name)
                 }
             });
         pBindings->push_back(pBinding);
-        auto onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
+        auto onCheckChanged = [=](const OUICheckBoxRef& pTextBox, const onut::UICheckEvent& evt)
         {
             if (!evt.isChecked) return;
             pBinding->updateControl(g_pDocument->pSelected);
@@ -1830,15 +1683,15 @@ void BIND_TEXT_COMPONENT(const std::string& name)
 template<typename TuiType, typename Tgetter, typename Tsetter>
 void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
 {
-    auto pLabel = new onut::UILabel();
-    auto pTextBox = new onut::UITextBox();
+    auto pLabel = onut::UILabel::create();
+    auto pTextBox = onut::UITextBox::create();
 
     pLabel->textComponent.text = name;
-    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->widthType = (OUIControl::DimType::DIM_PERCENTAGE);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
     pTextBox->align = (OTopRight);
-    pTextBox->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pTextBox->widthType = (OUIControl::DimType::DIM_PERCENTAGE);
     pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
     pTextBox->anchor = {1, 0};
 
@@ -1851,9 +1704,9 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
-    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    pTextBox->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    pTextBox->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
     };
@@ -1862,15 +1715,15 @@ void BIND_TEXT_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
 template<typename TuiType, typename Tgetter, typename Tsetter>
 void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter, int decimalCount = 0)
 {
-    auto pLabel = new onut::UILabel();
-    auto pTextBox = new onut::UITextBox();
+    auto pLabel = onut::UILabel::create();
+    auto pTextBox = onut::UITextBox::create();
 
     pLabel->textComponent.text = name;
-    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->widthType = (OUIControl::DimType::Percentage);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
     pTextBox->align = (OTopRight);
-    pTextBox->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pTextBox->widthType = (OUIControl::DimType::Percentage);
     pTextBox->rect = {{-4, yPos}, {0.618f, 24}};
     pTextBox->anchor = {1, 0};
     pTextBox->setIsNumerical(true);
@@ -1885,9 +1738,9 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
-    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    pTextBox->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    pTextBox->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
     };
@@ -1896,10 +1749,10 @@ void BIND_NUMERIC_PROPERTY(const std::string& name, Tgetter getter, Tsetter sett
 template<typename TuiType, typename Tgetter, typename Tsetter>
 void BIND_BOOL_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
 {
-    auto pCheckBox = new onut::UICheckBox();
+    auto pCheckBox = onut::UICheckBox::create();
 
     pCheckBox->textComponent.text = name;
-    pCheckBox->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pCheckBox->widthType = (OUIControl::DimType::Relative);
     pCheckBox->rect = {{4, yPos}, {-8, 24}};
 
     yPos += 24 + 4;
@@ -1918,7 +1771,7 @@ void BIND_BOOL_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter)
     });
     pBindings->push_back(pBinding);
 
-    pCheckBox->onCheckChanged = [=](onut::UICheckBox* pTextBox, const onut::UICheckEvent& evt)
+    pCheckBox->onCheckChanged = [=](const OUICheckBoxRef& pTextBox, const onut::UICheckEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
     };
@@ -1933,15 +1786,15 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
     auto pBrowseButton = new onut::UIButton();
 
     pLabel->textComponent.text = name;
-    pLabel->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pLabel->widthType = (OUIControl::DimType::DIM_PERCENTAGE);
     pLabel->rect = {{4, yPos}, {0.382f, 24}};
 
     pContainer->align = (OTopRight);
-    pContainer->widthType = (onut::eUIDimType::DIM_PERCENTAGE);
+    pContainer->widthType = (OUIControl::DimType::DIM_PERCENTAGE);
     pContainer->rect = {{-4, yPos}, {0.618f, 24}};
     pContainer->anchor = {1, 0};
 
-    pTextBox->widthType = (onut::eUIDimType::DIM_RELATIVE);
+    pTextBox->widthType = (OUIControl::DimType::DIM_RELATIVE);
     pTextBox->rect = {{0, 0}, {-32, 24}};
 
     pBrowseButton->align = (OTopRight);
@@ -1960,13 +1813,13 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
         (std::string("Edit ") + name, &(pTextBox->textComponent.text), getter, setter);
     pBindings->push_back(pBinding);
 
-    pTextBox->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    pTextBox->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
-    pTextBox->onTextChanged = [=](onut::UITextBox* pTextBox, const onut::UITextBoxEvent& evt)
+    pTextBox->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    pTextBox->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    pTextBox->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
     {
         pBinding->updateControl(g_pDocument->pSelected);
     };
-    pBrowseButton->onClick = [=](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent)
+    pBrowseButton->onClick = [=](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
     {
         std::string file = fileOpen(szFilter);
         if (!file.empty())
@@ -1987,13 +1840,13 @@ void BIND_FILE_PROPERTY(const std::string& name, const char* szFilter, Tgetter g
 
 #include "menu.h"
 
-void hookUIEvents(onut::UIControl* pUIScreen)
+void hookUIEvents(const OUIControlRef& pUIScreen)
 {
     curARROW = LoadCursor(nullptr, IDC_ARROW);
     curIBEAM = LoadCursor(nullptr, IDC_IBEAM);
 
     // Tool Bar
-    pUIScreen->getChild<onut::UICheckBox>("chkEditorStyle")->onCheckChanged = [&](onut::UICheckBox* pControl, const onut::UICheckEvent& checkEvent){
+    pUIScreen->getChild<onut::UICheckBox>("chkEditorStyle")->onCheckChanged = [&](const OUICheckBoxRef& pControl, const onut::UICheckEvent& checkEvent){
         if (checkEvent.isChecked)
         {
             g_pDocument->pUIContext = g_pDocument->pUIContextEditorStyle;
@@ -2003,15 +1856,15 @@ void hookUIEvents(onut::UIControl* pUIScreen)
             g_pDocument->pUIContext = g_pDocument->pUIContextUserStyle;
         }
     };
-    pUIScreen->getChild("toolNew")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_NEW); };
-    pUIScreen->getChild("toolOpen")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_OPEN); };
-    pUIScreen->getChild("toolSave")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
-    pUIScreen->getChild("toolCut")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_CUT); };
-    pUIScreen->getChild("toolCopy")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_COPY); };
-    pUIScreen->getChild("toolPaste")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_PASTE); };
-    pUIScreen->getChild("toolDelete")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_DELETE); };
-    pUIScreen->getChild("toolUndo")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_UNDO); };
-    pUIScreen->getChild("toolRedo")->onClick = [](onut::UIControl* pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_REDO); };
+    pUIScreen->getChild("toolNew")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_NEW); };
+    pUIScreen->getChild("toolOpen")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_OPEN); };
+    pUIScreen->getChild("toolSave")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_FILE_SAVE); };
+    pUIScreen->getChild("toolCut")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_CUT); };
+    pUIScreen->getChild("toolCopy")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_COPY); };
+    pUIScreen->getChild("toolPaste")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_PASTE); };
+    pUIScreen->getChild("toolDelete")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_DELETE); };
+    pUIScreen->getChild("toolUndo")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_UNDO); };
+    pUIScreen->getChild("toolRedo")->onClick = [](const OUIControlRef& pControl, const onut::UIMouseEvent& evt){onMenu(MENU_EDIT_REDO); };
 
     // Tool box
     pUIScreen->getChild("btnCreateControl")->onClick = onCreateControl;
@@ -2030,7 +1883,7 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     pUIScreen->getChild("pnlRegion")->onMouseUp = onSelectUp;
 
     // Scene Graph
-    dynamic_cast<onut::UITreeView*>(pUIScreen->getChild("sceneGraph"))->onSelectionChanged = onSceneGraphSelectionChanged;
+    ODynamicCast<OUITreeView>(pUIScreen->getChild("sceneGraph"))->onSelectionChanged = onSceneGraphSelectionChanged;
 
     // Inspector
     g_pInspector_UIControl_chkEnabled = pUIScreen->getChild<onut::UICheckBox>("chkEnabled");
@@ -2047,22 +1900,22 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtName = pUIScreen->getChild<onut::UITextBox>("txtName");
     g_pInspector_UIControl_txtName->onTextChanged = onUIControlNameChanged;
-    g_pInspector_UIControl_txtName->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtName->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtName->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtName->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
 
     g_pInspector_UIControl_txtStyle = pUIScreen->getChild<onut::UITextBox>("txtStyle");
     g_pInspector_UIControl_txtStyle->onTextChanged = onUIControlStyleChanged;
-    g_pInspector_UIControl_txtStyle->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtStyle->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtStyle->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtStyle->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
 
     g_pInspector_UIControl_txtX = pUIScreen->getChild<onut::UITextBox>("txtX");
     g_pInspector_UIControl_txtX->onTextChanged = onUIControlXChanged;
-    g_pInspector_UIControl_txtX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtX->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtX->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtY = pUIScreen->getChild<onut::UITextBox>("txtY");
     g_pInspector_UIControl_txtY->onTextChanged = onUIControlYChanged;
-    g_pInspector_UIControl_txtY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtY->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtY->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkXPercent = pUIScreen->getChild<onut::UICheckBox>("chkXPercent");
     g_pInspector_UIControl_chkXPercent->onCheckChanged = onUIControlXPercentChanged;
     g_pInspector_UIControl_chkYPercent = pUIScreen->getChild<onut::UICheckBox>("chkYPercent");
@@ -2070,12 +1923,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtWidth = pUIScreen->getChild<onut::UITextBox>("txtWidth");
     g_pInspector_UIControl_txtWidth->onTextChanged = onUIControlWidthChanged;
-    g_pInspector_UIControl_txtWidth->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtWidth->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtWidth->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtWidth->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtHeight = pUIScreen->getChild<onut::UITextBox>("txtHeight");
     g_pInspector_UIControl_txtHeight->onTextChanged = onUIControlHeightChanged;
-    g_pInspector_UIControl_txtHeight->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtHeight->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtHeight->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtHeight->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkWidthPercent = pUIScreen->getChild<onut::UICheckBox>("chkWidthPercent");
     g_pInspector_UIControl_chkWidthPercent->onCheckChanged = onUIControlWidthPercentChanged;
     g_pInspector_UIControl_chkHeightPercent = pUIScreen->getChild<onut::UICheckBox>("chkHeightPercent");
@@ -2098,12 +1951,12 @@ void hookUIEvents(onut::UIControl* pUIScreen)
 
     g_pInspector_UIControl_txtAnchorX = pUIScreen->getChild<onut::UITextBox>("txtAnchorX");
     g_pInspector_UIControl_txtAnchorX->onTextChanged = onUIControlAnchorXChanged;
-    g_pInspector_UIControl_txtAnchorX->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtAnchorX->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtAnchorX->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtAnchorX->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_txtAnchorY = pUIScreen->getChild<onut::UITextBox>("txtAnchorY");
     g_pInspector_UIControl_txtAnchorY->onTextChanged = onUIControlAnchorYChanged;
-    g_pInspector_UIControl_txtAnchorY->onMouseEnter = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
-    g_pInspector_UIControl_txtAnchorY->onMouseLeave = [&](onut::UIControl* pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    g_pInspector_UIControl_txtAnchorY->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    g_pInspector_UIControl_txtAnchorY->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
     g_pInspector_UIControl_chkXAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkXAnchorPercent");
     g_pInspector_UIControl_chkXAnchorPercent->onCheckChanged = onUIControlXAnchorPercentChanged;
     g_pInspector_UIControl_chkYAnchorPercent = pUIScreen->getChild<onut::UICheckBox>("chkYAnchorPercent");
@@ -2141,39 +1994,39 @@ void hookUIEvents(onut::UIControl* pUIScreen)
     //--- Controls inspector bindings
     
     // UIPanel
-    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_PANEL, "pnlInspector_UIPanel");
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::Panel, "pnlInspector_UIPanel");
     BIND_COLOR_PROPERTY<onut::UIPanel>("Background Color",
-                                       [=](onut::UIPanel* pPanel) -> Color {return pPanel->color; },
-                                       [=](onut::UIPanel* pPanel, const Color& color){ pPanel->color = color; });
+                                       [=](const OUIPanelRef& pPanel) -> Color {return pPanel->color; },
+                                       [=](const OUIPanelRef& pPanel, const Color& color){ pPanel->color = color; });
 
     // UIButton
-    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_BUTTON, "pnlInspector_UIButton");
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::Button, "pnlInspector_UIButton");
     BIND_TEXT_COMPONENT<onut::UIButton>("Caption");
     BIND_SCALE9_COMPONENT<onut::UIButton>("Bg Image");
 
     // UILabel
-    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_LABEL, "pnlInspector_UILabel");
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::Label, "pnlInspector_UILabel");
     BIND_TEXT_COMPONENT<onut::UILabel>("Text");
     
     // UIImage
-    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_IMAGE, "pnlInspector_UIImage");
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::Image, "pnlInspector_UIImage");
     BIND_SCALE9_COMPONENT<onut::UIImage>("Image");
 
     // UICheckBox
-    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_CHECKBOX, "pnlInspector_UICheckBox");
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::CheckBox, "pnlInspector_UICheckBox");
     BIND_TEXT_COMPONENT<onut::UICheckBox>("Text");
     BIND_BOOL_PROPERTY<onut::UICheckBox>("Checked",
-                                         [](onut::UICheckBox* pControl) {return pControl->getIsChecked(); },
-                                         [](onut::UICheckBox* pControl, const bool& isChecked){pControl->setIsChecked(isChecked); });
+                                         [](const OUICheckBoxRef& pControl) {return pControl->getIsChecked(); },
+                                         [](const OUICheckBoxRef& pControl, const bool& isChecked){pControl->setIsChecked(isChecked); });
 
     // UITextBox
-    BEGIN_BINDINGS(pUIScreen, onut::eUIType::UI_TEXTBOX, "pnlInspector_UITextBox");
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::TextBox, "pnlInspector_UITextBox");
     BIND_TEXT_COMPONENT<onut::UITextBox>("Text");
     BIND_SCALE9_COMPONENT<onut::UITextBox>("Bg Image");
     BIND_BOOL_PROPERTY<onut::UITextBox>("Numerical",
-                                        [](onut::UITextBox* pControl) {return pControl->getIsNumerical(); },
-                                        [](onut::UITextBox* pControl, const bool& isNumerical){pControl->setIsNumerical(isNumerical); });
+                                        [](const OUITextBoxRef& pControl) {return pControl->getIsNumerical(); },
+                                        [](const OUITextBoxRef& pControl, const bool& isNumerical){pControl->setIsNumerical(isNumerical); });
     BIND_NUMERIC_PROPERTY<onut::UITextBox>("Decimal",
-                                        [](onut::UITextBox* pControl) {return std::to_string(pControl->getDecimalPrecision()); },
-                                        [](onut::UITextBox* pControl, const std::string& decimal){pControl->setIsDecimalPrecision(std::stoi(decimal)); });
+                                        [](const OUITextBoxRef& pControl) {return std::to_string(pControl->getDecimalPrecision()); },
+                                        [](const OUITextBoxRef& pControl, const std::string& decimal){pControl->setIsDecimalPrecision(std::stoi(decimal)); });
 }

@@ -8,6 +8,9 @@
 #include "onut/Input.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/UIContext.h"
+#include "onut/UIControl.h"
+#include "onut/UIPanel.h"
 #include "onut/Window.h"
 
 void init();
@@ -15,8 +18,8 @@ void update();
 void render();
 
 DocumentView*       g_pDocument = nullptr;
-onut::UIContext*    g_pUIContext = nullptr;
-onut::UIControl*    g_pUIScreen = nullptr;
+OUIContextRef g_pUIContext = nullptr;
+OUIControlRef g_pUIScreen = nullptr;
 onut::ActionManager g_actionManager;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -40,24 +43,10 @@ void init()
 {
     oContentManager->addSearchPath("../../assets/textures/icons");
 
-    g_pUIContext = new onut::UIContext(Vector2{OScreenWf, OScreenHf});
-    g_pUIContext->onClipping = [](bool enabled, const Rect& rect)
-    {
-        oSpriteBatch->end();
-        oRenderer->renderStates.scissorEnabled = enabled;
-        if (enabled)
-        {
-            oRenderer->renderStates.scissor = {
-                static_cast<int>(rect.x), 
-                static_cast<int>(rect.y), 
-                static_cast<int>(rect.x + rect.z),
-                static_cast<int>(rect.y + rect.w)};
-        }
-        oSpriteBatch->begin();
-    };
+    g_pUIContext = OUIContext::create(Vector2{OScreenWf, OScreenHf});
     createUIStyles(g_pUIContext);
 
-    g_pUIContext->addStyle<onut::UIPanel>("sizableRegion", [](const onut::UIPanel* pPanel, const Rect& rect)
+    g_pUIContext->addStyle<OUIPanel>("sizableRegion", [](const OUIPanelRef& pPanel, const Rect& rect)
     {
         oSpriteBatch->drawRect(nullptr, (rect), Color::Black);
         oSpriteBatch->end();
@@ -81,8 +70,7 @@ void init()
         oSpriteBatch->begin();
     });
 
-    g_pUIScreen = new onut::UIControl("../../assets/ui/editor.json");
-    g_pUIScreen->retain();
+    g_pUIScreen = OUIControl::createFromFile("editor.json");
     hookUIEvents(g_pUIScreen);
 
     g_pDocument = new DocumentView("");
@@ -96,7 +84,7 @@ void init()
         if (!g_pDocument->isBusy())
         {
             g_pUIContext->keyDown(key);
-            if (!dynamic_cast<onut::UITextBox*>(g_pUIContext->getFocusControl()))
+            if (!ODynamicCast<OUITextBox>(g_pUIContext->getFocusControl()))
             {
                 checkShortCut(key);
                 g_pDocument->onKeyDown(key);
@@ -111,7 +99,7 @@ void update()
     g_pUIContext->resize({OScreenWf, OScreenHf});
 
     // Update.
-    g_pUIScreen->update(*g_pUIContext, {oInput->mousePosf.x, oInput->mousePosf.y}, OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),
+    g_pUIScreen->update(g_pUIContext, {oInput->mousePosf.x, oInput->mousePosf.y}, OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),
                         false, false, false, false,
                         OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
     g_pDocument->update();
@@ -122,6 +110,6 @@ void render()
     oRenderer->clear(OColorHex(1e1e1e));
 
     oSpriteBatch->begin();
-    g_pUIScreen->render(*g_pUIContext);
+    g_pUIScreen->render(g_pUIContext);
     oSpriteBatch->end();
 }

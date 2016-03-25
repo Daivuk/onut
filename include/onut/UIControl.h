@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "onut/ForwardDeclaration.h"
+OForwardDeclare(ContentManager);
 OForwardDeclare(UIContext);
 OForwardDeclare(UIControl);
 namespace rapidjson
@@ -111,7 +112,7 @@ namespace onut
         using Controls = std::vector<OUIControlRef>;
 
         static OUIControlRef create();
-        static OUIControlRef createFromFile(const std::string& filename);
+        static OUIControlRef createFromFile(const std::string& filename, OContentManagerRef pContentManager = nullptr);
 
         UIControl();
         UIControl(const UIControl& other);
@@ -134,6 +135,7 @@ namespace onut
         Vector2 anchor; /*! Anchor position */
         std::string name; /*! This control's name. Can be used to search for it */
         void* pUserData = nullptr; /*! Set whatever data you want on this. it will never be accessed or freed by onut::UI */
+        std::shared_ptr<void> pSharedUserData = nullptr; /*! Set whatever data you want on this. it will never be accessed or freed by onut::UI */
 
         void save(const std::string& filename) const;
 

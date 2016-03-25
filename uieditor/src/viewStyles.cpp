@@ -19,63 +19,63 @@ static const Color g_btnStatesColors[4][2] = {
 static OFontRef g_pFont;
 
 extern DocumentView* g_pDocument;
-extern onut::UIControl* g_pUIScreen;
-extern onut::UIContext* g_pUIContext;
+extern OUIControlRef g_pUIScreen;
+extern OUIContextRef g_pUIContext;
 
-void createViewUIStyles(onut::UIContext* pContext)
+void createViewUIStyles(const OUIContextRef& pContext)
 {
-    g_pFont = OGetFont("segeo12.fnt");
+    //g_pFont = OGetFont("segeo12.fnt");
 
-    pContext->onClipping = [](bool enabled, const Rect& rect)
-    {
-        oSpriteBatch->end();
+    //pContext->onClipping = [](bool enabled, const Rect& rect)
+    //{
+    //    oSpriteBatch->end();
 
-        auto regionRect = (g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext));
-        auto orect = (rect);
-        orect.x += regionRect.x;
-        orect.y += regionRect.y;
+    //    auto regionRect = (g_pUIScreen->getChild("pnlRegion")->getWorldRect(*g_pUIContext));
+    //    auto orect = (rect);
+    //    orect.x += regionRect.x;
+    //    orect.y += regionRect.y;
 
-        oRenderer->renderStates.scissorEnabled = enabled;
-        if (enabled)
-        {
-            oRenderer->renderStates.scissor = {static_cast<int>(orect.x), static_cast<int>(orect.y), static_cast<int>(orect.x + orect.z), static_cast<int>(orect.y + orect.w)};
-        }
-        oSpriteBatch->begin();
-    };
+    //    oRenderer->renderStates.scissorEnabled = enabled;
+    //    if (enabled)
+    //    {
+    //        oRenderer->renderStates.scissor = {static_cast<int>(orect.x), static_cast<int>(orect.y), static_cast<int>(orect.x + orect.z), static_cast<int>(orect.y + orect.w)};
+    //    }
+    //    oSpriteBatch->begin();
+    //};
 
-    pContext->drawRect = [pContext](onut::UIControl *pControl, const Rect &rect, const Color &color)
-    {
-        oSpriteBatch->drawRect(nullptr, (rect), (color));
-    };
+    //pContext->drawRect = [pContext](const OUIControlRef& pControl, const Rect &rect, const Color &color)
+    //{
+    //    oSpriteBatch->drawRect(nullptr, (rect), (color));
+    //};
 
-    pContext->drawTexturedRect = [pContext](onut::UIControl *pControl, const Rect &rect, const onut::sUIImageComponent &image)
-    {
-        auto pTexture = g_pDocument->pContentManager->getResourceAs<OTexture>(image.filename);
-        oSpriteBatch->drawRect(pTexture, (rect), (image.color));
-    };
+    //pContext->drawTexturedRect = [pContext](const OUIControlRef& pControl, const Rect &rect, const onut::UIImageComponent &image)
+    //{
+    //    auto pTexture = g_pDocument->pContentManager->getResourceAs<OTexture>(image.filename);
+    //    oSpriteBatch->drawRect(pTexture, (rect), (image.color));
+    //};
 
-    pContext->drawScale9Rect = [pContext](onut::UIControl *pControl, const Rect &rect, const onut::sUIScale9Component &scale9Component)
-    {
-        auto pTexture = g_pDocument->pContentManager->getResourceAs<OTexture>(scale9Component.image.filename);
-        if (pTexture)
-        {
-            if (scale9Component.isRepeat)
-            {
-                oSpriteBatch->drawRectScaled9RepeatCenters(pTexture, (rect), (scale9Component.padding), (scale9Component.image.color));
-            }
-            else
-            {
-                oSpriteBatch->drawRectScaled9(pTexture, (rect), (scale9Component.padding), (scale9Component.image.color));
-            }
-        }
-    };
+    //pContext->drawScale9Rect = [pContext](const OUIControlRef& pControl, const Rect &rect, const onut::UIScale9Component &scale9Component)
+    //{
+    //    auto pTexture = g_pDocument->pContentManager->getResourceAs<OTexture>(scale9Component.image.filename);
+    //    if (pTexture)
+    //    {
+    //        if (scale9Component.isRepeat)
+    //        {
+    //            oSpriteBatch->drawRectScaled9RepeatCenters(pTexture, (rect), (scale9Component.padding), (scale9Component.image.color));
+    //        }
+    //        else
+    //        {
+    //            oSpriteBatch->drawRectScaled9(pTexture, (rect), (scale9Component.padding), (scale9Component.image.color));
+    //        }
+    //    }
+    //};
 
-    pContext->drawText = [pContext](onut::UIControl *pControl, const Rect &rect, const onut::sUITextComponent &textComponent)
-    {
-        auto pFont = g_pDocument->pContentManager->getResourceAs<OFont>(textComponent.font.typeFace);
-        if (!pFont) pFont = g_pFont;
-        auto align = (textComponent.font.align);
-        auto oRect = (rect);
-        pFont->draw(textComponent.text, ORectAlign<>(oRect, align), align, (textComponent.font.color));
-    };
+    //pContext->drawText = [pContext](const OUIControlRef& pControl, const Rect &rect, const onut::UITextComponent &textComponent)
+    //{
+    //    auto pFont = g_pDocument->pContentManager->getResourceAs<OFont>(textComponent.font.typeFace);
+    //    if (!pFont) pFont = g_pFont;
+    //    auto align = (textComponent.font.align);
+    //    auto oRect = (rect);
+    //    pFont->draw(textComponent.text, ORectAlign<>(oRect, align), align, (textComponent.font.color));
+    //};
 }

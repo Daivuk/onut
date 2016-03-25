@@ -3,6 +3,7 @@
 
 #define OMake std::make_shared
 #define ODynamicCast std::dynamic_pointer_cast
+#define OStaticCast std::static_pointer_cast
 #define OThis shared_from_this()
 
 #define OForwardDeclare(__class__) \

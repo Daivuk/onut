@@ -59,7 +59,10 @@ namespace onut
         oUIContext->addStyle<onut::UIPanel>("blur", [](const OUIPanelRef& pPanel, const Rect& rect)
         {
             oSpriteBatch->end();
-            oRenderer->renderStates.renderTarget.get()->blur();
+            if (oRenderer->renderStates.renderTarget.get())
+            {
+                oRenderer->renderStates.renderTarget.get()->blur();
+            }
             oSpriteBatch->begin();
             oSpriteBatch->drawRect(nullptr, (rect), Color(0, 0, 0, .5f));
         });

@@ -1,4 +1,6 @@
 #pragma once
+#include "onut/UIContext.h"
+
 #include "onut_old.h"
 
-void createUIStyles(onut::UIContext* pContext);
+void createUIStyles(const OUIContextRef& pContext);

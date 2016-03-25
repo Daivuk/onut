@@ -1,4 +1,6 @@
 #pragma once
 #include "onut_old.h"
 
-void hookUIEvents(onut::UIControl* pUIScreen);
+#include "onut/UIControl.h"
+
+void hookUIEvents(const OUIControlRef& pUIScreen);

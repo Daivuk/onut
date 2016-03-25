@@ -482,6 +482,9 @@ namespace onut
         }
         isExpanded = other.isExpanded;
         text = other.text;
+        pSharedUserData = other.pSharedUserData;
+        pUserData = other.pUserData;
+        opacity = other.opacity;
     }
 
     void UITreeViewItem::setTreeView(const OUITreeViewRef& pTreeView)

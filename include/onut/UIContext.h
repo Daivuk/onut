@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "onut/ForwardDeclaration.h"
+OForwardDeclare(ContentManager)
 OForwardDeclare(Texture)
 OForwardDeclare(UIContext)
 OForwardDeclare(UIControl)
@@ -98,6 +99,7 @@ namespace onut
         DrawTextInsertCallback drawInsert = nullptr;
         std::chrono::steady_clock::duration doubleClickTime = std::chrono::milliseconds(500);
         bool useNavigation = false;
+        OContentManagerRef pContentManager;
 
         // Styles related function
         template<typename TobjType, typename TcallbackType>
