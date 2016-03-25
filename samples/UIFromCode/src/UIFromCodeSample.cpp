@@ -3,6 +3,9 @@
 
 // Oak Nut include
 #include "onut/Settings.h"
+#include "onut/UIButton.h"
+#include "onut/UIImage.h"
+#include "onut/UILabel.h"
 
 #include "onut_old.h"
 
@@ -22,21 +25,21 @@ void init()
     // Note: UIs are meant to be created using the editor. Doing it manually is a bit tedious.
 
     // Add frame in the middle of the screen
-    auto pFrame = new onut::UIImage();
+    auto pFrame = OUIImage::create();
     pFrame->anchor = {0.5f, 0.5f};
     pFrame->align = OCenter;
     pFrame->rect = {{0, 0}, {400, 300}};
     pFrame->scale9Component.image.filename = "Frame.png";
     pFrame->scale9Component.padding = {24, 24, 24, 24};
     pFrame->scale9Component.isScaled9 = true;
-    OUI->add(pFrame);
+    oUI->add(pFrame);
 
     // Title label
-    auto pTitle = new onut::UILabel();
+    auto pTitle = OUILabel::create();
     pTitle->anchor = {0.5f, 0.0f};
     pTitle->align = OTop;
     pTitle->rect = {{0, 8}, {-16, 24}};
-    pTitle->widthType = onut::eUIDimType::DIM_RELATIVE;
+    pTitle->widthType = OUIControl::DimType::Relative;
     pTitle->textComponent.font.align = OCenter;
     pTitle->textComponent.font.typeFace = "font.fnt";
     pTitle->textComponent.font.color = Color(1, 1, .5f, 1);
@@ -44,7 +47,7 @@ void init()
     pFrame->add(pTitle);
 
     // Add a quit button in bottom left of the frame
-    auto pQuitButton = new onut::UIButton();
+    auto pQuitButton = OUIButton::create();
     pQuitButton->anchor = {1, 1};
     pQuitButton->align = OBottomRight;
     pQuitButton->rect = {{-24, -24}, {100, 34}};
@@ -53,7 +56,7 @@ void init()
     pQuitButton->scale9Component.image.filename = "button.png";
     pQuitButton->scale9Component.padding = {13, 0, 13, 0};
     pQuitButton->scale9Component.isScaled9 = true;
-    pQuitButton->onClick = [](onut::UIControl* p, const onut::UIMouseEvent& e){ OQuit(); };
+    pQuitButton->onClick = [](const OUIControlRef& p, const onut::UIMouseEvent& e){ OQuit(); };
     pFrame->add(pQuitButton);
 }
 

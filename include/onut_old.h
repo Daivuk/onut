@@ -1,6 +1,5 @@
 #pragma once
 #include "onut/ParticleSystem.h"
-#include "onut/UI.h"
 
 #include "DefineHelpers.h"
 #include "ParticleSystemManager.h"
@@ -8,8 +7,6 @@
 
 // For quick stuff, we have shortcuts outside of the namespace
 extern onut::ParticleSystemManager<>*   OParticles;
-extern onut::UIControl*                 OUI;
-extern onut::UIContext*                 OUIContext;
 
 namespace onut
 {
@@ -38,12 +35,6 @@ inline auto OEmitPFX(const char* pName, const Vector3& position, const Vector3& 
 }
 
 using OEmitterInstance = onut::ParticleSystemManager<>::EmitterInstance;
-
-inline onut::UIControl* OLoadUI(const std::string& name)
-{
-    std::string filename = "../../assets/ui/" + name;
-    return new onut::UIControl(filename.c_str());
-}
 
 inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent)
 {
@@ -83,9 +74,4 @@ inline Vector4 OUVS(OTexture* pTexture, const Rect &rect)
 inline void OQuit()
 {
     PostQuitMessage(0);
-}
-
-inline onut::UIControl* OFindUI(const std::string& name)
-{
-    return OUI->getChild(name);
 }

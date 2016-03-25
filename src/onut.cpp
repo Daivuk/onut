@@ -10,6 +10,10 @@
 #include "onut/SpriteBatch.h"
 #include "onut/Texture.h"
 #include "onut/Timing.h"
+#include "onut/UIContext.h"
+#include "onut/UIControl.h"
+#include "onut/UIPanel.h"
+#include "onut/UITextBox.h"
 #include "onut/Updater.h"
 #include "onut/Window.h"
 
@@ -25,149 +29,17 @@ using namespace DirectX;
 // Our engine services
 AudioEngine*                        g_pAudioEngine = nullptr;
 onut::ParticleSystemManager<>*      OParticles = nullptr;
-onut::UIContext*                    OUIContext = nullptr;
-onut::UIControl*                    OUI = nullptr;
 
 namespace onut
 {
     void createUI()
     {
-        OUIContext = new UIContext(Vector2(OScreenWf, OScreenHf));
-        OUI = new UIControl();
-        OUI->retain();
-        OUI->widthType = eUIDimType::DIM_RELATIVE;
-        OUI->heightType = eUIDimType::DIM_RELATIVE;
+        oUIContext = UIContext::create(Vector2(OScreenWf, OScreenHf));
+        oUI = UIControl::create();
+        oUI->widthType = UIControl::DimType::Relative;
+        oUI->heightType = UIControl::DimType::Relative;
 
-        OUIContext->onClipping = [](bool enabled, const Rect& rect)
-        {
-            oSpriteBatch->end();
-            oRenderer->renderStates.scissorEnabled = enabled;
-            oRenderer->renderStates.scissor = iRect{
-                static_cast<int>(rect.x),
-                static_cast<int>(rect.y),
-                static_cast<int>(rect.x + rect.z),
-                static_cast<int>(rect.y + rect.w)
-            };
-            oSpriteBatch->begin();
-        };
-
-        auto getTextureForState = [](onut::UIControl *pControl, const std::string &filename)
-        {
-            static std::string stateFilename;
-            stateFilename = filename;
-            OTextureRef pTexture;
-            switch (pControl->getState(*OUIContext))
-            {
-                case onut::eUIState::NORMAL:
-                    pTexture = OGetTexture(filename.c_str());
-                    break;
-                case onut::eUIState::DISABLED:
-                    stateFilename.insert(filename.size() - 4, "_disabled");
-                    pTexture = OGetTexture(stateFilename.c_str());
-                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
-                    break;
-                case onut::eUIState::HOVER:
-                    stateFilename.insert(filename.size() - 4, "_hover");
-                    pTexture = OGetTexture(stateFilename.c_str());
-                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
-                    break;
-                case onut::eUIState::DOWN:
-                    stateFilename.insert(filename.size() - 4, "_down");
-                    pTexture = OGetTexture(stateFilename.c_str());
-                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
-                    break;
-            }
-            return pTexture;
-        };
-
-        OUIContext->drawRect = [=](onut::UIControl *pControl, const Rect &rect, const Color &color)
-        {
-            oSpriteBatch->drawRect(nullptr, rect, color);
-        };
-
-        OUIContext->drawTexturedRect = [=](onut::UIControl *pControl, const Rect &rect, const onut::sUIImageComponent &image)
-        {
-            oSpriteBatch->drawRect(getTextureForState(pControl, image.filename),
-                          rect,
-                          image.color);
-        };
-
-        OUIContext->drawScale9Rect = [=](onut::UIControl* pControl, const Rect& rect, const onut::sUIScale9Component& scale9)
-        {
-            const std::string &filename = scale9.image.filename;
-            static std::string stateFilename;
-            stateFilename = filename;
-            OTextureRef pTexture;
-            switch (pControl->getState(*OUIContext))
-            {
-                case onut::eUIState::NORMAL:
-                    pTexture = OGetTexture(filename.c_str());
-                    break;
-                case onut::eUIState::DISABLED:
-                    stateFilename.insert(filename.size() - 4, "_disabled");
-                    pTexture = OGetTexture(stateFilename.c_str());
-                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
-                    break;
-                case onut::eUIState::HOVER:
-                    stateFilename.insert(filename.size() - 4, "_hover");
-                    pTexture = OGetTexture(stateFilename.c_str());
-                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
-                    break;
-                case onut::eUIState::DOWN:
-                    stateFilename.insert(filename.size() - 4, "_down");
-                    pTexture = OGetTexture(stateFilename.c_str());
-                    if (!pTexture) pTexture = OGetTexture(filename.c_str());
-                    break;
-            }
-            if (scale9.isRepeat)
-            {
-                oSpriteBatch->drawRectScaled9RepeatCenters(getTextureForState(pControl, scale9.image.filename),
-                                                  (rect),
-                                                  (scale9.padding),
-                                                  (scale9.image.color));
-            }
-            else
-            {
-                oSpriteBatch->drawRectScaled9(getTextureForState(pControl, scale9.image.filename),
-                                     (rect),
-                                     (scale9.padding),
-                                     (scale9.image.color));
-            }
-        };
-
-        OUIContext->drawText = [=](onut::UIControl* pControl, const Rect& rect, const onut::sUITextComponent& text)
-        {
-            if (text.text.empty()) return;
-            auto align = (text.font.align);
-            auto oRect = (rect);
-            auto pFont = OGetFont(text.font.typeFace.c_str());
-            auto oColor = (text.font.color);
-            if (pControl->getState(*OUIContext) == onut::eUIState::DISABLED)
-            {
-                oColor = {.4f, .4f, .4f, 1};
-            }
-            oColor.Premultiply();
-
-            if (pFont)
-            {
-                if (pControl->getStyleName() == "password")
-                {
-                    std::string pwd;
-                    pwd.resize(text.text.size(), '*');
-                    if (pControl->hasFocus(*OUIContext) && ((onut::UITextBox*)pControl)->isCursorVisible())
-                    {
-                        pwd.back() = '_';
-                    }
-                    pFont->draw(pwd, ORectAlign<>(oRect, align), Vector2(align), oColor);
-                }
-                else
-                {
-                    pFont->draw(text.text, ORectAlign<>(oRect, align), Vector2(align), oColor);
-                }
-            }
-        };
-
-        OUIContext->addTextCaretSolver<onut::UITextBox>("", [=](const onut::UITextBox* pTextBox, const Vector2& localPos) -> decltype(std::string().size())
+        oUIContext->addTextCaretSolver<onut::UITextBox>("", [=](const OUITextBoxRef& pTextBox, const Vector2& localPos) -> decltype(std::string().size())
         {
             auto pFont = OGetFont(pTextBox->textComponent.font.typeFace.c_str());
             if (!pFont) return 0;
@@ -177,14 +49,14 @@ namespace onut
 
         oWindow->onWrite = [](char c)
         {
-            OUIContext->write(c);
+            oUIContext->write(c);
         };
         oWindow->onKey = [](uintptr_t key)
         {
-            OUIContext->keyDown(key);
+            oUIContext->keyDown(key);
         };
 
-        OUIContext->addStyle<onut::UIPanel>("blur", [](const onut::UIPanel* pPanel, const Rect& rect)
+        oUIContext->addStyle<onut::UIPanel>("blur", [](const OUIPanelRef& pPanel, const Rect& rect)
         {
             oSpriteBatch->end();
             oRenderer->renderStates.renderTarget.get()->blur();
@@ -252,7 +124,8 @@ namespace onut
     {
         oDispatcher = nullptr;
         oUpdater = nullptr;
-        delete OUIContext;
+        oUI = nullptr;
+        oUIContext = nullptr;
         delete OParticles;
         delete g_pAudioEngine;
         oInput = nullptr;
@@ -328,9 +201,9 @@ namespace onut
                 oInput->mousePosf.y = static_cast<float>(cur.y);
                 oUpdater->update();
                 auto mousePosf = OGetMousePos();
-                if (OUIContext->useNavigation)
+                if (oUIContext->useNavigation)
                 {
-                    OUI->update(*OUIContext, Vector2(mousePosf.x, mousePosf.y), OGamePadPressed(OGamePadA), false, false,
+                    oUI->update(oUIContext, Vector2(mousePosf.x, mousePosf.y), OGamePadPressed(OGamePadA), false, false,
                                 OGamePadJustPressed(OGamePadDPadLeft) || OGamePadJustPressed(OGamePadLeftThumbLeft),
                                 OGamePadJustPressed(OGamePadDPadRight) || OGamePadJustPressed(OGamePadLeftThumbRight),
                                 OGamePadJustPressed(OGamePadDPadUp) || OGamePadJustPressed(OGamePadLeftThumbUp),
@@ -339,7 +212,7 @@ namespace onut
                 }
                 else
                 {
-                    OUI->update(*OUIContext, Vector2(mousePosf.x, mousePosf.y), 
+                    oUI->update(oUIContext, Vector2(mousePosf.x, mousePosf.y),
                                 OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),
                                 false, false, false, false, 
                                 OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
@@ -360,7 +233,7 @@ namespace onut
             }
             OParticles->render();
             oSpriteBatch->begin();
-            OUI->render(*OUIContext);
+            oUI->render(oUIContext);
             oSpriteBatch->end();
             oRenderer->endFrame();
         }

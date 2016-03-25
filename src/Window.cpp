@@ -1,6 +1,7 @@
 ﻿#include "onut/Point.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/UIContext.h"
 #include "onut/Window.h"
 
 #include "onut_old.h"
@@ -26,9 +27,9 @@ namespace onut
             {
                 oRenderer->onResize(Point{static_cast<int>(LOWORD(lparam)), static_cast<int>(HIWORD(lparam))});
             }
-            if (OUIContext)
+            if (oUIContext)
             {
-                OUIContext->resize(Vector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
+                oUIContext->resize(Vector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
             }
             if (oWindow)
             {

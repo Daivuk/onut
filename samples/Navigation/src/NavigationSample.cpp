@@ -3,6 +3,8 @@
 
 // Oak Nut include
 #include "onut/Settings.h"
+#include "onut/UIContext.h"
+#include "onut/UIControl.h"
 
 #include "onut_old.h"
 
@@ -19,21 +21,21 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void init()
 {
-    OUIContext->useNavigation = true; // We want to navigate the UI manually
+    oUIContext->useNavigation = true; // We want to navigate the UI manually
 
     // Load our sample UI
-    OUI->add(OLoadUI("example.json"));
+    oUI->add(OUIControl::createFromFile("example.json"));
 
     // Bind events
-    OFindUI("QuitButton")->onClick = [](onut::UIControl* pButton, const onut::UIMouseEvent& mouseEvent)
+    OFindUI("QuitButton")->onClick = [](const OUIControlRef& pButton, const onut::UIMouseEvent& mouseEvent)
     {
         OQuit();
     };
-    OFindUI("ShowDialogButton")->onClick = [](onut::UIControl* pButton, const onut::UIMouseEvent& mouseEvent)
+    OFindUI("ShowDialogButton")->onClick = [](const OUIControlRef& pButton, const onut::UIMouseEvent& mouseEvent)
     {
         OFindUI("Dialog")->isVisible = true;
     };
-    OFindUI("CloseDialogButton")->onClick = [](onut::UIControl* pButton, const onut::UIMouseEvent& mouseEvent)
+    OFindUI("CloseDialogButton")->onClick = [](const OUIControlRef& pButton, const onut::UIMouseEvent& mouseEvent)
     {
         OFindUI("Dialog")->isVisible = false;
     };
