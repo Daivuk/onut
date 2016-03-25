@@ -2,6 +2,7 @@
 #include "DocumentView.h"
 #include "events.h"
 
+#include "onut/Files.h"
 #include "onut/Input.h"
 #include "onut/UIButton.h"
 #include "onut/UICheckBox.h"
@@ -11,8 +12,6 @@
 #include "onut/UITextBox.h"
 #include "onut/UITreeView.h"
 #include "onut/Window.h"
-
-#include "Utils.h"
 
 extern DocumentView* g_pDocument;
 extern OUIContextRef g_pUIContext;

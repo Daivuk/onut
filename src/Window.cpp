@@ -1,10 +1,9 @@
 ﻿#include "onut/Point.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/Strings.h"
 #include "onut/UIContext.h"
 #include "onut/Window.h"
-
-#include "Utils.h"
 
 #include <windowsx.h>
 

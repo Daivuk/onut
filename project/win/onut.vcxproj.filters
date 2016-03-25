@@ -116,9 +116,6 @@
     <ClInclude Include="..\..\include\RTS.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Utils.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h">
       <Filter>thirdparties\rapidjson</Filter>
     </ClInclude>
@@ -287,6 +284,12 @@
     <ClInclude Include="..\..\src\UIJson.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Strings.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Files.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ActionManager.cpp">
@@ -339,9 +342,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\zlib\gzclose.c">
       <Filter>thirdparties\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Utils.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Resource.cpp">
       <Filter>resources</Filter>
@@ -527,6 +527,12 @@
       <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp" />
+    <ClCompile Include="..\..\src\Strings.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Files.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

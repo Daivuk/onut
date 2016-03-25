@@ -1,10 +1,10 @@
 #include "onut/ContentManager.h"
 #include "onut/Music.h"
+#include "onut/Strings.h"
+
 #if defined(WIN32)
 #include "mp3/Mp3.h"
 #endif
-
-#include "Utils.h"
 
 #include <cassert>
 

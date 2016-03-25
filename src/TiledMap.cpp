@@ -1,11 +1,11 @@
 #include "onut/ContentManager.h"
 #include "onut/Crypto.h"
+#include "onut/Files.h"
 #include "onut/Renderer.h"
 #include "onut/SpriteBatch.h"
+#include "onut/Strings.h"
 #include "onut/Texture.h"
 #include "onut/TiledMap.h"
-
-#include "Utils.h"
 
 #include "tinyxml2/tinyxml2.h"
 #include "zlib/zlib.h"

@@ -1,9 +1,8 @@
 #include "onut/Async.h"
 #include "onut/Dispatcher.h"
 #include "onut/Http.h"
+#include "onut/Strings.h"
 #include "onut/Texture.h"
-
-#include "Utils.h"
 
 #if defined(WIN32)
 #include <atlbase.h>

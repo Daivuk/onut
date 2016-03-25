@@ -19,6 +19,7 @@
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
+    <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\GamePad.h" />
     <ClInclude Include="..\..\include\onut\Http.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
     <ClInclude Include="..\..\include\onut\SpriteBatch.h" />
+    <ClInclude Include="..\..\include\onut\Strings.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
     <ClInclude Include="..\..\include\onut\PrimitiveMode.h" />
     <ClInclude Include="..\..\include\onut\Timing.h" />
@@ -82,7 +84,6 @@
     <ClInclude Include="..\..\include\RTS.h" />
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
-    <ClInclude Include="..\..\include\Utils.h" />
     <ClInclude Include="..\..\src\audio\Audio.h" />
     <ClInclude Include="..\..\src\audio\pch.h" />
     <ClInclude Include="..\..\src\audio\SoundCommon.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
+    <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />
@@ -143,6 +145,7 @@
     <ClCompile Include="..\..\src\Shader.cpp" />
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
+    <ClCompile Include="..\..\src\Strings.cpp" />
     <ClCompile Include="..\..\src\Timing.cpp" />
     <ClCompile Include="..\..\src\Timer.cpp" />
     <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp" />
@@ -170,7 +173,6 @@
     <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\SpriteAnim.cpp" />
     <ClCompile Include="..\..\src\SpriteBatch.cpp" />
-    <ClCompile Include="..\..\src\Utils.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\TiledMap.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />

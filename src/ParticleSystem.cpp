@@ -1,9 +1,8 @@
 #include "onut/ContentManager.h"
 #include "onut/Log.h"
 #include "onut/ParticleSystem.h"
+#include "onut/Strings.h"
 #include "onut/Texture.h"
-
-#include "Utils.h"
 
 #include "rapidjson/filestream.h"
 #include "tinyxml2/tinyxml2.h"

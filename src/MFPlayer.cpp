@@ -1,9 +1,9 @@
 #if defined(WIN32)
-#include "MFPlayer.h"
+#include "onut/Strings.h"
 #include "onut/Texture.h"
 
+#include "MFPlayer.h"
 #include "RendererD3D11.h"
-#include "Utils.h"
 
 #include <cassert>
 #include <codecvt>
