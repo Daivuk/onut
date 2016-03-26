@@ -4,14 +4,14 @@
 // Oak Nut include
 #include "onut/Anim.h"
 #include "onut/ParticleSystem.h"
+#include "onut/ParticleSystemManager.h"
 #include "onut/Font.h"
 #include "onut/Input.h"
 #include "onut/onut.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
+#include "onut/SpriteBatch.h"
 #include "onut/Timing.h"
-
-#include "ParticleSystemManager.h"
 
 void init();
 void update();
@@ -37,7 +37,7 @@ void update()
 
     if (OInputJustPressed(OKey1))
     {
-        OEmitPFX("test.pfx", Vector3{OScreenWf / 3, OScreenHf / 2, 0});
+        OEmitParticles("test.pfx", Vector3{OScreenWf / 3, OScreenHf / 2, 0});
     }
     if (OInputJustPressed(OKey2))
     {
@@ -50,7 +50,7 @@ void update()
             // Animate it back and forth across the screen
             position.play(Vector3{OScreenWf - 100, OScreenHf / 2, 0}, Vector3{100, OScreenHf / 2, 0}, 2.f, OTweenLinear, OPingPongLoop);
 
-            emitter = OEmitPFX("test2.pex", position);
+            emitter = OEmitParticles("test2.pex", position);
             emitter.setRenderEnabled(false);
         }
     }

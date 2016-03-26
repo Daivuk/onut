@@ -5,7 +5,9 @@
 #include "onut/GamePad.h"
 #include "onut/Input.h"
 #include "onut/onut.h"
+#include "onut/ParticleSystemManager.h"
 #include "onut/PrimitiveBatch.h"
+#include "onut/Random.h"
 #include "onut/Renderer.h"
 #include "onut/Settings.h"
 #include "onut/SpriteBatch.h"
@@ -20,17 +22,14 @@
 
 #include "audio/Audio.h"
 
-#include "ParticleSystemManager.h"
-
 #include <cassert>
 #include <mutex>
 #include <sstream>
 
 using namespace DirectX;
 
-// Our engine services
-AudioEngine*                        g_pAudioEngine = nullptr;
-onut::ParticleSystemManager<>*      OParticles = nullptr;
+// The audio engine is a third party
+AudioEngine* g_pAudioEngine = nullptr;
 
 namespace onut
 {
@@ -119,7 +118,7 @@ namespace onut
         }
 
         // Particles
-        OParticles = new ParticleSystemManager<>();
+        oParticleSystemManager = ParticleSystemManager::create();
 
         // UI Context
         createUI();
@@ -135,7 +134,7 @@ namespace onut
         oUpdater = nullptr;
         oUI = nullptr;
         oUIContext = nullptr;
-        delete OParticles;
+        oParticleSystemManager = nullptr;
         delete g_pAudioEngine;
         oInput = nullptr;
         oContentManager = nullptr;
@@ -226,7 +225,7 @@ namespace onut
                                 false, false, false, false, 
                                 OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
                 }
-                OParticles->update();
+                oParticleSystemManager->update();
                 if (updateCallback)
                 {
                     updateCallback();
@@ -240,7 +239,7 @@ namespace onut
             {
                 renderCallback();
             }
-            OParticles->render();
+            oParticleSystemManager->render();
             oSpriteBatch->begin();
             oUI->render(oUIContext);
             oSpriteBatch->end();

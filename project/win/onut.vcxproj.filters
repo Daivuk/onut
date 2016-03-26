@@ -101,15 +101,6 @@
     <ClInclude Include="..\..\include\onut\VideoPlayer.h">
       <Filter>utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Particle.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\ParticleEmitter.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\ParticleSystemManager.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h">
       <Filter>thirdparties\rapidjson</Filter>
     </ClInclude>
@@ -290,6 +281,15 @@
     <ClInclude Include="..\..\include\onut\ActionManager.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\ParticleSystemManager.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Particle.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ParticleEmitter.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -387,15 +387,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Random.cpp">
       <Filter>utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Particle.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ParticleEmitter.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ParticleSystemManager.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\micropather.cpp">
       <Filter>thirdparties\micropather</Filter>
@@ -533,11 +524,17 @@
     <ClCompile Include="..\..\src\ActionManager.cpp">
       <Filter>services</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Particle.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ParticleEmitter.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ParticleSystemManager.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{f147408f-9c92-4c54-bcfd-bd3c26c0fc93}</UniqueIdentifier>
-    </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{df7d4196-d4d0-4c6a-a6ea-bbf5f5ea3d3c}</UniqueIdentifier>
     </Filter>

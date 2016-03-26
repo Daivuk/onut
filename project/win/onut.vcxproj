@@ -30,6 +30,7 @@
     <ClInclude Include="..\..\include\onut\Music.h" />
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\ParticleSystem.h" />
+    <ClInclude Include="..\..\include\onut\ParticleSystemManager.h" />
     <ClInclude Include="..\..\include\onut\Point.h" />
     <ClInclude Include="..\..\include\onut\Pool.h" />
     <ClInclude Include="..\..\include\onut\PrimitiveBatch.h" />
@@ -68,9 +69,6 @@
     <ClInclude Include="..\..\include\onut\Maths.h" />
     <ClInclude Include="..\..\include\onut\Resource.h" />
     <ClInclude Include="..\..\include\onut\Texture.h" />
-    <ClInclude Include="..\..\include\Particle.h" />
-    <ClInclude Include="..\..\include\ParticleEmitter.h" />
-    <ClInclude Include="..\..\include\ParticleSystemManager.h" />
     <ClInclude Include="..\..\include\rapidjson\document.h" />
     <ClInclude Include="..\..\include\rapidjson\filestream.h" />
     <ClInclude Include="..\..\include\rapidjson\filewritestream.h" />
@@ -94,6 +92,8 @@
     <ClInclude Include="..\..\src\MFPlayer.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
     <ClInclude Include="..\..\src\mp3\Mp3.h" />
+    <ClInclude Include="..\..\src\Particle.h" />
+    <ClInclude Include="..\..\src\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\RendererD3D11.h" />
     <ClInclude Include="..\..\src\ShaderD3D11.h" />
     <ClInclude Include="..\..\src\UIJson.h" />

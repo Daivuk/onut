@@ -1,11 +1,14 @@
+#include "onut/ParticleSystem.h"
+#include "onut/ParticleSystemManager.h"
 #include "onut/Timing.h"
 
-#include "ParticleSystemManager.h"
+#include "Particle.h"
+#include "ParticleEmitter.h"
 
 namespace onut
 {
     ParticleEmitter::ParticleEmitter(const OParticleEmitterDescRef& pEmitterDesc,
-                                     IParticleSystemManager* pParticleSystemManager, 
+                                     const OParticleSystemManagerRef& pParticleSystemManager,
                                      const Matrix& transform,
                                      uint32_t instanceId) :
         m_pDesc(pEmitterDesc),
