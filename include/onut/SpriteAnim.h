@@ -1,13 +1,16 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/Resource.h"
-#include "onut/Updater.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/Resource.h>
+#include <onut/Updater.h>
 
+// STL
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager);
 OForwardDeclare(SpriteAnim);
 OForwardDeclare(SpriteAnimInstance);

@@ -1,5 +1,6 @@
-#include "onut/GamePad.h"
-#include "onut/Input.h"
+// Onut
+#include <onut/GamePad.h>
+#include <onut/Input.h>
 
 namespace onut
 {

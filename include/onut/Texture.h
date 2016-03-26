@@ -1,13 +1,16 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/Point.h"
-#include "onut/Resource.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/Point.h>
+#include <onut/Resource.h>
 
+// Third party
 #if defined(WIN32)
 #include <d3d11.h>
 #endif
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Texture);
 OForwardDeclare(ContentManager);
 

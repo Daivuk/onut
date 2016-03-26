@@ -1,9 +1,13 @@
-#if defined(WIN32)
 #pragma once
-#include "onut/VideoPlayer.h"
+#if defined(WIN32)
+// Onut
+#include <onut/VideoPlayer.h>
 
+// Third party
 #include <Mfmediaengine.h>
 
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(MFPlayer);
 
 namespace onut

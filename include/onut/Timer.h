@@ -1,6 +1,8 @@
 #pragma once
-#include "onut/Updater.h"
+// Onut
+#include <onut/Updater.h>
 
+// STL
 #include <functional>
 
 namespace onut

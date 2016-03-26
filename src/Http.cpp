@@ -1,15 +1,18 @@
-#include "onut/Async.h"
-#include "onut/Dispatcher.h"
-#include "onut/Http.h"
-#include "onut/Strings.h"
-#include "onut/Texture.h"
+// Onut
+#include <onut/Async.h>
+#include <onut/Dispatcher.h>
+#include <onut/Http.h>
+#include <onut/Strings.h>
+#include <onut/Texture.h>
 
+// Third party
 #if defined(WIN32)
 #include <atlbase.h>
 #include <comutil.h>
 #include <msxml6.h>
 #endif
 
+// STL
 #include <locale>
 
 namespace onut

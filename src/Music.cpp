@@ -1,11 +1,14 @@
-#include "onut/ContentManager.h"
-#include "onut/Music.h"
-#include "onut/Strings.h"
+// Onut
+#include <onut/ContentManager.h>
+#include <onut/Music.h>
+#include <onut/Strings.h>
 
+// Third party
 #if defined(WIN32)
-#include "mp3/Mp3.h"
+#include <mp3/Mp3.h>
 #endif
 
+// STL
 #include <cassert>
 
 namespace onut

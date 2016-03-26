@@ -1,9 +1,11 @@
 #pragma once
+// Onut
 #include <functional>
 #include <string>
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Texture);
 
 namespace onut

@@ -1,12 +1,15 @@
 #pragma once
-#include "onut/Maths.h"
+// Onut
+#include <onut/Maths.h>
 
+// Third party
 #if defined(WIN32)
 #include <Windows.h>
 #include <Xinput.h>
 #endif
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(GamePad);
 
 namespace onut

@@ -1,7 +1,9 @@
 #pragma once
-#include "onut/Resource.h"
+// Onut
+#include <onut/Resource.h>
 
-#include "onut/ForwardDeclaration.h"
+// Third party
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager)
 OForwardDeclare(Shader)
 

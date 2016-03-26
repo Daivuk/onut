@@ -1,27 +1,30 @@
-#include "onut/ActionManager.h"
-#include "onut/ContentManager.h"
-#include "onut/Dispatcher.h"
-#include "onut/Font.h"
-#include "onut/GamePad.h"
-#include "onut/Input.h"
-#include "onut/onut.h"
-#include "onut/ParticleSystemManager.h"
-#include "onut/PrimitiveBatch.h"
-#include "onut/Random.h"
-#include "onut/Renderer.h"
-#include "onut/Settings.h"
-#include "onut/SpriteBatch.h"
-#include "onut/Texture.h"
-#include "onut/Timing.h"
-#include "onut/UIContext.h"
-#include "onut/UIControl.h"
-#include "onut/UIPanel.h"
-#include "onut/UITextBox.h"
-#include "onut/Updater.h"
-#include "onut/Window.h"
+// Onut includes
+#include <onut/ActionManager.h>
+#include <onut/ContentManager.h>
+#include <onut/Dispatcher.h>
+#include <onut/Font.h>
+#include <onut/GamePad.h>
+#include <onut/Input.h>
+#include <onut/onut.h>
+#include <onut/ParticleSystemManager.h>
+#include <onut/PrimitiveBatch.h>
+#include <onut/Random.h>
+#include <onut/Renderer.h>
+#include <onut/Settings.h>
+#include <onut/SpriteBatch.h>
+#include <onut/Texture.h>
+#include <onut/Timing.h>
+#include <onut/UIContext.h>
+#include <onut/UIControl.h>
+#include <onut/UIPanel.h>
+#include <onut/UITextBox.h>
+#include <onut/Updater.h>
+#include <onut/Window.h>
 
-#include "audio/Audio.h"
+// Third parties
+#include <audio/Audio.h>
 
+// STL
 #include <cassert>
 #include <mutex>
 #include <sstream>

@@ -1,10 +1,13 @@
 #pragma once
 #if defined(WIN32)
-#include "onut/Renderer.h"
+// Onut
+#include <onut/Renderer.h>
 
+// Third party
 #include <d3d11.h>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(RendererD3D11);
 
 namespace onut

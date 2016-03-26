@@ -1,10 +1,12 @@
-﻿#include "onut/Point.h"
-#include "onut/Renderer.h"
-#include "onut/Settings.h"
-#include "onut/Strings.h"
-#include "onut/UIContext.h"
-#include "onut/Window.h"
+﻿// Onut
+#include <onut/Point.h>
+#include <onut/Renderer.h>
+#include <onut/Settings.h>
+#include <onut/Strings.h>
+#include <onut/UIContext.h>
+#include <onut/Window.h>
 
+// Third party
 #include <windowsx.h>
 
 OWindowRef oWindow;

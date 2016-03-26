@@ -2,12 +2,12 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut/onut.h"
-#include "onut/Renderer.h"
-#include "onut/Settings.h"
-#include "onut/UIButton.h"
-#include "onut/UIImage.h"
-#include "onut/UILabel.h"
+#include <onut/onut.h>
+#include <onut/Renderer.h>
+#include <onut/Settings.h>
+#include <onut/UIButton.h>
+#include <onut/UIImage.h>
+#include <onut/UILabel.h>
 
 void init();
 void update();

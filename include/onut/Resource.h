@@ -1,7 +1,9 @@
 #pragma once
+// STL
 #include <string>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Resource);
 
 namespace onut

@@ -1,7 +1,9 @@
+// Onut
+#include <onut/Strings.h>
+
+// STL
 #include <algorithm>
 #include <codecvt>
-
-#include "onut/Strings.h"
 
 namespace onut
 {

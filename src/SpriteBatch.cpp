@@ -1,9 +1,12 @@
-#include "onut/PrimitiveMode.h"
-#include "onut/SpriteBatch.h"
-#include "onut/Texture.h"
+// Onut
+#include <onut/PrimitiveMode.h>
+#include <onut/SpriteBatch.h>
+#include <onut/Texture.h>
 
+// Private
 #include "RendererD3D11.h"
 
+// STL
 #include <cmath>
 
 OSpriteBatchRef oSpriteBatch;

@@ -1,8 +1,10 @@
 #pragma once
-#include "onut/Curve.h"
-#include "onut/Maths.h"
+// Onut
+#include <onut/Curve.h>
+#include <onut/Maths.h>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ParticleEmitterDesc);
 OForwardDeclare(ParticleSystem);
 OForwardDeclare(Texture);

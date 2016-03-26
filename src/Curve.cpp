@@ -1,4 +1,5 @@
-#include "onut/Curve.h"
+// Onut
+#include <onut/Curve.h>
 
 namespace onut
 {

@@ -2,13 +2,13 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut/Anim.h"
-#include "onut/onut.h"
-#include "onut/Renderer.h"
-#include "onut/Settings.h"
-#include "onut/Sound.h"
-#include "onut/SpriteBatch.h"
-#include "onut/Texture.h"
+#include <onut/Anim.h>
+#include <onut/onut.h>
+#include <onut/Renderer.h>
+#include <onut/Settings.h>
+#include <onut/Sound.h>
+#include <onut/SpriteBatch.h>
+#include <onut/Texture.h>
 
 void init();
 void update();

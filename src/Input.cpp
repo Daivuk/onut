@@ -1,9 +1,12 @@
-#include "onut/GamePad.h"
-#include "onut/Input.h"
-#include "onut/Window.h"
+// Onut
+#include <onut/GamePad.h>
+#include <onut/Input.h>
+#include <onut/Window.h>
 
+// Private
 #include "InputDevice.h"
 
+// STL
 #include <cassert>
 
 OInputRef oInput;

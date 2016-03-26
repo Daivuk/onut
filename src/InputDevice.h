@@ -1,10 +1,12 @@
 #pragma once
+// Third party
 #if defined(WIN32)
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #endif
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Input);
 OForwardDeclare(InputDevice);
 OForwardDeclare(Window);

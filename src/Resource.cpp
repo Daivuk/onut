@@ -1,4 +1,5 @@
-#include "onut/Resource.h"
+// Onut
+#include <onut/Resource.h>
 
 namespace onut
 {

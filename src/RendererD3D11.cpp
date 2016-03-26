@@ -1,16 +1,20 @@
 #if defined(WIN32)
-#include "onut/IndexBuffer.h"
-#include "onut/Renderer.h"
-#include "onut/Texture.h"
-#include "onut/VertexBuffer.h"
-#include "onut/Window.h"
+// Onut
+#include <onut/IndexBuffer.h>
+#include <onut/Renderer.h>
+#include <onut/Texture.h>
+#include <onut/VertexBuffer.h>
+#include <onut/Window.h>
 
+// Private
 #include "RendererD3D11.h"
 #include "ShaderD3D11.h"
 
+// STL
 #include <fstream>
 #include <vector>
 
+// Shaders
 #include "_2dvs.cso.h"
 #include "_2dps.cso.h"
 #include "blurvs.cso.h"

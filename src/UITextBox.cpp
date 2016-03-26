@@ -1,8 +1,11 @@
-#include "onut/UIContext.h"
-#include "onut/UITextBox.h"
+// Onut
+#include <onut/UIContext.h>
+#include <onut/UITextBox.h>
 
+// Private
 #include "UIJson.h"
 
+// STL
 #include <iomanip>
 #include <sstream>
 

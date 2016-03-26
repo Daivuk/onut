@@ -1,10 +1,13 @@
 #if defined(WIN32)
-#include "onut/Strings.h"
-#include "onut/Texture.h"
+// Onut
+#include <onut/Strings.h>
+#include <onut/Texture.h>
 
+// Private
 #include "MFPlayer.h"
 #include "RendererD3D11.h"
 
+// STL
 #include <cassert>
 #include <codecvt>
 #include <Mfapi.h>

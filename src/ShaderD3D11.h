@@ -1,10 +1,13 @@
-#if defined(WIN32)
 #pragma once
-#include "onut/Shader.h"
+#if defined(WIN32)
+// Onut
+#include <onut/Shader.h>
 
+// Third party
 #include <d3d11.h>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ShaderD3D11)
 
 namespace onut

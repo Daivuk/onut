@@ -1,5 +1,6 @@
 #pragma once
-#include "onut/Timing.h"
+// Onut
+#include <onut/Timing.h>
 
 OTimingRef oTiming;
 

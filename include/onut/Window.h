@@ -1,13 +1,18 @@
 #pragma once
-#include "onut/Point.h"
+// Onut
+#include <onut/Point.h>
 
-#include <functional>
+// Third party
 #if defined(WIN32)
 #include <Windows.h>
 #endif
+
+// STL
+#include <functional>
 #include <string>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Window);
 
 namespace onut

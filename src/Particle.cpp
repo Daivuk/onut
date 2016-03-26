@@ -1,6 +1,8 @@
-#include "onut/ParticleSystem.h"
-#include "onut/Timing.h"
+// Onut
+#include <onut/ParticleSystem.h>
+#include <onut/Timing.h>
 
+// Private
 #include "Particle.h"
 #include "ParticleEmitter.h"
 

@@ -1,7 +1,9 @@
 #pragma once
+// STL
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(UpdateTarget)
 OForwardDeclare(Updater)
 

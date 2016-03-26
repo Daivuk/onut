@@ -1,7 +1,9 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/Point.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/Point.h>
 
+// STL
 #include <string>
 
 namespace onut

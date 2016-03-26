@@ -1,7 +1,9 @@
-#include "onut/ContentManager.h"
-#include "onut/Files.h"
-#include "onut/Resource.h"
+// Onut
+#include <onut/ContentManager.h>
+#include <onut/Files.h>
+#include <onut/Resource.h>
 
+// STL
 #include <cassert>
 
 OContentManagerRef oContentManager;

@@ -1,10 +1,13 @@
-#include "onut/ContentManager.h"
-#include "onut/Sound.h"
-#include "onut/Strings.h"
-#include "onut/Random.h"
+// Onut
+#include <onut/ContentManager.h>
+#include <onut/Sound.h>
+#include <onut/Strings.h>
+#include <onut/Random.h>
 
-#include "audio/Audio.h"
-#include "tinyxml2/tinyxml2.h"
+// Third party
+#include <audio/Audio.h>
+#include <tinyxml2/tinyxml2.h>
+
 using namespace DirectX;
 
 extern AudioEngine* g_pAudioEngine;

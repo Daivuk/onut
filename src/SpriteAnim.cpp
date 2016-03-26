@@ -1,10 +1,13 @@
-#include "onut/ContentManager.h"
-#include "onut/SpriteAnim.h"
-#include "onut/Texture.h"
-#include "onut/Timing.h"
+// Onut
+#include <onut/ContentManager.h>
+#include <onut/SpriteAnim.h>
+#include <onut/Texture.h>
+#include <onut/Timing.h>
 
-#include "tinyxml2/tinyxml2.h"
+// Third party
+#include <tinyxml2/tinyxml2.h>
 
+// STL
 #include <cassert>
 
 namespace onut

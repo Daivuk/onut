@@ -1,5 +1,6 @@
 #pragma once
-#include "simplemath/SimpleMath.h"
+// Third party
+#include <simplemath/SimpleMath.h>
 
 using namespace DirectX::SimpleMath;
 

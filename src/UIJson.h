@@ -1,22 +1,21 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/UIComponents.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/UIComponents.h>
 
+// Third party
+#include <rapidjson/document.h>
+#include <rapidjson/filestream.h>
+#include <rapidjson/filewritestream.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
+// Forward
 namespace rapidjson
 {
-    class CrtAllocator;
-    template <typename BaseAllocator> class MemoryPoolAllocator;
-    template <typename Encoding, typename Allocator> class GenericValue;
-    template<typename CharType> struct UTF8;
     typedef GenericValue<UTF8<char>, MemoryPoolAllocator<CrtAllocator>> Value;
     typedef MemoryPoolAllocator<CrtAllocator> Allocator;
 }
-
-#include "rapidjson/document.h"
-#include "rapidjson/filestream.h"
-#include "rapidjson/filewritestream.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 
 namespace onut
 {

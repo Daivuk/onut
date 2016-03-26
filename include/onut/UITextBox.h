@@ -1,10 +1,13 @@
 #pragma once
-#include "onut/UIComponents.h"
-#include "onut/UIControl.h"
+// Onut
+#include <onut/UIComponents.h>
+#include <onut/UIControl.h>
 
+// STL
 #include <chrono>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(UITextBox)
 
 namespace onut

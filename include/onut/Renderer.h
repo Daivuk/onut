@@ -1,13 +1,16 @@
 #pragma once
-#include "onut/BlendMode.h"
-#include "onut/Maths.h"
-#include "onut/Point.h"
-#include "onut/PrimitiveMode.h"
-#include "onut/SampleMode.h"
+// Onut
+#include <onut/BlendMode.h>
+#include <onut/Maths.h>
+#include <onut/Point.h>
+#include <onut/PrimitiveMode.h>
+#include <onut/SampleMode.h>
 
+// STL
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(IndexBuffer)
 OForwardDeclare(Renderer)
 OForwardDeclare(Shader)

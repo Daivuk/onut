@@ -1,16 +1,20 @@
 #pragma once
-#include "onut/Tween.h"
-#include "onut/Maths.h"
-#include "onut/Resource.h"
-#include "onut/Random.h"
+// Onut
+#include <onut/Tween.h>
+#include <onut/Maths.h>
+#include <onut/Resource.h>
+#include <onut/Random.h>
 
-#include "rapidjson/document.h"
+// Third party
+#include <rapidjson/document.h>
 
+// STL
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager);
 OForwardDeclare(ParticleEmitterDesc);
 OForwardDeclare(ParticleSystem);

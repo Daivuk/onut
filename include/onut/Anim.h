@@ -1,9 +1,11 @@
 #pragma once
-#include "onut/Curve.h"
-#include "onut/Timing.h"
-#include "onut/Tween.h"
-#include "onut/Updater.h"
+// Onut
+#include <onut/Curve.h>
+#include <onut/Timing.h>
+#include <onut/Tween.h>
+#include <onut/Updater.h>
 
+// STL
 #include <vector>
 
 namespace onut

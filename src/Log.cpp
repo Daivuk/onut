@@ -1,11 +1,16 @@
 #pragma once
+// Onut
+#include <onut/Log.h>
+
+// Third party
 #if defined(WIN32)
 #include <Windows.h>
-#else
-#include <iostream>
 #endif
 
-#include "onut/Log.h"
+// STL
+#if !defined(WIN32)
+#include <iostream>
+#endif
 
 namespace onut
 {

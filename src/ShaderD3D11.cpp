@@ -1,10 +1,13 @@
 #if defined(WIN32)
-#include "onut/ContentManager.h"
-#include "onut/Renderer.h"
+// Onut
+#include <onut/ContentManager.h>
+#include <onut/Renderer.h>
 
+// Private
 #include "ShaderD3D11.h"
 #include "RendererD3D11.h"
 
+// STL
 #include <cassert>
 
 namespace onut

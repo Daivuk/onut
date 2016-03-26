@@ -1,10 +1,14 @@
 #pragma once
-#include <string>
+// Third party
 #if defined(WIN32)
 #include <Windows.h>
 #endif
 
-#include "onut/ForwardDeclaration.h"
+// STL
+#include <string>
+
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Texture);
 OForwardDeclare(VideoPlayer);
 

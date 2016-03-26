@@ -1,7 +1,9 @@
 #pragma once
-#include "onut/Maths.h"
+// Onut
+#include <onut/Maths.h>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ParticleEmitterDesc);
 OForwardDeclare(ParticleSystemManager);
 

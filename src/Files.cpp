@@ -1,11 +1,14 @@
+// Onut
+#include <onut/Files.h>
+#include <onut/Strings.h>
+
+// STL
 #include <algorithm>
 #include <fstream>
 #include <sstream>
 
-#include "onut/Files.h"
-#include "onut/Strings.h"
-
-#include "dirent/dirent.h"
+// Third party
+#include <dirent/dirent.h>
 
 namespace onut
 {

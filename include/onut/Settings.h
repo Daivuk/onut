@@ -1,6 +1,8 @@
 #pragma once
-#include "onut/Point.h"
+// Onut
+#include <onut/Point.h>
 
+// STL
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -8,7 +10,8 @@
 #include <thread>
 #include <unordered_map>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(Settings);
 
 namespace onut

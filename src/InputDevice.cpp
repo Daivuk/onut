@@ -1,12 +1,11 @@
-#include "onut/Input.h"
-#include "onut/Window.h"
+// Onut
+#include <onut/Input.h>
+#include <onut/Window.h>
 
+// Private
 #include "InputDevice.h"
 
 #if defined(WIN32)
-#pragma comment(lib, "dinput8.lib")
-#pragma comment(lib, "dxguid.lib")
-
 #define FAIL_DI_WITH_ERROR(__errorMsg__) {MessageBoxA(NULL, __errorMsg__, "DirectInput8 Error", MB_OK); exit(0);}
 #endif
 

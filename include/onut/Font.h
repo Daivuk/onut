@@ -1,10 +1,13 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/Resource.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/Resource.h>
 
+// STL
 #include <unordered_map>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager)
 OForwardDeclare(Font)
 OForwardDeclare(SpriteBatch)

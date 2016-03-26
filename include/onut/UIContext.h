@@ -1,15 +1,18 @@
 #pragma once
-#include "onut/Crypto.h"
-#include "onut/Maths.h"
-#include "onut/UIEvents.h"
+// Onut
+#include <onut/Crypto.h>
+#include <onut/Maths.h>
+#include <onut/UIEvents.h>
 
+// STL
 #include <chrono>
 #include <functional>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager)
 OForwardDeclare(Texture)
 OForwardDeclare(UIContext)

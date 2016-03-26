@@ -1,5 +1,7 @@
-#include "onut/Settings.h"
+// Onut
+#include <onut/Settings.h>
 
+// STL
 #include <fstream>
 
 OSettingsRef oSettings = std::make_shared<OSettings>();

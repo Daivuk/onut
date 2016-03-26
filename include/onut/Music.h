@@ -1,10 +1,11 @@
 #pragma once
-#include "onut/Resource.h"
+// Onut
+#include <onut/Resource.h>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager)
 OForwardDeclare(Music)
-
 #if defined(WIN32)
 class Mp3;
 #endif

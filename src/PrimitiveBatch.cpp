@@ -1,6 +1,8 @@
-#include "onut/PrimitiveBatch.h"
-#include "onut/Texture.h"
+// Onut
+#include <onut/PrimitiveBatch.h>
+#include <onut/Texture.h>
 
+// Private
 #include "RendererD3D11.h"
 
 OPrimitiveBatchRef oPrimitiveBatch;

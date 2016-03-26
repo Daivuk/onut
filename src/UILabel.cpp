@@ -1,6 +1,8 @@
-#include "onut/UIContext.h"
-#include "onut/UILabel.h"
+// Onut
+#include <onut/UIContext.h>
+#include <onut/UILabel.h>
 
+// Private
 #include "UIJson.h"
 
 namespace onut

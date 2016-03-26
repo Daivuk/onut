@@ -2,15 +2,15 @@
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut/Font.h"
-#include "onut/Input.h"
-#include "onut/Log.h"
-#include "onut/Music.h"
-#include "onut/onut.h"
-#include "onut/Renderer.h"
-#include "onut/Settings.h"
-#include "onut/SpriteBatch.h"
-#include "onut/Sound.h"
+#include <onut/Font.h>
+#include <onut/Input.h>
+#include <onut/Log.h>
+#include <onut/Music.h>
+#include <onut/onut.h>
+#include <onut/Renderer.h>
+#include <onut/Settings.h>
+#include <onut/SpriteBatch.h>
+#include <onut/Sound.h>
 
 void init();
 void update();

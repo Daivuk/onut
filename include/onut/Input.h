@@ -1,8 +1,10 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/Point.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/Point.h>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(GamePad);
 OForwardDeclare(Input);
 OForwardDeclare(InputDevice);

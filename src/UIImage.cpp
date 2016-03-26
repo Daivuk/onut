@@ -1,6 +1,8 @@
-#include "onut/UIContext.h"
-#include "onut/UIImage.h"
+// Onut
+#include <onut/UIContext.h>
+#include <onut/UIImage.h>
 
+// Private
 #include "UIJson.h"
 
 namespace onut

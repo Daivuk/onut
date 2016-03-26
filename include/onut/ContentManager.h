@@ -1,9 +1,11 @@
 #pragma once
+// STL
 #include <mutex>
 #include <string>
 #include <unordered_map>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager);
 OForwardDeclare(Resource);
 

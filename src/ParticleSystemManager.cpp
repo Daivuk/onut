@@ -1,9 +1,11 @@
-#include "onut/ParticleSystem.h"
-#include "onut/ParticleSystemManager.h"
-#include "onut/Pool.h"
-#include "onut/SpriteBatch.h"
-#include "onut/Texture.h"
+// Onut
+#include <onut/ParticleSystem.h>
+#include <onut/ParticleSystemManager.h>
+#include <onut/Pool.h>
+#include <onut/SpriteBatch.h>
+#include <onut/Texture.h>
 
+// Private
 #include "Particle.h"
 #include "ParticleEmitter.h"
 

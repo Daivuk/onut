@@ -1,10 +1,12 @@
 #pragma once
+// STL
 #include <functional>
 #include <cinttypes>
 #include <string>
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(IAction)
 OForwardDeclare(ActionGroup)
 OForwardDeclare(Action)

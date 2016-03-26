@@ -1,15 +1,19 @@
 #pragma once
-#include "onut/BlendMode.h"
-#include "onut/Maths.h"
-#include "onut/SampleMode.h"
+// Onut
+#include <onut/BlendMode.h>
+#include <onut/Maths.h>
+#include <onut/SampleMode.h>
 
+// Third party
 #if defined(WIN32)
 #include <d3d11.h>
 #endif
 
+// STL
 #include <vector>
 
-#include "onut/ForwardDeclaration.h"
+// Forward
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(SpriteBatch);
 OForwardDeclare(Texture);
 

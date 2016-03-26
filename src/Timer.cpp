@@ -1,6 +1,7 @@
 #pragma once
-#include "onut/Timing.h"
-#include "onut/Timer.h"
+// Onut
+#include <onut/Timing.h>
+#include <onut/Timer.h>
 
 namespace onut
 {

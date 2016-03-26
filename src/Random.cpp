@@ -1,5 +1,7 @@
-#include "onut/Random.h"
+// Onut
+#include <onut/Random.h>
 
+// STL
 #include <stdlib.h>
 #include <time.h>
 

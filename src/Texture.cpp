@@ -1,11 +1,15 @@
-#include "onut/ContentManager.h"
-#include "onut/Files.h"
-#include "onut/Texture.h"
+// Onut
+#include <onut/ContentManager.h>
+#include <onut/Files.h>
+#include <onut/Texture.h>
 
+// Private
 #include "RendererD3D11.h"
 
-#include "lodepng/LodePNG.h"
+// Third party
+#include <lodepng/LodePNG.h>
 
+// STL
 #include <cassert>
 #include <vector>
 

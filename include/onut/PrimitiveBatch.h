@@ -1,13 +1,15 @@
 #pragma once
-#include "onut/Maths.h"
-#include "onut/PrimitiveMode.h"
+// Onut
+#include <onut/Maths.h>
+#include <onut/PrimitiveMode.h>
 
+// Third party
 #if defined(WIN32)
 #include <d3d11.h>
 #endif
 
 // Forward declares
-#include "onut/ForwardDeclaration.h"
+#include <onut/ForwardDeclaration.h>
 OForwardDeclare(PrimitiveBatch);
 OForwardDeclare(Texture);
 

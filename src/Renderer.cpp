@@ -1,10 +1,12 @@
-#include "onut/IndexBuffer.h"
-#include "onut/Renderer.h"
-#include "onut/Shader.h"
-#include "onut/Texture.h"
-#include "onut/VertexBuffer.h"
-#include "onut/Window.h"
+// Onut
+#include <onut/IndexBuffer.h>
+#include <onut/Renderer.h>
+#include <onut/Shader.h>
+#include <onut/Texture.h>
+#include <onut/VertexBuffer.h>
+#include <onut/Window.h>
 
+// STL
 #include <fstream>
 #include <vector>
 
