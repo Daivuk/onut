@@ -45,6 +45,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Crypto", "Crypto\project\wi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UndoRedo", "UndoRedo\project\win\UndoRedo.vcxproj", "{DC59BD52-1741-451D-A05B-9A0C4F4CDB88}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Empty", "Empty\project\win\Empty.vcxproj", "{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -131,6 +133,10 @@ Global
 		{DC59BD52-1741-451D-A05B-9A0C4F4CDB88}.Debug|Win32.Build.0 = Debug|Win32
 		{DC59BD52-1741-451D-A05B-9A0C4F4CDB88}.Release|Win32.ActiveCfg = Release|Win32
 		{DC59BD52-1741-451D-A05B-9A0C4F4CDB88}.Release|Win32.Build.0 = Release|Win32
+		{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB}.Debug|Win32.Build.0 = Debug|Win32
+		{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB}.Release|Win32.ActiveCfg = Release|Win32
+		{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,5 +161,6 @@ Global
 		{AD4E263E-D44A-4508-A91C-AED463F95259} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{C4BC0D78-EEDC-4329-A1A4-692D1C21FB05} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{DC59BD52-1741-451D-A05B-9A0C4F4CDB88} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal

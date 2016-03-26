@@ -113,7 +113,8 @@ namespace onut
             m_totalTime = duration;
             m_isPingPonging = false;
             m_hasCallbacks = in_callback != nullptr;
-            oUpdater->registerTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->registerTarget(this);
         }
 
         void queue(const Ttype& to, float duration, Tween tween = Tween::Linear, const KeyFrameCallback& in_callback = nullptr)
@@ -141,7 +142,8 @@ namespace onut
             m_totalTime = duration;
             m_isPingPonging = false;
             m_hasCallbacks = in_callback != nullptr;
-            oUpdater->registerTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->registerTarget(this);
         }
 
         void playKeyFrames(const Ttype& from, const KeyFrames& keyFrames, LoopType loop = LoopType::None)
@@ -165,7 +167,8 @@ namespace onut
             m_loop = loop;
             m_progress = 0;
             m_isPingPonging = false;
-            oUpdater->registerTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->registerTarget(this);
         }
 
         void playKeyFramesFromCurrent(const KeyFrames& keyFrames, LoopType loop = LoopType::None)
@@ -188,12 +191,14 @@ namespace onut
             m_loop = loop;
             m_progress = 0;
             m_isPingPonging = false;
-            oUpdater->registerTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->registerTarget(this);
         }
 
         void stop(bool goToEnd = false)
         {
-            oUpdater->unregisterTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->unregisterTarget(this);
             if (goToEnd)
             {
                 if (!m_keyFrames.empty())
@@ -219,13 +224,15 @@ namespace onut
 
         void pause()
         {
-            oUpdater->unregisterTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->unregisterTarget(this);
         }
 
         void play(LoopType loop = LoopType::None)
         {
             m_loop = loop;
-            oUpdater->registerTarget(this);
+            if (!m_pMyUpdater) m_pMyUpdater = oUpdater;
+            m_pMyUpdater->registerTarget(this);
         }
 
         bool isPlaying() const
@@ -337,6 +344,11 @@ namespace onut
             }
         }
 
+        void setUpdater(const OUpdaterRef& pUpdater)
+        {
+            m_pMyUpdater = pUpdater;
+        }
+
     private:
         Ttype m_value;
         float m_progress = 0.f;
@@ -345,6 +357,7 @@ namespace onut
         KeyFrames m_keyFrames;
         bool m_isPingPonging = false;
         bool m_hasCallbacks = false;
+        OUpdaterRef m_pMyUpdater;
     };
 }
 
