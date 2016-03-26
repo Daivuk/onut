@@ -81,7 +81,7 @@ namespace onut
         oTiming = OTiming::create();
 
         // Updater
-        oUpdater = OMake<OUpdater>();
+        oUpdater = OUpdater::create();
 
         // Window
         oWindow = OWindow::create(oSettings->getResolution(), oSettings->getIsResizableWindow());
@@ -95,7 +95,7 @@ namespace onut
         oPrimitiveBatch = PrimitiveBatch::create();
 
         // Content
-        oContentManager = OMake<ContentManager>();
+        oContentManager = ContentManager::create();
         oContentManager->addDefaultSearchPaths();
 
         // Mouse/Keyboard
@@ -124,7 +124,7 @@ namespace onut
         createUI();
 
         // Undo/Redo for editors
-        oActionManager = OMake<ActionManager>();
+        oActionManager = ActionManager::create();
     }
 
     void cleanup()

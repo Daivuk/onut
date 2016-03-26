@@ -34,6 +34,11 @@ namespace onut
         return m_pUpdater;
     }
 
+    OUpdaterRef Updater::create()
+    {
+        return OMake<Updater>();
+    }
+
     void Updater::update()
     {
         for (auto& pTarget : m_toAdd) m_targets.push_back(pTarget);

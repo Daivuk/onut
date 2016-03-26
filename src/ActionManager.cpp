@@ -79,6 +79,11 @@ namespace onut
         {
             m_onRedo();
         }
+    }        
+    
+    OActionManagerRef ActionManager::create()
+    {
+        return OMake<ActionManager>();
     }
 
     ActionManager::ActionManager(uint32_t maxHistory) :

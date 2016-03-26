@@ -10,7 +10,7 @@ namespace onut
 {
     OContentManagerRef ContentManager::create()
     {
-        return std::make_shared<OContentManager>();
+        return OMake<OContentManager>();
     }
 
     ContentManager::ContentManager()

@@ -31,6 +31,8 @@ namespace onut
     class Updater final : public std::enable_shared_from_this<Updater>
     {
     public:
+        static OUpdaterRef create();
+
         void update();
 
         void registerTarget(OUpdateTarget* pTarget);

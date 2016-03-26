@@ -66,6 +66,8 @@ namespace onut
     class ActionManager final
     {
     public:
+        static OActionManagerRef create();
+
         ActionManager(uint32_t maxHistory = 1000);
 
         void doAction(const OIActionRef& pAction);
