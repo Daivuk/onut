@@ -43,42 +43,39 @@ namespace onut
         Anim(const Ttype& rvalue) :
             m_value(rvalue)
         {}
+
         Anim(const Anim& other)
-            : m_isPlaying(other.m_isPlaying)
-            , m_value(other.m_value)
-            , m_retValue(other.m_retValue)
-            , m_startTime(other.m_startTime)
-            , m_oldTime(other.m_oldTime)
-            , m_keyFrames(other.m_keyFrames)
+            : m_value(other.m_value)
+            , m_progress(other.m_progress)
+            , m_totalTime(other.m_totalTime)
             , m_loop(other.m_loop)
+            , m_keyFrames(other.m_keyFrames)
             , m_isPingPonging(other.m_isPingPonging)
-            , m_cachedCallback(other.m_cachedCallback)
-            , m_pAnimManager(other.m_pAnimManager)
+            , m_hasCallbacks(other.m_hasCallbacks)
+            , m_pMyUpdater(other.m_pMyUpdater)
         {
             if (m_isPlaying)
             {
-                m_pAnimManager->registerAnim(this);
+                m_pMyUpdater->registerTarget(this);
             }
         }
         Anim& operator=(const Anim& other)
         {
             if (m_isPlaying)
             {
-                m_pAnimManager->unregisterAnim(this);
+                m_pMyUpdater->unregisterTarget(this);
             }
-            m_isPlaying = other.m_isPlaying;
             m_value = other.m_value;
-            m_retValue = other.m_retValue;
-            m_startTime = other.m_startTime;
-            m_oldTime = other.m_oldTime;
-            m_keyFrames = other.m_keyFrames;
+            m_progress = other.m_progress;
+            m_totalTime = other.m_totalTime;
             m_loop = other.m_loop;
+            m_keyFrames = other.m_keyFrames;
             m_isPingPonging = other.m_isPingPonging;
-            m_cachedCallback = other.m_cachedCallback;
-            m_pAnimManager = other.m_pAnimManager;
+            m_hasCallbacks = other.m_hasCallbacks;
+            m_pMyUpdater = other.m_pMyUpdater;
             if (m_isPlaying)
             {
-                m_pAnimManager->registerAnim(this);
+                m_pMyUpdater->registerTarget(this);
             }
             return *this;
         }
