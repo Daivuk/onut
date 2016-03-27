@@ -5,6 +5,10 @@
 // STL
 #include <cinttypes>
 
+// Forward
+#include <onut/ForwardDeclaration.h>
+OForwardDeclare(Texture)
+
 namespace onut
 {
     class UIFontComponent
@@ -38,6 +42,7 @@ namespace onut
     public:
         std::string filename;
         Color color = Color::White;
+        OTextureRef pTexture;
     };
 
     class UIScale9Component

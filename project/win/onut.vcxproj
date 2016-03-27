@@ -17,6 +17,7 @@
     <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
+    <ClInclude Include="..\..\include\onut\Cloud.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
@@ -87,7 +88,54 @@
     <ClInclude Include="..\..\src\audio\SoundCommon.h" />
     <ClInclude Include="..\..\src\audio\WaveBankReader.h" />
     <ClInclude Include="..\..\src\audio\WAVFileReader.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudAsyncMatch.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudAuthentication.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudClient.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudDataStream.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudEntity.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudEvent.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudFile.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudFriend.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudGamification.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudGlobalApp.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudGlobalEntity.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudGlobalStatistics.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudIdentity.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudMatchmaking.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudOneWayMatch.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudPlaybackStream.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudPlayerState.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudPlayerStatistics.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudPlayerStatisticsEvent.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudProduct.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudProfanity.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudPushNotification.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudRedemptionCode.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudS3Handling.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudScript.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudSocialLeaderboard.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudSteam.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudTime.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudTwitter.h" />
+    <ClInclude Include="..\..\src\braincloud\BrainCloudTypes.h" />
+    <ClInclude Include="..\..\src\braincloud\http_codes.h" />
+    <ClInclude Include="..\..\src\braincloud\IBrainCloudComms.h" />
+    <ClInclude Include="..\..\src\braincloud\IEventCallback.h" />
+    <ClInclude Include="..\..\src\braincloud\IFileUploadCallback.h" />
+    <ClInclude Include="..\..\src\braincloud\IGlobalErrorCallback.h" />
+    <ClInclude Include="..\..\src\braincloud\INetworkErrorCallback.h" />
+    <ClInclude Include="..\..\src\braincloud\IRewardCallback.h" />
+    <ClInclude Include="..\..\src\braincloud\IServerCallback.h" />
+    <ClInclude Include="..\..\src\braincloud\OperationParam.h" />
+    <ClInclude Include="..\..\src\braincloud\Platform.h" />
+    <ClInclude Include="..\..\src\braincloud\reason_codes.h" />
+    <ClInclude Include="..\..\src\braincloud\ServerCall.h" />
+    <ClInclude Include="..\..\src\braincloud\ServiceName.h" />
+    <ClInclude Include="..\..\src\braincloud\ServiceOperation.h" />
+    <ClInclude Include="..\..\src\CloudBrainCloud.h" />
     <ClInclude Include="..\..\src\dirent\dirent.h" />
+    <ClInclude Include="..\..\src\jsoncpp\json\json-forwards.h" />
+    <ClInclude Include="..\..\src\jsoncpp\json\json.h" />
     <ClInclude Include="..\..\src\LodePNG\LodePNG.h" />
     <ClInclude Include="..\..\src\MFPlayer.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
@@ -119,6 +167,8 @@
     <ClCompile Include="..\..\src\audio\WaveBank.cpp" />
     <ClCompile Include="..\..\src\audio\WaveBankReader.cpp" />
     <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
+    <ClCompile Include="..\..\src\Cloud.cpp" />
+    <ClCompile Include="..\..\src\CloudBrainCloud.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
@@ -233,7 +283,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -241,8 +291,8 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;cpprest120d_2_0.lib;brainCloudClientd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;../../lib/win/Debug</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -268,8 +318,8 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;brainCloudClient.lib;cpprest120_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;../../lib/win/Release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

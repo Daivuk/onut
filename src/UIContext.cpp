@@ -434,9 +434,16 @@ namespace onut
 
     void UIContext::drawTexturedRect(const OUIControlRef& pControl, const Rect& rect, const UIImageComponent& imageComponent)
     {
-        oSpriteBatch->drawRect(getTextureForState(pControl, imageComponent.filename),
-                               rect,
-                               imageComponent.color);
+        if (imageComponent.pTexture)
+        {
+            oSpriteBatch->drawRect(imageComponent.pTexture, rect, imageComponent.color);
+        }
+        else
+        {
+            oSpriteBatch->drawRect(getTextureForState(pControl, imageComponent.filename),
+                                   rect,
+                                   imageComponent.color);
+        }
     };
 
     void UIContext::drawScale9Rect(const OUIControlRef& pControl, const Rect& rect, const UIScale9Component& scale9Component)

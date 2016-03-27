@@ -520,8 +520,7 @@ namespace onut
         }
     }
 
-    UIControl::UIControl(const UIControl& other) :
-        UIControl()
+    void UIControl::operator=(const UIControl& other)
     {
         isEnabled = other.isEnabled;
         isClickThrough = other.isClickThrough;
@@ -542,6 +541,7 @@ namespace onut
         m_properties = other.m_properties;
         m_style = other.m_style;
         m_styleName = other.m_styleName;
+        m_children.clear();
 
         for (auto pChild : other.m_children)
         {
@@ -551,26 +551,39 @@ namespace onut
 
     OUIControlRef UIControl::copy() const
     {
+        OUIControlRef pRet;
         switch (getType())
         {
             case Type::Control:
-                return std::shared_ptr<UIControl>(new UIControl(*this));
+                pRet = UIControl::create();
+                break;
             case Type::Button:
-                return std::shared_ptr<UIButton>(new UIButton(*(UIButton*)this));
+                pRet = UIButton::create();
+                break;
             case Type::Panel:
-                return std::shared_ptr<UIPanel>(new UIPanel(*(UIPanel*)this));
+                pRet = UIPanel::create();
+                break;
             case Type::Label:
-                return std::shared_ptr<UILabel>(new UILabel(*(UILabel*)this));
+                pRet = UILabel::create();
+                break;
             case Type::Image:
-                return std::shared_ptr<UIImage>(new UIImage(*(UIImage*)this));
+                pRet = UIImage::create();
+                break;
             case Type::CheckBox:
-                return std::shared_ptr<UICheckBox>(new UICheckBox(*(UICheckBox*)this));
+                pRet = UICheckBox::create();
+                break;
             case Type::TreeView:
-                return std::shared_ptr<UITreeView>(new UITreeView(*(UITreeView*)this));
+                pRet = UITreeView::create();
+                break;
             case Type::TextBox:
-                return std::shared_ptr<UITextBox>(new UITextBox(*(UITextBox*)this));
+                pRet = UITextBox::create();
+                break;
+            default:
+                assert(false);
+                break;
         }
-        return nullptr;
+        *pRet.get() = *this;
+        return pRet;
     }
 
     void UIControl::add(OUIControlRef pChild)
@@ -662,10 +675,13 @@ namespace onut
 
     void UIControl::removeAll()
     {
-        while (m_children.size())
+        auto size = m_children.size();
+        for (decltype(size) i = 0; i < size; ++i)
         {
-            remove(m_children.front());
+            auto pChild = m_children[i];
+            pChild->m_pParent.reset();
         }
+        m_children.clear();
     }
 
     OUIControlRef UIControl::getChild(const std::string& in_name, bool bSearchSubChildren)
@@ -1368,4 +1384,14 @@ namespace onut
 OUIControlRef OFindUI(const std::string& name)
 {
     return oUI->getChild(name);
+}
+
+OUIControlRef OLoadUI(const std::string& filename)
+{
+    auto pUI = OUIControl::createFromFile(filename);
+    if (pUI)
+    {
+        oUI->add(pUI);
+    }
+    return pUI;
 }

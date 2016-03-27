@@ -15,7 +15,9 @@ namespace onut
         static OUIButtonRef create();
 
         UIButton();
-        UIButton(const UIButton& other);
+
+        UIButton(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::Button; }
         bool isNavigatable() const override { return true; }

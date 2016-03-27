@@ -20,7 +20,9 @@ namespace onut
         static OUITreeViewRef create();
 
         UITreeView() {}
-        UITreeView(const UITreeView& other);
+
+        UITreeView(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::TreeView; }
 

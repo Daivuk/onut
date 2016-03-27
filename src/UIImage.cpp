@@ -12,10 +12,14 @@ namespace onut
         return OMake<UIImage>();
     }
 
-    UIImage::UIImage(const UIImage& other) :
-        UIControl(other)
+    void UIImage::operator=(const UIControl& other)
     {
-        scale9Component = other.scale9Component;
+        auto pOther = dynamic_cast<const UIImage*>(&other);
+        if (pOther)
+        {
+            scale9Component = pOther->scale9Component;
+        }
+        UIControl::operator=(other);
     }
 
     void UIImage::load(const rapidjson::Value& jsonNode)

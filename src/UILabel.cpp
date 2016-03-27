@@ -17,10 +17,14 @@ namespace onut
         textComponent.font.align = onut::Align::Left;
     }
 
-    UILabel::UILabel(const UILabel& other) :
-        UIControl(other)
+    void UILabel::operator=(const UIControl& other)
     {
-        textComponent = other.textComponent;
+        auto pOther = dynamic_cast<const UILabel*>(&other);
+        if (pOther)
+        {
+            textComponent = pOther->textComponent;
+        }
+        UIControl::operator=(other);
     }
 
     void UILabel::load(const rapidjson::Value& jsonNode)

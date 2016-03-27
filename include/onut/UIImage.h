@@ -15,7 +15,9 @@ namespace onut
         static OUIImageRef create();
 
         UIImage() {}
-        UIImage(const UIImage& other);
+
+        UIImage(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::Image; }
 

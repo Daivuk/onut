@@ -26,7 +26,9 @@ namespace onut
 
         static OUICheckBoxRef create();
         UICheckBox() {}
-        UICheckBox(const UICheckBox& other);
+
+        UICheckBox(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::CheckBox; }
 

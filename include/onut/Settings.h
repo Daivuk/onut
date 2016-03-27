@@ -44,6 +44,12 @@ namespace onut
         bool getIsEditorMode() const { return m_isEditorMode; }
         void setIsEditorMode(bool isEditorMode);
 
+        std::string getAppId() const { return m_appId; }
+        void setAppId(const std::string& appId);
+
+        std::string getAppSecret() const { return m_appSecret; }
+        void setAppSecret(const std::string& appSecret);
+
         void setUserSettingDefault(const SettingKey& key, const SettingValue& value);
         void setUserSetting(const SettingKey& key, const SettingValue& value);
         const SettingValue& getUserSetting(const SettingKey& key);
@@ -58,9 +64,11 @@ namespace onut
         bool m_isBorderLessFullscreen = false;
         bool m_isEditorMode = false;
         UserSettings m_userSettings;
+        std::string m_appId = "";
+        std::string m_appSecret = "";
 
         std::atomic<bool> m_isDirty = false;
-        std::atomic<bool> m_isRunning = false;
+        std::atomic<bool> m_isRunning = true;
         std::thread m_savingThread;
         std::mutex m_mutex;
         std::condition_variable m_conditionVariable;

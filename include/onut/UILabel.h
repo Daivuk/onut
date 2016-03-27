@@ -15,7 +15,9 @@ namespace onut
         static OUILabelRef create();
 
         UILabel();
-        UILabel(const UILabel& other);
+
+        UILabel(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::Label; }
 

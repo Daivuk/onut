@@ -16,13 +16,17 @@ namespace onut
         return OMake<UITextBox>();
     }
 
-    UITextBox::UITextBox(const UITextBox& other) :
-        UIControl(other)
+    void UITextBox::operator=(const UIControl& other)
     {
-        textComponent = other.textComponent;
-        scale9Component = other.scale9Component;
-        m_isNumerical = other.m_isNumerical;
-        m_decimalPrecision = other.m_decimalPrecision;
+        auto pOther = dynamic_cast<const UITextBox*>(&other);
+        if (pOther)
+        {
+            textComponent = pOther->textComponent;
+            scale9Component = pOther->scale9Component;
+            m_isNumerical = pOther->m_isNumerical;
+            m_decimalPrecision = pOther->m_decimalPrecision;
+        }
+        UIControl::operator=(other);
     }
 
     bool UITextBox::isCursorVisible() const

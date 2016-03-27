@@ -12,10 +12,14 @@ namespace onut
         return OMake<UIPanel>();
     }
 
-    UIPanel::UIPanel(const UIPanel& other) :
-        UIControl(other)
+    void UIPanel::operator=(const UIControl& other)
     {
-        color = other.color;
+        auto pOther = dynamic_cast<const UIPanel*>(&other);
+        if (pOther)
+        {
+            color = pOther->color;
+        }
+        UIControl::operator=(other);
     }
 
     void UIPanel::load(const rapidjson::Value& jsonNode)

@@ -20,7 +20,9 @@ namespace onut
         static OUITextBoxRef create();
 
         UITextBox() {}
-        UITextBox(const UITextBox& other);
+
+        UITextBox(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::TextBox; }
 

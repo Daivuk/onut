@@ -17,11 +17,15 @@ namespace onut
         textComponent.font.align = onut::Align::Center;
     }
 
-    UIButton::UIButton(const UIButton& other) :
-        UIControl(other)
+    void UIButton::operator=(const UIControl& other)
     {
-        textComponent = other.textComponent;
-        scale9Component = other.scale9Component;
+        auto pOther = dynamic_cast<const UIButton*>(&other);
+        if (pOther)
+        {
+            textComponent = pOther->textComponent;
+            scale9Component = pOther->scale9Component;
+        }
+        UIControl::operator=(other);
     }
 
     void UIButton::load(const rapidjson::Value& jsonNode)

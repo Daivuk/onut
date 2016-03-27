@@ -14,7 +14,9 @@ namespace onut
         static OUIPanelRef create();
 
         UIPanel() {}
-        UIPanel(const UIPanel& other);
+
+        UIPanel(const UIControl& other) = delete;
+        void operator=(const UIControl& other) override;
 
         Type getType() const override { return Type::Panel; }
 

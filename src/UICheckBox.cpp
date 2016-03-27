@@ -18,13 +18,17 @@ namespace onut
         return OMake<UICheckBox>();
     }
 
-    UICheckBox::UICheckBox(const UICheckBox& other) :
-        UIControl(other)
+    void UICheckBox::operator=(const UIControl& other)
     {
-        iconComponent = other.iconComponent;
-        textComponent = other.textComponent;
-        behavior = other.behavior;
-        m_isChecked = other.m_isChecked;
+        auto pOther = dynamic_cast<const UICheckBox*>(&other);
+        if (pOther)
+        {
+            iconComponent = pOther->iconComponent;
+            textComponent = pOther->textComponent;
+            behavior = pOther->behavior;
+            m_isChecked = pOther->m_isChecked;
+        }
+        UIControl::operator=(other);
     }
 
     void UICheckBox::setIsChecked(bool in_isChecked)

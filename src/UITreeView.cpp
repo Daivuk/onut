@@ -12,13 +12,17 @@ namespace onut
         return OMake<UITreeView>();
     }
 
-    UITreeView::UITreeView(const UITreeView& other) :
-        UIControl(other)
+    void UITreeView::operator=(const UIControl& other)
     {
-        for (auto pOtherItem : other.m_items)
+        auto pOther = dynamic_cast<const UITreeView*>(&other);
+        if (pOther)
         {
-            m_items.push_back(std::shared_ptr<UITreeViewItem>(new UITreeViewItem(*pOtherItem)));
+            for (auto pOtherItem : pOther->m_items)
+            {
+                m_items.push_back(std::shared_ptr<UITreeViewItem>(new UITreeViewItem(*pOtherItem)));
+            }
         }
+        UIControl::operator=(other);
     }
 
     void UITreeView::addItem(OUITreeViewItemRef pItem)

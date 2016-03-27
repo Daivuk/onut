@@ -118,8 +118,9 @@ namespace onut
         static OUIControlRef createFromFile(const std::string& filename, OContentManagerRef pContentManager = nullptr);
 
         UIControl();
-        UIControl(const UIControl& other);
 
+        UIControl(const UIControl& other) = delete;
+        virtual void operator=(const UIControl& other);
         OUIControlRef copy() const;
 
         // Public properties
@@ -265,3 +266,10 @@ namespace onut
 extern OUIControlRef oUI;
 
 OUIControlRef OFindUI(const std::string& name);
+template <typename Tui>
+inline std::shared_ptr<Tui> OFindUI(const std::string& name)
+{
+    return ODynamicCast<Tui>(oUI->getChild(name));
+}
+
+OUIControlRef OLoadUI(const std::string& filename);

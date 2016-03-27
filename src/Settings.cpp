@@ -41,6 +41,7 @@ namespace onut
             {
                 m_conditionVariable.wait(locker);
                 if (!m_isDirty) continue;
+                m_isDirty = false;
 
                 // Wait a little bit more, maybe the user is doing a bunch of transactions at once
                 locker.unlock();
@@ -103,6 +104,16 @@ namespace onut
         m_isEditorMode = isEditorMode;
     }
 
+    void Settings::setAppId(const std::string& appId)
+    {
+        m_appId = appId;
+    }
+
+    void Settings::setAppSecret(const std::string& appSecret)
+    {
+        m_appSecret = appSecret;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);
@@ -118,6 +129,14 @@ namespace onut
     void Settings::setUserSetting(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);
+        auto it = m_userSettings.find(key);
+        if (it != m_userSettings.end())
+        {
+            if (it->second == value)
+            {
+                return; // No change
+            }
+        }
         m_userSettings[key] = value;
         m_isDirty = true;
         m_conditionVariable.notify_one();
