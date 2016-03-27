@@ -148,23 +148,26 @@ namespace onut
                             achievementNames.push_back(jsonAchievement.asString());
                         }
                     }
-                    getAchievements([achievementNames, this](Achievements achievements)
+                    if (!achievementNames.empty())
                     {
-                        if (m_achievementCallback)
+                        getAchievements([achievementNames, this](Achievements achievements)
                         {
-                            for (auto& achievementName : achievementNames)
+                            if (m_achievementCallback)
                             {
-                                for (auto& achievement : achievements)
+                                for (auto& achievementName : achievementNames)
                                 {
-                                    if (achievement.id == achievementName)
+                                    for (auto& achievement : achievements)
                                     {
-                                        // Notify the app
-                                        m_achievementCallback(achievement);
+                                        if (achievement.id == achievementName)
+                                        {
+                                            // Notify the app
+                                            m_achievementCallback(achievement);
+                                        }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }
