@@ -31,7 +31,8 @@ namespace onut
         void login(const std::string& email, const std::string& password, const LoginCallback& callback) override;
         void createAccount(const std::string& username, const std::string& email, const std::string& password, const LoginCallback& callback) override;
         void logout(const LoginCallback& callback) override;
-        void getAchievements(const AchievementCallback& callback) override;
+        void getAchievements(const AchievementsCallback& callback) override;
+        void sendEvent(const std::string& eventName, int multiplier = 0) override;
 
     protected:
         void serverCallback(BrainCloud::ServiceName serviceName, BrainCloud::ServiceOperation serviceOperation, const std::string& jsonData) override;
@@ -51,6 +52,7 @@ namespace onut
         void update() override;
         void initializeBrainCloud();
         void onGoOnline(const Json::Value& json);
+        void doRewards(const Json::Value& json);
 
         BrainCloud::BrainCloudClient* m_pBrainCloudClient = nullptr;
         State m_state = State::Offline;

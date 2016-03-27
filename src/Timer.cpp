@@ -13,6 +13,13 @@ namespace onut
         oUpdater->registerTarget(this);
     }
 
+    void Timer::start(std::chrono::steady_clock::duration duration, const std::function<void()>& callback)
+    {
+        auto durationUs = std::chrono::duration_cast<std::chrono::microseconds>(duration);
+        auto durationS = static_cast<float>(static_cast<double>(durationUs.count()) / 1000000.0);
+        start(durationS, callback);
+    }
+
     /**
     Stop. Value will stay where it is. So you can get the time it was stopped by calling: getProgress
     */
@@ -21,9 +28,10 @@ namespace onut
         oUpdater->unregisterTarget(this);
         if (callCallback)
         {
-            m_callback();
+            auto callback = m_callback;
+            m_callback = nullptr;
+            callback();
         }
-        m_callback = nullptr;
     }
 
     /**

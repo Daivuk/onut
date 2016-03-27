@@ -121,6 +121,7 @@ namespace onut
             if (m_keyFrames.empty())
             {
                 m_hasCallbacks = false;
+                m_totalTime = 0.f;
                 if (duration > 0.f)
                 {
                     m_keyFrames.push_back(KeyFrame(m_value, 0.f, Tween::None));

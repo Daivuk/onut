@@ -130,6 +130,46 @@ namespace onut
         }
     }
 
+    void CloudBrainCloud::doRewards(const Json::Value& json)
+    {
+        if (!json["data"].isNull() && !json["data"]["rewards"].isNull())
+        {
+            auto& jsonReward = json["data"]["rewards"]; 
+            if (m_achievementCallback)
+            {
+                auto& jsonAchievements = jsonReward["playerAchievements"];
+                if (jsonAchievements.isArray())
+                {
+                    std::vector<std::string> achievementNames;
+                    for (auto& jsonAchievement : jsonAchievements)
+                    {
+                        if (jsonAchievement.isString())
+                        {
+                            achievementNames.push_back(jsonAchievement.asString());
+                        }
+                    }
+                    getAchievements([achievementNames, this](Achievements achievements)
+                    {
+                        if (m_achievementCallback)
+                        {
+                            for (auto& achievementName : achievementNames)
+                            {
+                                for (auto& achievement : achievements)
+                                {
+                                    if (achievement.id == achievementName)
+                                    {
+                                        // Notify the app
+                                        m_achievementCallback(achievement);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
     void CloudBrainCloud::login(const std::string& email, const std::string& password, const LoginCallback& callback)
     {
         initializeBrainCloud();
@@ -207,7 +247,7 @@ namespace onut
         }));
     }
 
-    void CloudBrainCloud::getAchievements(const AchievementCallback& callback)
+    void CloudBrainCloud::getAchievements(const AchievementsCallback& callback)
     {
         if (m_state != State::Online) return;
         m_pBrainCloudClient->getGamificationService()->readAchievements(true, new BCCallback([this, callback](const BCCallback::Event& event)
@@ -218,8 +258,6 @@ namespace onut
                 {
                     OAsync([event, callback]
                     {
-                    /*    std::atomic<int> downloaded = 0;
-                        int expected = 0;*/
                         Achievements achievements;
                         auto& jsonAchivements = event.json["data"]["achievements"];
                         for (auto& jsonAchievement : jsonAchivements)
@@ -227,12 +265,15 @@ namespace onut
                             if (!jsonAchievement.isNull() &&
                                 jsonAchievement["title"].isString() &&
                                 jsonAchievement["description"].isString() &&
-                                jsonAchievement["imageUrl"].isString())
+                                jsonAchievement["imageUrl"].isString() &&
+                                jsonAchievement["status"].isString() &&
+                                jsonAchievement["achievementId"].isString())
                             {
                                 Achievement achievement;
+                                achievement.id = jsonAchievement["achievementId"].asString();
                                 achievement.title = jsonAchievement["title"].asString();
                                 achievement.description = jsonAchievement["description"].asString();
-                            //    ++expected;
+                                achievement.achieved = jsonAchievement["status"].asString() == "AWARDED";
                                 achievement.iconTexture = OHTTPGetTexture(jsonAchievement["imageUrl"].asString());
                                 achievements.push_back(achievement);
                             }
@@ -241,10 +282,6 @@ namespace onut
                         {
                             if (callback) callback(achievements);
                         });
-                    /*    while (downloaded < expected)
-                        {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                        }*/
                     });
                 }
                 else
@@ -258,7 +295,21 @@ namespace onut
             }
         }));
     }
-    
+
+    void CloudBrainCloud::sendEvent(const std::string& eventName, int multiplier)
+    {
+        if (m_state == State::Online)
+        {
+            m_pBrainCloudClient->getPlayerStatisticsEventService()->triggerPlayerStatisticsEvent(eventName.c_str(), multiplier, new BCCallback([this](const BCCallback::Event& event)
+            {
+                if (event.success)
+                {
+                    doRewards(event.json);
+                }
+            }));
+        }
+    }
+
     void CloudBrainCloud::serverCallback(BrainCloud::ServiceName serviceName, BrainCloud::ServiceOperation serviceOperation, const std::string& jsonData)
     {
         if (m_state != State::Online)

@@ -20,4 +20,9 @@ namespace onut
     {
         m_username = username;
     }
+
+    void Cloud::setAchievementCallback(const AchievementCallback& callback)
+    {
+        m_achievementCallback = callback;
+    }
 };

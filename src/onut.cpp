@@ -150,6 +150,7 @@ namespace onut
         oSpriteBatch = nullptr;
         oRenderer = nullptr;
         oWindow = nullptr;
+        oSettings = nullptr;
     }
 
     // Start the engine

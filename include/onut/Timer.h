@@ -3,6 +3,7 @@
 #include <onut/Updater.h>
 
 // STL
+#include <chrono>
 #include <functional>
 
 namespace onut
@@ -19,6 +20,7 @@ namespace onut
         Start timed event
         */
         void start(float duration, const std::function<void()>& callback = nullptr);
+        void start(std::chrono::steady_clock::duration duration, const std::function<void()>& callback = nullptr);
 
         /**
         Stop. Value will stay where it is. So you can get the time it was stopped by calling: getProgress
