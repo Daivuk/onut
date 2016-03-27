@@ -194,6 +194,53 @@ static void onAchievementsCloseClicked(const OUIControlRef&, const onut::UIMouse
     OFindUI("achievementsDialog")->isVisible = false;
 }
 
+static void onLeaderboardsClicked(const OUIControlRef&, const onut::UIMouseEvent&)
+{
+    auto pLeaderboardsDialog = OFindUI("leaderboardsDialog");
+    auto pLeaderboardsContainer = pLeaderboardsDialog->getChild("leaderboardsContainer");
+    std::vector<OUIControlRef> entries = 
+    {
+        pLeaderboardsContainer->getChild("entry0"),
+        pLeaderboardsContainer->getChild("entry1"),
+        pLeaderboardsContainer->getChild("entry2"),
+        pLeaderboardsContainer->getChild("entry3"),
+        pLeaderboardsContainer->getChild("entry4"),
+        pLeaderboardsContainer->getChild("entry5"),
+        pLeaderboardsContainer->getChild("entry6"),
+        pLeaderboardsContainer->getChild("entry7"),
+    };
+    auto pSpinner = pLeaderboardsDialog->getChild("spinner");
+
+    pLeaderboardsDialog->isVisible = true;
+    pSpinner->isVisible = true;
+    pLeaderboardsContainer->isVisible = false;
+
+    oCloud->getLeaderboard("score", 8, [=](const OCloud::Leaderboard& leaderboard)
+    {
+        for (size_t i = 0; i < entries.size(); ++i)
+        {
+            auto& pUIEntry = entries[i];
+            if (i < leaderboard.size())
+            {
+                pUIEntry->isVisible = true;
+                pUIEntry->getChild<OUILabel>("lblPlayer")->textComponent.text = leaderboard[i].name;
+                pUIEntry->getChild<OUILabel>("lblScore")->textComponent.text = std::to_string(leaderboard[i].score);
+            }
+            else
+            {
+                pUIEntry->isVisible = false;
+            }
+        }
+        pSpinner->isVisible = false;
+        pLeaderboardsContainer->isVisible = true;
+    });
+}
+
+static void onLeaderboardsCloseClicked(const OUIControlRef&, const onut::UIMouseEvent&)
+{
+    OFindUI("leaderboardsDialog")->isVisible = false;
+}
+
 static void onSignOut(const OUIControlRef&, const onut::UIMouseEvent&)
 {
     oUI->removeAll();
@@ -348,6 +395,8 @@ static void showMainMenu()
     OFindUI("btnQuit")->onClick = onQuitClicked;
     OFindUI("btnAchievements")->onClick = onAchievementsClicked;
     OFindUI("btnCloseAchievements")->onClick = onAchievementsCloseClicked;
+    OFindUI("btnLeaderboards")->onClick = onLeaderboardsClicked;
+    OFindUI("btnCloseLeaderboards")->onClick = onLeaderboardsCloseClicked;
     OFindUI("btnSignOut")->onClick = onSignOut;
     OFindUI("btnPlay")->onClick = onPlay;
 }
@@ -360,6 +409,7 @@ static void onShowGameOver()
     pCurrentUI = OLoadUI("gameOver.json");
     oUI->add(pAchievementPopup); // Making sure achievement popup is always on top of everything
 
+    oCloud->postScore("score", static_cast<OCloud::LeaderboardEntry::Score>(coinCollected));
     OFindUI<OUILabel>("lblCoins")->textComponent.text = std::to_string(coinCollected);
     OFindUI<OUILabel>("lblGameOver")->textComponent.text = playerLife > 0 ? "VICTORY!" : "GAME OVER...";
 

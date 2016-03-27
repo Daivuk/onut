@@ -33,6 +33,8 @@ namespace onut
         void logout(const LoginCallback& callback) override;
         void getAchievements(const AchievementsCallback& callback) override;
         void sendEvent(const std::string& eventName, int multiplier = 0) override;
+        void getLeaderboard(const std::string& leaderboardName, int count, const LeaderboardCallback& callback) override;
+        void postScore(const std::string& leaderboardName, LeaderboardEntry::Score score) override;
 
     protected:
         void serverCallback(BrainCloud::ServiceName serviceName, BrainCloud::ServiceOperation serviceOperation, const std::string& jsonData) override;

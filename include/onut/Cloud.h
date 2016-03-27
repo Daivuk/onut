@@ -39,6 +39,18 @@ namespace onut
         using AchievementCallback = std::function<void(Achievement)>;
         using AchievementsCallback = std::function<void(Achievements)>;
 
+        struct LeaderboardEntry
+        {
+            using Score = int64_t;
+            using Rank = uint32_t;
+
+            Score score;
+            Rank rank;
+            std::string name;
+        };
+        using Leaderboard = std::vector<LeaderboardEntry>;
+        using LeaderboardCallback = std::function<void(Leaderboard)>;
+
         using Stats = std::unordered_map<std::string, int32_t>;
 
         static OCloudRef create(const std::string& appId, const std::string& appSecret);
@@ -50,7 +62,9 @@ namespace onut
         virtual void createAccount(const std::string& username, const std::string& email, const std::string& password, const LoginCallback& callback) = 0;
         virtual void logout(const LoginCallback& callback) = 0;
         virtual void getAchievements(const AchievementsCallback& callback) = 0;
+        virtual void getLeaderboard(const std::string& leaderboardName, int count, const LeaderboardCallback& callback) = 0;
         virtual void sendEvent(const std::string& eventName, int multiplier = 0) = 0;
+        virtual void postScore(const std::string& leaderboardName, LeaderboardEntry::Score score) = 0;
         Stats getStats() const;
         int32_t getStat(const std::string& statName) const;
 

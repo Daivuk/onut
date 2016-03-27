@@ -266,6 +266,7 @@ namespace onut
             m_pBrainCloudClient->shutdown();
             m_pBrainCloudClient = nullptr;
             m_state = State::Offline;
+            m_stats.clear();
             if (callback) callback({true, ""});
         }));
     }
@@ -315,6 +316,48 @@ namespace onut
             else
             {
                 if (callback) callback(Achievements()); // Just send empty back
+            }
+        }));
+    }
+
+    void CloudBrainCloud::getLeaderboard(const std::string& leaderboardName, int count, const LeaderboardCallback& callback)
+    {
+        if (m_state != State::Online) return;
+        m_pBrainCloudClient->getSocialLeaderboardService()->getGlobalLeaderboardPage(leaderboardName.c_str(), BrainCloud::SortOrder::HIGH_TO_LOW, 0, count - 1, false, new BCCallback([this, callback](const BCCallback::Event& event)
+        {
+            Leaderboard leaderboard;
+            if (event.success)
+            {
+                if (!event.json["data"].isNull() && event.json["data"]["leaderboard"].isArray())
+                {
+                    auto& jsonLeaderboard = event.json["data"]["leaderboard"];
+                    for (auto& jsonEntry : jsonLeaderboard)
+                    {
+                        if (jsonEntry["name"].isString() &&
+                            jsonEntry["rank"].isUInt() &&
+                            jsonEntry["score"].isInt())
+                        {
+                            LeaderboardEntry entry;
+                            entry.name = jsonEntry["name"].asString();
+                            entry.score = static_cast<LeaderboardEntry::Score>(jsonEntry["score"].asInt());
+                            entry.rank = static_cast<LeaderboardEntry::Rank>(jsonEntry["rank"].asInt());
+                            leaderboard.push_back(entry);
+                        }
+                    }
+                }
+            }
+            callback(leaderboard);
+        }));
+    }
+
+    void CloudBrainCloud::postScore(const std::string& leaderboardName, LeaderboardEntry::Score score)
+    {
+        if (m_state != State::Online) return;
+        m_pBrainCloudClient->getSocialLeaderboardService()->postScoreToLeaderboard(leaderboardName.c_str(), static_cast<int64_t>(score), "", new BCCallback([this](const BCCallback::Event& event)
+        {
+            if (event.success)
+            {
+                doRewards(event.json);
             }
         }));
     }
