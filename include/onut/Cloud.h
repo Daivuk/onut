@@ -5,6 +5,7 @@
 // STL
 #include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 // Forward
@@ -38,6 +39,8 @@ namespace onut
         using AchievementCallback = std::function<void(Achievement)>;
         using AchievementsCallback = std::function<void(Achievements)>;
 
+        using Stats = std::unordered_map<std::string, int32_t>;
+
         static OCloudRef create(const std::string& appId, const std::string& appSecret);
 
         Cloud(const std::string& appId, const std::string& appSecret);
@@ -48,6 +51,8 @@ namespace onut
         virtual void logout(const LoginCallback& callback) = 0;
         virtual void getAchievements(const AchievementsCallback& callback) = 0;
         virtual void sendEvent(const std::string& eventName, int multiplier = 0) = 0;
+        Stats getStats() const;
+        int32_t getStat(const std::string& statName) const;
 
         const std::string& getUsername() const;
         void setAchievementCallback(const AchievementCallback& callback);
@@ -55,6 +60,7 @@ namespace onut
     protected:
         void setUsername(const std::string& username);
 
+        Stats m_stats;
         std::string m_appId;
         std::string m_appSecret;
         std::string m_username;

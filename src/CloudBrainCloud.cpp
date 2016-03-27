@@ -132,9 +132,16 @@ namespace onut
 
     void CloudBrainCloud::doRewards(const Json::Value& json)
     {
+        // Update stats
+        if (!json["data"].isNull() && !json["data"]["statistics"].isNull())
+        {
+            updateStats(json["data"]["statistics"]);
+        }
+
         if (!json["data"].isNull() && !json["data"]["rewards"].isNull())
         {
             auto& jsonReward = json["data"]["rewards"]; 
+
             if (m_achievementCallback)
             {
                 auto& jsonAchievements = jsonReward["playerAchievements"];
@@ -173,6 +180,15 @@ namespace onut
         }
     }
 
+    void CloudBrainCloud::updateStats(const Json::Value& json)
+    {
+        auto statNames = json.getMemberNames();
+        for (auto& statName : statNames)
+        {
+            m_stats[statName] = static_cast<int32_t>(json[statName].asUInt());
+        }
+    }
+
     void CloudBrainCloud::login(const std::string& email, const std::string& password, const LoginCallback& callback)
     {
         initializeBrainCloud();
@@ -188,6 +204,10 @@ namespace onut
         {
             if (event.success)
             {
+                if (!event.json["data"].isNull() && !event.json["data"]["statistics"].isNull())
+                {
+                    updateStats(event.json["data"]["statistics"]);
+                }
                 onGoOnline(event.json);
                 if (callback) callback({true, ""});
             }

@@ -53,6 +53,7 @@ namespace onut
         void initializeBrainCloud();
         void onGoOnline(const Json::Value& json);
         void doRewards(const Json::Value& json);
+        void updateStats(const Json::Value& json);
 
         BrainCloud::BrainCloudClient* m_pBrainCloudClient = nullptr;
         State m_state = State::Offline;

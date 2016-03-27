@@ -25,4 +25,16 @@ namespace onut
     {
         m_achievementCallback = callback;
     }
+
+    Cloud::Stats Cloud::getStats() const
+    {
+        return m_stats;
+    }
+
+    int32_t Cloud::getStat(const std::string& statName) const
+    {
+        auto it = m_stats.find(statName);
+        if (it == m_stats.end()) return 0;
+        return it->second;
+    }
 };

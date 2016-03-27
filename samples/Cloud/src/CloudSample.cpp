@@ -342,6 +342,7 @@ static void showMainMenu()
     oUI->add(pAchievementPopup); // Making sure achievement popup is always on top of everything
 
     OFindUI<OUILabel>("lblWelcome")->textComponent.text = "Welcome ^999" + oCloud->getUsername();
+    OFindUI<OUILabel>("lblCoins")->textComponent.text = std::to_string(oCloud->getStat("coins_collected"));
 
     // Bind actions
     OFindUI("btnQuit")->onClick = onQuitClicked;
