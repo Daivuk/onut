@@ -10,6 +10,17 @@
 #include <fstream>
 #include <vector>
 
+// Shaders
+#include "_2dvs.cso.h"
+#include "_2dps.cso.h"
+#include "blurvs.cso.h"
+#include "blurhps.cso.h"
+#include "blurvps.cso.h"
+#include "sepia.cso.h"
+#include "crt.cso.h"
+#include "cartoon.cso.h"
+#include "vignette.cso.h"
+
 ORendererRef oRenderer;
 
 namespace onut
@@ -166,6 +177,20 @@ namespace onut
     {
     }
 
+    void Renderer::init(const OWindowRef& pWindow)
+    {
+        loadShaders();
+        const float vertices[] = {
+            -1, -1,
+            -1, 1,
+            1, -1,
+            1, -1,
+            -1, 1,
+            1, 1
+        };
+        m_pEffectsVertexBuffer = OVertexBuffer::createStatic(vertices, sizeof(vertices));
+    }
+
     void Renderer::operator=(const OTextureRef& texture)
     {
         renderStates = texture;
@@ -266,5 +291,78 @@ namespace onut
     {
         renderStates.viewProjection = viewProj;
         renderStates.world = transform;
+    }
+
+    void Renderer::loadShaders()
+    {
+        // Create 2D shaders
+        {
+            m_p2DVertexShader = OShader::createFromBinaryData(_2dvs_cso, sizeof(_2dvs_cso), OVertexShader, {{2, "POSITION"}, {2, "TEXCOORD"}, {4, "COLOR"}});
+            m_p2DPixelShader = OShader::createFromBinaryData(_2dps_cso, sizeof(_2dps_cso), OPixelShader);
+        }
+
+        // Effects
+        {
+            m_pEffectsVertexShader = OShader::createFromBinaryData(blurvs_cso, sizeof(blurvs_cso), OVertexShader, {{2, "POSITION"}});
+            m_pBlurHPixelShader = OShader::createFromBinaryData(blurhps_cso, sizeof(blurhps_cso), OPixelShader);
+            m_pBlurVPixelShader = OShader::createFromBinaryData(blurvps_cso, sizeof(blurvps_cso), OPixelShader);
+            m_pSepiaPixelShader = OShader::createFromBinaryData(sepia_cso, sizeof(sepia_cso), OPixelShader);
+            m_pCRTPixelShader = OShader::createFromBinaryData(crt_cso, sizeof(crt_cso), OPixelShader);
+            m_pCartoonPixelShader = OShader::createFromBinaryData(cartoon_cso, sizeof(cartoon_cso), OPixelShader);
+            m_pVignettePixelShader = OShader::createFromBinaryData(vignette_cso, sizeof(vignette_cso), OPixelShader);
+        }
+    }
+
+    void Renderer::setupEffectRenderStates()
+    {
+        renderStates.depthEnabled = false;
+        renderStates.scissorEnabled = false;
+        renderStates.blendMode = BlendMode::Opaque;
+        renderStates.sampleFiltering = OFilterLinear;
+        renderStates.sampleAddressMode = OTextureClamp;
+        renderStates.vertexShader = m_pEffectsVertexShader;
+        renderStates.vertexBuffer = m_pEffectsVertexBuffer;
+    }
+
+    void Renderer::drawBlurH()
+    {
+        setupEffectRenderStates();
+        renderStates.pixelShader = m_pBlurHPixelShader;
+        draw(6);
+    }
+
+    void Renderer::drawBlurV()
+    {
+        setupEffectRenderStates();
+        renderStates.pixelShader = m_pBlurVPixelShader;
+        draw(6);
+    }
+
+    void Renderer::drawSepia()
+    {
+        setupEffectRenderStates();
+        renderStates.pixelShader = m_pSepiaPixelShader;
+        draw(6);
+    }
+
+    void Renderer::drawCRT()
+    {
+        setupEffectRenderStates();
+        renderStates.pixelShader = m_pCRTPixelShader;
+        draw(6);
+    }
+
+    void Renderer::drawCartoon()
+    {
+        setupEffectRenderStates();
+        renderStates.pixelShader = m_pCartoonPixelShader;
+        draw(6);
+    }
+
+    void Renderer::drawVignette()
+    {
+        setupEffectRenderStates();
+        renderStates.pixelShader = m_pVignettePixelShader;
+        draw(6);
     }
 }

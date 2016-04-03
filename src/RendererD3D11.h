@@ -40,12 +40,6 @@ namespace onut
         void setCRT(const Vector2& kernelSize);
         void setCartoon(const Vector3& tone);
         void setVignette(const Vector2& kernelSize, float amount = .5f);
-        void drawBlurH();
-        void drawBlurV();
-        void drawSepia();
-        void drawCRT();
-        void drawCartoon();
-        void drawVignette();
 
         void applyRenderStates() override;
         void init(const OWindowRef& pWindow) override;
@@ -55,8 +49,6 @@ namespace onut
         void createRenderTarget();
         void createRenderStates();
         void createUniforms();
-        void setupEffectRenderStates();
-        void loadShaders();
 
         // Device stuff
         IDXGISwapChain* m_pSwapChain = nullptr;
@@ -72,9 +64,6 @@ namespace onut
         ID3D11SamplerState* m_pSamplerStates[static_cast<int>(sample::Filtering::COUNT) * static_cast<int>(sample::AddressMode::COUNT)];
         ID3D11RasterizerState* m_pRasterizerStates[2];
         ID3D11DepthStencilState* m_pDepthStencilStates[1];
-
-        // Input layouts
-        OVertexBufferRef m_pEffectsVertexBuffer;
 
         // Constant buffers
         ID3D11Buffer* m_pViewProj2dBuffer = nullptr;

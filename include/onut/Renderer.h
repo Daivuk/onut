@@ -157,20 +157,25 @@ namespace onut
         virtual void setCRT(const Vector2& kernelSize) = 0;
         virtual void setCartoon(const Vector3& tone) = 0;
         virtual void setVignette(const Vector2& kernelSize, float amount = .5f) = 0;
-        virtual void drawBlurH() = 0;
-        virtual void drawBlurV() = 0;
-        virtual void drawSepia() = 0;
-        virtual void drawCRT() = 0;
-        virtual void drawCartoon() = 0;
-        virtual void drawVignette() = 0;
+        void drawBlurH();
+        void drawBlurV();
+        void drawSepia();
+        void drawCRT();
+        void drawCartoon();
+        void drawVignette();
 
         virtual void applyRenderStates() = 0;
-        virtual void init(const OWindowRef& pWindow) = 0;
+        virtual void init(const OWindowRef& pWindow);
 
         RenderStates renderStates;
 
     protected:
         Renderer();
+
+        void loadShaders();
+        void setupEffectRenderStates();
+
+        OVertexBufferRef m_pEffectsVertexBuffer;
 
         OShaderRef m_p2DVertexShader;
         OShaderRef m_p2DPixelShader;
