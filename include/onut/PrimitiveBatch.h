@@ -3,15 +3,11 @@
 #include <onut/Maths.h>
 #include <onut/PrimitiveMode.h>
 
-// Third party
-#if defined(WIN32)
-#include <d3d11.h>
-#endif
-
 // Forward declares
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(PrimitiveBatch);
 OForwardDeclare(Texture);
+OForwardDeclare(VertexBuffer);
 
 namespace onut
 {
@@ -39,11 +35,9 @@ namespace onut
 
         void flush();
 
-        ID3D11Buffer* m_pVertexBuffer = nullptr;
-        D3D11_MAPPED_SUBRESOURCE m_pMappedVertexBuffer;
+        OVertexBufferRef m_pVertexBuffer;
+        SVertexP2T2C4* m_pMappedVertexBuffer = nullptr;
 
-        static const unsigned int m_stride = sizeof(SVertexP2T2C4);
-        static const unsigned int m_offset = 0;
         unsigned int m_vertexCount = 0;
 
         bool m_isDrawing = false;

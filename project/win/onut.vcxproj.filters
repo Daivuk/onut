@@ -434,6 +434,12 @@
     <ClInclude Include="..\..\src\jsoncpp\json\json-forwards.h">
       <Filter>thirdparties\jsoncpp\json</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\VertexBufferD3D11.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\IndexBufferD3D11.h">
+      <Filter>resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -682,6 +688,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\CloudBrainCloud.cpp">
       <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\VertexBufferD3D11.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\IndexBufferD3D11.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

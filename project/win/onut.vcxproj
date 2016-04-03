@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\src\braincloud\ServiceOperation.h" />
     <ClInclude Include="..\..\src\CloudBrainCloud.h" />
     <ClInclude Include="..\..\src\dirent\dirent.h" />
+    <ClInclude Include="..\..\src\IndexBufferD3D11.h" />
     <ClInclude Include="..\..\src\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="..\..\src\jsoncpp\json\json.h" />
     <ClInclude Include="..\..\src\LodePNG\LodePNG.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="..\..\src\RendererD3D11.h" />
     <ClInclude Include="..\..\src\ShaderD3D11.h" />
     <ClInclude Include="..\..\src\UIJson.h" />
+    <ClInclude Include="..\..\src\VertexBufferD3D11.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />
     <ClInclude Include="..\..\src\zlib\gzguts.h" />
@@ -177,6 +179,7 @@
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />
     <ClCompile Include="..\..\src\IndexBuffer.cpp" />
+    <ClCompile Include="..\..\src\IndexBufferD3D11.cpp" />
     <ClCompile Include="..\..\src\Input.cpp" />
     <ClCompile Include="..\..\src\InputDevice.cpp" />
     <ClCompile Include="..\..\src\Curve.cpp" />
@@ -212,6 +215,7 @@
     <ClCompile Include="..\..\src\UITreeView.cpp" />
     <ClCompile Include="..\..\src\Updater.cpp" />
     <ClCompile Include="..\..\src\VertexBuffer.cpp" />
+    <ClCompile Include="..\..\src\VertexBufferD3D11.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />

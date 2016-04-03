@@ -7,8 +7,10 @@
 #include <onut/Window.h>
 
 // Private
+#include "IndexBufferD3D11.h"
 #include "RendererD3D11.h"
 #include "ShaderD3D11.h"
+#include "VertexBufferD3D11.h"
 
 // STL
 #include <fstream>
@@ -44,17 +46,6 @@ namespace onut
         loadShaders();
         createUniforms();
 
-        // Set up the description of the static vertex buffer.
-        D3D11_BUFFER_DESC vertexBufferDesc;
-        vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        vertexBufferDesc.ByteWidth = 12 * 4;
-        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        vertexBufferDesc.CPUAccessFlags = 0;
-        vertexBufferDesc.MiscFlags = 0;
-        vertexBufferDesc.StructureByteStride = 0;
-
-        // Give the subresource structure a pointer to the vertex data.
-        D3D11_SUBRESOURCE_DATA vertexData;
         const float vertices[] = {
             -1, -1, 
             -1, 1, 
@@ -63,12 +54,7 @@ namespace onut
             -1, 1, 
             1, 1
         };
-        vertexData.pSysMem = vertices;
-        vertexData.SysMemPitch = 0;
-        vertexData.SysMemSlicePitch = 0;
-
-        auto ret = m_pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pEffectsVertexBuffer);
-        assert(ret == S_OK);
+        m_pEffectsVertexBuffer = OVertexBuffer::createStatic(vertices, sizeof(vertices));
     }
 
     RendererD3D11::~RendererD3D11()
@@ -76,11 +62,6 @@ namespace onut
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
         if (m_pKernelSizeBuffer) m_pKernelSizeBuffer->Release();
         if (m_pSepiaBuffer) m_pSepiaBuffer->Release();
-
-        if (m_p2DInputLayout) m_p2DInputLayout->Release();
-
-        if (m_pEffectsInputLayout) m_pEffectsInputLayout->Release();
-        if (m_pEffectsVertexBuffer) m_pEffectsVertexBuffer->Release();
 
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
 
@@ -348,35 +329,19 @@ namespace onut
     {
         // Create 2D shaders
         {
-            m_p2DVertexShader = OShader::createFromBinaryData(_2dvs_cso, sizeof(_2dvs_cso), OVertexShader);
+            m_p2DVertexShader = OShader::createFromBinaryData(_2dvs_cso, sizeof(_2dvs_cso), OVertexShader, {{2, "POSITION"}, {2, "TEXCOORD"}, {4, "COLOR"}});
             m_p2DPixelShader = OShader::createFromBinaryData(_2dps_cso, sizeof(_2dps_cso), OPixelShader);
-
-            // Create input layout
-            D3D11_INPUT_ELEMENT_DESC layout[] = {
-                {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-                {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-                {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            };
-            auto ret = m_pDevice->CreateInputLayout(layout, 3, _2dvs_cso, sizeof(_2dvs_cso), &m_p2DInputLayout);
-            assert(ret == S_OK);
         }
 
         // Effects
         {
-            m_pEffectsVertexShader = OShader::createFromBinaryData(blurvs_cso, sizeof(blurvs_cso), OVertexShader);
+            m_pEffectsVertexShader = OShader::createFromBinaryData(blurvs_cso, sizeof(blurvs_cso), OVertexShader, {{2, "POSITION"}});
             m_pBlurHPixelShader = OShader::createFromBinaryData(blurhps_cso, sizeof(blurhps_cso), OPixelShader);
             m_pBlurVPixelShader = OShader::createFromBinaryData(blurvps_cso, sizeof(blurvps_cso), OPixelShader);
             m_pSepiaPixelShader = OShader::createFromBinaryData(sepia_cso, sizeof(sepia_cso), OPixelShader);
             m_pCRTPixelShader = OShader::createFromBinaryData(crt_cso, sizeof(crt_cso), OPixelShader);
             m_pCartoonPixelShader = OShader::createFromBinaryData(cartoon_cso, sizeof(cartoon_cso), OPixelShader);
             m_pVignettePixelShader = OShader::createFromBinaryData(vignette_cso, sizeof(vignette_cso), OPixelShader);
-
-            // Create input layout
-            D3D11_INPUT_ELEMENT_DESC layout[] = {
-                {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            };
-            auto ret = m_pDevice->CreateInputLayout(layout, 1, blurvs_cso, sizeof(blurvs_cso), &m_pEffectsInputLayout);
-            assert(ret == S_OK);
         }
     }
 
@@ -527,107 +492,67 @@ namespace onut
         renderStates.blendMode = BlendMode::Opaque;
         renderStates.sampleFiltering = OFilterLinear;
         renderStates.sampleAddressMode = OTextureClamp;
+        renderStates.vertexShader = m_pEffectsVertexShader;
+        renderStates.vertexBuffer = m_pEffectsVertexBuffer;
     }
 
     void RendererD3D11::drawBlurH()
     {
         setupEffectRenderStates();
-
-        // Bind the shaders
-        m_pDeviceContext->IASetInputLayout(m_pEffectsInputLayout);
-        renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.pixelShader = m_pBlurHPixelShader;
-        applyRenderStates();
-
-        UINT stride = 2 * 4;
-        UINT offset = 0;
-        m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
-        m_pDeviceContext->Draw(6, 0);
+        draw(6);
     }
 
     void RendererD3D11::drawBlurV()
     {
         setupEffectRenderStates();
-
-        // Bind the shaders
-        m_pDeviceContext->IASetInputLayout(m_pEffectsInputLayout);
-        renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.pixelShader = m_pBlurVPixelShader;
-        applyRenderStates();
-
-        UINT stride = 2 * 4;
-        UINT offset = 0;
-        m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
-        m_pDeviceContext->Draw(6, 0);
+        draw(6);
     }
 
     void RendererD3D11::drawSepia()
     {
         setupEffectRenderStates();
-
-        // Bind the shaders
-        m_pDeviceContext->IASetInputLayout(m_pEffectsInputLayout);
-        renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.pixelShader = m_pSepiaPixelShader;
-        applyRenderStates();
-
-        UINT stride = 2 * 4;
-        UINT offset = 0;
-        m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
-        m_pDeviceContext->Draw(6, 0);
+        draw(6);
     }
 
     void RendererD3D11::drawCRT()
     {
         setupEffectRenderStates();
-
-        // Bind the shaders
-        m_pDeviceContext->IASetInputLayout(m_pEffectsInputLayout);
-        renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.pixelShader = m_pCRTPixelShader;
-        applyRenderStates();
-
-        UINT stride = 2 * 4;
-        UINT offset = 0;
-        m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
-        m_pDeviceContext->Draw(6, 0);
+        draw(6);
     }
 
     void RendererD3D11::drawCartoon()
     {
         setupEffectRenderStates();
-
-        // Bind the shaders
-        m_pDeviceContext->IASetInputLayout(m_pEffectsInputLayout);
-        renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.pixelShader = m_pCartoonPixelShader;
-        applyRenderStates();
-
-        UINT stride = 2 * 4;
-        UINT offset = 0;
-        m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
-        m_pDeviceContext->Draw(6, 0);
+        draw(6);
     }
 
     void RendererD3D11::drawVignette()
     {
         setupEffectRenderStates();
-
-        // Bind the shaders
-        m_pDeviceContext->IASetInputLayout(m_pEffectsInputLayout);
-        renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.pixelShader = m_pVignettePixelShader;
-        applyRenderStates();
+        draw(6);
+    }
 
-        UINT stride = 2 * 4;
-        UINT offset = 0;
-        m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pEffectsVertexBuffer, &stride, &offset);
-        m_pDeviceContext->Draw(6, 0);
+    void RendererD3D11::draw(uint32_t vertexCount)
+    {
+        applyRenderStates();
+        m_pDeviceContext->Draw(static_cast<UINT>(vertexCount), 0);
+    }
+
+    void RendererD3D11::drawIndexed(uint32_t indexCount)
+    {
+        applyRenderStates();
+        m_pDeviceContext->DrawIndexed(static_cast<UINT>(indexCount), 0, 0);
     }
 
     void RendererD3D11::applyRenderStates()
     {
-        // Rendertarget
+        // Render target
         if (renderStates.renderTarget.isDirty())
         {
             auto& pRenderTarget = renderStates.renderTarget.get();
@@ -773,6 +698,7 @@ namespace onut
         {
             auto pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());
             m_pDeviceContext->VSSetShader(pShaderD3D11->getVertexShader(), nullptr, 0);
+            m_pDeviceContext->IASetInputLayout(pShaderD3D11->getInputLayout());
             renderStates.vertexShader.resetDirty();
         }
         if (renderStates.pixelShader.isDirty())
@@ -782,11 +708,27 @@ namespace onut
             renderStates.pixelShader.resetDirty();
         }
 
-        m_pDeviceContext->IASetInputLayout(m_p2DInputLayout);
-
         // Vertex/Index buffers
-        //RenderState<OVertexBufferRef> vertexBuffer;
-        //RenderState<OIndexBufferRef> indexBuffer;
+        if (renderStates.vertexBuffer.isDirty())
+        {
+            if (renderStates.vertexBuffer.get())
+            {
+                auto pVertexBufferD3D11 = ODynamicCast<OVertexBufferD3D11>(renderStates.vertexBuffer.get());
+                auto pD3DBuffer = pVertexBufferD3D11->getBuffer();
+                UINT stride = static_cast<UINT>(renderStates.vertexShader.get()->getVertexSize());
+                UINT offset = 0;
+                m_pDeviceContext->IASetVertexBuffers(0, 1, &pD3DBuffer, &stride, &offset);
+            }
+        }
+        if (renderStates.indexBuffer.isDirty())
+        {
+            if (renderStates.indexBuffer.get())
+            {
+                auto pIndexBufferD3D11 = ODynamicCast<OIndexBufferD3D11>(renderStates.indexBuffer.get());
+                auto pD3DBuffer = pIndexBufferD3D11->getBuffer();
+                m_pDeviceContext->IASetIndexBuffer(pD3DBuffer, DXGI_FORMAT_R16_UINT, 0);
+            }
+        }
     }
 }
 

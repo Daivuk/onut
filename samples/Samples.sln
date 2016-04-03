@@ -49,6 +49,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Empty", "Empty\project\win\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cloud", "Cloud\project\win\Cloud.vcxproj", "{B0C6E918-3ABE-460B-909A-0BE9FFA59AB0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomMesh", "CustomMesh\project\win\CustomMesh.vcxproj", "{AC89F786-9E13-406F-9575-75E3D73F94DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -143,6 +145,10 @@ Global
 		{B0C6E918-3ABE-460B-909A-0BE9FFA59AB0}.Debug|Win32.Build.0 = Debug|Win32
 		{B0C6E918-3ABE-460B-909A-0BE9FFA59AB0}.Release|Win32.ActiveCfg = Release|Win32
 		{B0C6E918-3ABE-460B-909A-0BE9FFA59AB0}.Release|Win32.Build.0 = Release|Win32
+		{AC89F786-9E13-406F-9575-75E3D73F94DC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AC89F786-9E13-406F-9575-75E3D73F94DC}.Debug|Win32.Build.0 = Debug|Win32
+		{AC89F786-9E13-406F-9575-75E3D73F94DC}.Release|Win32.ActiveCfg = Release|Win32
+		{AC89F786-9E13-406F-9575-75E3D73F94DC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,5 +175,6 @@ Global
 		{DC59BD52-1741-451D-A05B-9A0C4F4CDB88} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{B0C6E918-3ABE-460B-909A-0BE9FFA59AB0} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{AC89F786-9E13-406F-9575-75E3D73F94DC} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 	EndGlobalSection
 EndGlobal

@@ -1,9 +1,8 @@
 // Onut
 #include <onut/PrimitiveBatch.h>
+#include <onut/Renderer.h>
 #include <onut/Texture.h>
-
-// Private
-#include "RendererD3D11.h"
+#include <onut/VertexBuffer.h>
 
 OPrimitiveBatchRef oPrimitiveBatch;
 
@@ -20,34 +19,12 @@ namespace onut
         unsigned char white[4] = {255, 255, 255, 255};
         m_pTexWhite = OTexture::createFromData(white, {1, 1}, false);
 
-        auto pRendererD3D11 = ODynamicCast<ORendererD3D11>(oRenderer);
-        auto pDevice = pRendererD3D11->getDevice();
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        SVertexP2T2C4 vertices[MAX_VERTEX_COUNT];
-
-        // Set up the description of the static vertex buffer.
-        D3D11_BUFFER_DESC vertexBufferDesc;
-        vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-        vertexBufferDesc.ByteWidth = sizeof(vertices);
-        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        vertexBufferDesc.MiscFlags = 0;
-        vertexBufferDesc.StructureByteStride = 0;
-
-        // Give the subresource structure a pointer to the vertex data.
-        D3D11_SUBRESOURCE_DATA vertexData;
-        vertexData.pSysMem = vertices;
-        vertexData.SysMemPitch = 0;
-        vertexData.SysMemSlicePitch = 0;
-
-        auto ret = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer);
-        assert(ret == S_OK);
+        // Vertex buffer.
+        m_pVertexBuffer = OVertexBuffer::createDynamic(sizeof(SVertexP2T2C4) * MAX_VERTEX_COUNT);
     }
 
     PrimitiveBatch::~PrimitiveBatch()
     {
-        if (m_pVertexBuffer) m_pVertexBuffer->Release();
     }
 
     void PrimitiveBatch::begin(PrimitiveMode primitiveType, const OTextureRef& pTexture, const Matrix& transform)
@@ -61,13 +38,12 @@ namespace onut
 		oRenderer->setupFor2D(transform);
         m_isDrawing = true;
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        pRendererD3D11->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+        m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());
     }
 
     void PrimitiveBatch::draw(const Vector2& position, const Color& color, const Vector2& texCoord)
     {
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + m_vertexCount;
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + m_vertexCount;
         pVerts->position = position;
         pVerts->texCoord = texCoord;
         pVerts->color = color;
@@ -82,7 +58,7 @@ namespace onut
 
                 flush();
 
-                auto pFirstVert = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData);
+                auto pFirstVert = m_pMappedVertexBuffer;
                 *pFirstVert = lastVert;
                 ++m_vertexCount;
             }
@@ -102,8 +78,7 @@ namespace onut
         {
             flush();
         }
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        pRendererD3D11->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
+        m_pVertexBuffer->unmap(sizeof(SVertexP2T2C4) * m_vertexCount);
     }
 
     void PrimitiveBatch::flush()
@@ -113,19 +88,14 @@ namespace onut
             return; // Nothing to flush
         }
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+        m_pVertexBuffer->unmap(sizeof(SVertexP2T2C4) * m_vertexCount);
 
-        pDeviceContext->Unmap(m_pVertexBuffer, 0);
+        oRenderer->renderStates.textures[0] = m_pTexture;
+        oRenderer->renderStates.primitiveMode = m_primitiveType;
+        oRenderer->renderStates.vertexBuffer = m_pVertexBuffer;
+        oRenderer->draw(m_vertexCount);
 
-        *oRenderer = m_pTexture;
-        *oRenderer = m_primitiveType;
-        oRenderer->applyRenderStates();
-
-        pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);
-        pDeviceContext->Draw(m_vertexCount, 0);
-
-        pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+        m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());
 
         m_vertexCount = 0;
     }

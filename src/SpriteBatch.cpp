@@ -1,10 +1,10 @@
 // Onut
+#include <onut/IndexBuffer.h>
 #include <onut/PrimitiveMode.h>
+#include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
-
-// Private
-#include "RendererD3D11.h"
+#include <onut/VertexBuffer.h>
 
 // STL
 #include <cmath>
@@ -20,15 +20,14 @@ namespace onut
 
     SpriteBatch::SpriteBatch()
     {
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDevice = pRendererD3D11->getDevice();
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
         // Create a white texture for rendering "without" texture
         unsigned char white[4] = {255, 255, 255, 255};
         m_pTexWhite = Texture::createFromData(white, {1, 1}, false);
 
-        SVertexP2T2C4 vertices[MAX_SPRITE_COUNT * 4];
+        // Create dynamic vertex buffer
+        m_pVertexBuffer = OVertexBuffer::createDynamic(sizeof(SVertexP2T2C4) * MAX_SPRITE_COUNT * 4);
+
+        // Create index buffer
         unsigned short indices[MAX_SPRITE_COUNT * 6];
         for (unsigned int i = 0; i < MAX_SPRITE_COUNT; ++i)
         {
@@ -39,48 +38,11 @@ namespace onut
             indices[i * 6 + 4] = i * 4 + 3;
             indices[i * 6 + 5] = i * 4 + 0;
         }
-
-        // Set up the description of the static vertex buffer.
-        D3D11_BUFFER_DESC vertexBufferDesc;
-        vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-        vertexBufferDesc.ByteWidth = sizeof(vertices);
-        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        vertexBufferDesc.MiscFlags = 0;
-        vertexBufferDesc.StructureByteStride = 0;
-
-        // Give the subresource structure a pointer to the vertex data.
-        D3D11_SUBRESOURCE_DATA vertexData;
-        vertexData.pSysMem = vertices;
-        vertexData.SysMemPitch = 0;
-        vertexData.SysMemSlicePitch = 0;
-
-        auto ret = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer);
-        assert(ret == S_OK);
-
-        // Set up the description of the static index buffer.
-        D3D11_BUFFER_DESC indexBufferDesc;
-        indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        indexBufferDesc.ByteWidth = sizeof(unsigned short) * 6 * MAX_SPRITE_COUNT;
-        indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        indexBufferDesc.CPUAccessFlags = 0;
-        indexBufferDesc.MiscFlags = 0;
-        indexBufferDesc.StructureByteStride = 0;
-
-        // Give the subresource structure a pointer to the index data.
-        D3D11_SUBRESOURCE_DATA indexData;
-        indexData.pSysMem = indices;
-        indexData.SysMemPitch = 0;
-        indexData.SysMemSlicePitch = 0;
-
-        ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
-        assert(ret == S_OK);
+        m_pIndexBuffer = OIndexBuffer::createStatic(indices, sizeof(indices));
     }
 
     SpriteBatch::~SpriteBatch()
     {
-        if (m_pVertexBuffer) m_pVertexBuffer->Release();
-        if (m_pIndexBuffer) m_pIndexBuffer->Release();
     }
 
     void SpriteBatch::begin(BlendMode blendMode)
@@ -92,14 +54,14 @@ namespace onut
     {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        pRendererD3D11->setupFor2D(transform);
+        oRenderer->setupFor2D(transform);
 
         m_currentTransform = transform;
         m_curBlendMode = blendMode;
         m_pTexture = nullptr;
         m_isDrawing = true;
-        pRendererD3D11->getDeviceContext()->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+
+        m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());
     }
 
     void SpriteBatch::changeBlendMode(BlendMode blendMode)
@@ -126,7 +88,7 @@ namespace onut
 
         changeTexture(pTexture);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
         pVerts[0].texCoord = {0, 0};
         pVerts[0].color = colors[0];
@@ -162,7 +124,7 @@ namespace onut
 
         changeTexture(pTexture);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
         pVerts[0].texCoord = {0, 0};
         pVerts[0].color = color;
@@ -313,7 +275,7 @@ namespace onut
 
         changeTexture(pTexture);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
         pVerts[0].texCoord = {0, 0};
         pVerts[0].color = color;
@@ -344,7 +306,7 @@ namespace onut
 
         changeTexture(pTexture);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
         pVerts[0].texCoord = {uvs.x, uvs.y};
         pVerts[0].color = color;
@@ -376,7 +338,7 @@ namespace onut
 
         changeTexture(pTexture);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = {rect.x, rect.y};
         pVerts[0].texCoord = {uvs.x, uvs.y};
         pVerts[0].color = colors[0];
@@ -444,7 +406,7 @@ namespace onut
 
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = Vector2::Transform(Vector2(-sizef.x * origin.x, -sizef.y * origin.y), transform);
         pVerts[0].texCoord = {0, 0};
         pVerts[0].color = color;
@@ -478,7 +440,7 @@ namespace onut
 
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = Vector2::Transform(Vector2(-sizef.x * origin.x, -sizef.y * origin.y), transform);
         pVerts[0].texCoord = {uvs.x, uvs.y};
         pVerts[0].color = color;
@@ -520,7 +482,7 @@ namespace onut
         Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
         Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = position;
         pVerts[0].position -= right * origin.x * 2.f;
         pVerts[0].position -= down * origin.y * 2.f;
@@ -565,7 +527,7 @@ namespace onut
         Vector2 right{-dir.y, dir.x};
         right *= size * .5f;
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = Vector2(from.x - right.x, from.y - right.y);
         pVerts[0].texCoord = {uOffset, 0};
         pVerts[0].color = color;
@@ -612,7 +574,7 @@ namespace onut
         Vector2 right{cosTheta * hSize.x, sinTheta * hSize.x};
         Vector2 down{-sinTheta * hSize.y, cosTheta * hSize.y};
 
-        SVertexP2T2C4* pVerts = static_cast<SVertexP2T2C4*>(m_pMappedVertexBuffer.pData) + (m_spriteCount * 4);
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
         pVerts[0].position = position;
         pVerts[0].position -= right * origin.x * 2.f;
         pVerts[0].position -= down * origin.y * 2.f;
@@ -655,8 +617,7 @@ namespace onut
             flush();
         }
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        pRendererD3D11->getDeviceContext()->Unmap(m_pVertexBuffer, 0);
+        m_pVertexBuffer->unmap(sizeof(SVertexP2T2C4) * m_spriteCount * 4);
     }
 
     void SpriteBatch::flush()
@@ -665,22 +626,17 @@ namespace onut
         {
             return; // Nothing to flush
         }
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+        m_pVertexBuffer->unmap(sizeof(SVertexP2T2C4) * m_spriteCount * 4);
 
-        pDeviceContext->Unmap(m_pVertexBuffer, 0);
+        oRenderer->renderStates.textures[0] = m_pTexture;
+        oRenderer->renderStates.blendMode = m_curBlendMode;
+        oRenderer->renderStates.sampleFiltering = m_curFiltering;
+        oRenderer->renderStates.primitiveMode = OPrimitiveTriangleList;
+        oRenderer->renderStates.indexBuffer = m_pIndexBuffer;
+        oRenderer->renderStates.vertexBuffer = m_pVertexBuffer;
+        oRenderer->drawIndexed(6 * m_spriteCount);
 
-        *oRenderer = m_pTexture;
-        *oRenderer = m_curBlendMode;
-        *oRenderer = m_curFiltering;
-        *oRenderer = OPrimitiveTriangleList;
-
-        pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &m_stride, &m_offset);
-        pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-        oRenderer->applyRenderStates();
-        pDeviceContext->DrawIndexed(6 * m_spriteCount, 0, 0);
-
-        pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_pMappedVertexBuffer);
+        m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());
 
         m_spriteCount = 0;
         m_pTexture = nullptr;

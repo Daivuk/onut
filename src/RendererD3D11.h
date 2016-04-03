@@ -23,6 +23,9 @@ namespace onut
         void beginFrame();
         void endFrame();
 
+        void draw(uint32_t vertexCount) override;
+        void drawIndexed(uint32_t indexCount) override;
+
         Point getResolution() const override;
         void onResize(const Point& newSize);
 
@@ -71,9 +74,7 @@ namespace onut
         ID3D11DepthStencilState* m_pDepthStencilStates[1];
 
         // Input layouts
-        ID3D11InputLayout* m_p2DInputLayout = nullptr;
-        ID3D11InputLayout* m_pEffectsInputLayout = nullptr;
-        ID3D11Buffer* m_pEffectsVertexBuffer = nullptr;
+        OVertexBufferRef m_pEffectsVertexBuffer;
 
         // Constant buffers
         ID3D11Buffer* m_pViewProj2dBuffer = nullptr;

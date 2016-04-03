@@ -143,6 +143,8 @@ namespace onut
         virtual void clear(const Color& color = {.25f, .5f, 1, 1}) = 0;
         virtual void beginFrame() = 0;
         virtual void endFrame() = 0;
+        virtual void draw(uint32_t vertexCount) = 0;
+        virtual void drawIndexed(uint32_t indexCount) = 0;
 
         virtual Point getResolution() const = 0;
         virtual void onResize(const Point& newSize) = 0;

@@ -4,18 +4,15 @@
 #include <onut/Maths.h>
 #include <onut/SampleMode.h>
 
-// Third party
-#if defined(WIN32)
-#include <d3d11.h>
-#endif
-
 // STL
 #include <vector>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(IndexBuffer);
 OForwardDeclare(SpriteBatch);
 OForwardDeclare(Texture);
+OForwardDeclare(VertexBuffer);
 
 namespace onut
 {
@@ -64,16 +61,13 @@ namespace onut
 
         static const int MAX_SPRITE_COUNT = 300;
 
-        ID3D11Buffer*               m_pVertexBuffer = nullptr;
-        ID3D11Buffer*               m_pIndexBuffer = nullptr;
-        D3D11_MAPPED_SUBRESOURCE    m_pMappedVertexBuffer;
+        OVertexBufferRef m_pVertexBuffer;
+        OIndexBufferRef m_pIndexBuffer;
+        SVertexP2T2C4* m_pMappedVertexBuffer = nullptr;
 
-        static const unsigned int   m_stride = sizeof(SVertexP2T2C4);
-        static const unsigned int   m_offset = 0;
+        bool m_isDrawing = false;
 
-        bool                        m_isDrawing = false;
-
-        OTextureRef                 m_pTexWhite = nullptr;
+        OTextureRef m_pTexWhite = nullptr;
 
         void flush();
         void changeTexture(const OTextureRef& pTexture);
