@@ -78,14 +78,14 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
 
     // Draw stuff to our render target
-    pRenderTarget->bindRenderTarget();
+    oRenderer->renderStates.renderTarget.push(pRenderTarget);
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFile, {128, 0, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFile, {0, 128, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFile, {128, 128, 128, 128});
     oSpriteBatch->end();
-    pRenderTarget->unbindRenderTarget();
+    oRenderer->renderStates.renderTarget.pop();
 
     // Update our dynamic texture
     auto animValue = dynamicAnim.get();

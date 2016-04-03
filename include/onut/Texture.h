@@ -37,15 +37,13 @@ namespace onut
         bool isRenderTarget() const;
         bool isDynamic() const;
 
-        void bindRenderTarget();
-        void unbindRenderTarget();
         void resizeTarget(const Point& size);
         void clearRenderTarget(const Color& color);
 
 #if defined(WIN32)
         ID3D11Texture2D* getD3DTexture() const { return m_pTexture; }
         ID3D11ShaderResourceView* getD3DResourceView() const { return m_pTextureView; }
-        ID3D11RenderTargetView* getD3DRenderTargetView() const { return m_pRenderTargetView; }
+        ID3D11RenderTargetView* getD3DRenderTargetView();
 #endif
 
         // Apply effects. It will only work if the texture is a render target

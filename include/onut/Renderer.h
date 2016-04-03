@@ -71,7 +71,23 @@ namespace onut
             m_isDirty = true;
         }
 
+        void push(const Ttype& value)
+        {
+            m_stack.push_back(m_value);
+            *this = value;
+        }
+
+        void pop()
+        {
+            if (!m_stack.empty())
+            {
+                *this = m_stack.back();
+                m_stack.pop_back();
+            }
+        }
+
     private:
+        std::vector<Ttype> m_stack;
         Ttype m_value;
         bool m_isDirty = true;
     };
@@ -84,16 +100,6 @@ namespace onut
         RenderStates();
         RenderStates(const RenderStates& other);
         RenderStates& operator=(const RenderStates& other);
-
-        void operator=(const OTextureRef& texture);
-        void operator=(BlendMode in_blendMode);
-        void operator=(sample::Filtering in_sampleFiltering);
-        void operator=(sample::AddressMode in_sampleAddressMode);
-        void operator=(const Matrix& in_world);
-        void operator=(PrimitiveMode in_primitiveMode);
-        void operator=(const OVertexBufferRef& in_vertexBuffer);
-        void operator=(const OIndexBufferRef& in_indexBuffer);
-        void operator=(const OShaderRef& in_shader);
 
         void reset();
 
@@ -121,16 +127,6 @@ namespace onut
         static ORendererRef create(const OWindowRef& pWindow);
 
         virtual ~Renderer();
-
-        void operator=(const OTextureRef& texture);
-        void operator=(BlendMode blendMode);
-        void operator=(sample::Filtering sampleFiltering);
-        void operator=(sample::AddressMode sampleAddressMode);
-        void operator=(const Matrix& in_world);
-        void operator=(PrimitiveMode in_primitiveMode);
-        void operator=(const OVertexBufferRef& in_vertexBuffer);
-        void operator=(const OIndexBufferRef& in_indexBuffer);
-        void operator=(const OShaderRef& in_shader);
 
         void setupFor2D();
         void setupFor2D(const Matrix& transform);

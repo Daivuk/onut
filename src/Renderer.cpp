@@ -116,59 +116,6 @@ namespace onut
         renderTarget.forceDirty();
     }
 
-    void RenderStates::operator=(const OTextureRef& texture)
-    {
-        textures[0] = texture;
-    }
-
-    void RenderStates::operator=(BlendMode in_blendMode)
-    {
-        blendMode = in_blendMode;
-    }
-
-    void RenderStates::operator=(sample::Filtering in_sampleFiltering)
-    {
-        sampleFiltering = in_sampleFiltering;
-    }
-
-    void RenderStates::operator=(sample::AddressMode in_sampleAddressMode)
-    {
-        sampleAddressMode = in_sampleAddressMode;
-    }
-
-    void RenderStates::operator=(const Matrix& in_world)
-    {
-        world = in_world;
-    }
-
-    void RenderStates::operator=(PrimitiveMode in_primitiveMode)
-    {
-        primitiveMode = in_primitiveMode;
-    }
-
-    void RenderStates::operator=(const OVertexBufferRef& in_vertexBuffer)
-    {
-        vertexBuffer = in_vertexBuffer;
-    }
-
-    void RenderStates::operator=(const OIndexBufferRef& in_indexBuffer)
-    {
-        indexBuffer = in_indexBuffer;
-    }
-
-    void RenderStates::operator=(const OShaderRef& in_shader)
-    {
-        switch (in_shader->getType())
-        {
-            case Shader::Type::Vertex:
-                vertexShader = in_shader;
-                break;
-            case Shader::Type::Pixel:
-                pixelShader = in_shader;
-                break;
-        }
-    }
-
     Renderer::Renderer()
     {
     }
@@ -191,51 +138,6 @@ namespace onut
         m_pEffectsVertexBuffer = OVertexBuffer::createStatic(vertices, sizeof(vertices));
     }
 
-    void Renderer::operator=(const OTextureRef& texture)
-    {
-        renderStates = texture;
-    }
-
-    void Renderer::operator=(BlendMode blendMode)
-    {
-        renderStates = blendMode;
-    }
-
-    void Renderer::operator=(sample::Filtering sampleFiltering)
-    {
-        renderStates = sampleFiltering;
-    }
-
-    void Renderer::operator=(sample::AddressMode sampleAddressMode)
-    {
-        renderStates = sampleAddressMode;
-    }
-
-    void Renderer::operator=(const Matrix& in_world)
-    {
-        renderStates = in_world;
-    }
-
-    void Renderer::operator=(PrimitiveMode in_primitiveMode)
-    {
-        renderStates = in_primitiveMode;
-    }
-
-    void Renderer::operator=(const OVertexBufferRef& in_vertexBuffer)
-    {
-        renderStates = in_vertexBuffer;
-    }
-
-    void Renderer::operator=(const OIndexBufferRef& in_indexBuffer)
-    {
-        renderStates = in_indexBuffer;
-    }
-
-    void Renderer::operator=(const OShaderRef& in_shader)
-    {
-        renderStates = in_shader;
-    }
-
     void Renderer::setupFor2D()
     {
         setupFor2D(Matrix::Identity);
@@ -244,9 +146,9 @@ namespace onut
     void Renderer::setupFor2D(const Matrix& transform)
     {
         set2DCamera(Vector2::Zero);
-        renderStates = transform;
-        renderStates = m_p2DVertexShader;
-        renderStates = m_p2DPixelShader;
+        renderStates.world = transform;
+        renderStates.vertexShader = m_p2DVertexShader;
+        renderStates.pixelShader = m_p2DPixelShader;
     }
 
     Matrix Renderer::build2DCamera(const Vector2& position, float zoom)

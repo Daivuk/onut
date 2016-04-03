@@ -333,7 +333,8 @@ namespace onut
         }
     }
 
-    void Texture::bindRenderTarget()
+#if defined(WIN32)
+    ID3D11RenderTargetView* Texture::getD3DRenderTargetView()
     {
         if (m_pRenderTargetView)
         {
@@ -368,18 +369,14 @@ namespace onut
                     m_pRenderTargetViewFX = nullptr;
                 }
             }
-            oRenderer->renderStates.renderTarget = shared_from_this();
         }
+        return m_pRenderTargetView;
     }
-
-    void Texture::unbindRenderTarget()
-    {
-        oRenderer->renderStates.renderTarget = nullptr;
-    }
+#endif
 
     void Texture::clearRenderTarget(const Color& color)
     {
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pRendererD3D11 = ODynamicCast<ORendererD3D11>(oRenderer);
         pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, &color.x);
     }
 
@@ -391,42 +388,39 @@ namespace onut
             createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
-        ID3D11RenderTargetView* pPrevRT = nullptr;
-        const FLOAT clearColor[] = {0, 0, 0, 0};
-
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-
-        pRendererD3D11->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
-        UINT prevViewportCount = 1;
-        D3D11_VIEWPORT pPrevViewports[8];
-        pRendererD3D11->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
-
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
-        pRendererD3D11->getDeviceContext()->RSSetViewports(1, &viewport);
+        oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.textures[0].push(shared_from_this());
 
         int i = 0;
         while (amount > 0.f)
         {
-            pRendererD3D11->setKernelSize({
+            oRenderer->setKernelSize({
                 1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
                 1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
             });
             amount -= 6.f;
 
-            pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
-            pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
-            pRendererD3D11->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
-            pRendererD3D11->drawBlurH();
+            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.textures[0].forceDirty();
+            std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+            clearRenderTarget(Color::Transparent);
+            oRenderer->drawBlurH();
+            std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
 
-            pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
-            pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, clearColor);
-            pRendererD3D11->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureViewFX);
-            pRendererD3D11->drawBlurV();
+            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.textures[0].forceDirty();
+            std::swap(m_pTextureView, m_pTextureViewFX);
+            clearRenderTarget(Color::Transparent);
+            oRenderer->drawBlurV();
+            std::swap(m_pTextureView, m_pTextureViewFX);
+
             i += 1;
         }
 
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
-        pRendererD3D11->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void Texture::sepia(const Vector3& tone, float saturation, float sepiaAmount)
@@ -437,31 +431,22 @@ namespace onut
             createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
-        ID3D11RenderTargetView* pPrevRT = nullptr;
-        const FLOAT clearColor[] = {0, 0, 0, 0};
+        oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.textures[0].push(shared_from_this());
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        clearRenderTarget(Color::Transparent);
 
-        pRendererD3D11->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
-        UINT prevViewportCount = 1;
-        D3D11_VIEWPORT pPrevViewports[8];
-        pRendererD3D11->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
-
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
-        pRendererD3D11->getDeviceContext()->RSSetViewports(1, &viewport);
-
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
-        pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
-        pRendererD3D11->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
-        pRendererD3D11->setSepia(tone, saturation, sepiaAmount);
-        pRendererD3D11->drawSepia();
+        oRenderer->setSepia(tone, saturation, sepiaAmount);
+        oRenderer->drawSepia();
 
         std::swap(m_pTexture, m_pTextureFX);
         std::swap(m_pTextureView, m_pTextureViewFX);
-        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
 
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
-        pRendererD3D11->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void Texture::crt()
@@ -472,31 +457,22 @@ namespace onut
             createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
-        ID3D11RenderTargetView* pPrevRT = nullptr;
-        const FLOAT clearColor[] = {0, 0, 0, 0};
+        oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.textures[0].push(shared_from_this());
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        clearRenderTarget(Color::Transparent);
 
-        pRendererD3D11->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
-        UINT prevViewportCount = 1;
-        D3D11_VIEWPORT pPrevViewports[8];
-        pRendererD3D11->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
-
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
-        pRendererD3D11->getDeviceContext()->RSSetViewports(1, &viewport);
-
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
-        pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
-        pRendererD3D11->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
-        pRendererD3D11->setCRT(getSizef());
-        pRendererD3D11->drawCRT();
+        oRenderer->setCRT(getSizef());
+        oRenderer->drawCRT();
 
         std::swap(m_pTexture, m_pTextureFX);
         std::swap(m_pTextureView, m_pTextureViewFX);
-        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
 
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
-        pRendererD3D11->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void Texture::cartoon(const Vector3& tone)
@@ -507,31 +483,22 @@ namespace onut
             createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
-        ID3D11RenderTargetView* pPrevRT = nullptr;
-        const FLOAT clearColor[] = {0, 0, 0, 0};
+        oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.textures[0].push(shared_from_this());
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        clearRenderTarget(Color::Transparent);
 
-        pRendererD3D11->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
-        UINT prevViewportCount = 1;
-        D3D11_VIEWPORT pPrevViewports[8];
-        pRendererD3D11->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
-
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
-        pRendererD3D11->getDeviceContext()->RSSetViewports(1, &viewport);
-
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
-        pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
-        pRendererD3D11->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
-        pRendererD3D11->setCartoon(tone);
-        pRendererD3D11->drawCartoon();
+        oRenderer->setCartoon(tone);
+        oRenderer->drawCartoon();
 
         std::swap(m_pTexture, m_pTextureFX);
         std::swap(m_pTextureView, m_pTextureViewFX);
-        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
 
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
-        pRendererD3D11->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.textures[0].pop();
     }
         
     void Texture::vignette(float amount)
@@ -542,34 +509,25 @@ namespace onut
             createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
-        ID3D11RenderTargetView* pPrevRT = nullptr;
-        const FLOAT clearColor[] = {0, 0, 0, 0};
+        oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.textures[0].push(shared_from_this());
 
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        clearRenderTarget(Color::Transparent);
 
-        pRendererD3D11->getDeviceContext()->OMGetRenderTargets(1, &pPrevRT, nullptr);
-        UINT prevViewportCount = 1;
-        D3D11_VIEWPORT pPrevViewports[8];
-        pRendererD3D11->getDeviceContext()->RSGetViewports(&prevViewportCount, pPrevViewports);
-
-        D3D11_VIEWPORT viewport = {0, 0, (FLOAT)m_size.x, (FLOAT)m_size.y, 0, 1};
-        pRendererD3D11->getDeviceContext()->RSSetViewports(1, &viewport);
-
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &m_pRenderTargetViewFX, nullptr);
-        pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetViewFX, clearColor);
-        pRendererD3D11->getDeviceContext()->PSSetShaderResources(0, 1, &m_pTextureView);
-        pRendererD3D11->setVignette({
+        oRenderer->setVignette({
             1.f / static_cast<float>(m_size.x),
             1.f / static_cast<float>(m_size.y)
         }, amount);
-        pRendererD3D11->drawVignette();
+        oRenderer->drawVignette();
 
         std::swap(m_pTexture, m_pTextureFX);
         std::swap(m_pTextureView, m_pTextureViewFX);
-        std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
 
-        pRendererD3D11->getDeviceContext()->OMSetRenderTargets(1, &pPrevRT, nullptr);
-        pRendererD3D11->getDeviceContext()->RSSetViewports(prevViewportCount, pPrevViewports);
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void Texture::createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView)

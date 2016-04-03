@@ -39,17 +39,20 @@ void update()
 {
 }
 
+void drawLandscapeToRenderTarget(const OTextureRef& pRenderTarget)
+{
+    auto pLandscape = OGetTexture("landscape.png");
+
+    oRenderer->renderStates.renderTarget.push(pRenderTarget);
+    oSpriteBatch->begin();
+    oSpriteBatch->drawRect(pLandscape, {0, 0, pRenderTarget->getSizef().x, pRenderTarget->getSizef().y});
+    oSpriteBatch->end();
+    oRenderer->renderStates.renderTarget.pop();
+}
+
 void render()
 {
     auto pLandscape = OGetTexture("landscape.png");
-    auto drawLandscapeToRenderTarget = [=](const OTextureRef& pRenderTarget)
-    {
-        pRenderTarget->bindRenderTarget();
-        oSpriteBatch->begin();
-        oSpriteBatch->drawRect(pLandscape, {0, 0, pRenderTarget->getSizef().x, pRenderTarget->getSizef().y});
-        oSpriteBatch->end();
-        pRenderTarget->unbindRenderTarget();
-    };
 
     // Clear
     oRenderer->clear(OColorHex(1d232d));

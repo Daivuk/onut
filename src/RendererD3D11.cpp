@@ -25,6 +25,10 @@ namespace onut
 
     RendererD3D11::RendererD3D11(const OWindowRef& pWindow)
     {
+        memset(m_pBlendStates, 0, sizeof(m_pBlendStates));
+        memset(m_pSamplerStates, 0, sizeof(m_pSamplerStates));
+        memset(m_pRasterizerStates, 0, sizeof(m_pRasterizerStates));
+        memset(m_pDepthStencilStates, 0, sizeof(m_pDepthStencilStates));
     }
 
     void RendererD3D11::init(const OWindowRef& pWindow)
@@ -45,27 +49,27 @@ namespace onut
 
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
 
-        if (m_pDeviceContext) m_pDeviceContext->Release();
-        if (m_pDevice) m_pDevice->Release();
-        if (m_pSwapChain) m_pSwapChain->Release();
-
         // The new stuff
         for (auto pBlendState : m_pBlendStates)
         {
-            pBlendState->Release();
+            if (pBlendState) pBlendState->Release();
         }
         for (auto pSamplerState : m_pSamplerStates)
         {
-            pSamplerState->Release();
+            if (pSamplerState) pSamplerState->Release();
         }
         for (auto pRasterizerState : m_pRasterizerStates)
         {
-            pRasterizerState->Release();
+            if (pRasterizerState) pRasterizerState->Release();
         }
         for (auto pDepthStencilStates : m_pDepthStencilStates)
         {
-            pDepthStencilStates->Release();
+            if (pDepthStencilStates) pDepthStencilStates->Release();
         }
+
+        if (m_pDeviceContext) m_pDeviceContext->Release();
+        if (m_pDevice) m_pDevice->Release();
+        if (m_pSwapChain) m_pSwapChain->Release();
     }
 
     void RendererD3D11::createDevice(const OWindowRef& pWindow)
@@ -467,6 +471,14 @@ namespace onut
             if (pRenderTarget)
             {
                 pRenderTargetView = pRenderTarget->getD3DRenderTargetView();
+                for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
+                {
+                    if (m_boundTextures[i] == pRenderTarget)
+                    {
+                        ID3D11ShaderResourceView* pResourceView = nullptr;
+                        m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
+                    }
+                }
             }
             m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
             renderStates.renderTarget.resetDirty();
@@ -476,16 +488,17 @@ namespace onut
         // Textures
         for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
-            auto& pTexture = renderStates.textures[i];
-            if (pTexture.isDirty())
+            auto& pTextureState = renderStates.textures[i];
+            if (pTextureState.isDirty())
             {
                 ID3D11ShaderResourceView* pResourceView = nullptr;
-                if (pTexture.get() != nullptr)
+                m_boundTextures[i] = pTextureState.get();
+                if (pTextureState.get() != nullptr)
                 {
-                    pResourceView = pTexture.get()->getD3DResourceView();
+                    pResourceView = pTextureState.get()->getD3DResourceView();
                 }
                 m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
-                pTexture.resetDirty();
+                pTextureState.resetDirty();
             }
         }
 
