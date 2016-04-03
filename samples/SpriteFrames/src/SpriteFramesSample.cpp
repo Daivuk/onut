@@ -41,6 +41,10 @@ void update()
     }
     if (OInputJustPressed(OKey3))
     {
+        spriteAnim.play("run", 20);
+    }
+    if (OInputJustPressed(OKey4))
+    {
         spriteAnim.play("attack");
     }
 }
@@ -69,6 +73,7 @@ void render()
     pFont->draw("Sheet", Vector2(8, 8), OLeft);
     pFont->draw("Press ^9901^999 to play ^991idle^999 anim", Vector2(8, 300), OLeft);
     pFont->draw("Press ^9902^999 to play ^991run^999 anim", Vector2(8, 320), OLeft);
-    pFont->draw("Press ^9903^999 to play ^991attack^999 anim", Vector2(8, 340), OLeft);
+    pFont->draw("Press ^9903^999 to play ^991run fast^999 anim", Vector2(8, 340), OLeft);
+    pFont->draw("Press ^9904^999 to play ^991attack^999 anim", Vector2(8, 360), OLeft);
     oSpriteBatch->end();
 }

@@ -62,8 +62,8 @@ namespace onut
         SpriteAnimInstance(const OSpriteAnimRef& pSpriteAnim);
         SpriteAnimInstance(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
 
-        void play(const std::string& animName);
-        void playBackward(const std::string& animName);
+        void play(const std::string& animName, float framePerSecond = 0.f);
+        void playBackward(const std::string& animName, float framePerSecond = 0.f);
         void queueAnim(const std::string& animName);
         void stop(bool reset = false);
         bool isPlaying() const;

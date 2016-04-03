@@ -124,7 +124,7 @@ namespace onut
         m_pSpriteAnim = pContentManager->getResourceAs<SpriteAnim>(filename);
     }
 
-    void SpriteAnimInstance::play(const std::string& animName)
+    void SpriteAnimInstance::play(const std::string& animName, float framePerSecond)
     {
         stop();
         if (m_pSpriteAnim)
@@ -137,14 +137,21 @@ namespace onut
                     m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
                 }
                 m_frame = 0.f;
-                m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
+                if (framePerSecond == 0)
+                {
+                    m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
+                }
+                else
+                {
+                    m_speed = framePerSecond;
+                }
 
                 oUpdater->registerTarget(this);
             }
         }
     }
 
-    void SpriteAnimInstance::playBackward(const std::string& animName)
+    void SpriteAnimInstance::playBackward(const std::string& animName, float framePerSecond)
     {
         stop();
         if (m_pSpriteAnim)
@@ -153,7 +160,14 @@ namespace onut
             if (m_pCurrentAnim)
             {
                 m_frame = static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
-                m_speed = -m_frame / m_pCurrentAnim->duration;
+                if (framePerSecond == 0)
+                {
+                    m_speed = -m_frame / m_pCurrentAnim->duration;
+                }
+                else
+                {
+                    m_speed = -framePerSecond;
+                }
 
                 oUpdater->registerTarget(this);
             }
