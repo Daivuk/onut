@@ -15,7 +15,7 @@ namespace onut
 {
     OMusicRef Music::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
-        auto pRet = std::make_shared<OMusic>();
+        auto pRet = std::shared_ptr<OMusic>(new OMusic());
 
         auto cmd = utf8ToUtf16(filename);
         if (!pRet->m_pMp3->Load(cmd.c_str()))
@@ -26,15 +26,10 @@ namespace onut
         return pRet;
     }
 
-    OMusicRef Music::create()
-    {
-        return std::make_shared<OMusic>();
-    }
-
     Music::Music()
     {
 #if defined(WIN32)
-        m_pMp3 = std::make_shared<Mp3>();
+        m_pMp3 = OMake<Mp3>();
 #endif
     }
 

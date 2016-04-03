@@ -15,7 +15,7 @@ namespace onut
 {
     OUIContextRef UIContext::create(const Vector2& screenSize)
     {
-        return OMake<UIContext>(screenSize);
+        return std::shared_ptr<UIContext>(new UIContext(screenSize));
     }
 
     UIContext::UIContext(const Vector2& screenSize) :

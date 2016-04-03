@@ -9,7 +9,7 @@ namespace onut
 {
     OUIPanelRef UIPanel::create()
     {
-        return OMake<UIPanel>();
+        return std::shared_ptr<UIPanel>(new UIPanel());
     }
 
     void UIPanel::operator=(const UIControl& other)

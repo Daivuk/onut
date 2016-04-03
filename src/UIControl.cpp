@@ -215,12 +215,12 @@ namespace onut
 
     OUIControlRef UIControl::create()
     {
-        return OMake<UIControl>();
+        return std::shared_ptr<UIControl>(new UIControl());
     }
 
     OUIControlRef UIControl::createFromFile(const std::string& in_filename, OContentManagerRef pContentManager)
     {
-        auto pControl = OMake<UIControl>();
+        auto pControl = std::shared_ptr<UIControl>(new UIControl());
 
         if (!pContentManager) pContentManager = oContentManager;
         auto filename = oContentManager->findResourceFile(in_filename);

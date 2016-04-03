@@ -9,7 +9,7 @@ namespace onut
 {
     OUILabelRef UILabel::create()
     {
-        return OMake<UILabel>();
+        return std::shared_ptr<UILabel>(new UILabel());
     }
 
     UILabel::UILabel()

@@ -13,7 +13,7 @@ namespace onut
 {
     OUITextBoxRef UITextBox::create()
     {
-        return OMake<UITextBox>();
+        return std::shared_ptr<UITextBox>(new UITextBox());
     }
 
     void UITextBox::operator=(const UIControl& other)

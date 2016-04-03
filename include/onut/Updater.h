@@ -41,6 +41,8 @@ namespace onut
         void unregisterTarget(OUpdateTarget* pTarget);
 
     private:
+        Updater() {}
+
         using Targets = std::vector<OUpdateTarget*>;
         
         Targets m_toAdd;

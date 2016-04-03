@@ -25,7 +25,6 @@ namespace onut
         using CheckChangedCallback = std::function<void(const OUICheckBoxRef&, const UICheckEvent&)>;
 
         static OUICheckBoxRef create();
-        UICheckBox() {}
 
         UICheckBox(const UIControl& other) = delete;
         void operator=(const UIControl& other) override;
@@ -43,6 +42,8 @@ namespace onut
         CheckChangedCallback onCheckChanged;
 
     protected:
+        UICheckBox() {}
+
         void load(const rapidjson::Value& jsonNode) override;
         void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const override;
         void renderControl(const OUIContextRef& context, const Rect& rect) override;

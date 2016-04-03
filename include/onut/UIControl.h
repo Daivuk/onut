@@ -117,8 +117,6 @@ namespace onut
         static OUIControlRef create();
         static OUIControlRef createFromFile(const std::string& filename, OContentManagerRef pContentManager = nullptr);
 
-        UIControl();
-
         UIControl(const UIControl& other) = delete;
         virtual void operator=(const UIControl& other);
         OUIControlRef copy() const;
@@ -225,6 +223,8 @@ namespace onut
         bool visitChildrenFirstVisible(const std::function<bool(const OUIControlRef&, const Rect&)>& callback, const Rect& parentRect);
 
     protected:
+        UIControl();
+
         friend UIContext;
 
         virtual void load(const rapidjson::Value& jsonNode);

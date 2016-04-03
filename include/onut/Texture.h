@@ -56,6 +56,8 @@ namespace onut
         void vignette(float amount = .5f); // 0 - 1
 
     private:
+        Texture() {}
+
         enum class Type
         {
             Static,

@@ -75,8 +75,6 @@ namespace onut
 
         static OUIContextRef create(const Vector2& screenSize);
 
-        UIContext(const Vector2& screenSize);
-
         const Vector2& getScreenSize() const { return m_screenSize; }
 
         void resize(const Vector2& screenSize);
@@ -170,6 +168,8 @@ namespace onut
         }
 
     private:
+        UIContext(const Vector2& screenSize);
+
         friend UIControl;
 
         using Writes = std::vector<char>;

@@ -16,9 +16,6 @@ namespace onut
     {
     public:
         static OMusicRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);
-        static OMusicRef create();
-
-        Music();
 
         void play();
         void stop();
@@ -30,6 +27,8 @@ namespace onut
         bool isDone();
 
     private:
+        Music();
+
 #if defined(WIN32)
         std::shared_ptr<Mp3> m_pMp3;
 #endif

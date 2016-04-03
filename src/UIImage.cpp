@@ -9,7 +9,7 @@ namespace onut
 {
     OUIImageRef UIImage::create()
     {
-        return OMake<UIImage>();
+        return std::shared_ptr<UIImage>(new UIImage());
     }
 
     void UIImage::operator=(const UIControl& other)

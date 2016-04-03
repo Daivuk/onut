@@ -19,8 +19,6 @@ namespace onut
 
         static OUITextBoxRef create();
 
-        UITextBox() {}
-
         UITextBox(const UIControl& other) = delete;
         void operator=(const UIControl& other) override;
 
@@ -67,6 +65,8 @@ namespace onut
         void onKeyDownInternal(const UIKeyEvent& evt) override;
 
     private:
+        UITextBox() {}
+
         void numerifyText();
 
         std::string::size_type m_selectedTextRegion[2];

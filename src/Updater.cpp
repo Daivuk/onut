@@ -37,7 +37,7 @@ namespace onut
 
     OUpdaterRef Updater::create()
     {
-        return OMake<Updater>();
+        return std::shared_ptr<Updater>(new Updater());
     }
 
     void Updater::update()

@@ -19,7 +19,7 @@ namespace onut
 {
     OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX)
     {
-        auto pRet = std::make_shared<Texture>();
+        auto pRet = std::shared_ptr<Texture>(new Texture());
         pRet->m_size = size;
 #if defined(WIN32)
         pRet->createRenderTargetViews(pRet->m_pTexture, pRet->m_pTextureView, pRet->m_pRenderTargetView);
@@ -47,7 +47,7 @@ namespace onut
 
     OTextureRef Texture::createDynamic(const Point& size)
     {
-        auto pRet = std::make_shared<Texture>();
+        auto pRet = std::shared_ptr<Texture>(new Texture());
 
 #if defined(WIN32)
         ID3D11Texture2D* pTexture = NULL;
@@ -84,7 +84,7 @@ namespace onut
 
     OTextureRef Texture::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager, bool generateMipmaps)
     {
-        auto pRet = std::make_shared<Texture>();
+        auto pRet = std::shared_ptr<Texture>(new Texture());
 
         std::vector<uint8_t> image; //the raw pixels (holy crap that must be slow)
         unsigned int w, h;
@@ -132,7 +132,7 @@ namespace onut
 
     OTextureRef Texture::createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps)
     {
-        auto pRet = std::make_shared<Texture>();
+        auto pRet = std::shared_ptr<Texture>(new Texture());
 
 #if defined(WIN32)
         ID3D11Texture2D* pTexture = NULL;

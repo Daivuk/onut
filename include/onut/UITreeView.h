@@ -19,8 +19,6 @@ namespace onut
 
         static OUITreeViewRef create();
 
-        UITreeView() {}
-
         UITreeView(const UIControl& other) = delete;
         void operator=(const UIControl& other) override;
 
@@ -59,6 +57,8 @@ namespace onut
         void onMouseScrollInternal(const UIMouseEvent& evt) override;
 
     private:
+        UITreeView() {}
+
         OUITreeViewItemRef getItemAtPosition(const Vector2& pos, const Rect& rect, bool* pPickedExpandButton = nullptr, Rect* pItemRect = nullptr) const;
         OUITreeViewItemRef getItemAtPosition(const OUITreeViewItemRef& pItem, const Vector2& pos, Rect& rect, bool* pPickedExpandButton = nullptr, Rect* pItemRect = nullptr) const;
         float getTotalHeight(const OUITreeViewItemRef& pItem = nullptr) const;

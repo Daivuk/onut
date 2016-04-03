@@ -9,7 +9,7 @@ namespace onut
 {
     OUIButtonRef UIButton::create()
     {
-        return OMake<UIButton>();
+        return std::shared_ptr<UIButton>(new UIButton());
     }
 
     UIButton::UIButton()

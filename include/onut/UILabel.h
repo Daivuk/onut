@@ -14,8 +14,6 @@ namespace onut
     public:
         static OUILabelRef create();
 
-        UILabel();
-
         UILabel(const UIControl& other) = delete;
         void operator=(const UIControl& other) override;
 
@@ -24,6 +22,8 @@ namespace onut
         UITextComponent textComponent;
 
     protected:
+        UILabel();
+
         void load(const rapidjson::Value& jsonNode) override;
         void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const override;
         void renderControl(const OUIContextRef& context, const Rect& rect) override;

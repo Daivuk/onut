@@ -9,7 +9,7 @@ namespace onut
 {
     OUITreeViewRef UITreeView::create()
     {
-        return OMake<UITreeView>();
+        return std::shared_ptr<UITreeView>(new UITreeView());
     }
 
     void UITreeView::operator=(const UIControl& other)

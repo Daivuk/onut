@@ -15,7 +15,7 @@ namespace onut
 
     OUICheckBoxRef UICheckBox::create()
     {
-        return OMake<UICheckBox>();
+        return std::shared_ptr<UICheckBox>(new UICheckBox());
     }
 
     void UICheckBox::operator=(const UIControl& other)
