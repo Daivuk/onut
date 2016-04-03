@@ -35,6 +35,8 @@ using namespace DirectX;
 // The audio engine is a third party
 AudioEngine* g_pAudioEngine = nullptr;
 
+OTextureRef g_pMainRenderTarget;
+
 namespace onut
 {
     void createUI()
@@ -132,10 +134,13 @@ namespace onut
 
         // Undo/Redo for editors
         oActionManager = ActionManager::create();
+
+        g_pMainRenderTarget = OTexture::createScreenRenderTarget();
     }
 
     void cleanup()
     {
+        g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
         oDispatcher = nullptr;
         oUpdater = nullptr;
@@ -244,6 +249,7 @@ namespace onut
             // Render
             oTiming->render();
             oRenderer->beginFrame();
+            oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
             if (renderCallback)
             {
                 renderCallback();
@@ -252,6 +258,16 @@ namespace onut
             oSpriteBatch->begin();
             oUI->render(oUIContext);
             oSpriteBatch->end();
+
+            // Draw final render target
+            oRenderer->renderStates.renderTarget = nullptr;
+            oSpriteBatch->begin();
+            oSpriteBatch->changeBlendMode(OBlendOpaque);
+            oSpriteBatch->changeFiltering(OFilterNearest);
+            oSpriteBatch->drawRect(g_pMainRenderTarget, {0, 0, OScreenWf, OScreenHf});
+            oSpriteBatch->end();
+            oSpriteBatch->changeBlendMode(OBlendAlpha);
+            oSpriteBatch->changeFiltering(OFilterLinear);
             oRenderer->endFrame();
         }
 

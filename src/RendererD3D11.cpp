@@ -369,7 +369,12 @@ namespace onut
 
     void RendererD3D11::clear(const Color& color)
     {
-        m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, &color.x);
+        ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
+        if (renderStates.renderTarget.get())
+        {
+            pRenderTargetView = renderStates.renderTarget.get()->getD3DRenderTargetView();
+        }
+        m_pDeviceContext->ClearRenderTargetView(pRenderTargetView, &color.x);
     }
 
     void RendererD3D11::setKernelSize(const Vector2& kernelSize)
