@@ -71,7 +71,6 @@ namespace onut
         ID3D11Buffer* m_pSepiaBuffer = nullptr;
 
         OTextureRef m_boundTextures[RenderStates::MAX_TEXTURES];
-
     };
 };
 

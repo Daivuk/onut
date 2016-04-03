@@ -18,8 +18,6 @@ namespace onut
     {
     public:
         static OContentManagerRef create();
-
-        ContentManager();
         virtual ~ContentManager();
 
         // Resource
@@ -37,6 +35,8 @@ namespace onut
         std::string findResourceFile(const std::string& name);
 
     private:
+        ContentManager();
+
         using ResourceMap = std::unordered_map<std::string, OResourceRef>;
         using SearchPaths = std::vector<std::string>;
 
