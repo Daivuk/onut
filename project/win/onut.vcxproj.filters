@@ -440,6 +440,9 @@
     <ClInclude Include="..\..\src\IndexBufferD3D11.h">
       <Filter>resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\TextureD3D11.h">
+      <Filter>resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -693,6 +696,9 @@
       <Filter>resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\IndexBufferD3D11.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TextureD3D11.cpp">
       <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>

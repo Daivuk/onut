@@ -311,7 +311,7 @@ namespace onut
         return nullptr;
     }
 
-    static iRect getScreenRECTFromTransform(const Matrix& transform, const POINT& tileSize)
+    static iRect getScreenRECTFromTransform(const Matrix& transform, const Point& tileSize)
     {
         auto invTransform = transform.Invert();
         Vector2 localScreenPos[4] =
@@ -329,10 +329,10 @@ namespace onut
                     onut::max(localScreenPos[0].y, localScreenPos[1].y, localScreenPos[2].y, localScreenPos[3].y))
         };
         return iRect{
-            static_cast<LONG>(boundingBox[0].x) / tileSize.x,
-            static_cast<LONG>(boundingBox[0].y) / tileSize.y,
-            static_cast<LONG>(boundingBox[1].x) / tileSize.x,
-            static_cast<LONG>(boundingBox[1].y) / tileSize.y};
+            static_cast<int>(boundingBox[0].x) / tileSize.x,
+            static_cast<int>(boundingBox[0].y) / tileSize.y,
+            static_cast<int>(boundingBox[1].x) / tileSize.x,
+            static_cast<int>(boundingBox[1].y) / tileSize.y};
     }
 
     void TiledMap::render()
@@ -392,10 +392,10 @@ namespace onut
 
         bool manageSB = !oSpriteBatch->isInBatch();
         if (manageSB) oSpriteBatch->begin(getTransform());
-        for (LONG y = rect.top; y <= rect.bottom; ++y)
+        for (int y = rect.top; y <= rect.bottom; ++y)
         {
             Tile *pTile = pLayer->tiles + y * m_width + rect.left;
-            for (LONG x = rect.left; x <= rect.right; ++x, ++pTile)
+            for (int x = rect.left; x <= rect.right; ++x, ++pTile)
             {
                 if (!pTile->pTileset) continue;
                 oSpriteBatch->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);

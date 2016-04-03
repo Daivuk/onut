@@ -10,6 +10,7 @@
 #include "IndexBufferD3D11.h"
 #include "RendererD3D11.h"
 #include "ShaderD3D11.h"
+#include "TextureD3D11.h"
 #include "VertexBufferD3D11.h"
 
 // STL
@@ -372,7 +373,8 @@ namespace onut
         ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
         if (renderStates.renderTarget.get())
         {
-            pRenderTargetView = renderStates.renderTarget.get()->getD3DRenderTargetView();
+            auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(renderStates.renderTarget.get());
+            pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
         }
         m_pDeviceContext->ClearRenderTargetView(pRenderTargetView, &color.x);
     }
@@ -475,7 +477,8 @@ namespace onut
             ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
             if (pRenderTarget)
             {
-                pRenderTargetView = pRenderTarget->getD3DRenderTargetView();
+                auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
+                pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
                 for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
                 {
                     if (m_boundTextures[i] == pRenderTarget)
@@ -500,7 +503,8 @@ namespace onut
                 m_boundTextures[i] = pTextureState.get();
                 if (pTextureState.get() != nullptr)
                 {
-                    pResourceView = pTextureState.get()->getD3DResourceView();
+                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pTextureState.get());
+                    pResourceView = pRenderTargetD3D11->getD3DResourceView();
                 }
                 m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
                 pTextureState.resetDirty();

@@ -1,11 +1,11 @@
 #if defined(WIN32)
 // Onut
 #include <onut/Strings.h>
-#include <onut/Texture.h>
 
 // Private
 #include "MFPlayer.h"
 #include "RendererD3D11.h"
+#include "TextureD3D11.h"
 
 // STL
 #include <cassert>
@@ -291,7 +291,8 @@ namespace onut
                 borderColor.rgbBlue = 0;
                 borderColor.rgbAlpha = 255;
 
-                m_pMediaEngine->TransferVideoFrame(m_pRenderTarget->getD3DTexture(), &videoRect, &targetRect, &borderColor);
+                auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(m_pRenderTarget);
+                m_pMediaEngine->TransferVideoFrame(pRenderTargetD3D11->getD3DTexture(), &videoRect, &targetRect, &borderColor);
             }
         }
     }

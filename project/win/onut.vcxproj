@@ -145,6 +145,7 @@
     <ClInclude Include="..\..\src\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\RendererD3D11.h" />
     <ClInclude Include="..\..\src\ShaderD3D11.h" />
+    <ClInclude Include="..\..\src\TextureD3D11.h" />
     <ClInclude Include="..\..\src\UIJson.h" />
     <ClInclude Include="..\..\src\VertexBufferD3D11.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\Strings.cpp" />
+    <ClCompile Include="..\..\src\TextureD3D11.cpp" />
     <ClCompile Include="..\..\src\Timing.cpp" />
     <ClCompile Include="..\..\src\Timer.cpp" />
     <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp" />

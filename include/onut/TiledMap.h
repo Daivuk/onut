@@ -1,5 +1,6 @@
 #pragma once
 // Onut
+#include <onut/Point.h>
 #include <onut/Maths.h>
 #include <onut/Resource.h>
 
