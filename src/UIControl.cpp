@@ -1105,6 +1105,8 @@ namespace onut
         // Snap to pixels
         worldRect.x = std::roundf(worldRect.x);
         worldRect.y = std::roundf(worldRect.y);
+        worldRect.w = std::roundf(worldRect.w);
+        worldRect.z = std::roundf(worldRect.z);
 
         return std::move(worldRect);
     }

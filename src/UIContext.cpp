@@ -156,6 +156,10 @@ namespace onut
                 if (m_mouseEvents[0].scroll != 0)
                 {
                     m_pHoverControl->onMouseScrollInternal(m_mouseEvents[0]);
+                    if (m_pHoverControl->onMouseScroll)
+                    {
+                        m_pHoverControl->onMouseScroll(m_pHoverControl, m_mouseEvents[0]);
+                    }
                 }
             }
         }
@@ -305,15 +309,21 @@ namespace onut
             if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
                 m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
             {
-                if (m_pDownControls[0])
+                bool bAte = false;
+                for (int i = 0; i < 3; ++i)
                 {
-                    m_pDownControls[0]->onMouseMoveInternal(m_mouseEvents[0]);
-                    if (m_pDownControls[0]->onMouseMove)
+                    if (m_pDownControls[i])
                     {
-                        m_pDownControls[0]->onMouseMove(m_pDownControls[0], m_mouseEvents[0]);
+                        m_pDownControls[i]->onMouseMoveInternal(m_mouseEvents[i]);
+                        if (m_pDownControls[i]->onMouseMove)
+                        {
+                            m_pDownControls[i]->onMouseMove(m_pDownControls[i], m_mouseEvents[i]);
+                        }
+                        bAte = true;
+                        break;
                     }
                 }
-                else if (m_pHoverControl)
+                if (!bAte && m_pHoverControl)
                 {
                     m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
                     if (m_pHoverControl->onMouseMove)

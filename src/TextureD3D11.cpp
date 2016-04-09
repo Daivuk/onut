@@ -402,6 +402,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
         oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -415,6 +416,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.pop();
         oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -428,6 +430,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
         oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -441,6 +444,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.pop();
         oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -454,6 +458,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
         oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -467,6 +472,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.pop();
         oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -480,6 +486,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
         oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -496,6 +503,7 @@ namespace onut
 
         oRenderer->renderStates.viewport.pop();
         oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 

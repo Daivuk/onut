@@ -197,6 +197,7 @@ namespace onut
         TfnMouseEvent onMouseUp;
         TfnMouseEvent onMouseEnter;
         TfnMouseEvent onMouseLeave;
+        TfnMouseEvent onMouseScroll;
 
         TfnMouseEvent onRightClick;
         TfnMouseEvent onRightDoubleClick;
