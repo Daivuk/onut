@@ -2,6 +2,7 @@
 // Onut
 #include <onut/IndexBuffer.h>
 #include <onut/Renderer.h>
+#include <onut/Settings.h>
 #include <onut/Texture.h>
 #include <onut/VertexBuffer.h>
 #include <onut/Window.h>
@@ -350,7 +351,14 @@ namespace onut
     void RendererD3D11::endFrame()
     {
         // Swap the buffer!
-        m_pSwapChain->Present(1, 0);
+        if (oSettings->getIsEditorMode())
+        {
+            m_pSwapChain->Present(0, 0);
+        }
+        else
+        {
+            m_pSwapChain->Present(1, 0);
+        }
     }
 
     ID3D11Device* RendererD3D11::getDevice() const
