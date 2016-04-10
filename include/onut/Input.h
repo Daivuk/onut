@@ -19,6 +19,8 @@ namespace onut
     public:
         enum class State : int
         {
+            None = 0,
+
             KeyEscape = 0x01,
             Key1 = 0x02,
             Key2 = 0x03,

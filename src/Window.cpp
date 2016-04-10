@@ -191,6 +191,7 @@ namespace onut
     void Window::setCursor(HCURSOR cursor)
     {
         m_cursor = cursor;
+        SetCursor(m_cursor);
     }
 
     HCURSOR Window::getCursor() const
