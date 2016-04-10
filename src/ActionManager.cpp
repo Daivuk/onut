@@ -93,6 +93,11 @@ namespace onut
         m_position = m_history.begin();
     }
 
+    void ActionManager::setMaxHistory(uint32_t maxHistory)
+    {
+        m_maxHistory = maxHistory;
+    }
+
     void ActionManager::doAction(const OIActionRef& pAction)
     {
         m_history.resize(m_position - m_history.begin());
@@ -108,6 +113,20 @@ namespace onut
         pAction->redo();
     }
 
+    void ActionManager::addAction(const OIActionRef& pAction)
+    {
+        m_history.resize(m_position - m_history.begin());
+        m_history.push_back(pAction);
+        if (m_maxHistory)
+        {
+            while (static_cast<decltype(m_maxHistory)>(m_history.size()) > m_maxHistory)
+            {
+                m_history.erase(m_history.begin());
+            }
+        }
+        m_position = m_history.end();
+    }
+
     void ActionManager::doAction(const std::string& name,
                                  const Action::ActionCallBack& onRedo,
                                  const Action::ActionCallBack& onUndo,
@@ -115,6 +134,15 @@ namespace onut
                                  const Action::ActionCallBack& onDestroy)
     {
         doAction(OMake<Action>(name, onRedo, onUndo, onInit, onDestroy));
+    }
+
+    void ActionManager::addAction(const std::string& name,
+                                  const Action::ActionCallBack& onRedo,
+                                  const Action::ActionCallBack& onUndo,
+                                  const Action::ActionCallBack& onInit,
+                                  const Action::ActionCallBack& onDestroy)
+    {
+        addAction(OMake<Action>(name, onRedo, onUndo, onInit, onDestroy));
     }
 
     bool ActionManager::canRedo() const

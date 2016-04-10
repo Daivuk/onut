@@ -73,7 +73,13 @@ namespace onut
         ActionManager(uint32_t maxHistory = 1000);
 
         void doAction(const OIActionRef& pAction);
+        void addAction(const OIActionRef& pAction);
         void doAction(const std::string& name,
+                      const Action::ActionCallBack& onRedo,
+                      const Action::ActionCallBack& onUndo,
+                      const Action::ActionCallBack& onInit = nullptr,
+                      const Action::ActionCallBack& onDestroy = nullptr);
+        void addAction(const std::string& name,
                       const Action::ActionCallBack& onRedo,
                       const Action::ActionCallBack& onUndo,
                       const Action::ActionCallBack& onInit = nullptr,
@@ -89,6 +95,8 @@ namespace onut
 
         const Actions& getHistory() const { return m_history; }
         Actions::iterator getHistoryPosition() const { return m_position; }
+
+        void setMaxHistory(uint32_t maxHistory);
 
     private:
         Actions m_history;
