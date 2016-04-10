@@ -159,7 +159,10 @@ namespace onut
     }
 
     // Start the engine
-    void run(std::function<void()> initCallback, std::function<void()> updateCallback, std::function<void()> renderCallback)
+    void run(std::function<void()> initCallback,
+             std::function<void()> updateCallback, 
+             std::function<void()> renderCallback,
+             std::function<void()> postRenderCallback)
     {
         // Make sure we run just once
         static bool alreadyRan = false;
@@ -268,6 +271,12 @@ namespace onut
             oSpriteBatch->end();
             oSpriteBatch->changeBlendMode(OBlendAlpha);
             oSpriteBatch->changeFiltering(OFilterLinear);
+
+            if (postRenderCallback)
+            {
+                postRenderCallback();
+            }
+
             oRenderer->endFrame();
         }
 
