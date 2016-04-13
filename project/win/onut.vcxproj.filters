@@ -443,6 +443,9 @@
     <ClInclude Include="..\..\src\TextureD3D11.h">
       <Filter>resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Images.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -700,6 +703,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\TextureD3D11.cpp">
       <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Images.cpp">
+      <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

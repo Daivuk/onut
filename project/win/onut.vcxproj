@@ -25,6 +25,7 @@
     <ClInclude Include="..\..\include\onut\GamePad.h" />
     <ClInclude Include="..\..\include\onut\Http.h" />
     <ClInclude Include="..\..\include\onut\Curve.h" />
+    <ClInclude Include="..\..\include\onut\Images.h" />
     <ClInclude Include="..\..\include\onut\IndexBuffer.h" />
     <ClInclude Include="..\..\include\onut\Input.h" />
     <ClInclude Include="..\..\include\onut\Log.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
     <ClCompile Include="..\..\src\Http.cpp" />
+    <ClCompile Include="..\..\src\Images.cpp" />
     <ClCompile Include="..\..\src\IndexBuffer.cpp" />
     <ClCompile Include="..\..\src\IndexBufferD3D11.cpp" />
     <ClCompile Include="..\..\src\Input.cpp" />
