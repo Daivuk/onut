@@ -37,6 +37,7 @@ namespace onut
         std::function<void(uint32_t)>               onMenu;
         std::function<void(const std::string&)>     onDrop;
         std::function<void(const Point& newSize)>   onResize;
+        std::function<bool()>                       onQuit;
 
     private:
 #if defined(WIN32)

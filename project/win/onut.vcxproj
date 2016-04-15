@@ -19,6 +19,7 @@
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
     <ClInclude Include="..\..\include\onut\Cloud.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
+    <ClInclude Include="..\..\include\onut\Dialogs.h" />
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="..\..\src\CloudBrainCloud.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
+    <ClCompile Include="..\..\src\Dialogs.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />

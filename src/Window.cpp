@@ -18,6 +18,10 @@ namespace onut
         if (msg == WM_DESTROY ||
             msg == WM_CLOSE)
         {
+            if (oWindow->onQuit)
+            {
+                if (!oWindow->onQuit()) return 0;
+            }
             PostQuitMessage(0);
             return 0;
         }
