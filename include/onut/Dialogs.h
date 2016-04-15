@@ -12,4 +12,5 @@ namespace onut
     };
 
     QuestionBoxAnswer showQuestionBox(const std::string& caption, const std::string& message);
+    void showMessageBox(const std::string& caption, const std::string& message);
 }

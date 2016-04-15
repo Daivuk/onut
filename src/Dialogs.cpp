@@ -22,5 +22,10 @@ namespace onut
                 return QuestionBoxAnswer::Cancel;
         }
     }
+
+    void showMessageBox(const std::string& caption, const std::string& message)
+    {
+        MessageBoxA(nullptr, message.c_str(), caption.c_str(), MB_OK);
+    }
 #endif
 }
