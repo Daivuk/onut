@@ -9,6 +9,11 @@
 #include <onut/UIControl.h>
 #include <onut/UITextBox.h>
 
+// Third parties
+#if defined(WIN32)
+#include <Windows.h>
+#endif
+
 OUIContextRef oUIContext;
 
 namespace onut
@@ -21,6 +26,9 @@ namespace onut
     UIContext::UIContext(const Vector2& screenSize) :
         m_screenSize(screenSize)
     {
+#if defined(WIN32)
+        doubleClickTime = std::chrono::milliseconds(GetDoubleClickTime());
+#endif
         pContentManager = oContentManager;
         m_pDownControls[0] = nullptr;
         m_pDownControls[1] = nullptr;
@@ -314,6 +322,9 @@ namespace onut
                 {
                     if (m_pDownControls[i])
                     {
+                        auto worldRect = m_pDownControls[i]->getWorldRect(OThis);
+                        m_mouseEvents[i].localMousePos.x = m_mouseEvents[i].mousePos.x - worldRect.x;
+                        m_mouseEvents[i].localMousePos.y = m_mouseEvents[i].mousePos.y - worldRect.y;
                         m_pDownControls[i]->onMouseMoveInternal(m_mouseEvents[i]);
                         if (m_pDownControls[i]->onMouseMove)
                         {

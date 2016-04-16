@@ -1390,10 +1390,5 @@ OUIControlRef OFindUI(const std::string& name)
 
 OUIControlRef OLoadUI(const std::string& filename)
 {
-    auto pUI = OUIControl::createFromFile(filename);
-    if (pUI)
-    {
-        oUI->add(pUI);
-    }
-    return pUI;
+    return OUIControl::createFromFile(filename);
 }
