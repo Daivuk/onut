@@ -13,10 +13,12 @@ namespace onut
 
     Dispatcher::Dispatcher()
     {
+        m_threadId = std::this_thread::get_id();
     }
 
     void Dispatcher::processQueue()
     {
+        m_threadId = std::this_thread::get_id();
         m_mutex.lock();
         while (!m_callbackQueue.empty())
         {
@@ -42,5 +44,10 @@ namespace onut
     void Dispatcher::syncCallback(const ICallbackRef& pCallback)
     {
         m_callbackQueue.push(pCallback);
+    }
+
+    std::thread::id Dispatcher::getThreadId() const
+    {
+        return m_threadId;
     }
 }

@@ -2,6 +2,7 @@
 // STL
 #include <mutex>
 #include <queue>
+#include <thread>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -41,6 +42,8 @@ namespace onut
         */
         size_t size();
 
+        std::thread::id getThreadId() const;
+
     private:
         class ICallback
         {
@@ -71,6 +74,7 @@ namespace onut
 
         std::mutex m_mutex;
         std::queue<ICallbackRef> m_callbackQueue;
+        std::thread::id m_threadId;
     };
 }
 

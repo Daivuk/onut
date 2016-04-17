@@ -18,9 +18,12 @@ namespace onut
         if (msg == WM_DESTROY ||
             msg == WM_CLOSE)
         {
-            if (oWindow->onQuit)
+            if (oWindow)
             {
-                if (!oWindow->onQuit()) return 0;
+                if (oWindow->onQuit)
+                {
+                    if (!oWindow->onQuit()) return 0;
+                }
             }
             PostQuitMessage(0);
             return 0;
@@ -46,10 +49,13 @@ namespace onut
         }
         else if (msg == WM_SETCURSOR)
         {
-            if (oWindow->getCursor())
+            if (oWindow)
             {
-                SetCursor(oWindow->getCursor());
-                return 0;
+                if (oWindow->getCursor())
+                {
+                    SetCursor(oWindow->getCursor());
+                    return 0;
+                }
             }
         }
         else if (msg == WM_SYSCOMMAND)
@@ -62,51 +68,63 @@ namespace onut
         else if (msg == WM_CHAR)
         {
             auto c = (char)wparam;
-            if (oWindow->onWrite)
+            if (oWindow)
             {
-                oWindow->onWrite(c);
-                return 0;
+                if (oWindow->onWrite)
+                {
+                    oWindow->onWrite(c);
+                    return 0;
+                }
             }
         }
         else if (msg == WM_KEYDOWN)
         {
-            if (oWindow->onKey)
+            if (oWindow)
             {
-                oWindow->onKey(static_cast<uintptr_t>(wparam));
-                return 0;
+                if (oWindow->onKey)
+                {
+                    oWindow->onKey(static_cast<uintptr_t>(wparam));
+                    return 0;
+                }
             }
         }
         else if (msg == WM_COMMAND)
         {
-            if (oWindow->onMenu)
+            if (oWindow)
             {
-                oWindow->onMenu(static_cast<uint32_t>(LOWORD(wparam)));
-                return 0;
+                if (oWindow->onMenu)
+                {
+                    oWindow->onMenu(static_cast<uint32_t>(LOWORD(wparam)));
+                    return 0;
+                }
             }
         }
         else if (msg == WM_DROPFILES)
         {
-            if (oWindow->onDrop)
+            if (oWindow)
             {
-                char lpszFile[MAX_PATH] = {0};
-                UINT uFile = 0;
-                HDROP hDrop = (HDROP)wparam;
-
-                uFile = DragQueryFileA(hDrop, 0xFFFFFFFF, NULL, NULL);
-                if (uFile != 1)
+                if (oWindow->onDrop)
                 {
-                    MessageBoxA(handle, "Dropping multiple files is not supported.", NULL, MB_ICONERROR);
+                    char lpszFile[MAX_PATH] = {0};
+                    UINT uFile = 0;
+                    HDROP hDrop = (HDROP)wparam;
+
+                    uFile = DragQueryFileA(hDrop, 0xFFFFFFFF, NULL, NULL);
+                    if (uFile != 1)
+                    {
+                        MessageBoxA(handle, "Dropping multiple files is not supported.", NULL, MB_ICONERROR);
+                        DragFinish(hDrop);
+                        return 0;
+                    }
+                    lpszFile[0] = '\0';
+                    if (DragQueryFileA(hDrop, 0, lpszFile, MAX_PATH))
+                    {
+                        oWindow->onDrop(lpszFile);
+                    }
+
                     DragFinish(hDrop);
                     return 0;
                 }
-                lpszFile[0] = '\0';
-                if (DragQueryFileA(hDrop, 0, lpszFile, MAX_PATH))
-                {
-                    oWindow->onDrop(lpszFile);
-                }
-
-                DragFinish(hDrop);
-                return 0;
             }
         }
 
