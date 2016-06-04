@@ -54,7 +54,7 @@ Make sure to follow the recommended folder structure when doing those steps.
 #include <Windows.h>
 
 // Oak Nut include
-#include "onut.h"
+#include <onut/onut.h>
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
