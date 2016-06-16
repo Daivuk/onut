@@ -262,7 +262,10 @@ namespace onut
 
         D3D11_MAPPED_SUBRESOURCE data;
         pDeviceContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-        memcpy(data.pData, pData, m_size.x * m_size.y * 4);
+        for (int y = 0; y < m_size.y; ++y)
+        {
+            memcpy(reinterpret_cast<uint8_t*>(data.pData) + y * data.RowPitch, pData + y * m_size.x * 4, m_size.x * 4);
+        }
         pDeviceContext->Unmap(m_pTexture, 0);
     }
 

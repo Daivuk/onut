@@ -39,6 +39,9 @@ namespace onut
         void unselectAll();
         void unselectItem(const OUITreeViewItemRef& pItem);
         void addSelectedItem(const OUITreeViewItemRef& pItem);
+        OUITreeViewItemRef getSelectedItem() const;
+
+        void sortItemsByName();
 
         void expandTo(const OUITreeViewItemRef& pItem);
 

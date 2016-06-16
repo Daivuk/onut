@@ -118,6 +118,16 @@ namespace onut
         drawRect(pTexture, {rect.x, rect.y, rect.z - rect.x, rect.w - rect.y}, color);
     }
 
+    void SpriteBatch::drawOutterOutlineRect(const Rect& rect, float thickness, const Color& color)
+    {
+        assert(m_isDrawing); // Should call begin() before calling draw()
+
+        drawRect(m_pTexWhite, {rect.x - thickness, rect.y - thickness, rect.z + thickness * 2, thickness}, color);
+        drawRect(m_pTexWhite, {rect.x - thickness, rect.y + rect.w, rect.z + thickness * 2, thickness}, color);
+        drawRect(m_pTexWhite, {rect.x - thickness, rect.y, thickness, rect.w}, color);
+        drawRect(m_pTexWhite, {rect.x + rect.z, rect.y, thickness, rect.w}, color);
+    }
+
     void SpriteBatch::drawRect(const OTextureRef& pTexture, const Rect& rect, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()

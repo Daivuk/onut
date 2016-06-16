@@ -42,6 +42,7 @@ namespace onut
         void drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin = OCenter);
         void drawBeam(const OTextureRef& pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
         void drawCross(const Vector2& position, float size, const Color& color = Color::White, float thickness = 2.f);
+        void drawOutterOutlineRect(const Rect& rect, float thickness, const Color& color = Color::White);
         void end();
 
         void changeBlendMode(BlendMode blendMode);

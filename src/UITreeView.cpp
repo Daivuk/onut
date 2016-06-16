@@ -211,6 +211,12 @@ namespace onut
         expandTo(pItem);
     }
 
+    OUITreeViewItemRef UITreeView::getSelectedItem() const
+    {
+        if (m_selectedItems.empty()) return nullptr;
+        return m_selectedItems.front();
+    }
+
     void UITreeView::expandTo(const OUITreeViewItemRef& pItem)
     {
         if (auto pParent = pItem->getParent())
@@ -460,6 +466,14 @@ namespace onut
         auto scrollMaxSize = contentSize - worldRect.w;
         if (m_scroll > scrollMaxSize) m_scroll = scrollMaxSize;
         if (m_scroll < 0) m_scroll = 0.f;
+    }
+
+    void UITreeView::sortItemsByName()
+    {
+        std::sort(m_items.begin(), m_items.end(), [](const OUITreeViewItemRef& a, const OUITreeViewItemRef& b) -> bool
+        {
+            return a->text < b->text;
+        });
     }
 };
 
