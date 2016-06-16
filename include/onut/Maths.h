@@ -42,6 +42,10 @@ inline Rect ORectFit(const TparentRect& parentRect, const Tsize& size)
 
 // Color stuff
 #define OColorHex(hex)                          Color::fromHexRGB(0x ## hex)
+#define OColorRGB(r, g, b)                      Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f)
+#define OColorRGBA(r, g, b, a)                  Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f, static_cast<float>(a) / 255.0f)
+#define OColorBGR(b, g, r)                      Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f)
+#define OColorBGRA(b, g, r, a)                  Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f, static_cast<float>(a) / 255.0f)
 
 // Gradient
 #define OGradientH(left, right)                 {left, left, right, right}

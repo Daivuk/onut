@@ -59,6 +59,9 @@ namespace onut
     {
         std::random_shuffle(vec.begin(), vec.end());
     }
+
+    Vector2 randCircle(const Vector2& center, float radius);
+    Vector2 randCircleEdge(const Vector2& center, float radius);
 }
 
 #define ORandColor onut::randc

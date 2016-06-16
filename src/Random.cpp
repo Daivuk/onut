@@ -66,6 +66,22 @@ namespace onut
         return{randf(min.x, max.x), randf(min.y, max.y)};
     }
 
+    Vector2 randCircle(const Vector2& center, float radius)
+    {
+        float dist = ORandFloat(0.0f, 1.0f);
+        dist *= dist;
+        dist = 1 - dist;
+        dist *= radius;
+        float angle = ORandFloat(0.0f, DirectX::XM_2PI);
+        return{center.x + cosf(angle) * dist, center.y + sinf(angle) * dist};
+    }
+
+    Vector2 randCircleEdge(const Vector2& center, float radius)
+    {
+        float angle = ORandFloat(0.0f, DirectX::XM_2PI);
+        return{center.x + cosf(angle), center.y + sinf(angle)};
+    }
+
     Vector3 rand3f(const Vector3& max)
     {
         return{randf(max.x), randf(max.y), randf(max.z)};
