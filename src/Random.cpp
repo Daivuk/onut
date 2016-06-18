@@ -7,10 +7,15 @@
 
 namespace onut
 {
+    void setSeed(unsigned int seed)
+    {
+        srand(seed);
+    }
+
     unsigned int randomizeSeed()
     {
         auto seed = static_cast<unsigned int>(time(nullptr));
-        srand(seed);
+        setSeed(seed);
         return seed;
     }
 

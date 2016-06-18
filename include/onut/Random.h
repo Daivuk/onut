@@ -10,6 +10,7 @@ namespace onut
 {
     using Palette = std::vector<Color>;
 
+    void setSeed(unsigned int seed);
     unsigned int randomizeSeed();
 
     int randi();
