@@ -25,6 +25,9 @@ namespace onut
             scale9Component = pOther->scale9Component;
             m_isNumerical = pOther->m_isNumerical;
             m_decimalPrecision = pOther->m_decimalPrecision;
+            min = pOther->min;
+            max = pOther->max;
+            step = pOther->step;
         }
         UIControl::operator=(other);
     }
