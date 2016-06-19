@@ -311,6 +311,12 @@ namespace onut
         return nullptr;
     }
 
+    TiledMap::TileSet* TiledMap::getTileSet(int index) const
+    {
+        if (index < 0 || index >= m_tilesetCount) return nullptr;
+        return m_tileSets + index;
+    }
+
     static iRect getScreenRECTFromTransform(const Matrix& transform, const Point& tileSize)
     {
         auto invTransform = transform.Invert();

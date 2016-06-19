@@ -43,6 +43,15 @@ namespace onut
             std::unordered_map<std::string, std::string> properties;
         };
 
+        struct TileSet
+        {
+            int firstId;
+            int tileWidth;
+            int tileHeight;
+            OTextureRef pTexture;
+            std::string name;
+        };
+
         struct ObjectLayer : public Layer
         {
             virtual ~ObjectLayer();
@@ -69,6 +78,8 @@ namespace onut
         void renderLayer(const iRect &rect, const std::string &name);
         void renderLayer(const iRect &rect, Layer *pLayer);
 
+        TileSet* getTileSet(int index) const;
+
         int getLayerCount() const { return m_layerCount; }
         Layer *getLayer(int index) const { return m_layers[index]; }
         Layer *getLayer(const std::string &name) const;
@@ -76,15 +87,6 @@ namespace onut
         const OTextureRef& getMinimap();
 
     private:
-        struct TileSet
-        {
-            int firstId;
-            int tileWidth;
-            int tileHeight;
-            OTextureRef pTexture;
-            std::string name;
-        };
-
         struct Tile
         {
             TileSet *pTileset = nullptr;
