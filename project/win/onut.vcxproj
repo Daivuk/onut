@@ -47,6 +47,7 @@
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
     <ClInclude Include="..\..\include\onut\SpriteBatch.h" />
     <ClInclude Include="..\..\include\onut\Strings.h" />
+    <ClInclude Include="..\..\include\onut\ThreadPool.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
     <ClInclude Include="..\..\include\onut\PrimitiveMode.h" />
     <ClInclude Include="..\..\include\onut\Timing.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\Strings.cpp" />
     <ClCompile Include="..\..\src\TextureD3D11.cpp" />
+    <ClCompile Include="..\..\src\ThreadPool.cpp" />
     <ClCompile Include="..\..\src\Timing.cpp" />
     <ClCompile Include="..\..\src\Timer.cpp" />
     <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp" />
@@ -318,7 +320,7 @@
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

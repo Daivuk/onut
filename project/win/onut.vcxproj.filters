@@ -449,6 +449,9 @@
     <ClInclude Include="..\..\include\onut\Dialogs.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\ThreadPool.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -712,6 +715,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Dialogs.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ThreadPool.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

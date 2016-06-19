@@ -14,6 +14,7 @@
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
+#include <onut/ThreadPool.h>
 #include <onut/Timing.h>
 #include <onut/UIContext.h>
 #include <onut/UIControl.h>
@@ -79,6 +80,9 @@ namespace onut
     {
         // Random
         randomizeSeed();
+
+        // Thread pool
+        oThreadPool = OThreadPool::create();
 
         // Dispatcher
         oDispatcher = ODispatcher::create();
@@ -156,6 +160,7 @@ namespace onut
         oRenderer = nullptr;
         oWindow = nullptr;
         oSettings = nullptr;
+        oThreadPool = nullptr;
     }
 
     // Start the engine
