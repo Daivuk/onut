@@ -57,5 +57,5 @@ namespace onut
 
 extern OThreadPoolRef oThreadPool;
 
-#define OWork(__fn__, ...) __fn__(__VA_ARGS__)
+#define OWork(...) oThreadPool->doWork(__VA_ARGS__)
 #define OWait oThreadPool->wait
