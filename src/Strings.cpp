@@ -19,7 +19,7 @@ namespace onut
         return g_stringConverter.to_bytes(utf16);
     }
 
-    std::vector<std::string> splitString(const std::string& in_string, char in_delimiter)
+    std::vector<std::string> splitString(const std::string& in_string, char in_delimiter, bool in_removeEmptyElements)
     {
         std::vector<std::string> elems;
         unsigned int start = 0;
@@ -28,16 +28,20 @@ namespace onut
         {
             if (in_string[end] == in_delimiter)
             {
-                if (end - start)
+                if (end - start || !in_removeEmptyElements)
                 {
                     elems.push_back(in_string.substr(start, end - start));
                 }
                 start = end + 1;
             }
         }
+        if (!in_removeEmptyElements && start == in_string.length())
+        {
+            elems.push_back("");
+        }
         if (start < in_string.length())
         {
-            if (end - start)
+            if (end - start || !in_removeEmptyElements)
             {
                 elems.push_back(in_string.substr(start, end - start));
             }

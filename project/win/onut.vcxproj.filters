@@ -452,6 +452,9 @@
     <ClInclude Include="..\..\include\onut\ThreadPool.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\CSV.h">
+      <Filter>resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -718,6 +721,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ThreadPool.cpp">
       <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CSV.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
