@@ -18,10 +18,12 @@
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
     <ClInclude Include="..\..\include\onut\Cloud.h" />
+    <ClInclude Include="..\..\include\onut\Component.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
     <ClInclude Include="..\..\include\onut\CSV.h" />
     <ClInclude Include="..\..\include\onut\Dialogs.h" />
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
+    <ClInclude Include="..\..\include\onut\Entity.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\GamePad.h" />
@@ -176,11 +178,13 @@
     <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
     <ClCompile Include="..\..\src\Cloud.cpp" />
     <ClCompile Include="..\..\src\CloudBrainCloud.cpp" />
+    <ClCompile Include="..\..\src\Component.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
     <ClCompile Include="..\..\src\CSV.cpp" />
     <ClCompile Include="..\..\src\Dialogs.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
+    <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />

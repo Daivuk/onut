@@ -455,6 +455,12 @@
     <ClInclude Include="..\..\include\onut\CSV.h">
       <Filter>resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Component.h">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Entity.h">
+      <Filter>entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -725,6 +731,12 @@
     <ClCompile Include="..\..\src\CSV.cpp">
       <Filter>resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Component.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Entity.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -780,6 +792,9 @@
     </Filter>
     <Filter Include="thirdparties\jsoncpp\json">
       <UniqueIdentifier>{7c788f72-e58f-4019-af65-e2b372e04109}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="entities">
+      <UniqueIdentifier>{1144fcd7-55fd-4bfc-b06a-8cb6329aac2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{967BBF3E-F7E6-4078-AD6B-9EB61AF247AB}</ProjectGuid>
+    <ProjectGuid>{39CEFB30-F92A-4B81-BE7F-7070132C72FB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Particles</RootNamespace>
   </PropertyGroup>
@@ -88,7 +88,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\EmptySample.cpp" />
+    <ClCompile Include="..\..\src\EntitiesSample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
