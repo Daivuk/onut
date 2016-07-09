@@ -4,7 +4,7 @@
 // STL
 #include <fstream>
 
-OSettingsRef oSettings = std::make_shared<OSettings>();
+OSettingsRef oSettings;
 
 namespace onut
 {

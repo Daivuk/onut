@@ -66,8 +66,8 @@ namespace onut
                     pRet->setName(name);
                     pRet->setFilename(filename);
                 }
+                addResource(name, pRet);
             }
-            addResource(name, pRet);
         }
         return pRet;
     }
