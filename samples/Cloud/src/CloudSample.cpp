@@ -366,6 +366,7 @@ static void showLogin()
     // Show the login dialog
     if (pCurrentUI) pCurrentUI->remove();
     pCurrentUI = OLoadUI("cloud.json");
+    oUI->add(pCurrentUI);
     oUI->add(pAchievementPopup); // Making sure achievement popup is always on top of everything
 
     OFindUI<OUITextBox>("txtEmail")->textComponent.text = oSettings->getUserSetting("email");
@@ -386,6 +387,7 @@ static void showMainMenu()
 
     if (pCurrentUI) pCurrentUI->remove();
     pCurrentUI = OLoadUI("mainMenu.json");
+    oUI->add(pCurrentUI);
     oUI->add(pAchievementPopup); // Making sure achievement popup is always on top of everything
 
     OFindUI<OUILabel>("lblWelcome")->textComponent.text = "Welcome ^999" + oCloud->getUsername();
@@ -407,6 +409,7 @@ static void onShowGameOver()
 
     if (pCurrentUI) pCurrentUI->remove();
     pCurrentUI = OLoadUI("gameOver.json");
+    oUI->add(pCurrentUI);
     oUI->add(pAchievementPopup); // Making sure achievement popup is always on top of everything
 
     oCloud->postScore("score", static_cast<OCloud::LeaderboardEntry::Score>(coinCollected));

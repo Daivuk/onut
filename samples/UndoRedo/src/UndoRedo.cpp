@@ -35,6 +35,7 @@ Vector2 dragStartItemPos;
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
     oSettings->setGameName("Undo/Redo Sample");
+    oSettings->setIsEditorMode(true);
     ORun(init, update, render);
 }
 
