@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{39CEFB30-F92A-4B81-BE7F-7070132C72FB}</ProjectGuid>
+    <ProjectGuid>{67B3D674-5BF8-4AF1-9AD0-AD0C3E123CE5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Particles</RootNamespace>
   </PropertyGroup>

@@ -21,12 +21,12 @@ namespace onut
     {
     }
 
-    void EntityManager::add(const OEntityRef& pEntity)
+    void EntityManager::addEntity(const OEntityRef& pEntity)
     {
         if (pEntity->m_pEntityManager)
         {
             auto pEntityRef = pEntity;
-            pEntityRef->m_pEntityManager->remove(pEntityRef);
+            pEntityRef->m_pEntityManager->removeEntity(pEntityRef);
             pEntityRef->m_pEntityManager = OThis;
             m_entities.push_back(pEntityRef);
         }
@@ -37,13 +37,73 @@ namespace onut
         }
     }
 
-    void EntityManager::remove(const OEntityRef& pEntity)
+    void EntityManager::removeEntity(const OEntityRef& pEntity)
     {
+        // Remove components
+        if (pEntity->isEnabled() && !pEntity->isStatic())
+        {
+            for (auto& pComponent : pEntity->m_components)
+            {
+                if (pComponent->isEnabled())
+                {
+                    addComponentAction(pComponent, m_componentUpdates, ComponentAction::Action::Remove);
+                }
+            }
+        }
+        if (pEntity->isVisible())
+        {
+            for (auto& pComponent : pEntity->m_components)
+            {
+                addComponentAction(pComponent, m_componentRenders, ComponentAction::Action::Remove);
+            }
+        }
+
+        // Remove entity
         for (auto it = m_entities.begin(); it != m_entities.end(); ++it)
         {
             if (*it == pEntity)
             {
                 m_entities.erase(it);
+                pEntity->m_pEntityManager = nullptr;
+                return;
+            }
+        }
+    }
+
+    void EntityManager::addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action)
+    {
+        m_componentActions.push_back({action, pComponent, &list});
+    }
+
+    void EntityManager::performComponentActions()
+    {
+        for (auto& componentAction : m_componentActions)
+        {
+            switch (componentAction.action)
+            {
+                case ComponentAction::Action::Add:
+                    addComponent(componentAction.pComponent, *componentAction.pTargetList);
+                    break;
+                case ComponentAction::Action::Remove:
+                    removeComponent(componentAction.pComponent, *componentAction.pTargetList);
+                    break;
+            }
+        }
+        m_componentActions.clear();
+    }
+
+    void EntityManager::addComponent(const OComponentRef& pComponent, Components& to)
+    {
+        to.push_back(pComponent);
+    }
+
+    void EntityManager::removeComponent(const OComponentRef& pComponent, Components& from)
+    {
+        for (auto it = from.begin(); it != from.end(); ++it)
+        {
+            if (*it == pComponent)
+            {
+                from.erase(it);
                 return;
             }
         }
@@ -51,24 +111,20 @@ namespace onut
 
     void EntityManager::update()
     {
-        for (auto& componentList : m_componentLists)
+        performComponentActions();
+        for (auto& pComponent : m_componentUpdates)
         {
-            for (auto& pComponent : componentList.components)
-            {
-                pComponent->update();
-            }
+            pComponent->update();
         }
+        performComponentActions();
     }
 
     void EntityManager::render()
     {
         oSpriteBatch->begin();
-        for (auto& componentList : m_componentLists)
+        for (auto& pComponent : m_componentRenders)
         {
-            for (auto& pComponent : componentList.components)
-            {
-                pComponent->render();
-            }
+            pComponent->render();
         }
         oSpriteBatch->end();
     }

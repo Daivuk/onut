@@ -32,6 +32,13 @@ namespace onut
         void remove(const OEntityRef& pChild);
         OEntityRef getParent() const;
 
+        bool isEnabled() const;
+        void setEnabled(bool isEnabled);
+        bool isVisible() const;
+        void setVisible(bool isVisible);
+        bool isStatic() const;
+        void setStatic(bool isStatic);
+
         template<typename Tcomponent>
         std::shared_ptr<Tcomponent> getComponent() const
         {
@@ -51,13 +58,12 @@ namespace onut
             auto pComponent = getComponent<Tcomponent>();
             if (pComponent) return pComponent;
             pComponent = std::shared_ptr<Tcomponent>(new Tcomponent());
-            pComponent->m_pEntity = OThis;
-            m_components.push_back(pComponent);
-            m_pEntityManager->addComponent(pComponent);
+            addComponent(pComponent);
             return pComponent;
         }
 
     private:
+        friend class Component;
         friend class EntityManager;
 
         using Entities = std::vector<OEntityRef>;
@@ -66,6 +72,7 @@ namespace onut
         Entity();
 
         void dirtyWorld();
+        void addComponent(const OComponentRef& pComponent);
 
         bool m_isWorldDirty = true;
         Matrix m_localTransform;
@@ -74,5 +81,8 @@ namespace onut
         Components m_components;
         Entities m_children;
         OEntityManagerRef m_pEntityManager;
+        bool m_isEnabled = true;
+        bool m_isVisible = true;
+        bool m_isStatic = false;
     };
 };

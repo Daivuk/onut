@@ -7,12 +7,15 @@ OForwardDeclare(Component);
 
 namespace onut
 {
-    class Component
+    class Component : public std::enable_shared_from_this<Component>
     {
     public:
         virtual ~Component();
 
         const OEntityRef& getEntity() const;
+
+        bool isEnabled() const;
+        void setEnabled(bool isEnabled);
 
     protected:
         Component();
@@ -25,5 +28,6 @@ namespace onut
         friend class EntityManager;
 
         OEntityRef m_pEntity;
+        bool m_isEnabled = true;
     };
 };

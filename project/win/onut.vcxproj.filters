@@ -462,7 +462,7 @@
       <Filter>entities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\EntityManager.h">
-      <Filter>services</Filter>
+      <Filter>entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -741,7 +741,7 @@
       <Filter>entities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\EntityManager.cpp">
-      <Filter>services</Filter>
+      <Filter>entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

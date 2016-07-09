@@ -22,50 +22,42 @@ namespace onut
         void render();
 
     private:
-        struct ComponentList
-        {
-            using Components = std::vector<OComponentRef>;
-
-            template<typename Tcomponent>
-            ComponentList(const std::shared_ptr<Tcomponent>& pComponent)
-                : type(typeid(Tcomponent).hash_code())
-            {
-                components.push_back(pComponent);
-            }
-
-            Components components;
-            size_t type;
-        };
-
-    public:
-        template<typename Tcomponent>
-        void addComponent(const std::shared_ptr<Tcomponent>& pComponent)
-        {
-            auto typeCode = typeid(Tcomponent).hash_code();
-            for (auto& componentList : m_componentLists)
-            {
-                if (componentList.type == typeCode)
-                {
-                    componentList.components.push_back(pComponent);
-                    return;
-                }
-            }
-            m_componentLists.push_back(ComponentList(pComponent));
-        }
-
-    private:
         friend class Entity;
+        friend class Component;
 
         using Entities = std::vector<OEntityRef>;
-        using ComponentLists = std::vector<ComponentList>;
+        using Components = std::vector<OComponentRef>;
 
-        void add(const OEntityRef& pEntity);
-        void remove(const OEntityRef& pEntity);
+        struct ComponentAction
+        {
+            enum class Action
+            {
+                Add,
+                Remove
+            };
+
+            Action action;
+            OComponentRef pComponent;
+            Components* pTargetList;
+        };
+
+        using ComponentActions = std::vector<ComponentAction>;
+
+        void addEntity(const OEntityRef& pEntity);
+        void removeEntity(const OEntityRef& pEntity);
+
+        void addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action);
+        void performComponentActions();
+
+        void addComponent(const OComponentRef& pComponent, Components& to);
+        void removeComponent(const OComponentRef& pComponent, Components& from);
 
         EntityManager();
 
         Entities m_entities;
-        ComponentLists m_componentLists;
+        Components m_componentUpdates;
+        Components m_componentRenders;
+        ComponentActions m_componentActions;
     };
 };
 
