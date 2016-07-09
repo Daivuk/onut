@@ -1,11 +1,16 @@
 // Onut includes
 #include <onut/Entity.h>
+#include <onut/EntityManager.h>
 
 namespace onut
 {
-    OEntityRef Entity::create()
+    OEntityRef Entity::create(const OEntityManagerRef& in_pEntityManager)
     {
-        return std::shared_ptr<OEntity>(new OEntity());
+        auto pEntityManager = in_pEntityManager;
+        if (!pEntityManager) pEntityManager = oEntityManager;
+        auto pEntity = std::shared_ptr<OEntity>(new OEntity());
+        pEntityManager->add(pEntity);
+        return pEntity;
     }
 
     Entity::Entity()
@@ -16,8 +21,14 @@ namespace onut
     {
     }
 
+    void Entity::destroy()
+    {
+        m_pEntityManager->remove(OThis);
+    }
+
     OEntityRef Entity::copy() const
     {
+        return nullptr;
     }
 
     const Matrix& Entity::getLocalTransform() const
@@ -34,6 +45,11 @@ namespace onut
             {
                 m_worldTransform = m_localTransform * pParent->getWorldTransform();
             }
+            else
+            {
+                m_worldTransform = m_localTransform;
+            }
+            m_isWorldDirty = false;
         }
         return m_worldTransform;
     }
@@ -60,35 +76,30 @@ namespace onut
 
     void Entity::add(const OEntityRef& pChild)
     {
+        m_children.push_back(pChild);
+        auto pChildParent = pChild->getParent();
+        if (pChildParent)
+        {
+            pChildParent->remove(pChild);
+        }
+        pChild->m_pParent = OThis;
     }
 
     void Entity::remove(const OEntityRef& pChild)
     {
+        for (auto it = m_children.begin(); it != m_children.end(); ++it)
+        {
+            if (*it == pChild)
+            {
+                pChild->m_pParent.reset();
+                m_children.erase(it);
+                return;
+            }
+        }
     }
 
     OEntityRef Entity::getParent() const
     {
         return m_pParent.lock();
-    }
-
-    void Entity::update()
-    {
-        m_childrenToRemove.clear();
-        m_childrenToAdd.clear();
-    }
-    static std::vector<OEntityRef> m_childrenToRemove;
-    static std::vector<OEntityRef> m_childrenToAdd;
-
-    void Entity::updateTree()
-    {
-    }
-
-    void Entity::render()
-    {
-    }
-
-    void Entity::addComponent(const OComponentRef& pComponent)
-    {
-        m_components.push_back(pComponent);
     }
 };

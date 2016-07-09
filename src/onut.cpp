@@ -3,6 +3,7 @@
 #include <onut/Cloud.h>
 #include <onut/ContentManager.h>
 #include <onut/Dispatcher.h>
+#include <onut/EntityManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
@@ -136,6 +137,9 @@ namespace onut
         // UI Context
         createUI();
 
+        // Entity Manager
+        oEntityManager = EntityManager::create();
+
         // Undo/Redo for editors
         oActionManager = ActionManager::create();
 
@@ -146,6 +150,7 @@ namespace onut
     {
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
+        oEntityManager = nullptr;
         oDispatcher = nullptr;
         oUpdater = nullptr;
         oUI = nullptr;
@@ -248,6 +253,7 @@ namespace onut
                                 OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
                 }
                 oParticleSystemManager->update();
+                oEntityManager->update();
                 if (updateCallback)
                 {
                     updateCallback();
@@ -262,6 +268,7 @@ namespace onut
             {
                 renderCallback();
             }
+            oEntityManager->render();
             oParticleSystemManager->render();
             oSpriteBatch->begin();
             oUI->render(oUIContext);

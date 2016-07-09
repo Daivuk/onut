@@ -9,16 +9,18 @@
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
+OForwardDeclare(EntityManager);
 
 namespace onut
 {
-    class Entity final
+    class Entity final : public std::enable_shared_from_this<Entity>
     {
     public:
-        static OEntityRef create();
+        static OEntityRef create(const OEntityManagerRef& pEntityManager = nullptr);
 
         ~Entity();
 
+        void destroy();
         OEntityRef copy() const;
 
         const Matrix& getLocalTransform() const;
@@ -42,37 +44,35 @@ namespace onut
             }
             return nullptr;
         }
-        void addComponent(const OComponentRef& pComponent);
 
-        void update();
-        void render();
+        template<typename Tcomponent>
+        std::shared_ptr<Tcomponent> addComponent()
+        {
+            auto pComponent = getComponent<Tcomponent>();
+            if (pComponent) return pComponent;
+            pComponent = std::shared_ptr<Tcomponent>(new Tcomponent());
+            pComponent->m_pEntity = OThis;
+            m_components.push_back(pComponent);
+            m_pEntityManager->addComponent(pComponent);
+            return pComponent;
+        }
 
     private:
+        friend class EntityManager;
+
+        using Entities = std::vector<OEntityRef>;
+        using Components = std::vector<OComponentRef>;
+
         Entity();
 
-        void updateTree();
         void dirtyWorld();
 
-        std::vector<OComponentRef> m_components;
-        std::vector<OEntityRef> m_children;
         bool m_isWorldDirty = true;
         Matrix m_localTransform;
         Matrix m_worldTransform;
         OEntityWeak m_pParent;
-
-        enum class ActionType
-        {
-            Add,
-            Remove
-        };
-
-        struct Action
-        {
-            ActionType action;
-            OEntityRef pParent;
-            OEntityRef pChild;
-        };
-
-        static std::vector<Action> s_actions;
+        Components m_components;
+        Entities m_children;
+        OEntityManagerRef m_pEntityManager;
     };
 };

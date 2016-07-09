@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\include\onut\Dialogs.h" />
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
     <ClInclude Include="..\..\include\onut\Entity.h" />
+    <ClInclude Include="..\..\include\onut\EntityManager.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
     <ClInclude Include="..\..\include\onut\GamePad.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="..\..\src\Dialogs.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
     <ClCompile Include="..\..\src\Entity.cpp" />
+    <ClCompile Include="..\..\src\EntityManager.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
     <ClCompile Include="..\..\src\GamePad.cpp" />
