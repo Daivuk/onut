@@ -13,6 +13,7 @@
 #include <onut/Files.h>
 #include <onut/Pool.h>
 #include <onut/Resource.h>
+#include <onut/Settings.h>
 #include <onut/Strings.h>
 
 using namespace std;
@@ -656,6 +657,8 @@ int main(int argc, char** args)
 
         cout << setColor(7) << endl;
     }
+
+    oSettings = nullptr;
 
     system("pause");
     return errCount;

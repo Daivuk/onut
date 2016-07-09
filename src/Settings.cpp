@@ -4,7 +4,7 @@
 // STL
 #include <fstream>
 
-OSettingsRef oSettings;
+OSettingsRef oSettings = OMake<OSettings>();
 
 namespace onut
 {
