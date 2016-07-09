@@ -440,6 +440,37 @@ namespace onut
             flush();
         }
     }
+    void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Vector2& scale, const Color& color, const Vector2& origin)
+    {
+        changeTexture(pTexture);
+        auto sizef = m_pTexture->getSizef() * scale;
+
+        auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
+
+        SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
+        pVerts[0].position = Vector2::Transform(Vector2(-sizef.x * origin.x, -sizef.y * origin.y), transform);
+        pVerts[0].texCoord = {0, 0};
+        pVerts[0].color = color;
+
+        pVerts[1].position = Vector2::Transform(Vector2(-sizef.x * origin.x, sizef.y * invOrigin.y), transform);
+        pVerts[1].texCoord = {0, 1};
+        pVerts[1].color = color;
+
+        pVerts[2].position = Vector2::Transform(Vector2(sizef.x * invOrigin.x, sizef.y * invOrigin.y), transform);
+        pVerts[2].texCoord = {1, 1};
+        pVerts[2].color = color;
+
+        pVerts[3].position = Vector2::Transform(Vector2(sizef.x * invOrigin.x, -sizef.y * origin.y), transform);
+        pVerts[3].texCoord = {1, 0};
+        pVerts[3].color = color;
+
+        ++m_spriteCount;
+
+        if (m_spriteCount == MAX_SPRITE_COUNT)
+        {
+            flush();
+        }
+    }
 
     void SpriteBatch::drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin)
     {

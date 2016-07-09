@@ -83,6 +83,7 @@ namespace onut
         {
             pChildParent->remove(pChild);
         }
+        pChild->dirtyWorld();
         pChild->m_pParent = OThis;
     }
 
@@ -94,8 +95,18 @@ namespace onut
             {
                 pChild->m_pParent.reset();
                 m_children.erase(it);
+                pChild->dirtyWorld();
                 return;
             }
+        }
+    }
+
+    void Entity::remove()
+    {
+        auto pParent = getParent();
+        if (pParent)
+        {
+            pParent->remove(OThis);
         }
     }
 

@@ -17,6 +17,12 @@ namespace onut
         bool isEnabled() const;
         void setEnabled(bool isEnabled);
 
+        template<typename Tcomponent>
+        std::shared_ptr<Tcomponent> getComponent() const
+        {
+            return getEntity()->getComponent<Tcomponent>();
+        }
+
     protected:
         Component();
 

@@ -30,6 +30,7 @@ namespace onut
 
         void add(const OEntityRef& pChild);
         void remove(const OEntityRef& pChild);
+        void remove();
         OEntityRef getParent() const;
 
         bool isEnabled() const;

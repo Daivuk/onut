@@ -20,12 +20,20 @@ void render();
 // This component draws a white square
 class WhiteSquareComponent : public onut::Component
 {
+public:
+    void setSize(float size)
+    {
+        m_size = size;
+    }
+
 private:
     void render() override
     {
         auto& transform = getEntity()->getWorldTransform();
-        oSpriteBatch->drawSprite(nullptr, transform);
+        oSpriteBatch->drawSprite(nullptr, transform, Vector2(m_size));
     }
+
+    float m_size = 64.0f;
 };
 
 // If this component is attached to an entity, it will rotate on the Z axis
@@ -62,12 +70,7 @@ private:
     {
         m_blink += ODT;
         if (m_blink >= 1.0f) m_blink -= 1.0f;
-
-        auto pRotationComponent = getEntity()->getComponent<RotatingComponent>();
-        if (pRotationComponent)
-        {
-            pRotationComponent->setEnabled(m_blink < 0.5f);
-        }
+        getComponent<RotatingComponent>()->setEnabled(m_blink < 0.5f);
     }
 
     float m_blink = 0.0f;
@@ -88,26 +91,34 @@ void init()
     pSquare = OEntity::create();
     pSquare->setStatic(true); // This square will not update and his rendering will potentially be batched.
     pSquare->addComponent<WhiteSquareComponent>();
-    pSquare->setLocalTransform(Matrix::CreateScale(128) * Matrix::CreateTranslation(OScreenCenterf / 2.0f));
+    pSquare->setLocalTransform(Matrix::CreateTranslation(OScreenCenterf / 2.0f));
 
     // Rotating square
     pSquare = OEntity::create();
     pSquare->addComponent<WhiteSquareComponent>();
     pSquare->addComponent<RotatingComponent>();
-    pSquare->setLocalTransform(Matrix::CreateScale(128) * Matrix::CreateTranslation(OScreenCenterf));
+    pSquare->setLocalTransform(Matrix::CreateTranslation(OScreenCenterf));
+    // Smaller square orbiting this one
+    {
+        auto pSmallSquare = OEntity::create();
+        auto pWhiteSquareComponent = pSmallSquare->addComponent<WhiteSquareComponent>();
+        pWhiteSquareComponent->setSize(32.0f);
+        pSmallSquare->setLocalTransform(Matrix::CreateTranslation(Vector2(64.0f, 0)));
+        pSquare->add(pSmallSquare);
+    }
 
     // Blinking square
     pSquare = OEntity::create();
     pSquare->addComponent<WhiteSquareComponent>();
     pSquare->addComponent<BlinkingComponent>();
-    pSquare->setLocalTransform(Matrix::CreateScale(128) * Matrix::CreateTranslation(OScreenCenterf * 1.5f));
+    pSquare->setLocalTransform(Matrix::CreateTranslation(OScreenCenterf * 1.5f));
 
     // Intermittent rotating square
     pSquare = OEntity::create();
     pSquare->addComponent<WhiteSquareComponent>();
     pSquare->addComponent<RotatingComponent>();
     pSquare->addComponent<DeactivateComponent>();
-    pSquare->setLocalTransform(Matrix::CreateScale(128) * Matrix::CreateTranslation(Vector2(OScreenCenterXf / 2.0f, OScreenCenterYf * 1.5f)));
+    pSquare->setLocalTransform(Matrix::CreateTranslation(Vector2(OScreenCenterXf / 2.0f, OScreenCenterYf * 1.5f)));
 
     // All combined
     pSquare = OEntity::create();
@@ -115,7 +126,7 @@ void init()
     pSquare->addComponent<RotatingComponent>();
     pSquare->addComponent<BlinkingComponent>();
     pSquare->addComponent<DeactivateComponent>();
-    pSquare->setLocalTransform(Matrix::CreateScale(128) * Matrix::CreateTranslation(Vector2(OScreenCenterXf * 1.5f, OScreenCenterYf / 2.0f)));
+    pSquare->setLocalTransform(Matrix::CreateTranslation(Vector2(OScreenCenterXf * 1.5f, OScreenCenterYf / 2.0f)));
 }
 
 void update()

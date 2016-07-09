@@ -37,6 +37,7 @@ namespace onut
         void draw4Corner(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
         void drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color = Color::White, const Vector2& origin = OCenter);
         void drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Color& color = Color::White, const Vector2& origin = OCenter);
+        void drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Vector2& scale, const Color& color = Color::White, const Vector2& origin = OCenter);
         void drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = OCenter);
         void drawSpriteWithUVs(const OTextureRef& pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale = 1.f, const Vector2& origin = OCenter);
         void drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin = OCenter);
