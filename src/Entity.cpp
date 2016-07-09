@@ -227,4 +227,22 @@ namespace onut
             }
         }
     }
+
+    void Entity::render2d()
+    {
+        for (auto& pComponent : m_components)
+        {
+            if (pComponent->isEnabled())
+            {
+                pComponent->render2d();
+            }
+        }
+        for (auto& pChild : m_children)
+        {
+            if (pChild->isVisible())
+            {
+                pChild->render2d();
+            }
+        }
+    }
 };

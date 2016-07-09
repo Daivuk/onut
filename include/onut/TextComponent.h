@@ -6,19 +6,19 @@
 
 // Forward declarations
 #include <onut/ForwardDeclaration.h>
-OForwardDeclare(SpriteComponent);
-OForwardDeclare(Texture);
+OForwardDeclare(Font);
+OForwardDeclare(TextComponent);
 
 namespace onut
 {
-    class SpriteComponent final : public Component
+    class TextComponent final : public Component
     {
     public:
-        void setTexture(const OTextureRef& pTexture);
-        const OTextureRef& getTexture() const;
+        void setFont(const OFontRef& pFont);
+        const OFontRef& getFont() const;
 
-        void setScale(const Vector2& scale);
-        const Vector2& getScale() const;
+        void setText(const std::string& text);
+        const std::string& getText() const;
 
         void setColor(const Color& color);
         const Color& getColor() const;
@@ -29,8 +29,8 @@ namespace onut
     private:
         void render2d() override;
 
-        OTextureRef m_pTexture;
-        Vector2 m_scale = Vector2(1);
+        OFontRef m_pFont;
+        std::string m_text;
         Color m_color = Color::White;
         Vector2 m_origin = OCenter;
     };

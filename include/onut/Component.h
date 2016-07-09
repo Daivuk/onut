@@ -28,6 +28,7 @@ namespace onut
 
         virtual void update() {}
         virtual void render() {}
+        virtual void render2d() {}
 
     private:
         friend class Entity;

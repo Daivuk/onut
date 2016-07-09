@@ -27,7 +27,7 @@ public:
     }
 
 private:
-    void render() override
+    void render2d() override
     {
         auto& transform = getEntity()->getWorldTransform();
         oSpriteBatch->drawSprite(nullptr, transform, Vector2(m_size));

@@ -470,6 +470,15 @@
     <ClInclude Include="..\..\include\onut\EntityFactory.h">
       <Filter>entities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\TiledMapComponent.h">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\TextComponent.h">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SoundComponent.h">
+      <Filter>entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -753,6 +762,15 @@
       <Filter>entities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteComponent.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TiledMapComponent.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TextComponent.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SoundComponent.cpp">
       <Filter>entities</Filter>
     </ClCompile>
   </ItemGroup>

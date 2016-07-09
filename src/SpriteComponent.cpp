@@ -46,7 +46,7 @@ namespace onut
         return m_origin;
     }
 
-    void SpriteComponent::render()
+    void SpriteComponent::render2d()
     {
         auto& transform = getEntity()->getWorldTransform();
         oSpriteBatch->drawSprite(m_pTexture, transform, Vector2(m_scale), m_color, m_origin);

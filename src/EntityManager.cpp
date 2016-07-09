@@ -122,10 +122,17 @@ namespace onut
     void EntityManager::render()
     {
         oSpriteBatch->begin();
+        for (auto& pEntity : m_entities)
+        {
+            if (!pEntity->getParent() && pEntity->isVisible())
+            {
+                pEntity->render2d();
+            }
+        }
+        oSpriteBatch->end();
         for (auto& pComponent : m_componentRenders)
         {
             pComponent->render();
         }
-        oSpriteBatch->end();
     }
 };

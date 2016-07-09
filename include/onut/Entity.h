@@ -74,6 +74,7 @@ namespace onut
 
         void dirtyWorld();
         void addComponent(const OComponentRef& pComponent);
+        void render2d();
 
         bool m_isWorldDirty = true;
         Matrix m_localTransform;
