@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\include\onut\Dialogs.h" />
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
     <ClInclude Include="..\..\include\onut\Entity.h" />
+    <ClInclude Include="..\..\include\onut\EntityFactory.h" />
     <ClInclude Include="..\..\include\onut\EntityManager.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
@@ -50,6 +51,7 @@
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
     <ClInclude Include="..\..\include\onut\SpriteBatch.h" />
+    <ClInclude Include="..\..\include\onut\SpriteComponent.h" />
     <ClInclude Include="..\..\include\onut\Strings.h" />
     <ClInclude Include="..\..\include\onut\ThreadPool.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
@@ -186,6 +188,7 @@
     <ClCompile Include="..\..\src\Dialogs.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
     <ClCompile Include="..\..\src\Entity.cpp" />
+    <ClCompile Include="..\..\src\EntityFactory.cpp" />
     <ClCompile Include="..\..\src\EntityManager.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
@@ -212,6 +215,7 @@
     <ClCompile Include="..\..\src\Shader.cpp" />
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
+    <ClCompile Include="..\..\src\SpriteComponent.cpp" />
     <ClCompile Include="..\..\src\Strings.cpp" />
     <ClCompile Include="..\..\src\TextureD3D11.cpp" />
     <ClCompile Include="..\..\src\ThreadPool.cpp" />

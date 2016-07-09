@@ -464,6 +464,12 @@
     <ClInclude Include="..\..\include\onut\EntityManager.h">
       <Filter>entities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\SpriteComponent.h">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\EntityFactory.h">
+      <Filter>entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -741,6 +747,12 @@
       <Filter>entities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\EntityManager.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\EntityFactory.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteComponent.cpp">
       <Filter>entities</Filter>
     </ClCompile>
   </ItemGroup>

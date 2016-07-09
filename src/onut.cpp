@@ -79,9 +79,6 @@ namespace onut
 
     void createServices()
     {
-        // Settings
-        oSettings = OMake<Settings>();
-
         // Random
         randomizeSeed();
 

@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{67B3D674-5BF8-4AF1-9AD0-AD0C3E123CE5}</ProjectGuid>
+    <ProjectGuid>{DA56A0ED-7F15-4461-88A3-5C8F236D25C3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Particles</RootNamespace>
-    <ProjectName>Entities</ProjectName>
+    <ProjectName>Components</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -89,7 +89,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\EntitiesSample.cpp" />
+    <ClCompile Include="..\..\src\ComponentsSample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
