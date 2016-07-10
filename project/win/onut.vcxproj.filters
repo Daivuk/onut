@@ -479,6 +479,9 @@
     <ClInclude Include="..\..\include\onut\SoundComponent.h">
       <Filter>entities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Camera2DComponent.h">
+      <Filter>entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -771,6 +774,9 @@
       <Filter>entities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SoundComponent.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Camera2DComponent.cpp">
       <Filter>entities</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,7 +1,9 @@
 // onut includes
+#include <onut/Camera2DComponent.h>
 #include <onut/Component.h>
 #include <onut/Entity.h>
 #include <onut/EntityManager.h>
+#include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 
 OEntityManagerRef oEntityManager;
@@ -109,6 +111,11 @@ namespace onut
         }
     }
 
+    void EntityManager::setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D)
+    {
+        m_pActiveCamera2D = pActiveCamera2D;
+    }
+
     void EntityManager::update()
     {
         performComponentActions();
@@ -121,7 +128,23 @@ namespace onut
 
     void EntityManager::render()
     {
-        oSpriteBatch->begin();
+        for (auto& pComponent : m_componentRenders)
+        {
+            pComponent->render();
+        }
+
+        Matrix transform;
+        if (m_pActiveCamera2D)
+        {
+            if (m_pActiveCamera2D->getClear())
+            {
+                oRenderer->clear(m_pActiveCamera2D->getClearColor());
+            }
+            transform = m_pActiveCamera2D->getEntity()->getWorldTransform().Invert();
+            transform *= Matrix::CreateScale(m_pActiveCamera2D->getZoom());
+            transform *= Matrix::CreateTranslation(OScreenCenterf);
+        }
+        oSpriteBatch->begin(transform);
         for (auto& pEntity : m_entities)
         {
             if (!pEntity->getParent() && pEntity->isVisible())
@@ -130,9 +153,5 @@ namespace onut
             }
         }
         oSpriteBatch->end();
-        for (auto& pComponent : m_componentRenders)
-        {
-            pComponent->render();
-        }
     }
 };

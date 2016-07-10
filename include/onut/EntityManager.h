@@ -5,6 +5,7 @@
 
 // Forward declarations
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(Camera2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
 OForwardDeclare(EntityManager);
@@ -20,6 +21,8 @@ namespace onut
 
         void update();
         void render();
+
+        void setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D);
 
     private:
         friend class Entity;
@@ -58,6 +61,7 @@ namespace onut
         Components m_componentUpdates;
         Components m_componentRenders;
         ComponentActions m_componentActions;
+        OCamera2DComponentRef m_pActiveCamera2D;
     };
 };
 

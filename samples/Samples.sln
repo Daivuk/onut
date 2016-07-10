@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "framework samples", "framew
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "game engine samples", "game engine samples", "{5B232BC5-6E7E-4DA1-A2C5-1CE1CEAF4811}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dungeon", "Dungeon\project\win\Dungeon.vcxproj", "{DD68AA05-7910-411C-996D-156D9F946FC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -165,6 +167,10 @@ Global
 		{DA56A0ED-7F15-4461-88A3-5C8F236D25C3}.Debug|Win32.Build.0 = Debug|Win32
 		{DA56A0ED-7F15-4461-88A3-5C8F236D25C3}.Release|Win32.ActiveCfg = Release|Win32
 		{DA56A0ED-7F15-4461-88A3-5C8F236D25C3}.Release|Win32.Build.0 = Release|Win32
+		{DD68AA05-7910-411C-996D-156D9F946FC1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD68AA05-7910-411C-996D-156D9F946FC1}.Debug|Win32.Build.0 = Debug|Win32
+		{DD68AA05-7910-411C-996D-156D9F946FC1}.Release|Win32.ActiveCfg = Release|Win32
+		{DD68AA05-7910-411C-996D-156D9F946FC1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,5 +202,6 @@ Global
 		{DA56A0ED-7F15-4461-88A3-5C8F236D25C3} = {5B232BC5-6E7E-4DA1-A2C5-1CE1CEAF4811}
 		{CBA6D869-48D0-4B6D-A0A8-49A98CB12B31} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{5B232BC5-6E7E-4DA1-A2C5-1CE1CEAF4811} = {EA1213E7-4804-4594-A944-35D5A4117E51}
+		{DD68AA05-7910-411C-996D-156D9F946FC1} = {5B232BC5-6E7E-4DA1-A2C5-1CE1CEAF4811}
 	EndGlobalSection
 EndGlobal

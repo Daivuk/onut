@@ -245,4 +245,9 @@ namespace onut
             }
         }
     }
+
+    const OEntityManagerRef& Entity::getEntityManager() const
+    {
+        return m_pEntityManager;
+    }
 };

@@ -63,6 +63,8 @@ namespace onut
             return pComponent;
         }
 
+        const OEntityManagerRef& getEntityManager() const;
+
     private:
         friend class Component;
         friend class EntityManager;

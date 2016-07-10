@@ -17,6 +17,7 @@
     <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
+    <ClInclude Include="..\..\include\onut\Camera2DComponent.h" />
     <ClInclude Include="..\..\include\onut\Cloud.h" />
     <ClInclude Include="..\..\include\onut\Component.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="..\..\src\audio\WaveBank.cpp" />
     <ClCompile Include="..\..\src\audio\WaveBankReader.cpp" />
     <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
+    <ClCompile Include="..\..\src\Camera2DComponent.cpp" />
     <ClCompile Include="..\..\src\Cloud.cpp" />
     <ClCompile Include="..\..\src\CloudBrainCloud.cpp" />
     <ClCompile Include="..\..\src\Component.cpp" />

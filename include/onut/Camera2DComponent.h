@@ -1,0 +1,32 @@
+#pragma once
+
+// Onut includes
+#include <onut/Component.h>
+#include <onut/Maths.h>
+
+// Forward declarations
+#include <onut/ForwardDeclaration.h>
+OForwardDeclare(Camera2DComponent);
+
+namespace onut
+{
+    class Camera2DComponent final : public Component
+    {
+    public:
+        void setZoom(float zoom);
+        const float getZoom() const;
+
+        void setClearColor(const Color& color);
+        const Color& getClearColor() const;
+
+        void setClear(bool clear);
+        bool getClear() const;
+
+    private:
+        void update() override;
+
+        bool m_clear = true;
+        Color m_clearColor = OColorHex(1d232d);
+        float m_zoom = 1.0f;
+    };
+};

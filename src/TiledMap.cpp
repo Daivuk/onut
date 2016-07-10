@@ -226,11 +226,11 @@ namespace onut
                     auto fitH = texSize.y / pTile->pTileset->tileHeight;
                     auto onTextureId = tileId - pTileSet->firstId;
                     pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-                    pTile->UVs.y = static_cast<float>((onTextureId / fitH) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+                    pTile->UVs.y = static_cast<float>((onTextureId / fitW) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
                     pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-                    pTile->UVs.w = static_cast<float>((onTextureId / fitH + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+                    pTile->UVs.w = static_cast<float>((onTextureId / fitW + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
                     pTile->rect.x = static_cast<float>((i % pLayer.width) * pTileSet->tileWidth);
-                    pTile->rect.y = static_cast<float>((i / pLayer.height) * pTileSet->tileHeight);
+                    pTile->rect.y = static_cast<float>((i / pLayer.width) * pTileSet->tileHeight);
                     pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
                     pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
                 }
@@ -398,6 +398,7 @@ namespace onut
 
         bool manageSB = !oSpriteBatch->isInBatch();
         if (manageSB) oSpriteBatch->begin(getTransform());
+        oSpriteBatch->changeFiltering(m_filtering);
         for (int y = rect.top; y <= rect.bottom; ++y)
         {
             Tile *pTile = pLayer->tiles + y * m_width + rect.left;
@@ -434,6 +435,11 @@ namespace onut
 //        oRenderer->bindRenderTarget(nullptr);
 //        return pMinimap;
         return m_pMinimap;
+    }
+
+    void TiledMap::setFiltering(onut::sample::Filtering filtering)
+    {
+        m_filtering = filtering;
     }
 };
 

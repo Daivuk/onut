@@ -3,6 +3,7 @@
 #include <onut/Point.h>
 #include <onut/Maths.h>
 #include <onut/Resource.h>
+#include <onut/SampleMode.h>
 
 // STL
 #include <unordered_map>
@@ -86,6 +87,8 @@ namespace onut
 
         const OTextureRef& getMinimap();
 
+        void setFiltering(onut::sample::Filtering filtering);
+
     private:
         struct Tile
         {
@@ -107,6 +110,7 @@ namespace onut
         Layer **m_layers = nullptr;
         TileSet *m_tileSets = nullptr;
         Matrix m_transform = Matrix::Identity;
+        onut::sample::Filtering m_filtering = OFilterNearest;
         OTextureRef m_pMinimap;
     };
 };
