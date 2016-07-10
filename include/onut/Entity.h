@@ -40,6 +40,9 @@ namespace onut
         bool isStatic() const;
         void setStatic(bool isStatic);
 
+        const std::string getName() const;
+        void setName(const std::string& name);
+
         template<typename Tcomponent>
         std::shared_ptr<Tcomponent> getComponent() const
         {
@@ -63,6 +66,8 @@ namespace onut
             return pComponent;
         }
 
+        void addComponent(const OComponentRef& pComponent);
+
         const OEntityManagerRef& getEntityManager() const;
 
     private:
@@ -75,7 +80,6 @@ namespace onut
         Entity();
 
         void dirtyWorld();
-        void addComponent(const OComponentRef& pComponent);
         void render2d();
 
         bool m_isWorldDirty = true;
@@ -88,5 +92,6 @@ namespace onut
         bool m_isEnabled = true;
         bool m_isVisible = true;
         bool m_isStatic = false;
+        std::string m_name;
     };
 };

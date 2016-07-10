@@ -1,6 +1,7 @@
 // Onut includes
 #include <onut/ActionManager.h>
 #include <onut/Cloud.h>
+#include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
 #include <onut/Dispatcher.h>
 #include <onut/EntityManager.h>
@@ -137,6 +138,9 @@ namespace onut
         // UI Context
         createUI();
 
+        // Component factory
+        oComponentFactory = ComponentFactory::create();
+
         // Entity Manager
         oEntityManager = EntityManager::create();
 
@@ -151,6 +155,7 @@ namespace onut
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
         oEntityManager = nullptr;
+        oComponentFactory = nullptr;
         oDispatcher = nullptr;
         oUpdater = nullptr;
         oUI = nullptr;

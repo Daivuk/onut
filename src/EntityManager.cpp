@@ -154,4 +154,13 @@ namespace onut
         }
         oSpriteBatch->end();
     }
+
+    OEntityRef EntityManager::findEntity(const std::string& name) const
+    {
+        for (auto& pEntity : m_entities)
+        {
+            if (pEntity->getName() == name) return pEntity;
+        }
+        return nullptr;
+    }
 };

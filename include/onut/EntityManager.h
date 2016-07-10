@@ -24,6 +24,8 @@ namespace onut
 
         void setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D);
 
+        OEntityRef findEntity(const std::string& name) const;
+
     private:
         friend class Entity;
         friend class Component;

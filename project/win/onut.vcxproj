@@ -20,6 +20,7 @@
     <ClInclude Include="..\..\include\onut\Camera2DComponent.h" />
     <ClInclude Include="..\..\include\onut\Cloud.h" />
     <ClInclude Include="..\..\include\onut\Component.h" />
+    <ClInclude Include="..\..\include\onut\ComponentFactory.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
     <ClInclude Include="..\..\include\onut\CSV.h" />
     <ClInclude Include="..\..\include\onut\Dialogs.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="..\..\src\Cloud.cpp" />
     <ClCompile Include="..\..\src\CloudBrainCloud.cpp" />
     <ClCompile Include="..\..\src\Component.cpp" />
+    <ClCompile Include="..\..\src\ComponentFactory.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
     <ClCompile Include="..\..\src\Crypto.cpp" />
     <ClCompile Include="..\..\src\CSV.cpp" />

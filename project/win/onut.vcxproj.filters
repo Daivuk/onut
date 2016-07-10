@@ -464,23 +464,26 @@
     <ClInclude Include="..\..\include\onut\EntityManager.h">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\SpriteComponent.h">
-      <Filter>entities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\EntityFactory.h">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\TiledMapComponent.h">
-      <Filter>entities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\TextComponent.h">
-      <Filter>entities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\SoundComponent.h">
+    <ClInclude Include="..\..\include\onut\ComponentFactory.h">
       <Filter>entities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Camera2DComponent.h">
-      <Filter>entities</Filter>
+      <Filter>entities\default components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SoundComponent.h">
+      <Filter>entities\default components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SpriteComponent.h">
+      <Filter>entities\default components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\TextComponent.h">
+      <Filter>entities\default components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\TiledMapComponent.h">
+      <Filter>entities\default components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -764,20 +767,23 @@
     <ClCompile Include="..\..\src\EntityFactory.cpp">
       <Filter>entities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\SpriteComponent.cpp">
-      <Filter>entities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\TiledMapComponent.cpp">
-      <Filter>entities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\TextComponent.cpp">
-      <Filter>entities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\SoundComponent.cpp">
+    <ClCompile Include="..\..\src\ComponentFactory.cpp">
       <Filter>entities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Camera2DComponent.cpp">
-      <Filter>entities</Filter>
+      <Filter>entities\default components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SoundComponent.cpp">
+      <Filter>entities\default components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpriteComponent.cpp">
+      <Filter>entities\default components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TextComponent.cpp">
+      <Filter>entities\default components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TiledMapComponent.cpp">
+      <Filter>entities\default components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -837,6 +843,9 @@
     </Filter>
     <Filter Include="entities">
       <UniqueIdentifier>{1144fcd7-55fd-4bfc-b06a-8cb6329aac2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="entities\default components">
+      <UniqueIdentifier>{a119ae80-6757-4426-85a0-faeb6f435df3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

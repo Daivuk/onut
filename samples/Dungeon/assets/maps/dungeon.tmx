@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="60">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="61">
  <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16">
   <image source="../textures/sheet.png" width="304" height="208"/>
  </tileset>
@@ -21,7 +21,7 @@
    H4sIAAAAAAAAC+3Y2w6CMBBF0f7/F8ubMZFoagvTDpiZnr0SXvCCm0ttWgoAAAAAAH6Papv5XFZ1+2x/1nPQ69/eWzHsz3wOLA1n+zP377z9K1NoPEI//Sv3XzX+Z6T+/8f8R/v675j/oOf7mVek3q+oNbYrjXf0/7aq9PeutdI9QD/Pv3I/PtTnf6v13/UMZxkbrOPZyPjXen30u/+pPvZWzte2LGtkrf5oa0fe6zn7/ihrh5bjHbVYf2vUfgvv/T96f0Xrf/H2RO26g3I7AAAAAOAaT3PTpqUAQAAA
   </data>
  </layer>
- <objectgroup name="entities" visible="0">
+ <objectgroup name="entities">
   <object id="16" type="chest" x="592" y="544" width="16" height="16"/>
   <object id="18" type="chest" x="704" y="672" width="16" height="16"/>
   <object id="19" type="chest" x="352" y="672" width="16" height="16"/>
@@ -53,7 +53,7 @@
   <object id="45" type="crumble" x="448" y="704" width="16" height="16"/>
   <object id="47" type="door" x="784" y="720" width="16" height="32"/>
   <object id="48" type="door" x="832" y="720" width="16" height="32"/>
-  <object id="49" type="start_location" x="384" y="416" width="16" height="16"/>
+  <object id="49" name="player" type="start_location" x="384" y="416" width="16" height="16"/>
   <object id="50" type="guard" x="528" y="352" width="16" height="16"/>
   <object id="51" type="mummy" x="400" y="256" width="16" height="16"/>
   <object id="52" type="guard" x="528" y="592" width="16" height="16"/>
@@ -64,5 +64,11 @@
   <object id="57" type="guard" x="752" y="720" width="16" height="16"/>
   <object id="58" type="guard" x="560" y="704" width="16" height="16"/>
   <object id="59" type="bat" x="336" y="688" width="16" height="16"/>
+  <object id="60" name="camera" x="416" y="480" width="16" height="16">
+   <properties>
+    <property name="Camera2DComponent:Zoom" value="4"/>
+    <property name="SmartRoomCamera" value=""/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

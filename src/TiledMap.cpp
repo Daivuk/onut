@@ -344,25 +344,33 @@ namespace onut
     void TiledMap::render()
     {
         if (!m_tileSets) return;
-        render(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}));
+        Matrix transform = getTransform();
+        if (oSpriteBatch->isInBatch()) transform = transform * oSpriteBatch->getTransform();
+        render(getScreenRECTFromTransform(transform, {m_tileSets->tileWidth, m_tileSets->tileHeight}));
     }
 
     void TiledMap::renderLayer(int index)
     {
         if (!m_tileSets) return;
-        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), index);
+        Matrix transform = getTransform();
+        if (oSpriteBatch->isInBatch()) transform = transform * oSpriteBatch->getTransform();
+        renderLayer(getScreenRECTFromTransform(transform, {m_tileSets->tileWidth, m_tileSets->tileHeight}), index);
     }
 
     void TiledMap::renderLayer(const std::string &name)
     {
         if (!m_tileSets) return;
-        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), name);
+        Matrix transform = getTransform();
+        if (oSpriteBatch->isInBatch()) transform = transform * oSpriteBatch->getTransform();
+        renderLayer(getScreenRECTFromTransform(transform, {m_tileSets->tileWidth, m_tileSets->tileHeight}), name);
     }
 
     void TiledMap::renderLayer(Layer *pLayer)
     {
         if (!m_tileSets) return;
-        renderLayer(getScreenRECTFromTransform(getTransform(), {m_tileSets->tileWidth, m_tileSets->tileHeight}), pLayer);
+        Matrix transform = getTransform();
+        if (oSpriteBatch->isInBatch()) transform = transform * oSpriteBatch->getTransform();
+        renderLayer(getScreenRECTFromTransform(transform, {m_tileSets->tileWidth, m_tileSets->tileHeight}), pLayer);
     }
 
     void TiledMap::render(const iRect &rect)
