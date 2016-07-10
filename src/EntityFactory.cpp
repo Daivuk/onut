@@ -1,6 +1,7 @@
 // Onut includes
 #include <onut/ComponentFactory.h>
 #include <onut/Entity.h>
+#include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Log.h>
 #include <onut/Sound.h>
@@ -46,6 +47,7 @@ OEntityRef OCreateTiledMapEntity(const std::string& filename)
     using ComponentMap = std::unordered_map<std::string, OComponentRef>;
 
     auto pRet = OEntity::create();
+    pRet->setName(onut::getFilenameWithoutExtension(filename));
     auto pTiledMapComponent = pRet->addComponent<OTiledMapComponent>();
     auto pTiledMap = OGetTiledMap(filename);
     pTiledMapComponent->setTiledMap(pTiledMap);

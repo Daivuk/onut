@@ -1,0 +1,22 @@
+<sheet texture="balt.png" spriteWidth="16" spriteHeight="24" originX="8" originY="22">
+  <anim name="idle" fps="6" loop="true">
+    <frame id="0" repeat="8"/>
+    <frame id="1"/>
+    <frame id="0" repeat="3"/>
+    <frame id="1"/>
+    <frame id="0" repeat="6"/>
+    <frame id="1"/>
+  </anim>
+  <anim name="run" fps="8" loop="true">
+    <frame id="5"/>
+    <frame id="2"/>
+    <frame id="4"/>
+    <frame id="3"/>
+  </anim>
+  <anim name="attack" fps="24" loop="false" next="idle">
+    <frame id="6"/>
+    <frame id="2"/>
+    <frame id="7" repeat="4"/>
+    <frame id="0"/>
+  </anim>
+</sheet>

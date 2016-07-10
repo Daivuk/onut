@@ -90,6 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DungeonSample.cpp" />
+    <ClCompile Include="..\..\src\SmartRoomCamera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\SmartRoomCamera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

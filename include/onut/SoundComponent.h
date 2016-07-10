@@ -31,7 +31,7 @@ namespace onut
         void stop();
 
     private:
-        void update() override;
+        void onUpdate() override;
 
         OSoundRef m_pSound;
         float m_volume = 1.0f;

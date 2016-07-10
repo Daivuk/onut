@@ -53,6 +53,7 @@
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\SoundComponent.h" />
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
+    <ClInclude Include="..\..\include\onut\SpriteAnimComponent.h" />
     <ClInclude Include="..\..\include\onut\SpriteBatch.h" />
     <ClInclude Include="..\..\include\onut\SpriteComponent.h" />
     <ClInclude Include="..\..\include\onut\Strings.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
     <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\SoundComponent.cpp" />
+    <ClCompile Include="..\..\src\SpriteAnimComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteComponent.cpp" />
     <ClCompile Include="..\..\src\Strings.cpp" />
     <ClCompile Include="..\..\src\TextComponent.cpp" />

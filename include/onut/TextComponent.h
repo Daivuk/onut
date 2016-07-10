@@ -27,7 +27,7 @@ namespace onut
         const Vector2& getOrigin() const;
 
     private:
-        void render2d() override;
+        void onRender2d() override;
 
         OFontRef m_pFont;
         std::string m_text;

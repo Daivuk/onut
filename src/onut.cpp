@@ -140,6 +140,7 @@ namespace onut
 
         // Component factory
         oComponentFactory = ComponentFactory::create();
+        oComponentFactory->registerDefaultComponents();
 
         // Entity Manager
         oEntityManager = EntityManager::create();

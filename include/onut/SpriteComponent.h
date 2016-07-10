@@ -27,7 +27,7 @@ namespace onut
         const Vector2& getOrigin() const;
 
     private:
-        void render2d() override;
+        void onRender2d() override;
 
         OTextureRef m_pTexture;
         Vector2 m_scale = Vector2(1);

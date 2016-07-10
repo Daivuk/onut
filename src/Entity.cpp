@@ -63,7 +63,15 @@ namespace onut
 
     void Entity::setWorldTransform(const Matrix& worldTransform)
     {
-        assert(false); // Todo
+        Matrix parentWorld;
+        auto pParent = getParent();
+        if (pParent)
+        {
+            parentWorld = pParent->getWorldTransform();
+        }
+        auto invParentWorld = parentWorld.Invert();
+        m_localTransform = worldTransform * invParentWorld;
+        m_isWorldDirty = true;
     }
 
     void Entity::dirtyWorld()
@@ -214,6 +222,10 @@ namespace onut
     void Entity::addComponent(const OComponentRef& pComponent)
     {
         pComponent->m_pEntity = OThis;
+        if (m_pEntityManager)
+        {
+            m_pEntityManager->m_componentJustCreated.push_back(pComponent);
+        }
         m_components.push_back(pComponent);
         if (pComponent->isEnabled())
         {
@@ -234,7 +246,7 @@ namespace onut
         {
             if (pComponent->isEnabled())
             {
-                pComponent->render2d();
+                pComponent->onRender2d();
             }
         }
         for (auto& pChild : m_children)

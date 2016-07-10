@@ -2,9 +2,13 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include <onut/ComponentFactory.h>
 #include <onut/EntityFactory.h>
 #include <onut/onut.h>
 #include <onut/Settings.h>
+
+// Game includes
+#include "SmartRoomCamera.h"
 
 void init();
 void update();
@@ -17,8 +21,15 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
     ORun(init, update, render);
 }
 
+void registerComponents()
+{
+    ORegisterComponent(SmartRoomCamera);
+}
+
 void init()
 {
+    registerComponents();
+
     // Create our tiled map entity.
     // The factory will look for the "entities" object layer and 
     // instantiate entities and their components based on properties

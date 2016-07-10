@@ -63,7 +63,7 @@ namespace onut
         m_pSoundInstance = nullptr;
     }
 
-    void SoundComponent::update()
+    void SoundComponent::onUpdate()
     {
         if (m_pSoundInstance && m_pSoundInstance->isPlaying())
         {

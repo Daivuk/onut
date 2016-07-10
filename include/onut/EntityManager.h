@@ -62,6 +62,7 @@ namespace onut
         Entities m_entities;
         Components m_componentUpdates;
         Components m_componentRenders;
+        Components m_componentJustCreated;
         ComponentActions m_componentActions;
         OCamera2DComponentRef m_pActiveCamera2D;
     };

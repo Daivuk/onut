@@ -26,9 +26,10 @@ namespace onut
     protected:
         Component();
 
-        virtual void update() {}
-        virtual void render() {}
-        virtual void render2d() {}
+        virtual void onCreate() {}
+        virtual void onUpdate() {}
+        virtual void onRender() {}
+        virtual void onRender2d() {}
 
     private:
         friend class Entity;

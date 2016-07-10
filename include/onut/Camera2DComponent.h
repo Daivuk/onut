@@ -23,7 +23,7 @@ namespace onut
         bool getClear() const;
 
     private:
-        void update() override;
+        void onUpdate() override;
 
         bool m_clear = true;
         Color m_clearColor = OColorHex(1d232d);

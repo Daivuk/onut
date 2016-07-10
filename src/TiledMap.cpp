@@ -317,6 +317,15 @@ namespace onut
         return m_tileSets + index;
     }
 
+    TiledMap::TileSet* TiledMap::getTileSet(const std::string& name) const
+    {
+        for (int i = 0; i < m_tilesetCount; ++i)
+        {
+            if (m_tileSets[i].name == name) return m_tileSets + i;
+        }
+        return nullptr;
+    }
+
     static iRect getScreenRECTFromTransform(const Matrix& transform, const Point& tileSize)
     {
         auto invTransform = transform.Invert();

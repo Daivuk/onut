@@ -79,6 +79,11 @@ namespace onut
 
     void EntityManager::performComponentActions()
     {
+        for (auto& pComponent : m_componentJustCreated)
+        {
+            pComponent->onCreate();
+        }
+        m_componentJustCreated.clear();
         for (auto& componentAction : m_componentActions)
         {
             switch (componentAction.action)
@@ -121,7 +126,7 @@ namespace onut
         performComponentActions();
         for (auto& pComponent : m_componentUpdates)
         {
-            pComponent->update();
+            pComponent->onUpdate();
         }
         performComponentActions();
     }
@@ -130,7 +135,7 @@ namespace onut
     {
         for (auto& pComponent : m_componentRenders)
         {
-            pComponent->render();
+            pComponent->onRender();
         }
 
         Matrix transform;

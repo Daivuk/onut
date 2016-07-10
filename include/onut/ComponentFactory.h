@@ -51,6 +51,8 @@ namespace onut
 
         void setProperty(const OComponentRef& pComponent, const std::string& componentName, const std::string& propertyName, const std::string& propertyValue);
 
+        void registerDefaultComponents();
+
     private:
         class IFactory
         {
@@ -223,24 +225,30 @@ namespace onut
     DECL_RES_STR_TO_VAL(Sound);
     DECL_RES_STR_TO_VAL(Texture);
     DECL_RES_STR_TO_VAL(TiledMap);
+    DECL_RES_STR_TO_VAL(SpriteAnim);
 };
 
 extern OComponentFactoryRef oComponentFactory;
 
-#define ORegisterComponent(__class__) registerComponent<__class__>(#__class__)
-#define OBindBoolProperty(__class__, __prop__) bindProperty<__class__, bool>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindIntProperty(__class__, __prop__) bindProperty<__class__, int>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindFloatProperty(__class__, __prop__) bindProperty<__class__, float>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindVector2Property(__class__, __prop__) bindProperty<__class__, Vector2>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindVector3Property(__class__, __prop__) bindProperty<__class__, Vector3>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindVector4Property(__class__, __prop__) bindProperty<__class__, Vector4>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindColorProperty(__class__, __prop__) bindProperty<__class__, Color>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindStringProperty(__class__, __prop__) bindProperty<__class__, std::string>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
+#define ORegisterComponent(__class__) oComponentFactory->registerComponent<__class__>(#__class__)
+
+// Properties
+#define OBindProperty(__type__, __class__, __prop__) oComponentFactory->bindProperty<__class__, __type__>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
+
+#define OBindBoolProperty(__class__, __prop__) OBindProperty(bool, __class__, __prop__)
+#define OBindIntProperty(__class__, __prop__) OBindProperty(int, __class__, __prop__)
+#define OBindFloatProperty(__class__, __prop__) OBindProperty(float, __class__, __prop__)
+#define OBindVector2Property(__class__, __prop__) OBindProperty(Vector2, __class__, __prop__)
+#define OBindVector3Property(__class__, __prop__) OBindProperty(Vector3, __class__, __prop__)
+#define OBindVector4Property(__class__, __prop__) OBindProperty(Vector4, __class__, __prop__)
+#define OBindColorProperty(__class__, __prop__) OBindProperty(Color, __class__, __prop__)
+#define OBindStringProperty(__class__, __prop__) OBindProperty(std::string, __class__, __prop__)
 
 // Resources
-#define OBindCSVProperty(__class__, __prop__) bindProperty<__class__, OCSVRef>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindFontProperty(__class__, __prop__) bindProperty<__class__, OFontRef>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindMusicProperty(__class__, __prop__) bindProperty<__class__, OMusicRef>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindSoundProperty(__class__, __prop__) bindProperty<__class__, OSoundRef>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindTextureProperty(__class__, __prop__) bindProperty<__class__, OTextureRef>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
-#define OBindTiledMapProperty(__class__, __prop__) bindProperty<__class__, OTiledMapRef>(#__class__, #__prop__, &__class__::get ## __prop__, &__class__::set ## __prop__)
+#define OBindCSVProperty(__class__, __prop__) OBindProperty(OCSVRef, __class__, __prop__)
+#define OBindFontProperty(__class__, __prop__) OBindProperty(OFontRef, __class__, __prop__)
+#define OBindMusicProperty(__class__, __prop__) OBindProperty(OMusicRef, __class__, __prop__)
+#define OBindSoundProperty(__class__, __prop__) OBindProperty(OSoundRef, __class__, __prop__)
+#define OBindTextureProperty(__class__, __prop__) OBindProperty(OTextureRef, __class__, __prop__)
+#define OBindTiledMapProperty(__class__, __prop__) OBindProperty(OTiledMapRef, __class__, __prop__)
+#define OBindSpriteAnimProperty(__class__, __prop__) OBindProperty(OSpriteAnimRef, __class__, __prop__)

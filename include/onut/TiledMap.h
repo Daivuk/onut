@@ -80,6 +80,7 @@ namespace onut
         void renderLayer(const iRect &rect, Layer *pLayer);
 
         TileSet* getTileSet(int index) const;
+        TileSet* getTileSet(const std::string& name) const;
 
         int getLayerCount() const { return m_layerCount; }
         Layer *getLayer(int index) const { return m_layers[index]; }

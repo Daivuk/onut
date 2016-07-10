@@ -46,7 +46,7 @@ namespace onut
         return m_origin;
     }
 
-    void TextComponent::render2d()
+    void TextComponent::onRender2d()
     {
         auto& transform = getEntity()->getWorldTransform();
         oSpriteBatch->end();

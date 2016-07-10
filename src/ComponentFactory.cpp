@@ -2,6 +2,7 @@
 #include <onut/Camera2DComponent.h>
 #include <onut/ComponentFactory.h>
 #include <onut/SoundComponent.h>
+#include <onut/SpriteAnimComponent.h>
 #include <onut/SpriteComponent.h>
 #include <onut/TextComponent.h>
 #include <onut/TiledMapComponent.h>
@@ -17,7 +18,14 @@ namespace onut
 
     ComponentFactory::ComponentFactory()
     {
-        // Add default components to it
+    }
+
+    ComponentFactory::~ComponentFactory()
+    {
+    }
+
+    void ComponentFactory::registerDefaultComponents()
+    {
         ORegisterComponent(Camera2DComponent);
         OBindBoolProperty(Camera2DComponent, Clear);
         OBindColorProperty(Camera2DComponent, ClearColor);
@@ -35,6 +43,12 @@ namespace onut
         OBindColorProperty(SpriteComponent, Color);
         OBindVector2Property(SpriteComponent, Origin);
 
+        ORegisterComponent(SpriteAnimComponent);
+        OBindSpriteAnimProperty(SpriteAnimComponent, SpriteAnim);
+        OBindVector2Property(SpriteAnimComponent, Scale);
+        OBindColorProperty(SpriteAnimComponent, Color);
+        OBindStringProperty(SpriteAnimComponent, DefaultAnim);
+
         ORegisterComponent(TextComponent);
         OBindFontProperty(TextComponent, Font);
         OBindStringProperty(TextComponent, Text);
@@ -43,10 +57,6 @@ namespace onut
 
         ORegisterComponent(TiledMapComponent);
         OBindTiledMapProperty(TiledMapComponent, TiledMap);
-    }
-
-    ComponentFactory::~ComponentFactory()
-    {
     }
 
     OComponentRef ComponentFactory::instantiate(const std::string& name) const

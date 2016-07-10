@@ -15,7 +15,7 @@ namespace onut
         return m_pTiledMap;
     }
 
-    void TiledMapComponent::render2d()
+    void TiledMapComponent::onRender2d()
     {
         auto& transform = getEntity()->getWorldTransform();
         m_pTiledMap->setTransform(transform);

@@ -35,7 +35,7 @@ namespace onut
         return m_zoom;
     }
 
-    void Camera2DComponent::update()
+    void Camera2DComponent::onUpdate()
     {
         getEntity()->getEntityManager()->setActiveCamera2D(ODynamicCast<Camera2DComponent>(OThis));
     }
