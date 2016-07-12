@@ -8,6 +8,8 @@
 #include <onut/Settings.h>
 
 // Game includes
+#include "Controllable.h"
+#include "MapCollider.h"
 #include "SmartRoomCamera.h"
 
 void init();
@@ -23,6 +25,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void registerComponents()
 {
+    ORegisterComponent(Controllable);
+    OBindFloatProperty(Controllable, Speed);
+
+    ORegisterComponent(MapCollider);
+
     ORegisterComponent(SmartRoomCamera);
 }
 

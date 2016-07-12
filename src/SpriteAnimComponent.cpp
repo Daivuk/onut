@@ -52,6 +52,7 @@ namespace onut
     {
         if (isEnabled())
         {
+            m_currentlyPlaying = m_defaultAnim;
             m_pSpriteAnimInstance->play(m_defaultAnim);
         }
     }
@@ -67,5 +68,48 @@ namespace onut
 
         auto& transform = getEntity()->getWorldTransform();
         oSpriteBatch->drawSpriteWithUVs(pTexture, transform, Vector2(m_scale), uvs, m_color, origin);
+    }
+
+    void SpriteAnimComponent::play(const std::string& animName, float framePerSecond)
+    {
+        if (m_pSpriteAnimInstance)
+        {
+            if (m_currentlyPlaying == animName) return;
+            m_currentlyPlaying = animName;
+            m_pSpriteAnimInstance->play(animName, framePerSecond);
+        }
+    }
+
+    void SpriteAnimComponent::playBackward(const std::string& animName, float framePerSecond)
+    {
+        if (m_pSpriteAnimInstance)
+        {
+            if (m_currentlyPlaying == animName + "REVERSE") return;
+            m_currentlyPlaying = animName + "REVERSE";
+            m_pSpriteAnimInstance->playBackward(animName, framePerSecond);
+        }
+    }
+
+    void SpriteAnimComponent::queueAnim(const std::string& animName)
+    {
+        if (m_pSpriteAnimInstance)
+        {
+            m_pSpriteAnimInstance->queueAnim(animName);
+        }
+    }
+
+    void SpriteAnimComponent::stop(bool reset)
+    {
+        if (m_pSpriteAnimInstance)
+        {
+            m_currentlyPlaying = "";
+            m_pSpriteAnimInstance->stop(reset);
+        }
+    }
+
+    bool SpriteAnimComponent::isPlaying() const
+    {
+        if (m_pSpriteAnimInstance) return m_pSpriteAnimInstance->isPlaying();
+        return false;
     }
 };

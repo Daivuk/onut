@@ -27,6 +27,12 @@ namespace onut
         void setDefaultAnim(const std::string& anim);
         const std::string& getDefaultAnim() const;
 
+        void play(const std::string& animName, float framePerSecond = 0.f);
+        void playBackward(const std::string& animName, float framePerSecond = 0.f);
+        void queueAnim(const std::string& animName);
+        void stop(bool reset = false);
+        bool isPlaying() const;
+
     private:
         void onCreate() override;
         void onRender2d() override;
@@ -36,5 +42,6 @@ namespace onut
         Color m_color = Color::White;
         OSpriteAnimRef m_pSpriteAnim;
         std::string m_defaultAnim;
+        std::string m_currentlyPlaying;
     };
 };

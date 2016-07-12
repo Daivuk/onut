@@ -60,8 +60,12 @@ namespace onut
             {
                 int repeat = 1;
                 int id = 0;
+                bool isFlipH = false;
+                bool isFlipV = false;
                 pXMLFrame->QueryAttribute("id", &id);
                 pXMLFrame->QueryAttribute("repeat", &repeat);
+                pXMLFrame->QueryAttribute("flipH", &isFlipH);
+                pXMLFrame->QueryAttribute("flipV", &isFlipV);
                 int col = id % (pTexture->getSize().x / spriteW);
                 int row = id / (pTexture->getSize().x / spriteW);
                 col *= spriteW;
@@ -71,6 +75,8 @@ namespace onut
                     (float)row / (float)pTexture->getSize().y,
                     (float)(col + spriteW) / (float)pTexture->getSize().x,
                     (float)(row + spriteH) / (float)pTexture->getSize().y);
+                if (isFlipH) std::swap(frame.UVs.x, frame.UVs.z);
+                if (isFlipV) std::swap(frame.UVs.y, frame.UVs.w);
                 for (auto i = 0; i < repeat; ++i)
                 {
                     anim.frames.push_back(frame);
