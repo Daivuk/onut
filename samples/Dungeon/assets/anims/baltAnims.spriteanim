@@ -1,4 +1,4 @@
-<sheet texture="balt.png" spriteWidth="16" spriteHeight="24" originX="8" originY="22">
+<sheet texture="balt.png" spriteWidth="16" spriteHeight="24" originX="8" originY="20">
   <anim name="idle_s" fps="6" loop="true">
     <frame id="0" repeat="8"/>
     <frame id="1"/>

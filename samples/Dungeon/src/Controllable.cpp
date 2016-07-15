@@ -26,26 +26,29 @@ void Controllable::onUpdate()
     Vector2 dir;
     bool isMoving = false;
 
-    if (OInputPressed(OKeyA) || OGamePadPressed(OGamePadLeftThumbLeft))
+    dir = OGetGamePad(0)->getLeftThumb();
+
+    if (OInputPressed(OKeyA) || OGamePadPressed(OGamePadDPadLeft))
     {
         dir -= Vector2::UnitX;
         isMoving = true;
     }
-    else if (OInputPressed(OKeyD) || OGamePadPressed(OGamePadLeftThumbRight))
+    else if (OInputPressed(OKeyD) || OGamePadPressed(OGamePadDPadRight))
     {
         dir += Vector2::UnitX;
         isMoving = true;
     }
-    if (OInputPressed(OKeyW) || OGamePadPressed(OGamePadLeftThumbUp))
+    if (OInputPressed(OKeyW) || OGamePadPressed(OGamePadDPadUp))
     {
         dir -= Vector2::UnitY;
         isMoving = true;
     }
-    else if (OInputPressed(OKeyS) || OGamePadPressed(OGamePadLeftThumbDown))
+    else if (OInputPressed(OKeyS) || OGamePadPressed(OGamePadDPadDown))
     {
         dir += Vector2::UnitY;
         isMoving = true;
     }
+
     if (!isMoving)
     {
         if (m_pSpriteAnimComponent) m_pSpriteAnimComponent->play("idle_" + m_dir);

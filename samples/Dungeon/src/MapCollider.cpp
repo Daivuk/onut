@@ -6,7 +6,7 @@
 
 #include "MapCollider.h"
 
-static const float COLLIDER_RADIUS = 0.35f;
+static const float COLLIDER_RADIUS = 3.0f;
 static const uint32_t INFO_WALKABLE = 0;
 
 void MapCollider::onCreate()
@@ -34,12 +34,55 @@ void MapCollider::onUpdate()
     Vector2 currentPosition = getEntity()->getLocalTransform().Translation();
     if (currentPosition == m_lastPosition) return;
 
-    if (!walkableAt(currentPosition, m_pInfoLayer, m_pInfoTileset))
+    Point lastMapPos((int)(m_lastPosition.x / 16.0f), (int)(m_lastPosition.y / 16.0f));
+
+    auto dir = currentPosition - m_lastPosition;
+    auto result = currentPosition;
+    if (dir.x < 0)
     {
-        getEntity()->setLocalTransform(Matrix::CreateTranslation(m_lastPosition));
+        if (!walkableAt(Vector2(currentPosition.x - COLLIDER_RADIUS, m_lastPosition.y - COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.x = (float)(lastMapPos.x) * 16.0f + COLLIDER_RADIUS;
+        }
+        else if (!walkableAt(Vector2(currentPosition.x - COLLIDER_RADIUS, m_lastPosition.y + COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.x = (float)(lastMapPos.x) * 16.0f + COLLIDER_RADIUS;
+        }
     }
-    else
+    else if (dir.x > 0)
     {
-        m_lastPosition = currentPosition;
+        if (!walkableAt(Vector2(currentPosition.x + COLLIDER_RADIUS, m_lastPosition.y - COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.x = (float)(lastMapPos.x + 1) * 16.0f - COLLIDER_RADIUS - 0.1f;
+        }
+        else if (!walkableAt(Vector2(currentPosition.x + COLLIDER_RADIUS, m_lastPosition.y + COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.x = (float)(lastMapPos.x + 1) * 16.0f - COLLIDER_RADIUS - 0.1f;
+        }
     }
+    if (dir.y < 0)
+    {
+        if (!walkableAt(Vector2(m_lastPosition.x - COLLIDER_RADIUS, currentPosition.y - COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.y = (float)(lastMapPos.y) * 16.0f + COLLIDER_RADIUS;
+        }
+        else if(!walkableAt(Vector2(m_lastPosition.x + COLLIDER_RADIUS, currentPosition.y - COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.y = (float)(lastMapPos.y) * 16.0f + COLLIDER_RADIUS;
+        }
+    }
+    else if (dir.y > 0)
+    {
+        if (!walkableAt(Vector2(m_lastPosition.x - COLLIDER_RADIUS, currentPosition.y + COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.y = (float)(lastMapPos.y + 1) * 16.0f - COLLIDER_RADIUS - 0.1f;
+        }
+        else if(!walkableAt(Vector2(m_lastPosition.x + COLLIDER_RADIUS, currentPosition.y + COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))
+        {
+            result.y = (float)(lastMapPos.y + 1) * 16.0f - COLLIDER_RADIUS - 0.1f;
+        }
+    }
+
+    m_lastPosition = result;
+    getEntity()->setLocalTransform(Matrix::CreateTranslation(m_lastPosition));
 }
