@@ -1,6 +1,7 @@
 // Onut includes
 #include <onut/ComponentFactory.h>
 #include <onut/Entity.h>
+#include <onut/EntityManager.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Log.h>
@@ -52,6 +53,7 @@ OEntityRef OCreateTiledMapEntity(const std::string& filename)
     auto pTiledMap = OGetTiledMap(filename);
     pTiledMapComponent->setTiledMap(pTiledMap);
     auto pEntitiesLayer = dynamic_cast<OTiledMap::ObjectLayer*>(pTiledMap->getLayer("entities"));
+    auto pEntityManager = pRet->getEntityManager();
 
     if (pEntitiesLayer)
     {
@@ -96,11 +98,6 @@ OEntityRef OCreateTiledMapEntity(const std::string& filename)
                     oComponentFactory->setProperty(pComponent, componentName, propertyName, value);
                 }
             }
-
-            //auto pCamera = pMapEntity->addComponent<OCamera2DComponent>();
-            //pCamera->setZoom(4.0f);
-            //pCamera->setClear(true);
-            //pCamera->setClearColor(Color::Black);
 
             // Add the entity to the map
             pRet->add(pMapEntity);

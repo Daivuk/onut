@@ -488,6 +488,9 @@
     <ClInclude Include="..\..\include\onut\SpriteAnimComponent.h">
       <Filter>entities\default components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\TiledMapColliderComponent.h">
+      <Filter>entities\default components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -789,6 +792,9 @@
       <Filter>entities\default components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteAnimComponent.cpp">
+      <Filter>entities\default components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TiledMapColliderComponent.cpp">
       <Filter>entities\default components</Filter>
     </ClCompile>
   </ItemGroup>

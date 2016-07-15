@@ -93,6 +93,10 @@ namespace onut
         }
         pChild->dirtyWorld();
         pChild->m_pParent = OThis;
+        for (auto& pComponent : m_components)
+        {
+            pComponent->onAddChild(pChild);
+        }
     }
 
     void Entity::remove(const OEntityRef& pChild)
@@ -101,6 +105,10 @@ namespace onut
         {
             if (*it == pChild)
             {
+                for (auto& pComponent : m_components)
+                {
+                    pComponent->onRemoveChild(pChild);
+                }
                 pChild->m_pParent.reset();
                 m_children.erase(it);
                 pChild->dirtyWorld();
@@ -271,5 +279,13 @@ namespace onut
     void Entity::setName(const std::string& name)
     {
         m_name = name;
+    }
+
+    void Entity::sendMessage(int messageId, void* pData)
+    {
+        for (auto& pComponent : m_components)
+        {
+            pComponent->onMessage(messageId, pData);
+        }
     }
 };

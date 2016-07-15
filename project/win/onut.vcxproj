@@ -61,6 +61,7 @@
     <ClInclude Include="..\..\include\onut\ThreadPool.h" />
     <ClInclude Include="..\..\include\onut\TiledMap.h" />
     <ClInclude Include="..\..\include\onut\PrimitiveMode.h" />
+    <ClInclude Include="..\..\include\onut\TiledMapColliderComponent.h" />
     <ClInclude Include="..\..\include\onut\TiledMapComponent.h" />
     <ClInclude Include="..\..\include\onut\Timing.h" />
     <ClInclude Include="..\..\include\onut\Timer.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="..\..\src\TextComponent.cpp" />
     <ClCompile Include="..\..\src\TextureD3D11.cpp" />
     <ClCompile Include="..\..\src\ThreadPool.cpp" />
+    <ClCompile Include="..\..\src\TiledMapColliderComponent.cpp" />
     <ClCompile Include="..\..\src\TiledMapComponent.cpp" />
     <ClCompile Include="..\..\src\Timing.cpp" />
     <ClCompile Include="..\..\src\Timer.cpp" />

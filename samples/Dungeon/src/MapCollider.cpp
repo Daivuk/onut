@@ -4,10 +4,10 @@
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 
+#include "Defines.h"
 #include "MapCollider.h"
 
 static const float COLLIDER_RADIUS = 3.0f;
-static const uint32_t INFO_WALKABLE = 0;
 
 void MapCollider::onCreate()
 {
@@ -21,12 +21,20 @@ void MapCollider::onCreate()
     m_lastPosition = pEntity->getLocalTransform().Translation();
 }
 
+static Point tilePosAt(const Vector2& pos)
+{
+    return Point((int)(pos.x / 16.0f), (int)(pos.y / 16.0f));
+}
+
+static uint32_t tileIdAt(const Point& mapPos, OTiledMap::TileLayer* pLayer, OTiledMap::TileSet* pTileset)
+{
+    if (mapPos.x < 0 || mapPos.y < 0 || mapPos.x >= pLayer->width || mapPos.y >= pLayer->height) return INFO_BLOCKED;
+    return pLayer->tileIds[mapPos.y * pLayer->width + mapPos.x] - pTileset->firstId;
+}
+
 static bool walkableAt(const Vector2& pos, OTiledMap::TileLayer* pLayer, OTiledMap::TileSet* pTileset)
 {
-    Point mapPos((int)(pos.x / 16.0f), (int)(pos.y / 16.0f));
-    if (mapPos.x < 0 || mapPos.y < 0 || mapPos.x >= pLayer->width || mapPos.y >= pLayer->height) return false;
-    auto tileIdAtPos = pLayer->tileIds[mapPos.y * pLayer->width + mapPos.x] - pTileset->firstId;
-    return tileIdAtPos == INFO_WALKABLE;
+    return tileIdAt(tilePosAt(pos), pLayer, pTileset) != INFO_BLOCKED;
 }
 
 void MapCollider::onUpdate()
@@ -36,8 +44,8 @@ void MapCollider::onUpdate()
 
     Point lastMapPos((int)(m_lastPosition.x / 16.0f), (int)(m_lastPosition.y / 16.0f));
 
-    auto dir = currentPosition - m_lastPosition;
-    auto result = currentPosition;
+    Vector2 dir = currentPosition - m_lastPosition;
+    Vector2 result = currentPosition;
     if (dir.x < 0)
     {
         if (!walkableAt(Vector2(currentPosition.x - COLLIDER_RADIUS, m_lastPosition.y - COLLIDER_RADIUS), m_pInfoLayer, m_pInfoTileset))

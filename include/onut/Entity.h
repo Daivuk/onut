@@ -3,6 +3,7 @@
 #include <onut/Maths.h>
 
 // STL
+#include <unordered_map>
 #include <vector>
 
 // Forward declarations
@@ -69,6 +70,8 @@ namespace onut
         void addComponent(const OComponentRef& pComponent);
 
         const OEntityManagerRef& getEntityManager() const;
+
+        void sendMessage(int messageId, void* pData = nullptr);
 
     private:
         friend class Component;

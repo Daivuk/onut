@@ -4,11 +4,8 @@
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 
+#include "Defines.h"
 #include "SmartRoomCamera.h"
-
-static const uint32_t INFO_NOTHING = std::numeric_limits<uint32_t>::max();
-static const uint32_t INFO_WALKABLE = 0;
-static const uint32_t INFO_DOORWAY = 1;
 
 void SmartRoomCamera::onCreate()
 {
@@ -36,7 +33,7 @@ void SmartRoomCamera::onUpdate()
 
     if (mapPos.x < 0 || mapPos.y < 0 || mapPos.x >= w || mapPos.y >= h) return;
     auto tileIdAtPos = pInfoLayer->tileIds[mapPos.y * w + mapPos.x] - infoTileset->firstId;
-    if (tileIdAtPos != INFO_WALKABLE) return;
+    if (tileIdAtPos == INFO_BLOCKED) return;
 
     Point minBound = mapPos;
     Point maxBound = mapPos;
@@ -54,7 +51,7 @@ void SmartRoomCamera::onUpdate()
         if (point.x > 0 && m_paint[(point.y) * w + (point.x - 1)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y) * w + (point.x - 1)] - infoTileset->firstId;
-            if (tileId == INFO_WALKABLE)
+            if (tileId != INFO_BLOCKED)
             {
                 m_paint[(point.y) * w + (point.x - 1)] = m_nextPaint;
                 m_paintQueue.push_back({point.x - 1, point.y});
@@ -64,7 +61,7 @@ void SmartRoomCamera::onUpdate()
         if (point.x < w - 1 && m_paint[(point.y) * w + (point.x + 1)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y) * w + (point.x + 1)] - infoTileset->firstId;
-            if (tileId == INFO_WALKABLE)
+            if (tileId != INFO_BLOCKED)
             {
                 m_paint[(point.y) * w + (point.x + 1)] = m_nextPaint;
                 m_paintQueue.push_back({point.x + 1, point.y});
@@ -74,7 +71,7 @@ void SmartRoomCamera::onUpdate()
         if (point.y > 0 && m_paint[(point.y - 1) * w + (point.x)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y - 1) * w + (point.x)] - infoTileset->firstId;
-            if (tileId == INFO_WALKABLE)
+            if (tileId != INFO_BLOCKED)
             {
                 m_paint[(point.y - 1) * w + (point.x)] = m_nextPaint;
                 m_paintQueue.push_back({point.x, point.y - 1});
@@ -84,7 +81,7 @@ void SmartRoomCamera::onUpdate()
         if (point.y < h - 1 && m_paint[(point.y + 1) * w + (point.x)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y + 1) * w + (point.x)] - infoTileset->firstId;
-            if (tileId == INFO_WALKABLE)
+            if (tileId != INFO_BLOCKED)
             {
                 m_paint[(point.y + 1) * w + (point.x)] = m_nextPaint;
                 m_paintQueue.push_back({point.x, point.y + 1});

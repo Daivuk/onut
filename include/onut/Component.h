@@ -30,6 +30,9 @@ namespace onut
         virtual void onUpdate() {}
         virtual void onRender() {}
         virtual void onRender2d() {}
+        virtual void onMessage(int messageId, void* pData) {}
+        virtual void onAddChild(const OEntityRef& pChild) {}
+        virtual void onRemoveChild(const OEntityRef& pChild) {}
 
     private:
         friend class Entity;

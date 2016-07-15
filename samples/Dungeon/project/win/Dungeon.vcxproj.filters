@@ -2,13 +2,43 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\DungeonSample.cpp" />
-    <ClCompile Include="..\..\src\SmartRoomCamera.cpp" />
-    <ClCompile Include="..\..\src\MapCollider.cpp" />
-    <ClCompile Include="..\..\src\Controllable.cpp" />
+    <ClCompile Include="..\..\src\Controllable.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DoorTraverser.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MapCollider.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SmartRoomCamera.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Door.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\SmartRoomCamera.h" />
-    <ClInclude Include="..\..\src\MapCollider.h" />
-    <ClInclude Include="..\..\src\Controllable.h" />
+    <ClInclude Include="..\..\src\Controllable.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DoorTraverser.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MapCollider.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SmartRoomCamera.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Door.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Defines.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Components">
+      <UniqueIdentifier>{24c5848e-53f7-4ed1-985a-948bca152c95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

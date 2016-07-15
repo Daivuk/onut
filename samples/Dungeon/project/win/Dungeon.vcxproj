@@ -90,12 +90,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Controllable.cpp" />
+    <ClCompile Include="..\..\src\Door.cpp" />
+    <ClCompile Include="..\..\src\DoorTraverser.cpp" />
     <ClCompile Include="..\..\src\DungeonSample.cpp" />
     <ClCompile Include="..\..\src\MapCollider.cpp" />
     <ClCompile Include="..\..\src\SmartRoomCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Defines.h" />
     <ClInclude Include="..\..\src\Controllable.h" />
+    <ClInclude Include="..\..\src\Door.h" />
+    <ClInclude Include="..\..\src\DoorTraverser.h" />
     <ClInclude Include="..\..\src\MapCollider.h" />
     <ClInclude Include="..\..\src\SmartRoomCamera.h" />
   </ItemGroup>

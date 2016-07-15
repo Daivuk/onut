@@ -1,3 +1,4 @@
+#pragma once
 #include <onut/Component.h>
 
 #include <string>
