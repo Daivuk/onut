@@ -5,7 +5,6 @@
 #include <onut/SpriteAnimComponent.h>
 #include <onut/SpriteComponent.h>
 #include <onut/TextComponent.h>
-#include <onut/TiledMapColliderComponent.h>
 #include <onut/TiledMapComponent.h>
 
 OComponentFactoryRef oComponentFactory;
@@ -55,10 +54,6 @@ namespace onut
         OBindStringProperty(TextComponent, Text);
         OBindColorProperty(TextComponent, Color);
         OBindVector2Property(TextComponent, Origin);
-
-        ORegisterComponent(TiledMapColliderComponent);
-        OBindBoolProperty(TiledMapColliderComponent, CollideWithTiles);
-        OBindVector2Property(TiledMapColliderComponent, Size);
 
         ORegisterComponent(TiledMapComponent);
         OBindTiledMapProperty(TiledMapComponent, TiledMap);

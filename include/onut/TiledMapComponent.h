@@ -17,6 +17,7 @@ namespace onut
         const OTiledMapRef& getTiledMap() const;
 
     private:
+        void onCreate() override;
         void onRender2d() override;
 
         OTiledMapRef m_pTiledMap;

@@ -8,9 +8,6 @@
     <ClCompile Include="..\..\src\DoorTraverser.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\MapCollider.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\SmartRoomCamera.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -23,9 +20,6 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\DoorTraverser.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\MapCollider.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\SmartRoomCamera.h">

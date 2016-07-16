@@ -11,7 +11,6 @@
 #include "Controllable.h"
 #include "Door.h"
 #include "DoorTraverser.h"
-#include "MapCollider.h"
 #include "SmartRoomCamera.h"
 
 void init();
@@ -34,8 +33,6 @@ void registerComponents()
     OBindBoolProperty(Door, Open);
 
     ORegisterComponent(DoorTraverser);
-
-    ORegisterComponent(MapCollider);
 
     ORegisterComponent(SmartRoomCamera);
 }

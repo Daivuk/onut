@@ -22,44 +22,44 @@ namespace onut
 
         if (dir.x < 0)
         {
-            if (!walkableAt(Vector2(to.x - hSize.x, from.y - hSize.y), pPassableTiles, width, height, tileSize))
+            if (!walkableAt(Vector2(to.x - hSize.x, from.y - hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.x = (float)(lastMapPos.x) * tileSizef + hSize.x;
             }
-            else if (!walkableAt(Vector2(to.x - hSize.x, from.y + hSize.y), pPassableTiles, width, height, tileSize))
+            else if (!walkableAt(Vector2(to.x - hSize.x, from.y + hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.x = (float)(lastMapPos.x) * tileSizef + hSize.x;
             }
         }
         else if (dir.x > 0)
         {
-            if (!walkableAt(Vector2(to.x + hSize.x, from.y - hSize.y), pPassableTiles, width, height, tileSize))
+            if (!walkableAt(Vector2(to.x + hSize.x, from.y - hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.x = (float)(lastMapPos.x + 1) * tileSizef - hSize.x - (tileSizef / 100.0f);
             }
-            else if (!walkableAt(Vector2(to.x + hSize.x, from.y + hSize.y), pPassableTiles, width, height, tileSize))
+            else if (!walkableAt(Vector2(to.x + hSize.x, from.y + hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.x = (float)(lastMapPos.x + 1) * tileSizef - hSize.x - (tileSizef / 100.0f);
             }
         }
         if (dir.y < 0)
         {
-            if (!walkableAt(Vector2(from.x - hSize.x, to.y - hSize.y), pPassableTiles, width, height, tileSize))
+            if (!walkableAt(Vector2(from.x - hSize.x, to.y - hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.y = (float)(lastMapPos.y) * tileSizef + hSize.y;
             }
-            else if (!walkableAt(Vector2(from.x + hSize.x, to.y - hSize.y), pPassableTiles, width, height, tileSize))
+            else if (!walkableAt(Vector2(from.x + hSize.x, to.y - hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.y = (float)(lastMapPos.y) * tileSizef + hSize.y;
             }
         }
         else if (dir.y > 0)
         {
-            if (!walkableAt(Vector2(from.x - hSize.x, to.y + hSize.y), pPassableTiles, width, height, tileSize))
+            if (!walkableAt(Vector2(from.x - hSize.x, to.y + hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.y = (float)(lastMapPos.y + 1) * tileSizef - hSize.y - (tileSizef / 100.0f);
             }
-            else if (!walkableAt(Vector2(from.x + hSize.x, to.y + hSize.y), pPassableTiles, width, height, tileSize))
+            else if (!walkableAt(Vector2(from.x + hSize.x, to.y + hSize.y), pPassableTiles, width, height, tileSizef))
             {
                 result.y = (float)(lastMapPos.y + 1) * tileSizef - hSize.y - (tileSizef / 100.0f);
             }

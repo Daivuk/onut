@@ -33,7 +33,7 @@ void SmartRoomCamera::onUpdate()
 
     if (mapPos.x < 0 || mapPos.y < 0 || mapPos.x >= w || mapPos.y >= h) return;
     auto tileIdAtPos = pInfoLayer->tileIds[mapPos.y * w + mapPos.x] - infoTileset->firstId;
-    if (tileIdAtPos == INFO_BLOCKED) return;
+    if (tileIdAtPos != INFO_ROOM) return;
 
     Point minBound = mapPos;
     Point maxBound = mapPos;
@@ -51,7 +51,7 @@ void SmartRoomCamera::onUpdate()
         if (point.x > 0 && m_paint[(point.y) * w + (point.x - 1)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y) * w + (point.x - 1)] - infoTileset->firstId;
-            if (tileId != INFO_BLOCKED)
+            if (tileId == INFO_ROOM)
             {
                 m_paint[(point.y) * w + (point.x - 1)] = m_nextPaint;
                 m_paintQueue.push_back({point.x - 1, point.y});
@@ -61,7 +61,7 @@ void SmartRoomCamera::onUpdate()
         if (point.x < w - 1 && m_paint[(point.y) * w + (point.x + 1)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y) * w + (point.x + 1)] - infoTileset->firstId;
-            if (tileId != INFO_BLOCKED)
+            if (tileId == INFO_ROOM)
             {
                 m_paint[(point.y) * w + (point.x + 1)] = m_nextPaint;
                 m_paintQueue.push_back({point.x + 1, point.y});
@@ -71,7 +71,7 @@ void SmartRoomCamera::onUpdate()
         if (point.y > 0 && m_paint[(point.y - 1) * w + (point.x)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y - 1) * w + (point.x)] - infoTileset->firstId;
-            if (tileId != INFO_BLOCKED)
+            if (tileId == INFO_ROOM)
             {
                 m_paint[(point.y - 1) * w + (point.x)] = m_nextPaint;
                 m_paintQueue.push_back({point.x, point.y - 1});
@@ -81,7 +81,7 @@ void SmartRoomCamera::onUpdate()
         if (point.y < h - 1 && m_paint[(point.y + 1) * w + (point.x)] != m_nextPaint)
         {
             auto tileId = pInfoLayer->tileIds[(point.y + 1) * w + (point.x)] - infoTileset->firstId;
-            if (tileId != INFO_BLOCKED)
+            if (tileId == INFO_ROOM)
             {
                 m_paint[(point.y + 1) * w + (point.x)] = m_nextPaint;
                 m_paintQueue.push_back({point.x, point.y + 1});

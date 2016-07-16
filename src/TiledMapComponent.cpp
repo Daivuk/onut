@@ -15,6 +15,13 @@ namespace onut
         return m_pTiledMap;
     }
 
+    void TiledMapComponent::onCreate()
+    {
+        // Create collision layer
+
+        // Populate with entities
+    }
+
     void TiledMapComponent::onRender2d()
     {
         auto& transform = getEntity()->getWorldTransform();
