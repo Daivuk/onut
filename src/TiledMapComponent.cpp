@@ -1,13 +1,173 @@
 // Onut includes
+#include <onut/Collider2DComponent.h>
+#include <onut/ComponentFactory.h>
 #include <onut/Entity.h>
+#include <onut/EntityManager.h>
+#include <onut/Log.h>
+#include <onut/Strings.h>
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 
+// Third parties
+#include <Box2D/Box2D.h>
+
+#include <onut/SpriteBatch.h>
+
 namespace onut
 {
+    TiledMapComponent::~TiledMapComponent()
+    {
+        destroyCollisions();
+    }
+
+    void TiledMapComponent::destroyCollisions()
+    {
+        if (m_pTiledMap)
+        {
+            auto pEntity = getEntity();
+            auto pEntityManager = pEntity->getEntityManager();
+            auto pPhysic = pEntityManager->getPhysic2DWorld();
+            auto w = m_pTiledMap->getWidth();
+            for (auto pCollisionTile : m_collisionTiles)
+            {
+                if (!pCollisionTile) continue;
+                if (pCollisionTile->pBody)
+                {
+                    pPhysic->DestroyBody(pCollisionTile->pBody);
+                }
+                for (int y = pCollisionTile->mapPos.y; y < pCollisionTile->mapPos.y + pCollisionTile->size.y; ++y)
+                {
+                    for (int x = pCollisionTile->mapPos.x; x < pCollisionTile->mapPos.x + pCollisionTile->size.x; ++x)
+                    {
+                        m_collisionTiles[y * w + x] = nullptr;
+                    }
+                }
+                delete pCollisionTile;
+            }
+            m_collisionTiles.clear();
+        }
+    }
+
     void TiledMapComponent::setTiledMap(const OTiledMapRef& pTiledMap)
     {
+        using ComponentMap = std::unordered_map<std::string, OComponentRef>;
+
+        destroyCollisions();
+
         m_pTiledMap = pTiledMap;
+        if (!m_pTiledMap) return;
+
+        auto pEntity = getEntity();
+        auto pEntityManager = pEntity->getEntityManager();
+        auto pPhysic = pEntityManager->getPhysic2DWorld();
+
+        // Create collision layer
+        m_collisionTiles.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), nullptr);
+        auto pCollisionsLayer = dynamic_cast<OTiledMap::TileLayer*>(pTiledMap->getLayer("collisions"));
+        if (pCollisionsLayer)
+        {
+            auto tileIds = pCollisionsLayer->tileIds;
+            auto w = m_pTiledMap->getWidth();
+            auto h = m_pTiledMap->getHeight();
+            for (int y = 0; y < h; ++y)
+            {
+                for (int x = 0; x < w; ++x)
+                {
+                    if (!tileIds[y * w + x] || m_collisionTiles[y * w + x]) continue;
+                    auto pCollisionTile = m_collisionTiles[y * w + x];
+                    if (pCollisionTile) continue;
+                    pCollisionTile = new CollisionTile();
+                    pCollisionTile->mapPos = Point(x, y);
+                    pCollisionTile->size = Point(1, 1);
+                    int max = w;
+                    int y2;
+                    for (y2 = y; y2 < h; ++y2)
+                    {
+                        if (!tileIds[y2 * w + x] || m_collisionTiles[y2 * w + x])
+                        {
+                            break;
+                        }
+                        for (int x2 = x; x2 < max; ++x2)
+                        {
+                            if (!tileIds[y2 * w + x2] || m_collisionTiles[y2 * w + x2])
+                            {
+                                max = onut::min(x2, max);
+                                break;
+                            }
+                        }
+                    }
+                    pCollisionTile->size = Point(max - x, y2 - y);
+                    for (y2 = y; y2 < y + pCollisionTile->size.y; ++y2)
+                    {
+                        for (int x2 = x; x2 < x + pCollisionTile->size.x; ++x2)
+                        {
+                            m_collisionTiles[y2 * w + x2] = pCollisionTile;
+                        }
+                    }
+
+                    // Create the body
+                    b2BodyDef bodyDef;
+                    bodyDef.type = b2_staticBody;
+                    bodyDef.position.Set((float)pCollisionTile->mapPos.x + (float)pCollisionTile->size.x / 2.0f, 
+                                         (float)pCollisionTile->mapPos.y + (float)pCollisionTile->size.y / 2.0f);
+                    pCollisionTile->pBody = pPhysic->CreateBody(&bodyDef);
+                    b2PolygonShape box;
+                    box.SetAsBox((float)pCollisionTile->size.x / 2.0f, (float)pCollisionTile->size.y / 2.0f);
+                    pCollisionTile->pBody->CreateFixture(&box, 0.0f);
+                }
+            }
+        }
+
+        // Populate with entities
+        auto pEntitiesLayer = dynamic_cast<OTiledMap::ObjectLayer*>(pTiledMap->getLayer("entities"));
+        if (pEntitiesLayer)
+        {
+            for (uint32_t i = 0; i < pEntitiesLayer->objectCount; ++i)
+            {
+                auto& object = pEntitiesLayer->pObjects[i];
+
+                // Create the entity and set it's position
+                auto pMapEntity = OEntity::create();
+                auto position = object.position + Vector2(object.size / 2.0f);
+                pMapEntity->setLocalTransform(Matrix::CreateTranslation(position));
+                pMapEntity->setName(object.name);
+
+                // Load his components
+                ComponentMap componentMap;
+                for (auto& kv : object.properties)
+                {
+                    auto split = onut::splitString(kv.first, ':');
+                    if (split.size() == 0) continue;
+                    auto& componentName = split[0];
+                    auto it = componentMap.find(componentName);
+                    OComponentRef pComponent;
+                    if (it == componentMap.end())
+                    {
+                        pComponent = oComponentFactory->instantiate(componentName);
+                        if (!pComponent)
+                        {
+                            OLogW("Component not registered \"" + componentName + "\"");
+                            continue;
+                        }
+                        componentMap[componentName] = pComponent;
+                        pMapEntity->addComponent(pComponent);
+                    }
+                    else
+                    {
+                        pComponent = it->second;
+                    }
+                    if (split.size() == 2)
+                    {
+                        auto& propertyName = split[1];
+                        auto& value = kv.second;
+                        oComponentFactory->setProperty(pComponent, componentName, propertyName, value);
+                    }
+                }
+
+                // Add the entity to the map
+                pEntity->add(pMapEntity);
+            }
+        }
     }
 
     const OTiledMapRef& TiledMapComponent::getTiledMap() const
@@ -17,9 +177,6 @@ namespace onut
 
     void TiledMapComponent::onCreate()
     {
-        // Create collision layer
-
-        // Populate with entities
     }
 
     void TiledMapComponent::onRender2d()
@@ -27,5 +184,28 @@ namespace onut
         auto& transform = getEntity()->getWorldTransform();
         m_pTiledMap->setTransform(transform);
         m_pTiledMap->render();
+
+        // Uncomment to show collision rectangles
+        //for (auto pCollisionTile : m_collisionTiles)
+        //{
+        //    if (pCollisionTile)
+        //    {
+        //        oSpriteBatch->drawOutterOutlineRect(Rect(
+        //            (float)pCollisionTile->mapPos.x * 16.0f + 2, (float)pCollisionTile->mapPos.y * 16.0f + 2,
+        //            (float)pCollisionTile->size.x * 16.0f - 4, (float)pCollisionTile->size.y * 16.0f - 4), 2);
+        //    }
+        //}
+    }
+
+    void TiledMapComponent::onAddChild(const OEntityRef& pChild)
+    {
+        if (m_pTiledMap)
+        {
+            auto pCollider2DComponent = pChild->getComponent<Collider2DComponent>();
+            if (pCollider2DComponent)
+            {
+                pCollider2DComponent->setPhysicScale((float)m_pTiledMap->getTileSize());
+            }
+        }
     }
 };

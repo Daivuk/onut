@@ -1,5 +1,6 @@
 // Onut includes
 #include <onut/Camera2DComponent.h>
+#include <onut/Collider2DComponent.h>
 #include <onut/ComponentFactory.h>
 #include <onut/SoundComponent.h>
 #include <onut/SpriteAnimComponent.h>
@@ -30,6 +31,11 @@ namespace onut
         OBindBoolProperty(Camera2DComponent, Clear);
         OBindColorProperty(Camera2DComponent, ClearColor);
         OBindFloatProperty(Camera2DComponent, Zoom);
+
+        ORegisterComponent(Collider2DComponent);
+        OBindVector2Property(Collider2DComponent, Size);
+        OBindBoolProperty(Collider2DComponent, Trigger);
+        OBindVector2Property(Collider2DComponent, Velocity);
 
         ORegisterComponent(SoundComponent);
         OBindSoundProperty(SoundComponent, Sound);

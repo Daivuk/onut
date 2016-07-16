@@ -1,5 +1,6 @@
 #include "Controllable.h"
 
+#include <onut/Collider2DComponent.h>
 #include <onut/Entity.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
@@ -19,6 +20,7 @@ void Controllable::setSpeed(float speed)
 void Controllable::onCreate()
 {
     m_pSpriteAnimComponent = getEntity()->getComponent<OSpriteAnimComponent>();
+    m_pCollider2DComponent = getEntity()->getComponent<OCollider2DComponent>();
 }
 
 void Controllable::onUpdate()
@@ -51,6 +53,7 @@ void Controllable::onUpdate()
 
     if (!isMoving)
     {
+        m_pCollider2DComponent->setVelocity(Vector2::Zero);
         if (m_pSpriteAnimComponent) m_pSpriteAnimComponent->play("idle_" + m_dir);
         return;
     }
@@ -66,6 +69,5 @@ void Controllable::onUpdate()
 
     auto& pEntity = getEntity();
     Vector2 position = pEntity->getLocalTransform().Translation();
-    position += dir * m_speed * ODT;
-    pEntity->setLocalTransform(Matrix::CreateTranslation(position));
+    m_pCollider2DComponent->setVelocity(dir * m_speed);
 }

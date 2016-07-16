@@ -9,6 +9,7 @@ OForwardDeclare(Camera2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
 OForwardDeclare(EntityManager);
+class b2World;
 
 namespace onut
 {
@@ -25,6 +26,8 @@ namespace onut
         void setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D);
 
         OEntityRef findEntity(const std::string& name) const;
+
+        b2World* getPhysic2DWorld() const;
 
     private:
         friend class Entity;
@@ -65,6 +68,8 @@ namespace onut
         Components m_componentJustCreated;
         ComponentActions m_componentActions;
         OCamera2DComponentRef m_pActiveCamera2D;
+
+        b2World *m_pPhysic2DWorld;
     };
 };
 

@@ -64,7 +64,7 @@ namespace onut
             pTileSet.name = pXMLTileset->Attribute("name");
             pTileSet.firstId = pXMLTileset->IntAttribute("firstgid");
             assert(pTileSet.firstId);
-            pTileSet.tileWidth = pXMLTileset->IntAttribute("tilewidth");
+            pRet->m_tileSize = pTileSet.tileWidth = pXMLTileset->IntAttribute("tilewidth");
             assert(pTileSet.tileWidth);
             pTileSet.tileHeight = pXMLTileset->IntAttribute("tileheight");
             assert(pTileSet.tileHeight);

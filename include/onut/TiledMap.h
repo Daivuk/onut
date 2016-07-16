@@ -69,6 +69,7 @@ namespace onut
 
         int getWidth() const { return m_width; }
         int getHeight() const { return m_height; }
+        int getTileSize() const { return m_tileSize; }
 
         void render();
         void renderLayer(int index);
@@ -106,6 +107,7 @@ namespace onut
 
         int m_width = 0;
         int m_height = 0;
+        int m_tileSize = 1;
         int m_layerCount = 0;
         int m_tilesetCount = 0;
         Layer **m_layers = nullptr;

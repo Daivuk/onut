@@ -5,6 +5,10 @@
 #include <onut/EntityManager.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
+#include <onut/Timing.h>
+
+// Third parties
+#include <Box2D/Box2D.h>
 
 OEntityManagerRef oEntityManager;
 
@@ -17,10 +21,12 @@ namespace onut
 
     EntityManager::EntityManager()
     {
+        m_pPhysic2DWorld = new b2World(b2Vec2(0, 0));
     }
 
     EntityManager::~EntityManager()
     {
+        delete m_pPhysic2DWorld;
     }
 
     void EntityManager::addEntity(const OEntityRef& pEntity)
@@ -124,6 +130,7 @@ namespace onut
     void EntityManager::update()
     {
         performComponentActions();
+        m_pPhysic2DWorld->Step(ODT, 6, 2);
         for (auto& pComponent : m_componentUpdates)
         {
             pComponent->onUpdate();
@@ -167,5 +174,10 @@ namespace onut
             if (pEntity->getName() == name) return pEntity;
         }
         return nullptr;
+    }
+
+    b2World* EntityManager::getPhysic2DWorld() const
+    {
+        return m_pPhysic2DWorld;
     }
 };

@@ -4,6 +4,7 @@
 #include <string>
 
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(Collider2DComponent);
 OForwardDeclare(SpriteAnimComponent);
 ForwardDeclare(Controllable);
 
@@ -19,5 +20,6 @@ public:
 private:
     float m_speed = 1.0f;
     OSpriteAnimComponentRef m_pSpriteAnimComponent;
+    OCollider2DComponentRef m_pCollider2DComponent;
     std::string m_dir = "s";
 };
