@@ -207,6 +207,9 @@ namespace onut
     {
         return alignedRect(0, 0, size, size, padding, align);
     }
+
+    Vector2 tilesCollision(const Vector2& from, const Vector2& to, const Vector2& size, 
+                           bool* pPassableTiles, int width, int height, int tileSize);
 }
 
 inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent)

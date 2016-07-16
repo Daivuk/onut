@@ -797,6 +797,9 @@
     <ClCompile Include="..\..\src\TiledMapColliderComponent.cpp">
       <Filter>entities\default components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Maths.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">

@@ -211,6 +211,7 @@
     <ClCompile Include="..\..\src\Curve.cpp" />
     <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
+    <ClCompile Include="..\..\src\Maths.cpp" />
     <ClCompile Include="..\..\src\MFPlayer.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
     <ClCompile Include="..\..\src\mp3\Mp3.cpp" />
