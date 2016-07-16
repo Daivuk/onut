@@ -92,8 +92,24 @@ void SmartRoomCamera::onUpdate()
     }
     ++m_nextPaint;
 
-    pos.x = ((float)minBound.x * 16.0f + (float)maxBound.x * 16.0f) / 2.0f + 8.0f;
-    pos.y = ((float)minBound.y * 16.0f + (float)maxBound.y * 16.0f) / 2.0f + 8.0f;
+    if (maxBound.x - minBound.x < 10)
+    {
+        pos.x = ((float)minBound.x * 16.0f + (float)maxBound.x * 16.0f) / 2.0f + 8.0f;
+    }
+    else
+    {
+        pos.x = onut::max(((float)minBound.x + 5) * 16.0f, pos.x);
+        pos.x = onut::min(((float)maxBound.x - 4) * 16.0f, pos.x);
+    }
+    if (maxBound.y - minBound.y < 7)
+    {
+        pos.y = ((float)minBound.y * 16.0f + (float)maxBound.y * 16.0f) / 2.0f + 8.0f;
+    }
+    else
+    {
+        pos.y = onut::max(((float)minBound.y + 3.5f) * 16.0f, pos.y);
+        pos.y = onut::min(((float)maxBound.y - 2.5f) * 16.0f, pos.y);
+    }
 
     getEntity()->setLocalTransform(Matrix::CreateTranslation(pos));
 }

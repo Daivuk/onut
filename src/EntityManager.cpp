@@ -7,6 +7,7 @@
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Timing.h>
+#include <onut/Updater.h>
 
 // Third parties
 #include <Box2D/Box2D.h>
@@ -44,6 +45,7 @@ namespace onut
 
     EntityManager::EntityManager()
     {
+        m_pUpdater = OUpdater::create();
         m_pPhysic2DWorld = new b2World(b2Vec2(0, 0));
         m_pPhysic2DContactListener = new Physic2DContactListener(this);
         m_pPhysic2DWorld->SetContactListener(m_pPhysic2DContactListener);
@@ -175,6 +177,8 @@ namespace onut
 
     void EntityManager::update()
     {
+        if (m_pause) return;
+        m_pUpdater->update();
         performComponentActions();
         m_pPhysic2DWorld->Step(ODT, 6, 2);
         performContacts();
@@ -264,5 +268,20 @@ namespace onut
         m_contact2Ds.push_back({Contact2D::Type::End,
                                OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
                                OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
+    }
+
+    bool EntityManager::getPause() const
+    {
+        return m_pause;
+    }
+
+    void EntityManager::setPause(bool pause)
+    {
+        m_pause = pause;
+    }
+
+    OUpdaterRef EntityManager::getUpdater() const
+    {
+        return m_pUpdater;
     }
 };

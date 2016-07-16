@@ -116,18 +116,26 @@ namespace onut
 {
     SpriteAnimInstance::SpriteAnimInstance()
     {
+        m_pUpdater = oUpdater;
     }
 
     SpriteAnimInstance::SpriteAnimInstance(const OSpriteAnimRef& pSpriteAnim)
         : m_pSpriteAnim(pSpriteAnim)
     {
+        m_pUpdater = oUpdater;
     }
 
     SpriteAnimInstance::SpriteAnimInstance(const std::string& filename, const OContentManagerRef& in_pContentManager)
     {
+        m_pUpdater = oUpdater;
         auto pContentManager = in_pContentManager;
         if (!pContentManager) pContentManager = oContentManager;
         m_pSpriteAnim = pContentManager->getResourceAs<SpriteAnim>(filename);
+    }
+
+    void SpriteAnimInstance::setUpdater(const OUpdaterRef& pUpdater)
+    {
+        m_pUpdater = pUpdater;
     }
 
     void SpriteAnimInstance::play(const std::string& animName, float framePerSecond)
@@ -152,7 +160,7 @@ namespace onut
                     m_speed = framePerSecond;
                 }
 
-                oUpdater->registerTarget(this);
+                m_pUpdater->registerTarget(this);
             }
         }
     }
@@ -175,7 +183,7 @@ namespace onut
                     m_speed = -framePerSecond;
                 }
 
-                oUpdater->registerTarget(this);
+                m_pUpdater->registerTarget(this);
             }
         }
     }
@@ -203,7 +211,7 @@ namespace onut
                     m_frame = 0.f;
                     m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
 
-                    oUpdater->registerTarget(this);
+                    m_pUpdater->registerTarget(this);
                 }
             }
         }
@@ -212,7 +220,7 @@ namespace onut
     void SpriteAnimInstance::stop(bool reset)
     {
         m_animQueue.clear();
-        oUpdater->unregisterTarget(this);
+        m_pUpdater->unregisterTarget(this);
         if (reset) m_frame = 0.f;
         m_pCurrentAnim = nullptr;
     }
@@ -274,7 +282,7 @@ namespace onut
                 else
                 {
                     m_frame = static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
-                    oUpdater->unregisterTarget(this);
+                    m_pUpdater->unregisterTarget(this);
                     playNextQueuedAnim();
                 }
             }
@@ -288,7 +296,7 @@ namespace onut
             else
             {
                 m_frame = 0.f;
-                oUpdater->unregisterTarget(this);
+                m_pUpdater->unregisterTarget(this);
                 playNextQueuedAnim();
             }
         }

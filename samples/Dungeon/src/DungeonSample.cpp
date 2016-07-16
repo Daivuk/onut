@@ -2,10 +2,13 @@
 #include <Windows.h>
 
 // Oak Nut include
+#include <onut/Anim.h>
 #include <onut/ComponentFactory.h>
 #include <onut/EntityFactory.h>
 #include <onut/onut.h>
+#include <onut/Renderer.h>
 #include <onut/Settings.h>
+#include <onut/SpriteBatch.h>
 
 // Game includes
 #include "Controllable.h"
@@ -16,12 +19,15 @@
 void init();
 void update();
 void render();
+void postRender();
+
+OAnimFloat m_fadeAnim(1.0f);
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
     oSettings->setGameName("Dungeon Game Sample");
-    ORun(init, update, render);
+    ORun(init, update, render, postRender);
 }
 
 void registerComponents()
@@ -57,4 +63,16 @@ void update()
 
 void render()
 {
+}
+
+void postRender()
+{
+    float fade = m_fadeAnim.get();
+    if (fade < 1.0f)
+    {
+        auto fadeColor = OLerp(Color::Black, Color::Transparent, fade);
+        oSpriteBatch->begin();
+        oSpriteBatch->drawRect(nullptr, OScreenRectf, fadeColor);
+        oSpriteBatch->end();
+    }
 }

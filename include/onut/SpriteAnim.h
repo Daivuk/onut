@@ -77,6 +77,7 @@ namespace onut
         const Vector2& getOrigin() const;
 
         void update() override;
+        void setUpdater(const OUpdaterRef& pUpdater);
 
     private:
         using AnimQueue = std::vector<std::string>;
@@ -89,6 +90,7 @@ namespace onut
         float m_speed = 1.f;
         bool m_bIsPlaying = false;
         AnimQueue m_animQueue;
+        OUpdaterRef m_pUpdater;
     };
 };
 

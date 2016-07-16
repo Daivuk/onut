@@ -199,3 +199,4 @@ extern ORendererRef oRenderer;
 #define OScreenCenterY      (oRenderer->getResolution().y / 2)
 #define OScreenCenterXf     static_cast<float>(oRenderer->getResolution().x / 2)
 #define OScreenCenterYf     static_cast<float>(oRenderer->getResolution().y / 2)
+#define OScreenRectf        Rect{0, 0, static_cast<float>(oRenderer->getResolution().x), static_cast<float>(oRenderer->getResolution().y)}

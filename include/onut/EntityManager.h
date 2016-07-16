@@ -10,6 +10,7 @@ OForwardDeclare(Camera2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
 OForwardDeclare(EntityManager);
+OForwardDeclare(Updater);
 class b2Contact;
 class b2World;
 
@@ -32,6 +33,11 @@ namespace onut
         OEntityRef findEntity(const std::string& name) const;
 
         b2World* getPhysic2DWorld() const;
+
+        bool getPause() const;
+        void setPause(bool pause);
+
+        OUpdaterRef getUpdater() const;
 
     private:
         friend class Entity;
@@ -92,9 +98,11 @@ namespace onut
         ComponentActions m_componentActions;
         Contact2Ds m_contact2Ds;
         OCamera2DComponentRef m_pActiveCamera2D;
+        bool m_pause = false;
 
         b2World* m_pPhysic2DWorld;
         Physic2DContactListener* m_pPhysic2DContactListener;
+        OUpdaterRef m_pUpdater;
     };
 };
 

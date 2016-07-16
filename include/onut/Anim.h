@@ -122,6 +122,7 @@ namespace onut
             {
                 m_hasCallbacks = false;
                 m_totalTime = 0.f;
+                m_progress = 0;
                 if (duration > 0.f)
                 {
                     m_keyFrames.push_back(KeyFrame(m_value, 0.f, Tween::None));

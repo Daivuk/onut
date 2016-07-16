@@ -1,4 +1,5 @@
 #pragma once
+#include <onut/Anim.h>
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
