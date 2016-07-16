@@ -31,6 +31,9 @@ void registerComponents()
 
     ORegisterComponent(Door);
     OBindBoolProperty(Door, Open);
+    OBindSoundProperty(Door, OpenSound);
+    OBindSoundProperty(Door, CloseSound);
+    OBindEntityProperty(Door, Target);
 
     ORegisterComponent(DoorTraverser);
 

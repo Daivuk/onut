@@ -454,6 +454,39 @@ namespace onut
         return m_pMinimap;
     }
 
+    void TiledMap::setTileAt(TileLayer *pLayer, int x, int y, uint32_t tileId)
+    {
+        if (x < 0 || y < 0 || x >= pLayer->width || y >= pLayer->height) return;
+
+        auto pInternalLayer = (TileLayerInternal*)pLayer;
+        pLayer->tileIds[y * pInternalLayer->width + x] = tileId;
+        auto i = (y * pInternalLayer->width + x);
+        auto pTile = pInternalLayer->tiles + i;
+        if (tileId == 0)
+        {
+            pTile->pTileset = nullptr;
+            return;
+        }
+        auto pTileSet = m_tileSets;
+        for (int j = 0; j < m_tilesetCount; ++j, pTileSet)
+        {
+            if (pTileSet->firstId > static_cast<int>(tileId)) break;
+        }
+        pTile->pTileset = pTileSet;
+        auto texSize = pTileSet->pTexture->getSize();
+        auto fitW = texSize.x / pTile->pTileset->tileWidth;
+        auto fitH = texSize.y / pTile->pTileset->tileHeight;
+        auto onTextureId = tileId - pTileSet->firstId;
+        pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
+        pTile->UVs.y = static_cast<float>((onTextureId / fitH) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+        pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
+        pTile->UVs.w = static_cast<float>((onTextureId / fitH + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+        pTile->rect.x = static_cast<float>((i % pLayer->width) * pTileSet->tileWidth);
+        pTile->rect.y = static_cast<float>((i / pLayer->height) * pTileSet->tileHeight);
+        pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
+        pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
+    }
+
     void TiledMap::setFiltering(onut::sample::Filtering filtering)
     {
         m_filtering = filtering;

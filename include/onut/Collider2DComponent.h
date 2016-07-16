@@ -28,14 +28,19 @@ namespace onut
         const Vector2& getVelocity() const;
         void setVelocity(const Vector2& velocity);
 
+        void teleport(const Vector2& position);
+
     private:
         void onCreate() override;
         void onUpdate() override;
 
+        void createBody();
+        void destroyBody();
+
         bool m_trigger = false;
         Vector2 m_size = Vector2::One;
         float m_physicScale = 1.0f;
-        b2Body* m_pBody;
+        b2Body* m_pBody = nullptr;
         Vector2 m_velocity;
     };
 };

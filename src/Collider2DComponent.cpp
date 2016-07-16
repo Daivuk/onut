@@ -11,22 +11,7 @@ namespace onut
 {
     Collider2DComponent::~Collider2DComponent()
     {
-        if (m_pBody)
-        {
-            auto& pEntity = getEntity();
-            if (pEntity)
-            {
-                auto& pEntityManager = pEntity->getEntityManager();
-                if (pEntityManager)
-                {
-                    auto pPhysic = pEntityManager->getPhysic2DWorld();
-                    if (pPhysic)
-                    {
-                        pPhysic->DestroyBody(m_pBody);
-                    }
-                }
-            }
-        }
+        destroyBody();
     }
 
     const Vector2& Collider2DComponent::getSize() const
@@ -36,7 +21,13 @@ namespace onut
 
     void Collider2DComponent::setSize(const Vector2& size)
     {
+        if (m_size == size) return;
         m_size = size;
+        if (m_pBody)
+        {
+            destroyBody();
+            createBody();
+        }
     }
 
     bool Collider2DComponent::getTrigger() const
@@ -46,7 +37,13 @@ namespace onut
 
     void Collider2DComponent::setTrigger(bool trigger)
     {
+        if (m_trigger == trigger) return;
         m_trigger = trigger;
+        if (m_pBody)
+        {
+            destroyBody();
+            createBody();
+        }
     }
 
     float Collider2DComponent::getPhysicScale() const
@@ -67,9 +64,9 @@ namespace onut
     void Collider2DComponent::setVelocity(const Vector2& velocity)
     {
         m_velocity = velocity;
-    }
-
-    void Collider2DComponent::onCreate()
+    }       
+    
+    void Collider2DComponent::createBody()
     {
         auto& pEntity = getEntity();
         auto& pEntityManager = pEntity->getEntityManager();
@@ -81,6 +78,8 @@ namespace onut
         bodyDef.position.Set(pos.x / m_physicScale, pos.y / m_physicScale);
 
         m_pBody = pPhysic->CreateBody(&bodyDef);
+        m_pBody->SetUserData(this);
+        m_pBody->SetFixedRotation(true);
 
         b2PolygonShape box;
         box.SetAsBox(m_size.x / 2.f / m_physicScale, m_size.y / 2.f / m_physicScale);
@@ -106,6 +105,31 @@ namespace onut
         }
     }
 
+    void Collider2DComponent::destroyBody()
+    {
+        if (m_pBody)
+        {
+            auto& pEntity = getEntity();
+            if (pEntity)
+            {
+                auto& pEntityManager = pEntity->getEntityManager();
+                if (pEntityManager)
+                {
+                    auto pPhysic = pEntityManager->getPhysic2DWorld();
+                    if (pPhysic)
+                    {
+                        pPhysic->DestroyBody(m_pBody);
+                    }
+                }
+            }
+        }
+    }
+
+    void Collider2DComponent::onCreate()
+    {
+        createBody();
+    }
+
     void Collider2DComponent::onUpdate()
     {
         if (m_pBody)
@@ -121,11 +145,18 @@ namespace onut
                 Vector2 currentPosition(b2Position.x * m_physicScale, b2Position.y * m_physicScale);
                 getEntity()->setLocalTransform(Matrix::CreateTranslation(currentPosition));
                 Vector2 vel = m_velocity / m_physicScale;
-
-                m_pBody->SetTransform(b2Position, 0.0f);
-                m_pBody->SetAngularVelocity(0.0f);
                 m_pBody->SetLinearVelocity(b2Vec2(vel.x, vel.y));
             }
+        }
+    }
+
+    void Collider2DComponent::teleport(const Vector2& position)
+    {
+        if (m_pBody)
+        {
+            b2Vec2 b2Pos(position.x / m_physicScale, position.y / m_physicScale);
+            getEntity()->setLocalTransform(Matrix::CreateTranslation(position));
+            m_pBody->SetTransform(b2Pos, 0.0f);
         }
     }
 };

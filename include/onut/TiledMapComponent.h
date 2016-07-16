@@ -22,6 +22,9 @@ namespace onut
         void setTiledMap(const OTiledMapRef& pTiledMap);
         const OTiledMapRef& getTiledMap() const;
 
+        bool getPassable(const Point& mapPos) const;
+        void setPassable(const Point& mapPos, bool passable);
+
     private:
         struct CollisionTile
         {
@@ -35,6 +38,7 @@ namespace onut
         void onAddChild(const OEntityRef& pChild) override;
 
         void destroyCollisions();
+        void createCollisionTiles(const iRect& rect);
 
         OTiledMapRef m_pTiledMap;
         std::vector<CollisionTile*> m_collisionTiles;

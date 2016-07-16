@@ -91,6 +91,8 @@ namespace onut
 
         void setFiltering(onut::sample::Filtering filtering);
 
+        void setTileAt(TileLayer *pLayer, int x, int y, uint32_t tileId);
+
     private:
         struct Tile
         {

@@ -8,6 +8,7 @@
 
 // Forward declarations
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
 OForwardDeclare(EntityManager);
@@ -58,6 +59,24 @@ namespace onut
         }
 
         template<typename Tcomponent>
+        std::shared_ptr<Tcomponent> getParentComponent() const
+        {
+            for (auto& pComponent : m_components)
+            {
+                if (dynamic_cast<Tcomponent*>(pComponent.get()))
+                {
+                    return ODynamicCast<Tcomponent>(pComponent);
+                }
+            }
+            auto pParent = getParent();
+            if (pParent)
+            {
+                return pParent->getParentComponent<Tcomponent>();
+            }
+            return nullptr;
+        }
+
+        template<typename Tcomponent>
         std::shared_ptr<Tcomponent> addComponent()
         {
             auto pComponent = getComponent<Tcomponent>();
@@ -84,6 +103,8 @@ namespace onut
 
         void dirtyWorld();
         void render2d();
+        void onTriggerEnter(const OCollider2DComponentRef& pCollider);
+        void onTriggerLeave(const OCollider2DComponentRef& pCollider);
 
         bool m_isWorldDirty = true;
         Matrix m_localTransform;

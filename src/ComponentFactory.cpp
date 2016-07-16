@@ -83,4 +83,19 @@ namespace onut
         auto& pProperty = it2->second;
         pProperty->set(pComponent.get(), propertyValue);
     }
+
+    void ComponentFactory::registerEntity(uint32_t id, const OEntityRef& pEntity)
+    {
+        m_entityMap[id] = pEntity;
+    }
+
+    OEntityRef ComponentFactory::getEntity(uint32_t id)
+    {
+        return m_entityMap[id].lock();
+    }
+
+    void ComponentFactory::clearEntityRegistry()
+    {
+        m_entityMap.clear();
+    }
 };

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="61">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="64">
  <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16">
-  <image source="../textures/sheet.png" width="304" height="208"/>
+  <image source="../textures/sheet.png" width="304" height="304"/>
  </tileset>
- <tileset firstgid="248" name="info" tilewidth="16" tileheight="16">
+ <tileset firstgid="362" name="info" tilewidth="16" tileheight="16">
   <image source="../textures/info.png" width="64" height="64"/>
  </tileset>
  <layer name="tiles" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   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
+   H4sIAAAAAAAAC+2Zu25UMRCGx4EQQYJAYgOBQEQDJCEEJBouCRdxKQiBjZSCFIQDtOmgQEg8EAh6Oujp4BngGbhKzAhbZzIZ73oRnKydKT7trs8c7/ntWfvf8SgAjBqGYRiGYRiGYRh/zXbkIjLJuIAMiphO7ZOij8Eevn+zWUROCw4jD1nMfnatJe7d5dtP+dedIqbfIW2zyhi0REy3ds6dPtCVypOIhq/IN2TYAYy47u2xset3aA7PJMz/daWdxm6oAP3huQ/511mhoeowLqR/nF2/kZn+A8gA0vavxBIy5q9PIyeZvnnkErt3id0X+hnr4ftzgOY55EZOc/sv9ee4tqfAvY3mYTrlP/c/gTnIy/9o+x/5n5T9P+Z/csqRFP+zGGmvlPtyWyNiHm6r+5+nIkbzP2H/z1l/xZ475n9ojbgHf37jpfofzl1Y72EoZgFz/bbb2N728cE3DUB5/odYRe0P3OY/R5PsYO+PofbjTr9WIuRtDkLta86h9vOurvXQtZx8Ti8Ez0c+iNa0m1Cvb1eh9jncC5YEzf0U6Hs75wSUmQOaJ7qFLCjtOXndXvQHXx+4j6wq+nPa61OpFJ0vkVeibahQ/eRrtsHGHOCQ58PtoEivE9Z/8rLXItplLaA0KAdmgHlinOy2q2t8M4XOPecye/8ItT92+rXc6Fbz0phC7dMd/D+vhYV+PyT0SzTtpVNqXrK2N4fa5118vDTP8ALiPon3H3y2PF/9X6Se+R1BditxxBUlntonFP3aGGjnrk35iVjN6zvyA9mH89yi+lYkLvAT+YXswdi9rt4bhoX+s4q2CuqaUtO1k9Sal9T/THzmZ+SV0l/Qv+K1vUbeIB+RT0o8+akm9lT+rLGal8wRqX1ExL9FlgXPWfwa8g55j3xGvij6m8r/lJpX7DdC40X/fWm91PI/BumX+SW91dGG9KfmyJp4vnHPiid2Rq4hvTI/d+U+q188lZYj9Kz8vFfmC9WHqT4yAev3gW7/E3L2Uny8+Bn6gJ9Xfpa+1ShhXg3DMAzDMAzDaJ7f90/qiABAAAA=
   </data>
  </layer>
  <layer name="obj" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3YvQ3CMBAG0EwQfjZAwCxAS0nYgbFYE6elwRJnDkfvSdedPl+T5JxhAAAAgO88KnrOpS4fesbKrB5Npe4VfevWg0CwTaltQM6h1DEgB+BXIneWpe4/sFRRe0vUHgVAnlP2AMluFT3P5lOQZcweAICm5m941P1395Y72wfkZlllD9CQ/5T/45p4duTzz7L0/O4GAACAHr0AqVA6YQBAAAA=
+   H4sIAAAAAAAAC+3YQQoCMQwAwH2BoD8Q9C3qF9TT4n2Pft96ELxZMDW2zEBuIZtLm2ynCQAAAL6zVOQcS5w+5MyVtXp0KXGtyLu3bgSCrUtsAursSuwD6gD8SuTOMur+A6OK2lui9igA8hyyG0h2rshZNe+CLHN2AwA09ZzhUf+/7zPjtRvcAupmGXkGeqf8H9vEb0eef8bS890NAAAAPXoAWQ2O/gBAAAA=
   </data>
  </layer>
  <objectgroup name="entities">
@@ -34,6 +34,7 @@
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="30"/>
    </properties>
   </object>
   <object id="30" type="door" x="592" y="704" width="16" height="16">
@@ -41,6 +42,7 @@
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="29"/>
    </properties>
   </object>
   <object id="31" type="door" x="592" y="752" width="16" height="16">
@@ -48,6 +50,7 @@
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="32"/>
    </properties>
   </object>
   <object id="32" type="door" x="640" y="752" width="16" height="16">
@@ -55,76 +58,107 @@
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="31"/>
    </properties>
   </object>
   <object id="33" type="door" x="592" y="400" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="34"/>
    </properties>
   </object>
   <object id="34" type="door" x="544" y="400" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="33"/>
    </properties>
   </object>
   <object id="35" type="door" x="496" y="400" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="36"/>
    </properties>
   </object>
   <object id="36" type="door" x="448" y="400" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="35"/>
    </properties>
   </object>
   <object id="37" type="door" x="496" y="256" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="40"/>
    </properties>
   </object>
   <object id="38" type="door" x="592" y="256" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="39"/>
    </properties>
   </object>
   <object id="39" type="door" x="544" y="256" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="38"/>
    </properties>
   </object>
   <object id="40" type="door" x="448" y="256" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="37"/>
    </properties>
   </object>
   <object id="41" type="door" x="512" y="448" width="32" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="32,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="42"/>
    </properties>
   </object>
   <object id="42" type="door" x="512" y="496" width="32" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="32,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="41"/>
    </properties>
   </object>
   <object id="43" type="door" x="512" y="624" width="32" height="16">
@@ -132,6 +166,7 @@
     <property name="Collider2DComponent:Size" value="32,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="44"/>
    </properties>
   </object>
   <object id="44" type="door" x="512" y="672" width="32" height="16">
@@ -139,12 +174,14 @@
     <property name="Collider2DComponent:Size" value="32,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="43"/>
    </properties>
   </object>
   <object id="45" type="crumble" x="448" y="704" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Target" value="61"/>
    </properties>
   </object>
   <object id="47" type="door" x="784" y="720" width="16" height="32">
@@ -152,6 +189,7 @@
     <property name="Collider2DComponent:Size" value="16,32"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="48"/>
    </properties>
   </object>
   <object id="48" type="door" x="832" y="720" width="16" height="32">
@@ -159,6 +197,7 @@
     <property name="Collider2DComponent:Size" value="16,32"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="47"/>
    </properties>
   </object>
   <object id="49" name="player" type="start_location" x="384" y="416" width="16" height="16">
@@ -227,6 +266,14 @@
     <property name="SmartRoomCamera" value=""/>
    </properties>
   </object>
+  <object id="61" type="door" x="400" y="704" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="true"/>
+    <property name="Door:Target" value="45"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer name="fow" width="64" height="64" visible="0">
   <data encoding="base64" compression="gzip">
@@ -235,12 +282,12 @@
  </layer>
  <layer name="collisions" width="64" height="64" visible="0" opacity="0.41">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3SQQ6EIAxAUe5/YpauTIwpFApYC7/J2ziM4Xcmp5QyAAAAAACD3mP5nnfDrHZrf9QdtPRrzyPv4PR+qcXS733/L3bjfQ/66ad/XV+pU3seeT/SWPsj7oD+s/ulFku/9/0BYBZtvO9H/3f9tWc7eo/2fEf018f7fvQDsLgnyntX3fM5redK56XPe9/9px1o09Pfcl464/n7j/ZE6G/dUamvZ89/6rf+R3p7IvdrTSNnd3RyOwAAAABgjguldwg3AEAAAA==
+   H4sIAAAAAAAAC+3USxKDIBBAQXNd73+A7FMavjICTVVvjEnxJsr5OY4TAAAAGv2umu9FN/Rqr+2fdQY5/anrM89g9/6rlpr+6P2PmE30PvTr1/9cX+v5H93Ro72lf8YZ6N+7/6qlpj96/wC9pFb0/vSP6/93bUV3//VOz4B+7//O/bCqp97hWc6G3POs5Py7+rz0t980g9Qq6c+5f2T/iJ4Z+nNndNdXMuc39dc+I6U9M/enmlruXdHO7QAAAPTxBaEWbkYAQAAA
   </data>
  </layer>
  <layer name="info" width="64" height="64" visible="0">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3YOQqAQBREQe9/YkMxFcVxH39XgZkGb8AGHQYAAAC4Zly5tu4582zv9OvXn9vfonJbC/36q/an759+/fpz+wGW1rYtaeeS+/faq5+B/uz+WXL7LL0fqnriff7TThz55m/tOrqVX57V2/29/TvRn93fQv+z+1dNcjsAAAD3mABpvtp2AEAAAA==
+   H4sIAAAAAAAAC+3YSw5EQBiFUbbb+1+AmOoW5VGN/56TmDH4KnEThgEAAADO+Yzf19o9R559Ov369ef2t6jc1kK//qr96funX7/+3H6ApV/blrRzyf1b7dXPQH92/yy5fZbeD1X1eJ/ftBN7vvlbu/Zu5Z1n9e/+p/070Z/d30J/3/2rJrkdAACAa0x2JOiLAEAAAA==
   </data>
  </layer>
 </map>

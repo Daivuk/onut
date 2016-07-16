@@ -288,4 +288,20 @@ namespace onut
             pComponent->onMessage(messageId, pData);
         }
     }
+
+    void Entity::onTriggerEnter(const OCollider2DComponentRef& pCollider)
+    {
+        for (auto& pComponent : m_components)
+        {
+            pComponent->onTriggerEnter(pCollider);
+        }
+    }
+
+    void Entity::onTriggerLeave(const OCollider2DComponentRef& pCollider)
+    {
+        for (auto& pComponent : m_components)
+        {
+            pComponent->onTriggerLeave(pCollider);
+        }
+    }
 };

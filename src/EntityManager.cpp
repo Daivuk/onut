@@ -1,4 +1,5 @@
 // onut includes
+#include <onut/Collider2DComponent.h>
 #include <onut/Camera2DComponent.h>
 #include <onut/Component.h>
 #include <onut/Entity.h>
@@ -14,6 +15,28 @@ OEntityManagerRef oEntityManager;
 
 namespace onut
 {
+    class Physic2DContactListener : public b2ContactListener
+    {
+    public:
+        Physic2DContactListener(EntityManager* pEntityManager)
+            : m_pEntityManager(pEntityManager)
+        {
+        }
+
+    private:
+        void BeginContact(b2Contact* contact) override
+        {
+            m_pEntityManager->begin2DContact(contact);
+        }
+
+        void EndContact(b2Contact* contact) override
+        {
+            m_pEntityManager->end2DContact(contact);
+        }
+
+        EntityManager* m_pEntityManager;
+    };
+
     OEntityManagerRef EntityManager::create()
     {
         return std::shared_ptr<EntityManager>(new EntityManager());
@@ -22,11 +45,14 @@ namespace onut
     EntityManager::EntityManager()
     {
         m_pPhysic2DWorld = new b2World(b2Vec2(0, 0));
+        m_pPhysic2DContactListener = new Physic2DContactListener(this);
+        m_pPhysic2DWorld->SetContactListener(m_pPhysic2DContactListener);
     }
 
     EntityManager::~EntityManager()
     {
         delete m_pPhysic2DWorld;
+        delete m_pPhysic2DContactListener;
     }
 
     void EntityManager::addEntity(const OEntityRef& pEntity)
@@ -127,10 +153,31 @@ namespace onut
         m_pActiveCamera2D = pActiveCamera2D;
     }
 
+    void EntityManager::performContacts()
+    {
+        auto contacts = m_contact2Ds;
+        m_contact2Ds.clear();
+        for (auto& contact2D : contacts)
+        {
+            switch (contact2D.type)
+            {
+                case Contact2D::Type::Begin:
+                    contact2D.pColliderA->getEntity()->onTriggerEnter(contact2D.pColliderB);
+                    contact2D.pColliderB->getEntity()->onTriggerEnter(contact2D.pColliderA);
+                    break;
+                case Contact2D::Type::End:
+                    contact2D.pColliderA->getEntity()->onTriggerLeave(contact2D.pColliderB);
+                    contact2D.pColliderB->getEntity()->onTriggerLeave(contact2D.pColliderA);
+                    break;
+            }
+        }
+    }
+
     void EntityManager::update()
     {
         performComponentActions();
         m_pPhysic2DWorld->Step(ODT, 6, 2);
+        performContacts();
         for (auto& pComponent : m_componentUpdates)
         {
             pComponent->onUpdate();
@@ -179,5 +226,43 @@ namespace onut
     b2World* EntityManager::getPhysic2DWorld() const
     {
         return m_pPhysic2DWorld;
+    }
+
+    void EntityManager::begin2DContact(b2Contact* pContact)
+    {
+        b2Fixture* pFixtureA = pContact->GetFixtureA();
+        b2Fixture* pFixtureB = pContact->GetFixtureB();
+        if (pFixtureA == pFixtureB) return;
+
+        // Make sure only one of the fixtures was a sensor
+        bool sensorA = pFixtureA->IsSensor();
+        bool sensorB = pFixtureB->IsSensor();
+        if (!(sensorA ^ sensorB)) return;
+
+        auto* pColliderA = static_cast<Collider2DComponent*>(pFixtureA->GetBody()->GetUserData());
+        auto* pColliderB = static_cast<Collider2DComponent*>(pFixtureB->GetBody()->GetUserData());
+
+        m_contact2Ds.push_back({Contact2D::Type::Begin,
+                               OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
+                               OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
+    }
+
+    void EntityManager::end2DContact(b2Contact* pContact)
+    {
+        b2Fixture* pFixtureA = pContact->GetFixtureA();
+        b2Fixture* pFixtureB = pContact->GetFixtureB();
+        if (pFixtureA == pFixtureB) return;
+
+        // Make sure only one of the fixtures was a sensor
+        bool sensorA = pFixtureA->IsSensor();
+        bool sensorB = pFixtureB->IsSensor();
+        if (!(sensorA ^ sensorB)) return;
+
+        auto* pColliderA = static_cast<Collider2DComponent*>(pFixtureA->GetBody()->GetUserData());
+        auto* pColliderB = static_cast<Collider2DComponent*>(pFixtureB->GetBody()->GetUserData());
+
+        m_contact2Ds.push_back({Contact2D::Type::End,
+                               OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
+                               OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
     }
 };

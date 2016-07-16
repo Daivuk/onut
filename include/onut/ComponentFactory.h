@@ -46,6 +46,7 @@ namespace onut
             auto pProperty = OMake<Property<Tcomponent, Ttype, Tgetter, Tsetter>>();
             pProperty->getter = getter;
             pProperty->setter = setter;
+            pProperty->pComponentFactory = this;
             m_propertyComponentMap[componentName].propertyMap[propertyName] = pProperty;
         }
 
@@ -53,7 +54,13 @@ namespace onut
 
         void registerDefaultComponents();
 
+        void registerEntity(uint32_t id, const OEntityRef& pEntity);
+        OEntityRef getEntity(uint32_t id);
+        void clearEntityRegistry();
+
     private:
+        using EntityMap = std::unordered_map<uint32_t, OEntityWeak>;
+
         class IFactory
         {
         public:
@@ -77,7 +84,7 @@ namespace onut
         };
 
         template<typename Ttype>
-        static Ttype stringToValue(const std::string& str);
+        Ttype stringToValue(const std::string& str);
 
         template<typename Tcomponent, typename Ttype, typename Tgetter, typename Tsetter>
         class Property final : public IProperty
@@ -85,10 +92,11 @@ namespace onut
         public:
             Tgetter getter;
             Tsetter setter;
+            ComponentFactory* pComponentFactory;
 
             void set(Component* pCaller, const std::string& valueStr)
             {
-                Ttype value = stringToValue<Ttype>(valueStr);
+                Ttype value = pComponentFactory->stringToValue<Ttype>(valueStr);
                 auto pRealCaller = dynamic_cast<Tcomponent*>(pCaller);
                 auto fn = std::bind(setter, pRealCaller, std::placeholders::_1);
                 fn(value);
@@ -106,6 +114,7 @@ namespace onut
 
         FactoryMap m_factoryMap;
         PropertyComponentMap m_propertyComponentMap;
+        EntityMap m_entityMap;
     };
 
     template<>
@@ -213,6 +222,21 @@ namespace onut
         }
     }
 
+    template<>
+    inline OEntityRef ComponentFactory::stringToValue<OEntityRef>(const std::string& str)
+    {
+        uint32_t entityId = 0;
+        try
+        {
+            entityId = (uint32_t)std::stoi(str);
+            return m_entityMap[entityId].lock();
+        }
+        catch (...)
+        {
+            return nullptr;
+        }
+    }
+
     #define DECL_RES_STR_TO_VAL(__res__) \
     template<> \
     inline O ## __res__ ## Ref ComponentFactory::stringToValue<O ## __res__ ## Ref>(const std::string& str) \
@@ -243,6 +267,7 @@ extern OComponentFactoryRef oComponentFactory;
 #define OBindVector4Property(__class__, __prop__) OBindProperty(Vector4, __class__, __prop__)
 #define OBindColorProperty(__class__, __prop__) OBindProperty(Color, __class__, __prop__)
 #define OBindStringProperty(__class__, __prop__) OBindProperty(std::string, __class__, __prop__)
+#define OBindEntityProperty(__class__, __prop__) OBindProperty(OEntityRef, __class__, __prop__)
 
 // Resources
 #define OBindCSVProperty(__class__, __prop__) OBindProperty(OCSVRef, __class__, __prop__)

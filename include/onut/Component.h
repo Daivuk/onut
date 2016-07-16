@@ -2,8 +2,9 @@
 
 // Forward Declaration
 #include <onut/ForwardDeclaration.h>
-OForwardDeclare(Entity);
+OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Component);
+OForwardDeclare(Entity);
 
 namespace onut
 {
@@ -33,6 +34,8 @@ namespace onut
         virtual void onMessage(int messageId, void* pData) {}
         virtual void onAddChild(const OEntityRef& pChild) {}
         virtual void onRemoveChild(const OEntityRef& pChild) {}
+        virtual void onTriggerEnter(const OCollider2DComponentRef& pCollider) {}
+        virtual void onTriggerLeave(const OCollider2DComponentRef& pCollider) {}
 
     private:
         friend class Entity;

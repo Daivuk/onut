@@ -48,30 +48,20 @@ namespace onut
         }
     }
 
-    void TiledMapComponent::setTiledMap(const OTiledMapRef& pTiledMap)
+    void TiledMapComponent::createCollisionTiles(const iRect& rect)
     {
-        using ComponentMap = std::unordered_map<std::string, OComponentRef>;
-
-        destroyCollisions();
-
-        m_pTiledMap = pTiledMap;
-        if (!m_pTiledMap) return;
-
-        auto pEntity = getEntity();
-        auto pEntityManager = pEntity->getEntityManager();
-        auto pPhysic = pEntityManager->getPhysic2DWorld();
-
-        // Create collision layer
-        m_collisionTiles.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), nullptr);
-        auto pCollisionsLayer = dynamic_cast<OTiledMap::TileLayer*>(pTiledMap->getLayer("collisions"));
+        auto pCollisionsLayer = dynamic_cast<OTiledMap::TileLayer*>(m_pTiledMap->getLayer("collisions"));
         if (pCollisionsLayer)
         {
+            auto pEntity = getEntity();
+            auto pEntityManager = pEntity->getEntityManager();
+            auto pPhysic = pEntityManager->getPhysic2DWorld();
+
             auto tileIds = pCollisionsLayer->tileIds;
             auto w = m_pTiledMap->getWidth();
-            auto h = m_pTiledMap->getHeight();
-            for (int y = 0; y < h; ++y)
+            for (int y = rect.top; y < rect.bottom; ++y)
             {
-                for (int x = 0; x < w; ++x)
+                for (int x = rect.left; x < rect.right; ++x)
                 {
                     if (!tileIds[y * w + x] || m_collisionTiles[y * w + x]) continue;
                     auto pCollisionTile = m_collisionTiles[y * w + x];
@@ -79,9 +69,9 @@ namespace onut
                     pCollisionTile = new CollisionTile();
                     pCollisionTile->mapPos = Point(x, y);
                     pCollisionTile->size = Point(1, 1);
-                    int max = w;
+                    int max = rect.right;
                     int y2;
-                    for (y2 = y; y2 < h; ++y2)
+                    for (y2 = y; y2 < rect.bottom; ++y2)
                     {
                         if (!tileIds[y2 * w + x] || m_collisionTiles[y2 * w + x])
                         {
@@ -108,7 +98,7 @@ namespace onut
                     // Create the body
                     b2BodyDef bodyDef;
                     bodyDef.type = b2_staticBody;
-                    bodyDef.position.Set((float)pCollisionTile->mapPos.x + (float)pCollisionTile->size.x / 2.0f, 
+                    bodyDef.position.Set((float)pCollisionTile->mapPos.x + (float)pCollisionTile->size.x / 2.0f,
                                          (float)pCollisionTile->mapPos.y + (float)pCollisionTile->size.y / 2.0f);
                     pCollisionTile->pBody = pPhysic->CreateBody(&bodyDef);
                     b2PolygonShape box;
@@ -117,6 +107,24 @@ namespace onut
                 }
             }
         }
+    }
+
+    void TiledMapComponent::setTiledMap(const OTiledMapRef& pTiledMap)
+    {
+        using ComponentMap = std::unordered_map<std::string, OComponentRef>;
+
+        destroyCollisions();
+
+        m_pTiledMap = pTiledMap;
+        if (!m_pTiledMap) return;
+
+        auto pEntity = getEntity();
+        auto pEntityManager = pEntity->getEntityManager();
+        auto pPhysic = pEntityManager->getPhysic2DWorld();
+
+        // Create collision layer
+        m_collisionTiles.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), nullptr);
+        createCollisionTiles({0, 0, m_pTiledMap->getWidth(), m_pTiledMap->getHeight()});
 
         // Populate with entities
         auto pEntitiesLayer = dynamic_cast<OTiledMap::ObjectLayer*>(pTiledMap->getLayer("entities"));
@@ -131,6 +139,13 @@ namespace onut
                 auto position = object.position + Vector2(object.size / 2.0f);
                 pMapEntity->setLocalTransform(Matrix::CreateTranslation(position));
                 pMapEntity->setName(object.name);
+                oComponentFactory->registerEntity(object.id, pMapEntity);
+            }
+
+            for (uint32_t i = 0; i < pEntitiesLayer->objectCount; ++i)
+            {
+                auto& object = pEntitiesLayer->pObjects[i];
+                auto pMapEntity = oComponentFactory->getEntity(object.id);
 
                 // Load his components
                 ComponentMap componentMap;
@@ -167,6 +182,8 @@ namespace onut
                 // Add the entity to the map
                 pEntity->add(pMapEntity);
             }
+
+            oComponentFactory->clearEntityRegistry();
         }
     }
 
@@ -206,6 +223,79 @@ namespace onut
             {
                 pCollider2DComponent->setPhysicScale((float)m_pTiledMap->getTileSize());
             }
+        }
+    }
+
+    bool TiledMapComponent::getPassable(const Point& mapPos) const
+    {
+        auto w = m_pTiledMap->getWidth();
+        auto h = m_pTiledMap->getHeight();
+        if (mapPos.x < 0 || mapPos.x >= w || mapPos.y < 0 || mapPos.y >= h) return false;
+        return m_collisionTiles[mapPos.y * w + mapPos.x] == nullptr;
+    }
+
+    void TiledMapComponent::setPassable(const Point& mapPos, bool passable)
+    {
+        auto w = m_pTiledMap->getWidth();
+        auto h = m_pTiledMap->getHeight();
+        if (mapPos.x < 0 || mapPos.x >= w || mapPos.y < 0 || mapPos.y >= h) return;
+        if (getPassable(mapPos) == passable) return;
+
+        auto pEntity = getEntity();
+        auto pEntityManager = pEntity->getEntityManager();
+        auto pPhysic = pEntityManager->getPhysic2DWorld();
+
+        auto pCollisionTile = m_collisionTiles[mapPos.y * w + mapPos.x];
+        if (pCollisionTile)
+        {
+            auto pCollisionsLayer = dynamic_cast<OTiledMap::TileLayer*>(m_pTiledMap->getLayer("collisions"));
+            if (pCollisionsLayer)
+            {
+                pCollisionsLayer->tileIds[mapPos.y * w + mapPos.x] = 0;
+            }
+
+            iRect rect{
+                pCollisionTile->mapPos.x, 
+                pCollisionTile->mapPos.y,
+                pCollisionTile->mapPos.x + pCollisionTile->size.x, 
+                pCollisionTile->mapPos.y + pCollisionTile->size.y
+            };
+
+            pPhysic->DestroyBody(pCollisionTile->pBody);
+            for (int y = rect.top; y < rect.bottom; ++y)
+            {
+                for (int x = rect.left; x < rect.right; ++x)
+                {
+                    m_collisionTiles[y * w + x] = nullptr;
+                }
+            }
+            delete pCollisionTile;
+
+            createCollisionTiles(rect);
+        }
+        else
+        {
+            auto pCollisionsLayer = dynamic_cast<OTiledMap::TileLayer*>(m_pTiledMap->getLayer("collisions"));
+            if (pCollisionsLayer)
+            {
+                pCollisionsLayer->tileIds[mapPos.y * w + mapPos.x] = 1;
+            }
+
+            // Just add a new one here
+            pCollisionTile = new CollisionTile();
+            pCollisionTile->mapPos = mapPos;
+            pCollisionTile->size = Point(1, 1);
+            m_collisionTiles[mapPos.y * w + mapPos.x] = pCollisionTile;
+
+            // Create the body
+            b2BodyDef bodyDef;
+            bodyDef.type = b2_staticBody;
+            bodyDef.position.Set((float)pCollisionTile->mapPos.x + (float)pCollisionTile->size.x / 2.0f,
+                                 (float)pCollisionTile->mapPos.y + (float)pCollisionTile->size.y / 2.0f);
+            pCollisionTile->pBody = pPhysic->CreateBody(&bodyDef);
+            b2PolygonShape box;
+            box.SetAsBox((float)pCollisionTile->size.x / 2.0f, (float)pCollisionTile->size.y / 2.0f);
+            pCollisionTile->pBody->CreateFixture(&box, 0.0f);
         }
     }
 };
