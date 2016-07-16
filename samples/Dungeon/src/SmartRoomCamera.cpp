@@ -9,7 +9,7 @@
 
 void SmartRoomCamera::onCreate()
 {
-    auto& pEntityManager = getEntity()->getEntityManager();
+    auto& pEntityManager = getEntityManager();
 
     m_pPlayer = pEntityManager->findEntity("player");
     m_pTiledMap = pEntityManager->findEntity("dungeon")->getComponent<OTiledMapComponent>()->getTiledMap();
@@ -111,5 +111,5 @@ void SmartRoomCamera::onUpdate()
         pos.y = onut::min(((float)maxBound.y - 2.5f) * 16.0f, pos.y);
     }
 
-    getEntity()->setLocalTransform(Matrix::CreateTranslation(pos));
+    setLocalTransform(Matrix::CreateTranslation(pos));
 }

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <onut/Maths.h>
+
 // Forward Declaration
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
+OForwardDeclare(EntityManager);
 
 namespace onut
 {
@@ -18,11 +21,24 @@ namespace onut
         bool isEnabled() const;
         void setEnabled(bool isEnabled);
 
+        // Entity mirror functions for convenience
         template<typename Tcomponent>
         std::shared_ptr<Tcomponent> getComponent() const
         {
             return getEntity()->getComponent<Tcomponent>();
         }
+        template<typename Tcomponent>
+        std::shared_ptr<Tcomponent> getParentComponent() const
+        {
+            return getEntity()->getParentComponent<Tcomponent>();
+        }
+        const OEntityManagerRef& getEntityManager() const;
+        void sendMessage(int messageId, void* pData = nullptr);
+        void destroy();
+        const Matrix& getLocalTransform() const;
+        const Matrix& getWorldTransform();
+        void setLocalTransform(const Matrix& localTransform);
+        void setWorldTransform(const Matrix& worldTransform);
 
     protected:
         Component();

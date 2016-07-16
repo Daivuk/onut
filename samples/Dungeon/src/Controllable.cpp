@@ -19,8 +19,8 @@ void Controllable::setSpeed(float speed)
 
 void Controllable::onCreate()
 {
-    m_pSpriteAnimComponent = getEntity()->getComponent<OSpriteAnimComponent>();
-    m_pCollider2DComponent = getEntity()->getComponent<OCollider2DComponent>();
+    m_pSpriteAnimComponent = getComponent<OSpriteAnimComponent>();
+    m_pCollider2DComponent = getComponent<OCollider2DComponent>();
 }
 
 void Controllable::onUpdate()
@@ -67,7 +67,6 @@ void Controllable::onUpdate()
 
     if (m_pSpriteAnimComponent) m_pSpriteAnimComponent->play("run_" + m_dir);
 
-    auto& pEntity = getEntity();
-    Vector2 position = pEntity->getLocalTransform().Translation();
+    Vector2 position = getLocalTransform().Translation();
     m_pCollider2DComponent->setVelocity(dir * m_speed);
 }

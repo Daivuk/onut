@@ -41,4 +41,39 @@ namespace onut
         }
         m_isEnabled = isEnabled;
     }
+
+    const OEntityManagerRef& Component::getEntityManager() const
+    {
+        return getEntity()->getEntityManager();
+    }
+
+    void Component::sendMessage(int messageId, void* pData)
+    {
+        getEntity()->sendMessage(messageId, pData);
+    }
+
+    void Component::destroy()
+    {
+        getEntity()->destroy();
+    }
+
+    const Matrix& Component::getLocalTransform() const
+    {
+        return getEntity()->getLocalTransform();
+    }
+
+    const Matrix& Component::getWorldTransform()
+    {
+        return getEntity()->getWorldTransform();
+    }
+
+    void Component::setLocalTransform(const Matrix& localTransform)
+    {
+        getEntity()->setLocalTransform(localTransform);
+    }
+
+    void Component::setWorldTransform(const Matrix& worldTransform)
+    {
+        getEntity()->setWorldTransform(worldTransform);
+    }
 };

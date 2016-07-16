@@ -11,12 +11,12 @@ extern OAnimFloat m_fadeAnim;
 
 void DoorTraverser::onCreate()
 {
-    m_pTiledMapComponent = getEntity()->getParentComponent<OTiledMapComponent>();
+    m_pTiledMapComponent = getParentComponent<OTiledMapComponent>();
 }
 
 void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
 {
-    auto pDoor = pCollider->getEntity()->getComponent<Door>();
+    auto pDoor = pCollider->getComponent<Door>();
     if (pDoor)
     {
         if (pDoor->getOpen())
@@ -26,11 +26,11 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
             if (pTarget)
             {
                 auto pTargetDoor = pTarget->getComponent<Door>();
-                auto pCollider = getEntity()->getComponent<OCollider2DComponent>();
+                auto pCollider = getComponent<OCollider2DComponent>();
                 if (pTargetDoor)
                 {
                     auto targetMapPos = pTargetDoor->getMapPos();
-                    Vector2 targetPos = pTargetDoor->getEntity()->getLocalTransform().Translation();
+                    Vector2 targetPos = pTargetDoor->getLocalTransform().Translation();
                     if (m_pTiledMapComponent->getPassable(Point(targetMapPos.x - 1, targetMapPos.y)))
                     {
                         targetPos.x -= 12.0f;

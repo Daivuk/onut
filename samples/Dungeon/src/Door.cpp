@@ -80,18 +80,18 @@ const Point& Door::getMapPos() const
 
 void Door::onCreate()
 {
-    Vector2 pos = getEntity()->getLocalTransform().Translation() / 16.0f;
+    Vector2 pos = getLocalTransform().Translation() / 16.0f;
     m_mapPos.x = (int)pos.x;
     m_mapPos.y = (int)pos.y;
 
-    m_pCollider = getEntity()->getComponent<OCollider2DComponent>();
+    m_pCollider = getComponent<OCollider2DComponent>();
     if (m_pCollider)
     {
         m_closeSize = m_pCollider->getSize();
         m_openSize = m_closeSize / 2.0f;
     }
 
-    m_pTiledMapComponent = getEntity()->getParentComponent<OTiledMapComponent>();
+    m_pTiledMapComponent = getParentComponent<OTiledMapComponent>();
     m_pTiledMap = m_pTiledMapComponent->getTiledMap();
     m_pTileLayer = (OTiledMap::TileLayer*)m_pTiledMap->getLayer("tiles");
 }
