@@ -9,6 +9,8 @@ ForwardDeclare(SmartRoomCamera);
 class SmartRoomCamera final : public OComponent
 {
 public:
+    SmartRoomCamera();
+
     void onCreate() override;
     void onUpdate() override;
 

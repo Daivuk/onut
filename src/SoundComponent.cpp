@@ -5,6 +5,11 @@
 
 namespace onut
 {
+    SoundComponent::SoundComponent()
+        : Component(FLAG_UPDATABLE)
+    {
+    }
+
     void SoundComponent::setSound(const OSoundRef& pSound)
     {
         m_pSound = pSound;

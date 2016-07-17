@@ -82,7 +82,7 @@ namespace onut
         {
             for (auto& pComponent : pRawEntity->m_components)
             {
-                if (pComponent->isEnabled())
+                if (pComponent->m_isEnabled && pComponent->m_flags & Component::FLAG_UPDATABLE)
                 {
                     addComponentAction(pComponent, m_componentUpdates, ComponentAction::Action::Remove);
                 }
@@ -92,7 +92,10 @@ namespace onut
         {
             for (auto& pComponent : pRawEntity->m_components)
             {
-                addComponentAction(pComponent, m_componentRenders, ComponentAction::Action::Remove);
+                if (pComponent->m_isEnabled && pComponent->m_flags & Component::FLAG_RENDERABLE)
+                {
+                    addComponentAction(pComponent, m_componentRenders, ComponentAction::Action::Remove);
+                }
             }
         }
 

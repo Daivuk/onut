@@ -5,6 +5,11 @@
 
 namespace onut
 {
+    Camera2DComponent::Camera2DComponent()
+        : Component(FLAG_UPDATABLE)
+    {
+    }
+
     void Camera2DComponent::setClear(bool clear)
     {
         m_clear = clear;

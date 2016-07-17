@@ -9,6 +9,11 @@
 
 namespace onut
 {
+    Collider2DComponent::Collider2DComponent()
+        : Component(FLAG_UPDATABLE)
+    {
+    }
+
     Collider2DComponent::~Collider2DComponent()
     {
         destroyBody();

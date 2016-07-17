@@ -15,6 +15,8 @@ namespace onut
     class SoundComponent final : public Component
     {
     public:
+        SoundComponent();
+
         void setSound(const OSoundRef& pSound);
         const OSoundRef& getSound() const;
 

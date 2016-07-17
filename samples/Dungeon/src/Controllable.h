@@ -11,6 +11,8 @@ ForwardDeclare(Controllable);
 class Controllable final : public OComponent
 {
 public:
+    Controllable();
+
     void onCreate() override;
     void onUpdate() override;
 

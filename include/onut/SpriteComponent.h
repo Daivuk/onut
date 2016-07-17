@@ -14,6 +14,8 @@ namespace onut
     class SpriteComponent final : public Component
     {
     public:
+        SpriteComponent();
+
         void setTexture(const OTextureRef& pTexture);
         const OTextureRef& getTexture() const;
 

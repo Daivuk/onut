@@ -17,6 +17,7 @@ namespace onut
     class TiledMapComponent final : public Component
     {
     public:
+        TiledMapComponent();
         ~TiledMapComponent();
 
         void setTiledMap(const OTiledMapRef& pTiledMap);

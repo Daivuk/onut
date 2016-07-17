@@ -14,6 +14,7 @@ namespace onut
     class Collider2DComponent final : public Component
     {
     public:
+        Collider2DComponent();
         ~Collider2DComponent();
 
         const Vector2& getSize() const;

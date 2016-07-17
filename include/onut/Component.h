@@ -14,6 +14,15 @@ namespace onut
     class Component : public std::enable_shared_from_this<Component>
     {
     public:
+        enum Flag : int
+        {
+            FLAG_NONE = 0,
+            FLAG_RENDERABLE = 1,
+            FLAG_UPDATABLE = 2,
+            FLAG_RENDERABLE_2D = 4,
+            FLAG_BROADCAST_LISTENER = 8,
+        };
+
         virtual ~Component();
 
         const OEntityRef& getEntity() const;
@@ -41,7 +50,7 @@ namespace onut
         void setWorldTransform(const Matrix& worldTransform);
 
     protected:
-        Component();
+        Component(int flags = FLAG_NONE);
 
         virtual void onCreate() {}
         virtual void onUpdate() {}
@@ -59,5 +68,6 @@ namespace onut
 
         OEntityRef m_pEntity;
         bool m_isEnabled = true;
+        int m_flags = FLAG_NONE;
     };
 };

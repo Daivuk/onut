@@ -454,6 +454,12 @@ namespace onut
         return m_pMinimap;
     }
 
+    uint32_t TiledMap::getTileAt(TileLayer *pLayer, int x, int y) const
+    {
+        if (x < 0 || y < 0 || x >= pLayer->width || y >= pLayer->height) return 0;
+        return pLayer->tileIds[y * pLayer->width + x];
+    }
+
     void TiledMap::setTileAt(TileLayer *pLayer, int x, int y, uint32_t tileId)
     {
         if (x < 0 || y < 0 || x >= pLayer->width || y >= pLayer->height) return;

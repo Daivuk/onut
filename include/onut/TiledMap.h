@@ -91,6 +91,7 @@ namespace onut
 
         void setFiltering(onut::sample::Filtering filtering);
 
+        uint32_t getTileAt(TileLayer *pLayer, int x, int y) const;
         void setTileAt(TileLayer *pLayer, int x, int y, uint32_t tileId);
 
     private:

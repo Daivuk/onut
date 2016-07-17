@@ -7,6 +7,11 @@
 #include <onut/SpriteAnimComponent.h>
 #include <onut/Timing.h>
 
+Controllable::Controllable()
+    : OComponent(FLAG_UPDATABLE)
+{
+}
+
 float Controllable::getSpeed() const
 {
     return m_speed;

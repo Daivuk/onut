@@ -15,6 +15,11 @@
 
 namespace onut
 {
+    TiledMapComponent::TiledMapComponent()
+        : Component(FLAG_RENDERABLE_2D)
+    {
+    }
+
     TiledMapComponent::~TiledMapComponent()
     {
         destroyCollisions();

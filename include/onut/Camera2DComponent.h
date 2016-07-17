@@ -13,6 +13,8 @@ namespace onut
     class Camera2DComponent final : public Component
     {
     public:
+        Camera2DComponent();
+
         void setZoom(float zoom);
         const float getZoom() const;
 

@@ -20,8 +20,6 @@ namespace onut
 
     Entity::~Entity()
     {
-        int tmp;
-        tmp = 5;
     }
 
     void Entity::destroy()
@@ -147,7 +145,7 @@ namespace onut
             {
                 for (auto& pComponent : m_components)
                 {
-                    if (pComponent->isEnabled())
+                    if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
                         m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
                     }
@@ -157,7 +155,7 @@ namespace onut
             {
                 for (auto& pComponent : m_components)
                 {
-                    if (pComponent->isEnabled())
+                    if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
                         m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
                     }
@@ -178,7 +176,7 @@ namespace onut
         {
             for (auto& pComponent : m_components)
             {
-                if (pComponent->isEnabled())
+                if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE)
                 {
                     m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Remove);
                 }
@@ -188,7 +186,7 @@ namespace onut
         {
             for (auto& pComponent : m_components)
             {
-                if (pComponent->isEnabled())
+                if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE)
                 {
                     m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Add);
                 }
@@ -210,7 +208,7 @@ namespace onut
             {
                 for (auto& pComponent : m_components)
                 {
-                    if (pComponent->isEnabled())
+                    if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
                         m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
                     }
@@ -220,7 +218,7 @@ namespace onut
             {
                 for (auto& pComponent : m_components)
                 {
-                    if (pComponent->isEnabled())
+                    if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
                         m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
                     }
@@ -240,11 +238,11 @@ namespace onut
         m_components.push_back(pComponent);
         if (pComponent->isEnabled())
         {
-            if (m_isEnabled && !m_isStatic)
+            if (m_isEnabled && !m_isStatic && pComponent->m_flags & Component::FLAG_UPDATABLE)
             {
                 m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
             }
-            if (m_isVisible)
+            if (m_isVisible && pComponent->m_flags & Component::FLAG_RENDERABLE)
             {
                 m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Add);
             }

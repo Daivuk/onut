@@ -6,6 +6,11 @@
 
 namespace onut
 {
+    SpriteComponent::SpriteComponent()
+        : Component(FLAG_RENDERABLE_2D)
+    {
+    }
+
     void SpriteComponent::setTexture(const OTextureRef& pTexture)
     {
         m_pTexture = pTexture;

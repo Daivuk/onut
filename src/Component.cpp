@@ -5,7 +5,8 @@
 
 namespace onut
 {
-    Component::Component()
+    Component::Component(int flags)
+        : m_flags(flags)
     {
     }
 
@@ -25,7 +26,7 @@ namespace onut
 
     void Component::setEnabled(bool isEnabled)
     {
-        if (m_pEntity->m_pSceneManager)
+        if (m_pEntity->m_pSceneManager && m_flags & FLAG_UPDATABLE)
         {
             if (m_pEntity->isEnabled() && !m_pEntity->isStatic())
             {

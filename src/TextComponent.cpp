@@ -6,6 +6,11 @@
 
 namespace onut
 {
+    TextComponent::TextComponent()
+        : Component(FLAG_RENDERABLE_2D)
+    {
+    }
+
     void TextComponent::setFont(const OFontRef& pFont)
     {
         m_pFont = pFont;

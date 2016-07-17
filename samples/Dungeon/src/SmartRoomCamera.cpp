@@ -7,6 +7,11 @@
 #include "Defines.h"
 #include "SmartRoomCamera.h"
 
+SmartRoomCamera::SmartRoomCamera()
+    : OComponent(FLAG_UPDATABLE)
+{
+}
+
 void SmartRoomCamera::onCreate()
 {
     auto& pSceneManager = getSceneManager();

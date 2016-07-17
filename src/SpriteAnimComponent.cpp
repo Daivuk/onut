@@ -9,6 +9,11 @@
 
 namespace onut
 {
+    SpriteAnimComponent::SpriteAnimComponent()
+        : Component(FLAG_RENDERABLE_2D)
+    {
+    }
+
     void SpriteAnimComponent::setSpriteAnim(const OSpriteAnimRef& pSpriteAnim)
     {
         m_pSpriteAnim = pSpriteAnim;

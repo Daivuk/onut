@@ -14,6 +14,8 @@ namespace onut
     class TextComponent final : public Component
     {
     public:
+        TextComponent();
+
         void setFont(const OFontRef& pFont);
         const OFontRef& getFont() const;
 

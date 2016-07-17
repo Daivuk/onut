@@ -15,6 +15,8 @@ namespace onut
     class SpriteAnimComponent final : public Component
     {
     public:
+        SpriteAnimComponent();
+
         void setSpriteAnim(const OSpriteAnimRef& pSpriteAnim);
         const OSpriteAnimRef& getSpriteAnim() const;
 
