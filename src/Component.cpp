@@ -1,7 +1,7 @@
 // Onut includes
 #include <onut/Component.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 
 namespace onut
 {
@@ -25,26 +25,26 @@ namespace onut
 
     void Component::setEnabled(bool isEnabled)
     {
-        if (m_pEntity->m_pEntityManager)
+        if (m_pEntity->m_pSceneManager)
         {
             if (m_pEntity->isEnabled() && !m_pEntity->isStatic())
             {
                 if (m_isEnabled && !isEnabled)
                 {
-                    m_pEntity->m_pEntityManager->addComponentAction(OThis, m_pEntity->m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Remove);
+                    m_pEntity->m_pSceneManager->addComponentAction(OThis, m_pEntity->m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
                 }
                 else if (!m_isEnabled && isEnabled)
                 {
-                    m_pEntity->m_pEntityManager->addComponentAction(OThis, m_pEntity->m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Add);
+                    m_pEntity->m_pSceneManager->addComponentAction(OThis, m_pEntity->m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
                 }
             }
         }
         m_isEnabled = isEnabled;
     }
 
-    const OEntityManagerRef& Component::getEntityManager() const
+    const OSceneManagerRef& Component::getSceneManager() const
     {
-        return getEntity()->getEntityManager();
+        return getEntity()->getSceneManager();
     }
 
     void Component::sendMessage(int messageId, void* pData)

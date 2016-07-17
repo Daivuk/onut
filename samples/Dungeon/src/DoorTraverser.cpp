@@ -3,7 +3,7 @@
 
 #include <onut/Collider2DComponent.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Sound.h>
 #include <onut/TiledMapComponent.h>
 
@@ -49,12 +49,12 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
                     }
 
                     auto pEntity = getEntity();
-                    auto pEntityManager = pEntity->getEntityManager();
+                    auto pSceneManager = pEntity->getSceneManager();
 
                     // Pause, fade out then teleport
-                    pEntityManager->setPause(true);
+                    pSceneManager->setPause(true);
                     m_fadeAnim.queue(0.0f, .5f, OTweenLinear, 
-                                     [pEntity, pEntityManager, pCollider, targetPos]
+                                     [pEntity, pSceneManager, pCollider, targetPos]
                     {
                         if (pCollider)
                         {
@@ -64,16 +64,16 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
                         {
                             pEntity->setLocalTransform(Matrix::CreateTranslation(targetPos));
                         }
-                        pEntityManager->setPause(false);
-                        pEntityManager->update();
-                        pEntityManager->setPause(true);
+                        pSceneManager->setPause(false);
+                        pSceneManager->update();
+                        pSceneManager->setPause(true);
                     });
 
                     // Fade in then unpause
                     m_fadeAnim.queue(1.0f, .5f, OTweenLinear, 
-                                     [pEntityManager]
+                                     [pSceneManager]
                     {
-                        pEntityManager->setPause(false);
+                        pSceneManager->setPause(false);
                     });
 
                     m_fadeAnim.play();

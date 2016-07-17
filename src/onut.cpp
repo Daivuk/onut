@@ -4,7 +4,7 @@
 #include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
 #include <onut/Dispatcher.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
@@ -143,7 +143,7 @@ namespace onut
         oComponentFactory->registerDefaultComponents();
 
         // Entity Manager
-        oEntityManager = EntityManager::create();
+        oSceneManager = SceneManager::create();
 
         // Undo/Redo for editors
         oActionManager = ActionManager::create();
@@ -155,7 +155,7 @@ namespace onut
     {
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
-        oEntityManager = nullptr;
+        oSceneManager = nullptr;
         oComponentFactory = nullptr;
         oDispatcher = nullptr;
         oUpdater = nullptr;
@@ -259,7 +259,7 @@ namespace onut
                                 OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
                 }
                 oParticleSystemManager->update();
-                oEntityManager->update();
+                oSceneManager->update();
                 if (updateCallback)
                 {
                     updateCallback();
@@ -274,7 +274,7 @@ namespace onut
             {
                 renderCallback();
             }
-            oEntityManager->render();
+            oSceneManager->render();
             oParticleSystemManager->render();
             oSpriteBatch->begin();
             oUI->render(oUIContext);

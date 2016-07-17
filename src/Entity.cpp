@@ -1,16 +1,16 @@
 // Onut includes
 #include <onut/Component.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 
 namespace onut
 {
-    OEntityRef Entity::create(const OEntityManagerRef& in_pEntityManager)
+    OEntityRef Entity::create(const OSceneManagerRef& in_pSceneManager)
     {
-        auto pEntityManager = in_pEntityManager;
-        if (!pEntityManager) pEntityManager = oEntityManager;
+        auto pSceneManager = in_pSceneManager;
+        if (!pSceneManager) pSceneManager = oSceneManager;
         auto pEntity = std::shared_ptr<OEntity>(new OEntity());
-        pEntityManager->addEntity(pEntity);
+        pSceneManager->addEntity(pEntity);
         return pEntity;
     }
 
@@ -20,11 +20,13 @@ namespace onut
 
     Entity::~Entity()
     {
+        int tmp;
+        tmp = 5;
     }
 
     void Entity::destroy()
     {
-        m_pEntityManager->removeEntity(OThis);
+        m_pSceneManager->removeEntity(OThis);
     }
 
     OEntityRef Entity::copy() const
@@ -146,7 +148,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled())
                     {
-                        m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Remove);
+                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
                     }
                 }
             }
@@ -156,7 +158,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled())
                     {
-                        m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Add);
+                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
                     }
                 }
             }
@@ -177,7 +179,7 @@ namespace onut
             {
                 if (pComponent->isEnabled())
                 {
-                    m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentRenders, EntityManager::ComponentAction::Action::Remove);
+                    m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Remove);
                 }
             }
         }
@@ -187,7 +189,7 @@ namespace onut
             {
                 if (pComponent->isEnabled())
                 {
-                    m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentRenders, EntityManager::ComponentAction::Action::Add);
+                    m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Add);
                 }
             }
         }
@@ -209,7 +211,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled())
                     {
-                        m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Remove);
+                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
                     }
                 }
             }
@@ -219,7 +221,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled())
                     {
-                        m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Add);
+                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
                     }
                 }
             }
@@ -230,20 +232,20 @@ namespace onut
     void Entity::addComponent(const OComponentRef& pComponent)
     {
         pComponent->m_pEntity = OThis;
-        if (m_pEntityManager)
+        if (m_pSceneManager)
         {
-            m_pEntityManager->m_componentJustCreated.push_back(pComponent);
+            m_pSceneManager->m_componentJustCreated.push_back(pComponent);
         }
         m_components.push_back(pComponent);
         if (pComponent->isEnabled())
         {
             if (m_isEnabled && !m_isStatic)
             {
-                m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentUpdates, EntityManager::ComponentAction::Action::Add);
+                m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
             }
             if (m_isVisible)
             {
-                m_pEntityManager->addComponentAction(pComponent, m_pEntityManager->m_componentRenders, EntityManager::ComponentAction::Action::Add);
+                m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Add);
             }
         }
     }
@@ -266,9 +268,9 @@ namespace onut
         }
     }
 
-    const OEntityManagerRef& Entity::getEntityManager() const
+    const OSceneManagerRef& Entity::getSceneManager() const
     {
-        return m_pEntityManager;
+        return m_pSceneManager;
     }
 
     const std::string Entity::getName() const

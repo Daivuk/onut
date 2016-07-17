@@ -9,7 +9,7 @@ OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Camera2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
-OForwardDeclare(EntityManager);
+OForwardDeclare(SceneManager);
 OForwardDeclare(Updater);
 class b2Contact;
 class b2World;
@@ -18,12 +18,12 @@ namespace onut
 {
     class Physic2DContactListener;
 
-    class EntityManager final : public std::enable_shared_from_this<EntityManager>
+    class SceneManager final : public std::enable_shared_from_this<SceneManager>
     {
     public:
-        static OEntityManagerRef create();
+        static OSceneManagerRef create();
 
-        ~EntityManager();
+        ~SceneManager();
 
         void update();
         void render();
@@ -89,7 +89,7 @@ namespace onut
         void end2DContact(b2Contact* pContact);
         void performContacts();
 
-        EntityManager();
+        SceneManager();
 
         Entities m_entities;
         Components m_componentUpdates;
@@ -106,4 +106,4 @@ namespace onut
     };
 };
 
-extern OEntityManagerRef oEntityManager;
+extern OSceneManagerRef oSceneManager;

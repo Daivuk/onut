@@ -461,9 +461,6 @@
     <ClInclude Include="..\..\include\onut\Entity.h">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\EntityManager.h">
-      <Filter>entities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\EntityFactory.h">
       <Filter>entities</Filter>
     </ClInclude>
@@ -631,6 +628,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Box2D\Rope\b2Rope.h">
       <Filter>thirdparties\Box2D\Rope</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SceneManager.h">
+      <Filter>entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -908,9 +908,6 @@
     <ClCompile Include="..\..\src\Entity.cpp">
       <Filter>entities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\EntityManager.cpp">
-      <Filter>entities</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\EntityFactory.cpp">
       <Filter>entities</Filter>
     </ClCompile>
@@ -1078,6 +1075,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Box2D\Rope\b2Rope.cpp">
       <Filter>thirdparties\Box2D\Rope</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SceneManager.cpp">
+      <Filter>entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

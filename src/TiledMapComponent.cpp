@@ -2,7 +2,7 @@
 #include <onut/Collider2DComponent.h>
 #include <onut/ComponentFactory.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Log.h>
 #include <onut/Strings.h>
 #include <onut/TiledMap.h>
@@ -25,8 +25,8 @@ namespace onut
         if (m_pTiledMap)
         {
             auto pEntity = getEntity();
-            auto pEntityManager = pEntity->getEntityManager();
-            auto pPhysic = pEntityManager->getPhysic2DWorld();
+            auto pSceneManager = pEntity->getSceneManager();
+            auto pPhysic = pSceneManager->getPhysic2DWorld();
             auto w = m_pTiledMap->getWidth();
             for (auto pCollisionTile : m_collisionTiles)
             {
@@ -54,8 +54,8 @@ namespace onut
         if (pCollisionsLayer)
         {
             auto pEntity = getEntity();
-            auto pEntityManager = pEntity->getEntityManager();
-            auto pPhysic = pEntityManager->getPhysic2DWorld();
+            auto pSceneManager = pEntity->getSceneManager();
+            auto pPhysic = pSceneManager->getPhysic2DWorld();
 
             auto tileIds = pCollisionsLayer->tileIds;
             auto w = m_pTiledMap->getWidth();
@@ -119,8 +119,8 @@ namespace onut
         if (!m_pTiledMap) return;
 
         auto pEntity = getEntity();
-        auto pEntityManager = pEntity->getEntityManager();
-        auto pPhysic = pEntityManager->getPhysic2DWorld();
+        auto pSceneManager = pEntity->getSceneManager();
+        auto pPhysic = pSceneManager->getPhysic2DWorld();
 
         // Create collision layer
         m_collisionTiles.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), nullptr);
@@ -242,8 +242,8 @@ namespace onut
         if (getPassable(mapPos) == passable) return;
 
         auto pEntity = getEntity();
-        auto pEntityManager = pEntity->getEntityManager();
-        auto pPhysic = pEntityManager->getPhysic2DWorld();
+        auto pSceneManager = pEntity->getSceneManager();
+        auto pPhysic = pSceneManager->getPhysic2DWorld();
 
         auto pCollisionTile = m_collisionTiles[mapPos.y * w + mapPos.x];
         if (pCollisionTile)

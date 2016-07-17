@@ -11,14 +11,14 @@
 OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
-OForwardDeclare(EntityManager);
+OForwardDeclare(SceneManager);
 
 namespace onut
 {
     class Entity final : public std::enable_shared_from_this<Entity>
     {
     public:
-        static OEntityRef create(const OEntityManagerRef& pEntityManager = nullptr);
+        static OEntityRef create(const OSceneManagerRef& pSceneManager = nullptr);
 
         ~Entity();
 
@@ -88,12 +88,12 @@ namespace onut
 
         void addComponent(const OComponentRef& pComponent);
 
-        const OEntityManagerRef& getEntityManager() const;
+        const OSceneManagerRef& getSceneManager() const;
         void sendMessage(int messageId, void* pData = nullptr);
 
     private:
         friend class Component;
-        friend class EntityManager;
+        friend class SceneManager;
 
         using Entities = std::vector<OEntityRef>;
         using Components = std::vector<OComponentRef>;
@@ -111,7 +111,7 @@ namespace onut
         OEntityWeak m_pParent;
         Components m_components;
         Entities m_children;
-        OEntityManagerRef m_pEntityManager;
+        OSceneManagerRef m_pSceneManager;
         bool m_isEnabled = true;
         bool m_isVisible = true;
         bool m_isStatic = false;

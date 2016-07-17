@@ -7,7 +7,7 @@
 OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Component);
 OForwardDeclare(Entity);
-OForwardDeclare(EntityManager);
+OForwardDeclare(SceneManager);
 
 namespace onut
 {
@@ -32,7 +32,7 @@ namespace onut
         {
             return getEntity()->getParentComponent<Tcomponent>();
         }
-        const OEntityManagerRef& getEntityManager() const;
+        const OSceneManagerRef& getSceneManager() const;
         void sendMessage(int messageId, void* pData = nullptr);
         void destroy();
         const Matrix& getLocalTransform() const;
@@ -55,7 +55,7 @@ namespace onut
 
     private:
         friend class Entity;
-        friend class EntityManager;
+        friend class SceneManager;
 
         OEntityRef m_pEntity;
         bool m_isEnabled = true;

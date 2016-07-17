@@ -11,10 +11,12 @@
 #include <onut/SpriteBatch.h>
 
 // Game includes
+#include "Chest.h"
 #include "Controllable.h"
 #include "Door.h"
 #include "DoorTraverser.h"
 #include "SmartRoomCamera.h"
+#include "TreasureHunter.h"
 
 void init();
 void update();
@@ -32,18 +34,29 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void registerComponents()
 {
+    // A chest containing treasures!
+    ORegisterComponent(Chest);
+    OBindIntProperty(Chest, Gold);
+
+    // Component allowing to controller a character
     ORegisterComponent(Controllable);
     OBindFloatProperty(Controllable, Speed);
 
+    // A door
     ORegisterComponent(Door);
     OBindBoolProperty(Door, Open);
     OBindSoundProperty(Door, OpenSound);
     OBindSoundProperty(Door, CloseSound);
     OBindEntityProperty(Door, Target);
 
+    // Allows the owner entity to traverse doors
     ORegisterComponent(DoorTraverser);
 
+    // Will position itself to follow the main player, but also respected room restrictions
     ORegisterComponent(SmartRoomCamera);
+
+    // A treasure hunter entity can open cheats
+    ORegisterComponent(TreasureHunter);
 }
 
 void init()

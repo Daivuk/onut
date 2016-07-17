@@ -14,6 +14,12 @@
     <ClCompile Include="..\..\src\Door.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Chest.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TreasureHunter.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Controllable.h">
@@ -29,6 +35,12 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Defines.h" />
+    <ClInclude Include="..\..\src\Chest.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\TreasureHunter.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Components">

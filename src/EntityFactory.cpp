@@ -1,6 +1,6 @@
 // Onut includes
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Sound.h>

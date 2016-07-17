@@ -1,7 +1,7 @@
 // Onut includes
 #include <onut/Camera2DComponent.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 
 namespace onut
 {
@@ -37,6 +37,6 @@ namespace onut
 
     void Camera2DComponent::onUpdate()
     {
-        getEntity()->getEntityManager()->setActiveCamera2D(ODynamicCast<Camera2DComponent>(OThis));
+        getEntity()->getSceneManager()->setActiveCamera2D(ODynamicCast<Camera2DComponent>(OThis));
     }
 };

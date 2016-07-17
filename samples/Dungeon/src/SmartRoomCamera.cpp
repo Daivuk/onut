@@ -1,5 +1,5 @@
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Point.h>
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
@@ -9,10 +9,10 @@
 
 void SmartRoomCamera::onCreate()
 {
-    auto& pEntityManager = getEntityManager();
+    auto& pSceneManager = getSceneManager();
 
-    m_pPlayer = pEntityManager->findEntity("player");
-    m_pTiledMap = pEntityManager->findEntity("dungeon")->getComponent<OTiledMapComponent>()->getTiledMap();
+    m_pPlayer = pSceneManager->findEntity("player");
+    m_pTiledMap = pSceneManager->findEntity("dungeon")->getComponent<OTiledMapComponent>()->getTiledMap();
 
     m_paint.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), 0);
 }

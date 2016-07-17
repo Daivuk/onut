@@ -3,7 +3,7 @@
 #include <onut/Camera2DComponent.h>
 #include <onut/Component.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Timing.h>
@@ -12,38 +12,38 @@
 // Third parties
 #include <Box2D/Box2D.h>
 
-OEntityManagerRef oEntityManager;
+OSceneManagerRef oSceneManager;
 
 namespace onut
 {
     class Physic2DContactListener : public b2ContactListener
     {
     public:
-        Physic2DContactListener(EntityManager* pEntityManager)
-            : m_pEntityManager(pEntityManager)
+        Physic2DContactListener(SceneManager* pSceneManager)
+            : m_pSceneManager(pSceneManager)
         {
         }
 
     private:
         void BeginContact(b2Contact* contact) override
         {
-            m_pEntityManager->begin2DContact(contact);
+            m_pSceneManager->begin2DContact(contact);
         }
 
         void EndContact(b2Contact* contact) override
         {
-            m_pEntityManager->end2DContact(contact);
+            m_pSceneManager->end2DContact(contact);
         }
 
-        EntityManager* m_pEntityManager;
+        SceneManager* m_pSceneManager;
     };
 
-    OEntityManagerRef EntityManager::create()
+    OSceneManagerRef SceneManager::create()
     {
-        return std::shared_ptr<EntityManager>(new EntityManager());
+        return std::shared_ptr<SceneManager>(new SceneManager());
     }
 
-    EntityManager::EntityManager()
+    SceneManager::SceneManager()
     {
         m_pUpdater = OUpdater::create();
         m_pPhysic2DWorld = new b2World(b2Vec2(0, 0));
@@ -51,29 +51,29 @@ namespace onut
         m_pPhysic2DWorld->SetContactListener(m_pPhysic2DContactListener);
     }
 
-    EntityManager::~EntityManager()
+    SceneManager::~SceneManager()
     {
         delete m_pPhysic2DWorld;
         delete m_pPhysic2DContactListener;
     }
 
-    void EntityManager::addEntity(const OEntityRef& pEntity)
+    void SceneManager::addEntity(const OEntityRef& pEntity)
     {
-        if (pEntity->m_pEntityManager)
+        if (pEntity->m_pSceneManager)
         {
             auto pEntityRef = pEntity;
-            pEntityRef->m_pEntityManager->removeEntity(pEntityRef);
-            pEntityRef->m_pEntityManager = OThis;
+            pEntityRef->m_pSceneManager->removeEntity(pEntityRef);
+            pEntityRef->m_pSceneManager = OThis;
             m_entities.push_back(pEntityRef);
         }
         else
         {
-            pEntity->m_pEntityManager = OThis;
+            pEntity->m_pSceneManager = OThis;
             m_entities.push_back(pEntity);
         }
     }
 
-    void EntityManager::removeEntity(const OEntityRef& pEntity)
+    void SceneManager::removeEntity(const OEntityRef& pEntity)
     {
         // Remove components
         if (pEntity->isEnabled() && !pEntity->isStatic())
@@ -100,18 +100,18 @@ namespace onut
             if (*it == pEntity)
             {
                 m_entities.erase(it);
-                pEntity->m_pEntityManager = nullptr;
+                pEntity->m_pSceneManager = nullptr;
                 return;
             }
         }
     }
 
-    void EntityManager::addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action)
+    void SceneManager::addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action)
     {
         m_componentActions.push_back({action, pComponent, &list});
     }
 
-    void EntityManager::performComponentActions()
+    void SceneManager::performComponentActions()
     {
         for (auto& pComponent : m_componentJustCreated)
         {
@@ -133,12 +133,12 @@ namespace onut
         m_componentActions.clear();
     }
 
-    void EntityManager::addComponent(const OComponentRef& pComponent, Components& to)
+    void SceneManager::addComponent(const OComponentRef& pComponent, Components& to)
     {
         to.push_back(pComponent);
     }
 
-    void EntityManager::removeComponent(const OComponentRef& pComponent, Components& from)
+    void SceneManager::removeComponent(const OComponentRef& pComponent, Components& from)
     {
         for (auto it = from.begin(); it != from.end(); ++it)
         {
@@ -150,12 +150,12 @@ namespace onut
         }
     }
 
-    void EntityManager::setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D)
+    void SceneManager::setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D)
     {
         m_pActiveCamera2D = pActiveCamera2D;
     }
 
-    void EntityManager::performContacts()
+    void SceneManager::performContacts()
     {
         auto contacts = m_contact2Ds;
         m_contact2Ds.clear();
@@ -175,7 +175,7 @@ namespace onut
         }
     }
 
-    void EntityManager::update()
+    void SceneManager::update()
     {
         if (m_pause) return;
         m_pUpdater->update();
@@ -189,7 +189,7 @@ namespace onut
         performComponentActions();
     }
 
-    void EntityManager::render()
+    void SceneManager::render()
     {
         for (auto& pComponent : m_componentRenders)
         {
@@ -218,7 +218,7 @@ namespace onut
         oSpriteBatch->end();
     }
 
-    OEntityRef EntityManager::findEntity(const std::string& name) const
+    OEntityRef SceneManager::findEntity(const std::string& name) const
     {
         for (auto& pEntity : m_entities)
         {
@@ -227,12 +227,12 @@ namespace onut
         return nullptr;
     }
 
-    b2World* EntityManager::getPhysic2DWorld() const
+    b2World* SceneManager::getPhysic2DWorld() const
     {
         return m_pPhysic2DWorld;
     }
 
-    void EntityManager::begin2DContact(b2Contact* pContact)
+    void SceneManager::begin2DContact(b2Contact* pContact)
     {
         b2Fixture* pFixtureA = pContact->GetFixtureA();
         b2Fixture* pFixtureB = pContact->GetFixtureB();
@@ -251,7 +251,7 @@ namespace onut
                                OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
     }
 
-    void EntityManager::end2DContact(b2Contact* pContact)
+    void SceneManager::end2DContact(b2Contact* pContact)
     {
         b2Fixture* pFixtureA = pContact->GetFixtureA();
         b2Fixture* pFixtureB = pContact->GetFixtureB();
@@ -270,17 +270,17 @@ namespace onut
                                OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
     }
 
-    bool EntityManager::getPause() const
+    bool SceneManager::getPause() const
     {
         return m_pause;
     }
 
-    void EntityManager::setPause(bool pause)
+    void SceneManager::setPause(bool pause)
     {
         m_pause = pause;
     }
 
-    OUpdaterRef EntityManager::getUpdater() const
+    OUpdaterRef SceneManager::getUpdater() const
     {
         return m_pUpdater;
     }

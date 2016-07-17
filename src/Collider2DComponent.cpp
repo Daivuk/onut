@@ -1,7 +1,7 @@
 // Onut includes
 #include <onut/Collider2DComponent.h>
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/Timing.h>
 
 // Third parties
@@ -69,8 +69,8 @@ namespace onut
     void Collider2DComponent::createBody()
     {
         auto& pEntity = getEntity();
-        auto& pEntityManager = pEntity->getEntityManager();
-        auto pPhysic = pEntityManager->getPhysic2DWorld();
+        auto& pSceneManager = pEntity->getSceneManager();
+        auto pPhysic = pSceneManager->getPhysic2DWorld();
         Vector2 pos = pEntity->getWorldTransform().Translation();
 
         b2BodyDef bodyDef;
@@ -112,10 +112,10 @@ namespace onut
             auto& pEntity = getEntity();
             if (pEntity)
             {
-                auto& pEntityManager = pEntity->getEntityManager();
-                if (pEntityManager)
+                auto& pSceneManager = pEntity->getSceneManager();
+                if (pSceneManager)
                 {
-                    auto pPhysic = pEntityManager->getPhysic2DWorld();
+                    auto pPhysic = pSceneManager->getPhysic2DWorld();
                     if (pPhysic)
                     {
                         pPhysic->DestroyBody(m_pBody);

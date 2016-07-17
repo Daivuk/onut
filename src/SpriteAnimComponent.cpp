@@ -1,6 +1,6 @@
 // onut includes
 #include <onut/Entity.h>
-#include <onut/EntityManager.h>
+#include <onut/SceneManager.h>
 #include <onut/SpriteAnim.h>
 #include <onut/SpriteAnimComponent.h>
 #include <onut/SpriteBatch.h>
@@ -13,7 +13,7 @@ namespace onut
     {
         m_pSpriteAnim = pSpriteAnim;
         m_pSpriteAnimInstance = OMake<OSpriteAnimInstance>(m_pSpriteAnim);
-        m_pSpriteAnimInstance->setUpdater(getEntity()->getEntityManager()->getUpdater());
+        m_pSpriteAnimInstance->setUpdater(getEntity()->getSceneManager()->getUpdater());
     }
 
     const OSpriteAnimRef& SpriteAnimComponent::getSpriteAnim() const
