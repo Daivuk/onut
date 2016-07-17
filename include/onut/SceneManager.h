@@ -1,6 +1,10 @@
 #pragma once
 
+// Third parties
+#include <list/List.h>
+
 // STL
+#include <set>
 #include <vector>
 
 // Forward declarations
@@ -44,8 +48,8 @@ namespace onut
         friend class Component;
         friend class Physic2DContactListener;
 
-        using Entities = std::vector<OEntityRef>;
         using Components = std::vector<OComponentRef>;
+        using EntitySet = std::set<OEntityRef>;
 
         struct ComponentAction
         {
@@ -91,7 +95,7 @@ namespace onut
 
         SceneManager();
 
-        Entities m_entities;
+        EntitySet m_entities;
         Components m_componentUpdates;
         Components m_componentRenders;
         Components m_componentJustCreated;

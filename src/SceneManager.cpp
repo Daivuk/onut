@@ -64,21 +64,23 @@ namespace onut
             auto pEntityRef = pEntity;
             pEntityRef->m_pSceneManager->removeEntity(pEntityRef);
             pEntityRef->m_pSceneManager = OThis;
-            m_entities.push_back(pEntityRef);
+            m_entities.insert(pEntityRef);
         }
         else
         {
             pEntity->m_pSceneManager = OThis;
-            m_entities.push_back(pEntity);
+            m_entities.insert(pEntity);
         }
     }
 
     void SceneManager::removeEntity(const OEntityRef& pEntity)
     {
+        auto pRawEntity = pEntity.get();
+
         // Remove components
-        if (pEntity->isEnabled() && !pEntity->isStatic())
+        if (pRawEntity->isEnabled() && !pRawEntity->isStatic())
         {
-            for (auto& pComponent : pEntity->m_components)
+            for (auto& pComponent : pRawEntity->m_components)
             {
                 if (pComponent->isEnabled())
                 {
@@ -86,24 +88,17 @@ namespace onut
                 }
             }
         }
-        if (pEntity->isVisible())
+        if (pRawEntity->isVisible())
         {
-            for (auto& pComponent : pEntity->m_components)
+            for (auto& pComponent : pRawEntity->m_components)
             {
                 addComponentAction(pComponent, m_componentRenders, ComponentAction::Action::Remove);
             }
         }
 
         // Remove entity
-        for (auto it = m_entities.begin(); it != m_entities.end(); ++it)
-        {
-            if (*it == pEntity)
-            {
-                m_entities.erase(it);
-                pEntity->m_pSceneManager = nullptr;
-                return;
-            }
-        }
+        pRawEntity->m_pSceneManager = nullptr;
+        m_entities.erase(pEntity);
     }
 
     void SceneManager::addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action)
@@ -245,6 +240,7 @@ namespace onut
 
         auto* pColliderA = static_cast<Collider2DComponent*>(pFixtureA->GetBody()->GetUserData());
         auto* pColliderB = static_cast<Collider2DComponent*>(pFixtureB->GetBody()->GetUserData());
+        if (!pColliderA || !pColliderB) return;
 
         m_contact2Ds.push_back({Contact2D::Type::Begin,
                                OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
@@ -264,6 +260,7 @@ namespace onut
 
         auto* pColliderA = static_cast<Collider2DComponent*>(pFixtureA->GetBody()->GetUserData());
         auto* pColliderB = static_cast<Collider2DComponent*>(pFixtureB->GetBody()->GetUserData());
+        if (!pColliderA || !pColliderB) return;
 
         m_contact2Ds.push_back({Contact2D::Type::End,
                                OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),

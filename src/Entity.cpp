@@ -27,6 +27,7 @@ namespace onut
     void Entity::destroy()
     {
         m_pSceneManager->removeEntity(OThis);
+        m_components.clear();
     }
 
     OEntityRef Entity::copy() const

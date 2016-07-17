@@ -109,6 +109,7 @@ namespace onut
     {
         if (m_pBody)
         {
+            m_pBody->SetUserData(nullptr);
             auto& pEntity = getEntity();
             if (pEntity)
             {
