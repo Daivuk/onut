@@ -3,8 +3,15 @@
 #include <onut/Entity.h>
 #include <onut/SceneManager.h>
 
+// STL
+#include <atomic>
+
 namespace onut
 {
+#if defined(_DEBUG)
+    std::atomic<int> g_entityCount = 0;
+#endif
+
     OEntityRef Entity::create(const OSceneManagerRef& in_pSceneManager)
     {
         auto pSceneManager = in_pSceneManager;
@@ -16,15 +23,27 @@ namespace onut
 
     Entity::Entity()
     {
+#if defined(_DEBUG)
+        ++g_entityCount;
+#endif
     }
 
     Entity::~Entity()
     {
+#if defined(_DEBUG)
+        --g_entityCount;
+#endif
     }
 
     void Entity::destroy()
     {
-        m_pSceneManager->removeEntity(OThis);
+        auto pThis = OThis;
+        m_pSceneManager->removeEntity(pThis);
+        auto pParent = getParent();
+        if (pParent)
+        {
+            pParent->remove(pThis);
+        }
         m_components.clear();
     }
 

@@ -13,10 +13,18 @@
 // Third parties
 #include <Box2D/Box2D.h>
 
+// STL
+#include <atomic>
+
 OSceneManagerRef oSceneManager;
 
 namespace onut
 {
+#if defined(_DEBUG)
+    extern std::atomic<int> g_componentCount;
+    extern std::atomic<int> g_entityCount;
+#endif
+
     class Physic2DContactListener : public b2ContactListener
     {
     public:
@@ -198,10 +206,14 @@ namespace onut
 
     void SceneManager::render()
     {
+#if defined(_DEBUG)
         int renderCount = 0;
+#endif
         for (auto pComponent = m_pComponentRenders->Head(); pComponent; pComponent = pComponent->m_renderLink.Next())
         {
+#if defined(_DEBUG)
             ++renderCount;
+#endif
             pComponent->onRender();
         }
 
@@ -226,14 +238,21 @@ namespace onut
         }
         oSpriteBatch->end();
 
-        auto pFont = OGetFont("font.fnt");
+#if defined(_DEBUG)
         int updateCount = 0;
         for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
         {
             ++updateCount;
         }
+        auto pFont = OGetFont("font.fnt");
+        oSpriteBatch->begin();
+        oSpriteBatch->drawRect(nullptr, {0, 20, 200, 80}, Color(0, 0, 0, .75f));
         pFont->draw("Updatables: " + std::to_string(updateCount), {0, 20});
         pFont->draw("Renderables: " + std::to_string(renderCount), {0, 40});
+        pFont->draw("Components: " + std::to_string(g_componentCount), {0, 60});
+        pFont->draw("Entities: " + std::to_string(g_entityCount), {0, 80});
+        oSpriteBatch->end();
+#endif
     }
 
     OEntityRef SceneManager::findEntity(const std::string& name) const

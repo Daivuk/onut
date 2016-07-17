@@ -3,15 +3,28 @@
 #include <onut/Entity.h>
 #include <onut/SceneManager.h>
 
+// STL
+#include <atomic>
+
 namespace onut
 {
+#if defined(_DEBUG)
+    std::atomic<int> g_componentCount = 0;
+#endif
+
     Component::Component(int flags)
         : m_flags(flags)
     {
+#if defined(_DEBUG)
+        ++g_componentCount;
+#endif
     }
 
     Component::~Component()
     {
+#if defined(_DEBUG)
+        --g_componentCount;
+#endif
     }
 
     const OEntityRef& Component::getEntity() const

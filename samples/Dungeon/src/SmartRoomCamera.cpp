@@ -17,7 +17,7 @@ void SmartRoomCamera::onCreate()
     auto& pSceneManager = getSceneManager();
 
     m_pPlayer = pSceneManager->findEntity("player");
-    m_pTiledMap = pSceneManager->findEntity("dungeon")->getComponent<OTiledMapComponent>()->getTiledMap();
+    m_pTiledMap = getParentComponent<OTiledMapComponent>()->getTiledMap();
 
     m_paint.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), 0);
 }

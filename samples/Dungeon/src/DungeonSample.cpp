@@ -64,9 +64,9 @@ void init()
     registerComponents();
 
     // Create our tiled map entity.
-    // The factory will look for the "entities" object layer and 
+    // The TiledMapComponent will look for the "entities" object layer and 
     // instantiate entities and their components based on properties
-    // set in TiledMap editor.
+    // set in Tiled editor.
     auto pTiledMapEntity = OCreateTiledMapEntity("dungeon.tmx");
 }
 
