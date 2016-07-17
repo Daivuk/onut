@@ -39,15 +39,16 @@ namespace onut
 
     void Component::setEnabled(bool isEnabled)
     {
+        if (m_isEnabled == isEnabled) return;
         if (m_pEntity->m_pSceneManager && m_flags & FLAG_UPDATABLE)
         {
             if (m_pEntity->isEnabled() && !m_pEntity->isStatic())
             {
-                if (m_isEnabled && !isEnabled)
+                if (m_isEnabled)
                 {
                     m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::RemoveUpdate);
                 }
-                else if (!m_isEnabled && isEnabled)
+                else if (!m_isEnabled)
                 {
                     m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddUpdate);
                 }
@@ -56,29 +57,39 @@ namespace onut
             {
                 if (m_flags & FLAG_RENDERABLE)
                 {
-                    if (m_isEnabled && !isEnabled)
+                    if (m_isEnabled)
                     {
                         m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::RemoveRender);
                     }
-                    else if (!m_isEnabled && isEnabled)
+                    else if (!m_isEnabled)
                     {
                         m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddRender);
                     }
                 }
                 if (m_flags & FLAG_RENDERABLE_2D)
                 {
-                    if (m_isEnabled && !isEnabled)
+                    if (m_isEnabled)
                     {
                         m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::RemoveRender2D);
                     }
-                    else if (!m_isEnabled && isEnabled)
+                    else if (!m_isEnabled)
                     {
                         m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddRender2D);
                     }
                 }
             }
         }
+
         m_isEnabled = isEnabled;
+
+        if (m_isEnabled)
+        {
+            onEnable();
+        }
+        else
+        {
+            onDisable();
+        }
     }
 
     const OSceneManagerRef& Component::getSceneManager() const

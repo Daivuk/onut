@@ -15,20 +15,10 @@ void Chest::setGold(int gold)
     m_gold = gold;
 }
 
-const OSoundRef& Chest::getOpenSound() const
-{
-    return m_pOpenSound;
-}
-
-void Chest::setOpenSound(const OSoundRef& pSound)
-{
-    m_pOpenSound = pSound;
-}
-
 void Chest::open()
 {
     // Play the opening sound
-    if (m_pOpenSound) m_pOpenSound->play();
+    OPlaySound("chestOpen.wav");
 
     // Change the graphic to an open chest
     auto pTiledMapComponent = getParentComponent<OTiledMapComponent>();

@@ -1,6 +1,5 @@
 #pragma once
-#include <cinttypes>
-#include <limits>
 
-static const uint32_t INFO_NONE = std::numeric_limits<uint32_t>::max();
-static const uint32_t INFO_ROOM = 0;
+static const int SWORD_ATTACK_DRAW_INDEX = 1000000;
+
+static const int MESSAGE_DAMAGE = 1;

@@ -44,7 +44,6 @@ namespace onut
         {
             pParent->remove(pThis);
         }
-        m_components.clear();
     }
 
     OEntityRef Entity::copy() const
@@ -158,15 +157,20 @@ namespace onut
 
     void Entity::setEnabled(bool isEnabled)
     {
+        if (m_isEnabled == isEnabled) return;
         if (!m_isStatic)
         {
             if (m_isEnabled && !isEnabled)
             {
                 for (auto& pComponent : m_components)
                 {
-                    if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
+                    if (pComponent->isEnabled())
                     {
-                        m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveUpdate);
+                        if (pComponent->m_flags & Component::FLAG_UPDATABLE)
+                        {
+                            m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveUpdate);
+                        }
+                        pComponent->onDisable();
                     }
                 }
             }
@@ -174,9 +178,13 @@ namespace onut
             {
                 for (auto& pComponent : m_components)
                 {
-                    if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
+                    if (pComponent->isEnabled())
                     {
-                        m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddUpdate);
+                        if (pComponent->m_flags & Component::FLAG_UPDATABLE)
+                        {
+                            m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddUpdate);
+                        }
+                        pComponent->onEnable();
                     }
                 }
             }
@@ -315,6 +323,7 @@ namespace onut
 
     void Entity::sendMessage(int messageId, void* pData)
     {
+        auto pThis = OThis; // This way we make sure we don't destroy all our stuff
         for (auto& pComponent : m_components)
         {
             pComponent->onMessage(messageId, pData);

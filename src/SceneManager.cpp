@@ -116,8 +116,7 @@ namespace onut
         }
 
         // Remove entity
-        pRawEntity->m_pSceneManager = nullptr;
-        m_entities.erase(pEntity);
+        m_entitiesToRemove.push_back(pEntity);
     }
 
     void SceneManager::addComponentAction(const OComponentRef& pComponent, ComponentAction::Action action)
@@ -127,11 +126,15 @@ namespace onut
 
     void SceneManager::performComponentActions()
     {
-        for (auto& pComponent : m_componentJustCreated)
+        while (m_componentJustCreated.size())
         {
-            pComponent->onCreate();
+            auto justCreated = m_componentJustCreated;
+            m_componentJustCreated.clear();
+            for (auto& pComponent : justCreated)
+            {
+                pComponent->onCreate();
+            }
         }
-        m_componentJustCreated.clear();
         for (auto& componentAction : m_componentActions)
         {
             switch (componentAction.action)
@@ -214,10 +217,22 @@ namespace onut
         }
     }
 
+    void SceneManager::performEntityActions()
+    {
+        for (auto& pEntity : m_entitiesToRemove)
+        {
+            pEntity->m_pSceneManager = nullptr;
+            pEntity->m_components.clear();
+            m_entities.erase(pEntity);
+        }
+        m_entitiesToRemove.clear();
+    }
+
     void SceneManager::update()
     {
         if (m_pause) return;
         m_pUpdater->update();
+        performEntityActions();
         performComponentActions();
         m_pPhysic2DWorld->Step(ODT, 6, 2);
         performContacts();
@@ -226,6 +241,7 @@ namespace onut
             pComponent->onUpdate();
         }
         performComponentActions();
+        performEntityActions();
     }
 
     void SceneManager::render()
@@ -321,9 +337,30 @@ namespace onut
         auto* pColliderB = static_cast<Collider2DComponent*>(pFixtureB->GetBody()->GetUserData());
         if (!pColliderA || !pColliderB) return;
 
-        m_contact2Ds.push_back({Contact2D::Type::Begin,
-                               OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
-                               OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
+        if (sensorA)
+        {
+            for (auto& contact2D : m_contact2Ds)
+            {
+                if (contact2D.pColliderA.get() == pColliderA &&
+                    contact2D.pColliderB.get() == pColliderB &&
+                    contact2D.type == Contact2D::Type::Begin) return;
+            }
+            m_contact2Ds.push_back({Contact2D::Type::Begin,
+                                    OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
+                                    OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
+        }
+        else
+        {
+            for (auto& contact2D : m_contact2Ds)
+            {
+                if (contact2D.pColliderA.get() == pColliderB &&
+                    contact2D.pColliderB.get() == pColliderA &&
+                    contact2D.type == Contact2D::Type::Begin) return;
+            }
+            m_contact2Ds.push_back({Contact2D::Type::Begin,
+                                   OStaticCast<Collider2DComponent>(pColliderB->shared_from_this()),
+                                   OStaticCast<Collider2DComponent>(pColliderA->shared_from_this())});
+        }
     }
 
     void SceneManager::end2DContact(b2Contact* pContact)
@@ -341,9 +378,30 @@ namespace onut
         auto* pColliderB = static_cast<Collider2DComponent*>(pFixtureB->GetBody()->GetUserData());
         if (!pColliderA || !pColliderB) return;
 
-        m_contact2Ds.push_back({Contact2D::Type::End,
-                               OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
-                               OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
+        if (sensorA)
+        {
+            for (auto& contact2D : m_contact2Ds)
+            {
+                if (contact2D.pColliderA.get() == pColliderA &&
+                    contact2D.pColliderB.get() == pColliderB &&
+                    contact2D.type == Contact2D::Type::End) return;
+            }
+            m_contact2Ds.push_back({Contact2D::Type::End,
+                                   OStaticCast<Collider2DComponent>(pColliderA->shared_from_this()),
+                                   OStaticCast<Collider2DComponent>(pColliderB->shared_from_this())});
+        }
+        else
+        {
+            for (auto& contact2D : m_contact2Ds)
+            {
+                if (contact2D.pColliderA.get() == pColliderB &&
+                    contact2D.pColliderB.get() == pColliderA &&
+                    contact2D.type == Contact2D::Type::End) return;
+            }
+            m_contact2Ds.push_back({Contact2D::Type::End,
+                                   OStaticCast<Collider2DComponent>(pColliderB->shared_from_this()),
+                                   OStaticCast<Collider2DComponent>(pColliderA->shared_from_this())});
+        }
     }
 
     bool SceneManager::getPause() const

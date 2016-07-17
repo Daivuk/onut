@@ -50,6 +50,7 @@ namespace onut
 
         using Components = std::vector<OComponentRef>;
         using EntitySet = std::set<OEntityRef>;
+        using Entities = std::vector<OEntityRef>;
 
         struct ComponentAction
         {
@@ -88,6 +89,7 @@ namespace onut
 
         void addComponentAction(const OComponentRef& pComponent, ComponentAction::Action action);
         void performComponentActions();
+        void performEntityActions();
 
         void addComponent(const OComponentRef& pComponent, Components& to);
         void removeComponent(const OComponentRef& pComponent, Components& from);
@@ -106,6 +108,7 @@ namespace onut
         ComponentActions m_componentActions;
         Contact2Ds m_contact2Ds;
         OCamera2DComponentRef m_pActiveCamera2D;
+        Entities m_entitiesToRemove;
         bool m_pause = false;
 
         b2World* m_pPhysic2DWorld;

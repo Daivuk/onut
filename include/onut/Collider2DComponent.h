@@ -34,6 +34,8 @@ namespace onut
     private:
         void onCreate() override;
         void onUpdate() override;
+        void onEnable() override;
+        void onDisable() override;
 
         void createBody();
         void destroyBody();

@@ -13,10 +13,14 @@
 // Game includes
 #include "Chest.h"
 #include "Controllable.h"
+#include "Damager.h"
 #include "Door.h"
 #include "DoorTraverser.h"
+#include "Guard.h"
+#include "Player.h"
 #include "SmartRoomCamera.h"
 #include "TreasureHunter.h"
+#include "Vase.h"
 
 void init();
 void update();
@@ -37,12 +41,15 @@ void registerComponents()
     // A chest containing treasures!
     ORegisterComponent(Chest);
     OBindIntProperty(Chest, Gold);
-    OBindSoundProperty(Chest, OpenSound);
 
     // Component allowing to controller a character
     ORegisterComponent(Controllable);
     OBindFloatProperty(Controllable, Speed);
     OBindSoundProperty(Controllable, StepSound);
+
+    // A component that inflicts damage when triggered
+    ORegisterComponent(Damager);
+    OBindIntProperty(Damager, Damage);
 
     // A door
     ORegisterComponent(Door);
@@ -57,8 +64,17 @@ void registerComponents()
     // Will position itself to follow the main player, but also respected room restrictions
     ORegisterComponent(SmartRoomCamera);
 
+    // Guards will be alerted if they look in your direction,
+    // and pursue/attack you.
+    ORegisterComponent(Guard);
+    OBindIntProperty(Guard, Life);
+
     // A treasure hunter entity can open cheats
     ORegisterComponent(TreasureHunter);
+
+    // Vases can be broke and they usually contain gold or health
+    ORegisterComponent(Vase);
+    OBindIntProperty(Vase, Gold);
 }
 
 void init()

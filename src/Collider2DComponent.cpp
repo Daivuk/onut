@@ -73,13 +73,23 @@ namespace onut
     
     void Collider2DComponent::createBody()
     {
+        if (m_pBody) return;
+
         auto& pEntity = getEntity();
         auto& pSceneManager = pEntity->getSceneManager();
         auto pPhysic = pSceneManager->getPhysic2DWorld();
         Vector2 pos = pEntity->getWorldTransform().Translation();
 
         b2BodyDef bodyDef;
-        bodyDef.type = pEntity->isStatic() ? b2_staticBody : (m_trigger ? b2_kinematicBody : b2_dynamicBody);
+        if (pEntity->isStatic())
+        {
+            bodyDef.type = b2_staticBody;
+        }
+        else
+        {
+            bodyDef.type = b2_dynamicBody;
+        }
+
         bodyDef.position.Set(pos.x / m_physicScale, pos.y / m_physicScale);
 
         m_pBody = pPhysic->CreateBody(&bodyDef);
@@ -89,7 +99,7 @@ namespace onut
         b2PolygonShape box;
         box.SetAsBox(m_size.x / 2.f / m_physicScale, m_size.y / 2.f / m_physicScale);
 
-        if (pEntity->isStatic() || m_trigger)
+        if (pEntity->isStatic())
         {
             m_pBody->CreateFixture(&box, 0.0f);
             b2FixtureDef fixtureDef;
@@ -103,6 +113,7 @@ namespace onut
             fixtureDef.shape = &box;
             fixtureDef.friction = 0.0f;
             fixtureDef.density = 1.0f;
+            fixtureDef.isSensor = m_trigger;
             m_pBody->CreateFixture(&fixtureDef);
         }
     }
@@ -125,28 +136,45 @@ namespace onut
                     }
                 }
             }
+            m_pBody = nullptr;
         }
     }
 
     void Collider2DComponent::onCreate()
     {
+        if (isEnabled() && getEntity()->isEnabled())
+        {
+            createBody();
+        }
+    }
+
+    void Collider2DComponent::onEnable()
+    {
         createBody();
+    }
+
+    void Collider2DComponent::onDisable()
+    {
+        destroyBody();
     }
 
     void Collider2DComponent::onUpdate()
     {
         if (m_pBody)
         {
+            Vector2 position = getEntity()->getWorldTransform().Translation();
             if (m_trigger)
             {
-                Vector2 position = getEntity()->getLocalTransform().Translation();
                 m_pBody->SetTransform(b2Vec2(position.x / m_physicScale, position.y / m_physicScale), 0.0f);
             }
             else
             {
                 auto b2Position = m_pBody->GetPosition();
                 Vector2 currentPosition(b2Position.x * m_physicScale, b2Position.y * m_physicScale);
-                getEntity()->setLocalTransform(Matrix::CreateTranslation(currentPosition));
+                if (currentPosition != position)
+                {
+                    getEntity()->setWorldTransform(Matrix::CreateTranslation(currentPosition));
+                }
                 Vector2 vel = m_velocity / m_physicScale;
                 m_pBody->SetLinearVelocity(b2Vec2(vel.x, vel.y));
             }
@@ -158,7 +186,7 @@ namespace onut
         if (m_pBody)
         {
             b2Vec2 b2Pos(position.x / m_physicScale, position.y / m_physicScale);
-            getEntity()->setLocalTransform(Matrix::CreateTranslation(position));
+            getEntity()->setWorldTransform(Matrix::CreateTranslation(position));
             m_pBody->SetTransform(b2Pos, 0.0f);
         }
     }

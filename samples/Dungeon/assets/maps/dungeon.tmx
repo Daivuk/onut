@@ -13,14 +13,13 @@
  </layer>
  <layer name="obj" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3YQQoCMQwAwH2BoD8Q9C3qF9TT4n2Pft96ELxZMDW2zEBuIZtLm2ynCQAAAL6zVOQcS5w+5MyVtXp0KXGtyLu3bgSCrUtsAursSuwD6gD8SuTOMur+A6OK2lui9igA8hyyG0h2rshZNe+CLHN2AwA09ZzhUf+/7zPjtRvcAupmGXkGeqf8H9vEb0eef8bS890NAAAAPXoAWQ2O/gBAAAA=
+   H4sIAAAAAAAAC+3YwQ3CMAwF0E6ABBsgwSzACsAObIEQG3Rb0isXIuFgEr0n+Wb9+tLUzTQBAADAd24VPcdSpw89c2VWjy6lrhV9j9aDQLB1qU1Azq7UPiAH4Fcid5ZR9x8YVdTeErVHAZDnkD1AsnNFz6r5FGRxjwkwtuUbHvX/e3/LXTwDcrPM2QM05J7yf2wTnx35/jOWns9uAAAA6NELC226PgBAAAA=
   </data>
  </layer>
  <objectgroup name="entities">
   <object id="16" type="chest" x="592" y="544" width="16" height="16">
    <properties>
     <property name="Chest:Gold" value="5"/>
-    <property name="Chest:OpenSound" value="chestOpen.wav"/>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Static" value="true"/>
@@ -52,37 +51,51 @@
   </object>
   <object id="21" type="vase" x="464" y="688" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="22" type="vase" x="464" y="768" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="23" type="vase" x="656" y="672" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="24" type="vase" x="736" y="672" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="25" type="vase" x="448" y="576" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="26" type="vase" x="656" y="224" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="27" type="vase" x="672" y="240" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
    </properties>
   </object>
   <object id="28" type="stairs" x="880" y="720" width="16" height="16">
@@ -295,6 +308,7 @@
   <object id="50" type="guard" x="528" y="352" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_n"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>
@@ -307,6 +321,7 @@
   <object id="52" type="guard" x="528" y="592" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>
@@ -314,6 +329,7 @@
   <object id="53" type="guard" x="480" y="528" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_e"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
    </properties>
@@ -321,6 +337,7 @@
   <object id="54" type="guard" x="544" y="752" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_n"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>
@@ -328,6 +345,7 @@
   <object id="55" type="guard" x="480" y="736" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_e"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
    </properties>
@@ -335,6 +353,7 @@
   <object id="56" type="guard" x="720" y="768" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
    </properties>
@@ -342,6 +361,7 @@
   <object id="57" type="guard" x="752" y="720" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>
@@ -349,6 +369,7 @@
   <object id="58" type="guard" x="560" y="704" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="Guard:Life" value="3"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>

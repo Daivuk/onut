@@ -20,6 +20,15 @@
     <ClCompile Include="..\..\src\TreasureHunter.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Guard.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Vase.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Damager.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Controllable.h">
@@ -39,6 +48,15 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\TreasureHunter.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Guard.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Vase.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Damager.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

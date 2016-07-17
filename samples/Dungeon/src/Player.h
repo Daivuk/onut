@@ -1,5 +1,13 @@
 #include <onut/Component.h>
 
-class Player : public OComponent
+#include <onut/ForwardDeclaration.h>
+OForwardDeclare(Entity);
+
+class Player final : public OComponent
 {
+public:
+private:
+    void onCreate() override;
+
+    OEntityRef m_pSwordAttack;
 };
