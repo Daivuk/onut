@@ -29,24 +29,7 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
                 auto pCollider = getComponent<OCollider2DComponent>();
                 if (pTargetDoor)
                 {
-                    auto targetMapPos = pTargetDoor->getMapPos();
-                    Vector2 targetPos = pTargetDoor->getLocalTransform().Translation();
-                    if (m_pTiledMapComponent->getPassable(Point(targetMapPos.x - 1, targetMapPos.y)))
-                    {
-                        targetPos.x -= 12.0f;
-                    }
-                    else if (m_pTiledMapComponent->getPassable(Point(targetMapPos.x + 1, targetMapPos.y)))
-                    {
-                        targetPos.x += 12.0f;
-                    }
-                    else if (m_pTiledMapComponent->getPassable(Point(targetMapPos.x, targetMapPos.y - 1)))
-                    {
-                        targetPos.y -= 12.0f;
-                    }
-                    else if (m_pTiledMapComponent->getPassable(Point(targetMapPos.x, targetMapPos.y + 1)))
-                    {
-                        targetPos.y += 12.0f;
-                    }
+                    Vector2 targetPos = pTargetDoor->getExitPosition();
 
                     auto pEntity = getEntity();
                     auto pSceneManager = pEntity->getSceneManager();

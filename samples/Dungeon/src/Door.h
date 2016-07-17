@@ -26,14 +26,14 @@ public:
     void setTarget(const OEntityRef& pTarget);
 
     const Point& getMapPos() const;
+    Vector2 getExitPosition() const;
 
 protected:
     void onCreate() override;
 
 private:
-    Point m_mapPos;
+    std::vector<Point> m_mapPositions;
     bool m_open = false;
-    Vector2 m_openSize;
     Vector2 m_closeSize;
     OCollider2DComponentRef m_pCollider;
     OTiledMapRef m_pTiledMap;
