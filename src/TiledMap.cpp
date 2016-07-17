@@ -414,7 +414,13 @@ namespace onut
         rect.bottom = std::min<>((m_height - 1), rect.bottom);
 
         bool manageSB = !oSpriteBatch->isInBatch();
-        if (manageSB) oSpriteBatch->begin(getTransform());
+        if (manageSB)
+        {
+            auto transform = getTransform();
+            transform._41 = std::roundf(transform._41);
+            transform._42 = std::roundf(transform._42);
+            oSpriteBatch->begin(transform);
+        }
         oSpriteBatch->changeFiltering(m_filtering);
         for (int y = rect.top; y <= rect.bottom; ++y)
         {

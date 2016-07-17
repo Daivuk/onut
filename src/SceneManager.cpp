@@ -252,6 +252,8 @@ namespace onut
             transform *= Matrix::CreateScale(m_pActiveCamera2D->getZoom());
             transform *= Matrix::CreateTranslation(OScreenCenterf);
         }
+        transform._41 = std::roundf(transform._41);
+        transform._42 = std::roundf(transform._42);
         oSpriteBatch->begin(transform);
         //for (auto& pEntity : m_entities)
         //{
