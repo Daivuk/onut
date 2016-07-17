@@ -13,7 +13,23 @@ void Damager::setDamage(int damage)
     m_damage = damage;
 }
 
+void Damager::addExclusion(const OEntityRef& pEntity)
+{
+    m_exclusions.push_back(pEntity);
+}
+
 void Damager::onTriggerEnter(const OCollider2DComponentRef& pCollider)
 {
-    pCollider->sendMessage(MESSAGE_DAMAGE, &m_damage);
+    auto pColliderEntity = pCollider->getEntity().get();
+    for (auto& pEntity : m_exclusions)
+    {
+        if (pEntity.get() == pColliderEntity) return;
+    }
+    Message message;
+    message.damage = m_damage;
+    message.direction = 
+        Vector2(pCollider->getWorldTransform().Translation()) -
+        Vector2(getWorldTransform().Translation());
+    message.direction.Normalize();
+    pCollider->sendMessage(MESSAGE_DAMAGE, &message);
 }

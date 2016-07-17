@@ -179,6 +179,7 @@ namespace onut
                 m_pBody->SetLinearVelocity(b2Vec2(vel.x, vel.y));
             }
         }
+        m_velocity = Vector2::Zero;
     }
 
     void Collider2DComponent::teleport(const Vector2& position)

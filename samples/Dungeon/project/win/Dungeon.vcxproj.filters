@@ -29,6 +29,12 @@
     <ClCompile Include="..\..\src\Damager.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\DamageFlasher.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\PushBack.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Controllable.h">
@@ -57,6 +63,12 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Damager.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DamageFlasher.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\PushBack.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

@@ -48,6 +48,7 @@ void Controllable::onCreate()
     // The damager
     auto pDamager = pSwordTrigger->addComponent<Damager>();
     pDamager->setDamage(1);
+    pDamager->addExclusion(getEntity());
 
     getEntity()->add(m_pSwordAttackEntity);
 }
@@ -144,7 +145,6 @@ void Controllable::onUpdate()
             {
                 m_state = State::Idle;
                 m_stepDelay = 0.15f;
-                m_pCollider2DComponent->setVelocity(Vector2::Zero);
                 if (m_pSpriteAnimComponent) m_pSpriteAnimComponent->play("idle_" + m_dir);
                 return;
             }
@@ -166,12 +166,12 @@ void Controllable::onUpdate()
                 m_stepDelay = 0.3f;
                 if (m_pStepSound)
                 {
-                    m_pStepSound->play(0.5f, 0.0f, ORandFloat(.9f, 1.1f));
+                    m_pStepSound->play(0.25f, 0.0f, ORandFloat(.9f, 1.1f));
                 }
             }
 
             Vector2 position = getLocalTransform().Translation();
-            m_pCollider2DComponent->setVelocity(dir * m_speed);
+            m_pCollider2DComponent->setVelocity(m_pCollider2DComponent->getVelocity() + dir * m_speed);
 
             break;
         }

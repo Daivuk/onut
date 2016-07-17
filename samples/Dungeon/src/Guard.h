@@ -12,6 +12,7 @@ public:
 
 private:
     void onCreate() override;
+    void onMessage(int messageId, void* pData) override;
 
     int m_life = 1;
     OEntityRef m_pPlayer;

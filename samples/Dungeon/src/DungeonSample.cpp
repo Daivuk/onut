@@ -13,11 +13,13 @@
 // Game includes
 #include "Chest.h"
 #include "Controllable.h"
+#include "DamageFlasher.h"
 #include "Damager.h"
 #include "Door.h"
 #include "DoorTraverser.h"
 #include "Guard.h"
 #include "Player.h"
+#include "PushBack.h"
 #include "SmartRoomCamera.h"
 #include "TreasureHunter.h"
 #include "Vase.h"
@@ -47,6 +49,10 @@ void registerComponents()
     OBindFloatProperty(Controllable, Speed);
     OBindSoundProperty(Controllable, StepSound);
 
+    // If attached to an entity, it will flash (old school style)
+    // upon receiving damage.
+    ORegisterComponent(DamageFlasher);
+
     // A component that inflicts damage when triggered
     ORegisterComponent(Damager);
     OBindIntProperty(Damager, Damage);
@@ -68,6 +74,10 @@ void registerComponents()
     // and pursue/attack you.
     ORegisterComponent(Guard);
     OBindIntProperty(Guard, Life);
+
+    // Will push back the entity if damaged
+    ORegisterComponent(PushBack);
+    OBindFloatProperty(PushBack, Strength);
 
     // A treasure hunter entity can open cheats
     ORegisterComponent(TreasureHunter);

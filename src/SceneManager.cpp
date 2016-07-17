@@ -271,13 +271,6 @@ namespace onut
         transform._41 = std::roundf(transform._41);
         transform._42 = std::roundf(transform._42);
         oSpriteBatch->begin(transform);
-        //for (auto& pEntity : m_entities)
-        //{
-        //    if (!pEntity->getParent() && pEntity->isVisible())
-        //    {
-        //        pEntity->render2d();
-        //    }
-        //}
 #if defined(_DEBUG)
         int render2DCount = 0;
 #endif
