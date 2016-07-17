@@ -4,6 +4,8 @@
 #include <onut/Entity.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/Random.h>
+#include <onut/Sound.h>
 #include <onut/SpriteAnimComponent.h>
 #include <onut/Timing.h>
 
@@ -26,6 +28,16 @@ void Controllable::onCreate()
 {
     m_pSpriteAnimComponent = getComponent<OSpriteAnimComponent>();
     m_pCollider2DComponent = getComponent<OCollider2DComponent>();
+}
+
+const OSoundRef& Controllable::getStepSound() const
+{
+    return m_pStepSound;
+}
+
+void Controllable::setStepSound(const OSoundRef& pSound)
+{
+    m_pStepSound = pSound;
 }
 
 void Controllable::onUpdate()
@@ -58,6 +70,7 @@ void Controllable::onUpdate()
 
     if (!isMoving)
     {
+        m_stepDelay = 0.15f;
         m_pCollider2DComponent->setVelocity(Vector2::Zero);
         if (m_pSpriteAnimComponent) m_pSpriteAnimComponent->play("idle_" + m_dir);
         return;
@@ -71,6 +84,16 @@ void Controllable::onUpdate()
     else if (dir.y < -.7f) m_dir = "n";
 
     if (m_pSpriteAnimComponent) m_pSpriteAnimComponent->play("run_" + m_dir);
+
+    m_stepDelay -= ODT;
+    if (m_stepDelay <= 0.0f)
+    {
+        m_stepDelay = 0.3f;
+        if (m_pStepSound)
+        {
+            m_pStepSound->play(0.8f, 0.0f, ORandFloat(.9f, 1.1f));
+        }
+    }
 
     Vector2 position = getLocalTransform().Translation();
     m_pCollider2DComponent->setVelocity(dir * m_speed);

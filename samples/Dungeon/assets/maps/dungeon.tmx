@@ -20,6 +20,7 @@
   <object id="16" type="chest" x="592" y="544" width="16" height="16">
    <properties>
     <property name="Chest:Gold" value="5"/>
+    <property name="Chest:OpenSound" value="chestOpen.wav"/>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Static" value="true"/>
@@ -283,6 +284,7 @@
    <properties>
     <property name="Collider2DComponent:Size" value="6,6"/>
     <property name="Controllable:Speed" value="64"/>
+    <property name="Controllable:StepSound" value="step.wav"/>
     <property name="DoorTraverser" value=""/>
     <property name="Inventory" value=""/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_s"/>

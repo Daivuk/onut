@@ -37,10 +37,12 @@ void registerComponents()
     // A chest containing treasures!
     ORegisterComponent(Chest);
     OBindIntProperty(Chest, Gold);
+    OBindSoundProperty(Chest, OpenSound);
 
     // Component allowing to controller a character
     ORegisterComponent(Controllable);
     OBindFloatProperty(Controllable, Speed);
+    OBindSoundProperty(Controllable, StepSound);
 
     // A door
     ORegisterComponent(Door);
