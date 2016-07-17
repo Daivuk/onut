@@ -30,7 +30,4 @@ void Chest::open()
 
     // Kill self
     destroy();
-
-    int tmp;
-    tmp = 5;
 }

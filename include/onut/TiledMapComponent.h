@@ -36,6 +36,7 @@ namespace onut
 
         void onCreate() override;
         void onRender2d() override;
+        void onUpdate() override;
         void onAddChild(const OEntityRef& pChild) override;
 
         void destroyCollisions();

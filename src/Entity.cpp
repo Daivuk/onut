@@ -199,6 +199,10 @@ namespace onut
                 {
                     m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveRender);
                 }
+                if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE_2D)
+                {
+                    m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveRender2D);
+                }
             }
         }
         else if (!m_isVisible && isVisible)
@@ -208,6 +212,10 @@ namespace onut
                 if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE)
                 {
                     m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddRender);
+                }
+                if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE_2D)
+                {
+                    m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddRender2D);
                 }
             }
         }
@@ -264,6 +272,10 @@ namespace onut
             if (m_isVisible && pComponent->m_flags & Component::FLAG_RENDERABLE)
             {
                 m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddRender);
+            }
+            if (m_isVisible && pComponent->m_flags & Component::FLAG_RENDERABLE_2D)
+            {
+                m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddRender2D);
             }
         }
     }
@@ -323,5 +335,70 @@ namespace onut
         {
             pComponent->onTriggerLeave(pCollider);
         }
+    }
+
+    int Entity::getDrawIndex() const
+    {
+        return m_drawIndex;
+    }
+
+    void Entity::setDrawIndex(int drawIndex)
+    {
+        if (m_drawIndex == drawIndex) return;
+        auto previousIndex = m_drawIndex;
+        m_drawIndex = drawIndex;
+        auto pRenderableList = getSceneManager()->m_pComponentRender2Ds;
+        Component* pOtherComponent;
+        for (auto& pComponentRef : m_components)
+        {
+            auto pComponent = pComponentRef.get();
+            if (pComponent->m_render2DLink.IsLinked())
+            {
+                // Re-order it
+                if (m_drawIndex < previousIndex)
+                {
+                    pOtherComponent = pComponent->m_render2DLink.Prev();
+                    pComponent->m_render2DLink.Unlink();
+                    while (pOtherComponent)
+                    {
+                        auto otherIndex = pOtherComponent->m_pEntity->getDrawIndex();
+                        if (m_drawIndex > otherIndex)
+                        {
+                            pRenderableList->InsertAfter(pComponent, pOtherComponent);
+                            break;
+                        }
+                        pOtherComponent = pOtherComponent->m_render2DLink.Prev();
+                    }
+                    if (!pOtherComponent)
+                    {
+                        pRenderableList->InsertHead(pComponent);
+                    }
+                }
+                else
+                {
+                    pOtherComponent = pComponent->m_render2DLink.Next();
+                    pComponent->m_render2DLink.Unlink();
+                    while (pOtherComponent)
+                    {
+                        auto otherIndex = pOtherComponent->m_pEntity->getDrawIndex();
+                        if (m_drawIndex < otherIndex)
+                        {
+                            pRenderableList->InsertBefore(pComponent, pOtherComponent);
+                            break;
+                        }
+                        pOtherComponent = pOtherComponent->m_render2DLink.Next();
+                    }
+                    if (!pOtherComponent)
+                    {
+                        pRenderableList->InsertTail(pComponent);
+                    }
+                }
+            }
+        }
+    }
+
+    const Entity::Entities& Entity::getChildren() const
+    {
+        return m_children;
     }
 };

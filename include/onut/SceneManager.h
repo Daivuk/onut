@@ -59,6 +59,8 @@ namespace onut
                 RemoveUpdate,
                 AddRender,
                 RemoveRender,
+                AddRender2D,
+                RemoveRender2D,
             };
 
             Action action;
@@ -99,6 +101,7 @@ namespace onut
         EntitySet m_entities;
         TList<Component> *m_pComponentUpdates;
         TList<Component> *m_pComponentRenders;
+        TList<Component> *m_pComponentRender2Ds;
         Components m_componentJustCreated;
         ComponentActions m_componentActions;
         Contact2Ds m_contact2Ds;

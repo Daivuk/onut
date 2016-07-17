@@ -60,6 +60,7 @@ namespace onut
         m_pPhysic2DWorld->SetContactListener(m_pPhysic2DContactListener);
         m_pComponentUpdates = new TList<Component>(offsetOf(&Component::m_updateLink));
         m_pComponentRenders = new TList<Component>(offsetOf(&Component::m_renderLink));
+        m_pComponentRender2Ds = new TList<Component>(offsetOf(&Component::m_render2DLink));
     }
 
     SceneManager::~SceneManager()
@@ -107,6 +108,10 @@ namespace onut
                 {
                     addComponentAction(pComponent, ComponentAction::Action::RemoveRender);
                 }
+                if (pComponent->m_isEnabled && pComponent->m_flags & Component::FLAG_RENDERABLE_2D)
+                {
+                    addComponentAction(pComponent, ComponentAction::Action::RemoveRender2D);
+                }
             }
         }
 
@@ -142,6 +147,25 @@ namespace onut
                     break;
                 case ComponentAction::Action::RemoveRender:
                     componentAction.pComponent->m_renderLink.Unlink();
+                    break;
+                case ComponentAction::Action::AddRender2D:
+                {
+                    auto drawIndex = componentAction.pComponent->getEntity()->getDrawIndex();
+                    Component* pComponent;
+                    for (pComponent = m_pComponentRender2Ds->Head(); pComponent; pComponent = pComponent->m_render2DLink.Next())
+                    {
+                        auto otherDrawIndex = pComponent->getEntity()->getDrawIndex();
+                        if (drawIndex < otherDrawIndex)
+                        {
+                            m_pComponentRender2Ds->InsertBefore(componentAction.pComponent.get(), pComponent);
+                            break;
+                        }
+                    }
+                    if (!pComponent) m_pComponentRender2Ds->InsertTail(componentAction.pComponent.get());
+                    break;
+                }
+                case ComponentAction::Action::RemoveRender2D:
+                    componentAction.pComponent->m_render2DLink.Unlink();
                     break;
             }
         }
@@ -229,12 +253,22 @@ namespace onut
             transform *= Matrix::CreateTranslation(OScreenCenterf);
         }
         oSpriteBatch->begin(transform);
-        for (auto& pEntity : m_entities)
+        //for (auto& pEntity : m_entities)
+        //{
+        //    if (!pEntity->getParent() && pEntity->isVisible())
+        //    {
+        //        pEntity->render2d();
+        //    }
+        //}
+#if defined(_DEBUG)
+        int render2DCount = 0;
+#endif
+        for (auto pComponent = m_pComponentRender2Ds->Head(); pComponent; pComponent = pComponent->m_render2DLink.Next())
         {
-            if (!pEntity->getParent() && pEntity->isVisible())
-            {
-                pEntity->render2d();
-            }
+#if defined(_DEBUG)
+            ++render2DCount;
+#endif
+            pComponent->onRender2d();
         }
         oSpriteBatch->end();
 
@@ -246,11 +280,12 @@ namespace onut
         }
         auto pFont = OGetFont("font.fnt");
         oSpriteBatch->begin();
-        oSpriteBatch->drawRect(nullptr, {0, 20, 200, 80}, Color(0, 0, 0, .75f));
+        oSpriteBatch->drawRect(nullptr, {0, 16, 200, 100}, Color(0, 0, 0, .75f));
         pFont->draw("Updatables: " + std::to_string(updateCount), {0, 20});
         pFont->draw("Renderables: " + std::to_string(renderCount), {0, 40});
-        pFont->draw("Components: " + std::to_string(g_componentCount), {0, 60});
-        pFont->draw("Entities: " + std::to_string(g_entityCount), {0, 80});
+        pFont->draw("Renderables 2D: " + std::to_string(render2DCount), {0, 60});
+        pFont->draw("Components: " + std::to_string(g_componentCount), {0, 80});
+        pFont->draw("Entities: " + std::to_string(g_entityCount), {0, 100});
         oSpriteBatch->end();
 #endif
     }

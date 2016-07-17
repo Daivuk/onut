@@ -16,7 +16,7 @@
 namespace onut
 {
     TiledMapComponent::TiledMapComponent()
-        : Component(FLAG_RENDERABLE_2D)
+        : Component(FLAG_RENDERABLE_2D | FLAG_UPDATABLE)
     {
     }
 
@@ -219,9 +219,21 @@ namespace onut
     {
     }
 
+    void TiledMapComponent::onUpdate()
+    {
+        auto& children = getEntity()->getChildren();
+        for (auto& pEntityRef : children)
+        {
+            auto pEntity = pEntityRef.get();
+            if (!pEntity->isVisible()) continue;
+            int drawIndex = (int)pEntity->getLocalTransform().Translation().y + 1;
+            pEntity->setDrawIndex(drawIndex);
+        }
+    }
+
     void TiledMapComponent::onRender2d()
     {
-        auto& transform = getEntity()->getWorldTransform();
+        auto& transform = getWorldTransform();
         m_pTiledMap->setTransform(transform);
         m_pTiledMap->render();
 

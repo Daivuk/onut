@@ -52,6 +52,31 @@ namespace onut
                     m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddUpdate);
                 }
             }
+            if (m_pEntity->isVisible())
+            {
+                if (m_flags & FLAG_RENDERABLE)
+                {
+                    if (m_isEnabled && !isEnabled)
+                    {
+                        m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::RemoveRender);
+                    }
+                    else if (!m_isEnabled && isEnabled)
+                    {
+                        m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddRender);
+                    }
+                }
+                if (m_flags & FLAG_RENDERABLE_2D)
+                {
+                    if (m_isEnabled && !isEnabled)
+                    {
+                        m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::RemoveRender2D);
+                    }
+                    else if (!m_isEnabled && isEnabled)
+                    {
+                        m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddRender2D);
+                    }
+                }
+            }
         }
         m_isEnabled = isEnabled;
     }

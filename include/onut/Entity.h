@@ -21,6 +21,8 @@ namespace onut
     class Entity final : public std::enable_shared_from_this<Entity>
     {
     public:
+        using Entities = std::vector<OEntityRef>;
+
         static OEntityRef create(const OSceneManagerRef& pSceneManager = nullptr);
 
         ~Entity();
@@ -94,11 +96,15 @@ namespace onut
         const OSceneManagerRef& getSceneManager() const;
         void sendMessage(int messageId, void* pData = nullptr);
 
+        int getDrawIndex() const;
+        void setDrawIndex(int drawIndex);
+
+        const Entities& getChildren() const;
+
     private:
         friend class Component;
         friend class SceneManager;
 
-        using Entities = std::vector<OEntityRef>;
         using Components = std::vector<OComponentRef>;
 
         Entity();
@@ -111,13 +117,14 @@ namespace onut
         bool m_isWorldDirty = true;
         Matrix m_localTransform;
         Matrix m_worldTransform;
-        OEntityWeak m_pParent;
         Components m_components;
         Entities m_children;
+        OEntityWeak m_pParent;
         OSceneManagerRef m_pSceneManager;
         bool m_isEnabled = true;
         bool m_isVisible = true;
         bool m_isStatic = false;
+        int m_drawIndex = 0;
         std::string m_name;
     };
 };
