@@ -147,7 +147,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
-                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
+                        m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveUpdate);
                     }
                 }
             }
@@ -157,7 +157,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
-                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
+                        m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddUpdate);
                     }
                 }
             }
@@ -178,7 +178,7 @@ namespace onut
             {
                 if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE)
                 {
-                    m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Remove);
+                    m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveRender);
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace onut
             {
                 if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_RENDERABLE)
                 {
-                    m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Add);
+                    m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddRender);
                 }
             }
         }
@@ -210,7 +210,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
-                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
+                        m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::RemoveUpdate);
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace onut
                 {
                     if (pComponent->isEnabled() && pComponent->m_flags & Component::FLAG_UPDATABLE)
                     {
-                        m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
+                        m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddUpdate);
                     }
                 }
             }
@@ -240,11 +240,11 @@ namespace onut
         {
             if (m_isEnabled && !m_isStatic && pComponent->m_flags & Component::FLAG_UPDATABLE)
             {
-                m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
+                m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddUpdate);
             }
             if (m_isVisible && pComponent->m_flags & Component::FLAG_RENDERABLE)
             {
-                m_pSceneManager->addComponentAction(pComponent, m_pSceneManager->m_componentRenders, SceneManager::ComponentAction::Action::Add);
+                m_pSceneManager->addComponentAction(pComponent, SceneManager::ComponentAction::Action::AddRender);
             }
         }
     }

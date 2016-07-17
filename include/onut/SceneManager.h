@@ -55,13 +55,14 @@ namespace onut
         {
             enum class Action
             {
-                Add,
-                Remove
+                AddUpdate,
+                RemoveUpdate,
+                AddRender,
+                RemoveRender,
             };
 
             Action action;
             OComponentRef pComponent;
-            Components* pTargetList;
         };
 
         struct Contact2D
@@ -83,7 +84,7 @@ namespace onut
         void addEntity(const OEntityRef& pEntity);
         void removeEntity(const OEntityRef& pEntity);
 
-        void addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action);
+        void addComponentAction(const OComponentRef& pComponent, ComponentAction::Action action);
         void performComponentActions();
 
         void addComponent(const OComponentRef& pComponent, Components& to);
@@ -96,8 +97,8 @@ namespace onut
         SceneManager();
 
         EntitySet m_entities;
-        Components m_componentUpdates;
-        Components m_componentRenders;
+        TList<Component> *m_pComponentUpdates;
+        TList<Component> *m_pComponentRenders;
         Components m_componentJustCreated;
         ComponentActions m_componentActions;
         Contact2Ds m_contact2Ds;

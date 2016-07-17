@@ -1,6 +1,10 @@
 #pragma once
 
+// Onut includes
 #include <onut/Maths.h>
+
+// Third parties
+#include <list/List.h>
 
 // Forward Declaration
 #include <onut/ForwardDeclaration.h>
@@ -69,5 +73,10 @@ namespace onut
         OEntityRef m_pEntity;
         bool m_isEnabled = true;
         int m_flags = FLAG_NONE;
+
+        // List links
+        LIST_LINK(Component) m_updateLink;
+        LIST_LINK(Component) m_renderLink;
+        LIST_LINK(Component) m_render2DLink;
     };
 };

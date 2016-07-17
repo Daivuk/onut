@@ -156,6 +156,21 @@ namespace onut
                 ComponentMap componentMap;
                 for (auto& kv : object.properties)
                 {
+                    if (kv.first == "Static")
+                    {
+                        pMapEntity->setStatic(kv.second == "true");
+                        continue;
+                    }
+                    else if (kv.first == "Visible")
+                    {
+                        pMapEntity->setVisible(kv.second == "true");
+                        continue;
+                    }
+                    else if (kv.first == "Enable")
+                    {
+                        pMapEntity->setEnabled(kv.second == "true");
+                        continue;
+                    }
                     auto split = onut::splitString(kv.first, ':');
                     if (split.size() == 0) continue;
                     auto& componentName = split[0];
@@ -170,7 +185,6 @@ namespace onut
                             continue;
                         }
                         componentMap[componentName] = pComponent;
-                        pMapEntity->addComponent(pComponent);
                     }
                     else
                     {
@@ -182,6 +196,10 @@ namespace onut
                         auto& value = kv.second;
                         oComponentFactory->setProperty(pComponent, componentName, propertyName, value);
                     }
+                }
+                for (auto& kv : componentMap)
+                {
+                    pMapEntity->addComponent(kv.second);
                 }
 
                 // Add the entity to the map

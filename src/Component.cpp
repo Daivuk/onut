@@ -32,11 +32,11 @@ namespace onut
             {
                 if (m_isEnabled && !isEnabled)
                 {
-                    m_pEntity->m_pSceneManager->addComponentAction(OThis, m_pEntity->m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Remove);
+                    m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::RemoveUpdate);
                 }
                 else if (!m_isEnabled && isEnabled)
                 {
-                    m_pEntity->m_pSceneManager->addComponentAction(OThis, m_pEntity->m_pSceneManager->m_componentUpdates, SceneManager::ComponentAction::Action::Add);
+                    m_pEntity->m_pSceneManager->addComponentAction(OThis, SceneManager::ComponentAction::Action::AddUpdate);
                 }
             }
         }

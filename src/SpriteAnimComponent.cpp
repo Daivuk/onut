@@ -18,7 +18,6 @@ namespace onut
     {
         m_pSpriteAnim = pSpriteAnim;
         m_pSpriteAnimInstance = OMake<OSpriteAnimInstance>(m_pSpriteAnim);
-        m_pSpriteAnimInstance->setUpdater(getEntity()->getSceneManager()->getUpdater());
     }
 
     const OSpriteAnimRef& SpriteAnimComponent::getSpriteAnim() const
@@ -58,6 +57,7 @@ namespace onut
 
     void SpriteAnimComponent::onCreate()
     {
+        m_pSpriteAnimInstance->setUpdater(getEntity()->getSceneManager()->getUpdater());
         if (isEnabled())
         {
             m_currentlyPlaying = m_defaultAnim;

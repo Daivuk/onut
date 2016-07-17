@@ -89,15 +89,12 @@ namespace onut
         b2PolygonShape box;
         box.SetAsBox(m_size.x / 2.f / m_physicScale, m_size.y / 2.f / m_physicScale);
 
-        if (pEntity->isStatic())
+        if (pEntity->isStatic() || m_trigger)
         {
             m_pBody->CreateFixture(&box, 0.0f);
-        }
-        else if (m_trigger)
-        {
             b2FixtureDef fixtureDef;
             fixtureDef.shape = &box;
-            fixtureDef.isSensor = true;
+            fixtureDef.isSensor = m_trigger;
             m_pBody->CreateFixture(&fixtureDef);
         }
         else

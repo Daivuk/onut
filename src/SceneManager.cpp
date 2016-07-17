@@ -3,6 +3,7 @@
 #include <onut/Camera2DComponent.h>
 #include <onut/Component.h>
 #include <onut/Entity.h>
+#include <onut/Font.h>
 #include <onut/SceneManager.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
@@ -49,6 +50,8 @@ namespace onut
         m_pPhysic2DWorld = new b2World(b2Vec2(0, 0));
         m_pPhysic2DContactListener = new Physic2DContactListener(this);
         m_pPhysic2DWorld->SetContactListener(m_pPhysic2DContactListener);
+        m_pComponentUpdates = new TList<Component>(offsetOf(&Component::m_updateLink));
+        m_pComponentRenders = new TList<Component>(offsetOf(&Component::m_renderLink));
     }
 
     SceneManager::~SceneManager()
@@ -84,7 +87,7 @@ namespace onut
             {
                 if (pComponent->m_isEnabled && pComponent->m_flags & Component::FLAG_UPDATABLE)
                 {
-                    addComponentAction(pComponent, m_componentUpdates, ComponentAction::Action::Remove);
+                    addComponentAction(pComponent, ComponentAction::Action::RemoveUpdate);
                 }
             }
         }
@@ -94,7 +97,7 @@ namespace onut
             {
                 if (pComponent->m_isEnabled && pComponent->m_flags & Component::FLAG_RENDERABLE)
                 {
-                    addComponentAction(pComponent, m_componentRenders, ComponentAction::Action::Remove);
+                    addComponentAction(pComponent, ComponentAction::Action::RemoveRender);
                 }
             }
         }
@@ -104,9 +107,9 @@ namespace onut
         m_entities.erase(pEntity);
     }
 
-    void SceneManager::addComponentAction(const OComponentRef& pComponent, Components& list, ComponentAction::Action action)
+    void SceneManager::addComponentAction(const OComponentRef& pComponent, ComponentAction::Action action)
     {
-        m_componentActions.push_back({action, pComponent, &list});
+        m_componentActions.push_back({action, pComponent});
     }
 
     void SceneManager::performComponentActions()
@@ -120,11 +123,17 @@ namespace onut
         {
             switch (componentAction.action)
             {
-                case ComponentAction::Action::Add:
-                    addComponent(componentAction.pComponent, *componentAction.pTargetList);
+                case ComponentAction::Action::AddUpdate:
+                    m_pComponentUpdates->InsertTail(componentAction.pComponent.get());
                     break;
-                case ComponentAction::Action::Remove:
-                    removeComponent(componentAction.pComponent, *componentAction.pTargetList);
+                case ComponentAction::Action::RemoveUpdate:
+                    componentAction.pComponent->m_updateLink.Unlink();
+                    break;
+                case ComponentAction::Action::AddRender:
+                    m_pComponentRenders->InsertTail(componentAction.pComponent.get());
+                    break;
+                case ComponentAction::Action::RemoveRender:
+                    componentAction.pComponent->m_renderLink.Unlink();
                     break;
             }
         }
@@ -180,7 +189,7 @@ namespace onut
         performComponentActions();
         m_pPhysic2DWorld->Step(ODT, 6, 2);
         performContacts();
-        for (auto& pComponent : m_componentUpdates)
+        for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
         {
             pComponent->onUpdate();
         }
@@ -189,8 +198,10 @@ namespace onut
 
     void SceneManager::render()
     {
-        for (auto& pComponent : m_componentRenders)
+        int renderCount = 0;
+        for (auto pComponent = m_pComponentRenders->Head(); pComponent; pComponent = pComponent->m_renderLink.Next())
         {
+            ++renderCount;
             pComponent->onRender();
         }
 
@@ -214,6 +225,15 @@ namespace onut
             }
         }
         oSpriteBatch->end();
+
+        auto pFont = OGetFont("font.fnt");
+        int updateCount = 0;
+        for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
+        {
+            ++updateCount;
+        }
+        pFont->draw("Updatables: " + std::to_string(updateCount), {0, 20});
+        pFont->draw("Renderables: " + std::to_string(renderCount), {0, 40});
     }
 
     OEntityRef SceneManager::findEntity(const std::string& name) const
