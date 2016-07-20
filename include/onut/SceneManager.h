@@ -43,6 +43,8 @@ namespace onut
 
         OUpdaterRef getUpdater() const;
 
+        void boardcastMessage(int messageId, void* pData = nullptr);
+
     private:
         friend class Entity;
         friend class Component;

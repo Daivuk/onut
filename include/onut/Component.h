@@ -47,6 +47,7 @@ namespace onut
         }
         const OSceneManagerRef& getSceneManager() const;
         void sendMessage(int messageId, void* pData = nullptr);
+        void boardcastMessage(int messageId, void* pData = nullptr);
         void destroy();
         const Matrix& getLocalTransform() const;
         const Matrix& getWorldTransform();

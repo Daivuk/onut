@@ -411,4 +411,12 @@ namespace onut
     {
         return m_pUpdater;
     }
+
+    void SceneManager::boardcastMessage(int messageId, void* pData)
+    {
+        for (auto& pEntity : m_entities)
+        {
+            pEntity->sendMessage(messageId, pData);
+        }
+    }
 };

@@ -38,7 +38,7 @@ void PushBack::onUpdate()
 
 void PushBack::onMessage(int messageId, void* pData)
 {
-    if (messageId == MESSAGE_DAMAGE)
+    if (messageId == Messages::Damage)
     {
         m_time = .25f;
         auto pMessage = (Damager::Message*)pData;

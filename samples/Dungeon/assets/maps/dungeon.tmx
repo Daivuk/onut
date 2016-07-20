@@ -301,6 +301,8 @@
     <property name="DamageFlasher" value=""/>
     <property name="DoorTraverser" value=""/>
     <property name="Inventory" value=""/>
+    <property name="Life:Amount" value="4"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_s"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="baltAnims.spriteanim"/>
@@ -311,16 +313,24 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="n"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_n"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>
   </object>
-  <object id="51" type="mummy" x="400" y="256" width="16" height="16">
+  <object id="51" type="bat" x="400" y="256" width="16" height="16">
    <properties>
+    <property name="Bat" value=""/>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
    </properties>
   </object>
@@ -328,7 +338,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="w"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
@@ -338,7 +352,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="e"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_e"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
@@ -348,7 +366,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="n"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_n"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
@@ -358,7 +380,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="e"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_e"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
@@ -368,7 +394,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="w"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
@@ -378,7 +408,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="w"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
@@ -388,7 +422,11 @@
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
-    <property name="Guard:Life" value="3"/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="w"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
@@ -396,8 +434,12 @@
   </object>
   <object id="59" type="bat" x="336" y="688" width="16" height="16">
    <properties>
+    <property name="Bat" value=""/>
     <property name="Collider2DComponent:Size" value="8,8"/>
     <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
     <property name="PushBack:Strength" value="16"/>
    </properties>
   </object>
@@ -417,9 +459,9 @@
    </properties>
   </object>
  </objectgroup>
- <layer name="fow" width="64" height="64" visible="0">
+ <layer name="fow" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3PwQkAAAwCMZfo/qt2BX+lECF/b5IMAAAAAACVZtcf9evXr1+/fv36AQAAAAAAAAD4aQG9jCziAEAAAA==
+   H4sIAAAAAAAAC+3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAIC3AYbSVKsAQAAA
   </data>
  </layer>
  <layer name="collisions" width="64" height="64" visible="0" opacity="0.41">
@@ -427,7 +469,7 @@
    H4sIAAAAAAAAC+3UWxaCIBRAUZuu8x9A/2Xx5ops1to/Rskh5XwdxwkAAACNPkfN96IberXX9q+6Bzn9qesr78Hu/VctNf3R65+xN9Hr0K9f/7i+1vM/uqNHe0v/inugf+/+q5aa/uj1A/SSGtHr0z+v/9+1J/r1X+/0DOj3/u/cD0816h1e5WzIPc9Kzr+rz0t/+057kBol/TnzZ/aP6End5479JWsv3a+a+TOf/5pnZKf+VFPLXAAAAODbGx7fr0IAQAAA
   </data>
  </layer>
- <layer name="info" width="64" height="64" visible="0" opacity="0.65">
+ <layer name="room" width="64" height="64" visible="0" opacity="0.65">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC+3YSw5AQABEQa7r/gcQS78YZHymqxI7Fm8SndB1AAAAcM/Qr6+9e648+3X69evP7S/RclsJ/fpb7U/fP/369ef2AyxtbVvSziX3H7W3fgb6s/snye2T9H5oVY33+U87ceabv7Tr7Fa+eVZP93/t34n+7P4S+uvuHwAAADA3ApDQUhkAQAAA
   </data>

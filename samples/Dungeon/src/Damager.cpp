@@ -31,5 +31,5 @@ void Damager::onTriggerEnter(const OCollider2DComponentRef& pCollider)
         Vector2(pCollider->getWorldTransform().Translation()) -
         Vector2(getWorldTransform().Translation());
     message.direction.Normalize();
-    pCollider->sendMessage(MESSAGE_DAMAGE, &message);
+    pCollider->sendMessage(Messages::Damage, &message);
 }

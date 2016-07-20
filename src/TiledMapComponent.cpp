@@ -237,27 +237,27 @@ namespace onut
         m_pTiledMap->setTransform(transform);
         m_pTiledMap->render();
 
-#if defined(_DEBUG)
-        auto w = m_pTiledMap->getWidth();
-        auto h = m_pTiledMap->getHeight();
-        Color collisionColor(.25f, 0, 0, .25f);
-        for (int y = 0; y < h; ++y)
-        {
-            for (int x = 0; x < w; ++x)
-            {
-                auto pCollisionTile = m_collisionTiles[y * w + x];
-                if (pCollisionTile && pCollisionTile->mapPos.x == x && pCollisionTile->mapPos.y == y)
-                {
-                    oSpriteBatch->drawRect(nullptr, Rect(
-                        (float)pCollisionTile->mapPos.x * 16.0f, (float)pCollisionTile->mapPos.y * 16.0f,
-                        (float)pCollisionTile->size.x * 16.0f, (float)pCollisionTile->size.y * 16.0f), collisionColor);
-                    oSpriteBatch->drawOutterOutlineRect(Rect(
-                        (float)pCollisionTile->mapPos.x * 16.0f + 2, (float)pCollisionTile->mapPos.y * 16.0f + 2,
-                        (float)pCollisionTile->size.x * 16.0f - 4, (float)pCollisionTile->size.y * 16.0f - 4), 1, collisionColor);
-                }
-            }
-        }
-#endif
+//#if defined(_DEBUG)
+//        auto w = m_pTiledMap->getWidth();
+//        auto h = m_pTiledMap->getHeight();
+//        Color collisionColor(.25f, 0, 0, .25f);
+//        for (int y = 0; y < h; ++y)
+//        {
+//            for (int x = 0; x < w; ++x)
+//            {
+//                auto pCollisionTile = m_collisionTiles[y * w + x];
+//                if (pCollisionTile && pCollisionTile->mapPos.x == x && pCollisionTile->mapPos.y == y)
+//                {
+//                    oSpriteBatch->drawRect(nullptr, Rect(
+//                        (float)pCollisionTile->mapPos.x * 16.0f, (float)pCollisionTile->mapPos.y * 16.0f,
+//                        (float)pCollisionTile->size.x * 16.0f, (float)pCollisionTile->size.y * 16.0f), collisionColor);
+//                    oSpriteBatch->drawOutterOutlineRect(Rect(
+//                        (float)pCollisionTile->mapPos.x * 16.0f + 2, (float)pCollisionTile->mapPos.y * 16.0f + 2,
+//                        (float)pCollisionTile->size.x * 16.0f - 4, (float)pCollisionTile->size.y * 16.0f - 4), 1, collisionColor);
+//                }
+//            }
+//        }
+//#endif
     }
 
     void TiledMapComponent::onAddChild(const OEntityRef& pChild)

@@ -7,13 +7,15 @@ OForwardDeclare(Entity);
 class Guard final : public OComponent
 {
 public:
-    int getLife() const;
-    void setLife(int life);
+    const std::string& getDir() const;
+    void setDir(const std::string& dir);
 
 private:
     void onCreate() override;
     void onMessage(int messageId, void* pData) override;
+    void onUpdate() override;
 
-    int m_life = 1;
-    OEntityRef m_pPlayer;
+    OEntityWeak m_pPlayer;
+    std::string m_dir;
+    std::string m_resetDir;
 };

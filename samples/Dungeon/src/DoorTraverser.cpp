@@ -7,7 +7,7 @@
 #include <onut/Sound.h>
 #include <onut/TiledMapComponent.h>
 
-extern OAnimFloat m_fadeAnim;
+extern OAnimFloat g_fadeAnim;
 
 void DoorTraverser::onCreate()
 {
@@ -36,7 +36,7 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
 
                     // Pause, fade out then teleport
                     pSceneManager->setPause(true);
-                    m_fadeAnim.queue(0.0f, .5f, OTweenLinear, 
+                    g_fadeAnim.queue(0.0f, .5f, OTweenLinear, 
                                      [pEntity, pSceneManager, pCollider, targetPos]
                     {
                         if (pCollider)
@@ -53,13 +53,13 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
                     });
 
                     // Fade in then unpause
-                    m_fadeAnim.queue(1.0f, .5f, OTweenLinear, 
+                    g_fadeAnim.queue(1.0f, .5f, OTweenLinear, 
                                      [pSceneManager]
                     {
                         pSceneManager->setPause(false);
                     });
 
-                    m_fadeAnim.play();
+                    g_fadeAnim.play();
                 }
             }
         }

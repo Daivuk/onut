@@ -35,6 +35,13 @@
     <ClCompile Include="..\..\src\PushBack.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Dungeon.cpp" />
+    <ClCompile Include="..\..\src\OnRoomResetter.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Life.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Controllable.h">
@@ -69,6 +76,13 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\PushBack.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Dungeon.h" />
+    <ClInclude Include="..\..\src\OnRoomResetter.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Life.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

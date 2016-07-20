@@ -43,7 +43,7 @@ void DamageFlasher::onUpdate()
 
 void DamageFlasher::onMessage(int messageId, void* pData)
 {
-    if (messageId == MESSAGE_DAMAGE)
+    if (messageId == Messages::Damage)
     {
         m_time = .8f;
     }

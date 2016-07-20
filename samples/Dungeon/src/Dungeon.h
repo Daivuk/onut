@@ -1,0 +1,49 @@
+#pragma once
+// Onut includes
+#include <onut/Maths.h>
+#include <onut/Point.h>
+
+// STL
+#include <set>
+#include <string>
+#include <vector>
+
+// Forward declarations
+#include <onut/ForwardDeclaration.h>
+OForwardDeclare(TiledMap)
+ForwardDeclare(Dungeon)
+
+class Dungeon
+{
+public:
+    using TiledId = int;
+    using TiledIdSet = std::set<TiledId>;
+
+    struct Room
+    {
+        iRect bound;
+        TiledIdSet tileIdSet;
+    };
+
+    Dungeon(const std::string& filename);
+
+    const Room* getRoomAt(const Vector2& position) const;
+    const Room* getRoomAt(const Point& tilePos) const;
+
+    bool isInRoom(const Vector2& position, const Room* pRoom) const;
+    bool isInRoom(const Point& tilePos, const Room* pRoom) const;
+
+private:
+    using Rooms = std::vector<Room>;
+
+    void createMap(const std::string& filename);
+    void createRooms();
+    Room createRoomAt(const Point& mapPos, const uint32_t* pTiles);
+
+    int m_width;
+    int m_height;
+    OTiledMapRef m_pTiledMap;
+    Rooms m_rooms;
+};
+
+extern DungeonRef g_pDungeon;

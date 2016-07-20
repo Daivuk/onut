@@ -70,7 +70,7 @@ void Controllable::attack()
     m_pSpriteAnimComponent->play("attack_" + m_dir);
 
     // Show the attack effect
-    m_pSwordAttackEntity->setDrawIndex(SWORD_ATTACK_DRAW_INDEX);
+    m_pSwordAttackEntity->setDrawIndex(DrawIndexes::SwordAttack);
     if (m_dir == "s")
     {
         m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));

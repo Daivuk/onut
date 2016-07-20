@@ -18,7 +18,7 @@ void Vase::setGold(int gold)
 
 void Vase::onMessage(int messageId, void* pData)
 {
-    if (messageId == MESSAGE_DAMAGE)
+    if (messageId == Messages::Damage)
     {
         auto damage = *(int*)pData;
         if (damage >= 1)

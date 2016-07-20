@@ -1,4 +1,6 @@
 #pragma once
+#include "Dungeon.h"
+
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
@@ -15,9 +17,12 @@ public:
     void onUpdate() override;
 
 private:
+    void RefreshFogOfWar();
+
     OEntityRef m_pPlayer;
     OTiledMapRef m_pTiledMap;
     std::vector<int> m_paint;
     int m_nextPaint = 1;
     std::vector<Point> m_paintQueue;
+    const Dungeon::Room* m_pRoom = nullptr;
 };

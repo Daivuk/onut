@@ -102,6 +102,11 @@ namespace onut
         getEntity()->sendMessage(messageId, pData);
     }
 
+    void Component::boardcastMessage(int messageId, void* pData)
+    {
+        getEntity()->getSceneManager()->boardcastMessage(messageId, pData);
+    }
+
     void Component::destroy()
     {
         getEntity()->destroy();

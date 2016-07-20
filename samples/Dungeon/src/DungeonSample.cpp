@@ -4,7 +4,6 @@
 // Oak Nut include
 #include <onut/Anim.h>
 #include <onut/ComponentFactory.h>
-#include <onut/EntityFactory.h>
 #include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
@@ -17,9 +16,12 @@
 #include "Damager.h"
 #include "Door.h"
 #include "DoorTraverser.h"
+#include "Dungeon.h"
 #include "Guard.h"
+#include "Life.h"
 #include "Player.h"
 #include "PushBack.h"
+#include "OnRoomResetter.h"
 #include "SmartRoomCamera.h"
 #include "TreasureHunter.h"
 #include "Vase.h"
@@ -29,7 +31,7 @@ void update();
 void render();
 void postRender();
 
-OAnimFloat m_fadeAnim(1.0f);
+OAnimFloat g_fadeAnim(1.0f);
 
 // Main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -44,16 +46,16 @@ void registerComponents()
     ORegisterComponent(Chest);
     OBindIntProperty(Chest, Gold);
 
-    // Component allowing to controller a character
+    // Component allowing to control a character
     ORegisterComponent(Controllable);
     OBindFloatProperty(Controllable, Speed);
     OBindSoundProperty(Controllable, StepSound);
 
-    // If attached to an entity, it will flash (old school style)
+    // If attached to an entity, it will flash white
     // upon receiving damage.
     ORegisterComponent(DamageFlasher);
 
-    // A component that inflicts damage when triggered
+    // A component that inflicts damage when touched
     ORegisterComponent(Damager);
     OBindIntProperty(Damager, Damage);
 
@@ -64,38 +66,45 @@ void registerComponents()
     OBindSoundProperty(Door, CloseSound);
     OBindEntityProperty(Door, Target);
 
-    // Allows the owner entity to traverse doors
+    // Allows the entity to traverse doors
     ORegisterComponent(DoorTraverser);
 
-    // Will position itself to follow the main player, but also respected room restrictions
-    ORegisterComponent(SmartRoomCamera);
-
-    // Guards will be alerted if they look in your direction,
-    // and pursue/attack you.
+    // Guard enemy
     ORegisterComponent(Guard);
-    OBindIntProperty(Guard, Life);
+    OBindStringProperty(Guard, Dir);
+
+    // Life receives damage, and gets destroyed once reached zero
+    ORegisterComponent(Life);
+    OBindIntProperty(Life, Amount);
+    OBindSoundProperty(Life, DamageSound);
 
     // Will push back the entity if damaged
     ORegisterComponent(PushBack);
     OBindFloatProperty(PushBack, Strength);
 
-    // A treasure hunter entity can open cheats
+    // When the player enters a room, this component will reset
+    // the entity's position and call a Reset message on itself.
+    ORegisterComponent(OnRoomResetter);
+
+    // Will position itself to follow the main player,
+    // but also respecting room restrictions
+    ORegisterComponent(SmartRoomCamera);
+
+    // A treasure hunter entity can open chest upon touching them
     ORegisterComponent(TreasureHunter);
 
-    // Vases can be broke and they usually contain gold or health
+    // Vases can be broke and they usually contain gold or health potion
     ORegisterComponent(Vase);
     OBindIntProperty(Vase, Gold);
 }
 
 void init()
 {
+    // Register components
     registerComponents();
 
-    // Create our tiled map entity.
-    // The TiledMapComponent will look for the "entities" object layer and 
-    // instantiate entities and their components based on properties
-    // set in Tiled editor.
-    auto pTiledMapEntity = OCreateTiledMapEntity("dungeon.tmx");
+    // Create our dungeon
+    g_pDungeon = OMake<Dungeon>("dungeon.tmx");
 }
 
 void update()
@@ -108,7 +117,8 @@ void render()
 
 void postRender()
 {
-    float fade = m_fadeAnim.get();
+    // Global fade
+    float fade = g_fadeAnim.get();
     if (fade < 1.0f)
     {
         auto fadeColor = OLerp(Color::Black, Color::Transparent, fade);
