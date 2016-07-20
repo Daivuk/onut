@@ -126,15 +126,11 @@ namespace onut
 
     void SceneManager::performComponentActions()
     {
-        while (m_componentJustCreated.size())
+        for (size_t i = 0; i < m_componentJustCreated.size(); ++i)
         {
-            auto justCreated = m_componentJustCreated;
-            m_componentJustCreated.clear();
-            for (auto& pComponent : justCreated)
-            {
-                pComponent->onCreate();
-            }
+            m_componentJustCreated[i]->onCreate();
         }
+        m_componentJustCreated.clear();
         for (auto& componentAction : m_componentActions)
         {
             switch (componentAction.action)
@@ -175,23 +171,6 @@ namespace onut
         m_componentActions.clear();
     }
 
-    void SceneManager::addComponent(const OComponentRef& pComponent, Components& to)
-    {
-        to.push_back(pComponent);
-    }
-
-    void SceneManager::removeComponent(const OComponentRef& pComponent, Components& from)
-    {
-        for (auto it = from.begin(); it != from.end(); ++it)
-        {
-            if (*it == pComponent)
-            {
-                from.erase(it);
-                return;
-            }
-        }
-    }
-
     void SceneManager::setActiveCamera2D(const OCamera2DComponentRef& pActiveCamera2D)
     {
         m_pActiveCamera2D = pActiveCamera2D;
@@ -230,16 +209,31 @@ namespace onut
 
     void SceneManager::update()
     {
+        // Check if paused
         if (m_pause) return;
+
+        // Update scene updater that managers sprite animations and such
         m_pUpdater->update();
+        
+        // Perform add/remove of entities
         performEntityActions();
+
+        // Perform add/remove of components to various lists
         performComponentActions();
+
+        // Update physics
         m_pPhysic2DWorld->Step(ODT, 6, 2);
+
+        // Send physic contact messages
         performContacts();
+
+        // Update updatables
         for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
         {
             pComponent->onUpdate();
         }
+
+        // Redo the entity/component add/remove actions because they might have changed while updating.
         performComponentActions();
         performEntityActions();
     }

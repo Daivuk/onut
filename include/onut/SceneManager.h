@@ -93,9 +93,6 @@ namespace onut
         void performComponentActions();
         void performEntityActions();
 
-        void addComponent(const OComponentRef& pComponent, Components& to);
-        void removeComponent(const OComponentRef& pComponent, Components& from);
-
         void begin2DContact(b2Contact* pContact);
         void end2DContact(b2Contact* pContact);
         void performContacts();
