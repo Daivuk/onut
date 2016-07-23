@@ -89,6 +89,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Bat.cpp" />
     <ClCompile Include="..\..\src\Chest.cpp" />
     <ClCompile Include="..\..\src\Controllable.cpp" />
     <ClCompile Include="..\..\src\DamageFlasher.cpp" />
@@ -106,6 +107,7 @@
     <ClCompile Include="..\..\src\Vase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Bat.h" />
     <ClInclude Include="..\..\src\Chest.h" />
     <ClInclude Include="..\..\src\DamageFlasher.h" />
     <ClInclude Include="..\..\src\Damager.h" />

@@ -68,6 +68,7 @@ namespace onut
         virtual void onTriggerLeave(const OCollider2DComponentRef& pCollider) {}
         virtual void onEnable() {}
         virtual void onDisable() {}
+        virtual void onDestroy() {}
 
     private:
         friend class Entity;

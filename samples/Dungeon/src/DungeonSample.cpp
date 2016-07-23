@@ -4,12 +4,14 @@
 // Oak Nut include
 #include <onut/Anim.h>
 #include <onut/ComponentFactory.h>
+#include <onut/Entity.h>
 #include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 
 // Game includes
+#include "Bat.h"
 #include "Chest.h"
 #include "Controllable.h"
 #include "DamageFlasher.h"
@@ -42,6 +44,9 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 void registerComponents()
 {
+    // Bat enemy
+    ORegisterComponent(Bat);
+
     // A chest containing treasures!
     ORegisterComponent(Chest);
     OBindIntProperty(Chest, Gold);
@@ -125,5 +130,23 @@ void postRender()
         oSpriteBatch->begin();
         oSpriteBatch->drawRect(nullptr, OScreenRectf, fadeColor);
         oSpriteBatch->end();
+    }
+
+    // Health
+    auto pPlayer = g_pDungeon->getPlayer();
+    if (pPlayer)
+    {
+        auto pPlayerLife = pPlayer->getComponent<Life>();
+        if (pPlayerLife)
+        {
+            auto pHeartTexture = OGetTexture("heart.PNG");
+            oSpriteBatch->begin(Matrix::CreateScale(4.0f));
+            oSpriteBatch->changeFiltering(OFilterNearest);
+            for (int i = 0; i < pPlayerLife->getAmount(); ++i)
+            {
+                oSpriteBatch->drawSprite(pHeartTexture, Vector2((float)i * 8.0f + 12.0f, 12.0f));
+            }
+            oSpriteBatch->end();
+        }
     }
 }

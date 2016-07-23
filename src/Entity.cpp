@@ -37,19 +37,11 @@ namespace onut
 
     void Entity::destroy()
     {
-        while (!m_children.empty())
+        for (auto& pChild : m_children)
         {
-            auto& pChild = m_children.back();
             pChild->destroy();
         }
-
-        auto pThis = OThis;
-        m_pSceneManager->removeEntity(pThis);
-        auto pParent = getParent();
-        if (pParent)
-        {
-            pParent->remove(pThis);
-        }
+        m_pSceneManager->removeEntity(OThis);
     }
 
     OEntityRef Entity::copy() const

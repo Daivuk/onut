@@ -42,6 +42,9 @@
     <ClCompile Include="..\..\src\Life.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Bat.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Controllable.h">
@@ -83,6 +86,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Life.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Bat.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

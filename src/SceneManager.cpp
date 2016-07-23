@@ -200,6 +200,18 @@ namespace onut
     {
         for (auto& pEntity : m_entitiesToRemove)
         {
+            for (auto& pComponent : pEntity->m_components)
+            {
+                pComponent->onDestroy();
+            }
+        }
+        for (auto& pEntity : m_entitiesToRemove)
+        {
+            auto pParent = pEntity->getParent();
+            if (pParent)
+            {
+                pParent->remove(pEntity);
+            }
             pEntity->m_components.clear();
             m_entities.erase(pEntity);
         }
@@ -286,17 +298,33 @@ namespace onut
                 aabb.lowerBound = b2Vec2(FLT_MAX, FLT_MAX);
                 aabb.upperBound = b2Vec2(-FLT_MAX, -FLT_MAX);
                 b2Fixture *pFixture = pBody->GetFixtureList();
+                bool isTrigger = false;
                 while (pFixture)
                 {
+                    isTrigger |= pFixture->IsSensor();
                     aabb.Combine(aabb, pFixture->GetAABB(0));
                     pFixture = pFixture->GetNext();
                 }
+
+                Color color = Color(.35f, 0, 0, .35f);
+                switch (pBody->GetType())
+                {
+                    case b2BodyType::b2_staticBody:
+                        color = Color(.35f, 0, 0, .35f);
+                        break;
+                    case b2BodyType::b2_dynamicBody:
+                    case b2BodyType::b2_kinematicBody:
+                        color = Color(0, .35f, 0, .35f);
+                        break;
+                }
+                if (isTrigger) color.z = .35f;
+                
                 oSpriteBatch->drawOutterOutlineRect(Rect(
                     aabb.lowerBound.x * 16.0f + 1,
                     aabb.lowerBound.y * 16.0f + 1,
                     (aabb.upperBound.x - aabb.lowerBound.x) * 16.0f - 1,
                     (aabb.upperBound.y - aabb.lowerBound.y) * 16.0f - 1),
-                    1, Color(1, 0, 0, .35f));
+                    1, color);
 
                 pBody = pBody->GetNext();
             }
