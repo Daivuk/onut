@@ -120,6 +120,11 @@ namespace onut
 
     void Collider2DComponent::destroyBody()
     {
+        if (getEntity()->getName() == "player")
+        {
+            int tmp;
+            tmp = 5;
+        }
         if (m_pBody)
         {
             m_pBody->SetUserData(nullptr);

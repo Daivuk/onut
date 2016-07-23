@@ -23,7 +23,7 @@ void Damager::onTriggerEnter(const OCollider2DComponentRef& pCollider)
     auto pColliderEntity = pCollider->getEntity().get();
     for (auto& pEntity : m_exclusions)
     {
-        if (pEntity.get() == pColliderEntity) return;
+        if (pEntity.lock().get() == pColliderEntity) return;
     }
     Message message;
     message.damage = m_damage;

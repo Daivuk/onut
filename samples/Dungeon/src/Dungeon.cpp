@@ -1,6 +1,7 @@
 #include "Dungeon.h"
 
 #include <onut/EntityFactory.h>
+#include <onut/SceneManager.h>
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 
@@ -13,6 +14,9 @@ Dungeon::Dungeon(const std::string& filename)
 
     // Find our rooms
     createRooms();
+
+    // Find our player
+    m_pPlayer = oSceneManager->findEntity("player");
 }
 
 void Dungeon::createMap(const std::string& filename)
@@ -175,4 +179,9 @@ Dungeon::Room Dungeon::createRoomAt(const Point& mapPos, const uint32_t* pTiles)
     room.bound.bottom = maxBound.y;
 
     return std::move(room);
+}
+
+OEntityRef Dungeon::getPlayer() const
+{
+    return m_pPlayer.lock();
 }

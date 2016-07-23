@@ -37,6 +37,12 @@ namespace onut
 
     void Entity::destroy()
     {
+        while (!m_children.empty())
+        {
+            auto& pChild = m_children.back();
+            pChild->destroy();
+        }
+
         auto pThis = OThis;
         m_pSceneManager->removeEntity(pThis);
         auto pParent = getParent();

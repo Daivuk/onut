@@ -10,6 +10,7 @@
 
 // Forward declarations
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(Entity)
 OForwardDeclare(TiledMap)
 ForwardDeclare(Dungeon)
 
@@ -33,6 +34,8 @@ public:
     bool isInRoom(const Vector2& position, const Room* pRoom) const;
     bool isInRoom(const Point& tilePos, const Room* pRoom) const;
 
+    OEntityRef getPlayer() const;
+
 private:
     using Rooms = std::vector<Room>;
 
@@ -44,6 +47,7 @@ private:
     int m_height;
     OTiledMapRef m_pTiledMap;
     Rooms m_rooms;
+    OEntityWeak m_pPlayer;
 };
 
 extern DungeonRef g_pDungeon;

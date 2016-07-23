@@ -19,7 +19,6 @@ public:
 private:
     void RefreshFogOfWar();
 
-    OEntityRef m_pPlayer;
     OTiledMapRef m_pTiledMap;
     std::vector<int> m_paint;
     int m_nextPaint = 1;

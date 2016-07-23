@@ -14,13 +14,27 @@ public:
     void setDir(const std::string& dir);
 
 private:
+    enum class State
+    {
+        Follow,
+        PrepareAttack,
+        Attacking
+    };
+
     void onCreate() override;
     void onMessage(int messageId, void* pData) override;
     void onUpdate() override;
 
+    void attack();
+    void followPlayer();
+    void prepareAttack();
+
+    State m_state = State::Follow;
     std::string m_dir;
-    OEntityWeak m_pPlayer;
+    float m_prepareAttackDelay = 0.0f;
     OCollider2DComponentRef m_pCollider;
     OSpriteAnimComponentRef m_pSpriteAnimComponent;
+    OEntityRef m_pSwordAttackEntity;
+    OCollider2DComponentRef m_pSwordCollider;
     std::string m_resetDir;
 };

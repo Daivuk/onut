@@ -5,6 +5,7 @@
 #include <onut/TiledMapComponent.h>
 
 #include "Defines.h"
+#include "Dungeon.h"
 #include "SmartRoomCamera.h"
 
 SmartRoomCamera::SmartRoomCamera()
@@ -16,7 +17,6 @@ void SmartRoomCamera::onCreate()
 {
     auto& pSceneManager = getSceneManager();
 
-    m_pPlayer = pSceneManager->findEntity("player");
     m_pTiledMap = getParentComponent<OTiledMapComponent>()->getTiledMap();
 
     m_paint.assign(m_pTiledMap->getWidth() * m_pTiledMap->getHeight(), 0);
@@ -58,35 +58,39 @@ void SmartRoomCamera::onUpdate()
     // Here we will check the bounds of the current room the player is in
     // and not scroll the view passed those bounds. Centering the room
     // if it is smaller than the bounds.
-    Vector2 pos = m_pPlayer->getWorldTransform().Translation();
-    auto pRoom = g_pDungeon->getRoomAt(pos);
-    if (!pRoom) return;
-    if (pRoom != m_pRoom)
+    auto pPlayer = g_pDungeon->getPlayer();
+    if (pPlayer)
     {
-        if (m_pRoom) boardcastMessage(Messages::LeaveRoom, (void*)m_pRoom);
-        boardcastMessage(Messages::EnterRoom, (void*)pRoom);
-        m_pRoom = pRoom;
-        RefreshFogOfWar();
-    }
+        Vector2 pos = pPlayer->getWorldTransform().Translation();
+        auto pRoom = g_pDungeon->getRoomAt(pos);
+        if (!pRoom) return;
+        if (pRoom != m_pRoom)
+        {
+            if (m_pRoom) boardcastMessage(Messages::LeaveRoom, (void*)m_pRoom);
+            boardcastMessage(Messages::EnterRoom, (void*)pRoom);
+            m_pRoom = pRoom;
+            RefreshFogOfWar();
+        }
 
-    if (pRoom->bound.right - pRoom->bound.left < 10)
-    {
-        pos.x = ((float)pRoom->bound.left * 16.0f + (float)pRoom->bound.right * 16.0f) / 2.0f + 8.0f;
-    }
-    else
-    {
-        pos.x = onut::max(((float)pRoom->bound.left + 5) * 16.0f, pos.x);
-        pos.x = onut::min(((float)pRoom->bound.right - 4) * 16.0f, pos.x);
-    }
-    if (pRoom->bound.bottom - pRoom->bound.top < 7)
-    {
-        pos.y = ((float)pRoom->bound.top * 16.0f + (float)pRoom->bound.bottom * 16.0f) / 2.0f + 8.0f;
-    }
-    else
-    {
-        pos.y = onut::max(((float)pRoom->bound.top + 3.5f) * 16.0f, pos.y);
-        pos.y = onut::min(((float)pRoom->bound.bottom - 2.5f) * 16.0f, pos.y);
-    }
+        if (pRoom->bound.right - pRoom->bound.left < 10)
+        {
+            pos.x = ((float)pRoom->bound.left * 16.0f + (float)pRoom->bound.right * 16.0f) / 2.0f + 8.0f;
+        }
+        else
+        {
+            pos.x = onut::max(((float)pRoom->bound.left + 5) * 16.0f, pos.x);
+            pos.x = onut::min(((float)pRoom->bound.right - 4) * 16.0f, pos.x);
+        }
+        if (pRoom->bound.bottom - pRoom->bound.top < 7)
+        {
+            pos.y = ((float)pRoom->bound.top * 16.0f + (float)pRoom->bound.bottom * 16.0f) / 2.0f + 8.0f;
+        }
+        else
+        {
+            pos.y = onut::max(((float)pRoom->bound.top + 3.5f) * 16.0f, pos.y);
+            pos.y = onut::min(((float)pRoom->bound.bottom - 2.5f) * 16.0f, pos.y);
+        }
 
-    setLocalTransform(Matrix::CreateTranslation(pos));
+        setLocalTransform(Matrix::CreateTranslation(pos));
+    }
 }

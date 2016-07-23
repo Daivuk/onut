@@ -21,5 +21,5 @@ private:
     void onTriggerEnter(const OCollider2DComponentRef& pCollider) override;
 
     int m_damage = 0;
-    std::vector<OEntityRef> m_exclusions;
+    std::vector<OEntityWeak> m_exclusions;
 };

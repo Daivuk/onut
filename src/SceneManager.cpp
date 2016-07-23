@@ -200,7 +200,6 @@ namespace onut
     {
         for (auto& pEntity : m_entitiesToRemove)
         {
-            pEntity->m_pSceneManager = nullptr;
             pEntity->m_components.clear();
             m_entities.erase(pEntity);
         }
@@ -275,6 +274,35 @@ namespace onut
 #endif
             pComponent->onRender2d();
         }
+
+#if defined(_DEBUG)
+        auto pPhysic = getPhysic2DWorld();
+        if (pPhysic)
+        {
+            auto pBody = pPhysic->GetBodyList();
+            while (pBody)
+            {
+                b2AABB aabb;
+                aabb.lowerBound = b2Vec2(FLT_MAX, FLT_MAX);
+                aabb.upperBound = b2Vec2(-FLT_MAX, -FLT_MAX);
+                b2Fixture *pFixture = pBody->GetFixtureList();
+                while (pFixture)
+                {
+                    aabb.Combine(aabb, pFixture->GetAABB(0));
+                    pFixture = pFixture->GetNext();
+                }
+                oSpriteBatch->drawOutterOutlineRect(Rect(
+                    aabb.lowerBound.x * 16.0f + 1,
+                    aabb.lowerBound.y * 16.0f + 1,
+                    (aabb.upperBound.x - aabb.lowerBound.x) * 16.0f - 1,
+                    (aabb.upperBound.y - aabb.lowerBound.y) * 16.0f - 1),
+                    1, Color(1, 0, 0, .35f));
+
+                pBody = pBody->GetNext();
+            }
+        }
+#endif
+
         oSpriteBatch->end();
 
 #if defined(_DEBUG)
