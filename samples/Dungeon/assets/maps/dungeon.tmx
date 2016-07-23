@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="88">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="91">
  <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16">
   <image source="../textures/sheet.png" width="304" height="304"/>
  </tileset>
@@ -336,20 +336,6 @@
     <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
    </properties>
   </object>
-  <object id="52" type="guard" x="528" y="592" width="16" height="16">
-   <properties>
-    <property name="Collider2DComponent:Size" value="8,8"/>
-    <property name="DamageFlasher" value=""/>
-    <property name="Guard" value=""/>
-    <property name="Guard:Dir" value="w"/>
-    <property name="Life:Amount" value="3"/>
-    <property name="Life:DamageSound" value="flesh.wav"/>
-    <property name="OnRoomResetter" value=""/>
-    <property name="PushBack:Strength" value="16"/>
-    <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
-    <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
-   </properties>
-  </object>
   <object id="53" type="guard" x="480" y="528" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="8,8"/>
@@ -420,20 +406,6 @@
     <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
    </properties>
   </object>
-  <object id="58" type="guard" x="560" y="704" width="16" height="16">
-   <properties>
-    <property name="Collider2DComponent:Size" value="8,8"/>
-    <property name="DamageFlasher" value=""/>
-    <property name="Guard" value=""/>
-    <property name="Guard:Dir" value="w"/>
-    <property name="Life:Amount" value="3"/>
-    <property name="Life:DamageSound" value="flesh.wav"/>
-    <property name="OnRoomResetter" value=""/>
-    <property name="PushBack:Strength" value="16"/>
-    <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
-    <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
-   </properties>
-  </object>
   <object id="59" type="bat" x="336" y="688" width="16" height="16">
    <properties>
     <property name="Bat" value=""/>
@@ -460,6 +432,45 @@
     <property name="Door:Open" value="true"/>
     <property name="Door:Target" value="45"/>
     <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="88" type="bat" x="528" y="592" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+  <object id="89" type="bat" x="560" y="704" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+  <object id="90" type="bat" x="336" y="720" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
    </properties>
   </object>
  </objectgroup>

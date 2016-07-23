@@ -1,4 +1,4 @@
-<sheet texture="Bat.png" spriteWidth="16" spriteHeight="24" originX="8" originY="20">
+<sheet texture="Bat.png" spriteWidth="16" spriteHeight="24" originX="8" originY="10">
   <anim name="fly" fps="18" loop="true">
     <frame id="0"/>
     <frame id="1"/>

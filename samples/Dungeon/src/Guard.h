@@ -24,6 +24,7 @@ private:
     void onCreate() override;
     void onMessage(int messageId, void* pData) override;
     void onUpdate() override;
+    void onDestroy() override;
 
     void attack();
     void followPlayer();

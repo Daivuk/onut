@@ -144,7 +144,7 @@ void postRender()
             oSpriteBatch->changeFiltering(OFilterNearest);
             for (int i = 0; i < pPlayerLife->getAmount(); ++i)
             {
-                oSpriteBatch->drawSprite(pHeartTexture, Vector2((float)i * 8.0f + 12.0f, 12.0f));
+                oSpriteBatch->drawSprite(pHeartTexture, Vector2(OScreenWf / 4.0f - (float)i * 8.0f - 12.0f, 12.0f));
             }
             oSpriteBatch->end();
         }

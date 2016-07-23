@@ -216,3 +216,12 @@ void Guard::onUpdate()
             break;
     }
 }
+
+void Guard::onDestroy()
+{
+    auto pPuff = OCreateSpriteAnimEntity("puff.spriteanim", getLocalTransform().Translation());
+    pPuff->getComponent<OSpriteAnimComponent>()->setDefaultAnim("puff");
+    auto pParent = getEntity()->getParent();
+    if (pParent) pParent->add(pPuff);
+    OPlaySound("puff.wav");
+}
