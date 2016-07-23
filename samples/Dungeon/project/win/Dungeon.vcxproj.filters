@@ -2,9 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\DungeonSample.cpp" />
-    <ClCompile Include="..\..\src\Controllable.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\DoorTraverser.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -45,11 +42,17 @@
     <ClCompile Include="..\..\src\Bat.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ItemJump.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Player.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Bomb.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Controllable.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\DoorTraverser.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -89,6 +92,15 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Bat.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ItemJump.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Player.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Bomb.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,7 +13,7 @@
 // Game includes
 #include "Bat.h"
 #include "Chest.h"
-#include "Controllable.h"
+#include "Player.h"
 #include "DamageFlasher.h"
 #include "Damager.h"
 #include "Door.h"
@@ -50,11 +50,13 @@ void registerComponents()
     // A chest containing treasures!
     ORegisterComponent(Chest);
     OBindIntProperty(Chest, Gold);
+    OBindIntProperty(Chest, Bomb);
 
     // Component allowing to control a character
-    ORegisterComponent(Controllable);
-    OBindFloatProperty(Controllable, Speed);
-    OBindSoundProperty(Controllable, StepSound);
+    ORegisterComponent(Player);
+    OBindFloatProperty(Player, Speed);
+    OBindSoundProperty(Player, StepSound);
+    OBindIntProperty(Player, BombCount);
 
     // If attached to an entity, it will flash white
     // upon receiving damage.
@@ -70,6 +72,7 @@ void registerComponents()
     OBindSoundProperty(Door, OpenSound);
     OBindSoundProperty(Door, CloseSound);
     OBindEntityProperty(Door, Target);
+    OBindBoolProperty(Door, NeedBomb);
 
     // Allows the entity to traverse doors
     ORegisterComponent(DoorTraverser);
@@ -136,17 +139,37 @@ void postRender()
     auto pPlayer = g_pDungeon->getPlayer();
     if (pPlayer)
     {
+        oSpriteBatch->begin(Matrix::CreateScale(4.0f));
+        oSpriteBatch->changeFiltering(OFilterNearest);
+
         auto pPlayerLife = pPlayer->getComponent<Life>();
         if (pPlayerLife)
         {
             auto pHeartTexture = OGetTexture("heart.PNG");
-            oSpriteBatch->begin(Matrix::CreateScale(4.0f));
-            oSpriteBatch->changeFiltering(OFilterNearest);
             for (int i = 0; i < pPlayerLife->getAmount(); ++i)
             {
                 oSpriteBatch->drawSprite(pHeartTexture, Vector2(OScreenWf / 4.0f - (float)i * 8.0f - 12.0f, 12.0f));
             }
-            oSpriteBatch->end();
         }
+
+        auto pPlayerComponent = pPlayer->getComponent<Player>();
+        if (pPlayerComponent)
+        {
+            auto pCoinTexture = OGetTexture("coinIcon.PNG");
+            for (int i = 0; i < pPlayerComponent->getCoinCount(); ++i)
+            {
+                oSpriteBatch->drawSprite(pCoinTexture, Vector2(OScreenWf / 4.0f - (float)i * 2.0f - 12.0f, 24.0f));
+            }
+        }
+        if (pPlayerComponent)
+        {
+            auto pBombTexture = OGetTexture("bombIcon.PNG");
+            for (int i = 0; i < pPlayerComponent->getBombCount(); ++i)
+            {
+                oSpriteBatch->drawSprite(pBombTexture, Vector2(OScreenWf / 4.0f - (float)i * 8.0f - 12.0f, 36.0f));
+            }
+        }
+
+        oSpriteBatch->end();
     }
 }

@@ -1,7 +1,11 @@
 #include "Dungeon.h"
+#include "ItemJump.h"
+#include "Player.h"
 
 #include <onut/EntityFactory.h>
 #include <onut/SceneManager.h>
+#include <onut/Sound.h>
+#include <onut/SpriteAnimComponent.h>
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 
@@ -31,6 +35,7 @@ void Dungeon::createMap(const std::string& filename)
 
     m_width = m_pTiledMap->getWidth();
     m_height = m_pTiledMap->getHeight();
+    m_pDungeonEntity = pTiledMapEntity;
 }
 
 const Dungeon::Room* Dungeon::getRoomAt(const Vector2& position) const
@@ -184,4 +189,53 @@ Dungeon::Room Dungeon::createRoomAt(const Point& mapPos, const uint32_t* pTiles)
 OEntityRef Dungeon::getPlayer() const
 {
     return m_pPlayer.lock();
+}
+
+OEntityRef Dungeon::getEntity() const
+{
+    return m_pDungeonEntity.lock();
+}
+
+void Dungeon::showCoinAt(const Vector2& position, int count)
+{
+    OPlaySound("gold.wav");
+
+    auto pDungeon = m_pDungeonEntity.lock();
+    if (pDungeon)
+    {
+        auto pPlayer = getPlayer();
+        if (pPlayer)
+        {
+            auto pPlayerComponent = pPlayer->getComponent<Player>();
+            pPlayerComponent->setCoinCount(pPlayerComponent->getCoinCount() + count);
+        }
+        for (int i = 0; i < count; ++i)
+        {
+            auto pCoinEntity = OCreateSpriteAnimEntity("coin.spriteanim", position, "spin");
+            pCoinEntity->addComponent<ItemJump>();
+            pDungeon->add(pCoinEntity);
+        }
+    }
+}
+
+void Dungeon::showBombAt(const Vector2& position, int count)
+{
+    OPlaySound("hit.wav");
+
+    auto pDungeon = m_pDungeonEntity.lock();
+    if (pDungeon)
+    {
+        auto pPlayer = getPlayer();
+        if (pPlayer)
+        {
+            auto pPlayerComponent = pPlayer->getComponent<Player>();
+            pPlayerComponent->setBombCount(pPlayerComponent->getBombCount() + count);
+        }
+        for (int i = 0; i < count; ++i)
+        {
+            auto pCoinEntity = OCreateSpriteAnimEntity("bomb.spriteanim", position, "idle");
+            pCoinEntity->addComponent<ItemJump>();
+            pDungeon->add(pCoinEntity);
+        }
+    }
 }

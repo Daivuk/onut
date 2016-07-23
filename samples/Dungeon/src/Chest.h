@@ -10,9 +10,13 @@ public:
     int getGold() const;
     void setGold(int gold);
 
+    int getBomb() const;
+    void setBomb(int bomb);
+
     void open();
 
 private:
     OSoundRef m_pOpenSound;
     int m_gold = 0;
+    int m_bomb = 0;
 };

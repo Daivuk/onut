@@ -1,4 +1,5 @@
 #include "Defines.h"
+#include "Dungeon.h"
 #include "Vase.h"
 
 #include <onut/Entity.h>
@@ -36,6 +37,12 @@ void Vase::onMessage(int messageId, void* pData)
                 Point muhMapPos((int)(muhPos.x / 16.0f), (int)(muhPos.y / 16.0f));
                 auto muhTile = pTiledMap->getTileAt(pTileLayer, muhMapPos.x, muhMapPos.y);
                 pTiledMap->setTileAt(pTileLayer, muhMapPos.x, muhMapPos.y, muhTile + 1);
+            }
+
+            // Spawn the gold
+            if (m_gold)
+            {
+                g_pDungeon->showCoinAt(getLocalTransform().Translation(), m_gold);
             }
 
             destroy();

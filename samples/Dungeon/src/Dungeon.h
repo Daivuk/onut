@@ -35,6 +35,10 @@ public:
     bool isInRoom(const Point& tilePos, const Room* pRoom) const;
 
     OEntityRef getPlayer() const;
+    OEntityRef getEntity() const;
+
+    void showCoinAt(const Vector2& position, int count);
+    void showBombAt(const Vector2& position, int count);
 
 private:
     using Rooms = std::vector<Room>;
@@ -48,6 +52,7 @@ private:
     OTiledMapRef m_pTiledMap;
     Rooms m_rooms;
     OEntityWeak m_pPlayer;
+    OEntityWeak m_pDungeonEntity;
 };
 
 extern DungeonRef g_pDungeon;

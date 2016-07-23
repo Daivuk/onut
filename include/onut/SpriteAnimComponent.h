@@ -34,6 +34,7 @@ namespace onut
         void queueAnim(const std::string& animName);
         void stop(bool reset = false);
         bool isPlaying() const;
+        void setFPS(float fps);
 
     private:
         void onCreate() override;

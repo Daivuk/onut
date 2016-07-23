@@ -241,6 +241,11 @@ namespace onut
             return isUpdateTargetRegistered();
         }
 
+        void setUpdater(const OUpdaterRef& pUpdater)
+        {
+            m_pMyUpdater = pUpdater;
+        }
+
     protected:
         void update() override
         {
@@ -343,11 +348,6 @@ namespace onut
                     callback();
                 }
             }
-        }
-
-        void setUpdater(const OUpdaterRef& pUpdater)
-        {
-            m_pMyUpdater = pUpdater;
         }
 
     private:

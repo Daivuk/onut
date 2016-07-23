@@ -138,6 +138,11 @@ namespace onut
         m_pUpdater = pUpdater;
     }
 
+    void SpriteAnimInstance::setFps(float framePerSecond)
+    {
+        m_speed = framePerSecond;
+    }
+
     void SpriteAnimInstance::play(const std::string& animName, float framePerSecond)
     {
         stop();

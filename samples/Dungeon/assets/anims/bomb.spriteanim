@@ -1,0 +1,9 @@
+<sheet texture="bomb.PNG" spriteWidth="16" spriteHeight="16" originX="8" originY="10">
+  <anim name="idle" fps="18" loop="true">
+    <frame id="0"/>
+  </anim>
+  <anim name="fuse" fps="4" loop="true">
+    <frame id="1"/>
+    <frame id="0"/>
+  </anim>
+</sheet>

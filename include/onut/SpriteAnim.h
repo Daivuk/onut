@@ -78,6 +78,7 @@ namespace onut
 
         void update() override;
         void setUpdater(const OUpdaterRef& pUpdater);
+        void setFps(float framePerSecond);
 
     private:
         using AnimQueue = std::vector<std::string>;

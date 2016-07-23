@@ -33,12 +33,13 @@ OEntityRef OCreateSoundEntity(const std::string& sound, const Vector2& position,
     return pRet;
 }
 
-OEntityRef OCreateSpriteAnimEntity(const std::string& filename, const Vector2& position)
+OEntityRef OCreateSpriteAnimEntity(const std::string& filename, const Vector2& position, const std::string& defaultAnim)
 {
     auto pRet = OEntity::create();
     pRet->setLocalTransform(Matrix::CreateTranslation(position));
     auto pSpriteComponent = pRet->addComponent<OSpriteAnimComponent>();
     pSpriteComponent->setSpriteAnim(OGetSpriteAnim(filename));
+    pSpriteComponent->setDefaultAnim(defaultAnim);
     return pRet;
 }
 

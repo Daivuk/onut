@@ -66,7 +66,7 @@ void DoorTraverser::onTriggerEnter(const OCollider2DComponentRef& pCollider)
         else
         {
             // Open the door, and it's target
-            if (!pDoor->getOpen())
+            if (!pDoor->getOpen() && !pDoor->getNeedBomb())
             {
                 pDoor->setOpen(true);
 

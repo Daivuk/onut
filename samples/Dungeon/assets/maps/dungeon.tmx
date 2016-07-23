@@ -19,7 +19,7 @@
  <objectgroup name="entities">
   <object id="16" type="chest" x="592" y="544" width="16" height="16">
    <properties>
-    <property name="Chest:Gold" value="5"/>
+    <property name="Chest:Gold" value="3"/>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Static" value="true"/>
@@ -27,7 +27,8 @@
   </object>
   <object id="18" type="chest" x="704" y="672" width="16" height="16">
    <properties>
-    <property name="Chest:Gold" value="5"/>
+    <property name="Chest:Bomb" value="1"/>
+    <property name="Chest:Gold" value="0"/>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Static" value="true"/>
@@ -35,7 +36,7 @@
   </object>
   <object id="19" type="chest" x="352" y="672" width="16" height="16">
    <properties>
-    <property name="Chest:Gold" value="5"/>
+    <property name="Chest:Gold" value="6"/>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Static" value="true"/>
@@ -43,7 +44,7 @@
   </object>
   <object id="20" type="chest" x="352" y="736" width="16" height="16">
    <properties>
-    <property name="Chest:Gold" value="5"/>
+    <property name="Chest:Gold" value="2"/>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Static" value="true"/>
@@ -60,7 +61,7 @@
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
-    <property name="Vase:Gold" value="1"/>
+    <property name="Vase:Gold" value="0"/>
    </properties>
   </object>
   <object id="23" type="vase" x="656" y="672" width="16" height="16">
@@ -74,7 +75,7 @@
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
-    <property name="Vase:Gold" value="1"/>
+    <property name="Vase:Gold" value="0"/>
    </properties>
   </object>
   <object id="25" type="vase" x="448" y="576" width="16" height="16">
@@ -88,18 +89,21 @@
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
-    <property name="Vase:Gold" value="1"/>
+    <property name="Vase:Gold" value="0"/>
    </properties>
   </object>
   <object id="27" type="vase" x="672" y="240" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Static" value="true"/>
-    <property name="Vase:Gold" value="1"/>
+    <property name="Vase:Gold" value="0"/>
    </properties>
   </object>
   <object id="28" type="stairs" x="880" y="720" width="16" height="16">
    <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Exit" value=""/>
     <property name="Static" value="true"/>
    </properties>
   </object>
@@ -271,6 +275,7 @@
    <properties>
     <property name="Collider2DComponent:Size" value="16,16"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:NeedBomb" value="true"/>
     <property name="Door:Target" value="61"/>
     <property name="Static" value="true"/>
    </properties>
@@ -296,13 +301,14 @@
   <object id="49" name="player" type="start_location" x="384" y="416" width="16" height="16">
    <properties>
     <property name="Collider2DComponent:Size" value="6,6"/>
-    <property name="Controllable:Speed" value="64"/>
-    <property name="Controllable:StepSound" value="step.wav"/>
     <property name="DamageFlasher" value=""/>
     <property name="DoorTraverser" value=""/>
     <property name="Inventory" value=""/>
     <property name="Life:Amount" value="4"/>
     <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="Player:BombCount" value="3"/>
+    <property name="Player:Speed" value="64"/>
+    <property name="Player:StepSound" value="step.wav"/>
     <property name="PushBack:Strength" value="16"/>
     <property name="SpriteAnimComponent:DefaultAnim" value="idle_s"/>
     <property name="SpriteAnimComponent:SpriteAnim" value="baltAnims.spriteanim"/>
@@ -460,7 +466,7 @@
     <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
    </properties>
   </object>
-  <object id="90" type="bat" x="336" y="720" width="16" height="16">
+  <object id="90" type="bat" x="320" y="736" width="16" height="16">
    <properties>
     <property name="Bat" value=""/>
     <property name="Collider2DComponent:Size" value="8,8"/>

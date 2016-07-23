@@ -1,4 +1,5 @@
 #include "Chest.h"
+#include "Dungeon.h"
 
 #include <onut/Entity.h>
 #include <onut/Sound.h>
@@ -13,6 +14,16 @@ int Chest::getGold() const
 void Chest::setGold(int gold)
 {
     m_gold = gold;
+}
+
+int Chest::getBomb() const
+{
+    return m_bomb;
+}
+
+void Chest::setBomb(int bomb)
+{
+    m_bomb = bomb;
 }
 
 void Chest::open()
@@ -30,6 +41,16 @@ void Chest::open()
         Point muhMapPos((int)(muhPos.x / 16.0f), (int)(muhPos.y / 16.0f));
         auto muhTile = pTiledMap->getTileAt(pTileLayer, muhMapPos.x, muhMapPos.y);
         pTiledMap->setTileAt(pTileLayer, muhMapPos.x, muhMapPos.y, muhTile + 1);
+    }
+
+    // Spawn the gold
+    if (m_gold)
+    {
+        g_pDungeon->showCoinAt(getLocalTransform().Translation(), m_gold);
+    }
+    if (m_bomb)
+    {
+        g_pDungeon->showBombAt(getLocalTransform().Translation(), m_bomb);
     }
 
     // Kill self

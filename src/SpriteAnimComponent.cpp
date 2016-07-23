@@ -88,6 +88,14 @@ namespace onut
         }
     }
 
+    void SpriteAnimComponent::setFPS(float fps)
+    {
+        if (m_pSpriteAnimInstance)
+        {
+            m_pSpriteAnimInstance->setFps(fps);
+        }
+    }
+
     void SpriteAnimComponent::playBackward(const std::string& animName, float framePerSecond)
     {
         if (m_pSpriteAnimInstance)

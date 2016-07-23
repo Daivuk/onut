@@ -25,11 +25,15 @@ public:
     OEntityRef getTarget() const;
     void setTarget(const OEntityRef& pTarget);
 
+    bool getNeedBomb() const;
+    void setNeedBomb(bool needBomb);
+
     const Point& getMapPos() const;
     Vector2 getExitPosition() const;
 
 protected:
     void onCreate() override;
+    void onMessage(int messageId, void* pData) override;
 
 private:
     std::vector<Point> m_mapPositions;
@@ -42,4 +46,5 @@ private:
     OSoundRef m_pOpenSound;
     OSoundRef m_pCloseSound;
     OEntityWeak m_pTargetDoor;
+    bool m_needBomb = false;
 };

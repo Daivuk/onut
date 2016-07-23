@@ -90,8 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Bat.cpp" />
+    <ClCompile Include="..\..\src\Bomb.cpp" />
     <ClCompile Include="..\..\src\Chest.cpp" />
-    <ClCompile Include="..\..\src\Controllable.cpp" />
+    <ClCompile Include="..\..\src\Player.cpp" />
     <ClCompile Include="..\..\src\DamageFlasher.cpp" />
     <ClCompile Include="..\..\src\Damager.cpp" />
     <ClCompile Include="..\..\src\Door.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="..\..\src\Dungeon.cpp" />
     <ClCompile Include="..\..\src\DungeonSample.cpp" />
     <ClCompile Include="..\..\src\Guard.cpp" />
+    <ClCompile Include="..\..\src\ItemJump.cpp" />
     <ClCompile Include="..\..\src\Life.cpp" />
     <ClCompile Include="..\..\src\OnRoomResetter.cpp" />
     <ClCompile Include="..\..\src\PushBack.cpp" />
@@ -108,15 +110,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Bat.h" />
+    <ClInclude Include="..\..\src\Bomb.h" />
     <ClInclude Include="..\..\src\Chest.h" />
     <ClInclude Include="..\..\src\DamageFlasher.h" />
     <ClInclude Include="..\..\src\Damager.h" />
     <ClInclude Include="..\..\src\Defines.h" />
-    <ClInclude Include="..\..\src\Controllable.h" />
+    <ClInclude Include="..\..\src\Player.h" />
     <ClInclude Include="..\..\src\Door.h" />
     <ClInclude Include="..\..\src\DoorTraverser.h" />
     <ClInclude Include="..\..\src\Dungeon.h" />
     <ClInclude Include="..\..\src\Guard.h" />
+    <ClInclude Include="..\..\src\ItemJump.h" />
     <ClInclude Include="..\..\src\Life.h" />
     <ClInclude Include="..\..\src\OnRoomResetter.h" />
     <ClInclude Include="..\..\src\PushBack.h" />

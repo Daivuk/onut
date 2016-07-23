@@ -1,3 +1,4 @@
+#include "Defines.h"
 #include "Door.h"
 
 #include <onut/Collider2DComponent.h>
@@ -96,6 +97,16 @@ const Point& Door::getMapPos() const
     return m_mapPositions[0];
 }
 
+bool Door::getNeedBomb() const
+{
+    return m_needBomb;
+}
+
+void Door::setNeedBomb(bool needBomb)
+{
+    m_needBomb = needBomb;
+}
+
 Vector2 Door::getExitPosition() const
 {
     Vector2 exitPos = getLocalTransform().Translation();
@@ -150,4 +161,16 @@ void Door::onCreate()
     m_pTiledMapComponent = getParentComponent<OTiledMapComponent>();
     m_pTiledMap = m_pTiledMapComponent->getTiledMap();
     m_pTileLayer = (OTiledMap::TileLayer*)m_pTiledMap->getLayer("tiles");
+}
+
+void Door::onMessage(int messageId, void* pData)
+{
+    if (messageId == Messages::Damage && !getOpen())
+    {
+        if (*(int*)pData >= 5)
+        {
+            // This was at least a bomb, destroy the wall
+            setOpen(true);
+        }
+    }
 }
