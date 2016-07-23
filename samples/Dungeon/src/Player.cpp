@@ -4,15 +4,21 @@
 #include "Defines.h"
 #include "Player.h"
 
+#include <onut/Anim.h>
 #include <onut/Collider2DComponent.h>
 #include <onut/Entity.h>
 #include <onut/EntityFactory.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/onut.h>
 #include <onut/Random.h>
+#include <onut/SceneManager.h>
 #include <onut/Sound.h>
+#include <onut/SpriteAnim.h>
 #include <onut/SpriteAnimComponent.h>
 #include <onut/Timing.h>
+
+extern OAnimFloat g_fadeAnim;
 
 Player::Player()
     : OComponent(FLAG_UPDATABLE)
@@ -87,6 +93,9 @@ void Player::setCoinCount(int count)
 
 void Player::placeBomb()
 {
+    if (!m_bombs) return;
+    --m_bombs;
+
     auto pDungeon = g_pDungeon->getEntity();
     if (pDungeon)
     {
@@ -233,4 +242,18 @@ void Player::onUpdate()
             }
             break;
     };
+}
+
+void Player::onDestroy()
+{
+    getSceneManager()->setPause(true);
+
+    g_fadeAnim.playFromCurrent(1.0f, 2.0f, OTweenLinear);
+    g_fadeAnim.queue(0.0f, .5f, OTweenLinear, []{ OQuit(); });
+
+    auto pDyingPlayer = OCreateSpriteAnimEntity("baltAnims.spriteanim", getWorldTransform().Translation(), "die");
+    pDyingPlayer->setDrawIndex(DrawIndexes::DyingPlayer);
+    pDyingPlayer->getComponent<OSpriteAnimComponent>()->setPlayPaused(true);
+
+    OPlaySound("gameover.wav");
 }

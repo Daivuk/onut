@@ -2,7 +2,8 @@
 
 enum DrawIndexes : int
 {
-    SwordAttack = 1000000
+    SwordAttack = 1000000,
+    DyingPlayer = 1000001,
 };
 
 enum Messages : int

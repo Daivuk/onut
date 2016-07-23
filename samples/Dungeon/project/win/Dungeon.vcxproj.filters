@@ -51,6 +51,9 @@
     <ClCompile Include="..\..\src\Bomb.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Exit.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\DoorTraverser.h">
@@ -101,6 +104,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Bomb.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Exit.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

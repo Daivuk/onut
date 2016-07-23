@@ -220,11 +220,8 @@ namespace onut
 
     void SceneManager::update()
     {
-        // Check if paused
-        if (m_pause) return;
-
         // Update scene updater that managers sprite animations and such
-        m_pUpdater->update();
+        if (!m_pause) m_pUpdater->update();
         
         // Perform add/remove of entities
         performEntityActions();
@@ -232,21 +229,24 @@ namespace onut
         // Perform add/remove of components to various lists
         performComponentActions();
 
-        // Update physics
-        m_pPhysic2DWorld->Step(ODT, 6, 2);
-
-        // Send physic contact messages
-        performContacts();
-
-        // Update updatables
-        for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
+        if (!m_pause)
         {
-            pComponent->onUpdate();
-        }
+            // Update physics
+            m_pPhysic2DWorld->Step(ODT, 6, 2);
 
-        // Redo the entity/component add/remove actions because they might have changed while updating.
-        performComponentActions();
-        performEntityActions();
+            // Send physic contact messages
+            performContacts();
+
+            // Update updatables
+            for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
+            {
+                pComponent->onUpdate();
+            }
+
+            // Redo the entity/component add/remove actions because they might have changed while updating.
+            performComponentActions();
+            performEntityActions();
+        }
     }
 
     void SceneManager::render()

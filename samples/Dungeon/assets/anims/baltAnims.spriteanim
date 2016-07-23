@@ -26,6 +26,12 @@
     <frame id="16" repeat="6" flipH="true"/>
     <frame id="17" flipH="true"/>
   </anim>
+  <anim name="die" fps="12" loop="true">
+    <frame id="0"/>
+    <frame id="16"/>
+    <frame id="8"/>
+    <frame id="16" flipH="true"/>
+  </anim>
   <anim name="run_s" fps="12" loop="true">
     <frame id="5"/>
     <frame id="2"/>

@@ -101,10 +101,9 @@
   </object>
   <object id="28" type="stairs" x="880" y="720" width="16" height="16">
    <properties>
-    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Size" value="4,4"/>
     <property name="Collider2DComponent:Trigger" value="true"/>
     <property name="Exit" value=""/>
-    <property name="Static" value="true"/>
    </properties>
   </object>
   <object id="29" type="door" x="640" y="704" width="16" height="16">
@@ -306,7 +305,6 @@
     <property name="Inventory" value=""/>
     <property name="Life:Amount" value="4"/>
     <property name="Life:DamageSound" value="flesh.wav"/>
-    <property name="Player:BombCount" value="3"/>
     <property name="Player:Speed" value="64"/>
     <property name="Player:StepSound" value="step.wav"/>
     <property name="PushBack:Strength" value="16"/>

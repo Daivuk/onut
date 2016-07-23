@@ -92,6 +92,7 @@
     <ClCompile Include="..\..\src\Bat.cpp" />
     <ClCompile Include="..\..\src\Bomb.cpp" />
     <ClCompile Include="..\..\src\Chest.cpp" />
+    <ClCompile Include="..\..\src\Exit.cpp" />
     <ClCompile Include="..\..\src\Player.cpp" />
     <ClCompile Include="..\..\src\DamageFlasher.cpp" />
     <ClCompile Include="..\..\src\Damager.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="..\..\src\DamageFlasher.h" />
     <ClInclude Include="..\..\src\Damager.h" />
     <ClInclude Include="..\..\src\Defines.h" />
+    <ClInclude Include="..\..\src\Exit.h" />
     <ClInclude Include="..\..\src\Player.h" />
     <ClInclude Include="..\..\src\Door.h" />
     <ClInclude Include="..\..\src\DoorTraverser.h" />

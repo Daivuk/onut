@@ -37,6 +37,8 @@ private:
         Attacking
     };
 
+    void onDestroy() override;
+
     void attack();
     void placeBomb();
 

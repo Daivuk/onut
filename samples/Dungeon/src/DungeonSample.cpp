@@ -13,6 +13,7 @@
 // Game includes
 #include "Bat.h"
 #include "Chest.h"
+#include "Exit.h"
 #include "Player.h"
 #include "DamageFlasher.h"
 #include "Damager.h"
@@ -65,6 +66,9 @@ void registerComponents()
     // A component that inflicts damage when touched
     ORegisterComponent(Damager);
     OBindIntProperty(Damager, Damage);
+
+    // Player steps on this, end of level
+    ORegisterComponent(Exit);
 
     // A door
     ORegisterComponent(Door);

@@ -55,9 +55,21 @@ namespace onut
         return m_defaultAnim;
     }
 
+    void SpriteAnimComponent::setPlayPaused(bool playPaused)
+    {
+        if (m_playPaused == playPaused) return;
+        m_playPaused = playPaused;
+        m_pSpriteAnimInstance->setUpdater(m_playPaused ? oUpdater : getEntity()->getSceneManager()->getUpdater());
+    }
+
+    bool SpriteAnimComponent::getPlayPaused() const
+    {
+        return m_playPaused;
+    }
+
     void SpriteAnimComponent::onCreate()
     {
-        m_pSpriteAnimInstance->setUpdater(getEntity()->getSceneManager()->getUpdater());
+        m_pSpriteAnimInstance->setUpdater(m_playPaused ? oUpdater : getEntity()->getSceneManager()->getUpdater());
         if (isEnabled())
         {
             m_currentlyPlaying = m_defaultAnim;

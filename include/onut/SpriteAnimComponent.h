@@ -29,6 +29,9 @@ namespace onut
         void setDefaultAnim(const std::string& anim);
         const std::string& getDefaultAnim() const;
 
+        void setPlayPaused(bool playPaused);
+        bool getPlayPaused() const;
+
         void play(const std::string& animName, float framePerSecond = 0.f);
         void playBackward(const std::string& animName, float framePerSecond = 0.f);
         void queueAnim(const std::string& animName);
@@ -44,6 +47,7 @@ namespace onut
         Vector2 m_scale = Vector2(1);
         Color m_color = Color::White;
         OSpriteAnimRef m_pSpriteAnim;
+        bool m_playPaused = false;
         std::string m_defaultAnim;
         std::string m_currentlyPlaying;
     };
