@@ -4,6 +4,7 @@
 #include <onut/Timer.h>
 
 // STL
+#include <atomic>
 #include <vector>
 
 // Forward
@@ -12,15 +13,10 @@ OForwardDeclare(ContentManager);
 OForwardDeclare(Sound);
 OForwardDeclare(SoundCue);
 OForwardDeclare(SoundInstance);
-namespace DirectX
-{
-    class SoundEffect;
-    class SoundEffectInstance;
-}
 
 namespace onut
 {
-    class SoundInstance final
+    class SoundInstance final : public std::enable_shared_from_this<SoundInstance>
     {
     public:
         void play();
@@ -42,26 +38,27 @@ namespace onut
         float getPitch() const;
         void setPitch(float pitch);
 
+        ~SoundInstance();
+
     private:
         friend class Sound;
+        friend class AudioEngine;
 
-        using DXSoundEffectRef = std::shared_ptr<DirectX::SoundEffect>;
-        using DXSoundEffectInstanceRef = std::shared_ptr<DirectX::SoundEffectInstance>;
-
-        DXSoundEffectRef m_pSound;
-        DXSoundEffectInstanceRef m_pInstance;
-
-        bool m_isPaused = false;
-        bool m_loop = false;
-        float m_volume = 1.f;
-        float m_balance = 0.f;
-        float m_pitch = 1.f;
+        bool m_isPaused = true;
+        std::atomic<bool> m_loop = false;
+        std::atomic<float> m_volume = 1.f;
+        std::atomic<float> m_balance = 0.f;
+        std::atomic<float> m_pitch = 1.f;
+        std::atomic<int> m_offset = 0;
+        OSoundRef m_pSound;
     };
 
-    class Sound final : public Resource
+    class Sound final : public Resource, public std::enable_shared_from_this<Sound>
     {
     public:
         static OSoundRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
+
+        ~Sound();
 
         void setMaxInstance(int maxInstance = -1) { m_maxInstance = maxInstance; }
         void play(float volume = 1.f, float balance = 0.f, float pitch = 1.f);
@@ -70,11 +67,14 @@ namespace onut
         OSoundInstanceRef createInstance();
 
     private:
-        using DXSoundEffectRef = std::shared_ptr<DirectX::SoundEffect>;
-        using DXSoundEffectInstanceRef = std::shared_ptr<DirectX::SoundEffectInstance>;
-        using Instances = std::vector<DXSoundEffectInstanceRef>;
+        friend class SoundInstance;
+        friend class AudioEngine;
 
-        DXSoundEffectRef m_pSound;
+        using Instances = std::vector<OSoundInstanceRef>;
+
+        float* m_pBuffer = nullptr;
+        int m_bufferSampleCount = 0;
+        int m_channelCount = 0;
         Instances m_instances;
         int m_maxInstance = -1;
     };

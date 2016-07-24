@@ -146,11 +146,8 @@
     <ClInclude Include="..\..\include\rapidjson\writer.h" />
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
-    <ClInclude Include="..\..\src\audio\Audio.h" />
-    <ClInclude Include="..\..\src\audio\pch.h" />
-    <ClInclude Include="..\..\src\audio\SoundCommon.h" />
-    <ClInclude Include="..\..\src\audio\WaveBankReader.h" />
-    <ClInclude Include="..\..\src\audio\WAVFileReader.h" />
+    <ClInclude Include="..\..\src\AudioEngine.h" />
+    <ClInclude Include="..\..\src\AudioEngineWASAPI.h" />
     <ClInclude Include="..\..\src\braincloud\BrainCloudAsyncMatch.h" />
     <ClInclude Include="..\..\src\braincloud\BrainCloudAuthentication.h" />
     <ClInclude Include="..\..\src\braincloud\BrainCloudClient.h" />
@@ -225,14 +222,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ActionManager.cpp" />
-    <ClCompile Include="..\..\src\audio\AudioEngine.cpp" />
-    <ClCompile Include="..\..\src\audio\DynamicSoundEffectInstance.cpp" />
-    <ClCompile Include="..\..\src\audio\SoundCommon.cpp" />
-    <ClCompile Include="..\..\src\audio\SoundEffect.cpp" />
-    <ClCompile Include="..\..\src\audio\SoundEffectInstance.cpp" />
-    <ClCompile Include="..\..\src\audio\WaveBank.cpp" />
-    <ClCompile Include="..\..\src\audio\WaveBankReader.cpp" />
-    <ClCompile Include="..\..\src\audio\WAVFileReader.cpp" />
+    <ClCompile Include="..\..\src\AudioEngine.cpp" />
+    <ClCompile Include="..\..\src\AudioEngineWASAPI.cpp" />
     <ClCompile Include="..\..\src\Box2D\Collision\b2BroadPhase.cpp" />
     <ClCompile Include="..\..\src\Box2D\Collision\b2CollideCircle.cpp" />
     <ClCompile Include="..\..\src\Box2D\Collision\b2CollideEdge.cpp" />

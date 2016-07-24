@@ -25,18 +25,13 @@
 #include <onut/Updater.h>
 #include <onut/Window.h>
 
-// Third parties
-#include <audio/Audio.h>
+// Private
+#include "AudioEngine.h"
 
 // STL
 #include <cassert>
 #include <mutex>
 #include <sstream>
-
-using namespace DirectX;
-
-// The audio engine is a third party
-AudioEngine* g_pAudioEngine = nullptr;
 
 OTextureRef g_pMainRenderTarget;
 
@@ -117,20 +112,7 @@ namespace onut
         oInput = OInput::create(oWindow);
 
         // Audio
-#ifdef WIN32
-        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-#endif
-        AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
-#ifdef _DEBUG
-        eflags = eflags | AudioEngine_Debug;
-#endif
-        try
-        {
-            g_pAudioEngine = new AudioEngine(eflags);
-        }
-        catch (std::exception e)
-        {
-        }
+        oAudioEngine = AudioEngine::create();
 
         // Particles
         oParticleSystemManager = ParticleSystemManager::create();
@@ -162,7 +144,8 @@ namespace onut
         oUI = nullptr;
         oUIContext = nullptr;
         oParticleSystemManager = nullptr;
-        delete g_pAudioEngine;
+        //delete g_pAudioEngine;
+        oAudioEngine = nullptr;
         oInput = nullptr;
         oCloud = nullptr;
         oContentManager = nullptr;
@@ -228,7 +211,7 @@ namespace onut
             oDispatcher->processQueue();
 
             // Update
-            if (g_pAudioEngine) g_pAudioEngine->Update();
+            oAudioEngine->update();
             auto framesToUpdate = oTiming->update(oSettings->getIsFixedStep());
             while (framesToUpdate--)
             {

@@ -146,21 +146,6 @@
     <ClInclude Include="..\..\src\dirent\dirent.h">
       <Filter>thirdparties\dirent</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\audio\WaveBankReader.h">
-      <Filter>thirdparties\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\audio\WAVFileReader.h">
-      <Filter>thirdparties\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\audio\Audio.h">
-      <Filter>thirdparties\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\audio\pch.h">
-      <Filter>thirdparties\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\audio\SoundCommon.h">
-      <Filter>thirdparties\audio</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h">
       <Filter>thirdparties\tinyxml2</Filter>
     </ClInclude>
@@ -632,6 +617,12 @@
     <ClInclude Include="..\..\include\onut\SceneManager.h">
       <Filter>entities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\AudioEngine.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AudioEngineWASAPI.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -738,30 +729,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp">
       <Filter>thirdparties\lodepng</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\SoundEffect.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\SoundEffectInstance.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\WaveBank.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\WaveBankReader.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\WAVFileReader.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\AudioEngine.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\DynamicSoundEffectInstance.cpp">
-      <Filter>thirdparties\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\audio\SoundCommon.cpp">
-      <Filter>thirdparties\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp">
       <Filter>thirdparties\tinyxml2</Filter>
@@ -1079,6 +1046,12 @@
     <ClCompile Include="..\..\src\SceneManager.cpp">
       <Filter>entities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\AudioEngine.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AudioEngineWASAPI.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -1116,9 +1089,6 @@
     </Filter>
     <Filter Include="thirdparties\dirent">
       <UniqueIdentifier>{8fcd1db3-eef8-4c79-8914-ed6365c4b1b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="thirdparties\audio">
-      <UniqueIdentifier>{0fcd117a-dc6b-4505-b51e-c00eb77824fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="thirdparties\tinyxml2">
       <UniqueIdentifier>{a8654ab6-6ce0-4785-9796-6add1e23f92d}</UniqueIdentifier>
