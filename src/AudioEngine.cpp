@@ -66,6 +66,11 @@ namespace onut
             int bufferSampleCount = pSoundPtr->m_bufferSampleCount;
             bool loop = pInstancePtr->m_loop;
             float balance = pInstancePtr->m_balance;
+            float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
+            float rightVolume = std::min(1.0f, balance + 1.0f) * volume;
+            float pitch = pInstancePtr->m_pitch;
+            int fi;
+            int len = std::min(frameCount, (int)((float)(bufferSampleCount - offset) / pitch));
             switch (channelCount)
             {
                 case 1:
@@ -74,22 +79,20 @@ namespace onut
                     {
                         case 1:
                         {
-                            int len = std::min(frameCount, bufferSampleCount - offset);
                             for (int i = 0; i < len; ++i)
                             {
-                                pOut[i] += pSoundBuffer[i] * volume;
+                                fi = (int)((float)i * pitch);
+                                pOut[i] += pSoundBuffer[fi] * volume;
                             }
-                            offset += len;
                             break;
                         }
                         case 2:
                         {
-                            int len = std::min(frameCount, bufferSampleCount - offset);
                             for (int i = 0; i < len; ++i)
                             {
-                                pOut[i] += (pSoundBuffer[i * 2 + 0] + pSoundBuffer[i * 2 + 1]) * 0.5f * volume;
+                                fi = (int)((float)i * pitch);
+                                pOut[i] += (pSoundBuffer[fi * 2 + 0] + pSoundBuffer[fi * 2 + 1]) * 0.5f * volume;
                             }
-                            offset += len;
                             break;
                         }
                         default:
@@ -103,23 +106,22 @@ namespace onut
                     {
                         case 1:
                         {
-                            int len = std::min(frameCount, bufferSampleCount - offset);
                             for (int i = 0; i < len; ++i)
                             {
-                                pOut[i * 2 + 0] += pSoundBuffer[i] * volume;
-                                pOut[i * 2 + 1] += pSoundBuffer[i] * volume;
+                                fi = (int)((float)i * pitch);
+                                pOut[i * 2 + 0] += pSoundBuffer[fi] * leftVolume;
+                                pOut[i * 2 + 1] += pSoundBuffer[fi] * rightVolume;
                             }
-                            offset += len;
                             break;
                         }
                         case 2:
                         {
-                            int len = std::min(frameCount, bufferSampleCount - offset) * 2;
-                            for (int i = 0; i < len; ++i)
+                            for (int i = 0; i < len * 2; i += 2)
                             {
-                                pOut[i] += pSoundBuffer[i] * volume;
+                                fi = (int)((float)i * pitch);
+                                pOut[i + 0] += pSoundBuffer[fi + 0] * leftVolume;
+                                pOut[i + 1] += pSoundBuffer[fi + 0] * rightVolume;
                             }
-                            offset += len / 2;
                             break;
                         }
                         default:
@@ -131,6 +133,7 @@ namespace onut
                     assert(false);
             }
 
+            offset += (int)((float)len * pitch);
             pInstancePtr->m_offset = offset;
             if (offset >= pSoundPtr->m_bufferSampleCount)
             {
