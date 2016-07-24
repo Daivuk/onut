@@ -150,12 +150,6 @@ namespace onut
                             assert(false);
                     }
 
-                    // Resample if the wave is not the same sample rate as the audio engine
-                    if (samplerate != oAudioEngine->getSampleRate())
-                    {
-                        // TODO...
-                    }
-
                     delete[] pData;
                     break;
                 }
@@ -168,7 +162,34 @@ namespace onut
                 }
             }
         }
+
+        // Resample if the wave is not the same sample rate as the audio engine
+        if (samplerate != oAudioEngine->getSampleRate())
+        {
+            // TODO...
+        }
+
         fclose(pFic);
+
+        return pRet;
+    }
+
+    OSoundRef Sound::createFromData(float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager)
+    {
+        auto pRet = std::make_shared<OSound>();
+
+        pRet->m_bufferSampleCount = sampleCount;
+        pRet->m_channelCount = channelCount;
+
+        int len = pRet->m_bufferSampleCount * channelCount;
+        pRet->m_pBuffer = new float[len];
+        memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * len);
+
+        // Resample if the wave is not the same sample rate as the audio engine
+        if (samplerate != oAudioEngine->getSampleRate())
+        {
+            // TODO...
+        }
 
         return pRet;
     }
