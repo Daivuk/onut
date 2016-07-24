@@ -18,16 +18,18 @@ void render();
 //--- User defined components
 
 // This component draws a white square
-class WhiteSquareComponent : public onut::Component
+class WhiteSquareComponent : public OComponent
 {
 public:
+    WhiteSquareComponent() : OComponent(FLAG_RENDERABLE_2D) {}
+
     void setSize(float size)
     {
         m_size = size;
     }
 
 private:
-    void render2d() override
+    void onRender2d() override
     {
         auto& transform = getEntity()->getWorldTransform();
         oSpriteBatch->drawSprite(nullptr, transform, Vector2(m_size));
@@ -37,10 +39,13 @@ private:
 };
 
 // If this component is attached to an entity, it will rotate on the Z axis
-class RotatingComponent : public onut::Component
+class RotatingComponent : public OComponent
 {
+public:
+    RotatingComponent() : OComponent(FLAG_UPDATABLE) {}
+
 private:
-    void update() override
+    void onUpdate() override
     {
         auto transform = getEntity()->getLocalTransform();
         transform = Matrix::CreateRotationZ(ODT) * transform;
@@ -49,10 +54,13 @@ private:
 };
 
 // Blinks the entity by toggling visible state on and off
-class BlinkingComponent : public onut::Component
+class BlinkingComponent : public OComponent
 {
+public:
+    BlinkingComponent() : OComponent(FLAG_UPDATABLE) {}
+
 private:
-    void update() override
+    void onUpdate() override
     {
         m_blink += ODT * 2.0f;
         if (m_blink >= 1.0f) m_blink -= 1.0f;
@@ -63,10 +71,13 @@ private:
 };
 
 // Pause the rotation by toggling enable state on and off
-class DeactivateComponent : public onut::Component
+class DeactivateComponent : public OComponent
 {
+public:
+    DeactivateComponent() : OComponent(FLAG_UPDATABLE) {}
+
 private:
-    void update() override
+    void onUpdate() override
     {
         m_blink += ODT;
         if (m_blink >= 1.0f) m_blink -= 1.0f;

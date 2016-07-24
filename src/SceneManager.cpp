@@ -251,6 +251,8 @@ namespace onut
 
     void SceneManager::render()
     {
+        if (m_entities.empty()) return;
+
 #if defined(_DEBUG)
         int renderCount = 0;
 #endif
@@ -340,14 +342,17 @@ namespace onut
             ++updateCount;
         }
         auto pFont = OGetFont("font.fnt");
-        oSpriteBatch->begin();
-        oSpriteBatch->drawRect(nullptr, {0, 16, 200, 100}, Color(0, 0, 0, .75f));
-        pFont->draw("Updatables: " + std::to_string(updateCount), {0, 20});
-        pFont->draw("Renderables: " + std::to_string(renderCount), {0, 40});
-        pFont->draw("Renderables 2D: " + std::to_string(render2DCount), {0, 60});
-        pFont->draw("Components: " + std::to_string(g_componentCount), {0, 80});
-        pFont->draw("Entities: " + std::to_string(g_entityCount), {0, 100});
-        oSpriteBatch->end();
+        if (pFont)
+        {
+            oSpriteBatch->begin();
+            oSpriteBatch->drawRect(nullptr, {0, 16, 200, 100}, Color(0, 0, 0, .75f));
+            pFont->draw("Updatables: " + std::to_string(updateCount), {0, 20});
+            pFont->draw("Renderables: " + std::to_string(renderCount), {0, 40});
+            pFont->draw("Renderables 2D: " + std::to_string(render2DCount), {0, 60});
+            pFont->draw("Components: " + std::to_string(g_componentCount), {0, 80});
+            pFont->draw("Entities: " + std::to_string(g_entityCount), {0, 100});
+            oSpriteBatch->end();
+        }
 #endif
     }
 
