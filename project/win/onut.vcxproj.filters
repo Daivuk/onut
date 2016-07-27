@@ -623,6 +623,9 @@
     <ClInclude Include="..\..\src\AudioEngineWASAPI.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\AudioStream.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">

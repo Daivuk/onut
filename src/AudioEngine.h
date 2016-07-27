@@ -30,7 +30,7 @@ namespace onut
 
         using Instances = std::vector<OAudioStreamWeak>;
 
-        void progressInstances(int frameCount, int channelCount, float* pOut);
+        void progressInstances(int frameCount, int sampleRate, int channelCount, float* pOut);
 
         std::mutex m_instancesMutex;
         Instances m_instances;

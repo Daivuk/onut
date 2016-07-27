@@ -1,5 +1,5 @@
 // Onut
-#include <onut/Sound.h>
+#include <onut/AudioStream.h>
 
 // Private
 #include "AudioEngine.h"
@@ -39,7 +39,7 @@ namespace onut
         }
     }
 
-    void AudioEngine::progressInstances(int frameCount, int channelCount, float* pOut)
+    void AudioEngine::progressInstances(int frameCount, int sampleRate, int channelCount, float* pOut)
     {
         std::unique_lock<std::mutex> locker(m_instancesMutex);
         memset(pOut, 0, sizeof(float) * frameCount * channelCount);
@@ -53,7 +53,7 @@ namespace onut
                 continue;
             }
 
-            if (!pInstancePtr->progress(frameCount, channelCount, pOut))
+            if (!pInstancePtr->progress(frameCount, sampleRate, channelCount, pOut))
             {
                 it = m_instances.erase(it);
                 continue;

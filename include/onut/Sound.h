@@ -1,5 +1,6 @@
 #pragma once
 // Onut
+#include <onut/AudioStream.h>
 #include <onut/Resource.h>
 #include <onut/Timer.h>
 
@@ -17,15 +18,6 @@ OForwardDeclare(SoundInstance);
 
 namespace onut
 {
-    class AudioStream
-    {
-    protected:
-        friend class AudioEngine;
-
-        // Returns false when completed
-        virtual bool progress(int frameCount, int channelCount, float* pOut) = 0;
-    };
-
     class SoundInstance final : public AudioStream, public std::enable_shared_from_this<AudioStream>
     {
     public:
@@ -52,7 +44,7 @@ namespace onut
 
     private:
         friend class Sound;
-        bool progress(int frameCount, int channelCount, float* pOut) override;
+        bool progress(int frameCount, int sampleRate, int channelCount, float* pOut) override;
 
         bool m_isPaused = true;
         std::atomic<bool> m_loop = false;

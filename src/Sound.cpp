@@ -359,7 +359,7 @@ namespace onut
         return m_pitch;
     }
 
-    bool SoundInstance::progress(int frameCount, int channelCount, float* pOut)
+    bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut)
     {
         auto pSoundPtr = m_pSound.get();
         int offset = m_offset;

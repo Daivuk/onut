@@ -23,31 +23,19 @@ namespace onut
     {
         HRESULT hr;
 
-        hr = CoCreateInstance(
-            CLSID_MMDeviceEnumerator, NULL,
-            CLSCTX_ALL, IID_IMMDeviceEnumerator,
-            (void**)&m_pEnumerator);
+        hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
         assert(hr == S_OK);
 
-        hr = m_pEnumerator->GetDefaultAudioEndpoint(
-            eRender, eConsole, &m_pDevice);
+        hr = m_pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &m_pDevice);
         assert(hr == S_OK);
 
-        hr = m_pDevice->Activate(
-            IID_IAudioClient, CLSCTX_ALL,
-            NULL, (void**)&m_pAudioClient);
+        hr = m_pDevice->Activate(IID_IAudioClient, CLSCTX_ALL, NULL, (void**)&m_pAudioClient);
         assert(hr == S_OK);
 
         hr = m_pAudioClient->GetMixFormat(&m_pWaveFormat);
         assert(hr == S_OK);
 
-        hr = m_pAudioClient->Initialize(
-            AUDCLNT_SHAREMODE_SHARED,
-            AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-            50000,
-            0,
-            m_pWaveFormat,
-            NULL);
+        hr = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 50000, 0, m_pWaveFormat, NULL);
         assert(hr == S_OK);
 
         m_pEventHandler = CreateEvent(nullptr, false, false, nullptr);
@@ -59,9 +47,7 @@ namespace onut
         hr = m_pAudioClient->GetBufferSize(&bufferFrameCount);
         assert(hr == S_OK);
 
-        hr = m_pAudioClient->GetService(
-            IID_IAudioRenderClient,
-            (void**)&m_pRenderClient);
+        hr = m_pAudioClient->GetService(IID_IAudioRenderClient, (void**)&m_pRenderClient);
         assert(hr == S_OK);
 
         hr = m_pAudioClient->Start();  // Start playing.
@@ -112,7 +98,7 @@ namespace onut
                 hr = m_pRenderClient->GetBuffer(numFramesAvailable, &pData);
                 assert(hr == S_OK);
 
-                progressInstances(numFramesAvailable, m_pWaveFormat->nChannels, (float*)pData);
+                progressInstances(numFramesAvailable, getSampleRate(), m_pWaveFormat->nChannels, (float*)pData);
 
                 hr = m_pRenderClient->ReleaseBuffer(numFramesAvailable, 0);
                 assert(hr == S_OK);
