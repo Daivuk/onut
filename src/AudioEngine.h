@@ -33,7 +33,6 @@ namespace onut
 
         std::mutex m_instancesMutex;
         Instances m_instances;
-        std::condition_variable m_instancesWait;
     };
 };
 

@@ -23,7 +23,6 @@ namespace onut
     {
         std::lock_guard<std::mutex> locker(m_instancesMutex);
         m_instances.push_back(pInstance);
-        m_instancesWait.notify_one();
     }
 
     void AudioEngine::removeInstance(const OSoundInstanceRef& pInstance)
@@ -35,7 +34,6 @@ namespace onut
             if (it->lock().get() == pInstanceRaw)
             {
                 m_instances.erase(it);
-                m_instancesWait.notify_one();
                 break;
             }
         }
@@ -44,10 +42,6 @@ namespace onut
     void AudioEngine::progressInstances(int frameCount, int channelCount, float* pOut)
     {
         std::unique_lock<std::mutex> locker(m_instancesMutex);
-        if (m_instances.empty())
-        {
-            m_instancesWait.wait(locker);
-        }
         memset(pOut, 0, sizeof(float) * frameCount * channelCount);
         for (auto it = m_instances.begin(); it != m_instances.end();)
         {

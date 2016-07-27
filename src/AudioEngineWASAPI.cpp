@@ -43,11 +43,17 @@ namespace onut
 
         hr = m_pAudioClient->Initialize(
             AUDCLNT_SHAREMODE_SHARED,
-            0,
-            hnsRequestedDuration,
+            AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+            50000,
             0,
             m_pWaveFormat,
             NULL);
+        assert(hr == S_OK);
+
+        m_pEventHandler = CreateEvent(nullptr, false, false, nullptr);
+        assert(m_pEventHandler);
+
+        hr = m_pAudioClient->SetEventHandle(m_pEventHandler);
         assert(hr == S_OK);
 
         hr = m_pAudioClient->GetBufferSize(&bufferFrameCount);
@@ -57,11 +63,6 @@ namespace onut
             IID_IAudioRenderClient,
             (void**)&m_pRenderClient);
         assert(hr == S_OK);
-
-        hnsActualDuration = static_cast<REFERENCE_TIME>(
-            static_cast<double>(REFTIMES_PER_SEC) * 
-            static_cast<double>(bufferFrameCount) / 
-            static_cast<double>(m_pWaveFormat->nSamplesPerSec));
 
         hr = m_pAudioClient->Start();  // Start playing.
         assert(hr == S_OK);
@@ -73,7 +74,6 @@ namespace onut
     AudioEngineWASAPI::~AudioEngineWASAPI()
     {
         m_isRunning = false;
-        m_instancesWait.notify_all();
         if (m_thread.joinable()) m_thread.join();
 
         CoTaskMemFree(m_pWaveFormat);
@@ -85,28 +85,36 @@ namespace onut
 
     void AudioEngineWASAPI::threadMain()
     {
-        float angle = 0;
+        HRESULT hr;
+        UINT32 numFramesAvailable;
+        UINT32 numFramesPadding;
+        BYTE *pData;
+        DWORD retval;
+
         while (m_isRunning)
         {
-            HRESULT hr;
-            UINT32 numFramesAvailable;
-            UINT32 numFramesPadding;
-            BYTE *pData;
+            retval = WaitForSingleObject(m_pEventHandler, 2000);
+            if (retval != WAIT_OBJECT_0)
+            {
+                // Event handle timed out after a 2-second wait.
+                m_pAudioClient->Stop();
+                break;
+            }
 
             // See how much buffer space is available.
             hr = m_pAudioClient->GetCurrentPadding(&numFramesPadding);
             assert(hr == S_OK);
 
             numFramesAvailable = bufferFrameCount - numFramesPadding;
-            if (numFramesPadding < SAMPLES_PER_FRAME)
+            if (numFramesAvailable > 0)
             {
                 // Grab all the available space in the shared buffer.
-                hr = m_pRenderClient->GetBuffer(SAMPLES_PER_FRAME, &pData);
+                hr = m_pRenderClient->GetBuffer(numFramesAvailable, &pData);
                 assert(hr == S_OK);
 
-                progressInstances(SAMPLES_PER_FRAME, m_pWaveFormat->nChannels, (float*)pData);
+                progressInstances(numFramesAvailable, m_pWaveFormat->nChannels, (float*)pData);
 
-                hr = m_pRenderClient->ReleaseBuffer(SAMPLES_PER_FRAME, 0);
+                hr = m_pRenderClient->ReleaseBuffer(numFramesAvailable, 0);
                 assert(hr == S_OK);
             }
         }
