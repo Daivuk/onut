@@ -7,7 +7,7 @@
 // Forward declaration
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(AudioEngine);
-OForwardDeclare(SoundInstance);
+OForwardDeclare(AudioStream);
 
 namespace onut
 {
@@ -20,14 +20,15 @@ namespace onut
 
         virtual void update() = 0;
         virtual int getSampleRate() const = 0;
+        virtual int getChannels() const = 0;
 
-        void addInstance(const OSoundInstanceRef& pInstance);
-        void removeInstance(const OSoundInstanceRef& pInstance);
+        void addInstance(const OAudioStreamRef& pInstance);
+        void removeInstance(const OAudioStreamRef& pInstance);
 
     protected:
         AudioEngine();
 
-        using Instances = std::vector<OSoundInstanceWeak>;
+        using Instances = std::vector<OAudioStreamWeak>;
 
         void progressInstances(int frameCount, int channelCount, float* pOut);
 

@@ -9,6 +9,7 @@
 
 // Forward
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(AudioStream);
 OForwardDeclare(ContentManager);
 OForwardDeclare(Sound);
 OForwardDeclare(SoundCue);
@@ -16,7 +17,16 @@ OForwardDeclare(SoundInstance);
 
 namespace onut
 {
-    class SoundInstance final : public std::enable_shared_from_this<SoundInstance>
+    class AudioStream
+    {
+    protected:
+        friend class AudioEngine;
+
+        // Returns false when completed
+        virtual bool progress(int frameCount, int channelCount, float* pOut) = 0;
+    };
+
+    class SoundInstance final : public AudioStream, public std::enable_shared_from_this<AudioStream>
     {
     public:
         void play();
@@ -42,7 +52,7 @@ namespace onut
 
     private:
         friend class Sound;
-        friend class AudioEngine;
+        bool progress(int frameCount, int channelCount, float* pOut) override;
 
         bool m_isPaused = true;
         std::atomic<bool> m_loop = false;
@@ -75,7 +85,6 @@ namespace onut
 
         float* m_pBuffer = nullptr;
         int m_bufferSampleCount = 0;
-        int m_channelCount = 0;
         Instances m_instances;
         int m_maxInstance = -1;
     };

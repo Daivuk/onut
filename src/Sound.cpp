@@ -14,8 +14,6 @@ namespace onut
 {
     OSoundRef Sound::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
-        auto pRet = std::make_shared<OSound>();
-
         enum class WavChunks
         {
             RiffHeader = 0x46464952,
@@ -63,6 +61,9 @@ namespace onut
         
         int32_t datasize;
 
+        int sampleCount;
+        float* pBuffer = nullptr;
+
         bool datachunk = false;
         while (!datachunk)
         {
@@ -103,11 +104,10 @@ namespace onut
                     uint8_t* pData = new uint8_t[datasize];
                     fread(pData, bitdepth / 8, datasize / (bitdepth / 8), pFic);
 
-                    pRet->m_bufferSampleCount = (int)datasize / ((int)bitdepth / 8) / channelcount;
-                    pRet->m_channelCount = channelcount;
+                    sampleCount = (int)datasize / ((int)bitdepth / 8) / channelcount;
 
-                    int len = pRet->m_bufferSampleCount * channelcount;
-                    pRet->m_pBuffer = new float[len];
+                    int len = sampleCount * channelcount;
+                    pBuffer = new float[len];
 
                     switch (bitdepth)
                     {
@@ -116,7 +116,7 @@ namespace onut
                             for (int i = 0; i < len; ++i)
                             {
                                 int8_t sample16 = *(int8_t*)(pData + (i * 2));
-                                pRet->m_pBuffer[i] = (float)sample16 / (float)std::numeric_limits<int8_t>::max();
+                                pBuffer[i] = (float)sample16 / (float)std::numeric_limits<int8_t>::max();
                             }
                             break;
                         }
@@ -125,7 +125,7 @@ namespace onut
                             for (int i = 0; i < len; ++i)
                             {
                                 int16_t sample16 = *(int16_t*)(pData + (i * 2));
-                                pRet->m_pBuffer[i] = (float)sample16 / (float)std::numeric_limits<int16_t>::max();
+                                pBuffer[i] = (float)sample16 / (float)std::numeric_limits<int16_t>::max();
                             }
                             break;
                         }
@@ -137,13 +137,13 @@ namespace onut
                                 int8_t b1 = pData[i * 3 + 1];
                                 int8_t b2 = pData[i * 3 + 2];
                                 int32_t sample24 = b0 | (b1 << 8) | (b2 << 16);
-                                pRet->m_pBuffer[i] = (float)sample24 / 8388608.0f;
+                                pBuffer[i] = (float)sample24 / 8388608.0f;
                             }
                             break;
                         }
                         case 32:
                         {
-                            memcpy(pRet->m_pBuffer, pData, sizeof(float) * len);
+                            memcpy(pBuffer, pData, sizeof(float) * len);
                             break;
                         }
                         default:
@@ -163,27 +163,76 @@ namespace onut
             }
         }
 
-        // Resample if the wave is not the same sample rate as the audio engine
-        if (samplerate != oAudioEngine->getSampleRate())
-        {
-            // TODO...
-        }
-
         fclose(pFic);
 
+        if (!pBuffer) return nullptr;
+        auto pRet = createFromData(pBuffer, sampleCount, channelcount, samplerate, pContentManager);
+        delete[] pBuffer;
         return pRet;
     }
 
     OSoundRef Sound::createFromData(float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager)
     {
+        auto engineFreq = oAudioEngine->getSampleRate();
+        auto engineChannels = oAudioEngine->getChannels();
         auto pRet = std::make_shared<OSound>();
 
         pRet->m_bufferSampleCount = sampleCount;
-        pRet->m_channelCount = channelCount;
+        pRet->m_pBuffer = new float[sampleCount * engineChannels];
 
-        int len = pRet->m_bufferSampleCount * channelCount;
-        pRet->m_pBuffer = new float[len];
-        memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * len);
+        switch (engineChannels)
+        {
+            case 1:
+            {
+                switch (channelCount)
+                {
+                    case 1:
+                    {
+                        memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * sampleCount);
+                        break;
+                    }
+                    case 2:
+                    {
+                        for (auto i = 0; i < sampleCount; ++i)
+                        {
+                            pRet->m_pBuffer[i] = (pSamples[i * 2 + 0] + pSamples[i * 2 + 1]) * 0.5f;
+                        }
+                        break;
+                    }
+                    default:
+                        assert(false);
+                        break;
+                }
+                break;
+            }
+            case 2:
+            {
+                switch (channelCount)
+                {
+                    case 1:
+                    {
+                        for (auto i = 0; i < sampleCount; ++i)
+                        {
+                            pRet->m_pBuffer[i * 2 + 0] = pSamples[i];
+                            pRet->m_pBuffer[i * 2 + 1] = pSamples[i];
+                        }
+                        break;
+                    }
+                    case 2:
+                    {
+                        memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * sampleCount * 2);
+                        break;
+                    }
+                    default:
+                        assert(false);
+                        break;
+                }
+                break;
+            }
+            default:
+                assert(false);
+                break;
+        }
 
         // Resample if the wave is not the same sample rate as the audio engine
         if (samplerate != oAudioEngine->getSampleRate())
@@ -308,6 +357,62 @@ namespace onut
     float SoundInstance::getPitch() const
     {
         return m_pitch;
+    }
+
+    bool SoundInstance::progress(int frameCount, int channelCount, float* pOut)
+    {
+        auto pSoundPtr = m_pSound.get();
+        int offset = m_offset;
+        auto pSoundBuffer = pSoundPtr->m_pBuffer + offset * channelCount;
+        float volume = m_volume;
+        int bufferSampleCount = pSoundPtr->m_bufferSampleCount;
+        bool loop = m_loop;
+        float balance = m_balance;
+        float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
+        float rightVolume = std::min(1.0f, balance + 1.0f) * volume;
+        float pitch = m_pitch;
+
+        int fi;
+        int len = std::min(frameCount, (int)((float)(bufferSampleCount - offset) / pitch));
+        switch (channelCount)
+        {
+            case 1:
+            {
+                for (int i = 0; i < len; ++i)
+                {
+                    fi = (int)((float)i * pitch);
+                    pOut[i] += pSoundBuffer[fi] * volume;
+                }
+                break;
+            }
+            case 2:
+            {
+                for (int i = 0; i < len * 2; i += 2)
+                {
+                    fi = (int)((float)i * pitch);
+                    pOut[i + 0] += pSoundBuffer[fi + 0] * leftVolume;
+                    pOut[i + 1] += pSoundBuffer[fi + 1] * rightVolume;
+                }
+                break;
+            }
+            default:
+                assert(false);
+        }
+
+        offset += (int)((float)len * pitch);
+        m_offset = offset;
+        if (offset >= bufferSampleCount)
+        {
+            if (loop)
+            {
+                m_offset = 0;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     OSoundCueRef SoundCue::createFromFile(const std::string& filename, const OContentManagerRef& in_pContentManager)

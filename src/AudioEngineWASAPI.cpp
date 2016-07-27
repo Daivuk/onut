@@ -128,6 +128,11 @@ namespace onut
     {
         return static_cast<int>(m_pWaveFormat->nSamplesPerSec);
     }
+
+    int AudioEngineWASAPI::getChannels() const
+    {
+        return static_cast<int>(m_pWaveFormat->nChannels);
+    }
 };
 
 #endif

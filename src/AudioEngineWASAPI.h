@@ -23,6 +23,7 @@ namespace onut
     private:
         void update() override;
         int getSampleRate() const override;
+        int getChannels() const override;
         void threadMain();
 
         UINT32 bufferFrameCount = 0;
