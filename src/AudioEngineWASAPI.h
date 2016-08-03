@@ -1,12 +1,12 @@
 #pragma once
 #if defined(WIN32)
 
+// Onut
+#include <onut/AudioEngine.h>
+
 // Platform
 #include <Audioclient.h>
 #include <Mmdeviceapi.h>
-
-// Private
-#include "AudioEngine.h"
 
 // STL
 #include <atomic>

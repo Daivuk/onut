@@ -1,5 +1,9 @@
 #pragma once
 
+// Forward declaration
+#include <onut/ForwardDeclaration.h>
+OForwardDeclare(AudioStream)
+
 namespace onut
 {
     class AudioEngine;

@@ -1,8 +1,6 @@
 // Onut
+#include <onut/AudioEngine.h>
 #include <onut/AudioStream.h>
-
-// Private
-#include "AudioEngine.h"
 
 // STL
 #include <algorithm>

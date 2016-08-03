@@ -20,6 +20,17 @@ namespace onut
     Matrix lerp(const Matrix& from, const Matrix& to, float t);
     Color lerp(const Color& from, const Color& to, float t);
     std::string lerp(const std::string& from, const std::string& to, float t);
+
+    template<typename T>
+    T bezier(const T& p0, const T& p1, const T& p2, const T& p3, float t)
+    {
+        float invT = 1.0f - t;
+        return
+            p0 * invT * invT * invT +
+            p1 * t * invT * invT * 3.0f +
+            p2 * t * t * invT * 3.0f +
+            p3 * t * t * t;
+    }
 };
 
 #define OLerp onut::lerp

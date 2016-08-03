@@ -54,6 +54,8 @@ namespace onut
 
         bool isInBatch() const { return m_isDrawing; };
 
+        void flush();
+
     private:
         struct SVertexP2T2C4
         {
@@ -72,7 +74,6 @@ namespace onut
 
         OTextureRef m_pTexWhite = nullptr;
 
-        void flush();
         void changeTexture(const OTextureRef& pTexture);
 
         OTextureRef m_pTexture = nullptr;

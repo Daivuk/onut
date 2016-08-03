@@ -1,5 +1,6 @@
 // Onut includes
 #include <onut/ActionManager.h>
+#include <onut/AudioEngine.h>
 #include <onut/Cloud.h>
 #include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
@@ -24,9 +25,6 @@
 #include <onut/UITextBox.h>
 #include <onut/Updater.h>
 #include <onut/Window.h>
-
-// Private
-#include "AudioEngine.h"
 
 // STL
 #include <cassert>

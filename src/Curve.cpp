@@ -3,7 +3,6 @@
 
 namespace onut
 {
-
     bool lerp(bool from, bool to, float t)
     {
         return (t < .5f) ? from : to;
@@ -80,7 +79,4 @@ namespace onut
             return std::move(ret);
         }
     }
-
-    // Bezier
-    //\mathbf{P}(t) = \mathbf{P}_0(1 - t) ^ 3 + 3 \mathbf{P}_1 t(1 - t) ^ 2 + 3 \mathbf{P}_2 t ^ 2(1 - t) + \mathbf{P}_3 t ^ 3
 }
