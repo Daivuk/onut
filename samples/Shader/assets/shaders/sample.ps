@@ -1,37 +1,28 @@
+// Shader input. These should match outputs from the vertex shader.
+// Order is also important
 input float2 inUV;
 input float4 inColor;
 
-Texture0 texture
+// Textures and their's sampler state
+Texture0 texture0
 {
-    filter = smooth;
+    filter = trilinear;
     repeat = clamp;
 }
 
-float4 main()
+Texture1 texture1
 {
-    float4 diffuse = texture(inUV);
-    return diffuse * inColor;
+    filter = nearest;
+    repeatX = wrap;
+    repeatY = clamp;
 }
 
+extern float anim;
 
-
-/*
-
-Texture2D texDiffuse : register(t0);
-SamplerState samplerState : register(s0);
-
-struct PSInput
+void main()
 {
-    float4 position : SV_POSITION;
-    float2 texCoord : TEXCOORD;
-    float4 color : COLOR;
-};
+    float4 color0 = texture0(inUV);
+    float4 color1 = texture1(float2(inUV.x + anim, inUV.y));
 
-float4 main(PSInput input) : SV_TARGET
-{
-    float4 diffuse = texDiffuse.Sample(samplerState, input.texCoord);
-
-    return diffuse * input.color;
+    oColor = color0 * color1 * inColor;
 }
-
-*/

@@ -1138,5 +1138,8 @@
     <Filter Include="thirdparties\Box2D\Dynamics\Joints">
       <UniqueIdentifier>{0147b924-14ea-4156-915a-25a533e92be7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{c940a429-595b-4ded-9573-58853852d4bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

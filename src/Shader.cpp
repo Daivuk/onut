@@ -50,9 +50,9 @@ namespace onut
         return std::move(content);
     }
 
-    Shader::ParsedVS::Elements Shader::ParsedVS::parseElement(std::string& content, const std::string& type)
+    Shader::ParsedElements Shader::parseElements(std::string& content, const std::string& type)
     {
-        ParsedVS::Elements ret;
+        ParsedElements ret;
 
         std::regex inputReg(type + "\\s+([\\w]+)\\s+([\\w]+)\\s*;");
         std::smatch match;
@@ -60,7 +60,7 @@ namespace onut
         size_t position = 0;
         while (std::regex_search(searchStart, content.cend(), match, inputReg))
         {
-            ParsedVS::Element element;
+            ParsedElement element;
 
             auto type = match[1].str();
             element.name = match[2].str();
@@ -85,6 +85,139 @@ namespace onut
         return std::move(ret);
     }
 
+    Shader::ParsedUniforms Shader::parseUniforms(std::string& content)
+    {
+        ParsedUniforms ret;
+
+        // Create uniforms
+        int uniformId = 4;
+        std::smatch match;
+        size_t offset = 0;
+        if (std::regex_search(content.cbegin() + offset, content.cend(), match, std::regex("extern\\s+([\\w]+)\\s+([\\w]+)")))
+        {
+            ParsedUniform uniform;
+
+            uniform.type = match[1].str();
+            uniform.name = match[2].str();
+
+            content[offset + match.position()] = '/';
+            content[offset + match.position() + 1] = '*';
+            content[offset + match.position() + match.length() - 2] = '*';
+            content[offset + match.position() + match.length() - 1] = '/';
+
+            offset += match.position() + match.length();
+
+            ret.push_back(uniform);
+        }
+
+        return std::move(ret);
+    }
+
+    Shader::ParsedTextures Shader::parseTextures(std::string& content)
+    {
+        ParsedTextures ret;
+
+        std::smatch match;
+        size_t offset = 0;
+        while (std::regex_search(content.cbegin() + offset, content.cend(), match, std::regex("Texture([\\d]+)\\s+([\\w]+)\\s+\\{")))
+        {
+            ParsedTexture texture;
+
+            texture.index = std::stoi(match[1].str());
+            texture.name = match[2].str();
+
+            std::smatch match2;
+            size_t propsStart = offset + match.position() + match.length();
+            if (std::regex_search(content.cbegin() + propsStart, content.cend(), match2, std::regex("\\}")))
+            {
+                auto propsEnd = propsStart + match2.position() + match2.length();
+                std::smatch matchProperty;
+                while (std::regex_search(content.cbegin() + propsStart, content.cbegin() + propsEnd, matchProperty, std::regex("([\\w]+)\\s*=\\s*([\\w]+)\\s*;")))
+                {
+                    auto& propName = matchProperty[1].str();
+                    auto& propValue = matchProperty[2].str();
+                    if (propName == "filter")
+                    {
+                        if (propValue == "nearest")
+                        {
+                            texture.filter = ParsedTexture::Filter::Nearest;
+                        }
+                        else if (propValue == "linear")
+                        {
+                            texture.filter = ParsedTexture::Filter::Linear;
+                        }
+                        else if (propValue == "bilinear")
+                        {
+                            texture.filter = ParsedTexture::Filter::Bilinear;
+                        }
+                        else if (propValue == "trilinear")
+                        {
+                            texture.filter = ParsedTexture::Filter::Trilinear;
+                        }
+                        else if (propValue == "anisotropic")
+                        {
+                            texture.filter = ParsedTexture::Filter::Anisotropic;
+                        }
+                        else assert(false); // Invalid filter
+                    }
+                    else if (propName == "repeat")
+                    {
+                        if (propValue == "clamp")
+                        {
+                            texture.repeatX = texture.repeatY = ParsedTexture::Repeat::Clamp;
+                        }
+                        else if (propValue == "wrap")
+                        {
+                            texture.repeatX = texture.repeatY = ParsedTexture::Repeat::Wrap;
+                        }
+                        else assert(false); // Invalid repeat
+                    }
+                    else if (propName == "repeatX")
+                    {
+                        if (propValue == "clamp")
+                        {
+                            texture.repeatX = ParsedTexture::Repeat::Clamp;
+                        }
+                        else if (propValue == "wrap")
+                        {
+                            texture.repeatX = ParsedTexture::Repeat::Wrap;
+                        }
+                        else assert(false); // Invalid repeat
+                    }
+                    else if (propName == "repeatY")
+                    {
+                        if (propValue == "clamp")
+                        {
+                            texture.repeatY = ParsedTexture::Repeat::Clamp;
+                        }
+                        else if (propValue == "wrap")
+                        {
+                            texture.repeatY = ParsedTexture::Repeat::Wrap;
+                        }
+                        else assert(false); // Invalid repeat
+                    }
+                    else assert(false); // Invalid texture sampler property
+
+                    propsStart += matchProperty.position() + matchProperty.length();
+                }
+
+                propsStart = propsEnd;
+            }
+            else assert(false); // No matching closing } to texture sample
+
+            content[offset + match.position()] = '/';
+            content[offset + match.position() + 1] = '*';
+            content[propsStart - 2] = '*';
+            content[propsStart - 1] = '/';
+
+            offset += match.position() + match.length() + match2.position() + match2.length();
+
+            ret.push_back(texture);
+        }
+
+        return std::move(ret);
+    }
+
     Shader::ParsedVS Shader::parseVertexShader(const std::string& filename)
     {
         ParsedVS ret;
@@ -93,9 +226,25 @@ namespace onut
 
         onut::stripOutComments(content);
 
-        ret.inputs = ParsedVS::parseElement(content, "input");
-        ret.outputs = ParsedVS::parseElement(content, "output");
+        ret.inputs = parseElements(content, "input");
+        ret.outputs = parseElements(content, "output");
+        ret.uniforms = parseUniforms(content);
+        ret.source = std::move(content);
 
+        return std::move(ret);
+    }
+
+    Shader::ParsedPS Shader::parsePixelShader(const std::string& filename)
+    {
+        ParsedPS ret;
+
+        std::string content = readShaderFileContent(filename);
+
+        onut::stripOutComments(content);
+
+        ret.inputs = parseElements(content, "input");
+        ret.uniforms = parseUniforms(content);
+        ret.textures = parseTextures(content);
         ret.source = std::move(content);
 
         return std::move(ret);

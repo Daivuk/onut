@@ -32,7 +32,6 @@ namespace onut
         using VertexElements = std::vector<VertexElement>;
 
         static OShaderRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);
-
         static OShaderRef createFromBinaryFile(const std::string& filename, Type in_type, const VertexElements& vertexElements = {});
         static OShaderRef createFromSourceFile(const std::string& filename, Type in_type, const VertexElements& vertexElements = {});
         static OShaderRef createFromBinaryData(const uint8_t* pData, uint32_t size, Type in_type, const VertexElements& vertexElements = {});
@@ -58,24 +57,64 @@ namespace onut
     protected:
         Shader();
 
+        struct ParsedElement
+        {
+            uint32_t size;
+            std::string name;
+        };
+        using ParsedElements = std::vector<ParsedElement>;
+
+        struct ParsedUniform
+        {
+            std::string type;
+            std::string name;
+        };
+        using ParsedUniforms = std::vector<ParsedUniform>;
+
+        struct ParsedTexture
+        {
+            enum class Filter
+            {
+                Nearest,
+                Linear,
+                Bilinear,
+                Trilinear,
+                Anisotropic
+            };
+            enum class Repeat
+            {
+                Clamp,
+                Wrap
+            };
+            int index;
+            Filter filter = Filter::Trilinear;
+            Repeat repeatX = Repeat::Wrap;
+            Repeat repeatY = Repeat::Wrap;
+            std::string name;
+        };
+        using ParsedTextures = std::vector<ParsedTexture>;
+
         struct ParsedVS
         {
-            struct Element
-            {
-                uint32_t size;
-                std::string name;
-            };
-
-            using Elements = std::vector<Element>;
-
-            static Elements parseElement(std::string& content, const std::string& type);
-
-            Elements inputs;
-            Elements outputs;
+            ParsedElements inputs;
+            ParsedElements outputs;
+            ParsedUniforms uniforms;
             std::string source;
         };
 
+        struct ParsedPS
+        {
+            ParsedElements inputs;
+            ParsedUniforms uniforms;
+            ParsedTextures textures;
+            std::string source;
+        };
+
+        static ParsedElements parseElements(std::string& content, const std::string& type);
+        static ParsedUniforms parseUniforms(std::string& content);
+        static ParsedTextures parseTextures(std::string& content);
         static ParsedVS parseVertexShader(const std::string& filename);
+        static ParsedPS parsePixelShader(const std::string& filename);
 
         Type m_type;
         uint32_t m_vertexSize = 0;

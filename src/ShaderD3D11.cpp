@@ -41,7 +41,6 @@ namespace onut
         if (ext == "VS")
         {
             auto parsed = parseVertexShader(filename);
-            size_t offset = 0;
             std::smatch match;
 
             // Add engine default constant buffers
@@ -123,29 +122,20 @@ namespace onut
             // Create uniforms
             ShaderD3D11::Uniforms uniforms;
             int uniformId = 4;
-            if (std::regex_search(parsed.source.cbegin() + offset, parsed.source.cend(), match, std::regex("extern\\s+([\\w]+)\\s+([\\w]+)")))
+            for (auto& parsedUniform : parsed.uniforms)
             {
                 ShaderD3D11::Uniform uniform;
 
-                auto type = match[1].str();
-                uniform.second = match[2].str();
+                uniform.second = parsedUniform.name;
 
                 UINT uniformSize = 4;
-                if (type == "matrix") uniformSize = 16;
+                if (parsedUniform.type == "matrix") uniformSize = 16;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.first));
                 assert(ret == S_OK);
 
-                parsed.source[offset + match.position()] = '/';
-                parsed.source[offset + match.position() + 1] = '*';
-                parsed.source[offset + match.position() + match.length() - 2] = '*';
-                parsed.source[offset + match.position() + match.length() - 1] = '/';
-
-                parsed.source.insert(offset + match.position(), 
-                                     "cbuffer cb_" + uniform.second + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + type + " " + uniform.second + ";\n}\n\n");
-
-                offset += match.position() + match.length();
+                parsed.source.insert(0, "cbuffer cb_" + uniform.second + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.second + ";\n}\n\n");
 
                 uniforms.push_back(uniform);
                 ++uniformId;
@@ -163,6 +153,138 @@ namespace onut
         }
         else if (ext == "PS")
         {
+            auto parsed = parsePixelShader(filename);
+            std::smatch match;
+
+            // Add engine default constant buffers
+
+            // Replace main
+            if (std::regex_search(parsed.source, match, std::regex("void\\s+main\\s*\\(\\s*\\)\\s*\\{")))
+            {
+                parsed.source[match.position()] = '/';
+                parsed.source[match.position() + 1] = '*';
+                parsed.source[match.position() + match.length() - 2] = '*';
+                parsed.source[match.position() + match.length() - 1] = '/';
+                parsed.source.insert(match.position(), "float4 main(oPSInput oInput) : SV_TARGET\n{\n    float4 oColor;\n");
+
+                size_t offset = match.position() + match.length();
+                if (std::regex_search(parsed.source.cbegin() + offset, parsed.source.cend(), match, std::regex("\\}")))
+                {
+                    parsed.source.insert(offset + match.position(), "    return oColor;\n");
+                }
+                else assert(false); // No matching closing } to main function
+            }
+            else assert(false); // Shader should include "void main()"
+
+            // Replace element variables with structs
+            for (auto& element : parsed.inputs)
+            {
+                onut::replace(parsed.source, "\\b" + element.name + "\\b", "oInput." + element.name);
+            }
+
+            // Replace texture sampling
+            for (auto& texture : parsed.textures)
+            {
+                onut::replace(parsed.source, "(\\b" + texture.name + "\\b)\\s*\\(", "$1.Sample(sampler_" + texture.name + ", ");
+            }
+
+            // Inputs
+            std::string elementStructsSource;
+            elementStructsSource += "struct oPSInput\n{\n";
+            elementStructsSource += "    float4 position : SV_POSITION;\n";
+            int semanticIndex = 0;
+            for (auto& element : parsed.inputs)
+            {
+                std::string semanticName = "OUTPUT_ELEMENT" + std::to_string(semanticIndex++);
+                switch (element.size)
+                {
+                    case 1: elementStructsSource += "    float "; break;
+                    case 2: elementStructsSource += "    float2 "; break;
+                    case 3: elementStructsSource += "    float3 "; break;
+                    case 4: elementStructsSource += "    float4 "; break;
+                    default: assert(false);
+                }
+                elementStructsSource += element.name + " : " + semanticName + ";\n";
+            }
+            elementStructsSource += "};\n\n";
+            parsed.source.insert(0, elementStructsSource);
+
+            // Create uniforms
+            ShaderD3D11::Uniforms uniforms;
+            int uniformId = 4;
+            for (auto& parsedUniform : parsed.uniforms)
+            {
+                ShaderD3D11::Uniform uniform;
+
+                uniform.second = parsedUniform.name;
+
+                UINT uniformSize = 4;
+                if (parsedUniform.type == "matrix") uniformSize = 16;
+
+                D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+                auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.first));
+                assert(ret == S_OK);
+
+                parsed.source.insert(0, "cbuffer cb_" + uniform.second + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.second + ";\n}\n\n");
+
+                uniforms.push_back(uniform);
+                ++uniformId;
+            }
+
+            // Create textures samplers
+            for (auto& texture : parsed.textures)
+            {
+                std::string samplerStr = "Texture2D " + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                samplerStr += "SamplerState sampler_" + texture.name + "\n{\n";
+                switch (texture.filter)
+                {
+                    case ParsedTexture::Filter::Nearest:
+                        samplerStr += "    Filter = MIN_MAG_MIP_POINT;\n";
+                        break;
+                    case ParsedTexture::Filter::Linear:
+                        samplerStr += "    Filter = MIN_POINT_MAG_LINEAR_MIP_POINT;\n";
+                        break;
+                    case ParsedTexture::Filter::Bilinear:
+                        samplerStr += "    Filter = MIN_MAG_LINEAR_MIP_POINT;\n";
+                        break;
+                    case ParsedTexture::Filter::Trilinear:
+                        samplerStr += "    Filter = MIN_MAG_MIP_LINEAR;\n";
+                        break;
+                    case ParsedTexture::Filter::Anisotropic:
+                        samplerStr += "    Filter = ANISOTROPIC;\n";
+                        break;
+                }
+                switch (texture.repeatX)
+                {
+                    case ParsedTexture::Repeat::Clamp:
+                        samplerStr += "    AddressU = Clamp;\n";
+                        break;
+                    case ParsedTexture::Repeat::Wrap:
+                        samplerStr += "    AddressU = Wrap;\n";
+                        break;
+                }
+                switch (texture.repeatY)
+                {
+                    case ParsedTexture::Repeat::Clamp:
+                        samplerStr += "    AddressV = Clamp;\n";
+                        break;
+                    case ParsedTexture::Repeat::Wrap:
+                        samplerStr += "    AddressV = Wrap;\n";
+                        break;
+                }
+                samplerStr += "};\n\n";
+                parsed.source.insert(0, samplerStr);
+            }
+
+            // Now compile it
+            auto pRet = createFromSource(parsed.source, Type::Pixel);
+            auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
+            if (pRetD3D11)
+            {
+                pRetD3D11->m_uniforms = uniforms;
+            }
+
+            return pRet;
         }
         else
         {
