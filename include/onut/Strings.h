@@ -12,4 +12,10 @@ namespace onut
     std::string removeChars(const std::string& str, const std::string& charsToRemove);
     std::string toUpper(const std::string& str);
     std::string toLower(const std::string& str);
+
+    // Regex stuff
+    void stripOutComments(std::string& source);
+    std::string stripOutComments(const std::string& source);
+    void replace(std::string& source, const std::string& reg, const std::string& substitution);
+    std::string replace(const std::string& source, const std::string& reg, const std::string& substitution);
 }

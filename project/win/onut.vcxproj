@@ -415,7 +415,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;cpprest120d_2_0.lib;brainCloudClientd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;cpprest120d_2_0.lib;brainCloudClientd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;../../lib/win/Debug</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -442,7 +442,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;brainCloudClient.lib;cpprest120_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;brainCloudClient.lib;cpprest120_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;../../lib/win/Release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

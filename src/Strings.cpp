@@ -4,6 +4,7 @@
 // STL
 #include <algorithm>
 #include <codecvt>
+#include <regex>
 
 namespace onut
 {
@@ -71,5 +72,51 @@ namespace onut
         auto ret = str;
         std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
         return ret;
+    }
+
+    void stripOutComments(std::string& source)
+    {
+        // Group
+        std::smatch m1;
+        std::smatch m2;
+        size_t offset = 0;
+        while (std::regex_search(source.cbegin() + offset, source.cend(), m1, std::regex("\\/\\*")))
+        {
+            offset += m1.position();
+            if (std::regex_search(source.cbegin() + offset, source.cend(), m2, std::regex("\\*\\/")))
+            {
+                source.erase(source.cbegin() + offset,
+                             source.cbegin() + offset + m2.position() + m2.length());
+            }
+            else break;
+        }
+
+        // Single
+        offset = 0;
+        while (std::regex_search(source.cbegin() + offset, source.cend(), m1, std::regex("\\/\\/.*")))
+        {
+            offset += m1.position();
+            source.erase(source.cbegin() + offset,
+                         source.cbegin() + offset + m1.length());
+        }
+    }
+
+    std::string stripOutComments(const std::string& source)
+    {
+        auto ret = source;
+        stripOutComments(ret);
+        return std::move(ret);
+    }
+
+    void replace(std::string& source, const std::string& reg, const std::string& substitution)
+    {
+        source = std::regex_replace(source, std::regex(reg), substitution);
+    }
+
+    std::string replace(const std::string& source, const std::string& reg, const std::string& substitution)
+    {
+        auto ret = source;
+        replace(ret, reg, substitution);
+        return std::move(ret);
     }
 }

@@ -1,14 +1,20 @@
 #if defined(WIN32)
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Files.h>
 #include <onut/Renderer.h>
+#include <onut/Strings.h>
 
 // Private
 #include "ShaderD3D11.h"
 #include "RendererD3D11.h"
 
+// Third parties
+#include <D3Dcompiler.h>
+
 // STL
 #include <cassert>
+#include <regex>
 
 namespace onut
 {
@@ -24,6 +30,147 @@ namespace onut
 
     //    return pRet;
     //}
+
+    OShaderRef Shader::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+    {
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDevice = pRendererD3D11->getDevice();
+
+        // Set the shader type
+        auto ext = onut::getExtension(filename);
+        if (ext == "VS")
+        {
+            auto parsed = parseVertexShader(filename);
+            size_t offset = 0;
+            std::smatch match;
+
+            // Add engine default constant buffers
+            if (std::regex_search(parsed.source, std::regex("\\boViewProjection\\b")))
+            {
+                parsed.source.insert(0, "cbuffer OViewProjection : register(b0)\n{\n    matrix oViewProjection;\n}\n\n");
+            }
+
+            // Replace main
+            if (std::regex_search(parsed.source, match, std::regex("void\\s+main\\s*\\(\\s*\\)\\s*\\{")))
+            {
+                parsed.source[match.position()] = '/';
+                parsed.source[match.position() + 1] = '*';
+                parsed.source[match.position() + match.length() - 2] = '*';
+                parsed.source[match.position() + match.length() - 1] = '/';
+                parsed.source.insert(match.position(), "oVSOutput main(oVSInput oInput)\n{\n    oVSOutput oOutput;\n");
+
+                size_t offset = match.position() + match.length();
+                if (std::regex_search(parsed.source.cbegin() + offset, parsed.source.cend(), match, std::regex("\\}")))
+                {
+                    parsed.source.insert(offset + match.position(), "    return oOutput;\n");
+                }
+                else assert(false); // No matching closing } to main function
+            }
+            else assert(false); // Shader should include "void main()"
+
+            // Replace element variables with structs
+            for (auto& element : parsed.inputs)
+            {
+                onut::replace(parsed.source, "\\b" + element.name + "\\b", "oInput." + element.name);
+            }
+            for (auto& element : parsed.outputs)
+            {
+                onut::replace(parsed.source, "\\b" + element.name + "\\b", "oOutput." + element.name);
+            }
+            onut::replace(parsed.source, "\\boPosition\\b", "oOutput.position");
+
+            // Add vertex elements
+            VertexElements vertexElements;
+            std::string elementStructsSource;
+            elementStructsSource += "struct oVSInput\n{\n";
+            int semanticIndex = 0;
+            for (auto& element : parsed.inputs)
+            {
+                std::string semanticName = "INPUT_ELEMENT" + std::to_string(semanticIndex++);
+                vertexElements.push_back({element.size, "INPUT_ELEMENT"});
+                switch (element.size)
+                {
+                    case 1: elementStructsSource += "    float "; break;
+                    case 2: elementStructsSource += "    float2 "; break;
+                    case 3: elementStructsSource += "    float3 "; break;
+                    case 4: elementStructsSource += "    float4 "; break;
+                    default: assert(false);
+                }
+                elementStructsSource += element.name + " : " + semanticName + ";\n";
+            }
+            elementStructsSource += "};\n\n";
+
+            // Outputs
+            elementStructsSource += "struct oVSOutput\n{\n";
+            elementStructsSource += "    float4 position : SV_POSITION;\n";
+            semanticIndex = 0;
+            for (auto& element : parsed.outputs)
+            {
+                std::string semanticName = "OUTPUT_ELEMENT" + std::to_string(semanticIndex++);
+                switch (element.size)
+                {
+                    case 1: elementStructsSource += "    float "; break;
+                    case 2: elementStructsSource += "    float2 "; break;
+                    case 3: elementStructsSource += "    float3 "; break;
+                    case 4: elementStructsSource += "    float4 "; break;
+                    default: assert(false);
+                }
+                elementStructsSource += element.name + " : " + semanticName + ";\n";
+            }
+            elementStructsSource += "};\n\n";
+            parsed.source.insert(0, elementStructsSource);
+
+            // Create uniforms
+            ShaderD3D11::Uniforms uniforms;
+            int uniformId = 4;
+            if (std::regex_search(parsed.source.cbegin() + offset, parsed.source.cend(), match, std::regex("extern\\s+([\\w]+)\\s+([\\w]+)")))
+            {
+                ShaderD3D11::Uniform uniform;
+
+                auto type = match[1].str();
+                uniform.second = match[2].str();
+
+                UINT uniformSize = 4;
+                if (type == "matrix") uniformSize = 16;
+
+                D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+                auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.first));
+                assert(ret == S_OK);
+
+                parsed.source[offset + match.position()] = '/';
+                parsed.source[offset + match.position() + 1] = '*';
+                parsed.source[offset + match.position() + match.length() - 2] = '*';
+                parsed.source[offset + match.position() + match.length() - 1] = '/';
+
+                parsed.source.insert(offset + match.position(), 
+                                     "cbuffer cb_" + uniform.second + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + type + " " + uniform.second + ";\n}\n\n");
+
+                offset += match.position() + match.length();
+
+                uniforms.push_back(uniform);
+                ++uniformId;
+            }
+
+            // Now compile it
+            auto pRet = createFromSource(parsed.source, Type::Vertex, vertexElements);
+            auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
+            if (pRetD3D11)
+            {
+                pRetD3D11->m_uniforms = uniforms;
+            }
+
+            return pRet;
+        }
+        else if (ext == "PS")
+        {
+        }
+        else
+        {
+            assert(false);
+        }
+
+        return nullptr;
+    }
 
     OShaderRef Shader::createFromBinaryFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
     {
@@ -108,16 +255,51 @@ namespace onut
         return pRet;
     }
 
+    ID3DBlob* compileShader(const char *szSource, const char *szProfile)
+    {
+        ID3DBlob* shaderBlob = nullptr;
+        ID3DBlob* errorBlob = nullptr;
+
+        HRESULT result = D3DCompile(szSource, (SIZE_T)strlen(szSource), nullptr, nullptr, nullptr, "main", szProfile,
+                                    D3DCOMPILE_ENABLE_STRICTNESS
+#ifdef _DEBUG
+                                    | D3DCOMPILE_DEBUG
+#endif
+                                    , 0, &shaderBlob, &errorBlob);
+
+#ifdef _DEBUG
+        if (errorBlob)
+        {
+            char* pError = (char*)errorBlob->GetBufferPointer();
+            assert(false);
+        }
+#endif
+
+        return shaderBlob;
+    }
+
     OShaderRef Shader::createFromSource(const std::string& source, Type in_type, const VertexElements& vertexElements)
     {
-        auto pRet = std::make_shared<OShaderD3D11>();
-        pRet->m_type = in_type;
-        assert(false);
-        return pRet;
+        ID3DBlob* pBlob = nullptr;
+        switch (in_type)
+        {
+            case Type::Vertex:
+                pBlob = compileShader(source.c_str(), "vs_4_0");
+                break;
+            case Type::Pixel:
+                pBlob = compileShader(source.c_str(), "ps_4_0");
+                break;
+        }
+
+        return createFromBinaryData(reinterpret_cast<uint8_t*>(pBlob->GetBufferPointer()), static_cast<uint32_t>(pBlob->GetBufferSize()), in_type, vertexElements);
     }
 
     ShaderD3D11::~ShaderD3D11()
     {
+        for (auto& pUniform : m_uniforms)
+        {
+            pUniform.first->Release();
+        }
         if (m_pVertexShader)
         {
             m_pVertexShader->Release();
@@ -149,6 +331,111 @@ namespace onut
     ID3D11InputLayout* ShaderD3D11::getInputLayout() const
     {
         return m_pInputLayout;
+    }
+
+    int ShaderD3D11::getUniformId(const std::string& varName) const
+    {
+        for (int i = 0; i < (int)m_uniforms.size(); ++i)
+        {
+            if (m_uniforms[i].second == varName)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void ShaderD3D11::setFloat(int varId, float value)
+    {
+        auto pBuffer = m_uniforms[varId].first;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        float values[4] = {value, 0, 0, 0};
+        memcpy(map.pData, values, 16);
+        pDeviceContext->Unmap(pBuffer, 0);
+    }
+
+    void ShaderD3D11::setVector2(int varId, const Vector2& value)
+    {
+        auto pBuffer = m_uniforms[varId].first;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        float values[4] = {value.x, value.y, 0, 0};
+        memcpy(map.pData, values, 16);
+        pDeviceContext->Unmap(pBuffer, 0);
+    }
+
+    void ShaderD3D11::setVector3(int varId, const Vector3& value)
+    {
+        auto pBuffer = m_uniforms[varId].first;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        float values[4] = {value.x, value.y, value.z, 0};
+        memcpy(map.pData, values, 16);
+        pDeviceContext->Unmap(pBuffer, 0);
+    }
+
+    void ShaderD3D11::setVector4(int varId, const Vector4& value)
+    {
+        auto pBuffer = m_uniforms[varId].first;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, &value.x, 16);
+        pDeviceContext->Unmap(pBuffer, 0);
+    }
+
+    void ShaderD3D11::setMatrix(int varId, const Matrix& value)
+    {
+        auto pBuffer = m_uniforms[varId].first;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, &value._11, 64);
+        pDeviceContext->Unmap(pBuffer, 0);
+    }
+
+    void ShaderD3D11::setFloat(const std::string& varName, float value)
+    {
+        setFloat(getUniformId(varName), value);
+    }
+
+    void ShaderD3D11::setVector2(const std::string& varName, const Vector2& value)
+    {
+        setVector2(getUniformId(varName), value);
+    }
+
+    void ShaderD3D11::setVector3(const std::string& varName, const Vector3& value)
+    {
+        setVector3(getUniformId(varName), value);
+    }
+
+    void ShaderD3D11::setVector4(const std::string& varName, const Vector4& value)
+    {
+        setVector4(getUniformId(varName), value);
+    }
+
+    void ShaderD3D11::setMatrix(const std::string& varName, const Matrix& value)
+    {
+        setMatrix(getUniformId(varName), value);
+    }
+
+    ShaderD3D11::Uniforms& ShaderD3D11::getUniforms()
+    {
+        return m_uniforms;
     }
 };
 

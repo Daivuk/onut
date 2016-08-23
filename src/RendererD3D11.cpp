@@ -636,12 +636,22 @@ namespace onut
             auto pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());
             m_pDeviceContext->VSSetShader(pShaderD3D11->getVertexShader(), nullptr, 0);
             m_pDeviceContext->IASetInputLayout(pShaderD3D11->getInputLayout());
+            auto& uniforms = pShaderD3D11->getUniforms();
+            for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
+            {
+                m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniforms[i].first));
+            }
             renderStates.vertexShader.resetDirty();
         }
         if (renderStates.pixelShader.isDirty())
         {
             auto pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
             m_pDeviceContext->PSSetShader(pShaderD3D11->getPixelShader(), nullptr, 0);
+            auto& uniforms = pShaderD3D11->getUniforms();
+            for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
+            {
+                m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniforms[i].first));
+            }
             renderStates.pixelShader.resetDirty();
         }
 
