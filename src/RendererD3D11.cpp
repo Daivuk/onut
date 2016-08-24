@@ -586,8 +586,9 @@ namespace onut
         if (renderStates.viewProjection.isDirty() ||
             renderStates.world.isDirty())
         {
-            auto world = renderStates.world.get().Transpose();
+            auto world = renderStates.world.get();
             auto finalTransform = renderStates.viewProjection.get() * world;
+            finalTransform = finalTransform.Transpose();
 
             D3D11_MAPPED_SUBRESOURCE map;
             m_pDeviceContext->Map(m_pViewProj2dBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);

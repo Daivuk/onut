@@ -157,7 +157,6 @@ namespace onut
         auto view = Matrix::CreateTranslation(-position) * Matrix::CreateScale(zoom);
         view.Invert();
         auto viewProj = view * proj;
-        viewProj = viewProj.Transpose();
 
         return viewProj;
     }
@@ -170,7 +169,6 @@ namespace onut
             Matrix::CreateTranslation({static_cast<float>(getResolution().x) * .5f, static_cast<float>(getResolution().y) * .5f, 0.f});
         view.Invert();
         auto viewProj = view * proj;
-        viewProj = viewProj.Transpose();
 
         return viewProj;
     }
