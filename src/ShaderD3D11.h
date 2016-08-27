@@ -8,6 +8,7 @@
 
 // Forward
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(RendererD3D11)
 OForwardDeclare(ShaderD3D11)
 
 namespace onut
@@ -18,7 +19,13 @@ namespace onut
         ShaderD3D11();
         ~ShaderD3D11();
 
-        using Uniform = std::pair<ID3D11Buffer*, std::string>;
+        struct Uniform
+        {
+            bool dirty = true;
+            ID3D11Buffer* pBuffer = nullptr;
+            std::string name;
+        };
+
         using Uniforms = std::vector<Uniform>;
 
         ID3D11VertexShader* getVertexShader() const;
@@ -40,6 +47,7 @@ namespace onut
 
     private:
         friend class Shader;
+        friend class RendererD3D11;
 
         ID3D11VertexShader* m_pVertexShader = nullptr;
         ID3D11PixelShader* m_pPixelShader = nullptr;

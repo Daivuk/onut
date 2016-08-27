@@ -93,7 +93,7 @@ namespace onut
         int uniformId = 4;
         std::smatch match;
         size_t offset = 0;
-        if (std::regex_search(content.cbegin() + offset, content.cend(), match, std::regex("extern\\s+([\\w]+)\\s+([\\w]+)")))
+        while (std::regex_search(content.cbegin() + offset, content.cend(), match, std::regex("extern\\s+([\\w]+)\\s+([\\w]+)")))
         {
             ParsedUniform uniform;
 

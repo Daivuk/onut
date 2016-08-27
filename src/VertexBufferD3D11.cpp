@@ -85,7 +85,9 @@ namespace onut
         }
         else
         {
-            assert(false);
+            auto pData = map();
+            memcpy(pData, pVertexData, size);
+            unmap(size);
         }
     }
 

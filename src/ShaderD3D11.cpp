@@ -126,16 +126,16 @@ namespace onut
             {
                 ShaderD3D11::Uniform uniform;
 
-                uniform.second = parsedUniform.name;
+                uniform.name = parsedUniform.name;
 
                 UINT uniformSize = 4;
                 if (parsedUniform.type == "matrix") uniformSize = 16;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-                auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.first));
+                auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.pBuffer));
                 assert(ret == S_OK);
 
-                parsed.source.insert(0, "cbuffer cb_" + uniform.second + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.second + ";\n}\n\n");
+                parsed.source.insert(0, "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.name + ";\n}\n\n");
 
                 uniforms.push_back(uniform);
                 ++uniformId;
@@ -216,16 +216,16 @@ namespace onut
             {
                 ShaderD3D11::Uniform uniform;
 
-                uniform.second = parsedUniform.name;
+                uniform.name = parsedUniform.name;
 
                 UINT uniformSize = 4;
                 if (parsedUniform.type == "matrix") uniformSize = 16;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-                auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.first));
+                auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.pBuffer));
                 assert(ret == S_OK);
 
-                parsed.source.insert(0, "cbuffer cb_" + uniform.second + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.second + ";\n}\n\n");
+                parsed.source.insert(0, "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.name + ";\n}\n\n");
 
                 uniforms.push_back(uniform);
                 ++uniformId;
@@ -420,7 +420,7 @@ namespace onut
     {
         for (auto& pUniform : m_uniforms)
         {
-            pUniform.first->Release();
+            pUniform.pBuffer->Release();
         }
         if (m_pVertexShader)
         {
@@ -459,7 +459,7 @@ namespace onut
     {
         for (int i = 0; i < (int)m_uniforms.size(); ++i)
         {
-            if (m_uniforms[i].second == varName)
+            if (m_uniforms[i].name == varName)
             {
                 return i;
             }
@@ -469,7 +469,9 @@ namespace onut
 
     void ShaderD3D11::setFloat(int varId, float value)
     {
-        auto pBuffer = m_uniforms[varId].first;
+        auto& uniform = m_uniforms[varId];
+        uniform.dirty = true;
+        auto pBuffer = uniform.pBuffer;
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
@@ -482,7 +484,9 @@ namespace onut
 
     void ShaderD3D11::setVector2(int varId, const Vector2& value)
     {
-        auto pBuffer = m_uniforms[varId].first;
+        auto& uniform = m_uniforms[varId];
+        uniform.dirty = true;
+        auto pBuffer = uniform.pBuffer;
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
@@ -495,7 +499,9 @@ namespace onut
 
     void ShaderD3D11::setVector3(int varId, const Vector3& value)
     {
-        auto pBuffer = m_uniforms[varId].first;
+        auto& uniform = m_uniforms[varId];
+        uniform.dirty = true;
+        auto pBuffer = uniform.pBuffer;
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
@@ -508,7 +514,9 @@ namespace onut
 
     void ShaderD3D11::setVector4(int varId, const Vector4& value)
     {
-        auto pBuffer = m_uniforms[varId].first;
+        auto& uniform = m_uniforms[varId];
+        uniform.dirty = true;
+        auto pBuffer = uniform.pBuffer;
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
@@ -520,7 +528,9 @@ namespace onut
 
     void ShaderD3D11::setMatrix(int varId, const Matrix& value)
     {
-        auto pBuffer = m_uniforms[varId].first;
+        auto& uniform = m_uniforms[varId];
+        uniform.dirty = true;
+        auto pBuffer = uniform.pBuffer;
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
 
