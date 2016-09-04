@@ -15,6 +15,7 @@ namespace onut
     using FileTypes = std::vector<FileType>;
 
     std::string findFile(const std::string& name, const std::string& lookIn = ".", bool deepSearch = true);
+    std::vector<std::string> findAllFiles(const std::string& lookIn = ".", const std::string& extension = "*", bool deepSearch = true);
     std::string getPath(const std::string& filename);
     std::string getFilename(const std::string& path);
     std::string getFilenameWithoutExtension(const std::string& path);

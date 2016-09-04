@@ -195,7 +195,10 @@
     <ClInclude Include="..\..\src\braincloud\ServiceOperation.h" />
     <ClInclude Include="..\..\src\CloudBrainCloud.h" />
     <ClInclude Include="..\..\src\dirent\dirent.h" />
+    <ClInclude Include="..\..\src\duktape\duktape.h" />
+    <ClInclude Include="..\..\src\duktape\duk_config.h" />
     <ClInclude Include="..\..\src\IndexBufferD3D11.h" />
+    <ClInclude Include="..\..\src\JSBindings.h" />
     <ClInclude Include="..\..\src\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="..\..\src\jsoncpp\json\json.h" />
     <ClInclude Include="..\..\src\LodePNG\LodePNG.h" />
@@ -282,8 +285,10 @@
     <ClCompile Include="..\..\src\CSV.cpp" />
     <ClCompile Include="..\..\src\Dialogs.cpp" />
     <ClCompile Include="..\..\src\Dispatcher.cpp" />
+    <ClCompile Include="..\..\src\duktape\duktape.c" />
     <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\EntityFactory.cpp" />
+    <ClCompile Include="..\..\src\JSBindings.cpp" />
     <ClCompile Include="..\..\src\SceneManager.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />

@@ -17,6 +17,8 @@ namespace onut
     class ContentManager : public std::enable_shared_from_this<ContentManager>
     {
     public:
+        using SearchPaths = std::vector<std::string>;
+
         static OContentManagerRef create();
         virtual ~ContentManager();
 
@@ -33,12 +35,12 @@ namespace onut
         void addSearchPath(const std::string& path);
         void clearSearchPaths();
         std::string findResourceFile(const std::string& name);
+        const SearchPaths& getSearchPaths() const;
 
     private:
         ContentManager();
 
         using ResourceMap = std::unordered_map<std::string, OResourceRef>;
-        using SearchPaths = std::vector<std::string>;
 
         ResourceMap m_resources;
         SearchPaths m_searchPaths;

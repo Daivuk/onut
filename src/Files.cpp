@@ -53,6 +53,53 @@ namespace onut
         return "";
     }
 
+    std::vector<std::string> findAllFiles(const std::string& lookIn, const std::string& extension, bool deepSearch)
+    {
+        std::vector<std::string> ret;
+
+        bool all = extension == "*";
+        auto upExt = toUpper(extension);
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir(lookIn.c_str())) != NULL)
+        {
+            while ((ent = readdir(dir)) != NULL)
+            {
+                if (!strcmp(ent->d_name, "."))
+                {
+                    continue;
+                }
+                else if (!strcmp(ent->d_name, ".."))
+                {
+                    continue;
+                }
+
+                if (ent->d_type & DT_DIR)
+                {
+                    if (deepSearch)
+                    {
+                        auto ret2 = findAllFiles(lookIn + "/" + ent->d_name, extension, deepSearch);
+                        ret.insert(ret.end(), ret2.begin(), ret2.end());
+                    }
+                }
+                else
+                {
+                    if (all)
+                    {
+                        ret.push_back(lookIn + "/" + ent->d_name);
+                    }
+                    else if (toUpper(getExtension(ent->d_name)) == upExt)
+                    {
+                        ret.push_back(lookIn + "/" + ent->d_name);
+                    }
+                }
+            }
+            closedir(dir);
+        }
+
+        return std::move(ret);
+    }
+
     std::string getPath(const std::string& filename)
     {
         return filename.substr(0, filename.find_last_of("\\/"));

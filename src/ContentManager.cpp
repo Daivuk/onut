@@ -36,6 +36,11 @@ namespace onut
         m_searchPaths.clear();
     }
 
+    const ContentManager::SearchPaths& ContentManager::getSearchPaths() const
+    {
+        return m_searchPaths;
+    }
+
     void ContentManager::addSearchPath(const std::string& path)
     {
         std::unique_lock<std::mutex> locker(m_mutex);

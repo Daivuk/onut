@@ -26,6 +26,9 @@
 #include <onut/Updater.h>
 #include <onut/Window.h>
 
+// Private
+#include "JSBindings.h"
+
 // STL
 #include <cassert>
 #include <mutex>
@@ -101,7 +104,6 @@ namespace onut
 
         // Content
         oContentManager = ContentManager::create();
-        oContentManager->addDefaultSearchPaths();
 
         // Cloud
         oCloud = Cloud::create(oSettings->getAppId(), oSettings->getAppSecret());
@@ -133,6 +135,8 @@ namespace onut
 
     void cleanup()
     {
+        onut::js::shutdown();
+
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
         oSceneManager = nullptr;
@@ -167,6 +171,9 @@ namespace onut
         alreadyRan = true;
 
         createServices();
+
+        // Initialize Javascript
+        onut::js::init();
 
         // Call the user defined init
         if (initCallback)
@@ -241,6 +248,7 @@ namespace onut
                 }
                 oParticleSystemManager->update();
                 oSceneManager->update();
+                onut::js::update(oTiming->getDeltaTime());
                 if (updateCallback)
                 {
                     updateCallback();
@@ -251,6 +259,7 @@ namespace onut
             oTiming->render();
             oRenderer->beginFrame();
             oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+            onut::js::render();
             if (renderCallback)
             {
                 renderCallback();

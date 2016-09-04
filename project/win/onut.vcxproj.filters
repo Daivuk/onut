@@ -626,6 +626,15 @@
     <ClInclude Include="..\..\include\onut\AudioStream.h">
       <Filter>utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\duktape\duktape.h">
+      <Filter>thirdparties\duktape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\duktape\duk_config.h">
+      <Filter>thirdparties\duktape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\JSBindings.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -1055,6 +1064,12 @@
     <ClCompile Include="..\..\src\AudioEngineWASAPI.cpp">
       <Filter>services</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\duktape\duktape.c">
+      <Filter>thirdparties\duktape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\JSBindings.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -1140,6 +1155,9 @@
     </Filter>
     <Filter Include="shaders">
       <UniqueIdentifier>{c940a429-595b-4ded-9573-58853852d4bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparties\duktape">
+      <UniqueIdentifier>{242f5455-8650-415d-8e00-b9b77ebfe290}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

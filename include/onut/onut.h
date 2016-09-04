@@ -11,9 +11,9 @@ namespace onut
     @param renderCallback Called once per frame. Draw your stuff in there
     @retun This function never returns until the game shutsdown.
     */
-    void run(std::function<void()> initCallback, 
-             std::function<void()> updateCallback, 
-             std::function<void()> renderCallback, 
+    void run(std::function<void()> initCallback = nullptr, 
+             std::function<void()> updateCallback = nullptr, 
+             std::function<void()> renderCallback = nullptr, 
              std::function<void()> postRenderCallback = nullptr);
 
     void quit();
