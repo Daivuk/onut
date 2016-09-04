@@ -1,0 +1,28 @@
+// Shader input. These should match outputs from the vertex shader.
+// Order is also important
+input float2 inUV;
+input float4 inColor;
+
+// Textures and their's sampler state
+Texture0 texture0
+{
+    filter = trilinear;
+    repeat = clamp;
+}
+
+Texture1 texture1
+{
+    filter = nearest;
+    repeatX = wrap;
+    repeatY = clamp;
+}
+
+extern float anim;
+
+void main()
+{
+    float4 color0 = texture0(inUV);
+    float4 color1 = texture1(float2(inUV.x + anim, inUV.y));
+
+    oColor = color0 * color1 * inColor;
+}

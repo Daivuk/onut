@@ -1,0 +1,10 @@
+<sheet texture="coin.PNG" spriteWidth="16" spriteHeight="16" originX="8" originY="8">
+  <anim name="spin" fps="18" loop="true">
+    <frame id="0"/>
+    <frame id="1"/>
+    <frame id="2"/>
+    <frame id="3"/>
+    <frame id="4"/>
+    <frame id="5"/>
+  </anim>
+</sheet>

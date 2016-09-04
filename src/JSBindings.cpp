@@ -15,7 +15,6 @@
 // STL
 #include <set>
 
-
 namespace onut
 {
     namespace js
@@ -33,8 +32,9 @@ namespace onut
             auto __name__ = (float)duk_to_number(ctx, -1); \
             duk_pop(ctx);
 
-        static Rect getRect(duk_context *ctx, duk_idx_t index)
+        static Rect getRect(duk_context *ctx, duk_idx_t index, const Rect& default = {0, 0, 100, 100})
         {
+            if (duk_is_null_or_undefined(ctx, index)) return default;
             FLOAT_PROP(x, index);
             FLOAT_PROP(y, index);
             FLOAT_PROP(w, index);
@@ -42,8 +42,9 @@ namespace onut
             return Rect(x, y, w, h);
         }
 
-        static Color getColor(duk_context *ctx, duk_idx_t index)
+        static Color getColor(duk_context *ctx, duk_idx_t index, const Color& default = Color::White)
         {
+            if (duk_is_null_or_undefined(ctx, index)) return default;
             FLOAT_PROP(r, index);
             FLOAT_PROP(g, index);
             FLOAT_PROP(b, index);
@@ -53,6 +54,8 @@ namespace onut
 
         static OTextureRef getTexture(duk_context *ctx, duk_idx_t index)
         {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
             OTexture* pTexture = nullptr;
 
             duk_get_prop_string(ctx, index, "\xff""\xff""data");
@@ -67,145 +70,6 @@ namespace onut
             {
                 return nullptr;
             }
-        }
-
-        // Global
-        duk_ret_t js_print(duk_context *ctx)
-        {
-            auto arg = duk_require_string(ctx, 0);
-            OLog(arg);
-            return 0;
-        }
-
-        duk_ret_t js_Rect_ctor(duk_context *ctx)
-        {
-            auto x = duk_get_number(ctx, 0);
-            auto y = duk_get_number(ctx, 1);
-            auto w = duk_get_number(ctx, 2);
-            auto h = duk_get_number(ctx, 3);
-            duk_push_object(ctx);
-            duk_push_number(ctx, x);
-            duk_put_prop_string(ctx, -2, "x");
-            duk_push_number(ctx, y);
-            duk_put_prop_string(ctx, -2, "y");
-            duk_push_number(ctx, w);
-            duk_put_prop_string(ctx, -2, "w");
-            duk_push_number(ctx, h);
-            duk_put_prop_string(ctx, -2, "h");
-            return 1;
-        }
-
-        duk_ret_t js_Color_ctor(duk_context *ctx)
-        {
-            auto r = duk_get_number(ctx, 0);
-            auto g = duk_get_number(ctx, 1);
-            auto b = duk_get_number(ctx, 2);
-            auto a = duk_get_number(ctx, 3);
-            duk_push_object(ctx);
-            duk_push_number(ctx, r);
-            duk_put_prop_string(ctx, -2, "r");
-            duk_push_number(ctx, g);
-            duk_put_prop_string(ctx, -2, "g");
-            duk_push_number(ctx, b);
-            duk_put_prop_string(ctx, -2, "b");
-            duk_push_number(ctx, a);
-            duk_put_prop_string(ctx, -2, "a");
-            return 1;
-        }
-
-        duk_ret_t js_Vector2_ctor(duk_context *ctx)
-        {
-            auto x = duk_get_number(ctx, 0);
-            auto y = duk_get_number(ctx, 1);
-            duk_push_object(ctx);
-            duk_push_number(ctx, x);
-            duk_put_prop_string(ctx, -2, "x");
-            duk_push_number(ctx, y);
-            duk_put_prop_string(ctx, -2, "y");
-            return 1;
-        }
-
-        duk_ret_t js_Vector3_ctor(duk_context *ctx)
-        {
-            auto x = duk_get_number(ctx, 0);
-            auto y = duk_get_number(ctx, 1);
-            auto z = duk_get_number(ctx, 2);
-            duk_push_object(ctx);
-            duk_push_number(ctx, x);
-            duk_put_prop_string(ctx, -2, "x");
-            duk_push_number(ctx, y);
-            duk_put_prop_string(ctx, -2, "y");
-            duk_push_number(ctx, z);
-            duk_put_prop_string(ctx, -2, "z");
-            return 1;
-        }
-
-        duk_ret_t js_Vector4_ctor(duk_context *ctx)
-        {
-            auto x = duk_get_number(ctx, 0);
-            auto y = duk_get_number(ctx, 1);
-            auto z = duk_get_number(ctx, 2);
-            auto w = duk_get_number(ctx, 3);
-            duk_push_object(ctx);
-            duk_push_number(ctx, x);
-            duk_put_prop_string(ctx, -2, "x");
-            duk_push_number(ctx, y);
-            duk_put_prop_string(ctx, -2, "y");
-            duk_push_number(ctx, z);
-            duk_put_prop_string(ctx, -2, "z");
-            duk_push_number(ctx, w);
-            duk_put_prop_string(ctx, -2, "w");
-            return 1;
-        }
-
-        // Renderer
-        duk_ret_t js_Renderer_clear(duk_context *ctx)
-        {
-            oRenderer->clear(getColor(ctx, 0));
-            return 0;
-        }
-
-        // Spritebatch
-        duk_ret_t js_SpriteBatch_begin(duk_context *ctx)
-        {
-            oSpriteBatch->begin();
-            return 0;
-        }
-
-        duk_ret_t js_SpriteBatch_end(duk_context *ctx)
-        {
-            oSpriteBatch->end();
-            return 0;
-        }
-
-        duk_ret_t js_SpriteBatch_drawRect(duk_context *ctx)
-        {
-            oSpriteBatch->drawRect(nullptr, getRect(ctx, 0), getColor(ctx, 1));
-            return 0;
-        }
-
-        duk_ret_t js_SpriteBatch_drawTexturedRect(duk_context *ctx)
-        {
-            oSpriteBatch->drawRect(getTexture(ctx, 0), getRect(ctx, 1), getColor(ctx, 2));
-            return 0;
-        }
-
-        // Texture
-        duk_ret_t js_Texture(duk_context *ctx)
-        {
-            auto arg = duk_require_string(ctx, 0);
-            auto pTexture = OGetTexture(arg);
-            if (!pTexture) return 0;
-
-            duk_push_object(ctx);
-            duk_push_pointer(ctx, pTexture.get());
-            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-            duk_push_int(ctx, pTexture->getSize().x);
-            duk_put_prop_string(ctx, -2, "w");
-            duk_push_int(ctx, pTexture->getSize().y);
-            duk_put_prop_string(ctx, -2, "h");
-
-            return 1;
         }
 
         void init()
@@ -233,88 +97,206 @@ namespace onut
 
         void createBindings()
         {
+#define JS_GLOBAL_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+#define JS_GLOBAL_FUNCTION_PROPS_BEGIN(__argcnt__) , __argcnt__)
+#define JS_GLOBAL_FUNCTION_PROPS_END(__name__) duk_put_global_string(ctx, __name__)
+#define JS_GLOBAL_FUNCTION_END(__name__, __argcnt__) , __argcnt__); duk_put_global_string(ctx, __name__)
+
+#define JS_INTERFACE_BEGIN() duk_push_object(ctx)
+#define JS_INTERFACE_END(__name__) duk_put_global_string(ctx, __name__)
+#define JS_INTERFACE_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+#define JS_INTERFACE_FUNCTION_END(__name__, __argcnt__) , __argcnt__); duk_put_prop_string(ctx, 0, __name__)
+
+#define JS_OBJECT_BEGIN() duk_push_object(ctx)
+#define JS_ADD_FLOAT_PROP(__name__, __val__) duk_push_number(ctx, (duk_double_t)(__val__)); duk_put_prop_string(ctx, -2, __name__)
+#define JS_ADD_DATA_PROP(__pointer__) duk_push_pointer(ctx, __pointer__); duk_put_prop_string(ctx, -2, "\xff""\xff""data")
+
+#define JS_OBJECT_END(__name__) duk_put_prop_string(ctx, -2, __name__)
+
+#define JS_TEXTURE(__index__) getTexture(ctx, __index__)
+#define JS_RECT(__index__) getRect(ctx, __index__)
+#define JS_COLOR(__index__) getColor(ctx, __index__)
+#define JS_FLOAT(__index__) (float)duk_get_number(ctx, __index__)
+#define JS_STRING(__index__) duk_get_string(ctx, __index__)
+#define JS_UINT(__index__) duk_get_uint(ctx, __index__)
+
+            auto ctx = pContext;
+
             // Log function
-            duk_push_c_function(pContext, js_print, 1);
-            duk_put_global_string(pContext, "print");
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                OLog(JS_STRING(0));
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("print", 1);
 
             // Maths
-            duk_push_c_function(pContext, js_Rect_ctor, 4);
-            duk_put_global_string(pContext, "Rect");
-            duk_push_c_function(pContext, js_Vector2_ctor, 2);
-            duk_put_global_string(pContext, "Vector2");
-            duk_push_c_function(pContext, js_Vector3_ctor, 3);
-            duk_put_global_string(pContext, "Vector3");
-            duk_push_c_function(pContext, js_Vector4_ctor, 4);
-            duk_put_global_string(pContext, "Vector4");
-            duk_push_c_function(pContext, js_Color_ctor, 4);
+            JS_GLOBAL_FUNCTION_BEGIN
             {
-                duk_push_object(pContext);
-                {
-                    duk_push_number(pContext, 1);
-                    duk_put_prop_string(pContext, -2, "r");
-                    duk_push_number(pContext, 1);
-                    duk_put_prop_string(pContext, -2, "g");
-                    duk_push_number(pContext, 1);
-                    duk_put_prop_string(pContext, -2, "b");
-                    duk_push_number(pContext, 1);
-                    duk_put_prop_string(pContext, -2, "a");
-                }
-                duk_put_prop_string(pContext, -2, "White");
-                duk_push_object(pContext);
-                {
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "r");
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "g");
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "b");
-                    duk_push_number(pContext, 1);
-                    duk_put_prop_string(pContext, -2, "a");
-                }
-                duk_put_prop_string(pContext, -2, "Black");
-                duk_push_object(pContext);
-                {
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "r");
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "g");
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "b");
-                    duk_push_number(pContext, 0);
-                    duk_put_prop_string(pContext, -2, "a");
-                }
-                duk_put_prop_string(pContext, -2, "Transparent");
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("x", JS_FLOAT(0));
+                JS_ADD_FLOAT_PROP("y", JS_FLOAT(1));
+                JS_ADD_FLOAT_PROP("w", JS_FLOAT(2));
+                JS_ADD_FLOAT_PROP("h", JS_FLOAT(3));
+                return 1;
             }
-            duk_put_global_string(pContext, "Color");
+            JS_GLOBAL_FUNCTION_END("Rect", 4);
+
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("x", JS_FLOAT(0));
+                JS_ADD_FLOAT_PROP("y", JS_FLOAT(1));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("Vector2", 2);
+
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("x", JS_FLOAT(0));
+                JS_ADD_FLOAT_PROP("y", JS_FLOAT(1));
+                JS_ADD_FLOAT_PROP("z", JS_FLOAT(2));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("Vector3", 3);
+
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("x", JS_FLOAT(0));
+                JS_ADD_FLOAT_PROP("y", JS_FLOAT(1));
+                JS_ADD_FLOAT_PROP("z", JS_FLOAT(2));
+                JS_ADD_FLOAT_PROP("w", JS_FLOAT(3));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("Vector4", 4);
+
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto color = Color::fromHexRGB(JS_UINT(0));
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("r", color.x);
+                JS_ADD_FLOAT_PROP("g", color.y);
+                JS_ADD_FLOAT_PROP("b", color.z);
+                JS_ADD_FLOAT_PROP("a", color.w);
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("ColorHexRGB", 1);
+
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto color = Color::fromHexRGBA(JS_UINT(0));
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("r", color.x);
+                JS_ADD_FLOAT_PROP("g", color.y);
+                JS_ADD_FLOAT_PROP("b", color.z);
+                JS_ADD_FLOAT_PROP("a", color.w);
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("ColorHexRGBA", 1);
+
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                JS_OBJECT_BEGIN();
+                JS_ADD_FLOAT_PROP("r", JS_FLOAT(0));
+                JS_ADD_FLOAT_PROP("g", JS_FLOAT(1));
+                JS_ADD_FLOAT_PROP("b", JS_FLOAT(2));
+                JS_ADD_FLOAT_PROP("a", JS_FLOAT(3));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_PROPS_BEGIN(4);
+            {
+                JS_OBJECT_BEGIN();
+                {
+                    JS_ADD_FLOAT_PROP("r", 1);
+                    JS_ADD_FLOAT_PROP("g", 1);
+                    JS_ADD_FLOAT_PROP("b", 1);
+                    JS_ADD_FLOAT_PROP("a", 1);
+                }
+                JS_OBJECT_END("White");
+                JS_OBJECT_BEGIN();
+                {
+                    JS_ADD_FLOAT_PROP("r", 0);
+                    JS_ADD_FLOAT_PROP("g", 0);
+                    JS_ADD_FLOAT_PROP("b", 0);
+                    JS_ADD_FLOAT_PROP("a", 1);
+                }
+                JS_OBJECT_END("Black");
+                JS_OBJECT_BEGIN();
+                {
+                    JS_ADD_FLOAT_PROP("r", 0);
+                    JS_ADD_FLOAT_PROP("g", 0);
+                    JS_ADD_FLOAT_PROP("b", 0);
+                    JS_ADD_FLOAT_PROP("a", 0);
+                }
+                JS_OBJECT_END("Transparent");
+            }
+            JS_GLOBAL_FUNCTION_PROPS_END("Color");
 
             // oRenderer
-            duk_push_object(pContext);
+            JS_INTERFACE_BEGIN();
             {
-                duk_push_c_function(pContext, js_Renderer_clear, 1);
-                duk_put_prop_string(pContext, 0, "clear");
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->clear(JS_COLOR(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("clear", 1);
             }
-            duk_put_global_string(pContext, "Renderer");
+            JS_INTERFACE_END("Renderer");
 
             // oSpriteBatch
-            duk_push_object(pContext);
+            JS_INTERFACE_BEGIN();
             {
-                duk_push_c_function(pContext, js_SpriteBatch_begin, 0);
-                duk_put_prop_string(pContext, 0, "begin");
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oSpriteBatch->begin();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("begin", 0);
 
-                duk_push_c_function(pContext, js_SpriteBatch_end, 0);
-                duk_put_prop_string(pContext, 0, "end");
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oSpriteBatch->end();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("end", 0);
 
-                duk_push_c_function(pContext, js_SpriteBatch_drawRect, 2);
-                duk_put_prop_string(pContext, 0, "drawRect");
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oSpriteBatch->drawRect(JS_TEXTURE(0), JS_RECT(1), JS_COLOR(2));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawRect", 3);
 
-                duk_push_c_function(pContext, js_SpriteBatch_drawTexturedRect, 3);
-                duk_put_prop_string(pContext, 0, "drawTexturedRect");
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oSpriteBatch->drawInclinedRect(JS_TEXTURE(0), JS_RECT(1), JS_FLOAT(2), JS_COLOR(3));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawInclinedRect", 4);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oSpriteBatch->drawRectWithColors(JS_TEXTURE(0), JS_RECT(1), {JS_COLOR(2), JS_COLOR(3), JS_COLOR(4), JS_COLOR(5)});
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawRectWithColors", 6);
             }
-            duk_put_global_string(pContext, "SpriteBatch");
+            JS_INTERFACE_END("SpriteBatch");
 
-            // OTexture
-            duk_push_c_function(pContext, js_Texture, 1);
-            duk_put_global_string(pContext, "Texture");
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto pTexture = OGetTexture(JS_STRING(0));
+                if (!pTexture) return 0;
+                JS_OBJECT_BEGIN();
+                JS_ADD_DATA_PROP(pTexture.get());
+                JS_ADD_FLOAT_PROP("w", pTexture->getSize().x);
+                JS_ADD_FLOAT_PROP("h", pTexture->getSize().y);
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("Texture", 1);
         }
 
         void evalScripts()
