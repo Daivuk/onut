@@ -58,15 +58,19 @@ declare function rotateMatrixAroundZ(matrix: Matrix, angle: number): Matrix;
 declare function scaleMatrix(matrix: Matrix, x: number, y: number, z: number): Matrix;
 declare function translateMatrix(matrix: Matrix, x: number, y: number, z: number): Matrix;
 
+// Resources
 interface Texture {
     w: number;
     h: number;
 }
 declare function Texture(name: string): Texture;
+interface Font { }
+declare function Font(name: string): Font;
 
 // Renderer
 interface Renderer {
     clear(color: Color);
+    getResolution(): Vector2;
 }
 declare var Renderer: Renderer;
 
@@ -74,6 +78,7 @@ declare var Renderer: Renderer;
 interface SpriteBatch {
     begin();
     end();
+
     drawRect(texture: Texture, rect: Rect, color: Color);
     drawinclinedRect(texture: Texture, rect: Rect, incliinedRatio: number, color: Color);
     drawRectWithColors(texture: Texture, rect: Rect, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color);
@@ -85,6 +90,11 @@ interface SpriteBatch {
     drawTransformedSprite(texture: Texture, transform: Matrix, color: Color, scale: Vector2, origin: Vector2);
     drawBeam(texture: Texture, from: Vector2, to: Vector2, size: Number, color: Color, uOffset: number, uScale: number);
     drawCross(position: Vector2, size: number, color: Color);
+
+    drawText(font: Font, text: string, position: Vector2, align: Vector2, color: Color);
+    drawOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
+    drawPrettyOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
+
     setBlend(blendMode: Number);
     setFilter(filterMode: Number);
 }

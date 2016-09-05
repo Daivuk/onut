@@ -1,8 +1,5 @@
 {
     "compilerOptions": {
         "target": "ES5"
-    },
-    "files":[
-        "typings/onut.d.ts"
-    ]
+    }
 }

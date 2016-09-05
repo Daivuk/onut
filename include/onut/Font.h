@@ -17,7 +17,7 @@ namespace onut
 {
     class SpriteBatch;
 
-    class Font final : public Resource
+    class Font final : public Resource, public std::enable_shared_from_this<Font>
     {
     public:
         static OFontRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);

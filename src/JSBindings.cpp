@@ -1,6 +1,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Files.h>
+#include <onut/Font.h>
 #include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
@@ -99,6 +100,12 @@ namespace onut
             return Color(r, g, b, a);
         }
 
+        static bool getBool(duk_context *ctx, duk_idx_t index, bool default = false)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return default;
+            return duk_to_boolean(ctx, index) == 1 ? true : false;
+        }
+
         static float getFloat(duk_context *ctx, duk_idx_t index, float default = 0.0f)
         {
             if (duk_is_null_or_undefined(ctx, index)) return default;
@@ -130,6 +137,26 @@ namespace onut
             if (pTexture)
             {
                 return ((OTexture*)pTexture)->shared_from_this();
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
+        static OFontRef getFont(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            OFont* pFont = nullptr;
+
+            duk_get_prop_string(ctx, index, "\xff""\xff""data");
+            pFont = (OFont*)(duk_to_pointer(ctx, -1));
+            duk_pop(ctx);
+
+            if (pFont)
+            {
+                return ((OFont*)pFont)->shared_from_this();
             }
             else
             {
@@ -205,13 +232,19 @@ namespace onut
     JS_ADD_FLOAT_PROP("g", __color__.y); \
     JS_ADD_FLOAT_PROP("b", __color__.z); \
     JS_ADD_FLOAT_PROP("a", __color__.w);
+#define JS_BUILD_VECTOR2_OBJECT(__val__) \
+    JS_OBJECT_BEGIN(); \
+    JS_ADD_FLOAT_PROP("x", __val__.x); \
+    JS_ADD_FLOAT_PROP("y", __val__.y); \
 
 #define JS_TEXTURE(__index__) getTexture(ctx, __index__)
+#define JS_FONT(__index__) getFont(ctx, __index__)
 #define JS_RECT(...) getRect(ctx, __VA_ARGS__)
 #define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
 #define JS_VECTOR3(...) getVector3(ctx, __VA_ARGS__)
 #define JS_VECTOR4(...) getVector4(ctx, __VA_ARGS__)
 #define JS_COLOR(...) getColor(ctx, __VA_ARGS__)
+#define JS_BOOL(...) getBool(ctx, __VA_ARGS__)
 #define JS_FLOAT(...) (float)getFloat(ctx, __VA_ARGS__)
 #define JS_STRING(...) getString(ctx, __VA_ARGS__)
 #define JS_UINT(...) getUInt(ctx, __VA_ARGS__)
@@ -386,6 +419,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("clear", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    JS_BUILD_VECTOR2_OBJECT(OScreenf);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getResolution", 0);
             }
             JS_INTERFACE_END("Renderer");
 
@@ -482,9 +521,31 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setFilter", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pFont = JS_FONT(0);
+                    if (pFont) pFont->draw(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawText", 5);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pFont = JS_FONT(0);
+                    if (pFont) pFont->drawOutlined(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4), JS_COLOR(5, Color(0, 0, 0, .75f)), JS_FLOAT(6, 2.0f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawOutlinedText", 7);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pFont = JS_FONT(0);
+                    if (pFont) pFont->drawOutlined(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4), JS_COLOR(5, Color(0, 0, 0, .75f)), JS_FLOAT(6, 2.0f), false);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawPrettyOutlinedText", 7);
             }
             JS_INTERFACE_END("SpriteBatch");
 
+            // Resources
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 auto pTexture = OGetTexture(JS_STRING(0));
@@ -496,6 +557,15 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("Texture", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto pFont = OGetFont(JS_STRING(0));
+                if (!pFont) return 0;
+                JS_OBJECT_BEGIN();
+                JS_ADD_DATA_PROP(pFont.get());
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("Font", 1);
 
             // Some enums
             JS_INTERFACE_BEGIN();
