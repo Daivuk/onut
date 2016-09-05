@@ -30,7 +30,6 @@ function render() {
     // Pretty outline
     SpriteBatch.drawPrettyOutlinedText(font, "Duis aute irure dolor in reprehenderit - Better outlines", Vector2(10, 450));
 
-
     // End the batch
     SpriteBatch.end();
 }
