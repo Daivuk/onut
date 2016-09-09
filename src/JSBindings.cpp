@@ -6,6 +6,7 @@
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
+#include <onut/TiledMap.h>
 
 // Private includes
 #include "JSBindings.h"
@@ -164,31 +165,6 @@ namespace onut
             }
         }
 
-        void init()
-        {
-            pContext = duk_create_heap_default();
-
-            createBindings();
-            evalScripts();
-
-            // Grab global Update and Render pointers if present
-            duk_get_global_string(pContext, "update");
-            pUpdatePtr = duk_get_heapptr(pContext, 0);
-            duk_pop(pContext);
-
-            duk_get_global_string(pContext, "render");
-            pRenderPtr = duk_get_heapptr(pContext, 0);
-            duk_pop(pContext);
-        }
-
-        void shutdown()
-        {
-            duk_destroy_heap(pContext);
-            pContext = nullptr;
-        }
-
-        void createBindings()
-        {
 #define JS_GLOBAL_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
 #define JS_GLOBAL_FUNCTION_PROPS_BEGIN(__argcnt__) , __argcnt__)
 #define JS_GLOBAL_FUNCTION_PROPS_END(__name__) duk_put_global_string(ctx, __name__)
@@ -250,6 +226,87 @@ namespace onut
 #define JS_UINT(...) getUInt(ctx, __VA_ARGS__)
 #define JS_MATRIX(...) getMatrix(ctx, __VA_ARGS__)
 
+        void init()
+        {
+            pContext = duk_create_heap_default();
+
+            createBindings();
+            evalScripts();
+
+            // Grab global Update and Render pointers if present
+            duk_get_global_string(pContext, "update");
+            pUpdatePtr = duk_get_heapptr(pContext, 0);
+            duk_pop(pContext);
+
+            duk_get_global_string(pContext, "render");
+            pRenderPtr = duk_get_heapptr(pContext, 0);
+            duk_pop(pContext);
+        }
+
+        void shutdown()
+        {
+            duk_destroy_heap(pContext);
+            pContext = nullptr;
+        }
+
+        void createTiledMapBindings()
+        {
+            auto ctx = pContext;
+
+            // TiledMap()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                auto pTiledMap = OGetTiledMap(JS_STRING(0));
+                if (!pTiledMap) return DUK_ERR_INTERNAL_ERROR;
+
+                // Add data prop
+                auto ppTiledMap = new OTiledMapRef(pTiledMap);
+                duk_push_this(ctx);
+                duk_push_pointer(ctx, ppTiledMap);
+                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+
+                return 0;
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~TiledMap()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    delete ppTiledMap;
+                }
+
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // render()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    (*ppTiledMap)->render();
+                }
+
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "render");
+
+            // Done with the object
+            duk_put_prop_string(ctx, -2, "prototype");
+            duk_put_global_string(ctx, "TiledMap");
+        }
+
+        void createBindings()
+        {
             auto ctx = pContext;
 
             // Log function
@@ -566,6 +623,7 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("Font", 1);
+            createTiledMapBindings();
 
             // Some enums
             JS_INTERFACE_BEGIN();
@@ -637,6 +695,9 @@ namespace onut
                 }
                 duk_pop(pContext);
             }
+
+            // Garbage collect
+            duk_gc(pContext, 0);
         }
 
         void render()

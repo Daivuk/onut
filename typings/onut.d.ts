@@ -67,6 +67,11 @@ declare function Texture(name: string): Texture;
 interface Font { }
 declare function Font(name: string): Font;
 
+interface TiledMap {
+    render(); 
+}
+declare function TiledMap(name: string): TiledMap;
+
 // Renderer
 interface Renderer {
     clear(color: Color);
