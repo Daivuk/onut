@@ -1,3 +1,11 @@
+interface TiledMap {
+    render();
+    renderLayer(name: string);
+    getWidth(): number;
+    getHeight(): number;
+}
+declare function TiledMap(name: string): TiledMap;
+
 interface Color {
     r: number;
     g: number;
@@ -66,11 +74,6 @@ interface Texture {
 declare function Texture(name: string): Texture;
 interface Font { }
 declare function Font(name: string): Font;
-
-interface TiledMap {
-    render(); 
-}
-declare function TiledMap(name: string): TiledMap;
 
 // Renderer
 interface Renderer {

@@ -261,7 +261,6 @@ namespace onut
                 auto pTiledMap = OGetTiledMap(JS_STRING(0));
                 if (!pTiledMap) return DUK_ERR_INTERNAL_ERROR;
 
-                // Add data prop
                 auto ppTiledMap = new OTiledMapRef(pTiledMap);
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, ppTiledMap);
@@ -279,8 +278,10 @@ namespace onut
                 if (ppTiledMap)
                 {
                     delete ppTiledMap;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
                 }
-
                 return 0;
             }, 1);
             duk_set_finalizer(ctx, -2);
@@ -295,10 +296,77 @@ namespace onut
                 {
                     (*ppTiledMap)->render();
                 }
-
                 return 0;
             }, 0);
             duk_put_prop_string(ctx, -2, "render");
+
+            // renderLayer(name)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto layerName = duk_to_string(ctx, 0);
+                    if (layerName)
+                    {
+                        auto pLayer = (*ppTiledMap)->getLayer(layerName);
+                        if (pLayer)
+                        {
+                            (*ppTiledMap)->renderLayer(pLayer);
+                        }
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "renderLayer");
+
+            // getWidth
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppTiledMap)->getWidth());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getWidth");
+
+            // getHeight
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppTiledMap)->getHeight());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getHeight");
+
+            // getTileSize
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppTiledMap)->getTileSize());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getTileSize");
 
             // Done with the object
             duk_put_prop_string(ctx, -2, "prototype");
