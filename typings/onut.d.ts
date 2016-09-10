@@ -2,17 +2,40 @@
 declare class Vector2 {
     static distance(v1: Vector2, v2: Vector2): number;
     static distanceSquared(v1: Vector2, v2: Vector2): number;
+    static min(v1: Vector2, v2: Vector2): Vector2;
+    static max(v1: Vector2, v2: Vector2): Vector2;
+    static lerp(from: Vector2, to: Vector2, t: number): Vector2;
+    static smoothStep(from: Vector2, to: Vector2, t: number): Vector2;
+    static barycentric(v1: Vector2, v2: Vector2, v3: Vector2, f: number, g: number): Vector2;
+    static catmullRom(v1: Vector2, v2: Vector2, v3: Vector2, v4: Vector2, t: number): Vector2;
+    static hermite(v1: Vector2, t1: Vector2, v2: Vector2, t2: Vector2, t: number): Vector2;
+    static bezier(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: number): Vector2;
+    static reflect(ivec: Vector2, nvec: Vector2): Vector2;
+    static refract(ivec: Vector2, nvec: Vector2, refractionIndex: number): Vector2;
 
     static ZERO: Vector2;
     static ONE: Vector2;
     static UNIT_X: Vector2;
     static UNIT_Y: Vector2;
 
+    static TOP_LEFT: Vector2;
+    static TOP: Vector2;
+    static TOP_RIGHT: Vector2;
+    static LEFT: Vector2;
+    static CENTER: Vector2;
+    static RIGHT: Vector2;
+    static BOTTOM_LEFT: Vector2;
+    static BOTTOM: Vector2;
+    static BOTTOM_RIGHT: Vector2;
+
+    /** (0, 0) */
     constructor();
+    /** (s, s) */
     constructor(s: number);
+    /** (x, y) */
     constructor(x: number, y: number);
     constructor(other: Vector2);
-    
+
     isEqual(other: Vector2): boolean;
     add(other: Vector2): Vector2;
     sub(other: Vector2): Vector2;
@@ -20,25 +43,149 @@ declare class Vector2 {
     div(other: Vector2): Vector2;
     length(): number;
     lengthSquared(): number;
+    dot(other: Vector2): number;
+    cross(other: Vector2): Vector2;
+    clamp(min: Vector2, max: Vector2): Vector2;
+    normalize(): Vector2;
 
     x: number;
     y: number;
 }
 
-interface Vector3 {
+declare class Vector3 {
+    static distance(v1: Vector3, v2: Vector3): number;
+    static distanceSquared(v1: Vector3, v2: Vector3): number;
+    static min(v1: Vector3, v2: Vector3): Vector3;
+    static max(v1: Vector3, v2: Vector3): Vector3;
+    static lerp(from: Vector3, to: Vector3, t: number): Vector3;
+    static smoothStep(from: Vector3, to: Vector3, t: number): Vector3;
+    static barycentric(v1: Vector3, v2: Vector3, v3: Vector3, f: number, g: number): Vector3;
+    static catmullRom(v1: Vector3, v2: Vector3, v3: Vector3, v4: Vector3, t: number): Vector3;
+    static hermite(v1: Vector3, t1: Vector3, v2: Vector3, t2: Vector3, t: number): Vector3;
+    static bezier(p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3, t: number): Vector3;
+    static reflect(ivec: Vector3, nvec: Vector3): Vector3;
+    static refract(ivec: Vector3, nvec: Vector3, refractionIndex: number): Vector3;
+
+    static ZERO: Vector3;
+    static ONE: Vector3;
+    static UNIT_X: Vector3;
+    static UNIT_Y: Vector3;
+    static UNIT_Z: Vector3;
+
+    /** (0, 0, 0) */
+    constructor();
+    /** (s, s, s) */
+    constructor(s: number);
+    /** (x, y, 0) */
+    constructor(x: number, y: number);
+    /** (x, y, z) */
+    constructor(x: number, y: number, z: number);
+    /** (other.x, other.y, 0) */
+    constructor(other: Vector2);
+    /** (other.x, other.y, z) */
+    constructor(other: Vector2, z: number);
+    constructor(other: Vector3);
+
+    isEqual(other: Vector3): boolean;
+    add(other: Vector3): Vector3;
+    sub(other: Vector3): Vector3;
+    mul(other: Vector3): Vector3;
+    div(other: Vector3): Vector3;
+    length(): number;
+    lengthSquared(): number;
+    dot(other: Vector3): number;
+    cross(other: Vector3): Vector3;
+    clamp(min: Vector3, max: Vector3): Vector3;
+    normalize(): Vector3;
+
     x: number;
     y: number;
     z: number;
 }
-declare function Vector3(x: number, y: number, z: number): Vector3;
 
-interface Vector4 {
+declare class Vector4 {
+    static distance(v1: Vector4, v2: Vector4): number;
+    static distanceSquared(v1: Vector4, v2: Vector4): number;
+    static min(v1: Vector4, v2: Vector4): Vector4;
+    static max(v1: Vector4, v2: Vector4): Vector4;
+    static lerp(from: Vector4, to: Vector4, t: number): Vector4;
+    static smoothStep(from: Vector4, to: Vector4, t: number): Vector4;
+    static barycentric(v1: Vector4, v2: Vector4, v3: Vector4, f: number, g: number): Vector4;
+    static catmullRom(v1: Vector4, v2: Vector4, v3: Vector4, v4: Vector4, t: number): Vector4;
+    static hermite(v1: Vector4, t1: Vector4, v2: Vector4, t2: Vector4, t: number): Vector4;
+    static bezier(p1: Vector4, p2: Vector4, p3: Vector4, p4: Vector4, t: number): Vector4;
+    static reflect(ivec: Vector4, nvec: Vector4): Vector4;
+    static refract(ivec: Vector4, nvec: Vector4, refractionIndex: number): Vector4;
+
+    static ZERO: Vector4;
+    static ONE: Vector4;
+    static UNIT_X: Vector4;
+    static UNIT_Y: Vector4;
+    static UNIT_Z: Vector4;
+    static UNIT_W: Vector4;
+
+    /** (0, 0, 0, 0) */
+    constructor();
+    /** (s, s, s, s) */
+    constructor(s: number);
+    /** (x, y, 0, 0) */
+    constructor(x: number, y: number);
+    /** (x, y, z, 0) */
+    constructor(x: number, y: number, z: number);
+    /** (x, y, z, w) */
+    constructor(x: number, y: number, z: number, w: number);
+    /** (other.x, other.y, 0, 0) */
+    constructor(other: Vector2);
+    /** (other.x, other.y, z, 0) */
+    constructor(other: Vector2, z: number);
+    /** (v1.x, v1.y, v2.x, v2.y) */
+    constructor(v1: Vector2, v2: Vector2);
+    /** (other.x, other.y, other.z, 0) */
+    constructor(other: Vector3);
+    /** (other.x, other.y, other.z, w) */
+    constructor(other: Vector3, w: number);
+    constructor(other: Vector4);
+
+    isEqual(other: Vector4): boolean;
+    add(other: Vector4): Vector4;
+    sub(other: Vector4): Vector4;
+    mul(other: Vector4): Vector4;
+    div(other: Vector4): Vector4;
+    length(): number;
+    lengthSquared(): number;
+    dot(other: Vector4): number;
+    cross(other: Vector4): Vector4;
+    clamp(min: Vector4, max: Vector4): Vector4;
+    normalize(): Vector4;
+
     x: number;
     y: number;
     z: number;
     w: number;
 }
-declare function Vector4(x: number, y: number, z: number, w: number): Vector4;
+
+declare class Rect {
+    /** (0, 0, 0, 0) */
+    constructor();
+    /** (x, y, w, h) */
+    constructor(x: number, y: number, w: number, h: number);
+    /** (position.x, position.y, size.x, size.y) */
+    constructor(position: Vector2, size: Vector2);
+    constructor(other: Rect);
+
+    isEqual(other: Rect): boolean;
+    contains(p: Vector2): boolean;
+    grow(by: number): Rect;
+    distance(v1: Vector2): number;
+
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+}
+
+
+
 
 interface Color {
     r: number;
@@ -52,14 +199,6 @@ declare function ColorHexRGBA(hex: number): Color;
 declare function whiteColor(): Color;
 declare function blackColor(): Color;
 declare function transparentColor(): Color;
-
-interface Rect {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}
-declare function Rect(x: number, y: number, w: number, h: number): Rect;
 
 interface Matrix {
     _11: number; _12: number; _13: number; _14: number;
@@ -191,17 +330,3 @@ interface FilterMode {
     Linear: number;
 }
 declare var FilterMode: FilterMode;
-
-// Alignment
-interface Align {
-    TopLeft: Vector2;
-    Top: Vector2;
-    TopRight: Vector2;
-    Left: Vector2;
-    Center: Vector2;
-    Right: Vector2;
-    BottomLeft: Vector2;
-    Bottom: Vector2;
-    BottomRight: Vector2;
-}
-declare var Align: Align;
