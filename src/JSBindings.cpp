@@ -40,13 +40,14 @@ namespace onut
         void* pVector3Prototype = nullptr;
         void* pVector4Prototype = nullptr;
         void* pRectPrototype = nullptr;
+        void* pColorPrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
             auto __name__ = 0.0f; \
             if (duk_get_prop_string(ctx, __index__, #__name__)) \
             { \
-                auto __name__ = (float)duk_to_number(ctx, -1); \
+                __name__ = (float)duk_to_number(ctx, -1); \
                 duk_pop(ctx); \
             }
 
@@ -111,6 +112,21 @@ namespace onut
             duk_push_number(ctx, val.w);
             duk_put_prop_string(ctx, -2, "h");
             duk_push_heapptr(ctx, pRectPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        static void newColor(duk_context* ctx, const Color& val)
+        {
+            duk_push_object(ctx);
+            duk_push_number(ctx, val.x);
+            duk_put_prop_string(ctx, -2, "r");
+            duk_push_number(ctx, val.y);
+            duk_put_prop_string(ctx, -2, "g");
+            duk_push_number(ctx, val.z);
+            duk_put_prop_string(ctx, -2, "b");
+            duk_push_number(ctx, val.w);
+            duk_put_prop_string(ctx, -2, "a");
+            duk_push_heapptr(ctx, pColorPrototype);
             duk_set_prototype(ctx, -2);
         }
 
@@ -183,6 +199,24 @@ namespace onut
             return default;
         }
 
+        static Color getColor(duk_context *ctx, duk_idx_t index, const Color& default = Color::White)
+        {
+            if (duk_is_object(ctx, index))
+            {
+                FLOAT_PROP(r, index);
+                FLOAT_PROP(g, index);
+                FLOAT_PROP(b, index);
+                FLOAT_PROP(a, index);
+                return Color(r, g, b, a);
+            }
+            else if (duk_is_number(ctx, index))
+            {
+                auto s = (float)duk_to_number(ctx, 0);
+                return Color(s, s, s, s);
+            }
+            return default;
+        }
+
         static Matrix getMatrix(duk_context *ctx, duk_idx_t index, const Matrix& default = Matrix::Identity)
         {
             if (duk_is_null_or_undefined(ctx, index)) return default;
@@ -191,16 +225,6 @@ namespace onut
             FLOAT_PROP(_31, index); FLOAT_PROP(_32, index); FLOAT_PROP(_33, index); FLOAT_PROP(_34, index);
             FLOAT_PROP(_41, index); FLOAT_PROP(_42, index); FLOAT_PROP(_43, index); FLOAT_PROP(_44, index);
             return Matrix(_11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44);
-        }
-
-        static Color getColor(duk_context *ctx, duk_idx_t index, const Color& default = Color::White)
-        {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
-            FLOAT_PROP(r, index);
-            FLOAT_PROP(g, index);
-            FLOAT_PROP(b, index);
-            FLOAT_PROP(a, index);
-            return Color(r, g, b, a);
         }
 
         static bool getBool(duk_context *ctx, duk_idx_t index, bool default = false)
@@ -338,12 +362,12 @@ namespace onut
             // Grab global Update and Render pointers if present
             if (duk_get_global_string(pContext, "update"))
             {
-                pUpdatePtr = duk_get_heapptr(pContext, 0);
+                pUpdatePtr = duk_get_heapptr(pContext, -1);
                 duk_pop(pContext);
             }
             if (duk_get_global_string(pContext, "render"))
             {
-                pRenderPtr = duk_get_heapptr(pContext, 0);
+                pRenderPtr = duk_get_heapptr(pContext, -1);
                 duk_pop(pContext);
             }
         }
@@ -1540,12 +1564,264 @@ namespace onut
             duk_put_global_string(ctx, "Rect");
         }
 
+        void createColorBindings()
+        {
+            auto ctx = pContext;
+
+            // Vector4(x, y, z, w)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                float r, g, b, a;
+                if (duk_is_null_or_undefined(ctx, 0))
+                {
+                    r = 1; g = 1; b = 1; a = 1;
+                }
+                else if (duk_is_number(ctx, 0) && duk_is_null_or_undefined(ctx, 1) && duk_is_null_or_undefined(ctx, 2) && duk_is_null_or_undefined(ctx, 3))
+                {
+                    a = b = g = r = (float)duk_to_number(ctx, 0);
+                }
+                else if (duk_is_number(ctx, 0) && duk_is_number(ctx, 1) && duk_is_number(ctx, 2) && duk_is_null_or_undefined(ctx, 3))
+                {
+                    r = (float)duk_to_number(ctx, 0);
+                    g = (float)duk_to_number(ctx, 1);
+                    b = (float)duk_to_number(ctx, 2);
+                    a = 1;
+                }
+                else if (duk_is_number(ctx, 0) && duk_is_number(ctx, 1) && duk_is_number(ctx, 2) && duk_is_number(ctx, 3))
+                {
+                    r = (float)duk_to_number(ctx, 0);
+                    g = (float)duk_to_number(ctx, 1);
+                    b = (float)duk_to_number(ctx, 2);
+                    a = (float)duk_to_number(ctx, 3);
+                }
+                else if (duk_is_object(ctx, 0))
+                {
+                    duk_get_prop_string(ctx, 0, "r");
+                    r = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "g");
+                    g = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "b");
+                    b = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "a");
+                    a = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                }
+                else
+                {
+                    return DUK_RET_SYNTAX_ERROR;
+                }
+
+                duk_push_this(ctx);
+                duk_push_number(ctx, r);
+                duk_put_prop_string(ctx, -2, "r");
+                duk_push_number(ctx, g);
+                duk_put_prop_string(ctx, -2, "g");
+                duk_push_number(ctx, b);
+                duk_put_prop_string(ctx, -2, "b");
+                duk_push_number(ctx, a);
+                duk_put_prop_string(ctx, -2, "a");
+
+                return 0;
+            }, 4);
+            duk_push_object(ctx);
+
+#define JS_THIS_COLOR \
+    duk_push_this(ctx); \
+    FLOAT_PROP(r, -1); \
+    FLOAT_PROP(g, -1); \
+    FLOAT_PROP(b, -1); \
+    FLOAT_PROP(a, -1); \
+    duk_pop(ctx); \
+    Color v(r, g, b, a)
+
+            // isEqual(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getColor(ctx, 0);
+                JS_THIS_COLOR;
+                duk_push_boolean(ctx, v == other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "isEqual");
+
+            // add(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getColor(ctx, 0);
+                JS_THIS_COLOR;
+                newColor(ctx, v + other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "add");
+
+            // sub(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getColor(ctx, 0);
+                JS_THIS_COLOR;
+                newColor(ctx, v - other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "sub");
+
+            // mul(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getColor(ctx, 0);
+                JS_THIS_COLOR;
+                newColor(ctx, v * other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "mul");
+
+            // div(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getColor(ctx, 0);
+                JS_THIS_COLOR;
+                newColor(ctx, Color(v.x / other.x, v.y / other.y, v.z / other.z, v.w / other.w));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "div");
+
+            // toVector3
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_COLOR;
+                newVector3(ctx, Vector3(v.x, v.y, v.z));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "toVector3");
+
+            // toVector4
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_COLOR;
+                newVector4(ctx, Vector4(v.x, v.y, v.z, v.w));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "toVector4");
+
+            // Negate
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_COLOR;
+                v.Negate();
+                newColor(ctx, v);
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "negate");
+
+            // saturate
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_COLOR;
+                v.Saturate();
+                newColor(ctx, v);
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "saturate");
+
+            // premultiply
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_COLOR;
+                v.Premultiply();
+                newColor(ctx, v);
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "premultiply");
+
+            // adjustSaturation
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto sat = JS_FLOAT(0);
+                JS_THIS_COLOR;
+                v.AdjustSaturation(sat);
+                newColor(ctx, v);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "adjustSaturation");
+
+            // adjustContrast
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto contrast = JS_FLOAT(0);
+                JS_THIS_COLOR;
+                v.AdjustContrast(contrast);
+                newColor(ctx, v);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "adjustContrast");
+
+            // Done with the object
+            pVector4Prototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // modulate(c1, c2)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto c1 = getColor(ctx, 0);
+                auto c2 = getColor(ctx, 1);
+                newColor(ctx, Color::Modulate(c1, c2));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "modulate");
+
+            // lerp(from, to, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getColor(ctx, 0);
+                auto v2 = getColor(ctx, 1);
+                auto t = JS_FLOAT(2);
+                newColor(ctx, Color::Lerp(v1, v2, t));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "lerp");
+
+            // fromHexRGB(hex)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto hex = JS_UINT(0);
+                newColor(ctx, Color::fromHexRGB(hex));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "fromHexRGB");
+
+            // fromHexRGBA(hex)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto hex = JS_UINT(0);
+                newColor(ctx, Color::fromHexRGBA(hex));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "fromHexRGBA");
+
+            // Constants
+            newColor(ctx, Color::Black);
+            duk_put_prop_string(ctx, -2, "BLACK");
+            newColor(ctx, Color::White);
+            duk_put_prop_string(ctx, -2, "WHITE");
+            newColor(ctx, Color::Transparent);
+            duk_put_prop_string(ctx, -2, "TRANSPARENT");
+            newColor(ctx, Color::TransparentWhite);
+            duk_put_prop_string(ctx, -2, "TRANSPARENT_WHITE");
+
+            duk_put_global_string(ctx, "Color");
+        }
+
         void createMathsBinding()
         {
             createVector2Bindings();
             createVector3Bindings();
             createVector4Bindings();
             createRectBindings();
+            createColorBindings();
         }
         
         void createTiledMapBindings()
@@ -1847,36 +2123,6 @@ namespace onut
             }
             JS_GLOBAL_FUNCTION_END("ColorHexRGBA", 1);
 
-            // Colors
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                JS_OBJECT_BEGIN();
-                JS_ADD_FLOAT_PROP("r", JS_FLOAT(0));
-                JS_ADD_FLOAT_PROP("g", JS_FLOAT(1));
-                JS_ADD_FLOAT_PROP("b", JS_FLOAT(2));
-                JS_ADD_FLOAT_PROP("a", JS_FLOAT(3));
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("Color", 4);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                JS_BUILD_COLOR_OBJECT(Color::White);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("whiteColor", 1);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                JS_BUILD_COLOR_OBJECT(Color::Black);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("blackColor", 1);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                JS_BUILD_COLOR_OBJECT(Color::Transparent);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("transparentColor", 1);
-
             // Matrices
             JS_GLOBAL_FUNCTION_BEGIN
             {
@@ -2092,18 +2338,18 @@ namespace onut
             // Some enums
             JS_INTERFACE_BEGIN();
             {
-                JS_ADD_FLOAT_PROP("Opaque", (float)OBlendOpaque);
-                JS_ADD_FLOAT_PROP("Alpha", (float)OBlendAlpha);
-                JS_ADD_FLOAT_PROP("Add", (float)OBlendAdd);
-                JS_ADD_FLOAT_PROP("PreMultiplied", (float)OBlendPreMultiplied);
-                JS_ADD_FLOAT_PROP("Multiply", (float)OBlendMultiply);
-                JS_ADD_FLOAT_PROP("ForceWrite", (float)OBlendForceWrite);
+                JS_ADD_FLOAT_PROP("OPAQUE", (float)OBlendOpaque);
+                JS_ADD_FLOAT_PROP("ALPHA", (float)OBlendAlpha);
+                JS_ADD_FLOAT_PROP("ADD", (float)OBlendAdd);
+                JS_ADD_FLOAT_PROP("PREMULTIPLIED", (float)OBlendPreMultiplied);
+                JS_ADD_FLOAT_PROP("MULTIPLY", (float)OBlendMultiply);
+                JS_ADD_FLOAT_PROP("FORCE_WRITE", (float)OBlendForceWrite);
             }
             JS_INTERFACE_END("BlendMode");
             JS_INTERFACE_BEGIN();
             {
-                JS_ADD_FLOAT_PROP("Nearest", (float)OFilterNearest);
-                JS_ADD_FLOAT_PROP("Linear", (float)OFilterLinear);
+                JS_ADD_FLOAT_PROP("NEAREST", (float)OFilterNearest);
+                JS_ADD_FLOAT_PROP("LINEAR", (float)OFilterLinear);
             }
             JS_INTERFACE_END("FilterMode");
 

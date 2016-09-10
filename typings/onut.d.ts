@@ -184,21 +184,48 @@ declare class Rect {
     h: number;
 }
 
+declare class Color {
+    static modulate(c1: Color, c2: Color): Color;
+    static lerp(from: Color, to: Color, t: number): Color;
+    static fromHexRGB(hex: number): Color;
+    static fromHexRGBA(hex: number): Color;
 
+    static BLACK: Color;
+    static WHITE: Color;
+    static TRANSPARENT: Color;
+    static TRANSPARENT_WHITE: Color;
 
+    /** (0, 0, 0, 0) */
+    constructor();
+    /** (s, s, s, s) */
+    constructor(s: number);
+    /** (r, g, b, 1) */
+    constructor(r: number, g: number, b: number);
+    /** (r, g, b, a) */
+    constructor(r: number, g: number, b: number, a: number);
+    constructor(other: Color);
 
-interface Color {
+    isEqual(other: Color): boolean;
+    add(other: Color): Vector4;
+    sub(other: Color): Vector4;
+    mul(other: Color): Vector4;
+    div(other: Color): Vector4;
+    toVector3(): Vector3;
+    toVector4(): Vector4;
+    negate(): Color;
+    saturate(): Color;
+    premultiply(): Color;
+    adjustSaturation(): Color;
+    adjustContrast(): Color;
+
     r: number;
     g: number;
     b: number;
     a: number;
 }
-declare function Color(r: number, g: number, b: number, a: number): Color;
-declare function ColorHexRGB(hex: number): Color;
-declare function ColorHexRGBA(hex: number): Color;
-declare function whiteColor(): Color;
-declare function blackColor(): Color;
-declare function transparentColor(): Color;
+
+
+
 
 interface Matrix {
     _11: number; _12: number; _13: number; _14: number;
@@ -314,19 +341,17 @@ interface SpriteBatch {
 declare var SpriteBatch: SpriteBatch;
 
 // Blend mode
-interface BlendMode {
-    Opaque: number;
-    Alpha: number;
-    Add: number;
-    PreMultiplied: number;
-    Multiply: number;
-    ForceWrite: number;
+declare enum BlendMode {
+    OPAQUE,
+    ALPHA,
+    ADD,
+    PREMULTIPLIED,
+    MULTIPLY,
+    FORCE_WRITE
 }
-declare var BlendMode: BlendMode;
 
 // filtering
-interface FilterMode {
-    Nearest: number;
-    Linear: number;
+declare enum FilterMode {
+    NEAREST,
+    LINEAR
 }
-declare var FilterMode: FilterMode;
