@@ -1,5 +1,8 @@
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Curve.h>
+#include <onut/Entity.h>
+#include <onut/EntityFactory.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Log.h>
@@ -7,6 +10,7 @@
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
+#include <onut/TiledMapComponent.h>
 
 // Private includes
 #include "JSBindings.h"
@@ -16,6 +20,8 @@
 
 // STL
 #include <set>
+
+void* pVector2Prototype = nullptr;
 
 namespace onut
 {
@@ -56,10 +62,29 @@ namespace onut
 
         static Vector2 getVector2(duk_context *ctx, duk_idx_t index, const Vector2& default = Vector2::Zero)
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
-            FLOAT_PROP(x, index);
-            FLOAT_PROP(y, index);
-            return Vector2(x, y);
+            if (duk_is_object(ctx, index))
+            {
+                FLOAT_PROP(x, index);
+                FLOAT_PROP(y, index);
+                return Vector2(x, y);
+            }
+            else if (duk_is_number(ctx, index))
+            {
+                auto s = (float)duk_to_number(ctx, 0);
+                return Vector2(s, s);
+            }
+            return default;
+        }
+
+        static void newVector2(duk_context* ctx, const Vector2& val)
+        {
+            duk_push_object(ctx);
+            duk_push_number(ctx, val.x);
+            duk_put_prop_string(ctx, -2, "x");
+            duk_push_number(ctx, val.y);
+            duk_put_prop_string(ctx, -2, "y");
+            duk_push_heapptr(ctx, pVector2Prototype);
+            duk_set_prototype(ctx, -2);
         }
 
         static Vector3 getVector3(duk_context *ctx, duk_idx_t index, const Vector3& default = Vector3::Zero)
@@ -234,13 +259,16 @@ namespace onut
             evalScripts();
 
             // Grab global Update and Render pointers if present
-            duk_get_global_string(pContext, "update");
-            pUpdatePtr = duk_get_heapptr(pContext, 0);
-            duk_pop(pContext);
-
-            duk_get_global_string(pContext, "render");
-            pRenderPtr = duk_get_heapptr(pContext, 0);
-            duk_pop(pContext);
+            if (duk_get_global_string(pContext, "update"))
+            {
+                pUpdatePtr = duk_get_heapptr(pContext, 0);
+                duk_pop(pContext);
+            }
+            if (duk_get_global_string(pContext, "render"))
+            {
+                pRenderPtr = duk_get_heapptr(pContext, 0);
+                duk_pop(pContext);
+            }
         }
 
         void shutdown()
@@ -249,6 +277,327 @@ namespace onut
             pContext = nullptr;
         }
 
+        void createVector2Bindings()
+        {
+            auto ctx = pContext;
+
+            // Vector2(x, y)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                float x, y;
+                if (duk_is_null_or_undefined(ctx, 0))
+                {
+                    x = 0; y = 0;
+                }
+                else if (duk_is_number(ctx, 0) && duk_is_null_or_undefined(ctx, 1))
+                {
+                    y = x = (float)duk_to_number(ctx, 0);
+                }
+                else if (duk_is_number(ctx, 0) && duk_is_number(ctx, 1))
+                {
+                    x = (float)duk_to_number(ctx, 0);
+                    y = (float)duk_to_number(ctx, 1);
+                }
+                else if (duk_is_object(ctx, 0))
+                {
+                    duk_get_prop_string(ctx, 0, "x");
+                    x = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "y");
+                    y = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                }
+                else
+                {
+                    return DUK_RET_SYNTAX_ERROR;
+                }
+
+                duk_push_this(ctx);
+                duk_push_number(ctx, x);
+                duk_put_prop_string(ctx, -2, "x");
+                duk_push_number(ctx, y);
+                duk_put_prop_string(ctx, -2, "y");
+
+                return 0;
+            }, 2);
+            duk_push_object(ctx);
+
+#define JS_THIS_VECTOR2 \
+    duk_push_this(ctx); \
+    FLOAT_PROP(x, -1); \
+    FLOAT_PROP(y, -1); \
+    duk_pop(ctx); \
+    Vector2 v(x, y)
+
+            // isEqual(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                duk_push_boolean(ctx, v == other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "isEqual");
+
+            // add(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                newVector2(ctx, v + other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "add");
+
+            // sub(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                newVector2(ctx, v - other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "sub");
+
+            // mul(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                newVector2(ctx, v * other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "mul");
+
+            // div(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                newVector2(ctx, Vector2(v.x / other.x, v.y / other.y));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "div");
+
+            // length()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_VECTOR2;
+                duk_push_number(ctx, (duk_double_t)v.Length());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "length");
+
+            // lengthSquared()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_VECTOR2;
+                duk_push_number(ctx, (duk_double_t)v.LengthSquared());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "lengthSquared");
+
+            // dot(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                duk_push_number(ctx, (duk_double_t)v.Dot(other));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "dot");
+
+            // cross(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getVector2(ctx, 0);
+                JS_THIS_VECTOR2;
+                newVector2(ctx, v.Cross(other));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "cross");
+
+            // clamp(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto minV = getVector2(ctx, 0);
+                auto maxV = getVector2(ctx, 1);
+                JS_THIS_VECTOR2;
+                v.Clamp(minV, maxV);
+                newVector2(ctx, v);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "clamp");
+
+            // normalize()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_VECTOR2;
+                v.Normalize();
+                newVector2(ctx, v);
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "normalize");
+
+            // Done with the object
+            pVector2Prototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // distance(v1, v2)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                duk_push_number(ctx, Vector2::Distance(v1, v2));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "distance");
+
+            // distanceSquared(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                duk_push_number(ctx, Vector2::DistanceSquared(v1, v2));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "distanceSquared");
+
+            // min(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                newVector2(ctx, Vector2::Min(v1, v2));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "min");
+
+            // max(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                newVector2(ctx, Vector2::Max(v2, v2));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "max");
+
+            // lerp(from, to, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                auto t = JS_FLOAT(2);
+                newVector2(ctx, Vector2::Lerp(v1, v2, t));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "lerp");
+
+            // smoothStep(from, to, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                auto t = JS_FLOAT(2);
+                newVector2(ctx, Vector2::SmoothStep(v1, v2, t));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "smoothStep");
+
+            // barycentric(v1, v2, v3, f, g)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                auto v3 = getVector2(ctx, 2);
+                auto f = JS_FLOAT(3);
+                auto g = JS_FLOAT(4);
+                newVector2(ctx, Vector2::Barycentric(v1, v2, v3, f, g));
+                return 1;
+            }, 5);
+            duk_put_prop_string(ctx, -2, "barycentric");
+
+            // catmullRom(v1, v2, v3, v4, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto v2 = getVector2(ctx, 1);
+                auto v3 = getVector2(ctx, 2);
+                auto v4 = getVector2(ctx, 3);
+                auto t = JS_FLOAT(4);
+                newVector2(ctx, Vector2::CatmullRom(v1, v2, v3, v3, t));
+                return 1;
+            }, 5);
+            duk_put_prop_string(ctx, -2, "catmullRom");
+
+            // hermite(v1, t1, v2, t2, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto v1 = getVector2(ctx, 0);
+                auto t1 = getVector2(ctx, 1);
+                auto v2 = getVector2(ctx, 2);
+                auto t2 = getVector2(ctx, 3);
+                auto t = JS_FLOAT(4);
+                newVector2(ctx, Vector2::Hermite(v1, t1, v2, t2, t));
+                return 1;
+            }, 5);
+            duk_put_prop_string(ctx, -2, "hermite");
+
+            // bezier(p1, p2, p3, p4, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto p1 = getVector2(ctx, 0);
+                auto p2 = getVector2(ctx, 1);
+                auto p3 = getVector2(ctx, 2);
+                auto p4 = getVector2(ctx, 3);
+                auto t = JS_FLOAT(4);
+                newVector2(ctx, onut::bezier<Vector2>(p1, p2, p3, p4, t));
+                return 1;
+            }, 5);
+            duk_put_prop_string(ctx, -2, "bezier");
+
+            // reflect(ivec, nvec)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto ivec = getVector2(ctx, 0);
+                auto nvec = getVector2(ctx, 1);
+                newVector2(ctx, Vector2::Reflect(ivec, nvec));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "reflect");
+
+            // refract(ivec, nvec, refractionIndex)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto ivec = getVector2(ctx, 0);
+                auto nvec = getVector2(ctx, 1);
+                auto refractionIndex = JS_FLOAT(2);
+                newVector2(ctx, Vector2::Refract(ivec, nvec, refractionIndex));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "refract");
+
+            // Zero
+            newVector2(ctx, Vector2::Zero);
+            duk_put_prop_string(ctx, -2, "ZERO");
+            newVector2(ctx, Vector2::One);
+            duk_put_prop_string(ctx, -2, "ONE");
+            newVector2(ctx, Vector2::UnitX);
+            duk_put_prop_string(ctx, -2, "UNIT_X");
+            newVector2(ctx, Vector2::UnitY);
+            duk_put_prop_string(ctx, -2, "UNIT_Y");
+
+            duk_put_global_string(ctx, "Vector2");
+        }
+
+        void createMathsBinding()
+        {
+            createVector2Bindings();
+        }
+        
         void createTiledMapBindings()
         {
             auto ctx = pContext;
@@ -373,6 +722,144 @@ namespace onut
             duk_put_global_string(ctx, "TiledMap");
         }
 
+        void addComponentPrototype(duk_context *ctx)
+        {
+            // ~Component()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
+                if (ppComponent)
+                {
+                    delete ppComponent;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+        }
+
+        void createTiledMapComponentPrototype()
+        {
+            auto ctx = pContext;
+            duk_push_object(ctx);
+
+            // TiledMapComponent()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                auto pTiledMap = OGetTiledMap(JS_STRING(0));
+                if (!pTiledMap) return DUK_ERR_INTERNAL_ERROR;
+
+                auto ppTiledMap = new OTiledMapRef(pTiledMap);
+                duk_push_this(ctx);
+                duk_push_pointer(ctx, ppTiledMap);
+                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+
+                return 0;
+            }, 1);
+            duk_push_object(ctx);
+
+            addComponentPrototype(ctx);
+        }
+        
+        void createEntityPrototype()
+        {
+            auto ctx = pContext;
+
+            duk_push_object(ctx);
+
+            // ~Entity()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
+                if (ppEntity)
+                {
+                    delete ppEntity;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // getComponent()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
+                if (ppEntity)
+                {
+                    int tmp;
+                    tmp = 5;
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getComponent");
+
+            // addComponent()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
+                if (ppEntity)
+                {
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "addComponent");
+
+            // Done with the object
+            duk_put_global_string(ctx, "\xff""\xff""Entity");
+        }
+
+        void pushEntity(duk_context *ctx, const OEntityRef& pEntity)
+        {
+            auto ppEntity = new OEntityRef(pEntity);
+
+            duk_push_object(ctx);
+            duk_push_pointer(ctx, ppEntity);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            
+            duk_get_global_string(ctx, "\xff""\xff""Entity");
+            duk_set_prototype(ctx, -2);
+        }
+
+        void createEntityFactoryBindings()
+        {
+            auto ctx = pContext;
+            duk_push_object(ctx);
+
+            // create
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto position = JS_VECTOR3(0, Vector3::Zero);
+                auto pEntity = OEntity::create();
+                pEntity->setLocalTransform(Matrix::CreateTranslation(position));
+                pushEntity(ctx, pEntity);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, 0, "create");
+
+            // createTiledMap
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto pEntity = OCreateTiledMapEntity(JS_STRING(0));
+                pushEntity(ctx, pEntity);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, 0, "createTiledMap");
+
+            duk_put_global_string(ctx, "EntityFactory");
+        }
+
         void createBindings()
         {
             auto ctx = pContext;
@@ -396,15 +883,6 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("Rect", 4);
-
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                JS_OBJECT_BEGIN();
-                JS_ADD_FLOAT_PROP("x", JS_FLOAT(0));
-                JS_ADD_FLOAT_PROP("y", JS_FLOAT(1));
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("Vector2", 2);
 
             JS_GLOBAL_FUNCTION_BEGIN
             {
@@ -723,6 +1201,12 @@ namespace onut
                 JS_ADD_VECTOR2_PROP("BottomRight", Vector2(OBottomRight));
             }
             JS_INTERFACE_END("Align");
+
+            // Entity/Component shits
+            createMathsBinding();
+            createEntityPrototype();
+            createEntityFactoryBindings();
+            createTiledMapComponentPrototype();
         }
 
         void evalScripts()

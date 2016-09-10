@@ -1,10 +1,44 @@
-interface TiledMap {
-    render();
-    renderLayer(name: string);
-    getWidth(): number;
-    getHeight(): number;
+// Maths
+declare class Vector2 {
+    static distance(v1: Vector2, v2: Vector2): number;
+    static distanceSquared(v1: Vector2, v2: Vector2): number;
+
+    static ZERO: Vector2;
+    static ONE: Vector2;
+    static UNIT_X: Vector2;
+    static UNIT_Y: Vector2;
+
+    constructor();
+    constructor(s: number);
+    constructor(x: number, y: number);
+    constructor(other: Vector2);
+    
+    isEqual(other: Vector2): boolean;
+    add(other: Vector2): Vector2;
+    sub(other: Vector2): Vector2;
+    mul(other: Vector2): Vector2;
+    div(other: Vector2): Vector2;
+    length(): number;
+    lengthSquared(): number;
+
+    x: number;
+    y: number;
 }
-declare function TiledMap(name: string): TiledMap;
+
+interface Vector3 {
+    x: number;
+    y: number;
+    z: number;
+}
+declare function Vector3(x: number, y: number, z: number): Vector3;
+
+interface Vector4 {
+    x: number;
+    y: number;
+    z: number;
+    w: number;
+}
+declare function Vector4(x: number, y: number, z: number, w: number): Vector4;
 
 interface Color {
     r: number;
@@ -26,27 +60,6 @@ interface Rect {
     h: number;
 }
 declare function Rect(x: number, y: number, w: number, h: number): Rect;
-
-interface Vector2 {
-    x: number;
-    y: number;
-}
-declare function Vector2(x: number, y: number): Vector2;
-
-interface Vector3 {
-    x: number;
-    y: number;
-    z: number;
-}
-declare function Vector3(x: number, y: number, z: number): Vector3;
-
-interface Vector4 {
-    x: number;
-    y: number;
-    z: number;
-    w: number;
-}
-declare function Vector4(x: number, y: number, z: number, w: number): Vector4;
 
 interface Matrix {
     _11: number; _12: number; _13: number; _14: number;
@@ -72,8 +85,61 @@ interface Texture {
     h: number;
 }
 declare function Texture(name: string): Texture;
+
 interface Font { }
 declare function Font(name: string): Font;
+
+interface TiledMap {
+    getWidth(): number;
+    getHeight(): number;
+}
+declare function TiledMap(name: string): TiledMap;
+
+// Entity
+interface Entity {
+    getComponent(type): Component;
+    addComponent(type): Component;
+}
+
+// Components
+interface Component {
+    getEntity(): Entity;
+}
+
+interface TiledMapComponent extends Component {
+    setTiledMap(tiledMap: TiledMap);
+    getTiledMap(): TiledMap;
+    getPassable(mapPos: Vector2): boolean;
+    setPassable(mapPos: Vector2, passable: boolean);
+}
+
+// Entity factory
+interface EntityFactory {
+    create(position: Vector3): Entity;
+    createCollider2D(size: Vector2, position: Vector2): Entity;
+    createSound(filename: string, position: Vector2): Entity;
+    createSpriteAnim(filename: string, position: Vector2, defaultAnim: string): Entity;
+    createSprite(filename: string, position: Vector2): Entity;
+    createText(font: Font, text: string, position: Vector2): Entity;
+    createTiledMap(filename: string): Entity;
+}
+declare var EntityFactory: EntityFactory;
+
+// Scene
+interface Scene {
+    load(filename: string);
+    findEntity(name: string): Entity;
+}
+declare var Scene: Scene;
+
+
+
+
+
+
+
+
+
 
 // Renderer
 interface Renderer {
