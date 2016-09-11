@@ -2626,7 +2626,7 @@ namespace onut
             // vignette(amount)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
-                auto amount = JS_FLOAT(0, 16.0f);
+                auto amount = JS_FLOAT(0, 0.5f);
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
