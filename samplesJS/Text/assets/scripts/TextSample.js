@@ -1,5 +1,5 @@
-var font = Font.createFromFile("main.fnt");
-var fontBig = Font.createFromFile("mainBig.fnt");
+var font = getFont("main.fnt");
+var fontBig = getFont("mainBig.fnt");
 
 function render() {
     // Clear

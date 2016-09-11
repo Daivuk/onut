@@ -1,10 +1,11 @@
-var landscape = Texture.createFromFile("landscape.png");
+var landscape = getTexture("landscape.png");
+var font = getFont("font.fnt");
+
 var blured = Texture.createRenderTarget(256);
 var sepia = Texture.createRenderTarget(256);
 var crt = Texture.createRenderTarget(256);
 var cartoon = Texture.createRenderTarget(256);
 var vignette = Texture.createRenderTarget(256);
-var font = Font.createFromFile("font.fnt");
 
 function drawLandscapeToRenderTarget(renderTarget)
 {

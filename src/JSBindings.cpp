@@ -3226,6 +3226,20 @@ namespace onut
             }
             JS_INTERFACE_END("SpriteBatch");
 
+            // Resources
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newTexture(ctx, OGetTexture(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getTexture", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newFont(ctx, OGetFont(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getFont", 1);
+
             createTiledMapBindings();
 
             // Some enums

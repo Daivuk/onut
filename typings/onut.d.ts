@@ -297,13 +297,16 @@ declare class Texture {
     resizeTarget(size: Vector2);
     setData(data: ArrayBuffer);
 }
+/** Same as Texture.createFromFile */
+declare function getTexture(filename:string):Texture;
 
 declare class Font {
     static createFromFile(filename: string): Font;
 
     measure(text: string): Vector2;
 }
-
+/** Same as Font.createFromFile */
+declare function getFont(filename:string):Font;
 
 
 
