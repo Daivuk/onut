@@ -369,12 +369,6 @@ declare var Scene: Scene;
 
 
 
-
-
-
-
-
-
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);
@@ -423,6 +417,15 @@ declare namespace SpriteBatch {
     function setFilter(filterMode: Number);
 }
 
+// PrimitiveBatch
+declare namespace PrimitiveBatch {
+    function begin(primitiveMode: PrimitiveMode);
+    function begin(primitiveMode: PrimitiveMode, texture: Texture);
+    function begin(primitiveMode: PrimitiveMode, texture: Texture, transform: Matrix);
+    function end();
+    function draw(position: Vector2, color: Color, texCoord: Vector2);
+}
+
 // Blend mode
 declare enum BlendMode {
     OPAQUE,
@@ -437,4 +440,13 @@ declare enum BlendMode {
 declare enum FilterMode {
     NEAREST,
     LINEAR
+}
+
+// Primitive mode
+declare enum PrimitiveMode {
+    POINT_LIST,
+    LINE_LIST,
+    LINE_STRIP,
+    TRIANGLE_LIST,
+    TRIANGLE_STRIP
 }

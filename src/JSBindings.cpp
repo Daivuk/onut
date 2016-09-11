@@ -6,6 +6,8 @@
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Log.h>
+#include <onut/PrimitiveBatch.h>
+#include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
 #include <onut/Shader.h>
 #include <onut/SpriteBatch.h>
@@ -3461,6 +3463,36 @@ namespace onut
             }
             JS_INTERFACE_END("SpriteBatch");
 
+            // oPrimitiveBatch
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto type = (onut::PrimitiveMode)JS_UINT(0);
+                    auto texture = JS_TEXTURE(1);
+                    auto transform = JS_MATRIX(2);
+                    oPrimitiveBatch->begin(type, texture, transform);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("begin", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oPrimitiveBatch->end();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("end", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto position = JS_VECTOR2(0);
+                    auto color = JS_COLOR(1);
+                    auto texCoord = JS_VECTOR2(2);
+                    oPrimitiveBatch->draw(position, color, texCoord);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("draw", 3);
+            }
+            JS_INTERFACE_END("PrimitiveBatch");
+
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN
             {
@@ -3498,6 +3530,15 @@ namespace onut
                 JS_ADD_FLOAT_PROP("LINEAR", (float)OFilterLinear);
             }
             JS_INTERFACE_END("FilterMode");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ADD_FLOAT_PROP("POINT_LIST", (float)OPrimitivePointList);
+                JS_ADD_FLOAT_PROP("LINE_LIST", (float)OPrimitiveLineList);
+                JS_ADD_FLOAT_PROP("LINE_STRIP", (float)OPrimitiveLineStrip);
+                JS_ADD_FLOAT_PROP("TRIANGLE_LIST", (float)OPrimitiveTriangleList);
+                JS_ADD_FLOAT_PROP("TRIANGLE_STRIP", (float)OPrimitiveTriangleStrip);
+            }
+            JS_INTERFACE_END("PrimitiveMode");
 
             createMathsBinding();
             createResourceBindings();
