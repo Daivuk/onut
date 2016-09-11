@@ -360,40 +360,38 @@ declare var Scene: Scene;
 
 
 // Renderer
-interface Renderer {
-    clear(color: Color);
-    getResolution(): Vector2;
+declare namespace Renderer {
+    function clear(color: Color);
+    function getResolution(): Vector2;
+    function pushRenderTarget(renderTarget: Texture);
+    function popRenderTarget();
 }
-declare var Renderer: Renderer;
 
 // Spritebatch
-interface SpriteBatch {
-    begin();
-    begin(transform: Matrix);
-    end();
+declare namespace SpriteBatch {
+    function begin();
+    function begin(transform: Matrix);
+    function end();
 
-    drawRect(texture: Texture, rect: Rect, color: Color);
-    drawinclinedRect(texture: Texture, rect: Rect, incliinedRatio: number, color: Color);
-    drawRectWithColors(texture: Texture, rect: Rect, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color);
-    drawRectWithUVs(texture: Texture, rect: Rect, uvs: Vector4, color: Color);
-    draw4Corner(texture: Texture, rect: Rect, color: Color);
-    drawRectScaled9(texture: Texture, rect: Rect, padding: Vector4, color: Color);
-    drawRectScaled9RepeatCenters(texture: Texture, rect: Rect, padding: Vector4, color: Color);
-    drawSprite(texture: Texture, position: Vector2, color: Color, rotation: number, scale: number, origin: Vector2);
-    drawTransformedSprite(texture: Texture, transform: Matrix, color: Color, scale: Vector2, origin: Vector2);
-    drawBeam(texture: Texture, from: Vector2, to: Vector2, size: Number, color: Color, uOffset: number, uScale: number);
-    drawCross(position: Vector2, size: number, color: Color);
+    function drawRect(texture: Texture, rect: Rect, color: Color);
+    function drawinclinedRect(texture: Texture, rect: Rect, incliinedRatio: number, color: Color);
+    function drawRectWithColors(texture: Texture, rect: Rect, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color);
+    function drawRectWithUVs(texture: Texture, rect: Rect, uvs: Vector4, color: Color);
+    function draw4Corner(texture: Texture, rect: Rect, color: Color);
+    function drawRectScaled9(texture: Texture, rect: Rect, padding: Vector4, color: Color);
+    function drawRectScaled9RepeatCenters(texture: Texture, rect: Rect, padding: Vector4, color: Color);
+    function drawSprite(texture: Texture, position: Vector2, color: Color, rotation: number, scale: number, origin: Vector2);
+    function drawTransformedSprite(texture: Texture, transform: Matrix, color: Color, scale: Vector2, origin: Vector2);
+    function drawBeam(texture: Texture, from: Vector2, to: Vector2, size: Number, color: Color, uOffset: number, uScale: number);
+    function drawCross(position: Vector2, size: number, color: Color);
 
-    drawText(font: Font, text: string, position: Vector2, align: Vector2, color: Color);
-    drawOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
-    drawPrettyOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
+    function drawText(font: Font, text: string, position: Vector2, align: Vector2, color: Color);
+    function drawOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
+    function drawPrettyOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
 
-    setBlend(blendMode: Number);
-    setFilter(filterMode: Number);
+    function setBlend(blendMode: Number);
+    function setFilter(filterMode: Number);
 }
-declare var SpriteBatch: SpriteBatch;
-
-
 
 // Blend mode
 declare enum BlendMode {
