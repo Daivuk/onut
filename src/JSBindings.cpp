@@ -7,6 +7,7 @@
 #include <onut/Font.h>
 #include <onut/Log.h>
 #include <onut/Renderer.h>
+#include <onut/Shader.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
@@ -42,8 +43,10 @@ namespace onut
         void* pRectPrototype = nullptr;
         void* pColorPrototype = nullptr;
         void* pMatrixPrototype = nullptr;
+
         void* pTexturePrototype = nullptr;
         void* pFontPrototype = nullptr;
+        void* pShaderPrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -357,6 +360,24 @@ namespace onut
             }
         }
 
+        static OShaderRef getShader(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            duk_get_prop_string(ctx, index, "\xff""\xff""data");
+            auto ppShader = (OShaderRef*)(duk_to_pointer(ctx, -1));
+            duk_pop(ctx);
+
+            if (ppShader)
+            {
+                return *ppShader;
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
 #define JS_GLOBAL_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
 #define JS_GLOBAL_FUNCTION_PROPS_BEGIN(__argcnt__) , __argcnt__)
 #define JS_GLOBAL_FUNCTION_PROPS_END(__name__) duk_put_global_string(ctx, __name__)
@@ -407,6 +428,7 @@ namespace onut
 
 #define JS_TEXTURE(__index__) getTexture(ctx, __index__)
 #define JS_FONT(__index__) getFont(ctx, __index__)
+#define JS_SHADER(__index__) getShader(ctx, __index__)
 #define JS_RECT(...) getRect(ctx, __VA_ARGS__)
 #define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
 #define JS_VECTOR3(...) getVector3(ctx, __VA_ARGS__)
@@ -2486,6 +2508,16 @@ namespace onut
             duk_push_heapptr(ctx, pFontPrototype);
             duk_set_prototype(ctx, -2);
         }
+        
+        static void newShader(duk_context* ctx, const OShaderRef& pFont)
+        {
+            duk_push_object(ctx);
+            auto ppShader = new OShaderRef(pFont);
+            duk_push_pointer(ctx, ppShader);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pShaderPrototype);
+            duk_set_prototype(ctx, -2);
+        }
 
         void createTextureBindings()
         {
@@ -2787,22 +2819,128 @@ namespace onut
             duk_put_global_string(ctx, "Font");
         }
 
-        void createMathsBinding()
+        void createShaderBindings()
         {
-            createVector2Bindings();
-            createVector3Bindings();
-            createVector4Bindings();
-            createRectBindings();
-            createColorBindings();
-            createMatrixBindings();
+            auto ctx = pContext;
+
+            // Shader() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~Shader()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)duk_to_pointer(ctx, -1);
+                if (ppShader)
+                {
+                    delete ppShader;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // setNumber()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto name = JS_STRING(0);
+                auto value = JS_FLOAT(1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)duk_to_pointer(ctx, -1);
+                if (ppShader)
+                {
+                    (*ppShader)->setFloat(name, value);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setNumber");
+
+            // setVector2()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto name = JS_STRING(0);
+                auto value = JS_VECTOR2(1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)duk_to_pointer(ctx, -1);
+                if (ppShader)
+                {
+                    (*ppShader)->setVector2(name, value);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setVector2");
+
+            // setVector3()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto name = JS_STRING(0);
+                auto value = JS_VECTOR3(1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)duk_to_pointer(ctx, -1);
+                if (ppShader)
+                {
+                    (*ppShader)->setVector3(name, value);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setVector3");
+
+            // setVector4()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto name = JS_STRING(0);
+                auto value = JS_VECTOR4(1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)duk_to_pointer(ctx, -1);
+                if (ppShader)
+                {
+                    (*ppShader)->setVector4(name, value);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setVector4");
+
+            // setMatrix()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto name = JS_STRING(0);
+                auto value = JS_MATRIX(1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)duk_to_pointer(ctx, -1);
+                if (ppShader)
+                {
+                    (*ppShader)->setMatrix(name, value);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setMatrix");
+
+            // Done with the object
+            pShaderPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newShader(ctx, OGetShader(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            duk_put_global_string(ctx, "Shader");
         }
 
-        void createResourceBindings()
-        {
-            createTextureBindings();
-            createFontBindings();
-        }
-        
         void createTiledMapBindings()
         {
             auto ctx = pContext;
@@ -2970,7 +3108,7 @@ namespace onut
 
             addComponentPrototype(ctx);
         }
-        
+
         void createEntityPrototype()
         {
             auto ctx = pContext;
@@ -3032,7 +3170,7 @@ namespace onut
             duk_push_object(ctx);
             duk_push_pointer(ctx, ppEntity);
             duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-            
+
             duk_get_global_string(ctx, "\xff""\xff""Entity");
             duk_set_prototype(ctx, -2);
         }
@@ -3065,6 +3203,25 @@ namespace onut
             duk_put_global_string(ctx, "EntityFactory");
         }
 
+        void createMathsBinding()
+        {
+            createVector2Bindings();
+            createVector3Bindings();
+            createVector4Bindings();
+            createRectBindings();
+            createColorBindings();
+            createMatrixBindings();
+        }
+
+        void createResourceBindings()
+        {
+            createTextureBindings();
+            createFontBindings();
+            createShaderBindings();            
+            
+            createTiledMapBindings(); // to revise
+        }
+
         void createBindings()
         {
             auto ctx = pContext;
@@ -3086,12 +3243,21 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("clear", 1);
+
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    JS_BUILD_VECTOR2_OBJECT(OScreenf);
+                    newVector2(ctx, OScreenf);
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getResolution", 0);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pTexture = JS_TEXTURE(0);
+                    oRenderer->renderStates.renderTarget = pTexture;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setRenderTarget", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pTexture = JS_TEXTURE(0);
@@ -3105,6 +3271,75 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popRenderTarget", 0);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pTexture = JS_TEXTURE(0);
+                    auto index = JS_UINT(1);
+                    if (index >= 0 && index < 8)
+                        oRenderer->renderStates.textures[index] = pTexture;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setTexture", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pTexture = JS_TEXTURE(0);
+                    auto index = JS_UINT(1);
+                    if (index >= 0 && index < 8)
+                        oRenderer->renderStates.textures[index].push(pTexture);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushTexture", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto index = JS_UINT(0);
+                    if (index >= 0 && index < 8)
+                        oRenderer->renderStates.textures[index].pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popTexture", 1);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pShader = JS_SHADER(0);
+                    oRenderer->renderStates.vertexShader = pShader;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setVertexShader", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pShader = JS_SHADER(0);
+                    oRenderer->renderStates.vertexShader.push(pShader);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushVertexShader", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.vertexShader.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popVertexShader", 0);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pShader = JS_SHADER(0);
+                    oRenderer->renderStates.pixelShader = pShader;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setPixelShader", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pShader = JS_SHADER(0);
+                    oRenderer->renderStates.pixelShader.push(pShader);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushPixelShader", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.pixelShader.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popPixelShader", 0);
             }
             JS_INTERFACE_END("Renderer");
 
@@ -3239,8 +3474,12 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getFont", 1);
-
-            createTiledMapBindings();
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newShader(ctx, OGetShader(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getShader", 1);
 
             // Some enums
             JS_INTERFACE_BEGIN();

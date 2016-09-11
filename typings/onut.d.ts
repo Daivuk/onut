@@ -298,7 +298,7 @@ declare class Texture {
     setData(data: ArrayBuffer);
 }
 /** Same as Texture.createFromFile */
-declare function getTexture(filename:string):Texture;
+declare function getTexture(filename: string): Texture;
 
 declare class Font {
     static createFromFile(filename: string): Font;
@@ -306,8 +306,19 @@ declare class Font {
     measure(text: string): Vector2;
 }
 /** Same as Font.createFromFile */
-declare function getFont(filename:string):Font;
+declare function getFont(filename: string): Font;
 
+declare class Shader {
+    static createFromFile(filename: string): Shader;
+
+    setNumber(name: string, value: number);
+    setVector2(name: string, value: Vector2);
+    setVector3(name: string, value: Vector3);
+    setVector4(name: string, value: Vector4);
+    setMatrix(name: string, value: Matrix);
+}
+/** Same as Shader.createFromFile */
+declare function getShader(filename: string): Shader;
 
 
 
@@ -368,8 +379,22 @@ declare var Scene: Scene;
 declare namespace Renderer {
     function clear(color: Color);
     function getResolution(): Vector2;
+
+    function setRenderTarget(renderTarget: Texture);
     function pushRenderTarget(renderTarget: Texture);
     function popRenderTarget();
+
+    function setTexture(texture: Texture, index: number);
+    function pushTexture(texture: Texture, index: number);
+    function popTexture(index: number);
+
+    function setVertexShader(shader: Shader, index: number);
+    function pushVertexShader(shader: Shader, index: number);
+    function popVertexShader(index: number);
+
+    function setPixelShader(shader: Shader, index: number);
+    function pushPixelShader(shader: Shader, index: number);
+    function popPixelShader(index: number);
 }
 
 // Spritebatch
