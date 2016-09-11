@@ -90,6 +90,9 @@
       <Project>{5a0e49d2-55f1-4ab5-94f6-d19f308ecc46}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\scripts\TextureSample.js" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

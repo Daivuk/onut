@@ -4,7 +4,7 @@ var sepia = Texture.createRenderTarget(256);
 var crt = Texture.createRenderTarget(256);
 var cartoon = Texture.createRenderTarget(256);
 var vignette = Texture.createRenderTarget(256);
-var font = Font("font.fnt");
+var font = Font.createFromFile("font.fnt");
 
 function drawLandscapeToRenderTarget(renderTarget)
 {

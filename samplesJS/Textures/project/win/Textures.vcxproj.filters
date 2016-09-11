@@ -3,4 +3,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\TexturesSample.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\scripts\TextureSample.js" />
+  </ItemGroup>
 </Project>

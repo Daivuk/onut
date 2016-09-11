@@ -43,6 +43,7 @@ namespace onut
         void* pColorPrototype = nullptr;
         void* pMatrixPrototype = nullptr;
         void* pTexturePrototype = nullptr;
+        void* pFontPrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -342,15 +343,13 @@ namespace onut
         {
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
-            OFont* pFont = nullptr;
-
             duk_get_prop_string(ctx, index, "\xff""\xff""data");
-            pFont = (OFont*)(duk_to_pointer(ctx, -1));
+            auto ppFont = (OFontRef*)(duk_to_pointer(ctx, -1));
             duk_pop(ctx);
 
-            if (pFont)
+            if (ppFont)
             {
-                return ((OFont*)pFont)->shared_from_this();
+                return *ppFont;
             }
             else
             {
@@ -2477,6 +2476,16 @@ namespace onut
             duk_push_heapptr(ctx, pTexturePrototype);
             duk_set_prototype(ctx, -2);
         }
+        
+        static void newFont(duk_context* ctx, const OFontRef& pFont)
+        {
+            duk_push_object(ctx);
+            auto ppFont = new OFontRef(pFont);
+            duk_push_pointer(ctx, ppFont);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pFontPrototype);
+            duk_set_prototype(ctx, -2);
+        }
 
         void createTextureBindings()
         {
@@ -2721,6 +2730,63 @@ namespace onut
             duk_put_global_string(ctx, "Texture");
         }
 
+        void createFontBindings()
+        {
+            auto ctx = pContext;
+
+            // Font() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~Font()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppFont = (OFontRef*)duk_to_pointer(ctx, -1);
+                if (ppFont)
+                {
+                    delete ppFont;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // measure()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto text = JS_STRING(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppFont = (OFontRef*)duk_to_pointer(ctx, -1);
+                if (ppFont)
+                {
+                    newVector2(ctx, (*ppFont)->measure(text));
+                }
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "measure");
+
+            // Done with the object
+            pFontPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newFont(ctx, OGetFont(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            duk_put_global_string(ctx, "Font");
+        }
+
         void createMathsBinding()
         {
             createVector2Bindings();
@@ -2734,6 +2800,7 @@ namespace onut
         void createResourceBindings()
         {
             createTextureBindings();
+            createFontBindings();
         }
         
         void createTiledMapBindings()
@@ -3159,16 +3226,6 @@ namespace onut
             }
             JS_INTERFACE_END("SpriteBatch");
 
-            // Resources
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto pFont = OGetFont(JS_STRING(0));
-                if (!pFont) return 0;
-                JS_OBJECT_BEGIN();
-                JS_ADD_DATA_PROP(pFont.get());
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("Font", 1);
             createTiledMapBindings();
 
             // Some enums

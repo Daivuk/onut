@@ -298,14 +298,16 @@ declare class Texture {
     setData(data: ArrayBuffer);
 }
 
+declare class Font {
+    static createFromFile(filename: string): Font;
+
+    measure(text: string): Vector2;
+}
 
 
 
 
 
-
-interface Font { }
-declare function Font(name: string): Font;
 
 interface TiledMap {
     getWidth(): number;

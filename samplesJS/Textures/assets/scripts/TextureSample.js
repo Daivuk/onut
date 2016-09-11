@@ -1,4 +1,4 @@
-var font = Font("font.fnt");
+var font = Font.createFromFile("font.fnt");
 
 // From file
 var textureFromFile = Texture.createFromFile("onutLogo.png");
@@ -67,4 +67,3 @@ function render()
     
     SpriteBatch.end();
 }
-
