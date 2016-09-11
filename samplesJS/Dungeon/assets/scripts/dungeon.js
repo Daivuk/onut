@@ -1,13 +1,3 @@
-var a = new Vector2(4, 6);
-print(JSON.stringify(a));
-var b = new Vector3(4, 6, 8);
-print(JSON.stringify(b));
-var c = new Vector4(4, 6, 8, 10);
-print(JSON.stringify(c));
-var d = new Rect(4, 6, 8, 10);
-print(JSON.stringify(d));
-
-/*
 // Represents a room in the dungeon
 function Room() {
     this.bound = new Rect();
@@ -82,4 +72,3 @@ Dungeon.prototype.showBombAt = function(position, count) {
 
 // Instantiate our dungeon
 var dungeon = new Dungeon("dungeon.tmx");
-*/
