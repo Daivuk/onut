@@ -42,15 +42,24 @@ namespace onut
         void* pRectPrototype = nullptr;
         void* pColorPrototype = nullptr;
         void* pMatrixPrototype = nullptr;
+        void* pTexturePrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
             auto __name__ = 0.0f; \
             if (duk_get_prop_string(ctx, __index__, #__name__)) \
-                        { \
+            { \
                 __name__ = (float)duk_to_number(ctx, -1); \
                 duk_pop(ctx); \
-                        }
+            }
+
+#define INT_PROP(__name__, __index__) \
+            auto __name__ = 0; \
+            if (duk_get_prop_string(ctx, __index__, #__name__)) \
+            { \
+                __name__ = duk_to_int(ctx, -1); \
+                duk_pop(ctx); \
+            }
 
 #define FLOAT_PROP2(__ret__, __name__, __index__) \
             if (duk_get_prop_string(ctx, __index__, __name__)) \
@@ -177,6 +186,22 @@ namespace onut
             return default;
         }
 
+        static Point getPoint(duk_context *ctx, duk_idx_t index, const Point& default = Point(0, 0))
+        {
+            if (duk_is_object(ctx, index))
+            {
+                INT_PROP(x, index);
+                INT_PROP(y, index);
+                return Point(x, y);
+            }
+            else if (duk_is_number(ctx, index))
+            {
+                auto s = duk_to_int(ctx, 0);
+                return Point(s, s);
+            }
+            return default;
+        }
+
         static Vector3 getVector3(duk_context *ctx, duk_idx_t index, const Vector3& default = Vector3::Zero)
         {
             if (duk_is_object(ctx, index))
@@ -299,15 +324,13 @@ namespace onut
         {
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
-            OTexture* pTexture = nullptr;
-
             duk_get_prop_string(ctx, index, "\xff""\xff""data");
-            pTexture = (OTexture*)(duk_to_pointer(ctx, -1));
+            auto ppTexture = (OTextureRef*)(duk_to_pointer(ctx, -1));
             duk_pop(ctx);
 
-            if (pTexture)
+            if (ppTexture)
             {
-                return ((OTexture*)pTexture)->shared_from_this();
+                return *ppTexture;
             }
             else
             {
@@ -2444,6 +2467,259 @@ namespace onut
 
             duk_put_global_string(ctx, "Matrix");
         }
+        
+        static void newTexture(duk_context* ctx, const OTextureRef& pTexture)
+        {
+            duk_push_object(ctx);
+            auto ppTexture = new OTextureRef(pTexture);
+            duk_push_pointer(ctx, ppTexture);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pTexturePrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        void createTextureBindings()
+        {
+            auto ctx = pContext;
+
+            // Texture() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~Texture()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    delete ppTexture;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // getSize()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    newVector2(ctx, (*ppTexture)->getSizef());
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getSize");
+
+            // isRenderTarget()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    duk_push_boolean(ctx, (*ppTexture)->isRenderTarget());
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isRenderTarget");
+
+            // isDynamic()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    duk_push_boolean(ctx, (*ppTexture)->isDynamic());
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isDynamic");
+
+            // clearRenderTarget()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto color = JS_COLOR(0, Color::Black);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->clearRenderTarget(color);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "clearRenderTarget");
+
+            // blur(amount)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto amount = JS_FLOAT(0, 16.0f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->blur(amount);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "blur");
+
+            // sepia(tone, saturation, sepiaAmount)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto tone = getVector3(ctx, 0, Vector3(1.40f, 1.10f, 0.90f));
+                auto saturation = getFloat(ctx, 0, 0);
+                auto sepiaAmount = getFloat(ctx, 0, .75f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->sepia(tone, saturation, sepiaAmount);
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "sepia");
+
+            // crt()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->crt();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "crt");
+
+            // cartoon(tone)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto tone = getVector3(ctx, 0, Vector3(2, 5, 1));
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->cartoon(tone);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "cartoon");
+
+            // vignette(amount)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto amount = JS_FLOAT(0, 16.0f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->vignette(amount);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "vignette");
+
+            // resizeTarget(size)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto size = getPoint(ctx, 0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->resizeTarget(size);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "resizeTarget");
+
+            // setData(data)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppTexture)
+                {
+                    (*ppTexture)->setData(reinterpret_cast<const uint8_t*>(pBuffer));
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setData");
+
+            // Done with the object
+            pTexturePrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newTexture(ctx, OGetTexture(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            // createDynamic(size)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto size = getPoint(ctx, 0, Point(1, 1));
+                newTexture(ctx, OTexture::createDynamic(size));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createDynamic");
+
+            // createFromData(data, size)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                auto size = getPoint(ctx, 1, Point(1, 1));
+                newTexture(ctx, OTexture::createFromData(reinterpret_cast<const uint8_t*>(pBuffer), size));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "createFromData");
+
+            // createRenderTarget(size)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto size = getPoint(ctx, 0, Point(1, 1));
+                newTexture(ctx, OTexture::createRenderTarget(size));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createRenderTarget");
+
+            // createScreenRenderTarget()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newTexture(ctx, OTexture::createScreenRenderTarget());
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "createScreenRenderTarget");
+
+            duk_put_global_string(ctx, "Texture");
+        }
 
         void createMathsBinding()
         {
@@ -2453,6 +2729,11 @@ namespace onut
             createRectBindings();
             createColorBindings();
             createMatrixBindings();
+        }
+
+        void createResourceBindings()
+        {
+            createTextureBindings();
         }
         
         void createTiledMapBindings()
@@ -2744,6 +3025,19 @@ namespace onut
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getResolution", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pTexture = JS_TEXTURE(0);
+                    oRenderer->renderStates.renderTarget.push(pTexture);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushRenderTarget", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.renderTarget.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popRenderTarget", 0);
             }
             JS_INTERFACE_END("Renderer");
 
@@ -2752,10 +3046,11 @@ namespace onut
             {
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    oSpriteBatch->begin();
+                    auto matrix = JS_MATRIX(0);
+                    oSpriteBatch->begin(matrix);
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("begin", 0);
+                JS_INTERFACE_FUNCTION_END("begin", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     oSpriteBatch->end();
@@ -2867,17 +3162,6 @@ namespace onut
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN
             {
-                auto pTexture = OGetTexture(JS_STRING(0));
-                if (!pTexture) return 0;
-                JS_OBJECT_BEGIN();
-                JS_ADD_DATA_PROP(pTexture.get());
-                JS_ADD_FLOAT_PROP("w", pTexture->getSize().x);
-                JS_ADD_FLOAT_PROP("h", pTexture->getSize().y);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("Texture", 1);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
                 auto pFont = OGetFont(JS_STRING(0));
                 if (!pFont) return 0;
                 JS_OBJECT_BEGIN();
@@ -2906,6 +3190,7 @@ namespace onut
             JS_INTERFACE_END("FilterMode");
 
             createMathsBinding();
+            createResourceBindings();
             createEntityPrototype();
             createEntityFactoryBindings();
             createTiledMapComponentPrototype();

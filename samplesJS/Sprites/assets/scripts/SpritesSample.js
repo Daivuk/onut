@@ -1,7 +1,7 @@
 var spriteAngle = 0.0;
-var nutTexture = Texture("onutLogo.png");
-var frameTexture = Texture("frameSmall.png");
-var chainTexture = Texture("chain.png");
+var nutTexture = Texture.createFromFile("onutLogo.png");
+var frameTexture = Texture.createFromFile("frameSmall.png");
+var chainTexture = Texture.createFromFile("chain.png");
 
 function update(dt) {
     spriteAngle += dt * 45;

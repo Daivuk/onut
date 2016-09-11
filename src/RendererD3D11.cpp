@@ -587,7 +587,7 @@ namespace onut
             renderStates.world.isDirty())
         {
             auto world = renderStates.world.get();
-            auto finalTransform = renderStates.viewProjection.get() * world;
+            auto finalTransform = world * renderStates.viewProjection.get();
             finalTransform = finalTransform.Transpose();
 
             D3D11_MAPPED_SUBRESOURCE map;

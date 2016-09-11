@@ -277,15 +277,32 @@ declare class Matrix {
     determinant(): number;
 }
 
-
-
-
 // Resources
-interface Texture {
-    w: number;
-    h: number;
+declare class Texture {
+    static createFromFile(filename: string): Texture;
+    static createDynamic(size: Vector2): Texture;
+    static createFromData(data: ArrayBuffer, size: Vector2): Texture;
+    static createRenderTarget(size: Vector2): Texture;
+    static createScreenRenderTarget(): Texture;
+
+    getSize(): Vector2;
+    isRenderTarget(): boolean;
+    isDynamic(): boolean;
+    clearRenderTarget();
+    blur(amount: number);
+    sepia(tone: Vector3, saturation: number, sepiaAmount: number);
+    crt();
+    cartoon(tone: Vector3);
+    vignette(amount: number);
+    resizeTarget(size: Vector2);
+    setData(data: ArrayBuffer);
 }
-declare function Texture(name: string): Texture;
+
+
+
+
+
+
 
 interface Font { }
 declare function Font(name: string): Font;
@@ -352,6 +369,7 @@ declare var Renderer: Renderer;
 // Spritebatch
 interface SpriteBatch {
     begin();
+    begin(transform: Matrix);
     end();
 
     drawRect(texture: Texture, rect: Rect, color: Color);
