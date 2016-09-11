@@ -41,13 +41,21 @@ namespace onut
         void* pVector4Prototype = nullptr;
         void* pRectPrototype = nullptr;
         void* pColorPrototype = nullptr;
+        void* pMatrixPrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
             auto __name__ = 0.0f; \
             if (duk_get_prop_string(ctx, __index__, #__name__)) \
-            { \
+                        { \
                 __name__ = (float)duk_to_number(ctx, -1); \
+                duk_pop(ctx); \
+                        }
+
+#define FLOAT_PROP2(__ret__, __name__, __index__) \
+            if (duk_get_prop_string(ctx, __index__, __name__)) \
+            { \
+                __ret__ = (float)duk_to_number(ctx, -1); \
                 duk_pop(ctx); \
             }
 
@@ -127,6 +135,29 @@ namespace onut
             duk_push_number(ctx, val.w);
             duk_put_prop_string(ctx, -2, "a");
             duk_push_heapptr(ctx, pColorPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        static void newMatrix(duk_context* ctx, const Matrix& val)
+        {
+            duk_push_object(ctx);
+            duk_push_number(ctx, val._11); duk_put_prop_string(ctx, -2, "_11");
+            duk_push_number(ctx, val._12); duk_put_prop_string(ctx, -2, "_12");
+            duk_push_number(ctx, val._13); duk_put_prop_string(ctx, -2, "_13");
+            duk_push_number(ctx, val._14); duk_put_prop_string(ctx, -2, "_14");
+            duk_push_number(ctx, val._21); duk_put_prop_string(ctx, -2, "_21");
+            duk_push_number(ctx, val._22); duk_put_prop_string(ctx, -2, "_22");
+            duk_push_number(ctx, val._23); duk_put_prop_string(ctx, -2, "_23");
+            duk_push_number(ctx, val._24); duk_put_prop_string(ctx, -2, "_24");
+            duk_push_number(ctx, val._31); duk_put_prop_string(ctx, -2, "_31");
+            duk_push_number(ctx, val._32); duk_put_prop_string(ctx, -2, "_32");
+            duk_push_number(ctx, val._33); duk_put_prop_string(ctx, -2, "_33");
+            duk_push_number(ctx, val._34); duk_put_prop_string(ctx, -2, "_34");
+            duk_push_number(ctx, val._41); duk_put_prop_string(ctx, -2, "_41");
+            duk_push_number(ctx, val._42); duk_put_prop_string(ctx, -2, "_42");
+            duk_push_number(ctx, val._43); duk_put_prop_string(ctx, -2, "_43");
+            duk_push_number(ctx, val._44); duk_put_prop_string(ctx, -2, "_44");
+            duk_push_heapptr(ctx, pMatrixPrototype);
             duk_set_prototype(ctx, -2);
         }
 
@@ -220,11 +251,24 @@ namespace onut
         static Matrix getMatrix(duk_context *ctx, duk_idx_t index, const Matrix& default = Matrix::Identity)
         {
             if (duk_is_null_or_undefined(ctx, index)) return default;
-            FLOAT_PROP(_11, index); FLOAT_PROP(_12, index); FLOAT_PROP(_13, index); FLOAT_PROP(_14, index);
-            FLOAT_PROP(_21, index); FLOAT_PROP(_22, index); FLOAT_PROP(_23, index); FLOAT_PROP(_24, index);
-            FLOAT_PROP(_31, index); FLOAT_PROP(_32, index); FLOAT_PROP(_33, index); FLOAT_PROP(_34, index);
-            FLOAT_PROP(_41, index); FLOAT_PROP(_42, index); FLOAT_PROP(_43, index); FLOAT_PROP(_44, index);
-            return Matrix(_11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44);
+            Matrix ret;
+            FLOAT_PROP2(ret._11, "_11", index);
+            FLOAT_PROP2(ret._12, "_12", index);
+            FLOAT_PROP2(ret._13, "_13", index);
+            FLOAT_PROP2(ret._14, "_14", index);
+            FLOAT_PROP2(ret._21, "_21", index);
+            FLOAT_PROP2(ret._22, "_22", index);
+            FLOAT_PROP2(ret._23, "_23", index);
+            FLOAT_PROP2(ret._24, "_24", index);
+            FLOAT_PROP2(ret._31, "_31", index);
+            FLOAT_PROP2(ret._32, "_32", index);
+            FLOAT_PROP2(ret._33, "_33", index);
+            FLOAT_PROP2(ret._34, "_34", index);
+            FLOAT_PROP2(ret._41, "_41", index);
+            FLOAT_PROP2(ret._42, "_42", index);
+            FLOAT_PROP2(ret._43, "_43", index);
+            FLOAT_PROP2(ret._44, "_44", index);
+            return std::move(ret);
         }
 
         static bool getBool(duk_context *ctx, duk_idx_t index, bool default = false)
@@ -1815,6 +1859,592 @@ namespace onut
             duk_put_global_string(ctx, "Color");
         }
 
+        void createMatrixBindings()
+        {
+            auto ctx = pContext;
+
+            // Vector4(x, y, z, w)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                Matrix ret;
+                if (duk_is_null_or_undefined(ctx, 0))
+                {
+                    // Identity
+                }
+                else if (duk_is_object(ctx, 0) && duk_is_object(ctx, 1) && duk_is_object(ctx, 2) && duk_is_null_or_undefined(ctx, 3))
+                {
+                    duk_get_prop_string(ctx, 0, "x");
+                    ret._11 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "y");
+                    ret._12 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "z");
+                    ret._13 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+
+                    duk_get_prop_string(ctx, 1, "x");
+                    ret._21 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 1, "y");
+                    ret._22 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 1, "z");
+                    ret._23 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+
+                    duk_get_prop_string(ctx, 2, "x");
+                    ret._31 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 2, "y");
+                    ret._32 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 2, "z");
+                    ret._33 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                }
+                else if (duk_is_object(ctx, 0) && duk_is_object(ctx, 1) && duk_is_object(ctx, 2) && duk_is_object(ctx, 3))
+                {
+                    duk_get_prop_string(ctx, 0, "x");
+                    ret._11 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "y");
+                    ret._12 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "z");
+                    ret._13 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 0, "w");
+                    ret._14 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+
+                    duk_get_prop_string(ctx, 1, "x");
+                    ret._21 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 1, "y");
+                    ret._22 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 1, "z");
+                    ret._23 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 1, "w");
+                    ret._24 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+
+                    duk_get_prop_string(ctx, 2, "x");
+                    ret._31 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 2, "y");
+                    ret._32 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 2, "z");
+                    ret._33 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 2, "w");
+                    ret._34 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+
+                    duk_get_prop_string(ctx, 3, "x");
+                    ret._41 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 3, "y");
+                    ret._42 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 3, "z");
+                    ret._43 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                    duk_get_prop_string(ctx, 3, "w");
+                    ret._44 = (float)duk_to_number(ctx, -1);
+                    duk_pop(ctx);
+                }
+                else
+                {
+                    ret._11 = (float)duk_require_number(ctx, 0);
+                    ret._12 = (float)duk_require_number(ctx, 1);
+                    ret._13 = (float)duk_require_number(ctx, 2);
+                    ret._14 = (float)duk_require_number(ctx, 3);
+                    ret._21 = (float)duk_require_number(ctx, 4);
+                    ret._22 = (float)duk_require_number(ctx, 5);
+                    ret._23 = (float)duk_require_number(ctx, 6);
+                    ret._24 = (float)duk_require_number(ctx, 7);
+                    ret._31 = (float)duk_require_number(ctx, 8);
+                    ret._32 = (float)duk_require_number(ctx, 9);
+                    ret._33 = (float)duk_require_number(ctx, 10);
+                    ret._34 = (float)duk_require_number(ctx, 11);
+                    ret._41 = (float)duk_require_number(ctx, 12);
+                    ret._42 = (float)duk_require_number(ctx, 13);
+                    ret._43 = (float)duk_require_number(ctx, 14);
+                    ret._44 = (float)duk_require_number(ctx, 15);
+                }
+
+                duk_push_this(ctx);
+                duk_push_number(ctx, ret._11); duk_put_prop_string(ctx, -2, "_11");
+                duk_push_number(ctx, ret._12); duk_put_prop_string(ctx, -2, "_12");
+                duk_push_number(ctx, ret._13); duk_put_prop_string(ctx, -2, "_13");
+                duk_push_number(ctx, ret._14); duk_put_prop_string(ctx, -2, "_14");
+                duk_push_number(ctx, ret._21); duk_put_prop_string(ctx, -2, "_21");
+                duk_push_number(ctx, ret._22); duk_put_prop_string(ctx, -2, "_22");
+                duk_push_number(ctx, ret._23); duk_put_prop_string(ctx, -2, "_23");
+                duk_push_number(ctx, ret._24); duk_put_prop_string(ctx, -2, "_24");
+                duk_push_number(ctx, ret._31); duk_put_prop_string(ctx, -2, "_31");
+                duk_push_number(ctx, ret._32); duk_put_prop_string(ctx, -2, "_32");
+                duk_push_number(ctx, ret._33); duk_put_prop_string(ctx, -2, "_33");
+                duk_push_number(ctx, ret._34); duk_put_prop_string(ctx, -2, "_34");
+                duk_push_number(ctx, ret._41); duk_put_prop_string(ctx, -2, "_41");
+                duk_push_number(ctx, ret._42); duk_put_prop_string(ctx, -2, "_42");
+                duk_push_number(ctx, ret._43); duk_put_prop_string(ctx, -2, "_43");
+                duk_push_number(ctx, ret._44); duk_put_prop_string(ctx, -2, "_44");
+
+                return 0;
+            }, 16);
+            duk_push_object(ctx);
+
+#define JS_THIS_MATRIX \
+    duk_push_this(ctx); \
+    Matrix v; \
+    FLOAT_PROP2(v._11, "_11", -1); \
+    FLOAT_PROP2(v._12, "_12", -1); \
+    FLOAT_PROP2(v._13, "_13", -1); \
+    FLOAT_PROP2(v._14, "_14", -1); \
+    FLOAT_PROP2(v._21, "_21", -1); \
+    FLOAT_PROP2(v._22, "_22", -1); \
+    FLOAT_PROP2(v._23, "_23", -1); \
+    FLOAT_PROP2(v._24, "_24", -1); \
+    FLOAT_PROP2(v._31, "_31", -1); \
+    FLOAT_PROP2(v._32, "_32", -1); \
+    FLOAT_PROP2(v._33, "_33", -1); \
+    FLOAT_PROP2(v._34, "_34", -1); \
+    FLOAT_PROP2(v._41, "_41", -1); \
+    FLOAT_PROP2(v._42, "_42", -1); \
+    FLOAT_PROP2(v._43, "_43", -1); \
+    FLOAT_PROP2(v._44, "_44", -1); \
+    duk_pop(ctx);
+
+            // isEqual(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getMatrix(ctx, 0);
+                JS_THIS_MATRIX;
+                duk_push_boolean(ctx, v == other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "isEqual");
+
+            // add(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getMatrix(ctx, 0);
+                JS_THIS_MATRIX;
+                newMatrix(ctx, v + other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "add");
+
+            // sub(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto other = getMatrix(ctx, 0);
+                JS_THIS_MATRIX;
+                newMatrix(ctx, v - other);
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "sub");
+
+            // mul(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (duk_is_number(ctx, 0))
+                {
+                    auto s = JS_FLOAT(0);
+                    JS_THIS_MATRIX;
+                    newMatrix(ctx, v * s);
+                    return 1;
+                }
+                else
+                {
+                    auto other = getMatrix(ctx, 0);
+                    JS_THIS_MATRIX;
+                    newMatrix(ctx, v * other);
+                    return 1;
+                }
+            }, 1);
+            duk_put_prop_string(ctx, -2, "mul");
+
+            // div(other)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (duk_is_number(ctx, 0))
+                {
+                    auto s = JS_FLOAT(0);
+                    JS_THIS_MATRIX;
+                    newMatrix(ctx, v / s);
+                    return 1;
+                }
+                else
+                {
+                    auto other = getMatrix(ctx, 0);
+                    JS_THIS_MATRIX;
+                    newMatrix(ctx, v / other);
+                    return 1;
+                }
+            }, 1);
+            duk_put_prop_string(ctx, -2, "div");
+
+            // translation()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_41, -1);
+                FLOAT_PROP(_42, -1);
+                FLOAT_PROP(_43, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_41, _42, _43));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "translation");
+
+            // right()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_11, -1);
+                FLOAT_PROP(_12, -1);
+                FLOAT_PROP(_13, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_11, _12, _13));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "right");
+
+            // axisX()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_11, -1);
+                FLOAT_PROP(_12, -1);
+                FLOAT_PROP(_13, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_11, _12, _13));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "axisX");
+
+            // left()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_11, -1);
+                FLOAT_PROP(_12, -1);
+                FLOAT_PROP(_13, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(-_11, -_12, -_13));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "left");
+
+            // front()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_21, -1);
+                FLOAT_PROP(_22, -1);
+                FLOAT_PROP(_23, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_21, _22, _23));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "front");
+
+            // axisY()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_21, -1);
+                FLOAT_PROP(_22, -1);
+                FLOAT_PROP(_23, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_21, _22, _23));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "axisY");
+
+            // back()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_21, -1);
+                FLOAT_PROP(_22, -1);
+                FLOAT_PROP(_23, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(-_21, -_22, -_23));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "back");
+
+            // up()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_31, -1);
+                FLOAT_PROP(_32, -1);
+                FLOAT_PROP(_33, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_31, _32, _33));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "up");
+
+            // axisZ()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_31, -1);
+                FLOAT_PROP(_32, -1);
+                FLOAT_PROP(_33, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(_31, _32, _33));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "axisZ");
+
+            // down()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                FLOAT_PROP(_31, -1);
+                FLOAT_PROP(_32, -1);
+                FLOAT_PROP(_33, -1);
+                duk_pop(ctx);
+                newVector3(ctx, Vector3(-_31, -_32, -_33));
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "down");
+
+            // transpose()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_MATRIX;
+                newMatrix(ctx, v.Transpose());
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "transpose");
+
+            // invert()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_MATRIX;
+                newMatrix(ctx, v.Invert());
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "invert");
+
+            // determinant()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_MATRIX;
+                duk_push_number(ctx, (duk_double_t)v.Determinant());
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "determinant");
+
+            // Done with the object
+            pMatrixPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // lerp(from, to, t)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto from = getMatrix(ctx, 0);
+                auto to = getMatrix(ctx, 1);
+                auto t = JS_FLOAT(2);
+                newMatrix(ctx, Matrix::Lerp(from, to, t));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "lerp");
+
+            // createBillboard(object, cameraPosition, cameraUp)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto object = getVector3(ctx, 0);
+                auto cameraPosition = getVector3(ctx, 1);
+                auto cameraUp = getVector3(ctx, 2);
+                newMatrix(ctx, Matrix::CreateBillboard(object, cameraPosition, cameraUp));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "createBillboard");
+
+            // createConstrainedBillboard(object, cameraPosition, rotateAxis)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto object = getVector3(ctx, 0);
+                auto cameraPosition = getVector3(ctx, 1);
+                auto rotateAxis = getVector3(ctx, 2);
+                newMatrix(ctx, Matrix::CreateConstrainedBillboard(object, cameraPosition, rotateAxis));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "createConstrainedBillboard");
+
+            // createTranslation(position)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto position = getVector3(ctx, 0);
+                newMatrix(ctx, Matrix::CreateTranslation(position));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createTranslation");
+
+            // createScale(scales)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto scales = getVector3(ctx, 0);
+                newMatrix(ctx, Matrix::CreateScale(scales));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createScale");
+
+            // createRotationX(degrees)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto degrees = JS_FLOAT(0);
+                newMatrix(ctx, Matrix::CreateRotationX(DirectX::XMConvertToRadians(degrees)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createRotationX");
+
+            // createRotationY(degrees)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto degrees = JS_FLOAT(0);
+                newMatrix(ctx, Matrix::CreateRotationY(DirectX::XMConvertToRadians(degrees)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createRotationY");
+
+            // createRotationZ(degrees)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto degrees = JS_FLOAT(0);
+                newMatrix(ctx, Matrix::CreateRotationZ(DirectX::XMConvertToRadians(degrees)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createRotationZ");
+
+            // createFromAxisAngle(axis, degrees)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto axis = getVector3(ctx, 0);
+                auto degrees = JS_FLOAT(1);
+                newMatrix(ctx, Matrix::CreateFromAxisAngle(axis, DirectX::XMConvertToRadians(degrees)));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "createFromAxisAngle");
+
+            // createPerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto fov = JS_FLOAT(0);
+                auto aspectRatio = JS_FLOAT(1);
+                auto nearPlane = JS_FLOAT(2);
+                auto farPlane = JS_FLOAT(3);
+                newMatrix(ctx, Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane));
+                return 1;
+            }, 4);
+            duk_put_prop_string(ctx, -2, "createPerspectiveFieldOfView");
+
+            // createPerspective(width, height, nearPlane, farPlane)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto width = JS_FLOAT(0);
+                auto height = JS_FLOAT(1);
+                auto nearPlane = JS_FLOAT(2);
+                auto farPlane = JS_FLOAT(3);
+                newMatrix(ctx, Matrix::CreatePerspective(width, height, nearPlane, farPlane));
+                return 1;
+            }, 4);
+            duk_put_prop_string(ctx, -2, "createPerspective");
+
+            // createPerspectiveOffCenter(left, right, bottom, top, nearPlane, farPlane)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto left = JS_FLOAT(0);
+                auto right = JS_FLOAT(1);
+                auto bottom = JS_FLOAT(2);
+                auto top = JS_FLOAT(3);
+                auto nearPlane = JS_FLOAT(4);
+                auto farPlane = JS_FLOAT(5);
+                newMatrix(ctx, Matrix::CreatePerspectiveOffCenter(left, right, bottom, top, nearPlane, farPlane));
+                return 1;
+            }, 6);
+            duk_put_prop_string(ctx, -2, "createPerspectiveOffCenter");
+
+            // createOrthographic(width, height, zNearPlane, zFarPlane)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto width = JS_FLOAT(0);
+                auto height = JS_FLOAT(1);
+                auto zNearPlane = JS_FLOAT(2);
+                auto zFarPlane = JS_FLOAT(3);
+                newMatrix(ctx, Matrix::CreateOrthographic(width, height, zNearPlane, zFarPlane));
+                return 1;
+            }, 4);
+            duk_put_prop_string(ctx, -2, "createOrthographic");
+
+            // createOrthographicOffCenter(left, right, bottom, top, zNearPlane, zFarPlane)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto left = JS_FLOAT(0);
+                auto right = JS_FLOAT(1);
+                auto bottom = JS_FLOAT(2);
+                auto top = JS_FLOAT(3);
+                auto zNearPlane = JS_FLOAT(4);
+                auto zFarPlane = JS_FLOAT(5);
+                newMatrix(ctx, Matrix::CreateOrthographicOffCenter(left, right, bottom, top, zNearPlane, zFarPlane));
+                return 1;
+            }, 6);
+            duk_put_prop_string(ctx, -2, "createOrthographicOffCenter");
+
+            // createLookAt(position, target, up)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto position = getVector3(ctx, 0);
+                auto target = getVector3(ctx, 1);
+                auto up = getVector3(ctx, 2);
+                newMatrix(ctx, Matrix::CreateLookAt(position, target, up));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "createLookAt");
+
+            // createWorld(position, forward, up)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto position = getVector3(ctx, 0);
+                auto forward = getVector3(ctx, 1);
+                auto up = getVector3(ctx, 2);
+                newMatrix(ctx, Matrix::CreateWorld(position, forward, up));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "createWorld");
+
+            // createFromYawPitchRoll(yaw, pitch, roll)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto yaw = JS_FLOAT(0);
+                auto pitch = JS_FLOAT(1);
+                auto roll = JS_FLOAT(2);
+                newMatrix(ctx, Matrix::CreateFromYawPitchRoll(roll, pitch, yaw));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "createFromYawPitchRoll");
+
+            // Constants
+            newMatrix(ctx, Matrix::Identity);
+            duk_put_prop_string(ctx, -2, "IDENTITY");
+
+            duk_put_global_string(ctx, "Matrix");
+        }
+
         void createMathsBinding()
         {
             createVector2Bindings();
@@ -1822,6 +2452,7 @@ namespace onut
             createVector4Bindings();
             createRectBindings();
             createColorBindings();
+            createMatrixBindings();
         }
         
         void createTiledMapBindings()
@@ -2097,85 +2728,6 @@ namespace onut
                 return 0;
             }
             JS_GLOBAL_FUNCTION_END("print", 1);
-
-            // Maths
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto color = Color::fromHexRGB(JS_UINT(0));
-                JS_OBJECT_BEGIN();
-                JS_ADD_FLOAT_PROP("r", color.x);
-                JS_ADD_FLOAT_PROP("g", color.y);
-                JS_ADD_FLOAT_PROP("b", color.z);
-                JS_ADD_FLOAT_PROP("a", color.w);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("ColorHexRGB", 1);
-
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto color = Color::fromHexRGBA(JS_UINT(0));
-                JS_OBJECT_BEGIN();
-                JS_ADD_FLOAT_PROP("r", color.x);
-                JS_ADD_FLOAT_PROP("g", color.y);
-                JS_ADD_FLOAT_PROP("b", color.z);
-                JS_ADD_FLOAT_PROP("a", color.w);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("ColorHexRGBA", 1);
-
-            // Matrices
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                JS_BUILD_MATRIX_OBJECT(Matrix::Identity);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("identityMatrix", 0);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto matrix = JS_MATRIX(0);
-                matrix *= Matrix::CreateRotationX(DirectX::XMConvertToRadians(JS_FLOAT(1)));
-                JS_BUILD_MATRIX_OBJECT(matrix);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("rotateMatrixAroundX", 2);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto matrix = JS_MATRIX(0);
-                matrix *= Matrix::CreateRotationY(DirectX::XMConvertToRadians(JS_FLOAT(1)));
-                JS_BUILD_MATRIX_OBJECT(matrix);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("rotateMatrixAroundY", 2);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto matrix = JS_MATRIX(0);
-                matrix *= Matrix::CreateRotationZ(DirectX::XMConvertToRadians(JS_FLOAT(1)));
-                JS_BUILD_MATRIX_OBJECT(matrix);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("rotateMatrixAroundZ", 2);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto matrix = JS_MATRIX(0);
-                auto scaleX = JS_FLOAT(1);
-                auto scaleY = JS_FLOAT(2);
-                auto scaleZ = JS_FLOAT(3);
-                matrix *= Matrix::CreateScale(scaleX, scaleY, scaleZ);
-                JS_BUILD_MATRIX_OBJECT(matrix);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("scaleMatrix", 4);
-            JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto matrix = JS_MATRIX(0);
-                auto scaleX = JS_FLOAT(1);
-                auto scaleY = JS_FLOAT(2);
-                auto scaleZ = JS_FLOAT(3);
-                matrix *= Matrix::CreateTranslation(scaleX, scaleY, scaleZ);
-                JS_BUILD_MATRIX_OBJECT(matrix);
-                return 1;
-            }
-            JS_GLOBAL_FUNCTION_END("translateMatrix", 4);
 
             // oRenderer
             JS_INTERFACE_BEGIN();

@@ -42,14 +42,11 @@ function render() {
     SpriteBatch.drawSprite(nutTexture, new Vector2(192, 480), Color.WHITE, spriteAngle);
     SpriteBatch.drawSprite(nutTexture, new Vector2(320, 440), Color.WHITE, spriteAngle, .5);
     SpriteBatch.drawSprite(null, new Vector2(320, 500), Color.WHITE, spriteAngle, 32);
-/*
+
     // With a custom matrix
-    var customTransform = identityMatrix();
-    customTransform = rotateMatrixAroundZ(customTransform, spriteAngle);
-    customTransform = scaleMatrix(customTransform, 4, .5, 1);
-    customTransform = translateMatrix(customTransform, 520, 120, 0);
+    var customTransform = Matrix.createRotationZ(spriteAngle).mul(Matrix.createScale(new Vector3(4, .5, 1))).mul(Matrix.createTranslation(new Vector3(520, 120, 0)));
     SpriteBatch.drawTransformedSprite(nutTexture, customTransform);
-*/
+
     // Lines
     SpriteBatch.drawBeam(chainTexture, new Vector2(448, 480), new Vector2(648, 440), 32);
     SpriteBatch.drawBeam(chainTexture, new Vector2(448, 520), new Vector2(648, 480), 32, Color.WHITE, spriteAngle * .1);

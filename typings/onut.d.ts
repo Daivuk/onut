@@ -224,26 +224,61 @@ declare class Color {
     a: number;
 }
 
+declare class Matrix {
+    static lerp(from: Matrix, to: Matrix, t: number): Matrix;
+    static createBillboard(object: Vector3, cameraPosition: Vector3, cameraUp: Vector3): Matrix;
+    static createConstrainedBillboard(object: Vector3, cameraPosition: Vector3, rotateAxis: Vector3): Matrix;
+    static createTranslation(position: Vector3): Matrix;
+    static createScale(scales: Vector3): Matrix;
+    static createRotationX(degrees: number): Matrix;
+    static createRotationY(degrees: number): Matrix;
+    static createRotationZ(degrees: number): Matrix;
+    static createFromAxisAngle(axis: Vector3, degrees: number): Matrix;
+    static createPerspectiveFieldOfView(fov: number, aspectRatio: number, nearPlane: number, farPlane: number): Matrix;
+    static createPerspective(width: number, height: number, nearPlane: number, farPlane: number): Matrix;
+    static createPerspectiveOffCenter(left: number, right: number, bottom: number, top: number, nearPlane: number, farPlane: number): Matrix;
+    static createOrthographic(width: number, height: number, zNearPlane: number, zFarPlane: number): Matrix;
+    static createOrthographicOffCenter(left: number, right: number, bottom: number, top: number, zNearPlane: number, zFarPlane: number): Matrix;
+    static createLookAt(position: Vector3, target: Vector3, up: Vector3): Matrix;
+    static createWorld(position: Vector3, forward: Vector3, up: Vector3): Matrix;
+    static createFromYawPitchRoll(yaw: number, pitch: number, roll: number): Matrix;
 
+    static IDENTITY: Matrix;
 
+    /** Identity */
+    constructor();
+    constructor(right: Vector3, front: Vector3, up: Vector3);
+    constructor(row0: Vector4, row1: Vector4, row2: Vector4, row3: Vector4);
+    constructor(
+        _11: number, _12: number, _13: number, _14: number,
+        _21: number, _22: number, _23: number, _24: number,
+        _31: number, _32: number, _33: number, _34: number,
+        _41: number, _42: number, _43: number, _44: number);
 
-interface Matrix {
-    _11: number; _12: number; _13: number; _14: number;
-    _21: number; _22: number; _23: number; _24: number;
-    _31: number; _32: number; _33: number; _34: number;
-    _41: number; _42: number; _43: number; _44: number;
+    isEqual(other: Matrix): boolean;
+    add(other: Color): Matrix;
+    sub(other: Color): Matrix;
+    mul(other: Color): Matrix;
+    mul(s: number): Matrix;
+    div(other: Color): Matrix;
+    div(s: number): Matrix;
+    translation(): Vector3;
+    right(): Vector3;
+    axisX(): Vector3;
+    left(): Vector3;
+    front(): Vector3;
+    axisY(): Vector3;
+    back(): Vector3;
+    up(): Vector3;
+    axisZ(): Vector3;
+    down(): Vector3;
+    transpose(): Matrix;
+    invert(): Matrix;
+    determinant(): number;
 }
-declare function Matrix(
-    _11: number, _12: number, _13: number, _14: number,
-    _21: number, _22: number, _23: number, _24: number,
-    _31: number, _32: number, _33: number, _34: number,
-    _41: number, _42: number, _43: number, _44: number): Matrix;
-declare function identityMatrix(): Matrix;
-declare function rotateMatrixAroundX(matrix: Matrix, angle: number): Matrix;
-declare function rotateMatrixAroundY(matrix: Matrix, angle: number): Matrix;
-declare function rotateMatrixAroundZ(matrix: Matrix, angle: number): Matrix;
-declare function scaleMatrix(matrix: Matrix, x: number, y: number, z: number): Matrix;
-declare function translateMatrix(matrix: Matrix, x: number, y: number, z: number): Matrix;
+
+
+
 
 // Resources
 interface Texture {
@@ -339,6 +374,8 @@ interface SpriteBatch {
     setFilter(filterMode: Number);
 }
 declare var SpriteBatch: SpriteBatch;
+
+
 
 // Blend mode
 declare enum BlendMode {
