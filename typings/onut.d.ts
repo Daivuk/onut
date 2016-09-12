@@ -426,6 +426,28 @@ declare namespace PrimitiveBatch {
     function draw(position: Vector2, color: Color, texCoord: Vector2);
 }
 
+// Input
+declare namespace Input {
+    function getMousePos(): Vector2;
+    function isDown(key: Key): boolean;
+    function isUp(key: Key): boolean;
+    function isJustDown(key: Key): boolean;
+    function isJustUp(key: Key): boolean;
+    function getValue(key: Key): number;
+}
+
+// HTTP
+declare namespace Http {
+    function post(url: string, arguments: any, onErrorFn: (code: number, message: string) => void): string;
+    function postAsync(url: string, arguments: any, onSuccessFn: (body: string) => void, onErrorFn: (code: number, message: string) => void);
+    function getString(url: string, arguments: any, onErrorFn: (code: number, message: string) => void): string;
+    function getStringAsync(url: string, arguments: any, onSuccessFn: (body: string) => void, onErrorFn: (code: number, message: string) => void);
+    function get(url: string, arguments: any, onErrorFn: (code: number, message: string) => void): ArrayBuffer;
+    function getAsync(url: string, arguments: any, onSuccessFn: (body: ArrayBuffer) => void, onErrorFn: (code: number, message: string) => void);
+    function getTexture(url: string, arguments: any, onErrorFn: (code: number, message: string) => void): Texture;
+    function getTextureAsync(url: string, arguments: any, onSuccessFn: (texture: Texture) => void, onErrorFn: (code: number, message: string) => void);
+}
+
 // Blend mode
 declare enum BlendMode {
     OPAQUE,
@@ -449,4 +471,39 @@ declare enum PrimitiveMode {
     LINE_STRIP,
     TRIANGLE_LIST,
     TRIANGLE_STRIP
+}
+
+// Input keys/mouse
+declare enum Key {
+    ESCAPE,
+    _1, _2, _3, _4, _5, _6, _7, _8, _9, _0,
+    MINUS, EQUALS, BACKSPACE, TAB,
+    Q, W, E, R, T, Y, U, I, O, P,
+    LEFT_BRACKET, RIGHT_BRACKET, ENTER, LEFT_CONTROL,
+    A, S, D, F, G, H, J, K, L,
+    SEMI_COLON, APOSTROPHE, GRAVE, LEFT_SHIFT, BACKSLASH,
+    Z, X, C, V, B, N, M,
+    COMMA, PERIOD, SLASH, RIGHT_SHIFT, MULTIPLY,
+    LEFT_ALT, SPACE_BAR, CAPS_LOCK,
+    F1, F2, F3, F4, F5, F6, F7, F8, F9, F10,
+    NUM_LOCK, SCROLL_LOCK,
+    NUM_PAD_7, NUM_PAD_8, NUM_PAD_9, NUM_PAD_MINUS,
+    NUM_PAD_4, NUM_PAD_5, NUM_PAD_6, NUM_PAD_ADD,
+    NUM_PAD_1, NUM_PAD_2, NUM_PAD_3,
+    NUM_PAD_0, NUM_PAD_PERIOD,
+    OEM102, F11, F12, F13, F14, F15,
+    KANA, ABNT_C1, CONVERT, NO_CONVERT, YEN, ABNT_C2,
+    NUM_PAD_EQUALS, PREVIOUS_TRACK, AT, COLON, UNDERLINE,
+    KANJI, STOP, AX, UNLABELED, NEXT_TRACK, NUM_PAD_ENTER,
+    RIGHT_CONTROL, MUTE, CALCULATOR, PLAY_PAUSE, MEDIA_STOP,
+    VOLUME_DOWN, VOLUME_UP, WEB_HOME,
+    NUM_PAD_COMMA, NUM_PAD_DIVICE, SYSRQ, RIGHT_ALT, ALT_CAR,
+    PAUSE, HOME, UP, PAGE_UP, LEFT, RIGHT, END, DOWN, PAGE_DOWN,
+    INSERT, DELETE, LEFT_WINDOWS, RIGHT_WINDOWS, APP_MENU,
+    POWER, SLEEP, WAKE,
+    WEB_SEARCH, WEB_FAVORITES, WEB_REFRESH, WEB_STOP,
+    WEB_FORWARD, WEB_BACK,
+    MY_COMPUTER, MAIL_L, MEDIA_SELECT,
+    CIRCOMFLEX,
+    MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_X, MOUSE_Y, MOUSE_Z
 }

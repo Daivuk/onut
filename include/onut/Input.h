@@ -73,7 +73,7 @@ namespace onut
             KeyM = 0x32,
             KeyComma = 0x33,
             KeyPeriod = 0x34, /* . on main keyboard */
-            KeySlack = 0x35, /* / on main keyboard */
+            KeySlash = 0x35, /* / on main keyboard */
             KeyRightShift = 0x36,
             KeyMultiply = 0x37, /* * on numeric keypad */
             KeyLeftAlt = 0x38, /* left Alt */
@@ -116,7 +116,7 @@ namespace onut
             KeyNoConvert = 0x7B, /* (Japanese keyboard) */
             KeyYen = 0x7D, /* (Japanese keyboard) */
             KeyAbntC2 = 0x7E, /* Numpad . on Brazilian keyboard */
-            KeyNumPadEqualds = 0x8D, /* = on numeric keypad (NEC PC98) */
+            KeyNumPadEquals = 0x8D, /* = on numeric keypad (NEC PC98) */
             KeyPreviousTrack = 0x90, /* Previous Track (OINPUT_CIRCUMFLEX on Japanese keyboard) */
             KeyAt = 0x91, /* (NEC PC98) */
             KeyColon = 0x92, /* (NEC PC98) */
@@ -128,7 +128,7 @@ namespace onut
             KeyNextTrack = 0x99, /* Next Track */
             KeyNumPadEnter = 0x9C, /* Enter on numeric keypad */
             KeyRightControl = 0x9D,
-            KeyMutex = 0xA0, /* Mute */
+            KeyMute = 0xA0, /* Mute */
             KeyCalculator = 0xA1, /* Calculator */
             KeyPlayPause = 0xA2, /* Play / Pause */
             KeyMediaStop = 0xA4, /* Media Stop */
@@ -279,7 +279,7 @@ namespace onut
 #define OKeyM onut::Input::State::KeyM
 #define OKeyComma onut::Input::State::KeyComma
 #define OKeyPeriod onut::Input::State::KeyPeriod /* . on main keyboard */
-#define OKeySlack onut::Input::State::KeySlack /* / on main keyboard */
+#define OKeySlash onut::Input::State::KeySlash /* / on main keyboard */
 #define OKeyRightShift onut::Input::State::KeyRightShift
 #define OKeyMultiply onut::Input::State::KeyMultiply /* * on numeric keypad */
 #define OKeyLeftAlt onut::Input::State::KeyLeftAlt /* left Alt */
@@ -322,7 +322,7 @@ namespace onut
 #define OKeyNoConvert onut::Input::State::KeyNoConvert /* (Japanese keyboard) */
 #define OKeyYen onut::Input::State::KeyYen /* (Japanese keyboard) */
 #define OKeyAbntC2 onut::Input::State::KeyAbntC2 /* Numpad . on Brazilian keyboard */
-#define OKeyNumPadEqualds onut::Input::State::KeyNumPadEqualds /* = on numeric keypad (NEC PC98) */
+#define OKeyNumPadEquals onut::Input::State::KeyNumPadEquals /* = on numeric keypad (NEC PC98) */
 #define OKeyPreviousTrack onut::Input::State::KeyPreviousTrack /* Previous Track (OINPUT_CIRCUMFLEX on Japanese keyboard) */
 #define OKeyAt onut::Input::State::KeyAt /* (NEC PC98) */
 #define OKeyColon onut::Input::State::KeyColon /* (NEC PC98) */
@@ -334,7 +334,7 @@ namespace onut
 #define OKeyNextTrack onut::Input::State::KeyNextTrack /* Next Track */
 #define OKeyNumPadEnter onut::Input::State::KeyNumPadEnter /* Enter on numeric keypad */
 #define OKeyRightControl onut::Input::State::KeyRightControl
-#define OKeyMutex onut::Input::State::KeyMutex /* Mute */
+#define OKeyMute onut::Input::State::KeyMute /* Mute */
 #define OKeyCalculator onut::Input::State::KeyCalculator /* Calculator */
 #define OKeyPlayPause onut::Input::State::KeyPlayPause /* Play / Pause */
 #define OKeyMediaStop onut::Input::State::KeyMediaStop /* Media Stop */

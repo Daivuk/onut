@@ -1,10 +1,13 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Curve.h>
+#include <onut/Dispatcher.h>
 #include <onut/Entity.h>
 #include <onut/EntityFactory.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
+#include <onut/Http.h>
+#include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/PrimitiveBatch.h>
 #include <onut/PrimitiveMode.h>
@@ -19,7 +22,8 @@
 #include "JSBindings.h"
 
 // Third party
-#include "duktape/duktape.h"
+#include <duktape/duktape.h>
+#include <json/json.h>
 
 // STL
 #include <set>
@@ -3493,6 +3497,289 @@ namespace onut
             }
             JS_INTERFACE_END("PrimitiveBatch");
 
+            // oInput
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newVector2(ctx, oInput->mousePosf);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getMousePos", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, oInput->isStateDown((onut::Input::State)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isDown", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, oInput->isStateUp((onut::Input::State)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isUp", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, oInput->isStateJustDown((onut::Input::State)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isJustDown", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, oInput->isStateJustUp((onut::Input::State)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isJustUp", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oInput->getStateValue((onut::Input::State)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isJustUp", 1);
+            }
+            JS_INTERFACE_END("Input");
+
+            // Http
+#define JS_HTTP_ARGUMENTS(__index__) \
+    onut::http::Arguments arguments; \
+    if (duk_is_object(ctx, __index__)) \
+    { \
+        auto str = duk_json_encode(ctx, __index__); \
+        Json::Reader reader; \
+        Json::Value root; \
+        if (reader.parse(str, root)) \
+        { \
+            auto members = root.getMemberNames(); \
+            for (auto& member : members) \
+            { \
+                arguments.push_back({member, root[member].asString()}); \
+            } \
+        } \
+    }
+            static uint32_t uniqueHTTPRequestID = 0;
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto url = JS_STRING(0);
+                    JS_HTTP_ARGUMENTS(1);
+                    auto onErrorFn = duk_get_heapptr(ctx, 2);
+                    auto ret = onut::http::getString(url, arguments, [onErrorFn, ctx](long code, std::string message)
+                    {
+                        if (onErrorFn)
+                        {
+                            duk_push_heapptr(ctx, onErrorFn);
+                            duk_push_uint(ctx, (duk_uint_t)code);
+                            duk_push_string(ctx, message.c_str());
+                            duk_call(ctx, 2);
+                            duk_pop(ctx);
+                        }
+                    });
+
+                    duk_push_string(ctx, ret.c_str());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getString", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto url = JS_STRING(0);
+                    JS_HTTP_ARGUMENTS(1);
+                    auto requestId = uniqueHTTPRequestID++;
+                    std::string keyOK;
+                    std::string keyFAIL;
+                    if (duk_is_function(ctx, 2))
+                    {
+                        keyOK = "httpOK" + std::to_string(requestId);
+                        duk_push_global_stash(ctx);
+                        duk_dup(ctx, 2);
+                        duk_put_prop_string(ctx, -2, keyOK.c_str());
+                    }
+                    if (duk_is_function(ctx, 3))
+                    {
+                        keyFAIL = "httpFAIL" + std::to_string(requestId);
+                        duk_push_global_stash(ctx);
+                        duk_dup(ctx, 3);
+                        duk_put_prop_string(ctx, -2, keyFAIL.c_str());
+                    }
+                    onut::http::getStringAsync(url, arguments,
+                                               [requestId, ctx, keyOK, keyFAIL](std::string ret)
+                    {
+                        duk_push_global_stash(ctx);
+                        if (duk_get_prop_string(ctx, -1, keyOK.c_str()))
+                        {
+                            duk_push_string(ctx, ret.c_str());
+                            duk_call(ctx, 1);
+                            duk_pop(ctx);
+                        }
+                        if (!keyOK.empty()) duk_del_prop_string(ctx, -1, keyOK.c_str());
+                        if (!keyFAIL.empty()) duk_del_prop_string(ctx, -1, keyFAIL.c_str());
+                        duk_pop(ctx);
+                    },
+                        [requestId, ctx, keyOK, keyFAIL](long code, std::string message)
+                    {
+                        duk_push_global_stash(ctx);
+                        if (duk_get_prop_string(ctx, -1, keyFAIL.c_str()))
+                        {
+                            duk_push_uint(ctx, (duk_uint_t)code);
+                            duk_push_string(ctx, message.c_str());
+                            duk_call(ctx, 2);
+                            duk_pop(ctx);
+                        }
+                        if (!keyOK.empty()) duk_del_prop_string(ctx, -1, keyOK.c_str());
+                        if (!keyFAIL.empty()) duk_del_prop_string(ctx, -1, keyFAIL.c_str());
+                        duk_pop(ctx);
+                    });
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("getStringAsync", 4);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto url = JS_STRING(0);
+                    JS_HTTP_ARGUMENTS(1);
+                    auto onErrorFn = duk_get_heapptr(ctx, 2);
+                    auto ret = onut::http::getString(url, arguments, [onErrorFn, ctx](long code, std::string message)
+                    {
+                        if (onErrorFn)
+                        {
+                            duk_push_heapptr(ctx, onErrorFn);
+                            duk_push_uint(ctx, (duk_uint_t)code);
+                            duk_push_string(ctx, message.c_str());
+                            duk_call(ctx, 2);
+                            duk_pop(ctx);
+                        }
+                    });
+
+                    duk_push_string(ctx, ret.c_str());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("post", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto url = JS_STRING(0);
+                    JS_HTTP_ARGUMENTS(1);
+                    auto requestId = uniqueHTTPRequestID++;
+                    std::string keyOK;
+                    std::string keyFAIL;
+                    if (duk_is_function(ctx, 2))
+                    {
+                        keyOK = "httpOK" + std::to_string(requestId);
+                        duk_push_global_stash(ctx);
+                        duk_dup(ctx, 2);
+                        duk_put_prop_string(ctx, -2, keyOK.c_str());
+                    }
+                    if (duk_is_function(ctx, 3))
+                    {
+                        keyFAIL = "httpFAIL" + std::to_string(requestId);
+                        duk_push_global_stash(ctx);
+                        duk_dup(ctx, 3);
+                        duk_put_prop_string(ctx, -2, keyFAIL.c_str());
+                    }
+                    onut::http::getStringAsync(url, arguments,
+                                               [requestId, ctx, keyOK, keyFAIL](std::string ret)
+                    {
+                        duk_push_global_stash(ctx);
+                        if (duk_get_prop_string(ctx, -1, keyOK.c_str()))
+                        {
+                            duk_push_string(ctx, ret.c_str());
+                            duk_call(ctx, 1);
+                            duk_pop(ctx);
+                        }
+                        if (!keyOK.empty()) duk_del_prop_string(ctx, -1, keyOK.c_str());
+                        if (!keyFAIL.empty()) duk_del_prop_string(ctx, -1, keyFAIL.c_str());
+                        duk_pop(ctx);
+                    },
+                        [requestId, ctx, keyOK, keyFAIL](long code, std::string message)
+                    {
+                        duk_push_global_stash(ctx);
+                        if (duk_get_prop_string(ctx, -1, keyFAIL.c_str()))
+                        {
+                            duk_push_uint(ctx, (duk_uint_t)code);
+                            duk_push_string(ctx, message.c_str());
+                            duk_call(ctx, 2);
+                            duk_pop(ctx);
+                        }
+                        if (!keyOK.empty()) duk_del_prop_string(ctx, -1, keyOK.c_str());
+                        if (!keyFAIL.empty()) duk_del_prop_string(ctx, -1, keyFAIL.c_str());
+                        duk_pop(ctx);
+                    });
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("postAsync", 4);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto url = JS_STRING(0);
+                    JS_HTTP_ARGUMENTS(1);
+                    auto onErrorFn = duk_get_heapptr(ctx, 2);
+                    auto ret = OHTTPGetTexture(url, arguments, [onErrorFn, ctx](long code, std::string message)
+                    {
+                        if (onErrorFn)
+                        {
+                            duk_push_heapptr(ctx, onErrorFn);
+                            duk_push_uint(ctx, (duk_uint_t)code);
+                            duk_push_string(ctx, message.c_str());
+                            duk_call(ctx, 2);
+                            duk_pop(ctx);
+                        }
+                    });
+                    newTexture(ctx, ret);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getTexture", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto url = JS_STRING(0);
+                    JS_HTTP_ARGUMENTS(1);
+                    auto requestId = uniqueHTTPRequestID++;
+                    std::string keyOK;
+                    std::string keyFAIL;
+                    if (duk_is_function(ctx, 2))
+                    {
+                        keyOK = "httpOK" + std::to_string(requestId);
+                        duk_push_global_stash(ctx);
+                        duk_dup(ctx, 2);
+                        duk_put_prop_string(ctx, -2, keyOK.c_str());
+                    }
+                    if (duk_is_function(ctx, 3))
+                    {
+                        keyFAIL = "httpFAIL" + std::to_string(requestId);
+                        duk_push_global_stash(ctx);
+                        duk_dup(ctx, 3);
+                        duk_put_prop_string(ctx, -2, keyFAIL.c_str());
+                    }
+                    OHTTPGetTextureAsync(url, arguments,
+                                         [requestId, ctx, keyOK, keyFAIL](OTextureRef ret)
+                    {
+                        duk_push_global_stash(ctx);
+                        if (duk_get_prop_string(ctx, -1, keyOK.c_str()))
+                        {
+                            newTexture(ctx, ret);
+                            duk_call(ctx, 1);
+                            duk_pop(ctx);
+                        }
+                        if (!keyOK.empty()) duk_del_prop_string(ctx, -1, keyOK.c_str());
+                        if (!keyFAIL.empty()) duk_del_prop_string(ctx, -1, keyFAIL.c_str());
+                        duk_pop(ctx);
+                    },
+                        [requestId, ctx, keyOK, keyFAIL](long code, std::string message)
+                    {
+                        duk_push_global_stash(ctx);
+                        if (duk_get_prop_string(ctx, -1, keyFAIL.c_str()))
+                        {
+                            duk_push_uint(ctx, (duk_uint_t)code);
+                            duk_push_string(ctx, message.c_str());
+                            duk_call(ctx, 2);
+                            duk_pop(ctx);
+                        }
+                        if (!keyOK.empty()) duk_del_prop_string(ctx, -1, keyOK.c_str());
+                        if (!keyFAIL.empty()) duk_del_prop_string(ctx, -1, keyFAIL.c_str());
+                        duk_pop(ctx);
+                    });
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("getTextureAsync", 4);
+            }
+            JS_INTERFACE_END("Http");
+
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN
             {
@@ -3514,31 +3801,189 @@ namespace onut
             JS_GLOBAL_FUNCTION_END("getShader", 1);
 
             // Some enums
+#define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)
             JS_INTERFACE_BEGIN();
             {
-                JS_ADD_FLOAT_PROP("OPAQUE", (float)OBlendOpaque);
-                JS_ADD_FLOAT_PROP("ALPHA", (float)OBlendAlpha);
-                JS_ADD_FLOAT_PROP("ADD", (float)OBlendAdd);
-                JS_ADD_FLOAT_PROP("PREMULTIPLIED", (float)OBlendPreMultiplied);
-                JS_ADD_FLOAT_PROP("MULTIPLY", (float)OBlendMultiply);
-                JS_ADD_FLOAT_PROP("FORCE_WRITE", (float)OBlendForceWrite);
+                JS_ENUM("OPAQUE", OBlendOpaque);
+                JS_ENUM("ALPHA", OBlendAlpha);
+                JS_ENUM("ADD", OBlendAdd);
+                JS_ENUM("PREMULTIPLIED", OBlendPreMultiplied);
+                JS_ENUM("MULTIPLY", OBlendMultiply);
+                JS_ENUM("FORCE_WRITE", OBlendForceWrite);
             }
             JS_INTERFACE_END("BlendMode");
             JS_INTERFACE_BEGIN();
             {
-                JS_ADD_FLOAT_PROP("NEAREST", (float)OFilterNearest);
-                JS_ADD_FLOAT_PROP("LINEAR", (float)OFilterLinear);
+                JS_ENUM("NEAREST", OFilterNearest);
+                JS_ENUM("LINEAR", OFilterLinear);
             }
             JS_INTERFACE_END("FilterMode");
             JS_INTERFACE_BEGIN();
             {
-                JS_ADD_FLOAT_PROP("POINT_LIST", (float)OPrimitivePointList);
-                JS_ADD_FLOAT_PROP("LINE_LIST", (float)OPrimitiveLineList);
-                JS_ADD_FLOAT_PROP("LINE_STRIP", (float)OPrimitiveLineStrip);
-                JS_ADD_FLOAT_PROP("TRIANGLE_LIST", (float)OPrimitiveTriangleList);
-                JS_ADD_FLOAT_PROP("TRIANGLE_STRIP", (float)OPrimitiveTriangleStrip);
+                JS_ENUM("POINT_LIST", OPrimitivePointList);
+                JS_ENUM("LINE_LIST", OPrimitiveLineList);
+                JS_ENUM("LINE_STRIP", OPrimitiveLineStrip);
+                JS_ENUM("TRIANGLE_LIST", OPrimitiveTriangleList);
+                JS_ENUM("TRIANGLE_STRIP", OPrimitiveTriangleStrip);
             }
             JS_INTERFACE_END("PrimitiveMode");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("ESCAPE", onut::Input::State::KeyEscape);
+                JS_ENUM("_1", onut::Input::State::Key1);
+                JS_ENUM("_2", onut::Input::State::Key2);
+                JS_ENUM("_3", onut::Input::State::Key3);
+                JS_ENUM("_4", onut::Input::State::Key4);
+                JS_ENUM("_5", onut::Input::State::Key5);
+                JS_ENUM("_6", onut::Input::State::Key6);
+                JS_ENUM("_7", onut::Input::State::Key7);
+                JS_ENUM("_8", onut::Input::State::Key8);
+                JS_ENUM("_9", onut::Input::State::Key9);
+                JS_ENUM("_0", onut::Input::State::Key0);
+                JS_ENUM("MINUS", onut::Input::State::KeyMinus); 
+                JS_ENUM("EQUALS", onut::Input::State::KeyEquals);
+                JS_ENUM("BACKSPACE", onut::Input::State::KeyBackspace); 
+                JS_ENUM("TAB", onut::Input::State::KeyTab);
+                JS_ENUM("Q", onut::Input::State::KeyQ);
+                JS_ENUM("W", onut::Input::State::KeyW);
+                JS_ENUM("E", onut::Input::State::KeyE);
+                JS_ENUM("R", onut::Input::State::KeyR);
+                JS_ENUM("T", onut::Input::State::KeyT);
+                JS_ENUM("Y", onut::Input::State::KeyY);
+                JS_ENUM("U", onut::Input::State::KeyU);
+                JS_ENUM("I", onut::Input::State::KeyI);
+                JS_ENUM("O", onut::Input::State::KeyO);
+                JS_ENUM("P", onut::Input::State::KeyP);
+                JS_ENUM("LEFT_BRACKET", onut::Input::State::KeyLeftBracket);
+                JS_ENUM("RIGHT_BRACKET", onut::Input::State::KeyRightBracket);
+                JS_ENUM("ENTER", onut::Input::State::KeyEnter); 
+                JS_ENUM("LEFT_CONTROL", onut::Input::State::KeyLeftControl);
+                JS_ENUM("A", onut::Input::State::KeyA);
+                JS_ENUM("S", onut::Input::State::KeyS);
+                JS_ENUM("D", onut::Input::State::KeyD);
+                JS_ENUM("F", onut::Input::State::KeyF);
+                JS_ENUM("G", onut::Input::State::KeyG);
+                JS_ENUM("H", onut::Input::State::KeyH);
+                JS_ENUM("J", onut::Input::State::KeyJ);
+                JS_ENUM("K", onut::Input::State::KeyK);
+                JS_ENUM("L", onut::Input::State::KeyL);
+                JS_ENUM("SEMI_COLON", onut::Input::State::KeySemiColon);
+                JS_ENUM("APOSTROPHE", onut::Input::State::KeyApostrophe);
+                JS_ENUM("GRAVE", onut::Input::State::KeyGrave);    
+                JS_ENUM("LEFT_SHIFT", onut::Input::State::KeyLeftShift);
+                JS_ENUM("BACL_SLASH", onut::Input::State::KeyBackslash);
+                JS_ENUM("Z", onut::Input::State::KeyZ);
+                JS_ENUM("X", onut::Input::State::KeyX);
+                JS_ENUM("C", onut::Input::State::KeyC);
+                JS_ENUM("V", onut::Input::State::KeyV);
+                JS_ENUM("B", onut::Input::State::KeyB);
+                JS_ENUM("N", onut::Input::State::KeyN);
+                JS_ENUM("M", onut::Input::State::KeyM);
+                JS_ENUM("COMMA", onut::Input::State::KeyComma);
+                JS_ENUM("PERIOD", onut::Input::State::KeyPeriod); 
+                JS_ENUM("SLASH", onut::Input::State::KeySlash); 
+                JS_ENUM("RIGHT_SHIFT", onut::Input::State::KeyRightShift);
+                JS_ENUM("MULTIPLY", onut::Input::State::KeyMultiply); 
+                JS_ENUM("LEFT_ALT", onut::Input::State::KeyLeftAlt); 
+                JS_ENUM("SPACE_BAR", onut::Input::State::KeySpaceBar);
+                JS_ENUM("CAPS_LOCK", onut::Input::State::KeyCapsLock);
+                JS_ENUM("F1", onut::Input::State::KeyF1);
+                JS_ENUM("F2", onut::Input::State::KeyF2);
+                JS_ENUM("F3", onut::Input::State::KeyF3);
+                JS_ENUM("F4", onut::Input::State::KeyF4);
+                JS_ENUM("F5", onut::Input::State::KeyF5);
+                JS_ENUM("F6", onut::Input::State::KeyF6);
+                JS_ENUM("F7", onut::Input::State::KeyF7);
+                JS_ENUM("F8", onut::Input::State::KeyF8);
+                JS_ENUM("F9", onut::Input::State::KeyF9);
+                JS_ENUM("F10", onut::Input::State::KeyF10);
+                JS_ENUM("NUM_LOCK", onut::Input::State::KeyNumLock);
+                JS_ENUM("SCROLL_LOCK", onut::Input::State::KeyScrollLock); 
+                JS_ENUM("NUM_PAD_7", onut::Input::State::KeyNumPad7);
+                JS_ENUM("NUM_PAD_8", onut::Input::State::KeyNumPad8);
+                JS_ENUM("NUM_PAD_9", onut::Input::State::KeyNumPad9);
+                JS_ENUM("NUM_PAD_MINUS", onut::Input::State::KeyNumPadMinus); 
+                JS_ENUM("NUM_PAD_4", onut::Input::State::KeyNumPad4);
+                JS_ENUM("NUM_PAD_5", onut::Input::State::KeyNumPad5);
+                JS_ENUM("NUM_PAD_6", onut::Input::State::KeyNumPad6);
+                JS_ENUM("NUM_PAD_ADD", onut::Input::State::KeyNumPadAdd); 
+                JS_ENUM("NUM_PAD_1", onut::Input::State::KeyNumPad1);
+                JS_ENUM("NUM_PAD_2", onut::Input::State::KeyNumPad2);
+                JS_ENUM("NUM_PAD_3", onut::Input::State::KeyNumPad3);
+                JS_ENUM("NUM_PAD_0", onut::Input::State::KeyNumPad0);
+                JS_ENUM("NUM_PAD_PERIOD", onut::Input::State::KeyNumPadPeriod); 
+                JS_ENUM("OEM102", onut::Input::State::KeyOEM102); 
+                JS_ENUM("F11", onut::Input::State::KeyF11);
+                JS_ENUM("F12", onut::Input::State::KeyF12);
+                JS_ENUM("F13", onut::Input::State::KeyF13); 
+                JS_ENUM("F14", onut::Input::State::KeyF14); 
+                JS_ENUM("F15", onut::Input::State::KeyF15); 
+                JS_ENUM("KANA", onut::Input::State::KeyKana); 
+                JS_ENUM("ABNT_C1", onut::Input::State::KeyAbntC1); 
+                JS_ENUM("CONVERT", onut::Input::State::KeyConvert); 
+                JS_ENUM("NO_CONVERT", onut::Input::State::KeyNoConvert); 
+                JS_ENUM("YEN", onut::Input::State::KeyYen); 
+                JS_ENUM("ABNT_C2", onut::Input::State::KeyAbntC2); 
+                JS_ENUM("NUM_PAD_EQUALS", onut::Input::State::KeyNumPadEquals); 
+                JS_ENUM("PREVIOUS_TRACK", onut::Input::State::KeyPreviousTrack); 
+                JS_ENUM("AT", onut::Input::State::KeyAt); 
+                JS_ENUM("COLON", onut::Input::State::KeyColon); 
+                JS_ENUM("UNDERLINE", onut::Input::State::KeyUnderline); 
+                JS_ENUM("KANJI", onut::Input::State::KeyKanji); 
+                JS_ENUM("STOP", onut::Input::State::KeyStop); 
+                JS_ENUM("AX", onut::Input::State::KeyAx); 
+                JS_ENUM("UNLABELED", onut::Input::State::KeyUnlabeled); 
+                JS_ENUM("NEXT_TRACK", onut::Input::State::KeyNextTrack); 
+                JS_ENUM("NUM_PAD_ENTER", onut::Input::State::KeyNumPadEnter); 
+                JS_ENUM("RIGHT_CONTROL", onut::Input::State::KeyRightControl);
+                JS_ENUM("MUTE", onut::Input::State::KeyMute); 
+                JS_ENUM("CALCULATOR", onut::Input::State::KeyCalculator); 
+                JS_ENUM("PLAY_PAUSE", onut::Input::State::KeyPlayPause); 
+                JS_ENUM("MEDIA_STOP", onut::Input::State::KeyMediaStop); 
+                JS_ENUM("VOLUME_DOWN", onut::Input::State::KeyVolumeDown); 
+                JS_ENUM("VOLUME_UP", onut::Input::State::KeyVolumeUp); 
+                JS_ENUM("WEB_HOME", onut::Input::State::KeyWebHome); 
+                JS_ENUM("NUM_PAD_COMMA", onut::Input::State::KeyNumPadComma);
+                JS_ENUM("NUM_PAD_DIVICE", onut::Input::State::KeyNumPadDivide); 
+                JS_ENUM("SYSRQ", onut::Input::State::Key_SYSRQ);
+                JS_ENUM("RIGHT_ALT", onut::Input::State::KeyRightAlt); 
+                JS_ENUM("ALT_CAR", onut::Input::State::KeyAltCar); 
+                JS_ENUM("PAUSE", onut::Input::State::KeyPause); 
+                JS_ENUM("HOME", onut::Input::State::KeyHome); 
+                JS_ENUM("UP", onut::Input::State::KeyUp); 
+                JS_ENUM("PAGE_UP", onut::Input::State::KeyPageUp); 
+                JS_ENUM("LEFT", onut::Input::State::KeyLeft); 
+                JS_ENUM("RIGHT", onut::Input::State::KeyRight); 
+                JS_ENUM("END", onut::Input::State::KeyEnd); 
+                JS_ENUM("DOWN", onut::Input::State::KeyDown); 
+                JS_ENUM("PAGE_DOWN", onut::Input::State::KeyPageDown); 
+                JS_ENUM("INSERT", onut::Input::State::KeyInsert); 
+                JS_ENUM("DELETE", onut::Input::State::KeyDelete); 
+                JS_ENUM("LEFT_WINDOWS", onut::Input::State::KeyLeftWindows); 
+                JS_ENUM("RIGHT_WINDOWS", onut::Input::State::KeyRightWindows); 
+                JS_ENUM("APP_MENU", onut::Input::State::KeyAppMenu); 
+                JS_ENUM("POWER", onut::Input::State::KeyPower); 
+                JS_ENUM("SLEEP", onut::Input::State::KeySleep); 
+                JS_ENUM("WAKE", onut::Input::State::KeyWake); 
+                JS_ENUM("WEB_SEARCH", onut::Input::State::KeyWebSearch); 
+                JS_ENUM("WEB_FAVORITES", onut::Input::State::KeyWebFavorites); 
+                JS_ENUM("WEB_REFRESH", onut::Input::State::KeyWebRefresh); 
+                JS_ENUM("WEB_STOP", onut::Input::State::KeyWebStop); 
+                JS_ENUM("WEB_FORWARD", onut::Input::State::KeyWebForward); 
+                JS_ENUM("WEB_BACK", onut::Input::State::KeyWebBack); 
+                JS_ENUM("MY_COMPUTER", onut::Input::State::KeyMyComputer); 
+                JS_ENUM("MAIL_L", onut::Input::State::KeyMailL); 
+                JS_ENUM("MEDIA_SELECT", onut::Input::State::KeyMediaSelect); 
+                JS_ENUM("CIRCOMFLEX", onut::Input::State::KeyCircomflex);
+                JS_ENUM("MOUSE_1", onut::Input::State::Mouse1);
+                JS_ENUM("MOUSE_2", onut::Input::State::Mouse2);
+                JS_ENUM("MOUSE_3", onut::Input::State::Mouse3);
+                JS_ENUM("MOUSE_4", onut::Input::State::Mouse4);
+                JS_ENUM("MOUSE_X", onut::Input::State::MouseX);
+                JS_ENUM("MOUSE_Y", onut::Input::State::MouseY);
+                JS_ENUM("MouseZ", onut::Input::State::MouseZ);
+            }
+            JS_INTERFACE_END("Key");
 
             createMathsBinding();
             createResourceBindings();
