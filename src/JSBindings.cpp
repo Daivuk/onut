@@ -1,5 +1,6 @@
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Crypto.h>
 #include <onut/Curve.h>
 #include <onut/Dispatcher.h>
 #include <onut/Entity.h>
@@ -4398,6 +4399,61 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("getTextureAsync", 4);
             }
             JS_INTERFACE_END("Http");
+
+            // Crypto
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto str = JS_STRING(0);
+                    auto seed = JS_UINT(1, 0);
+                    duk_push_uint(ctx, OHash(str, seed));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("hash", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto str = JS_STRING(0);
+                    duk_push_string(ctx, OSha1(str).c_str());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("sha1", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto str = JS_STRING(0);
+                    duk_push_boolean(ctx, OValidateEmail(str));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("validateEmail", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto str = JS_STRING(0);
+                        duk_push_string(ctx, OEncodeBase64(reinterpret_cast<const uint8_t*>(str), strlen(str)).c_str());
+                        return 1;
+                    }
+                    else if (duk_is_buffer(ctx, 0))
+                    {
+                        duk_size_t bufferSize;
+                        auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                        duk_push_string(ctx, OEncodeBase64(reinterpret_cast<const uint8_t*>(pBuffer), bufferSize).c_str());
+                        return 1;
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("encodeBase64", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto str = JS_STRING(0);
+                    auto out = ODecodeBase64(str);
+                    auto pOut = duk_push_buffer(ctx, out.size(), 0);
+                    memcpy(pOut, out.data(), out.size());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("decodeBase64", 1);
+            }
+            JS_INTERFACE_END("Cryptography");
 
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN

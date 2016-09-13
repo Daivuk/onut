@@ -453,6 +453,16 @@ declare namespace Http {
     function getTextureAsync(url: string, arguments: any, onSuccessFn: (texture: Texture) => void, onErrorFn: (code: number, message: string) => void);
 }
 
+// Crypto
+declare namespace Cryptography {
+    function hash(text: string, seed: number): number;
+    function sha1(text: string): string;
+    function validateEmail(email: string): boolean;
+    function encodeBase64(text: string): string;
+    function encodeBase64(buffer: ArrayBuffer): string;
+    function decodeBase64(base64: string): ArrayBuffer;
+}
+
 // Blend mode
 declare enum BlendMode {
     OPAQUE,
