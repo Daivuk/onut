@@ -15,6 +15,7 @@
 #include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
 #include <onut/Shader.h>
+#include <onut/Sound.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
@@ -56,6 +57,8 @@ namespace onut
         void* pFontPrototype = nullptr;
         void* pShaderPrototype = nullptr;
         void* pMusicPrototype = nullptr;
+        void* pSoundPrototype = nullptr;
+        void* pSoundInstancePrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -327,6 +330,12 @@ namespace onut
             return duk_to_uint(ctx, index);
         }
 
+        static int getInt(duk_context *ctx, duk_idx_t index, int default = 0)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return default;
+            return duk_to_int(ctx, index);
+        }
+
         static const char* getString(duk_context *ctx, duk_idx_t index, const char* default = "")
         {
             if (duk_is_null_or_undefined(ctx, index)) return default;
@@ -337,17 +346,24 @@ namespace onut
         {
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
-            duk_get_prop_string(ctx, index, "\xff""\xff""data");
-            auto ppTexture = (OTextureRef*)(duk_to_pointer(ctx, -1));
-            duk_pop(ctx);
-
-            if (ppTexture)
+            if (duk_is_string(ctx, index))
             {
-                return *ppTexture;
+                return OGetTexture(duk_to_string(ctx, index));
             }
             else
             {
-                return nullptr;
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppTexture = (OTextureRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppTexture)
+                {
+                    return *ppTexture;
+                }
+                else
+                {
+                    return nullptr;
+                }
             }
         }
 
@@ -355,17 +371,24 @@ namespace onut
         {
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
-            duk_get_prop_string(ctx, index, "\xff""\xff""data");
-            auto ppFont = (OFontRef*)(duk_to_pointer(ctx, -1));
-            duk_pop(ctx);
-
-            if (ppFont)
+            if (duk_is_string(ctx, index))
             {
-                return *ppFont;
+                return OGetFont(duk_to_string(ctx, index));
             }
             else
             {
-                return nullptr;
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppFont = (OFontRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppFont)
+                {
+                    return *ppFont;
+                }
+                else
+                {
+                    return nullptr;
+                }
             }
         }
 
@@ -373,17 +396,49 @@ namespace onut
         {
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
-            duk_get_prop_string(ctx, index, "\xff""\xff""data");
-            auto ppShader = (OShaderRef*)(duk_to_pointer(ctx, -1));
-            duk_pop(ctx);
-
-            if (ppShader)
+            if (duk_is_string(ctx, index))
             {
-                return *ppShader;
+                return OGetShader(duk_to_string(ctx, index));
             }
             else
             {
-                return nullptr;
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppShader = (OShaderRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppShader)
+                {
+                    return *ppShader;
+                }
+                else
+                {
+                    return nullptr;
+                }
+            }
+        }
+
+        static OSoundRef getSound(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            if (duk_is_string(ctx, index))
+            {
+                return OGetSound(duk_to_string(ctx, index));
+            }
+            else
+            {
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppSound = (OSoundRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppSound)
+                {
+                    return *ppSound;
+                }
+                else
+                {
+                    return nullptr;
+                }
             }
         }
 
@@ -438,6 +493,7 @@ namespace onut
 #define JS_TEXTURE(__index__) getTexture(ctx, __index__)
 #define JS_FONT(__index__) getFont(ctx, __index__)
 #define JS_SHADER(__index__) getShader(ctx, __index__)
+#define JS_SOUND(__index__) getSound(ctx, __index__)
 #define JS_RECT(...) getRect(ctx, __VA_ARGS__)
 #define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
 #define JS_VECTOR3(...) getVector3(ctx, __VA_ARGS__)
@@ -447,6 +503,7 @@ namespace onut
 #define JS_FLOAT(...) (float)getFloat(ctx, __VA_ARGS__)
 #define JS_STRING(...) getString(ctx, __VA_ARGS__)
 #define JS_UINT(...) getUInt(ctx, __VA_ARGS__)
+#define JS_INT(...) getInt(ctx, __VA_ARGS__)
 #define JS_MATRIX(...) getMatrix(ctx, __VA_ARGS__)
 
         void init()
@@ -2537,6 +2594,26 @@ namespace onut
             duk_push_heapptr(ctx, pMusicPrototype);
             duk_set_prototype(ctx, -2);
         }
+        
+        static void newSound(duk_context* ctx, const OSoundRef& pSound)
+        {
+            duk_push_object(ctx);
+            auto ppSound = new OSoundRef(pSound);
+            duk_push_pointer(ctx, ppSound);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pSoundPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+        
+        static void newSoundInstance(duk_context* ctx, const OSoundInstanceRef& pSoundInstance)
+        {
+            duk_push_object(ctx);
+            auto ppSoundInstance = new OSoundInstanceRef(pSoundInstance);
+            duk_push_pointer(ctx, ppSoundInstance);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pSoundInstancePrototype);
+            duk_set_prototype(ctx, -2);
+        }
 
         void createTextureBindings()
         {
@@ -3088,6 +3165,348 @@ namespace onut
             duk_put_global_string(ctx, "Music");
         }
 
+        void createSoundBindings()
+        {
+            auto ctx = pContext;
+
+            // Sound() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~Sound()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppSound = (OSoundRef*)duk_to_pointer(ctx, -1);
+                if (ppSound)
+                {
+                    delete ppSound;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // play()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto volume = JS_FLOAT(0, 1);
+                auto balance = JS_FLOAT(1);
+                auto pitch = JS_FLOAT(2, 1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSound = (OSoundRef*)duk_to_pointer(ctx, -1);
+                if (ppSound)
+                {
+                    (*ppSound)->play(volume, balance, pitch);
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "play");
+
+            // stop()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSound = (OSoundRef*)duk_to_pointer(ctx, -1);
+                if (ppSound)
+                {
+                    (*ppSound)->stop();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "stop");
+
+            // setMaxInstance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto maxInstances = JS_INT(0, -1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSound = (OSoundRef*)duk_to_pointer(ctx, -1);
+                if (ppSound)
+                {
+                    (*ppSound)->setMaxInstance(maxInstances);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setMaxInstance");
+
+            // createInstance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSound = (OSoundRef*)duk_to_pointer(ctx, -1);
+                if (ppSound)
+                {
+                    newSoundInstance(ctx, (*ppSound)->createInstance());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "createInstance");
+
+            // Done with the object
+            pSoundPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newSound(ctx, OGetSound(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            // createFromData(f)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                auto sampleCount = JS_INT(1);
+                auto channelCount = JS_INT(2);
+                auto sampleRate = JS_INT(3);
+                newSound(ctx, OSound::createFromData(reinterpret_cast<const float*>(pBuffer), sampleCount, channelCount, sampleRate));
+                return 1;
+            }, 4);
+            duk_put_prop_string(ctx, -2, "createFromData");
+
+            duk_put_global_string(ctx, "Sound");
+        }
+
+        void createSoundInstanceBindings()
+        {
+            auto ctx = pContext;
+
+            // SoundInstance() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~SoundInstance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    delete ppSoundInstance;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // play()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->play();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "play");
+
+            // pause()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->pause();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "pause");
+
+            // stop()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->stop();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "stop");
+
+            // isPlaying()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    duk_push_boolean(ctx, (*ppSoundInstance)->isPlaying());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isPlaying");
+
+            // isPaused()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    duk_push_boolean(ctx, (*ppSoundInstance)->isPaused());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isPaused");
+
+            // getLoop()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    duk_push_boolean(ctx, (*ppSoundInstance)->getLoop());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getLoop");
+
+            // getVolume()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppSoundInstance)->getVolume());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getVolume");
+
+            // getBalance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppSoundInstance)->getBalance());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getBalance");
+
+            // getPitch()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppSoundInstance)->getPitch());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getPitch");
+
+            // setLoop()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto loop = JS_BOOL(0, true);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->setLoop(loop);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setLoop");
+
+            // setVolume()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto value = JS_FLOAT(0, 1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->setVolume(value);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setVolume");
+
+            // setPitch()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto value = JS_FLOAT(0, 1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->setPitch(value);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setPitch");
+
+            // setBalance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto value = JS_FLOAT(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    (*ppSoundInstance)->setBalance(value);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setBalance");
+
+            // Done with the object
+            pSoundInstancePrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            duk_put_global_string(ctx, "SoundInstance");
+        }
+
         void createTiledMapBindings()
         {
             auto ctx = pContext;
@@ -3366,6 +3785,8 @@ namespace onut
             createFontBindings();
             createShaderBindings();
             createMusicBindings();
+            createSoundBindings();
+            createSoundInstanceBindings();
             
             createTiledMapBindings(); // to revise
         }
@@ -3686,13 +4107,13 @@ namespace onut
             {
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    duk_push_boolean(ctx, OGetGamePad((int)JS_UINT(0))->isConnected());
+                    duk_push_boolean(ctx, OGetGamePad(JS_INT(0))->isConnected());
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("isConnected", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    auto index = (int)JS_UINT(0);
+                    auto index = JS_INT(0);
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, OGamePadPressed(button, index));
                     return 1;
@@ -3700,7 +4121,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("isDown", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    auto index = (int)JS_UINT(0);
+                    auto index = JS_INT(0);
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, !OGamePadPressed(button, index));
                     return 1;
@@ -3708,7 +4129,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("isUp", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    auto index = (int)JS_UINT(0);
+                    auto index = JS_INT(0);
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, OGamePadJustPressed(button, index));
                     return 1;
@@ -3716,7 +4137,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("isJustDown", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    auto index = (int)JS_UINT(0);
+                    auto index = JS_INT(0);
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, OGamePadJustReleased(button, index));
                     return 1;
@@ -3724,13 +4145,13 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("isJustUp", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    newVector2(ctx, OGetGamePadLeftThumb((int)JS_UINT(0)));
+                    newVector2(ctx, OGetGamePadLeftThumb(JS_INT(0)));
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getLeftThumb", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    newVector2(ctx, OGetGamePadRightThumb((int)JS_UINT(0)));
+                    newVector2(ctx, OGetGamePadRightThumb(JS_INT(0)));
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getRightThumb", 1);
@@ -4003,6 +4424,63 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getMusic", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newSound(ctx, OGetSound(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getSound", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                OPlaySound(JS_STRING(0), JS_FLOAT(1, 1), JS_FLOAT(2), JS_FLOAT(3, 1));
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("playSound", 4);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                if (duk_is_array(ctx, 0))
+                {
+                    std::vector<std::string> sounds;
+                    auto len = duk_get_length(ctx, 0);
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        duk_get_prop_index(ctx, 0, i);
+                        sounds.push_back(duk_to_string(ctx, -1));
+                        duk_pop(ctx);
+                    }
+                    OPlayRandomSound(sounds, JS_FLOAT(1, 1), JS_FLOAT(2), JS_FLOAT(3, 1));
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("playRandomSound", 4);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                OPlaySoundCue(JS_STRING(0), JS_FLOAT(1, 1), JS_FLOAT(2), JS_FLOAT(3, 1));
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("playSoundCue", 4);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto sound = OGetSound(JS_STRING(0));
+                if (sound)
+                {
+                    newSoundInstance(ctx, sound->createInstance());
+                    return 1;
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("getSoundInstance", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto sound = JS_SOUND(0);
+                if (sound)
+                {
+                    newSoundInstance(ctx, sound->createInstance());
+                    return 1;
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("playSoundInstance", 1);
 
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)

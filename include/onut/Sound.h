@@ -59,7 +59,7 @@ namespace onut
     {
     public:
         static OSoundRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
-        static OSoundRef createFromData(float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager = nullptr);
+        static OSoundRef createFromData(const float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager = nullptr);
 
         ~Sound();
 

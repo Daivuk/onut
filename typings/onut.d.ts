@@ -333,6 +333,36 @@ declare class Music {
 /** Same as Music.createFromFile */
 declare function getMusic(filename: string): Music;
 
+declare class Sound {
+    static createFromFile(filename: string); Sound;
+    static createFromData(samples: ArrayBuffer, sampleCount: number, channelCount: number, sampleRate: number): Sound;
+
+    play(volume: number, balance: number, pitch: number);
+    stop();
+    setMaxInstance(maxInstance: number);
+    createInstance(): SoundInstance;
+}
+/** Same as Music.createFromFile */
+declare function getSound(filename: string): Sound;
+declare function playSound(filename: string, volume: number, balance: number, pitch: number);
+declare function playSoundCue(filename: string, volume: number, balance: number, pitch: number);
+
+declare class SoundInstance {
+    play();
+    pause();
+    stop();
+    isPlaying(): boolean;
+    isPaused(): boolean;
+    getLoop(): boolean;
+    setLoop(loop: boolean);
+    getVolume(): number;
+    setVolume(volume: number);
+    getBalance(): number;
+    setBalance(balance: number);
+    getPitch(): number;
+    setPitch(pitch: number);
+}
+
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);

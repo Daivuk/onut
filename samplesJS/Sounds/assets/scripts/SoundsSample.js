@@ -1,11 +1,12 @@
 var font = getFont("font.fnt");
 var music = getMusic("music.mp3");
-/*
-OSoundInstanceRef pLoopingSound;
-OMusicRef pMusic;
-OSoundRef pNotes[8];
+var sound5 = getSound("sound5.wav");
+var loopingSound = getSoundInstance("looping.wav");
+loopingSound.setLoop(true);
 
-static const double NOTE_FREQUENCIES[8] = {
+var notes = [];
+
+var NOTE_FREQUENCIES = [
     261.63, // C4
     293.66, // D4
     329.63, // E4
@@ -14,100 +15,89 @@ static const double NOTE_FREQUENCIES[8] = {
     440.00, // A4
     493.88, // B4
     523.25, // C5
-};
+];
 
-pLoopingSound = OCreateSoundInstance("looping.wav");
-pLoopingSound->setLoop(true);
-
-// Create sounds from custom data
-float* pSampleBuffer = new float[50000];
-for (int note = 0; note < 8; ++note)
+// Create sounds from custom data.
+// Not recommanded to do in Javascript. This is extremely slow.
+var sampleBuffer = new Float32Array(25000);
+for (var note = 0; note < 8; ++note)
 {
-    for (int i = 0; i < 50000; ++i)
+    var noteFreq = NOTE_FREQUENCIES[note];
+    var period = 1 / 44100 * Math.PI * 2 * noteFreq;
+    for (var i = 0; i < 25000; ++i)
     {
         // Create a sine wave of a standard C4 note
-        pSampleBuffer[i] = (float)std::sin((double)i / 44100.0 * NOTE_FREQUENCIES[note] * 3.1415926535897932384626433832795 * 2.0);
+        var val = Math.sin(i * period);
 
         // Fade out
-        float fadeOut = (float)((double)(50000 - i) / 50000.0);
-        fadeOut = std::powf(fadeOut, 4);
-        pSampleBuffer[i] *= fadeOut;
+        var fadeOut = (25000 - i) / 25000;
+        fadeOut = Math.pow(fadeOut, 4);
+
+        sampleBuffer[i] = val * fadeOut;
     }
-    pNotes[note] = OSound::createFromData(pSampleBuffer, 50000, 1, 44100);
+    notes[note] = Sound.createFromData(sampleBuffer, 25000, 1, 44100);
 }
-delete[] pSampleBuffer;
-*/
-function update()
-{
+sampleBuffer = null; // Free memory
+
+function update() {
     var volume = 1;
     var balance = 0;
 
-/*
-    if (OInputPressed(OKeyLeft)) balance -= 1.f;
-    if (OInputPressed(OKeyRight)) balance += 1.f;
+    if (Input.isDown(Key.LEFT)) balance -= 1;
+    if (Input.isDown(Key.RIGHT)) balance += 1;
 
-    if (OInputJustPressed(OKey1))
-    {
-        OPlaySound("sound1.wav", volume, balance);
+    if (Input.isJustDown(Key._1)) {
+        playSound("sound1.wav", volume, balance);
     }
-    if (OInputJustPressed(OKey2))
-    {
-        OPlaySound("sound1.wav", volume, balance, .5f);
+    if (Input.isJustDown(Key._2)) {
+        playSound("sound1.wav", volume, balance, .5);
     }
-    if (OInputJustPressed(OKey3))
-    {
-        OPlaySound("sound1.wav", volume, balance, 2.f);
+    if (Input.isJustDown(Key._3)) {
+        playSound("sound1.wav", volume, balance, 2);
     }
-    if (OInputJustPressed(OKey4))
-    {
-        OPlayRandomSound({"sound1.wav", "sound2.wav", "sound3.wav", "sound4.wav", "sound5.wav"}, 
-                         volume, balance);
+    if (Input.isJustDown(Key._4)) {
+        playRandomSound(["sound1.wav", "sound2.wav", "sound3.wav", "sound4.wav", "sound5.wav"],
+            volume, balance);
     }
-    if (OInputJustPressed(OKey5))
-    {
-        OPlaySound("sound5.wav", volume, balance);
+    if (Input.isJustDown(Key._5)) {
+        // Play using the resource directly
+        sound5.play(volume, balance);
     }
-    if (OInputJustPressed(OKey6))
+    if (Input.isJustDown(Key._6))
     {
-        if (pLoopingSound->isPlaying())
+        if (loopingSound.isPlaying())
         {
-            pLoopingSound->pause();
+            loopingSound.pause();
         }
         else
         {
-            pLoopingSound->play();
+            loopingSound.play();
         }
     }
-    if (OInputJustPressed(OKey7))
-    {
-        OPlaySoundCue("soundCue.cue", volume, balance);
-    }*/
-    if (Input.isJustDown(Key._9))
-    {
-        if (music.isPlaying())
-        {
+    if (Input.isJustDown(Key._7)) {
+        playSoundCue("soundCue.cue", volume, balance);
+    }
+    if (Input.isJustDown(Key._9)) {
+        if (music.isPlaying()) {
             print("Stop Music");
             music.stop();
         }
-        else
-        {
+        else {
             print("Start Music");
             music.play();
         }
     }
- /*   if (OInputJustPressed(OKeyQ)) pNotes[0]->play(volume, balance);
-    if (OInputJustPressed(OKeyW)) pNotes[1]->play(volume, balance);
-    if (OInputJustPressed(OKeyE)) pNotes[2]->play(volume, balance);
-    if (OInputJustPressed(OKeyR)) pNotes[3]->play(volume, balance);
-    if (OInputJustPressed(OKeyT)) pNotes[4]->play(volume, balance);
-    if (OInputJustPressed(OKeyY)) pNotes[5]->play(volume, balance);
-    if (OInputJustPressed(OKeyU)) pNotes[6]->play(volume, balance);
-    if (OInputJustPressed(OKeyI)) pNotes[7]->play(volume, balance);
-    */
+    if (Input.isJustDown(Key.Q)) notes[0].play(volume, balance);
+    if (Input.isJustDown(Key.W)) notes[1].play(volume, balance);
+    if (Input.isJustDown(Key.E)) notes[2].play(volume, balance);
+    if (Input.isJustDown(Key.R)) notes[3].play(volume, balance);
+    if (Input.isJustDown(Key.T)) notes[4].play(volume, balance);
+    if (Input.isJustDown(Key.Y)) notes[5].play(volume, balance);
+    if (Input.isJustDown(Key.U)) notes[6].play(volume, balance);
+    if (Input.isJustDown(Key.I)) notes[7].play(volume, balance);
 }
 
-function render()
-{
+function render() {
     // Clear to black
     Renderer.clear(Color.BLACK);
 
@@ -118,14 +108,14 @@ function render()
     SpriteBatch.drawText(font, "Press ^9903^999 to play sound1 at 200% speed", new Vector2(10, 50));
     SpriteBatch.drawText(font, "Press ^9904^999 to play a random sound", new Vector2(10, 70));
     SpriteBatch.drawText(font, "Press ^9905^999 to play sound5", new Vector2(10, 90));
-/*    if (pLoopingSound->isPlaying())
+    if (loopingSound.isPlaying())
     {
-        SpriteBatch.drawText(font, "Press ^9906^999 to start/stop looping sound (^099Playing^999)", {10, 110});
+        SpriteBatch.drawText(font, "Press ^9906^999 to start/stop looping sound (^099Playing^999)", new Vector2(10, 110));
     }
     else
     {
-        SpriteBatch.drawText(font, "Press ^9906^999 to start/stop looping sound", {10, 110});
-    }*/
+        SpriteBatch.drawText(font, "Press ^9906^999 to start/stop looping sound", new Vector2(10, 110));
+    }
     SpriteBatch.drawText(font, "Press ^9907^999 to play cue file", new Vector2(10, 130));
     SpriteBatch.drawText(font, "Press ^990qwertyui^999 to do music", new Vector2(10, 150));
     SpriteBatch.drawText(font, "Press ^9909^999 to play/stop music", new Vector2(10, 170));

@@ -169,7 +169,7 @@ namespace onut
         return pRet;
     }
 
-    OSoundRef Sound::createFromData(float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager)
+    OSoundRef Sound::createFromData(const float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager)
     {
         auto engineFreq = oAudioEngine->getSampleRate();
         auto engineChannels = oAudioEngine->getChannels();
