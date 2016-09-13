@@ -6,6 +6,7 @@
 #include <onut/EntityFactory.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
+#include <onut/GamePad.h>
 #include <onut/Http.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
@@ -3535,9 +3536,65 @@ namespace onut
                     duk_push_number(ctx, (duk_double_t)oInput->getStateValue((onut::Input::State)JS_UINT(0)));
                     return 1;
                 }
-                JS_INTERFACE_FUNCTION_END("isJustUp", 1);
+                JS_INTERFACE_FUNCTION_END("getValue", 1);
             }
             JS_INTERFACE_END("Input");
+
+            // GamePad
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, OGetGamePad((int)JS_UINT(0))->isConnected());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isConnected", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto index = (int)JS_UINT(0);
+                    auto button = (onut::GamePad::Button)JS_UINT(1);
+                    duk_push_boolean(ctx, OGamePadPressed(button, index));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isDown", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto index = (int)JS_UINT(0);
+                    auto button = (onut::GamePad::Button)JS_UINT(1);
+                    duk_push_boolean(ctx, !OGamePadPressed(button, index));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isUp", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto index = (int)JS_UINT(0);
+                    auto button = (onut::GamePad::Button)JS_UINT(1);
+                    duk_push_boolean(ctx, OGamePadJustPressed(button, index));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isJustDown", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto index = (int)JS_UINT(0);
+                    auto button = (onut::GamePad::Button)JS_UINT(1);
+                    duk_push_boolean(ctx, OGamePadJustReleased(button, index));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("isJustUp", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newVector2(ctx, OGetGamePadLeftThumb((int)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getLeftThumb", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newVector2(ctx, OGetGamePadRightThumb((int)JS_UINT(0)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getRightThumb", 1);
+            }
+            JS_INTERFACE_END("GamePad");
 
             // Http
 #define JS_HTTP_ARGUMENTS(__index__) \
@@ -3984,6 +4041,34 @@ namespace onut
                 JS_ENUM("MouseZ", onut::Input::State::MouseZ);
             }
             JS_INTERFACE_END("Key");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("A", onut::GamePad::A);
+                JS_ENUM("B", onut::GamePad::B);
+                JS_ENUM("X", onut::GamePad::X);
+                JS_ENUM("Y", onut::GamePad::Y);
+                JS_ENUM("DPAD_UP", onut::GamePad::DPadUp);
+                JS_ENUM("DPAD_DOWN", onut::GamePad::DPadDown);
+                JS_ENUM("DPAD_LEFT", onut::GamePad::DPadLeft);
+                JS_ENUM("DPAD_RIGHT", onut::GamePad::DPadRight);
+                JS_ENUM("LEFT_TRIGGER", onut::GamePad::LeftTrigger);
+                JS_ENUM("RIGHT_TRIGGER", onut::GamePad::RightTrigger);
+                JS_ENUM("LEFT_BUMPER", onut::GamePad::LeftBumper);
+                JS_ENUM("RIGHT_BUMPER", onut::GamePad::RightBumper);
+                JS_ENUM("LEFT_THUMBSTICK", onut::GamePad::LeftThumbStick);
+                JS_ENUM("RIGHT_THUMBSTICK", onut::GamePad::RightThumbStick);
+                JS_ENUM("START", onut::GamePad::Start);
+                JS_ENUM("BACK", onut::GamePad::Back);
+                JS_ENUM("LEFT_THUMBSTICK_LEFT", onut::GamePad::LeftThumbStickLeft);
+                JS_ENUM("LEFT_THUMBSTICK_RIGHT", onut::GamePad::LeftThumbStickRight);
+                JS_ENUM("LEFT_THUMBSTICK_UP", onut::GamePad::LeftThumbStickUp);
+                JS_ENUM("LEFT_THUMBSTICK_DOWN", onut::GamePad::LeftThumbStickDown);
+                JS_ENUM("RIGHT_THUMBSTICK_LEFT", onut::GamePad::RightThumbStickLeft);
+                JS_ENUM("RIGHT_THUMBSTICK_RIGHT", onut::GamePad::RightThumbStickRight);
+                JS_ENUM("RIGHT_THUMBSTICK_UP", onut::GamePad::RightThumbStickUp);
+                JS_ENUM("RIGHT_THUMBSTICK_DOWN", onut::GamePad::RightThumbStickDown);
+            }
+            JS_INTERFACE_END("Button");
 
             createMathsBinding();
             createResourceBindings();

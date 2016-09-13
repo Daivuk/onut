@@ -320,55 +320,6 @@ declare class Shader {
 /** Same as Shader.createFromFile */
 declare function getShader(filename: string): Shader;
 
-
-
-
-interface TiledMap {
-    getWidth(): number;
-    getHeight(): number;
-}
-declare function TiledMap(name: string): TiledMap;
-
-// Entity
-interface Entity {
-    getComponent(type): Component;
-    addComponent(type): Component;
-}
-
-// Components
-interface Component {
-    getEntity(): Entity;
-}
-
-interface TiledMapComponent extends Component {
-    setTiledMap(tiledMap: TiledMap);
-    getTiledMap(): TiledMap;
-    getPassable(mapPos: Vector2): boolean;
-    setPassable(mapPos: Vector2, passable: boolean);
-}
-
-// Entity factory
-interface EntityFactory {
-    create(position: Vector3): Entity;
-    createCollider2D(size: Vector2, position: Vector2): Entity;
-    createSound(filename: string, position: Vector2): Entity;
-    createSpriteAnim(filename: string, position: Vector2, defaultAnim: string): Entity;
-    createSprite(filename: string, position: Vector2): Entity;
-    createText(font: Font, text: string, position: Vector2): Entity;
-    createTiledMap(filename: string): Entity;
-}
-declare var EntityFactory: EntityFactory;
-
-// Scene
-interface Scene {
-    load(filename: string);
-    findEntity(name: string): Entity;
-}
-declare var Scene: Scene;
-
-
-
-
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);
@@ -434,6 +385,17 @@ declare namespace Input {
     function isJustDown(key: Key): boolean;
     function isJustUp(key: Key): boolean;
     function getValue(key: Key): number;
+}
+
+// GamePad
+declare namespace GamePad {
+    function isConnected(index: number): boolean;
+    function getLeftThumb(index: number): Vector2;
+    function getRightThumb(index: number): Vector2;
+    function isDown(index: number, button: Button): boolean;
+    function isUp(index: number, button: Button): boolean;
+    function isJustDown(index: number, button: Button): boolean;
+    function isJustUp(index: number, button: Button): boolean;
 }
 
 // HTTP
@@ -507,3 +469,69 @@ declare enum Key {
     CIRCOMFLEX,
     MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_X, MOUSE_Y, MOUSE_Z
 }
+
+declare enum Button {
+    A, B, X, Y,
+    DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAR_RIGHT,
+    LEFT_TRIGGER, LEFT_BUMPER,
+    RIGHT_TRIGGER, RIGHT_BUMPER,
+    LEFT_THUMBSTICK,
+    RIGHT_THUMBSTICK,
+    START, BACK,
+    LEFT_THUMBSTICK_LEFT,
+    LEFT_THUMBSTICK_RIGHT,
+    LEFT_THUMBSTICK_UP,
+    LEFT_THUMBSTICK_DOWN,
+    RIGHT_THUMBSTICK_LEFT,
+    RIGHT_THUMBSTICK_RIGHT,
+    RIGHT_THUMBSTICK_UP,
+    RIGHT_THUMBSTICK_DOWN
+}
+
+
+
+
+
+// TO REMOVE
+interface TiledMap {
+    getWidth(): number;
+    getHeight(): number;
+}
+declare function TiledMap(name: string): TiledMap;
+
+// Entity
+interface Entity {
+    getComponent(type): Component;
+    addComponent(type): Component;
+}
+
+// Components
+interface Component {
+    getEntity(): Entity;
+}
+
+interface TiledMapComponent extends Component {
+    setTiledMap(tiledMap: TiledMap);
+    getTiledMap(): TiledMap;
+    getPassable(mapPos: Vector2): boolean;
+    setPassable(mapPos: Vector2, passable: boolean);
+}
+
+// Entity factory
+interface EntityFactory {
+    create(position: Vector3): Entity;
+    createCollider2D(size: Vector2, position: Vector2): Entity;
+    createSound(filename: string, position: Vector2): Entity;
+    createSpriteAnim(filename: string, position: Vector2, defaultAnim: string): Entity;
+    createSprite(filename: string, position: Vector2): Entity;
+    createText(font: Font, text: string, position: Vector2): Entity;
+    createTiledMap(filename: string): Entity;
+}
+declare var EntityFactory: EntityFactory;
+
+// Scene
+interface Scene {
+    load(filename: string);
+    findEntity(name: string): Entity;
+}
+declare var Scene: Scene;
