@@ -320,6 +320,19 @@ declare class Shader {
 /** Same as Shader.createFromFile */
 declare function getShader(filename: string): Shader;
 
+declare class Music {
+    static createFromFile(filename: string): Music;
+
+    setVolume(volume: number);
+    play();
+    stop();
+    pause();
+    resume();
+    isPlayer(): boolean;
+}
+/** Same as Music.createFromFile */
+declare function getMusic(filename: string): Music;
+
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);

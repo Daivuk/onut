@@ -10,6 +10,7 @@
 #include <onut/Http.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
+#include <onut/Music.h>
 #include <onut/PrimitiveBatch.h>
 #include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
@@ -54,6 +55,7 @@ namespace onut
         void* pTexturePrototype = nullptr;
         void* pFontPrototype = nullptr;
         void* pShaderPrototype = nullptr;
+        void* pMusicPrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -2516,13 +2518,23 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newShader(duk_context* ctx, const OShaderRef& pFont)
+        static void newShader(duk_context* ctx, const OShaderRef& pShader)
         {
             duk_push_object(ctx);
-            auto ppShader = new OShaderRef(pFont);
+            auto ppShader = new OShaderRef(pShader);
             duk_push_pointer(ctx, ppShader);
             duk_put_prop_string(ctx, -2, "\xff""\xff""data");
             duk_push_heapptr(ctx, pShaderPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+        
+        static void newMusic(duk_context* ctx, const OMusicRef& pMusic)
+        {
+            duk_push_object(ctx);
+            auto ppMusic = new OMusicRef(pMusic);
+            duk_push_pointer(ctx, ppMusic);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pMusicPrototype);
             duk_set_prototype(ctx, -2);
         }
 
@@ -2948,6 +2960,134 @@ namespace onut
             duk_put_global_string(ctx, "Shader");
         }
 
+        void createMusicBindings()
+        {
+            auto ctx = pContext;
+
+            // Music() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~Music()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    delete ppMusic;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // setVolume(volume)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto volume = JS_FLOAT(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    (*ppMusic)->setVolume(volume);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setVolume");
+
+            // play()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    (*ppMusic)->play();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "play");
+
+            // stop()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    (*ppMusic)->stop();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "stop");
+
+            // pause()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    (*ppMusic)->pause();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "pause");
+
+            // resume()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    (*ppMusic)->resume();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "resume");
+
+            // isPlaying()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    duk_push_boolean(ctx, (*ppMusic)->isPlaying());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isPlaying");
+
+            // Done with the object
+            pMusicPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newMusic(ctx, OGetMusic(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            duk_put_global_string(ctx, "Music");
+        }
+
         void createTiledMapBindings()
         {
             auto ctx = pContext;
@@ -3224,7 +3364,8 @@ namespace onut
         {
             createTextureBindings();
             createFontBindings();
-            createShaderBindings();            
+            createShaderBindings();
+            createMusicBindings();
             
             createTiledMapBindings(); // to revise
         }
@@ -3856,6 +3997,12 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getShader", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newMusic(ctx, OGetMusic(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getMusic", 1);
 
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)
