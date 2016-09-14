@@ -376,13 +376,21 @@ declare class TiledMap {
 
     getSize(): Vector2;
     getTileSize(): number;
+    setFilter(filterMode: FilterMode);
+    getTileAt(layerIndex: number, x: number, y: number): number;
+    getTileAt(layerName: string, x: number, y: number): number;
+    setTileAt(layerIndex: number, x: number, y: number, tile: number);
+    setTileAt(layerName: string, x: number, y: number, tile: number);
+
     render();
     render(rect: Rect);
+
+    renderLayer(layerIndex: number);
+    renderLayer(layerIndex: number, rect: Rect);
     renderLayer(layerName: string);
     renderLayer(layerName: string, rect: Rect);
-    setFilter(filterMode: FilterMode);
 }
-/** Same as Music.createFromFile */
+/** Same as TiledMap.createFromFile */
 declare function getTiledMap(filename: string): TiledMap;
 
 // Renderer

@@ -3588,32 +3588,48 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "render");
 
-            // renderLayer(name)
+            // renderLayer(name/index, rect)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
-                auto layerName = JS_STRING(0, "");
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
                 if (ppTiledMap)
                 {
                     duk_pop(ctx);
-                    auto pLayer = (*ppTiledMap)->getLayer(layerName);
-                    if (pLayer)
+                    if (duk_is_string(ctx, 0))
                     {
-                        if (duk_is_object(ctx, 0))
+                        auto layerName = JS_STRING(0, "");
+                        auto pLayer = (*ppTiledMap)->getLayer(layerName);
+                        if (pLayer)
                         {
-                            auto rect = JS_iRECT(0);
-                            (*ppTiledMap)->renderLayer(rect, pLayer);
+                            if (duk_is_object(ctx, 1))
+                            {
+                                auto rect = JS_iRECT(1);
+                                (*ppTiledMap)->renderLayer(rect, pLayer);
+                            }
+                            else
+                            {
+                                (*ppTiledMap)->renderLayer(pLayer);
+                            }
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_UINT(0);
+                        if (duk_is_object(ctx, 1))
+                        {
+                            auto rect = JS_iRECT(1);
+                            (*ppTiledMap)->renderLayer(rect, layer);
                         }
                         else
                         {
-                            (*ppTiledMap)->renderLayer(pLayer);
+                            (*ppTiledMap)->renderLayer(layer);
                         }
                     }
                 }
                 return 0;
-            }, 1);
+            }, 2);
             duk_put_prop_string(ctx, -2, "renderLayer");
 
             // getSize()
@@ -3648,6 +3664,21 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "getTileSize");
 
+            // getLayerCount
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_push_number(ctx, (duk_double_t)(*ppTiledMap)->getLayerCount());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getLayerCount");
+
             // setFilter
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -3661,6 +3692,82 @@ namespace onut
                 return 0;
             }, 1);
             duk_put_prop_string(ctx, -2, "setFilter");
+
+            // getTileAt
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto layerName = JS_STRING(0, "");
+                        auto x = JS_INT(1);
+                        auto y = JS_INT(2);
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layerName));
+                        if (pLayer)
+                        {
+                            duk_push_uint(ctx, (*ppTiledMap)->getTileAt(pLayer, x, y));
+                            return 1;
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_INT(0);
+                        auto x = JS_INT(1);
+                        auto y = JS_INT(2);
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layer));
+                        if (pLayer)
+                        {
+                            duk_push_uint(ctx, (*ppTiledMap)->getTileAt(pLayer, x, y));
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "getTileAt");
+
+            // setTileAt
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto layerName = JS_STRING(0, "");
+                        auto x = JS_INT(1);
+                        auto y = JS_INT(2);
+                        auto tileId = JS_UINT(3);
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layerName));
+                        if (pLayer)
+                        {
+                            (*ppTiledMap)->setTileAt(pLayer, x, y, tileId);
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_INT(0);
+                        auto x = JS_INT(1);
+                        auto y = JS_INT(2);
+                        auto tileId = JS_UINT(3);
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layer));
+                        if (pLayer)
+                        {
+                            (*ppTiledMap)->setTileAt(pLayer, x, y, tileId);
+                        }
+                    }
+                }
+                return 0;
+            }, 4);
+            duk_put_prop_string(ctx, -2, "setTileAt");
 
             // Done with the object
             pTiledMapPrototype = duk_get_heapptr(ctx, -1);
