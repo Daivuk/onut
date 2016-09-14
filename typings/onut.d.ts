@@ -277,6 +277,120 @@ declare class Matrix {
     determinant(): number;
 }
 
+// Anims
+declare class BoolAnim {
+    constructor();
+    constructor(value: boolean);
+    get(): boolean;
+    set(value: boolean);
+    playSingle(from: boolean, to: boolean, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: boolean, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: boolean, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class NumberAnim {
+    constructor();
+    constructor(value: number);
+    get(): number;
+    set(value: number);
+    playSingle(from: number, to: number, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: number, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: number, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class Vector2Anim {
+    constructor();
+    constructor(value: Vector2);
+    get(): Vector2;
+    set(value: Vector2);
+    playSingle(from: Vector2, to: Vector2, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: Vector2, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: Vector2, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class Vector3Anim {
+    constructor();
+    constructor(value: Vector3);
+    get(): Vector3;
+    set(value: Vector3);
+    playSingle(from: Vector3, to: Vector3, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: Vector3, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: Vector3, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class Vector4Anim {
+    constructor();
+    constructor(value: Vector4);
+    get(): Vector4;
+    set(value: Vector4);
+    playSingle(from: Vector4, to: Vector4, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: Vector4, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: Vector4, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class RectAnim {
+    constructor();
+    constructor(value: Rect);
+    get(): Rect;
+    set(value: Rect);
+    playSingle(from: Rect, to: Rect, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: Rect, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: Rect, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class MatrixAnim {
+    constructor();
+    constructor(value: Matrix);
+    get(): Matrix;
+    set(value: Matrix);
+    playSingle(from: Matrix, to: Matrix, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: Matrix, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: Matrix, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+declare class ColorAnim {
+    constructor();
+    constructor(value: Color);
+    get(): Color;
+    set(value: Color);
+    playSingle(from: Color, to: Color, duration: number, tween: Tween, loop: Loop, callback: () => void);
+    queue(to: Color, duration: number, tween: Tween, callback: () => void);
+    play(loop: Loop);
+    playKeyFrames(from: Color, keyFrames: Object[], loop: Loop);
+    stop();
+    stopAndGoToEnd();
+    pause();
+    isPlaying(): boolean;
+}
+
 // Texture
 declare class Texture {
     static createFromFile(filename: string): Texture;
@@ -605,45 +719,21 @@ declare enum Button {
     RIGHT_THUMBSTICK_DOWN
 }
 
-
-
-
-
-// TO REMOVE
-
-// Entity
-interface Entity {
-    getComponent(type): Component;
-    addComponent(type): Component;
+declare enum Tween {
+    NONE,
+    LINEAR,
+    EASE_IN,
+    EASE_OUT,
+    EASE_BOTH,
+    BOUNCE_IN,
+    BOUNCE_OUT,
+    SPRING_IN,
+    SPRING_OUT
 }
 
-// Components
-interface Component {
-    getEntity(): Entity;
+declare enum Loop {
+    NONE,
+    LOOP,
+    PING_PONG,
+    PING_PONG_LOOP
 }
-
-interface TiledMapComponent extends Component {
-    setTiledMap(tiledMap: TiledMap);
-    getTiledMap(): TiledMap;
-    getPassable(mapPos: Vector2): boolean;
-    setPassable(mapPos: Vector2, passable: boolean);
-}
-
-// Entity factory
-interface EntityFactory {
-    create(position: Vector3): Entity;
-    createCollider2D(size: Vector2, position: Vector2): Entity;
-    createSound(filename: string, position: Vector2): Entity;
-    createSpriteAnim(filename: string, position: Vector2, defaultAnim: string): Entity;
-    createSprite(filename: string, position: Vector2): Entity;
-    createText(font: Font, text: string, position: Vector2): Entity;
-    createTiledMap(filename: string): Entity;
-}
-declare var EntityFactory: EntityFactory;
-
-// Scene
-interface Scene {
-    load(filename: string);
-    findEntity(name: string): Entity;
-}
-declare var Scene: Scene;

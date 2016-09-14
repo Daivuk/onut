@@ -149,12 +149,12 @@ namespace onut
 
         void playKeyFrames(const Ttype& from, const KeyFrames& keyFrames, LoopType loop = LoopType::None)
         {
+            m_value = from;
             if (keyFrames.empty())
             {
                 stop();
                 return;
             }
-            m_value = from;
             m_keyFrames.clear();
             m_keyFrames.push_back(KeyFrame(m_value, 0.f, Tween::None));
             m_keyFrames.insert(m_keyFrames.end(), keyFrames.begin(), keyFrames.end());
