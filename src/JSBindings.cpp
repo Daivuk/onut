@@ -17,6 +17,7 @@
 #include <onut/Renderer.h>
 #include <onut/Shader.h>
 #include <onut/Sound.h>
+#include <onut/SpriteAnim.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
@@ -61,6 +62,8 @@ namespace onut
         void* pSoundPrototype = nullptr;
         void* pSoundInstancePrototype = nullptr;
         void* pTiledMapPrototype = nullptr;
+        void* pSpriteAnimPrototype = nullptr;
+        void* pSpriteAnimInstancePrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -462,6 +465,56 @@ namespace onut
             }
         }
 
+        static OSpriteAnimRef getSpriteAnim(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            if (duk_is_string(ctx, index))
+            {
+                return OGetSpriteAnim(duk_to_string(ctx, index));
+            }
+            else
+            {
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppSpriteAnim = (OSpriteAnimRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppSpriteAnim)
+                {
+                    return *ppSpriteAnim;
+                }
+                else
+                {
+                    return nullptr;
+                }
+            }
+        }
+
+        static OSpriteAnimInstanceRef getSpriteAnimInstance(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            if (duk_is_string(ctx, index))
+            {
+                return OMake<OSpriteAnimInstance>(duk_to_string(ctx, index));
+            }
+            else
+            {
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppSpriteAnimInstance)
+                {
+                    return *ppSpriteAnimInstance;
+                }
+                else
+                {
+                    return nullptr;
+                }
+            }
+        }
+
 #define JS_GLOBAL_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
 #define JS_GLOBAL_FUNCTION_PROPS_BEGIN(__argcnt__) , __argcnt__)
 #define JS_GLOBAL_FUNCTION_PROPS_END(__name__) duk_put_global_string(ctx, __name__)
@@ -514,6 +567,8 @@ namespace onut
 #define JS_FONT(__index__) getFont(ctx, __index__)
 #define JS_SHADER(__index__) getShader(ctx, __index__)
 #define JS_SOUND(__index__) getSound(ctx, __index__)
+#define JS_SPRITE_ANIM(__index__) getSpriteAnim(ctx, __index__)
+#define JS_SPRITE_ANIM_INSTANCE(__index__) getSpriteAnimInstance(ctx, __index__)
 #define JS_RECT(...) getRect(ctx, __VA_ARGS__)
 #define JS_iRECT(...) getiRect(ctx, __VA_ARGS__)
 #define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
@@ -2646,6 +2701,26 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
+        static void newSpriteAnim(duk_context* ctx, const OSpriteAnimRef& pSpriteAnim)
+        {
+            duk_push_object(ctx);
+            auto ppSpriteAnim = new OSpriteAnimRef(pSpriteAnim);
+            duk_push_pointer(ctx, ppSpriteAnim);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pSpriteAnimPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        static void newSpriteAnimInstance(duk_context* ctx, const OSpriteAnimInstanceRef& pSpriteAnimInstance)
+        {
+            duk_push_object(ctx);
+            auto ppSpriteAnimInstance = new OSpriteAnimInstanceRef(pSpriteAnimInstance);
+            duk_push_pointer(ctx, ppSpriteAnimInstance);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pSpriteAnimInstancePrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
         void createTextureBindings()
         {
             auto ctx = pContext;
@@ -3784,6 +3859,284 @@ namespace onut
             duk_put_global_string(ctx, "TiledMap");
         }
 
+        void createSpriteAnimBindings()
+        {
+            auto ctx = pContext;
+
+            // SpriteAnim()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR;
+            }, 0);
+            duk_push_object(ctx);
+
+            // ~SpriteAnim()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppSpriteAnim = (OSpriteAnimRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnim)
+                {
+                    delete ppSpriteAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // Done with the object
+            pSpriteAnimPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newSpriteAnim(ctx, OGetSpriteAnim(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            duk_put_global_string(ctx, "SpriteAnim");
+        }
+
+        void createSpriteAnimInstanceBindings()
+        {
+            auto ctx = pContext;
+
+            // SpriteAnimInstance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR;
+            }, 0);
+            duk_push_object(ctx);
+
+            // ~SpriteAnimInstance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    delete ppSpriteAnimInstance;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // play
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto animName = JS_STRING(0);
+                auto fps = JS_FLOAT(1, 0.f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->play(animName, fps);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "play");
+
+            // playBackward
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto animName = JS_STRING(0);
+                auto fps = JS_FLOAT(1, 0.f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->playBackward(animName, fps);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "playBackward");
+
+            // queue
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto animName = JS_STRING(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->queueAnim(animName);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "queue");
+
+            // stop
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->stop(false);
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "stop");
+
+            // stopAndReset
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->stop(true);
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "stopAndReset");
+
+            // isPlaying
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->isPlaying();
+                    duk_push_boolean(ctx, ret);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isPlaying");
+
+            // getFrameId
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->getFrameId();
+                    duk_push_int(ctx, ret);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getFrameId");
+
+            // getSpriteAnim
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->getDefinition();
+                    newSpriteAnim(ctx, ret);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getSpriteAnim");
+
+            // getCurrentAnim
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->getCurrentAnim();
+                    duk_push_string(ctx, ret->name.c_str());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getCurrentAnim");
+
+            // getTexture
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->getTexture();
+                    newTexture(ctx, ret);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getTexture");
+
+            // getUVs
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->getUVs();
+                    newVector4(ctx, ret);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getUVs");
+
+            // getOrigin
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto ret = (*ppSpriteAnimInstance)->getOrigin();
+                    newVector2(ctx, ret);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getOrigin");
+
+            // setFPS
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto fps = JS_FLOAT(0, 0.f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->setFps(fps);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setFPS");
+
+            // Done with the object
+            pSpriteAnimInstancePrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            duk_put_global_string(ctx, "SpriteAnimInstance");
+        }
+
         void addComponentPrototype(duk_context *ctx)
         {
             // ~Component()
@@ -3801,125 +4154,6 @@ namespace onut
                 return 0;
             }, 1);
             duk_set_finalizer(ctx, -2);
-        }
-
-        void createTiledMapComponentPrototype()
-        {
-            auto ctx = pContext;
-            duk_push_object(ctx);
-
-            // TiledMapComponent()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
-
-                auto pTiledMap = OGetTiledMap(JS_STRING(0));
-                if (!pTiledMap) return DUK_ERR_INTERNAL_ERROR;
-
-                auto ppTiledMap = new OTiledMapRef(pTiledMap);
-                duk_push_this(ctx);
-                duk_push_pointer(ctx, ppTiledMap);
-                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-
-                return 0;
-            }, 1);
-            duk_push_object(ctx);
-
-            addComponentPrototype(ctx);
-        }
-
-        void createEntityPrototype()
-        {
-            auto ctx = pContext;
-
-            duk_push_object(ctx);
-
-            // ~Entity()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    delete ppEntity;
-                    duk_pop(ctx);
-                    duk_push_pointer(ctx, nullptr);
-                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
-                }
-                return 0;
-            }, 1);
-            duk_set_finalizer(ctx, -2);
-
-            // getComponent()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    int tmp;
-                    tmp = 5;
-                }
-                return 1;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getComponent");
-
-            // addComponent()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "addComponent");
-
-            // Done with the object
-            duk_put_global_string(ctx, "\xff""\xff""Entity");
-        }
-
-        void pushEntity(duk_context *ctx, const OEntityRef& pEntity)
-        {
-            auto ppEntity = new OEntityRef(pEntity);
-
-            duk_push_object(ctx);
-            duk_push_pointer(ctx, ppEntity);
-            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-
-            duk_get_global_string(ctx, "\xff""\xff""Entity");
-            duk_set_prototype(ctx, -2);
-        }
-
-        void createEntityFactoryBindings()
-        {
-            auto ctx = pContext;
-            duk_push_object(ctx);
-
-            // create
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto position = JS_VECTOR3(0, Vector3::Zero);
-                auto pEntity = OEntity::create();
-                pEntity->setLocalTransform(Matrix::CreateTranslation(position));
-                pushEntity(ctx, pEntity);
-                return 1;
-            }, 1);
-            duk_put_prop_string(ctx, 0, "create");
-
-            // createTiledMap
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto pEntity = OCreateTiledMapEntity(JS_STRING(0));
-                pushEntity(ctx, pEntity);
-                return 1;
-            }, 1);
-            duk_put_prop_string(ctx, 0, "createTiledMap");
-
-            duk_put_global_string(ctx, "EntityFactory");
         }
 
         void createMathsBinding()
@@ -3941,6 +4175,8 @@ namespace onut
             createSoundBindings();
             createSoundInstanceBindings();
             createTiledMapBindings();
+            createSpriteAnimBindings();
+            createSpriteAnimInstanceBindings();
         }
 
         void createBindings()
@@ -4130,10 +4366,30 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("drawSprite", 6);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    auto pSpriteAnimInstance = JS_SPRITE_ANIM_INSTANCE(0);
+                    if (pSpriteAnimInstance)
+                    {
+                        oSpriteBatch->drawSpriteWithUVs(pSpriteAnimInstance->getTexture(), JS_VECTOR2(1), pSpriteAnimInstance->getUVs(), JS_COLOR(2), JS_FLOAT(3, 0.0f), JS_FLOAT(4, 1.0f), pSpriteAnimInstance->getOrigin());
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawSpriteAnim", 5);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     oSpriteBatch->drawSprite(JS_TEXTURE(0), JS_MATRIX(1), JS_VECTOR2(3, Vector2::One), JS_COLOR(2), JS_VECTOR2(4, Vector2(.5f, .5f)));
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("drawTransformedSprite", 5);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pSpriteAnimInstance = JS_SPRITE_ANIM_INSTANCE(0);
+                    if (pSpriteAnimInstance)
+                    {
+                        oSpriteBatch->drawSpriteWithUVs(pSpriteAnimInstance->getTexture(), JS_MATRIX(1), JS_VECTOR2(3, Vector2::One), pSpriteAnimInstance->getUVs(), JS_COLOR(2), pSpriteAnimInstance->getOrigin());
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawTransformedSpriteAnim", 5);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     oSpriteBatch->drawBeam(JS_TEXTURE(0), JS_VECTOR2(1), JS_VECTOR2(2), JS_FLOAT(3, 1.f), JS_COLOR(4), JS_FLOAT(5, 0.f), JS_FLOAT(6, 1.f));
@@ -4694,6 +4950,30 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getTiledMap", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto spriteAnim = OGetSpriteAnim(JS_STRING(0));
+                if (spriteAnim)
+                {
+                    newSpriteAnimInstance(ctx, OMake<OSpriteAnimInstance>(spriteAnim));
+                    return 1;
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("createSpriteAnimInstance", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto spriteAnim = OGetSpriteAnim(JS_STRING(0));
+                if (spriteAnim)
+                {
+                    auto pRet = OMake<OSpriteAnimInstance>(spriteAnim);
+                    pRet->play(JS_STRING(1));
+                    newSpriteAnimInstance(ctx, pRet);
+                    return 1;
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 1);
 
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)
@@ -4910,9 +5190,6 @@ namespace onut
 
             createMathsBinding();
             createResourceBindings();
-            createEntityPrototype();
-            createEntityFactoryBindings();
-            createTiledMapComponentPrototype();
         }
 
         void evalScripts()

@@ -338,7 +338,7 @@ declare function getMusic(filename: string): Music;
 
 // Sound
 declare class Sound {
-    static createFromFile(filename: string); Sound;
+    static createFromFile(filename: string): Sound;
     static createFromData(samples: ArrayBuffer, sampleCount: number, channelCount: number, sampleRate: number): Sound;
 
     play(volume: number, balance: number, pitch: number);
@@ -372,7 +372,7 @@ declare function createSoundInstance(filename: string): SoundInstance;
 
 // TiledMap
 declare class TiledMap {
-    static createFromFile(filename: string); TiledMap;
+    static createFromFile(filename: string): TiledMap;
 
     getSize(): Vector2;
     getTileSize(): number;
@@ -392,6 +392,38 @@ declare class TiledMap {
 }
 /** Same as TiledMap.createFromFile */
 declare function getTiledMap(filename: string): TiledMap;
+
+// Sprite Anim
+declare class SpriteAnim {
+    static createFromFile(filename: string): SpriteAnim;
+
+    createInstance(): SpriteAnimInstance;
+}
+/** Same as TiledMap.createFromFile */
+declare function getTiledMap(filename: string): SpriteAnim;
+
+// SpriteAnimInstance
+declare class SpriteAnimInstance {
+    play(animName: String);
+    play(animName: string, fps: number);
+    playBackward(animName: String);
+    playBackward(animName: String, fps: number);
+    queue(animName: String);
+    stop();
+    stopAndReset();
+    isPlaying(): boolean;
+    getFrameId(): number;
+    getSpriteAnim(): SpriteAnim;
+    getCurrentAnim(): string;
+    setFPS(fps: number);
+    getTexture(): Texture;
+    getUVs(): Vector4;
+    getOrigin(): Vector2;
+}
+/** Same as spriteAnim.createInstance */
+declare function createSpriteAnimInstance(filename: string): SpriteAnimInstance;
+/** Same as spriteAnim.createInstance then calling play on the returned instance */
+declare function playSpriteAnim(filename: string, animName: string): SpriteAnimInstance;
 
 // Renderer
 declare namespace Renderer {
@@ -429,7 +461,9 @@ declare namespace SpriteBatch {
     function drawRectScaled9(texture: Texture, rect: Rect, padding: Vector4, color: Color);
     function drawRectScaled9RepeatCenters(texture: Texture, rect: Rect, padding: Vector4, color: Color);
     function drawSprite(texture: Texture, position: Vector2, color: Color, rotation: number, scale: number, origin: Vector2);
+    function drawSpriteAnim(spriteAnim: SpriteAnimInstance, position: Vector2, color: Color, rotation: number, scale: number);
     function drawTransformedSprite(texture: Texture, transform: Matrix, color: Color, scale: Vector2, origin: Vector2);
+    function drawTransformedSpriteAnim(spriteAnim: SpriteAnimInstance, transform: Matrix, color: Color, scale: Vector2);
     function drawBeam(texture: Texture, from: Vector2, to: Vector2, size: Number, color: Color, uOffset: number, uScale: number);
     function drawCross(position: Vector2, size: number, color: Color);
 
