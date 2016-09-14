@@ -277,7 +277,7 @@ declare class Matrix {
     determinant(): number;
 }
 
-// Resources
+// Texture
 declare class Texture {
     static createFromFile(filename: string): Texture;
     static createDynamic(size: Vector2): Texture;
@@ -300,6 +300,7 @@ declare class Texture {
 /** Same as Texture.createFromFile */
 declare function getTexture(filename: string): Texture;
 
+// Font
 declare class Font {
     static createFromFile(filename: string): Font;
 
@@ -308,6 +309,7 @@ declare class Font {
 /** Same as Font.createFromFile */
 declare function getFont(filename: string): Font;
 
+// Shader
 declare class Shader {
     static createFromFile(filename: string): Shader;
 
@@ -320,6 +322,7 @@ declare class Shader {
 /** Same as Shader.createFromFile */
 declare function getShader(filename: string): Shader;
 
+// Music
 declare class Music {
     static createFromFile(filename: string): Music;
 
@@ -333,6 +336,7 @@ declare class Music {
 /** Same as Music.createFromFile */
 declare function getMusic(filename: string): Music;
 
+// Sound
 declare class Sound {
     static createFromFile(filename: string); Sound;
     static createFromData(samples: ArrayBuffer, sampleCount: number, channelCount: number, sampleRate: number): Sound;
@@ -347,6 +351,7 @@ declare function getSound(filename: string): Sound;
 declare function playSound(filename: string, volume: number, balance: number, pitch: number);
 declare function playSoundCue(filename: string, volume: number, balance: number, pitch: number);
 
+// SoundInstance
 declare class SoundInstance {
     play();
     pause();
@@ -362,6 +367,23 @@ declare class SoundInstance {
     getPitch(): number;
     setPitch(pitch: number);
 }
+/** Same as sound.createInstance */
+declare function createSoundInstance(filename: string): SoundInstance;
+
+// TiledMap
+declare class TiledMap {
+    static createFromFile(filename: string); TiledMap;
+
+    getSize(): Vector2;
+    getTileSize(): number;
+    render();
+    render(rect: Rect);
+    renderLayer(layerName: string);
+    renderLayer(layerName: string, rect: Rect);
+    setFilter(filterMode: FilterMode);
+}
+/** Same as Music.createFromFile */
+declare function getTiledMap(filename: string): TiledMap;
 
 // Renderer
 declare namespace Renderer {
@@ -546,11 +568,6 @@ declare enum Button {
 
 
 // TO REMOVE
-interface TiledMap {
-    getWidth(): number;
-    getHeight(): number;
-}
-declare function TiledMap(name: string): TiledMap;
 
 // Entity
 interface Entity {

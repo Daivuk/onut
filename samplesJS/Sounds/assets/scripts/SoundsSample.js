@@ -1,7 +1,7 @@
 var font = getFont("font.fnt");
 var music = getMusic("music.mp3");
 var sound5 = getSound("sound5.wav");
-var loopingSound = getSoundInstance("looping.wav");
+var loopingSound = createSoundInstance("looping.wav");
 loopingSound.setLoop(true);
 
 var notes = [];

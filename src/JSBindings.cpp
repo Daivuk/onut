@@ -60,6 +60,7 @@ namespace onut
         void* pMusicPrototype = nullptr;
         void* pSoundPrototype = nullptr;
         void* pSoundInstancePrototype = nullptr;
+        void* pTiledMapPrototype = nullptr;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -197,7 +198,7 @@ namespace onut
             }
             else if (duk_is_number(ctx, index))
             {
-                auto s = (float)duk_to_number(ctx, 0);
+                auto s = (float)duk_to_number(ctx, index);
                 return Vector2(s, s);
             }
             return default;
@@ -213,7 +214,7 @@ namespace onut
             }
             else if (duk_is_number(ctx, index))
             {
-                auto s = duk_to_int(ctx, 0);
+                auto s = duk_to_int(ctx, index);
                 return Point(s, s);
             }
             return default;
@@ -230,7 +231,7 @@ namespace onut
             }
             else if (duk_is_number(ctx, index))
             {
-                auto s = (float)duk_to_number(ctx, 0);
+                auto s = (float)duk_to_number(ctx, index);
                 return Vector3(s, s, s);
             }
             return default;
@@ -248,7 +249,7 @@ namespace onut
             }
             else if (duk_is_number(ctx, index))
             {
-                auto s = (float)duk_to_number(ctx, 0);
+                auto s = (float)duk_to_number(ctx, index);
                 return Vector4(s, s, s, s);
             }
             return default;
@@ -266,8 +267,26 @@ namespace onut
             }
             else if (duk_is_number(ctx, index))
             {
-                auto s = (float)duk_to_number(ctx, 0);
+                auto s = (float)duk_to_number(ctx, index);
                 return Rect(s, s, s, s);
+            }
+            return default;
+        }
+
+        static iRect getiRect(duk_context *ctx, duk_idx_t index, const iRect& default = {0, 0, 1, 1})
+        {
+            if (duk_is_object(ctx, index))
+            {
+                INT_PROP(x, index);
+                INT_PROP(y, index);
+                INT_PROP(w, index);
+                INT_PROP(h, index);
+                return iRect{x, y, x + w, y + h};
+            }
+            else if (duk_is_number(ctx, index))
+            {
+                INT_PROP(s, index);
+                return iRect{s, s, s, s};
             }
             return default;
         }
@@ -284,7 +303,7 @@ namespace onut
             }
             else if (duk_is_number(ctx, index))
             {
-                auto s = (float)duk_to_number(ctx, 0);
+                auto s = (float)duk_to_number(ctx, index);
                 return Color(s, s, s, s);
             }
             return default;
@@ -496,6 +515,7 @@ namespace onut
 #define JS_SHADER(__index__) getShader(ctx, __index__)
 #define JS_SOUND(__index__) getSound(ctx, __index__)
 #define JS_RECT(...) getRect(ctx, __VA_ARGS__)
+#define JS_iRECT(...) getiRect(ctx, __VA_ARGS__)
 #define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
 #define JS_VECTOR3(...) getVector3(ctx, __VA_ARGS__)
 #define JS_VECTOR4(...) getVector4(ctx, __VA_ARGS__)
@@ -2615,6 +2635,16 @@ namespace onut
             duk_push_heapptr(ctx, pSoundInstancePrototype);
             duk_set_prototype(ctx, -2);
         }
+        
+        static void newTiledMap(duk_context* ctx, const OTiledMapRef& pTiledMap)
+        {
+            duk_push_object(ctx);
+            auto ppTiledMap = new OTiledMapRef(pTiledMap);
+            duk_push_pointer(ctx, ppTiledMap);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pTiledMapPrototype);
+            duk_set_prototype(ctx, -2);
+        }
 
         void createTextureBindings()
         {
@@ -3515,18 +3545,8 @@ namespace onut
             // TiledMap()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
-                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
-
-                auto pTiledMap = OGetTiledMap(JS_STRING(0));
-                if (!pTiledMap) return DUK_ERR_INTERNAL_ERROR;
-
-                auto ppTiledMap = new OTiledMapRef(pTiledMap);
-                duk_push_this(ctx);
-                duk_push_pointer(ctx, ppTiledMap);
-                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-
-                return 0;
-            }, 1);
+                return DUK_RET_TYPE_ERROR;
+            }, 0);
             duk_push_object(ctx);
 
             // ~TiledMap()
@@ -3553,26 +3573,40 @@ namespace onut
                 auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
                 if (ppTiledMap)
                 {
-                    (*ppTiledMap)->render();
+                    duk_pop(ctx);
+                    if (duk_is_object(ctx, 0))
+                    {
+                        auto rect = JS_iRECT(0);
+                        (*ppTiledMap)->render(rect);
+                    }
+                    else
+                    {
+                        (*ppTiledMap)->render();
+                    }
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "render");
 
             // renderLayer(name)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
+                auto layerName = JS_STRING(0, "");
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
                 if (ppTiledMap)
                 {
                     duk_pop(ctx);
-                    auto layerName = duk_to_string(ctx, 0);
-                    if (layerName)
+                    auto pLayer = (*ppTiledMap)->getLayer(layerName);
+                    if (pLayer)
                     {
-                        auto pLayer = (*ppTiledMap)->getLayer(layerName);
-                        if (pLayer)
+                        if (duk_is_object(ctx, 0))
+                        {
+                            auto rect = JS_iRECT(0);
+                            (*ppTiledMap)->renderLayer(rect, pLayer);
+                        }
+                        else
                         {
                             (*ppTiledMap)->renderLayer(pLayer);
                         }
@@ -3582,7 +3616,7 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "renderLayer");
 
-            // getWidth
+            // getSize()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 duk_push_this(ctx);
@@ -3590,27 +3624,14 @@ namespace onut
                 auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
                 if (ppTiledMap)
                 {
-                    duk_push_number(ctx, (duk_double_t)(*ppTiledMap)->getWidth());
+                    newVector2(ctx, Vector2(
+                        (float)(*ppTiledMap)->getWidth(),
+                        (float)(*ppTiledMap)->getHeight()));
                     return 1;
                 }
                 return 0;
             }, 0);
-            duk_put_prop_string(ctx, -2, "getWidth");
-
-            // getHeight
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
-                if (ppTiledMap)
-                {
-                    duk_push_number(ctx, (duk_double_t)(*ppTiledMap)->getHeight());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getHeight");
+            duk_put_prop_string(ctx, -2, "getSize");
 
             // getTileSize
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -3627,8 +3648,32 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "getTileSize");
 
+            // setFilter
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    (*ppTiledMap)->setFiltering((onut::sample::Filtering)JS_UINT(0));
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setFilter");
+
             // Done with the object
+            pTiledMapPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newTiledMap(ctx, OGetTiledMap(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
             duk_put_global_string(ctx, "TiledMap");
         }
 
@@ -3788,8 +3833,7 @@ namespace onut
             createMusicBindings();
             createSoundBindings();
             createSoundInstanceBindings();
-            
-            createTiledMapBindings(); // to revise
+            createTiledMapBindings();
         }
 
         void createBindings()
@@ -4525,7 +4569,7 @@ namespace onut
                 }
                 return 0;
             }
-            JS_GLOBAL_FUNCTION_END("getSoundInstance", 1);
+            JS_GLOBAL_FUNCTION_END("createSoundInstance", 1);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 auto sound = JS_SOUND(0);
@@ -4537,6 +4581,12 @@ namespace onut
                 return 0;
             }
             JS_GLOBAL_FUNCTION_END("playSoundInstance", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newTiledMap(ctx, OGetTiledMap(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getTiledMap", 1);
 
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)

@@ -1,4 +1,4 @@
-var tiledMap = new TiledMap("sample.tmx");
+var tiledMap = getTiledMap("sample.tmx");
 
 function render() {
     tiledMap.render();
