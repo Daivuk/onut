@@ -33,5 +33,6 @@ namespace onut
         virtual void setVolume(float volume) = 0;
         virtual void togglePlayPause() = 0;
         virtual void update() = 0;
+        virtual const OTextureRef& getRenderTarget() = 0;
     };
 }

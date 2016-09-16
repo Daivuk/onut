@@ -41,6 +41,7 @@ namespace onut
         void setVolume(float volume) override;
         void togglePlayPause() override;
         void update() override;
+        const OTextureRef& getRenderTarget() override;
 
         void OnEvent(DWORD event, DWORD_PTR param1, DWORD param2);
 

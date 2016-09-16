@@ -268,6 +268,7 @@ namespace onut
 
     void MFPlayer::update()
     {
+        if (!isPlaying()) return;
         if (m_pRenderTarget)
         {
             LONGLONG pts;
@@ -295,6 +296,11 @@ namespace onut
                 m_pMediaEngine->TransferVideoFrame(pRenderTargetD3D11->getD3DTexture(), &videoRect, &targetRect, &borderColor);
             }
         }
+    }
+
+    const OTextureRef& MFPlayer::getRenderTarget()
+    {
+        return m_pRenderTarget;
     }
 }
 

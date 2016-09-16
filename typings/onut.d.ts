@@ -177,6 +177,11 @@ declare class Rect {
     contains(p: Vector2): boolean;
     grow(by: number): Rect;
     distance(v1: Vector2): number;
+    
+    fillSize(size: Vector2): Rect;
+    fillRect(rect: Rect): Rect;
+    fitSize(size: Vector2): Rect;
+    fitRect(rect: Rect): Rect;
 
     x: number;
     y: number;
@@ -413,6 +418,22 @@ declare class Texture {
 }
 /** Same as Texture.createFromFile */
 declare function getTexture(filename: string): Texture;
+
+// Video Player
+declare class VideoPlayer {
+    constructor();
+
+    isPlaying(): boolean;
+    pause();
+    play();
+    setLoop(loop: boolean);
+    setPlayRate(playRate: number);
+    setSource(url: string);
+    setVolume(volume: number);
+    togglePlayPause();
+    update();
+    getRenderTarget(): Texture;
+}
 
 // Font
 declare class Font {
