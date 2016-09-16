@@ -44,6 +44,7 @@ namespace onut
                     if (pEmitter->getInstanceId() == m_id)
                     {
                         pEmitter->setRenderEnabled(renderEnabled);
+                        break;
                     }
                 }
             }
@@ -63,6 +64,7 @@ namespace onut
                     if (pEmitter->getInstanceId() == m_id)
                     {
                         pEmitter->setTransform(transform);
+                        break;
                     }
                 }
             }
@@ -82,6 +84,7 @@ namespace onut
                     if (pEmitter->getInstanceId() == m_id)
                     {
                         pEmitter->stop();
+                        break;
                     }
                 }
             }
@@ -103,6 +106,7 @@ namespace onut
                     if (pEmitter->getInstanceId() == m_id)
                     {
                         if (pEmitter->isAlive()) return true;
+                        break;
                     }
                 }
             }
@@ -123,6 +127,7 @@ namespace onut
                     if (pEmitter->getInstanceId() == m_id)
                     {
                         if (pEmitter->isAlive()) return true;
+                        break;
                     }
                 }
             }
@@ -145,6 +150,7 @@ namespace onut
                     if (pEmitter->getInstanceId() == m_id)
                     {
                         pEmitter->render();
+                        break;
                     }
                 }
             }

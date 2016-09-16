@@ -13,6 +13,8 @@
 #include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/Music.h>
+#include <onut/ParticleSystem.h>
+#include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
 #include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
@@ -65,6 +67,8 @@ namespace onut
         void* pTiledMapPrototype = nullptr;
         void* pSpriteAnimPrototype = nullptr;
         void* pSpriteAnimInstancePrototype = nullptr;
+        void* pParticleSystemPrototype = nullptr;
+        void* pParticleEmitterPrototype = nullptr;
 
         void* pBoolAnimPrototype = nullptr;
         void* pNumberAnimPrototype = nullptr;
@@ -525,6 +529,49 @@ namespace onut
             }
         }
 
+        static OParticleSystemRef getParticleSystem(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            if (duk_is_string(ctx, index))
+            {
+                return OGetParticleSystem(duk_to_string(ctx, index));
+            }
+            else
+            {
+                duk_get_prop_string(ctx, index, "\xff""\xff""data");
+                auto ppParticleSystem = (OParticleSystemRef*)(duk_to_pointer(ctx, -1));
+                duk_pop(ctx);
+
+                if (ppParticleSystem)
+                {
+                    return *ppParticleSystem;
+                }
+                else
+                {
+                    return nullptr;
+                }
+            }
+        }
+
+        static OEmitterInstance* getParticleEmitter(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            duk_get_prop_string(ctx, index, "\xff""\xff""data");
+            auto pEmitter = (OEmitterInstance*)(duk_to_pointer(ctx, -1));
+            duk_pop(ctx);
+
+            if (pEmitter)
+            {
+                return pEmitter;
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
         class Function
         {
         public:
@@ -634,6 +681,8 @@ namespace onut
 #define JS_SOUND(__index__) getSound(ctx, __index__)
 #define JS_SPRITE_ANIM(__index__) getSpriteAnim(ctx, __index__)
 #define JS_SPRITE_ANIM_INSTANCE(__index__) getSpriteAnimInstance(ctx, __index__)
+#define JS_PARTICLE_SYSTEM(__index__) getParticleSystem(ctx, __index__)
+#define JS_PARTICLE_EMITTER(__index__) getParticleEmitter(ctx, __index__)
 #define JS_RECT(...) getRect(ctx, __VA_ARGS__)
 #define JS_iRECT(...) getiRect(ctx, __VA_ARGS__)
 #define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
@@ -2786,6 +2835,26 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
+        static void newParticleSystem(duk_context* ctx, const OParticleSystemRef& pParticleSystem)
+        {
+            duk_push_object(ctx);
+            auto ppParticleSystem = new OParticleSystemRef(pParticleSystem);
+            duk_push_pointer(ctx, ppParticleSystem);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pParticleSystemPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        static void newParticleEmitter(duk_context* ctx, const OEmitterInstance& particleEmitter)
+        {
+            duk_push_object(ctx);
+            auto pParticleEmitter = new OEmitterInstance(particleEmitter);
+            duk_push_pointer(ctx, pParticleEmitter);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pParticleEmitterPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
         static void createTextureBindings()
         {
             auto ctx = pContext;
@@ -3951,6 +4020,21 @@ namespace onut
             }, 1);
             duk_set_finalizer(ctx, -2);
 
+            // createInstance()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnim = (OSpriteAnimRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnim)
+                {
+                    newSpriteAnimInstance(ctx, OMake<OSpriteAnimInstance>(*ppSpriteAnim));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "createInstance");
+
             // Done with the object
             pSpriteAnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -4202,6 +4286,213 @@ namespace onut
             duk_put_global_string(ctx, "SpriteAnimInstance");
         }
 
+        static void createParticleSystemBindings()
+        {
+            auto ctx = pContext;
+
+            // ParticleSystem()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR;
+            }, 0);
+            duk_push_object(ctx);
+
+            // ~ParticleSystem()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppParticleSystem = (OParticleSystemRef*)duk_to_pointer(ctx, -1);
+                if (ppParticleSystem)
+                {
+                    delete ppParticleSystem;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // emit()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto position = JS_VECTOR3(0);
+                auto dir = JS_VECTOR3(1, Vector3::UnitZ);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppParticleSystem = (OParticleSystemRef*)duk_to_pointer(ctx, -1);
+                if (ppParticleSystem)
+                {
+                    newParticleEmitter(ctx, oParticleSystemManager->emit(*ppParticleSystem, position, dir));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "emit");
+
+            // Done with the object
+            pParticleSystemPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newParticleSystem(ctx, OGetParticleSystem(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            duk_put_global_string(ctx, "ParticleSystem");
+        }
+
+        static void createParticleEmitterBindings()
+        {
+            auto ctx = pContext;
+
+            // ParticleEmitter()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                auto pEmitter = new OEmitterInstance();
+
+                duk_push_this(ctx);
+                duk_push_pointer(ctx, pEmitter);
+                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+                duk_push_heapptr(ctx, pParticleEmitterPrototype);
+                duk_set_prototype(ctx, -2);
+                return 0;
+            }, 0);
+            duk_push_object(ctx);
+
+            // ~ParticleEmitter()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    delete pEmitter;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // setTransform()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto pos = JS_VECTOR3(0);
+                auto dir = JS_VECTOR3(1, Vector3::UnitY);
+                auto up = JS_VECTOR3(2, Vector3::UnitZ);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    pEmitter->setTransform(pos, dir, up);
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "setTransform");
+
+            // setTransformMatrix()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto matrix = JS_MATRIX(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    pEmitter->setTransform(matrix);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setTransformMatrix");
+
+            // setRenderEnabled()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto enabled = JS_BOOL(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    pEmitter->setRenderEnabled(enabled);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setRenderEnabled");
+
+            // stop()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    pEmitter->stop();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "stop");
+
+            // render()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    pEmitter->render();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "render");
+
+            // isPlaying()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    duk_push_boolean(ctx, pEmitter->isPlaying());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isPlaying");
+
+            // isAlive()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pEmitter = (OEmitterInstance*)duk_to_pointer(ctx, -1);
+                if (pEmitter)
+                {
+                    duk_push_boolean(ctx, pEmitter->isAlive());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isAlive");
+
+            // Done with the object
+            pParticleEmitterPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            duk_put_global_string(ctx, "ParticleEmitter");
+        }
+
 #define JS_THIS_BOOL_ANIM \
     duk_push_this(ctx); \
     duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
@@ -4224,8 +4515,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pBoolAnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -4452,8 +4741,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pNumberAnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -4669,8 +4956,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pVector2AnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -4886,8 +5171,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pVector3AnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -5103,8 +5386,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pVector4AnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -5320,8 +5601,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pRectAnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -5537,8 +5816,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pColorAnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -5754,8 +6031,6 @@ namespace onut
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                duk_push_heapptr(ctx, pMatrixAnimPrototype);
-                duk_set_prototype(ctx, -2);
                 return 0;
             }, 1);
             duk_push_object(ctx);
@@ -5970,6 +6245,8 @@ namespace onut
             createTiledMapBindings();
             createSpriteAnimBindings();
             createSpriteAnimInstanceBindings();
+            createParticleSystemBindings();
+            createParticleEmitterBindings();
         }
 
         static void createAnimBindings()
@@ -6778,7 +7055,26 @@ namespace onut
                 }
                 return 0;
             }
-            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 1);
+            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 2);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newParticleSystem(ctx, OGetParticleSystem(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getParticleSystem", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto pPfx = JS_PARTICLE_SYSTEM(0);
+                auto pos = JS_VECTOR3(1);
+                auto dir = JS_VECTOR3(2, Vector3::UnitZ);
+                if (pPfx)
+                {
+                    newParticleEmitter(ctx, oParticleSystemManager->emit(pPfx, pos, dir));
+                    return 1;
+                }
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("emitParticles", 3);
 
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)

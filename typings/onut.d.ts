@@ -539,6 +539,28 @@ declare function createSpriteAnimInstance(filename: string): SpriteAnimInstance;
 /** Same as spriteAnim.createInstance then calling play on the returned instance */
 declare function playSpriteAnim(filename: string, animName: string): SpriteAnimInstance;
 
+// ParticleSystem
+declare class ParticleSystem {
+    static createFromFile(filename: string): ParticleSystem;
+
+    emit(pos: Vector3, dir: Vector3): ParticleEmitter;
+}
+/** Same as ParticleSystem.createFromFile */
+declare function getParticleSystem(filename: string): ParticleSystem;
+
+// ParticleEmitter
+declare class ParticleEmitter {
+    setTransform(pos: Vector3, dir: Vector3, up: Vector3);
+    setTransformMatrix(transform: Matrix);
+    setRenderEnabled(enabled: boolean);
+    stop();
+    isPlaying(): boolean;
+    isAlive(): boolean;
+    render();
+}
+/** Same as particleSystem.emit */
+declare function emitParticle(particleSystem: ParticleSystem, pos: Vector3, dir: Vector3): ParticleEmitter;
+
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);
