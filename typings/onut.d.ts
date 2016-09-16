@@ -632,6 +632,42 @@ declare namespace Renderer {
     function setIndexBuffer(indexBuffer: IndexBuffer);
     function pushIndexBuffer(indexBuffer: IndexBuffer);
     function popIndexBuffer();
+
+    function setBlendMode(blendMode: BlendMode);
+    function pushBlendMode(blendMode: BlendMode);
+    function popBlendMode();
+
+    function setFilterMode(filterMode: FilterMode);
+    function pushFilterMode(filterMode: FilterMode);
+    function popFilterMode();
+
+    function setWrapMode(wrapMode: WrapMode);
+    function pushWrapMode(wrapMode: WrapMode);
+    function popWrapMode();
+
+    function setViewport(viewport: Rect);
+    function pushViewport(viewport: Rect);
+    function popViewport();
+
+    function setScissorEnabled(enabled: boolean);
+    function pushScissorEnabled(enabled: boolean);
+    function popScissorEnabled();
+
+    function setScissor(scissor: Rect);
+    function pushScissor(scissor: Rect);
+    function popScissor();
+
+    function setPrimitiveMode(primitiveMode: PrimitiveMode);
+    function pushPrimitiveMode(primitiveMode: PrimitiveMode);
+    function popPrimitiveMode();
+
+    function setWorld(world: Matrix);
+    function pushWorld(world: Matrix);
+    function popWorld();
+
+    function setViewProjection(viewProjection: Matrix);
+    function pushViewProjection(viewProjection: Matrix);
+    function popViewProjection();
 }
 
 // Spritebatch
@@ -736,6 +772,11 @@ declare enum BlendMode {
 declare enum FilterMode {
     NEAREST,
     LINEAR
+}
+
+declare enum WrapMode {
+    WRAP,
+    CLAMP
 }
 
 // Primitive mode

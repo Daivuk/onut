@@ -97,23 +97,23 @@ namespace onut
     {
         for (auto& pTexture : textures)
         {
-            pTexture.forceDirty();
+            pTexture.reset();
         }
-        blendMode.forceDirty();
-        sampleFiltering.forceDirty();
-        sampleAddressMode.forceDirty();
-        viewport.forceDirty();
-        scissor.forceDirty();
-        viewProjection.forceDirty();
-        world.forceDirty();
-        depthEnabled.forceDirty();
-        scissorEnabled.forceDirty();
-        primitiveMode.forceDirty();
-        vertexShader.forceDirty();
-        pixelShader.forceDirty();
-        vertexBuffer.forceDirty();
-        indexBuffer.forceDirty();
-        renderTarget.forceDirty();
+        blendMode.reset();
+        sampleFiltering.reset();
+        sampleAddressMode.reset();
+        viewport.reset();
+        scissor.reset();
+        viewProjection.reset();
+        world.reset();
+        depthEnabled.reset();
+        scissorEnabled.reset();
+        primitiveMode.reset();
+        vertexShader.reset();
+        pixelShader.reset();
+        vertexBuffer.reset();
+        indexBuffer.reset();
+        renderTarget.reset();
     }
 
     Renderer::Renderer()

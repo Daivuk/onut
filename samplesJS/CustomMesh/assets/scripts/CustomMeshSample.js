@@ -2,9 +2,9 @@ var texture = getTexture("onutLogo.png");
 
 var vertexData = new Float32Array([
     0, 0, 0, 0, 1, 0, 0, 1, //(x, y, u, v, r, g, b, a)
-    0, 100, 0, 1, 0, 1, 0, 1,
+    0, 100, 0, 2, 0, 1, 0, 1,
     100, 0, 1, 0, 0, 0, 1, 1,
-    100, 100, 1, 1, 1, 1, 0, 1
+    100, 100, 1, 2, 1, 1, 0, 1
 ]);
 var vertexBuffer = VertexBuffer.createStatic(vertexData);
 

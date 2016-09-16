@@ -43,6 +43,7 @@ namespace onut
         RenderState& operator=(const RenderState& other)
         {
             *this = other.m_value;
+            m_stack = other.m_stack;
             return *this;
         }
 
@@ -69,6 +70,16 @@ namespace onut
         void forceDirty()
         {
             m_isDirty = true;
+        }
+
+        void reset()
+        {
+            m_isDirty = true;
+            if (!m_stack.empty())
+            {
+                m_value = m_stack.front();
+                m_stack.clear();
+            }
         }
 
         void push(const Ttype& value)

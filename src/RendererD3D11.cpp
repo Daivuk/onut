@@ -341,8 +341,10 @@ namespace onut
         // Bind render target
         renderStates.reset();
 
-        // Set viewport
+        // Set viewport/scissor
         renderStates.viewport = iRect{0, 0, static_cast<int>(m_backBufferDesc.Width), static_cast<int>(m_backBufferDesc.Height)};
+        renderStates.scissorEnabled = false;
+        renderStates.scissor = renderStates.viewport.get();
 
         // Reset 2d view
         set2DCamera(Vector2::Zero);
@@ -633,54 +635,60 @@ namespace onut
 
         // Shaders
         auto pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());
-        if (renderStates.vertexShader.isDirty())
+        if (pShaderD3D11)
         {
-            m_pDeviceContext->VSSetShader(pShaderD3D11->getVertexShader(), nullptr, 0);
-            m_pDeviceContext->IASetInputLayout(pShaderD3D11->getInputLayout());
-            renderStates.vertexShader.resetDirty();
+            if (renderStates.vertexShader.isDirty())
+            {
+                m_pDeviceContext->VSSetShader(pShaderD3D11->getVertexShader(), nullptr, 0);
+                m_pDeviceContext->IASetInputLayout(pShaderD3D11->getInputLayout());
+                renderStates.vertexShader.resetDirty();
 
-            auto& uniforms = pShaderD3D11->getUniforms();
-            for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
-            {
-                m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
-            }
-        }
-        else
-        {
-            auto& uniforms = pShaderD3D11->getUniforms();
-            for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
-            {
-                auto& uniform = uniforms[i];
-                if (uniform.dirty)
+                auto& uniforms = pShaderD3D11->getUniforms();
+                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
                 {
-                    m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniform.pBuffer));
-                    uniform.dirty = false;
+                    m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
+                }
+            }
+            else
+            {
+                auto& uniforms = pShaderD3D11->getUniforms();
+                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
+                {
+                    auto& uniform = uniforms[i];
+                    if (uniform.dirty)
+                    {
+                        m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniform.pBuffer));
+                        uniform.dirty = false;
+                    }
                 }
             }
         }
 
         pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
-        if (renderStates.pixelShader.isDirty())
+        if (pShaderD3D11)
         {
-            m_pDeviceContext->PSSetShader(pShaderD3D11->getPixelShader(), nullptr, 0);
-            renderStates.pixelShader.resetDirty();
+            if (renderStates.pixelShader.isDirty())
+            {
+                m_pDeviceContext->PSSetShader(pShaderD3D11->getPixelShader(), nullptr, 0);
+                renderStates.pixelShader.resetDirty();
 
-            auto& uniforms = pShaderD3D11->getUniforms();
-            for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
-            {
-                m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
-            }
-        }
-        else
-        {
-            auto& uniforms = pShaderD3D11->getUniforms();
-            for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
-            {
-                auto& uniform = uniforms[i];
-                if (uniform.dirty)
+                auto& uniforms = pShaderD3D11->getUniforms();
+                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
                 {
-                    m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniform.pBuffer));
-                    uniform.dirty = false;
+                    m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
+                }
+            }
+            else
+            {
+                auto& uniforms = pShaderD3D11->getUniforms();
+                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
+                {
+                    auto& uniform = uniforms[i];
+                    if (uniform.dirty)
+                    {
+                        m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniform.pBuffer));
+                        uniform.dirty = false;
+                    }
                 }
             }
         }

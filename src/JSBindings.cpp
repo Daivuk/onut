@@ -6797,7 +6797,7 @@ namespace onut
                 }
                 JS_INTERFACE_FUNCTION_END("drawIndexed", 1);
 
-                // States
+                // Render target
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pTexture = JS_TEXTURE(0);
@@ -6818,7 +6818,7 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popRenderTarget", 0);
-
+                // Textures
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pTexture = JS_TEXTURE(0);
@@ -6845,7 +6845,7 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popTexture", 1);
-
+                // Vertex shader
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pShader = JS_SHADER(0);
@@ -6866,7 +6866,7 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popVertexShader", 0);
-
+                // Pixel shader
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pShader = JS_SHADER(0);
@@ -6887,7 +6887,7 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popPixelShader", 0);
-
+                // Vertex buffer
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pVertexBuffer = JS_VERTEX_BUFFER(0);
@@ -6908,7 +6908,7 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popVertexBuffer", 0);
-
+                // Index buffer
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pIndexBuffer = JS_INDEX_BUFFER(0);
@@ -6929,6 +6929,181 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popIndexBuffer", 0);
+                // Blend mode
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.blendMode = (onut::BlendMode)JS_UINT(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setBlendMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.blendMode.push((onut::BlendMode)JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushBlendMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.blendMode.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popBlendMode", 0);
+                // Filter mode
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.sampleFiltering = (onut::sample::Filtering)JS_UINT(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setFilterMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.sampleFiltering.push((onut::sample::Filtering)JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushFilterMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.sampleFiltering.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popFilterMode", 0);
+                // Filter mode
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.sampleAddressMode = (onut::sample::AddressMode)JS_UINT(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setWrapMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.sampleAddressMode.push((onut::sample::AddressMode)JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushWrapMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.sampleAddressMode.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popWrapMode", 0);
+                // Viewport
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto viewport = JS_iRECT(0);
+                    oRenderer->renderStates.viewport = viewport;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setViewport", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto viewport = JS_iRECT(0);
+                    oRenderer->renderStates.viewport.push(viewport);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushViewport", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.viewport.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popViewport", 0);
+                // Scissor
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto scissor = JS_iRECT(0);
+                    oRenderer->renderStates.scissor = scissor;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setScissor", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto scissor = JS_iRECT(0);
+                    oRenderer->renderStates.scissor.push(scissor);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushScissor", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.scissor.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popScissor", 0);
+                // Scissor Enabled
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.scissorEnabled = JS_BOOL(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setScissorEnabled", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.scissorEnabled.push(JS_BOOL(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushScissorEnabled", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.scissorEnabled.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popScissorEnabled", 0);
+                // Primitive Mode
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.primitiveMode = (onut::PrimitiveMode)JS_UINT(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setPrimitiveMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.primitiveMode.push((onut::PrimitiveMode)JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushPrimitiveMode", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.primitiveMode.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popPrimitiveMode", 0);
+                // World
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.world = JS_MATRIX(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setWorld", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.world.push(JS_MATRIX(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushWorld", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.world.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popWorld", 0);
+                // View Projection Matrix
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.viewProjection = JS_MATRIX(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setViewProjection", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.viewProjection.push(JS_MATRIX(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushViewProjection", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.viewProjection.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popViewProjection", 0);
             }
             JS_INTERFACE_END("Renderer");
 
@@ -7674,6 +7849,12 @@ namespace onut
                 JS_ENUM("LINEAR", OFilterLinear);
             }
             JS_INTERFACE_END("FilterMode");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("WRAP", onut::sample::AddressMode::Wrap);
+                JS_ENUM("CLAMP", onut::sample::AddressMode::Clamp);
+            }
+            JS_INTERFACE_END("WrapMode");
             JS_INTERFACE_BEGIN();
             {
                 JS_ENUM("POINT_LIST", OPrimitivePointList);
