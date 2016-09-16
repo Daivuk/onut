@@ -44,12 +44,8 @@ Make sure to follow the recommended folder structure when doing those steps.
   * Right click YourGame project -> Properties -> Configuration Properties -> C/C++ -> General -> Additional Include Directories. Add the following
     * `../../src`
     * `../../onut/include`
-7. Compile statically.
-    * Right click YourGame project -> Properties -> Configuration Properties -> C/C++ -> Code Generation -> Runtime Library
-        * For Debug, set to `Multi-threaded Debug (/MTd)`
-        * For Release, set to `Multi-threaded (/MT)`
 
-##Main
+##Main (C++ Game)
 ```cpp
 // Required for WinMain
 #include <Windows.h>
@@ -66,7 +62,40 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 }
 ```
 
+##Main (JavaScript Game)
+
+###C++
+
+```cpp
+// Required for WinMain
+#include <Windows.h>
+
+// Oak Nut include
+#include <onut/onut.h>
+
+// Main
+int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+{
+  // Run. 
+  onut::run();
+}
+```
+
+###JS
+
+```javascript
+// Init here
+
+function update(dt) {
+    // Update your game here
+}
+
+function render() {
+    // Draw your game here
+}
+```
+
 ##Samples
-See the `onut/samples/Samples.sln` folder to learn how to use onut.
+See the `onut/samples/Samples.sln` and `onut/samplesJS/Samples.sln` folders to learn how to use onut.
 
 Enjoy!
