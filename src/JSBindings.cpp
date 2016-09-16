@@ -50,11 +50,11 @@ namespace onut
 
         duk_context* pContext = nullptr;
 
-        // Global functions head pointers
+        // Global functions heap pointers
         void* pUpdatePtr = nullptr;
         void* pRenderPtr = nullptr;
 
-        // Prototypes head pointers
+        // Prototypes heap pointers
         void* pVector2Prototype = nullptr;
         void* pVector3Prototype = nullptr;
         void* pVector4Prototype = nullptr;
@@ -665,52 +665,12 @@ namespace onut
         }
 
 #define JS_GLOBAL_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-#define JS_GLOBAL_FUNCTION_PROPS_BEGIN(__argcnt__) , __argcnt__)
-#define JS_GLOBAL_FUNCTION_PROPS_END(__name__) duk_put_global_string(ctx, __name__)
 #define JS_GLOBAL_FUNCTION_END(__name__, __argcnt__) , __argcnt__); duk_put_global_string(ctx, __name__)
 
 #define JS_INTERFACE_BEGIN() duk_push_object(ctx)
 #define JS_INTERFACE_END(__name__) duk_put_global_string(ctx, __name__)
 #define JS_INTERFACE_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
 #define JS_INTERFACE_FUNCTION_END(__name__, __argcnt__) , __argcnt__); duk_put_prop_string(ctx, 0, __name__)
-
-#define JS_OBJECT_BEGIN() duk_push_object(ctx)
-#define JS_OBJECT_END(__name__) duk_put_prop_string(ctx, -2, __name__)
-#define JS_ADD_FLOAT_PROP(__name__, __val__) duk_push_number(ctx, (duk_double_t)(__val__)); duk_put_prop_string(ctx, -2, __name__)
-#define JS_ADD_DATA_PROP(__pointer__) duk_push_pointer(ctx, __pointer__); duk_put_prop_string(ctx, -2, "\xff""\xff""data")
-#define JS_ADD_VECTOR2_PROP(__name__, __val__) \
-    JS_OBJECT_BEGIN(); \
-    JS_ADD_FLOAT_PROP("x", __val__.x); \
-    JS_ADD_FLOAT_PROP("y", __val__.y); \
-    JS_OBJECT_END(__name__);
-#define JS_BUILD_MATRIX_OBJECT(__matrix__) \
-    JS_OBJECT_BEGIN(); \
-    JS_ADD_FLOAT_PROP("_11", __matrix__._11); \
-    JS_ADD_FLOAT_PROP("_12", __matrix__._12); \
-    JS_ADD_FLOAT_PROP("_13", __matrix__._13); \
-    JS_ADD_FLOAT_PROP("_14", __matrix__._14); \
-    JS_ADD_FLOAT_PROP("_21", __matrix__._21); \
-    JS_ADD_FLOAT_PROP("_22", __matrix__._22); \
-    JS_ADD_FLOAT_PROP("_23", __matrix__._23); \
-    JS_ADD_FLOAT_PROP("_24", __matrix__._24); \
-    JS_ADD_FLOAT_PROP("_31", __matrix__._31); \
-    JS_ADD_FLOAT_PROP("_32", __matrix__._32); \
-    JS_ADD_FLOAT_PROP("_33", __matrix__._33); \
-    JS_ADD_FLOAT_PROP("_34", __matrix__._34); \
-    JS_ADD_FLOAT_PROP("_41", __matrix__._41); \
-    JS_ADD_FLOAT_PROP("_42", __matrix__._42); \
-    JS_ADD_FLOAT_PROP("_43", __matrix__._43); \
-    JS_ADD_FLOAT_PROP("_44", __matrix__._44)
-#define JS_BUILD_COLOR_OBJECT(__color__) \
-    JS_OBJECT_BEGIN(); \
-    JS_ADD_FLOAT_PROP("r", __color__.x); \
-    JS_ADD_FLOAT_PROP("g", __color__.y); \
-    JS_ADD_FLOAT_PROP("b", __color__.z); \
-    JS_ADD_FLOAT_PROP("a", __color__.w);
-#define JS_BUILD_VECTOR2_OBJECT(__val__) \
-    JS_OBJECT_BEGIN(); \
-    JS_ADD_FLOAT_PROP("x", __val__.x); \
-    JS_ADD_FLOAT_PROP("y", __val__.y); \
 
 #define JS_BOOL(...) getBool(ctx, __VA_ARGS__)
 #define JS_FLOAT(...) (float)getFloat(ctx, __VA_ARGS__)
