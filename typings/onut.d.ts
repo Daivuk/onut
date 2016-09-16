@@ -177,7 +177,7 @@ declare class Rect {
     contains(p: Vector2): boolean;
     grow(by: number): Rect;
     distance(v1: Vector2): number;
-    
+
     fillSize(size: Vector2): Rect;
     fillRect(rect: Rect): Rect;
     fitSize(size: Vector2): Rect;
@@ -582,11 +582,33 @@ declare class ParticleEmitter {
 /** Same as particleSystem.emit */
 declare function emitParticle(particleSystem: ParticleSystem, pos: Vector3, dir: Vector3): ParticleEmitter;
 
+// VertexBuffer
+declare class VertexBuffer {
+    static createStatic(data: Float32Array): VertexBuffer;
+    static createDynamic(count: number): VertexBuffer;
+
+    setData(data: Float32Array);
+    getCount(): number;
+}
+
+// IndexBuffer
+declare class IndexBuffer {
+    static createStatic(data: Uint16Array): IndexBuffer;
+    static createDynamic(count: number): IndexBuffer;
+
+    setData(data: Uint16Array);
+    getCount(): number;
+}
+
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);
     function getResolution(): Vector2;
+    function setupFor2D(transform: Matrix);
+    function draw(vertexCount: number);
+    function drawIndexed(indexCount: number);
 
+    // States
     function setRenderTarget(renderTarget: Texture);
     function pushRenderTarget(renderTarget: Texture);
     function popRenderTarget();
@@ -595,13 +617,21 @@ declare namespace Renderer {
     function pushTexture(texture: Texture, index: number);
     function popTexture(index: number);
 
-    function setVertexShader(shader: Shader, index: number);
-    function pushVertexShader(shader: Shader, index: number);
-    function popVertexShader(index: number);
+    function setVertexShader(shader: Shader);
+    function pushVertexShader(shader: Shader);
+    function popVertexShader();
 
-    function setPixelShader(shader: Shader, index: number);
-    function pushPixelShader(shader: Shader, index: number);
-    function popPixelShader(index: number);
+    function setPixelShader(shader: Shader);
+    function pushPixelShader(shader: Shader);
+    function popPixelShader();
+
+    function setVertexBuffer(vertexBuffer: VertexBuffer);
+    function pushVertexBuffer(vertexBuffer: VertexBuffer);
+    function popVertexBuffer();
+
+    function setIndexBuffer(indexBuffer: IndexBuffer);
+    function pushIndexBuffer(indexBuffer: IndexBuffer);
+    function popIndexBuffer();
 }
 
 // Spritebatch

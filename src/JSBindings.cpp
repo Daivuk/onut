@@ -10,6 +10,7 @@
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Http.h>
+#include <onut/IndexBuffer.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/Music.h>
@@ -26,6 +27,7 @@
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 #include <onut/Timing.h>
+#include <onut/VertexBuffer.h>
 #include <onut/VideoPlayer.h>
 
 // Private includes
@@ -71,6 +73,8 @@ namespace onut
         void* pSpriteAnimInstancePrototype = nullptr;
         void* pParticleSystemPrototype = nullptr;
         void* pParticleEmitterPrototype = nullptr;
+        void* pVertexBufferPrototype = nullptr;
+        void* pIndexBufferPrototype = nullptr;
 
         void* pBoolAnimPrototype = nullptr;
         void* pNumberAnimPrototype = nullptr;
@@ -566,9 +570,38 @@ namespace onut
             auto pEmitter = (OEmitterInstance*)(duk_to_pointer(ctx, -1));
             duk_pop(ctx);
 
-            if (pEmitter)
+            return pEmitter;
+        }
+
+        static OVertexBufferRef getVertexBuffer(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            duk_get_prop_string(ctx, index, "\xff""\xff""data");
+            auto pVertexBuffer = (OVertexBufferRef*)(duk_to_pointer(ctx, -1));
+            duk_pop(ctx);
+
+            if (pVertexBuffer)
             {
-                return pEmitter;
+                return *pVertexBuffer;
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
+        static OIndexBufferRef getIndexBuffer(duk_context *ctx, duk_idx_t index)
+        {
+            if (duk_is_null_or_undefined(ctx, index)) return nullptr;
+
+            duk_get_prop_string(ctx, index, "\xff""\xff""data");
+            auto pIndexBuffer = (OIndexBufferRef*)(duk_to_pointer(ctx, -1));
+            duk_pop(ctx);
+
+            if (pIndexBuffer)
+            {
+                return *pIndexBuffer;
             }
             else
             {
@@ -679,6 +712,20 @@ namespace onut
     JS_ADD_FLOAT_PROP("x", __val__.x); \
     JS_ADD_FLOAT_PROP("y", __val__.y); \
 
+#define JS_BOOL(...) getBool(ctx, __VA_ARGS__)
+#define JS_FLOAT(...) (float)getFloat(ctx, __VA_ARGS__)
+#define JS_STRING(...) getString(ctx, __VA_ARGS__)
+#define JS_UINT(...) getUInt(ctx, __VA_ARGS__)
+#define JS_INT(...) getInt(ctx, __VA_ARGS__)
+
+#define JS_RECT(...) getRect(ctx, __VA_ARGS__)
+#define JS_iRECT(...) getiRect(ctx, __VA_ARGS__)
+#define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
+#define JS_VECTOR3(...) getVector3(ctx, __VA_ARGS__)
+#define JS_VECTOR4(...) getVector4(ctx, __VA_ARGS__)
+#define JS_COLOR(...) getColor(ctx, __VA_ARGS__)
+#define JS_MATRIX(...) getMatrix(ctx, __VA_ARGS__)
+
 #define JS_TEXTURE(__index__) getTexture(ctx, __index__)
 #define JS_FONT(__index__) getFont(ctx, __index__)
 #define JS_SHADER(__index__) getShader(ctx, __index__)
@@ -687,18 +734,8 @@ namespace onut
 #define JS_SPRITE_ANIM_INSTANCE(__index__) getSpriteAnimInstance(ctx, __index__)
 #define JS_PARTICLE_SYSTEM(__index__) getParticleSystem(ctx, __index__)
 #define JS_PARTICLE_EMITTER(__index__) getParticleEmitter(ctx, __index__)
-#define JS_RECT(...) getRect(ctx, __VA_ARGS__)
-#define JS_iRECT(...) getiRect(ctx, __VA_ARGS__)
-#define JS_VECTOR2(...) getVector2(ctx, __VA_ARGS__)
-#define JS_VECTOR3(...) getVector3(ctx, __VA_ARGS__)
-#define JS_VECTOR4(...) getVector4(ctx, __VA_ARGS__)
-#define JS_COLOR(...) getColor(ctx, __VA_ARGS__)
-#define JS_BOOL(...) getBool(ctx, __VA_ARGS__)
-#define JS_FLOAT(...) (float)getFloat(ctx, __VA_ARGS__)
-#define JS_STRING(...) getString(ctx, __VA_ARGS__)
-#define JS_UINT(...) getUInt(ctx, __VA_ARGS__)
-#define JS_INT(...) getInt(ctx, __VA_ARGS__)
-#define JS_MATRIX(...) getMatrix(ctx, __VA_ARGS__)
+#define JS_VERTEX_BUFFER(__index__) getVertexBuffer(ctx, __index__)
+#define JS_INDEX_BUFFER(__index__) getIndexBuffer(ctx, __index__)
 
         void init()
         {
@@ -2918,6 +2955,26 @@ namespace onut
             duk_push_pointer(ctx, pParticleEmitter);
             duk_put_prop_string(ctx, -2, "\xff""\xff""data");
             duk_push_heapptr(ctx, pParticleEmitterPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        static void newVertexBuffer(duk_context* ctx, const OVertexBufferRef& pVertexBuffer)
+        {
+            duk_push_object(ctx);
+            auto ppVertexBuffer = new OVertexBufferRef(pVertexBuffer);
+            duk_push_pointer(ctx, ppVertexBuffer);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pVertexBufferPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+
+        static void newIndexBuffer(duk_context* ctx, const OIndexBufferRef& pIndexBuffer)
+        {
+            duk_push_object(ctx);
+            auto ppIndexBuffer = new OIndexBufferRef(pIndexBuffer);
+            duk_push_pointer(ctx, ppIndexBuffer);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pIndexBufferPrototype);
             duk_set_prototype(ctx, -2);
         }
 
@@ -6478,6 +6535,174 @@ namespace onut
             duk_put_global_string(ctx, "VideoPlayer");
         }
 
+        static void createVertexBufferBindings()
+        {
+            auto ctx = pContext;
+
+            // VertexBuffer() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~VertexBuffer()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppVertexBuffer = (OVertexBufferRef*)duk_to_pointer(ctx, -1);
+                if (ppVertexBuffer)
+                {
+                    delete ppVertexBuffer;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // getCount()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppVertexBuffer = (OVertexBufferRef*)duk_to_pointer(ctx, -1);
+                if (ppVertexBuffer)
+                {
+                    duk_push_uint(ctx, (duk_uint_t)((*ppVertexBuffer)->size() / 4));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getCount");
+
+            // setData()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppVertexBuffer = (OVertexBufferRef*)duk_to_pointer(ctx, -1);
+                if (ppVertexBuffer)
+                {
+                    (*ppVertexBuffer)->setData(pBuffer, bufferSize);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setData");
+
+            // Done with the object
+            pVertexBufferPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createStatic(data)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                newVertexBuffer(ctx, OVertexBuffer::createStatic(pBuffer, bufferSize));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createStatic");
+
+            // createDynamic(size)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto count = JS_UINT(0);
+                newVertexBuffer(ctx, OVertexBuffer::createDynamic(count * 4));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createDynamic");
+
+            duk_put_global_string(ctx, "VertexBuffer");
+        }
+
+        static void createIndexBufferBindings()
+        {
+            auto ctx = pContext;
+
+            // IndexBuffer() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~IndexBuffer()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppIndexBuffer = (OIndexBufferRef*)duk_to_pointer(ctx, -1);
+                if (ppIndexBuffer)
+                {
+                    delete ppIndexBuffer;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // getCount()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppIndexBuffer = (OIndexBufferRef*)duk_to_pointer(ctx, -1);
+                if (ppIndexBuffer)
+                {
+                    duk_push_uint(ctx, (duk_uint_t)((*ppIndexBuffer)->size() / 2));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getCount");
+
+            // setData()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppIndexBuffer = (OIndexBufferRef*)duk_to_pointer(ctx, -1);
+                if (ppIndexBuffer)
+                {
+                    (*ppIndexBuffer)->setData(pBuffer, bufferSize);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setData");
+
+            // Done with the object
+            pIndexBufferPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createStatic(data)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_size_t bufferSize;
+                auto pBuffer = duk_get_buffer_data(ctx, 0, &bufferSize);
+                newIndexBuffer(ctx, OIndexBuffer::createStatic(pBuffer, bufferSize));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createStatic");
+
+            // createDynamic(size)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto count = JS_UINT(0);
+                newIndexBuffer(ctx, OIndexBuffer::createDynamic(count * 2));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createDynamic");
+
+            duk_put_global_string(ctx, "IndexBuffer");
+        }
+
         static void createMathsBinding()
         {
             createVector2Bindings();
@@ -6501,6 +6726,8 @@ namespace onut
             createSpriteAnimInstanceBindings();
             createParticleSystemBindings();
             createParticleEmitterBindings();
+            createVertexBufferBindings();
+            createIndexBufferBindings();
         }
 
         static void createAnimBindings()
@@ -6549,6 +6776,28 @@ namespace onut
                 }
                 JS_INTERFACE_FUNCTION_END("getResolution", 0);
 
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->setupFor2D(JS_MATRIX(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setupFor2D", 1);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->draw(JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("draw", 1);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->drawIndexed(JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawIndexed", 1);
+
+                // States
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pTexture = JS_TEXTURE(0);
@@ -6638,6 +6887,48 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popPixelShader", 0);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pVertexBuffer = JS_VERTEX_BUFFER(0);
+                    oRenderer->renderStates.vertexBuffer = pVertexBuffer;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setVertexBuffer", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pVertexBuffer = JS_VERTEX_BUFFER(0);
+                    oRenderer->renderStates.vertexBuffer.push(pVertexBuffer);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushVertexbuffer", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.vertexBuffer.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popVertexBuffer", 0);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pIndexBuffer = JS_INDEX_BUFFER(0);
+                    oRenderer->renderStates.indexBuffer = pIndexBuffer;
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setIndexBuffer", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pIndexBuffer = JS_INDEX_BUFFER(0);
+                    oRenderer->renderStates.indexBuffer.push(pIndexBuffer);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushIndexbuffer", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.indexBuffer.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popIndexBuffer", 0);
             }
             JS_INTERFACE_END("Renderer");
 
