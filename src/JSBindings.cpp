@@ -525,6 +525,61 @@ namespace onut
             }
         }
 
+        class Function
+        {
+        public:
+            Function(duk_context* ctx, int index) : m_ctx(ctx)
+            {
+                duk_push_global_stash(m_ctx);
+                duk_dup(m_ctx, index < 0 ? index - 1 : index);
+                m_name = "fn" + std::to_string(reinterpret_cast<uintptr_t>(this));
+                duk_put_prop_string(m_ctx, -2, m_name.c_str());
+            }
+
+            bool push(duk_context* ctx)
+            {
+                duk_push_global_stash(ctx);
+                if (duk_get_prop_string(ctx, -1, m_name.c_str()))
+                {
+                    return true;
+                }
+                duk_pop(ctx);
+                return false;
+            }
+
+            void call(duk_context* ctx, duk_idx_t argCount)
+            {
+                duk_call(ctx, argCount);
+                duk_pop(ctx); // Pop result
+                duk_pop(ctx); // Pop global stash
+            }
+
+            ~Function()
+            {
+                if (!m_name.empty())
+                {
+                    duk_push_global_stash(m_ctx);
+                    duk_del_prop_string(m_ctx, -1, m_name.c_str());
+                    duk_pop(m_ctx);
+                }
+            }
+
+        private:
+            duk_context* m_ctx;
+            std::string m_name;
+        };
+        using FunctionRef = std::shared_ptr<Function>;
+
+        static FunctionRef getFunction(duk_context* ctx, int index)
+        {
+            if (duk_is_function(ctx, index))
+            {
+                auto pFunction = OMake<Function>(ctx, index);
+                return pFunction;
+            }
+            return nullptr;
+        }
+
 #define JS_GLOBAL_FUNCTION_BEGIN duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
 #define JS_GLOBAL_FUNCTION_PROPS_BEGIN(__argcnt__) , __argcnt__)
 #define JS_GLOBAL_FUNCTION_PROPS_END(__name__) duk_put_global_string(ctx, __name__)
@@ -4163,7 +4218,7 @@ namespace onut
             {
                 if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
 
-                auto pAnim = new OAnimFloat();
+                auto pAnim = new OAnimBool();
                 *pAnim = JS_BOOL(0);
 
                 duk_push_this(ctx);
@@ -4174,6 +4229,22 @@ namespace onut
                 return 0;
             }, 1);
             duk_push_object(ctx);
+
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimBool*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
 
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -4204,7 +4275,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -4216,7 +4298,18 @@ namespace onut
                 auto to = JS_BOOL(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -4294,8 +4387,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimBool::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimBool::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimBool::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -4351,6 +4458,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimFloat*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -4380,7 +4503,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -4392,7 +4526,18 @@ namespace onut
                 auto to = JS_FLOAT(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -4470,8 +4615,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimFloat::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimFloat::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimFloat::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -4516,6 +4675,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimVector2*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -4545,7 +4720,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -4557,7 +4743,18 @@ namespace onut
                 auto to = JS_VECTOR2(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -4635,8 +4832,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimVector2::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimVector2::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimVector2::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -4681,6 +4892,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimVector3*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -4710,7 +4937,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -4722,7 +4960,18 @@ namespace onut
                 auto to = JS_VECTOR3(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -4800,8 +5049,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimVector3::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimVector3::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimVector3::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -4846,6 +5109,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimVector4*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -4875,7 +5154,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -4887,7 +5177,18 @@ namespace onut
                 auto to = JS_VECTOR4(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -4965,8 +5266,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimVector4::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimVector4::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimVector4::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -5011,6 +5326,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimRect*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -5040,7 +5371,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -5052,7 +5394,18 @@ namespace onut
                 auto to = JS_RECT(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -5130,8 +5483,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimRect::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimRect::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimRect::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -5176,6 +5543,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimColor*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -5205,7 +5588,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -5217,7 +5611,18 @@ namespace onut
                 auto to = JS_COLOR(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -5295,8 +5700,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimColor::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimColor::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimColor::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
@@ -5341,6 +5760,22 @@ namespace onut
             }, 1);
             duk_push_object(ctx);
 
+            // ~destructor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pAnim = (OAnimMatrix*)duk_to_pointer(ctx, -1);
+                if (pAnim)
+                {
+                    delete pAnim;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
             // get()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -5370,7 +5805,18 @@ namespace onut
                 auto duration = JS_FLOAT(2);
                 auto tween = (onut::Tween)JS_UINT(3, (unsigned int)OTweenLinear);
                 auto loop = (onut::LoopType)JS_UINT(4, (unsigned int)ODontLoop);
-                pAnim->play(from, to, duration, tween, loop);
+                auto callback = getFunction(ctx, 5);
+                if (callback)
+                {
+                    pAnim->play(from, to, duration, tween, loop, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->play(from, to, duration, tween, loop);
+                }
                 return 0;
             }, 6);
             duk_put_prop_string(ctx, -2, "playSingle");
@@ -5382,7 +5828,18 @@ namespace onut
                 auto to = JS_MATRIX(0);
                 auto duration = JS_FLOAT(1);
                 auto tween = (onut::Tween)JS_UINT(2, (unsigned int)OTweenLinear);
-                pAnim->queue(to, duration, tween);
+                auto callback = getFunction(ctx, 3);
+                if (callback)
+                {
+                    pAnim->queue(to, duration, tween, [ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                else
+                {
+                    pAnim->queue(to, duration, tween);
+                }
                 return 0;
             }, 4);
             duk_put_prop_string(ctx, -2, "queue");
@@ -5460,8 +5917,22 @@ namespace onut
                             duk_get_prop_string(ctx, -1, "tween");
                             if (duk_is_number(ctx, -1)) tween = (onut::Tween)duk_to_uint(ctx, -1);
                             duk_pop(ctx);
-                            OAnimMatrix::KeyFrame keyFrame(value, duration, tween, nullptr);
-                            keyframes.push_back(keyFrame);
+                            duk_get_prop_string(ctx, -1, "callback");
+                            auto callback = getFunction(ctx, -1);
+                            duk_pop(ctx);
+                            if (callback)
+                            {
+                                OAnimMatrix::KeyFrame keyFrame(value, duration, tween, [ctx, callback]
+                                {
+                                    if (callback->push(ctx)) callback->call(ctx, 0);
+                                });
+                                keyframes.push_back(keyFrame);
+                            }
+                            else
+                            {
+                                OAnimMatrix::KeyFrame keyFrame(value, duration, tween, nullptr);
+                                keyframes.push_back(keyFrame);
+                            }
                         }
                         duk_pop(ctx);
                     }
