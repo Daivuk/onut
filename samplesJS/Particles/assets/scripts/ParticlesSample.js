@@ -47,7 +47,7 @@ function render()
     // so we can specify in which order it is renderer manually
     emitter.render();
 
-  //  SpriteBatch.drawText(font, "FPS: " + std::to_string(oTiming->getFPS()), {10, 50});
+    SpriteBatch.drawText(font, "FPS: " + Timing.getFPS(), new Vector2(10, 50));
 
     SpriteBatch.end();
 }

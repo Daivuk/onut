@@ -663,6 +663,14 @@ declare namespace Cryptography {
     function decodeBase64(base64: string): ArrayBuffer;
 }
 
+// Timing
+declare namespace Timing {
+    function getDeltaTime(): number;
+    function getRenderDeltaTime(): number;
+    function getTotalElapsed(): number;
+    function getFPS(): number;
+}
+
 // Blend mode
 declare enum BlendMode {
     OPAQUE,

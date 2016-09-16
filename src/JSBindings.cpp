@@ -25,6 +25,7 @@
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
+#include <onut/Timing.h>
 
 // Private includes
 #include "JSBindings.h"
@@ -6943,6 +6944,36 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("decodeBase64", 1);
             }
             JS_INTERFACE_END("Cryptography");
+
+            // Timing
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oTiming->getDeltaTime());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getDeltaTime", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oTiming->getRenderDeltaTime());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getRenderDeltaTime", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oTiming->getTotalElapsed());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getTotalElapsed", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_int(ctx, oTiming->getFPS());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getFPS", 0);
+            }
+            JS_INTERFACE_END("Timing");
 
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN
