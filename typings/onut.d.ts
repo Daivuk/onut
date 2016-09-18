@@ -859,3 +859,49 @@ declare enum Loop {
     PING_PONG,
     PING_PONG_LOOP
 }
+
+declare class Entity {
+    static create(): Entity;
+
+    destroy();
+    getTransform(): Matrix;
+    setTransform(transform: Matrix);
+    getWorldTransform(): Matrix;
+    setWorldTransform(transform: Matrix);
+    add(child: Entity);
+    remove(child: Entity);
+    removeFromParent();
+    getParent(): Entity;
+    isEnabled(): boolean;
+    setEnabled(enabled: boolean);
+    isVisible(): boolean;
+    setVisible(visible: boolean);
+    isStatic(): boolean;
+    setStatic(_static: boolean);
+    getName(): string;
+    setName(name: string);
+    getComponent(type: Object): Component;
+    getParentComponent(type: Object): Component;
+    addComponent(type: Object): Component;
+    addComponent(component: Component);
+    sendMessage(id: string, data: Object);
+    getDrawIndex(): number;
+    setDrawIndex(drawIndex: number);
+    getChildrenCount(): number;
+    getChildren(index: number): Entity;
+}
+
+declare class Component {
+    getTransform(): Matrix;
+    setTransform(transform: Matrix);
+    getWorldTransform(): Matrix;
+    setWorldTransform(transform: Matrix);
+    getEntity(): Entity;
+    isEnabled(): boolean;
+    setEnabled(enabled: boolean);
+    getComponent(type: Object): Component;
+    getParentComponent(type: Object): Component;
+    sendMessage(id: string, data: Object);
+    broadcastMessage(id: string, data: Object);
+    destroy();
+}
