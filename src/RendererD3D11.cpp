@@ -797,6 +797,7 @@ namespace onut
                 for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
                 {
                     m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
+                    uniforms[i].dirty = false;
                 }
             }
             else
@@ -826,6 +827,7 @@ namespace onut
                 for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
                 {
                     m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
+                    uniforms[i].dirty = false;
                 }
             }
             else
