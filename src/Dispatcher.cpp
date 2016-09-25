@@ -22,12 +22,10 @@ namespace onut
         m_mutex.lock();
         while (!m_callbackQueue.empty())
         {
-            auto pCallback = m_callbackQueue.front();
+            auto callback = m_callbackQueue.front();
             m_callbackQueue.pop();
-
-            // We unlock during the call. Because the call might add new callbacks!
             m_mutex.unlock();
-            pCallback->call();
+            callback();
             m_mutex.lock();
         }
         m_mutex.unlock();
@@ -39,11 +37,6 @@ namespace onut
         auto ret = m_callbackQueue.size();
         m_mutex.unlock();
         return ret;
-    }
-
-    void Dispatcher::syncCallback(const ICallbackRef& pCallback)
-    {
-        m_callbackQueue.push(pCallback);
     }
 
     std::thread::id Dispatcher::getThreadId() const

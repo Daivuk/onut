@@ -2,6 +2,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Files.h>
+#include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/Strings.h>
 
@@ -393,7 +394,8 @@ namespace onut
         if (errorBlob)
         {
             char* pError = (char*)errorBlob->GetBufferPointer();
-            assert(false);
+            OLog(pError);
+            return nullptr;
         }
 #endif
 
@@ -412,7 +414,7 @@ namespace onut
                 pBlob = compileShader(source.c_str(), "ps_4_0");
                 break;
         }
-
+        if (!pBlob) return nullptr;
         return createFromBinaryData(reinterpret_cast<uint8_t*>(pBlob->GetBufferPointer()), static_cast<uint32_t>(pBlob->GetBufferSize()), in_type, vertexElements);
     }
 

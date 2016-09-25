@@ -90,7 +90,7 @@ namespace onut
         auto result = D3D11CreateDeviceAndSwapChain(
             nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 
 #if _DEBUG
-            /*D3D11_CREATE_DEVICE_DEBUG*/0,
+            0,
 #else
             0,
 #endif
@@ -109,20 +109,62 @@ namespace onut
     void RendererD3D11::createRenderTarget()
     {
         ID3D11Texture2D* backBuffer;
+        ID3D11Texture2D* pDepthStencilBuffer;
+
+        // Get buffer resource
         auto result = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
         if (result != S_OK)
         {
             MessageBox(nullptr, L"m_pSwapChain->GetBuffer", L"Error", MB_OK);
-            exit(0);
+            abort();
         }
+        backBuffer->GetDesc(&m_backBufferDesc);
+
+        // Render target view
         result = m_pDevice->CreateRenderTargetView(backBuffer, nullptr, &m_pRenderTargetView);
         if (result != S_OK)
         {
             MessageBox(nullptr, L"m_pDevice->CreateRenderTargetView", L"Error", MB_OK);
-            exit(0);
+            abort();
         }
 
-        backBuffer->GetDesc(&m_backBufferDesc);
+        // Set up the description of the depth buffer.
+        D3D11_TEXTURE2D_DESC depthBufferDesc;
+        memset(&depthBufferDesc, 0, sizeof(depthBufferDesc));
+        depthBufferDesc.Width = m_backBufferDesc.Width;
+        depthBufferDesc.Height = m_backBufferDesc.Height;
+        depthBufferDesc.MipLevels = 1;
+        depthBufferDesc.ArraySize = 1;
+        depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthBufferDesc.SampleDesc.Count = 1;
+        depthBufferDesc.SampleDesc.Quality = 0;
+        depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+        depthBufferDesc.CPUAccessFlags = 0;
+        depthBufferDesc.MiscFlags = 0;
+
+        // Create the texture for the depth buffer using the filled out description.
+        result = m_pDevice->CreateTexture2D(&depthBufferDesc, NULL, &pDepthStencilBuffer);
+        if (result != S_OK)
+        {
+            MessageBox(nullptr, L"Failed DepthStencil CreateTexture2D", L"Error", MB_OK);
+            abort();
+        }
+
+        // Initailze the depth stencil view.
+        D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+        memset(&depthStencilViewDesc, 0, sizeof(depthStencilViewDesc));
+        depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        depthStencilViewDesc.Texture2D.MipSlice = 0;
+        result = m_pDevice->CreateDepthStencilView(pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
+        if (result != S_OK)
+        {
+            MessageBox(nullptr, L"m_pDevice->CreateDepthStencilView", L"Error", MB_OK);
+            abort();
+        }
+
+        pDepthStencilBuffer->Release();
         backBuffer->Release();
     }
 
@@ -133,6 +175,9 @@ namespace onut
 
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
         m_pRenderTargetView = nullptr;
+
+        if (m_pDepthStencilView) m_pDepthStencilView->Release();
+        m_pDepthStencilView = nullptr;
 
         auto ret = m_pSwapChain->ResizeBuffers(0,
                                                static_cast<UINT>(newSize.x),
@@ -291,12 +336,41 @@ namespace onut
             };
             ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[1]); // Scissor
             assert(ret == S_OK);
+            rasterizerDesc = D3D11_RASTERIZER_DESC{
+                D3D11_FILL_SOLID,
+                D3D11_CULL_BACK,
+                true,
+                0,
+                0.f,
+                0.f,
+                false,
+                false,
+                false,
+                false
+            };
+            ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[2]); // No Scissor, backface cull
+            assert(ret == S_OK);
+            rasterizerDesc = D3D11_RASTERIZER_DESC{
+                D3D11_FILL_SOLID,
+                D3D11_CULL_BACK,
+                true,
+                0,
+                0.f,
+                0.f,
+                false,
+                true,
+                false,
+                false
+            };
+            ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[3]); // Scissor, backface cull
+            assert(ret == S_OK);
         }
 
         // Depth stencil state
         {
             // Depth states
-            D3D11_DEPTH_STENCIL_DESC depthStencilState = D3D11_DEPTH_STENCIL_DESC{
+            D3D11_DEPTH_STENCIL_DESC depthStencilState;
+            depthStencilState = D3D11_DEPTH_STENCIL_DESC{
                 false,
                 D3D11_DEPTH_WRITE_MASK_ZERO,
                 D3D11_COMPARISON_LESS,
@@ -306,7 +380,43 @@ namespace onut
                 {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_INCR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS},
                 {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_DECR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS}
             };
-            auto ret = m_pDevice->CreateDepthStencilState(&depthStencilState, &m_pDepthStencilStates[0]);
+            ret = m_pDevice->CreateDepthStencilState(&depthStencilState, &m_pDepthStencilStates[0]);
+            assert(ret == S_OK);
+            depthStencilState = D3D11_DEPTH_STENCIL_DESC{
+                true,
+                D3D11_DEPTH_WRITE_MASK_ALL,
+                D3D11_COMPARISON_LESS,
+                false,
+                0xFF,
+                0xFF,
+                {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_INCR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS},
+                {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_DECR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS}
+            };
+            ret = m_pDevice->CreateDepthStencilState(&depthStencilState, &m_pDepthStencilStates[1]);
+            assert(ret == S_OK);
+            depthStencilState = D3D11_DEPTH_STENCIL_DESC{
+                true,
+                D3D11_DEPTH_WRITE_MASK_ZERO,
+                D3D11_COMPARISON_LESS,
+                false,
+                0xFF,
+                0xFF,
+                {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_INCR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS},
+                {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_DECR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS}
+            };
+            ret = m_pDevice->CreateDepthStencilState(&depthStencilState, &m_pDepthStencilStates[2]);
+            assert(ret == S_OK);
+            depthStencilState = D3D11_DEPTH_STENCIL_DESC{
+                true,
+                D3D11_DEPTH_WRITE_MASK_ALL,
+                D3D11_COMPARISON_ALWAYS,
+                false,
+                0xFF,
+                0xFF,
+                {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_INCR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS},
+                {D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_DECR, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS}
+            };
+            ret = m_pDevice->CreateDepthStencilState(&depthStencilState, &m_pDepthStencilStates[3]);
             assert(ret == S_OK);
         }
     }
@@ -387,6 +497,11 @@ namespace onut
             pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
         }
         m_pDeviceContext->ClearRenderTargetView(pRenderTargetView, &color.x);
+    }
+
+    void RendererD3D11::clearDepth()
+    {
+        m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
 
     void RendererD3D11::setKernelSize(const Vector2& kernelSize)
@@ -554,17 +669,32 @@ namespace onut
         }
 
         // Scissor enabled
-        if (renderStates.scissorEnabled.isDirty())
+        if (renderStates.scissorEnabled.isDirty() || renderStates.backFaceCull.isDirty())
         {
-            if (renderStates.scissorEnabled.get())
+            if (renderStates.backFaceCull.get())
             {
-                m_pDeviceContext->RSSetState(m_pRasterizerStates[1]);
+                if (renderStates.scissorEnabled.get())
+                {
+                    m_pDeviceContext->RSSetState(m_pRasterizerStates[3]);
+                }
+                else
+                {
+                    m_pDeviceContext->RSSetState(m_pRasterizerStates[2]);
+                }
             }
             else
             {
-                m_pDeviceContext->RSSetState(m_pRasterizerStates[0]);
+                if (renderStates.scissorEnabled.get())
+                {
+                    m_pDeviceContext->RSSetState(m_pRasterizerStates[1]);
+                }
+                else
+                {
+                    m_pDeviceContext->RSSetState(m_pRasterizerStates[0]);
+                }
             }
             renderStates.scissorEnabled.resetDirty();
+            renderStates.backFaceCull.resetDirty();
         }
 
         // Scissor
@@ -603,10 +733,30 @@ namespace onut
         }
 
         // Depth
-        if (renderStates.depthEnabled.isDirty())
+        if (renderStates.depthEnabled.isDirty() ||
+            renderStates.depthWrite.isDirty())
         {
-            m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[0], 1);
+            if (renderStates.depthEnabled.get() || renderStates.depthWrite.get())
+            {
+                auto& pRenderTarget = renderStates.renderTarget.get();
+                ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
+                if (pRenderTarget)
+                {
+                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
+                    pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
+                }
+                m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
+            }
+            if (!renderStates.depthEnabled.get() && !renderStates.depthWrite.get())
+                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[0], 1);
+            if (renderStates.depthEnabled.get() && renderStates.depthWrite.get())
+                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[1], 1);
+            if (renderStates.depthEnabled.get() && !renderStates.depthWrite.get())
+                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[2], 1);
+            if (!renderStates.depthEnabled.get() && renderStates.depthWrite.get())
+                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[3], 1);
             renderStates.depthEnabled.resetDirty();
+            renderStates.depthWrite.resetDirty();
         }
 
         // Primitive mode

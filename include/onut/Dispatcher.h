@@ -23,12 +23,10 @@ namespace onut
         @param callback Function or your usual lambda
         @param args arguments
         */
-        template<typename Tfn, typename ... Targs>
-        void dispatch(Tfn callback, Targs... args)
+        void dispatch(const std::function<void()>& fn)
         {
             m_mutex.lock();
-            auto pCallback = OMake<Callback<Tfn, Targs...>>(callback, args...);
-            syncCallback(pCallback);
+            m_callbackQueue.push(fn);
             m_mutex.unlock();
         }
 
@@ -45,43 +43,15 @@ namespace onut
         std::thread::id getThreadId() const;
 
     private:
-        class ICallback
-        {
-        public:
-            virtual void call() = 0;
-        };
-
-        using ICallbackRef = std::shared_ptr<ICallback>;
-
-        template<typename ... Targs>
-        class Callback final : public ICallback
-        {
-        public:
-            Callback(Targs... args) :
-                m_callback(args...)
-            {}
-
-            void call() override
-            {
-                m_callback();
-            }
-
-        private:
-            decltype(std::bind(std::declval<Targs>()...))  m_callback;
-        };
-
-        void syncCallback(const ICallbackRef& pCallback);
-
         std::mutex m_mutex;
-        std::queue<ICallbackRef> m_callbackQueue;
+        std::queue<std::function<void()>> m_callbackQueue;
         std::thread::id m_threadId;
     };
 }
 
 extern ODispatcherRef oDispatcher;
 
-template<typename Tfn, typename ... Targs>
-inline void OSync(Tfn callback, Targs... args)
+inline void OSync(const std::function<void()>& callback)
 {
-    oDispatcher->dispatch(callback, args...);
+    oDispatcher->dispatch(callback);
 }

@@ -123,6 +123,8 @@ namespace onut
         RenderState<Matrix> viewProjection;
         RenderState<Matrix> world;
         RenderState<bool> depthEnabled;
+        RenderState<bool> depthWrite;
+        RenderState<bool> backFaceCull;
         RenderState<bool> scissorEnabled;
         RenderState<PrimitiveMode> primitiveMode;
         RenderState<OShaderRef> vertexShader;
@@ -148,6 +150,7 @@ namespace onut
         Matrix build2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
 
         virtual void clear(const Color& color = {.25f, .5f, 1, 1}) = 0;
+        virtual void clearDepth() = 0;
         virtual void beginFrame() = 0;
         virtual void endFrame() = 0;
         virtual void draw(uint32_t vertexCount) = 0;

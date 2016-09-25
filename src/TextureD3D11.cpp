@@ -281,6 +281,8 @@ namespace onut
 
     void TextureD3D11::resizeTarget(const Point& size)
     {
+        if (m_size == size) return;
+
         m_size = size;
 
         // Release

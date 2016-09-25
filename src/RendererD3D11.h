@@ -18,7 +18,8 @@ namespace onut
         RendererD3D11(const OWindowRef& pWindow);
         ~RendererD3D11();
 
-        void clear(const Color& color = {.25f, .5f, 1, 1});
+        void clear(const Color& color = {.25f, .5f, 1, 1}) override;
+        void clearDepth() override;
 
         void beginFrame();
         void endFrame();
@@ -57,13 +58,14 @@ namespace onut
 
         // Render target
         ID3D11RenderTargetView* m_pRenderTargetView = nullptr;
+        ID3D11DepthStencilView* m_pDepthStencilView = nullptr;
         D3D11_TEXTURE2D_DESC m_backBufferDesc;
 
         // Render states
         ID3D11BlendState* m_pBlendStates[static_cast<int>(BlendMode::COUNT)];
         ID3D11SamplerState* m_pSamplerStates[static_cast<int>(sample::Filtering::COUNT) * static_cast<int>(sample::AddressMode::COUNT)];
-        ID3D11RasterizerState* m_pRasterizerStates[2];
-        ID3D11DepthStencilState* m_pDepthStencilStates[1];
+        ID3D11RasterizerState* m_pRasterizerStates[4];
+        ID3D11DepthStencilState* m_pDepthStencilStates[4];
 
         // Constant buffers
         ID3D11Buffer* m_pViewProj2dBuffer = nullptr;

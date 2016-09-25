@@ -482,10 +482,10 @@ namespace onut
                     sPacket packet(pBuf, recv_len, si_other);
                     if (validatePacket(packet))
                     {
-                        m_pDispatcher->dispatch([this](sPacket packet)
+                        m_pDispatcher->dispatch([this, packet]
                         {
                             onPacket(packet);
-                        }, packet);
+                        });
                     }
                 }
             }

@@ -38,6 +38,8 @@ namespace onut
         viewProjection = Matrix::Identity;
         world = Matrix::Identity;
         depthEnabled = false;
+        depthWrite = false;
+        backFaceCull = false;
         scissorEnabled = false;
         primitiveMode = OPrimitiveTriangleList;
         vertexShader = nullptr;
@@ -61,6 +63,8 @@ namespace onut
         viewProjection = other.viewProjection;
         world = other.world;
         depthEnabled = other.depthEnabled;
+        depthWrite = other.depthWrite;
+        backFaceCull = other.backFaceCull;
         scissorEnabled = other.scissorEnabled;
         primitiveMode = other.primitiveMode;
         vertexShader = other.vertexShader;
@@ -83,6 +87,8 @@ namespace onut
         viewProjection = other.viewProjection;
         world = other.world;
         depthEnabled = other.depthEnabled;
+        depthWrite = other.depthWrite;
+        backFaceCull = other.backFaceCull;
         scissorEnabled = other.scissorEnabled;
         primitiveMode = other.primitiveMode;
         vertexShader = other.vertexShader;
@@ -107,6 +113,8 @@ namespace onut
         viewProjection.reset();
         world.reset();
         depthEnabled.reset();
+        depthWrite.reset();
+        backFaceCull.reset();
         scissorEnabled.reset();
         primitiveMode.reset();
         vertexShader.reset();
