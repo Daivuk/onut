@@ -413,12 +413,6 @@
     <ClInclude Include="..\..\src\CloudBrainCloud.h">
       <Filter>services</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\jsoncpp\json\json.h">
-      <Filter>thirdparties\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\jsoncpp\json\json-forwards.h">
-      <Filter>thirdparties\jsoncpp\json</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\VertexBufferD3D11.h">
       <Filter>resources</Filter>
     </ClInclude>
@@ -634,6 +628,45 @@
     </ClInclude>
     <ClInclude Include="..\..\src\JSBindings.h">
       <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\json_tool.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\json-forwards.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\reader.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\value.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\version.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\writer.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\allocator.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\assertions.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\autolink.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\config.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\features.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\forwards.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\json\json.h">
+      <Filter>thirdparties\jsoncpp\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1070,6 +1103,15 @@
     <ClCompile Include="..\..\src\JSBindings.cpp">
       <Filter>services</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\json\json_value.cpp">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\json\json_writer.cpp">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\json\json_reader.cpp">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -1159,5 +1201,10 @@
     <Filter Include="thirdparties\duktape">
       <UniqueIdentifier>{242f5455-8650-415d-8e00-b9b77ebfe290}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\json\json_valueiterator.inl">
+      <Filter>thirdparties\jsoncpp\json</Filter>
+    </None>
   </ItemGroup>
 </Project>

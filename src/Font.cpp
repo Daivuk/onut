@@ -140,9 +140,12 @@ namespace onut
                 i += 3;
                 continue;
             }
-            const auto& it = m_chars.find(static_cast<int>(static_cast<unsigned char>(charId)));
-            if (it == m_chars.end()) continue;
-            auto pDatChar = it->second;
+            auto iCharId = static_cast<int>(static_cast<unsigned char>(charId));
+            if (!m_chars.count(iCharId))
+            {
+                continue;
+            }
+            auto pDatChar = m_chars[iCharId];
             if (i == len - 1)
             {
                 curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);

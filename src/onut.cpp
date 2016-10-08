@@ -1,7 +1,7 @@
 // Onut includes
 #include <onut/ActionManager.h>
 #include <onut/AudioEngine.h>
-#include <onut/Cloud.h>
+//#include <onut/Cloud.h>
 #include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
 #include <onut/Dispatcher.h>
@@ -106,7 +106,7 @@ namespace onut
         oContentManager = ContentManager::create();
 
         // Cloud
-        oCloud = Cloud::create(oSettings->getAppId(), oSettings->getAppSecret());
+        //oCloud = Cloud::create(oSettings->getAppId(), oSettings->getAppSecret());
 
         // Mouse/Keyboard
         oInput = OInput::create(oWindow);
@@ -149,7 +149,7 @@ namespace onut
         //delete g_pAudioEngine;
         oAudioEngine = nullptr;
         oInput = nullptr;
-        oCloud = nullptr;
+        //oCloud = nullptr;
         oContentManager = nullptr;
         oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
