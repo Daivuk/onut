@@ -140,6 +140,31 @@ namespace onut
         }
         m_keyDowns.clear();
 
+        if (!useNavigation)
+        {
+            if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
+                m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
+            {
+                bool bAte = false;
+                for (int i = 0; i < 3; ++i)
+                {
+                    if (m_pDownControls[i])
+                    {
+                        bAte = true;
+                        break;
+                    }
+                }
+                if (!bAte && m_pHoverControl)
+                {
+                    m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
+                    if (m_pHoverControl->onMouseMove)
+                    {
+                        m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
+                    }
+                }
+            }
+        }
+
         if (m_pHoverControl != m_pLastHoverControl)
         {
             if (m_pLastHoverControl)
@@ -317,7 +342,6 @@ namespace onut
             if (m_lastMouseEvents[0].mousePos.x != m_mouseEvents[0].mousePos.x ||
                 m_lastMouseEvents[0].mousePos.y != m_mouseEvents[0].mousePos.y)
             {
-                bool bAte = false;
                 for (int i = 0; i < 3; ++i)
                 {
                     if (m_pDownControls[i])
@@ -330,16 +354,7 @@ namespace onut
                         {
                             m_pDownControls[i]->onMouseMove(m_pDownControls[i], m_mouseEvents[i]);
                         }
-                        bAte = true;
                         break;
-                    }
-                }
-                if (!bAte && m_pHoverControl)
-                {
-                    m_pHoverControl->onMouseMoveInternal(m_mouseEvents[0]);
-                    if (m_pHoverControl->onMouseMove)
-                    {
-                        m_pHoverControl->onMouseMove(m_pHoverControl, m_mouseEvents[0]);
                     }
                 }
             }
