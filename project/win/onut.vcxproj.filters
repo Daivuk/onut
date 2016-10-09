@@ -611,9 +611,6 @@
     <ClInclude Include="..\..\include\onut\SceneManager.h">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\AudioEngine.h">
-      <Filter>services</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\AudioEngineWASAPI.h">
       <Filter>services</Filter>
     </ClInclude>
@@ -667,6 +664,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\json\json.h">
       <Filter>thirdparties\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\AudioEngine.h">
+      <Filter>services</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

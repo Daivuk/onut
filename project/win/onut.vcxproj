@@ -63,6 +63,7 @@
     <ClInclude Include="..\..\include\onut\ActionManager.h" />
     <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
+    <ClInclude Include="..\..\include\onut\AudioEngine.h" />
     <ClInclude Include="..\..\include\onut\AudioStream.h" />
     <ClInclude Include="..\..\include\onut\BlendMode.h" />
     <ClInclude Include="..\..\include\onut\Camera2DComponent.h" />
@@ -150,7 +151,6 @@
     <ClInclude Include="..\..\include\rapidjson\writer.h" />
     <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
-    <ClInclude Include="..\..\src\AudioEngine.h" />
     <ClInclude Include="..\..\src\AudioEngineWASAPI.h" />
     <ClInclude Include="..\..\src\braincloud\BrainCloudAsyncMatch.h" />
     <ClInclude Include="..\..\src\braincloud\BrainCloudAuthentication.h" />
