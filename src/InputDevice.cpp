@@ -1,5 +1,7 @@
 // Onut
 #include <onut/Input.h>
+#include <onut/UIContext.h>
+#include <onut/UITextBox.h>
 #include <onut/Window.h>
 
 // Private
@@ -93,6 +95,16 @@ namespace onut
 
     void InputDevice::update()
     {
+        // We only update the input device if the main UI system doesn't have a text box in focus
+        auto& pFocusControl = oUIContext->getFocusControl();
+        if (pFocusControl)
+        {
+            auto pFocusTextBox = ODynamicCast<OUITextBox>(pFocusControl);
+            if (pFocusTextBox)
+            {
+                return;
+            }
+        }
         readKeyboard();
         readMouse();
     }
