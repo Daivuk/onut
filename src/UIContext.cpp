@@ -45,38 +45,21 @@ namespace onut
 
     void UIContext::pushClip(const Rect& rect)
     {
-        m_clips.push_back(rect);
-        oSpriteBatch->end();
-        oRenderer->renderStates.scissorEnabled = true;
-        oRenderer->renderStates.scissor = iRect{
+        oSpriteBatch->flush();
+        oRenderer->renderStates.scissorEnabled.push(true);
+        oRenderer->renderStates.scissor.push(iRect{
             static_cast<int>(rect.x),
             static_cast<int>(rect.y),
             static_cast<int>(rect.x + rect.z),
             static_cast<int>(rect.y + rect.w)
-        };
-        oSpriteBatch->begin();
+        });
     }
 
     void UIContext::popClip()
     {
-        m_clips.pop_back();
-        oSpriteBatch->end();
-        if (m_clips.empty())
-        {
-            oRenderer->renderStates.scissorEnabled = false;
-        }
-        else
-        {
-            auto& rect = m_clips.back();
-            oRenderer->renderStates.scissorEnabled = true;
-            oRenderer->renderStates.scissor = iRect{
-                static_cast<int>(rect.x),
-                static_cast<int>(rect.y),
-                static_cast<int>(rect.x + rect.z),
-                static_cast<int>(rect.y + rect.w)
-            };
-        }
-        oSpriteBatch->begin();
+        oSpriteBatch->flush();
+        oRenderer->renderStates.scissorEnabled.pop();
+        oRenderer->renderStates.scissor.pop();
     }
 
     void UIContext::resolve()
@@ -368,8 +351,6 @@ namespace onut
         m_pLastHoverControl = m_pHoverControl;
         for (int i = 0; i < 3; ++i) m_pLastDownControls[i] = m_pDownControls[i];
         m_pLastFocus = m_pFocus;
-
-        m_clips.clear();
     }
 
     void UIContext::write(char c)
@@ -397,7 +378,6 @@ namespace onut
         for (int i = 0; i < 3; ++i) m_pDownControls[i] = nullptr;
         m_pFocus = nullptr;
 
-        m_clips.clear();
         m_writes.clear();
         m_keyDowns.clear();
 

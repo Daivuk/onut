@@ -23,8 +23,9 @@ public:
     void setSelected(const OUIControlRef& in_pSelected, bool bUpdateSceneGraph = true);
 
     void update();
-    void render();
+    void render(const Rect& rect);
     void save();
+    void resize(const Vector2& newSize);
 
     OUIContextRef pUIContext = nullptr;
     OUIContextRef pUIContextUserStyle = nullptr;

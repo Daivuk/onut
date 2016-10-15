@@ -22,6 +22,7 @@ void render();
 DocumentView*       g_pDocument = nullptr;
 OUIContextRef g_pUIContext = nullptr;
 OUIControlRef g_pUIScreen = nullptr;
+OUIControlRef g_pPnlRegion = nullptr;
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
@@ -50,28 +51,11 @@ void init()
     g_pUIContext->addStyle<OUIPanel>("sizableRegion", [](const OUIPanelRef& pPanel, const Rect& rect)
     {
         oSpriteBatch->drawRect(nullptr, (rect), Color::Black);
-        oSpriteBatch->end();
-
-        oRenderer->renderStates.scissorEnabled = true;
-        oRenderer->renderStates.scissor = {
-            static_cast<int>(rect.x),
-            static_cast<int>(rect.y),
-            static_cast<int>(rect.x + rect.z),
-            static_cast<int>(rect.y + rect.w)};
-
-        // Render edited UIs
-        //oRenderer->set2DCamera();
-        oSpriteBatch->begin(Matrix::CreateTranslation(rect.x, rect.y, 0.f));
-        g_pDocument->render();
-        oSpriteBatch->end();
-
-        oRenderer->renderStates.scissorEnabled = false;
-
-        oRenderer->set2DCamera({0, 0});
-        oSpriteBatch->begin();
+        g_pDocument->render(rect);
     });
 
     g_pUIScreen = OUIControl::createFromFile("editor.json");
+    g_pPnlRegion = g_pUIScreen->getChild("pnlRegion");
     hookUIEvents(g_pUIScreen);
 
     g_pDocument = new DocumentView("");
@@ -98,6 +82,8 @@ void update()
 {
     // Adjust size
     g_pUIContext->resize({OScreenWf, OScreenHf});
+    auto pnlRegionRect = g_pPnlRegion->getWorldRect(g_pUIContext);
+    g_pDocument->resize(Vector2(pnlRegionRect.z, pnlRegionRect.w));
 
     // Update.
     g_pUIScreen->update(g_pUIContext, {oInput->mousePosf.x, oInput->mousePosf.y}, OInputPressed(OMouse1), OInputPressed(OMouse2), OInputPressed(OMouse3),

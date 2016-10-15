@@ -1105,11 +1105,21 @@ void DocumentView::updateMovingHandle()
     updateInspector();
 }
 
-void DocumentView::render()
+void DocumentView::render(const Rect& rect)
 {
-    auto rect = pUIScreen->getWorldRect(pUIContext);
-
+    pUIScreen->setWorldRect(rect, pUIContext);
+    pUIScreen->widthType = OUIControl::DimType::Absolute;
+    pUIScreen->heightType = OUIControl::DimType::Absolute;
     pUIScreen->render(pUIContext);
+    pUIScreen->rect = {0, 0, 0, 0};
+    pUIScreen->widthType = OUIControl::DimType::Relative;
+    pUIScreen->heightType = OUIControl::DimType::Relative;
+}
+
+void DocumentView::resize(const Vector2& newSize)
+{
+    pUIContextUserStyle->resize(newSize);
+    pUIContextEditorStyle->resize(newSize);
 }
 
 void DocumentView::repopulateTreeView(const OUIControlRef& pControl)

@@ -203,7 +203,6 @@ namespace onut
 
         Writes m_writes;
         Keys m_keyDowns;
-        Clips m_clips;
 
         std::chrono::steady_clock::time_point m_clickTimes[3];
         Vector2 m_clicksPos[3];
