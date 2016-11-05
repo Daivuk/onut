@@ -173,6 +173,43 @@ namespace onut
             KeyCircomflex = KeyPreviousTrack, /* Japanese keyboard */
 
             /*
+            * X-Arcade
+            */
+            XArcadeLeftPaddle = 4, /* Key3 */
+            XArcadeRightPaddle = 5, /* Key4 */
+
+            XArcade1Player = 2, /* Key1 */
+            XArcade2Player = 3, /* Key2 */
+
+            XArcadeLJoyLeft = 75, /* KeyNumPad4 */
+            XArcadeLJoyRight = 77, /* KeyNumPad6 */
+            XArcadeLJoyUp = 72, /* KeyNumPad8 */
+            XArcadeLJoyDown = 80, /* KeyNumPad2 */
+
+            XArcadeRJoyLeft = 32, /* KeyD */
+            XArcadeRJoyRight = 34, /* KeyG */
+            XArcadeRJoyUp = 19, /* KeyR */
+            XArcadeRJoyDown = 33, /* KeyF */
+
+            XArcadeLButton1 = 29, /* KeyLeftControl */
+            XArcadeLButton2 = 56, /* KeyLeftAlt */
+            XArcadeLButton3 = 57, /* KeySpaceBar */
+            XArcadeLButton4 = 42, /* KeyLeftShift */
+            XArcadeLButton5 = 44, /* KeyZ */
+            XArcadeLButton6 = 45, /* KeyX */
+            XArcadeLButton7 = 46, /* KeyC */
+            XArcadeLButton8 = 6, /* Key5 */
+
+            XArcadeRButton1 = 30, /* KeyA */
+            XArcadeRButton2 = 31, /* KeyS */
+            XArcadeRButton3 = 16, /* KeyQ */
+            XArcadeRButton4 = 17, /* KeyW */
+            XArcadeRButton5 = 18, /* KeyE */
+            XArcadeRButton6 = 26, /* KeyLeftBracket */
+            XArcadeRButton7 = 27, /* KeyRightBracket */
+            XArcadeRButton8 = 7, /* Key6 */
+
+            /*
             * Mouse
             */
             Mouse1 = 256,
@@ -377,6 +414,37 @@ namespace onut
 *  Alternate names for keys originally not used on US keyboards.
 */
 #define OKeyCircomflex onut::Input::State::KeyCircomflex /* Japanese keyboard */
+
+/*
+* X-Arcade
+*/
+#define OXArcadeLeftPaddle onut::Input::State::XArcadeLeftPaddle
+#define OXArcadeRightPaddle onut::Input::State::XArcadeRightPaddle
+#define OXArcade1Player onut::Input::State::XArcade1Player
+#define OXArcade2Player onut::Input::State::XArcade2Player
+#define OXArcadeLJoyLeft onut::Input::State::XArcadeLJoyLeft
+#define OXArcadeLJoyRight onut::Input::State::XArcadeLJoyRight
+#define OXArcadeLJoyUp onut::Input::State::XArcadeLJoyUp
+#define OXArcadeLJoyDown onut::Input::State::XArcadeLJoyDown
+#define OXArcadeRJoyLeft onut::Input::State::XArcadeRJoyLeft
+#define OXArcadeRJoyRight onut::Input::State::XArcadeRJoyRight
+#define OXArcadeRJoyUp onut::Input::State::XArcadeRJoyUp
+#define OXArcadeLButton1 onut::Input::State::XArcadeLButton1
+#define OXArcadeLButton2 onut::Input::State::XArcadeLButton2
+#define OXArcadeLButton3 onut::Input::State::XArcadeLButton3
+#define OXArcadeLButton4 onut::Input::State::XArcadeLButton4
+#define OXArcadeLButton5 onut::Input::State::XArcadeLButton5
+#define OXArcadeLButton6 onut::Input::State::XArcadeLButton6
+#define OXArcadeLButton7 onut::Input::State::XArcadeLButton7
+#define OXArcadeLButton8 onut::Input::State::XArcadeLButton8
+#define OXArcadeRButton1 onut::Input::State::XArcadeRButton1
+#define OXArcadeRButton2 onut::Input::State::XArcadeRButton2
+#define OXArcadeRButton3 onut::Input::State::XArcadeRButton3
+#define OXArcadeRButton4 onut::Input::State::XArcadeRButton4
+#define OXArcadeRButton5 onut::Input::State::XArcadeRButton5
+#define OXArcadeRButton6 onut::Input::State::XArcadeRButton6
+#define OXArcadeRButton7 onut::Input::State::XArcadeRButton7
+#define OXArcadeRButton8 onut::Input::State::XArcadeRButton8
 
 /*
 * Mouse

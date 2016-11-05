@@ -5,6 +5,7 @@
 #include <onut/Anim.h>
 #include <onut/ComponentFactory.h>
 #include <onut/Entity.h>
+#include <onut/Input.h>
 #include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
@@ -40,6 +41,7 @@ OAnimFloat g_fadeAnim(1.0f);
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
     oSettings->setGameName("Dungeon Game Sample");
+    oSettings->setIsResizableWindow(true);
     ORun(init, update, render, postRender);
 }
 

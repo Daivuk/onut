@@ -161,13 +161,13 @@ void Player::onUpdate()
         case State::Idle:
         case State::Moving:
         {
-            if (OInputJustPressed(OKeySpaceBar))
+            if (OInputJustPressed(OKeySpaceBar) || OInputJustPressed(OXArcadeLButton1))
             {
                 attack();
                 return;
             }
 
-            if (OInputJustPressed(OKeyB))
+            if (OInputJustPressed(OKeyB) || OInputJustPressed(OXArcadeLButton2))
             {
                 placeBomb();
             }
@@ -177,22 +177,22 @@ void Player::onUpdate()
 
             dir = OGetGamePad(0)->getLeftThumb();
 
-            if (OInputPressed(OKeyA) || OGamePadPressed(OGamePadDPadLeft))
+            if (OInputPressed(OKeyA) || OGamePadPressed(OGamePadDPadLeft) || OInputPressed(OXArcadeLJoyLeft))
             {
                 dir -= Vector2::UnitX;
                 isMoving = true;
             }
-            else if (OInputPressed(OKeyD) || OGamePadPressed(OGamePadDPadRight))
+            else if (OInputPressed(OKeyD) || OGamePadPressed(OGamePadDPadRight) || OInputPressed(OXArcadeLJoyRight))
             {
                 dir += Vector2::UnitX;
                 isMoving = true;
             }
-            if (OInputPressed(OKeyW) || OGamePadPressed(OGamePadDPadUp))
+            if (OInputPressed(OKeyW) || OGamePadPressed(OGamePadDPadUp) || OInputPressed(OXArcadeLJoyUp))
             {
                 dir -= Vector2::UnitY;
                 isMoving = true;
             }
-            else if (OInputPressed(OKeyS) || OGamePadPressed(OGamePadDPadDown))
+            else if (OInputPressed(OKeyS) || OGamePadPressed(OGamePadDPadDown) || OInputPressed(OXArcadeLJoyDown))
             {
                 dir += Vector2::UnitY;
                 isMoving = true;
