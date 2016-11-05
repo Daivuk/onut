@@ -97,7 +97,8 @@ namespace onut
             Image,
             CheckBox,
             TreeView,
-            TextBox
+            TextBox,
+            ScrollView
         };
 
         enum class State

@@ -9,6 +9,7 @@
 #include <onut/UIImage.h>
 #include <onut/UILabel.h>
 #include <onut/UIPanel.h>
+#include <onut/UIScrollView.h>
 #include <onut/UITextBox.h>
 #include <onut/UITreeView.h>
 
@@ -53,6 +54,7 @@ namespace onut
         {"UICheckBox", UIControl::Type::CheckBox},
         {"UITreeView", UIControl::Type::TreeView},
         {"UITextBox", UIControl::Type::TextBox},
+        {"UIScrollView", UIControl::Type::ScrollView},
     };
 
     UIControl::Property::Property()
@@ -577,6 +579,9 @@ namespace onut
                 break;
             case Type::TextBox:
                 pRet = UITextBox::create();
+                break;
+            case Type::ScrollView:
+                pRet = UIScrollView::create();
                 break;
             default:
                 assert(false);

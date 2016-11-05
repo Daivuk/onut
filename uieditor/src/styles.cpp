@@ -48,6 +48,8 @@ static OTextureRef g_pTexIcoUILabel;
 static OTextureRef g_pTexIcoUIImage;
 static OTextureRef g_pTexIcoUICheckbox;
 static OTextureRef g_pTexIcoUITextBox;
+static OTextureRef g_pTexIcoUITreeView;
+static OTextureRef g_pTexIcoUIScrollView;
 
 extern DocumentView* g_pDocument;
 OAnimFloat g_dottedLineAnim = 0.f;
@@ -64,6 +66,8 @@ void createUIStyles(const OUIContextRef& pContext)
     g_pTexIcoUIImage = OGetTexture("picture.png");
     g_pTexIcoUICheckbox = OGetTexture("accept.png");
     g_pTexIcoUITextBox = OGetTexture("textfield.png");
+    g_pTexIcoUITreeView = OGetTexture("application_side_tree.png");
+    g_pTexIcoUIScrollView = OGetTexture("application_view_gallery.png");
     g_dottedLineAnim.play(0.f, -1.f, .5f, OTweenLinear, OLoop);
 
     pContext->addStyle<OUIPanel>("", [](const OUIPanelRef& pPanel, const Rect& rect)
@@ -219,6 +223,22 @@ void createUIStyles(const OUIContextRef& pContext)
                 if (!hasText)
                 {
                     static const std::string uiText = "UITextBox";
+                    g_pFont->draw(uiText, textPos, OLeft, textColor);
+                }
+                break;
+            case OUIControl::Type::TreeView:
+                oSpriteBatch->drawSprite(g_pTexIcoUITreeView, orect.Left(expandClickWidth + 12));
+                if (!hasText)
+                {
+                    static const std::string uiText = "UITreeView";
+                    g_pFont->draw(uiText, textPos, OLeft, textColor);
+                }
+                break;
+            case OUIControl::Type::ScrollView:
+                oSpriteBatch->drawSprite(g_pTexIcoUIScrollView, orect.Left(expandClickWidth + 12));
+                if (!hasText)
+                {
+                    static const std::string uiText = "UIScrollView";
                     g_pFont->draw(uiText, textPos, OLeft, textColor);
                 }
                 break;

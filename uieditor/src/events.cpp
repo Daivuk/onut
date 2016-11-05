@@ -11,6 +11,7 @@
 #include "onut/UIPanel.h"
 #include "onut/UITextBox.h"
 #include "onut/UITreeView.h"
+#include "onut/UIScrollView.h"
 #include "onut/Window.h"
 
 extern DocumentView* g_pDocument;
@@ -188,8 +189,17 @@ void onCreateTreeView(const OUIControlRef& pControl, const onut::UIMouseEvent& e
     auto pParent = getCreateParent();
     auto pTreeView = onut::UITreeView::create();
 
-    pTreeView->rect = {{0, 0}, {64, 24}};
+    pTreeView->rect = {{0, 0}, {64, 64}};
     createControlAction(pTreeView, pParent);
+}
+
+void onCreateScrollView(const OUIControlRef& pControl, const onut::UIMouseEvent& evt)
+{
+    auto pParent = getCreateParent();
+    auto pScrollView = onut::UIScrollView::create();
+
+    pScrollView->rect = {{0, 0}, {64, 64}};
+    createControlAction(pScrollView, pParent);
 }
 
 bool g_bSelected = false;
@@ -1272,6 +1282,118 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 }
 
 template<typename TuiType>
+void BIND_PADDING_COMPONENT(const std::string& name)
+{
+    auto pLabel = onut::UILabel::create();
+    auto pContainer = onut::UIPanel::create();
+    auto pTxtPaddingLeft = onut::UITextBox::create();
+    auto pTxtPaddingRight = onut::UITextBox::create();
+    auto pTxtPaddingTop = onut::UITextBox::create();
+    auto pTxtPaddingBottom = onut::UITextBox::create();
+
+    pLabel->textComponent.text = name;
+    pLabel->rect = {{4, yPos}, {58, 174 - 66 - 46}};
+
+    pContainer->setStyle("group");
+    pContainer->widthType = (OUIControl::DimType::Relative);
+    pContainer->rect = {{66, yPos}, {-70, 174 - 66 - 46}};
+
+    pTxtPaddingLeft->textComponent.text = "0";
+    pTxtPaddingLeft->rect = {{53, 130 - 66 - 46}, {51, 24}};
+    pTxtPaddingLeft->setIsNumerical(true);
+    pTxtPaddingLeft->setIsDecimalPrecision(0);
+
+    pTxtPaddingRight->textComponent.text = "0";
+    pTxtPaddingRight->rect = {{159, 130 - 66 - 46}, {51, 24}};
+    pTxtPaddingRight->setIsNumerical(true);
+    pTxtPaddingRight->setIsDecimalPrecision(0);
+
+    pTxtPaddingTop->textComponent.text = "0";
+    pTxtPaddingTop->rect = {{106, 118 - 66 - 46}, {51, 24}};
+    pTxtPaddingTop->setIsNumerical(true);
+    pTxtPaddingTop->setIsDecimalPrecision(0);
+
+    pTxtPaddingBottom->textComponent.text = "0";
+    pTxtPaddingBottom->rect = {{106, 144 - 66 - 46}, {51, 24}};
+    pTxtPaddingBottom->setIsNumerical(true);
+    pTxtPaddingBottom->setIsDecimalPrecision(0);
+
+    pPnl->add(pLabel);
+    pPnl->add(pContainer);
+    pContainer->add(pTxtPaddingLeft);
+    pContainer->add(pTxtPaddingRight);
+    pContainer->add(pTxtPaddingTop);
+    pContainer->add(pTxtPaddingBottom);
+
+    yPos += 174 + 4 - 66 - 46;
+
+    auto mouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curIBEAM); };
+    auto mouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    pTxtPaddingLeft->onMouseEnter = mouseEnter;
+    pTxtPaddingLeft->onMouseLeave = mouseLeave;
+    pTxtPaddingRight->onMouseEnter = mouseEnter;
+    pTxtPaddingRight->onMouseLeave = mouseLeave;
+    pTxtPaddingTop->onMouseEnter = mouseEnter;
+    pTxtPaddingTop->onMouseLeave = mouseLeave;
+    pTxtPaddingBottom->onMouseEnter = mouseEnter;
+    pTxtPaddingBottom->onMouseLeave = mouseLeave;
+
+    auto actionName = std::string("Edit ") + name;
+    { // padding.left
+        auto pBinding = new ControlInspectorBind<float, TuiType>(
+            actionName, nullptr,
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->padding.x; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->padding.x = padding; },
+            [=]{return pTxtPaddingLeft->getFloat(); },
+            [=](const float& padding) {pTxtPaddingLeft->setFloat(padding); });
+        pBindings->push_back(pBinding);
+        pTxtPaddingLeft->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+    }
+    { // padding.right
+        auto pBinding = new ControlInspectorBind<float, TuiType>(
+            actionName, nullptr,
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->padding.z; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->padding.z = padding; },
+            [=]{return pTxtPaddingRight->getFloat(); },
+            [=](const float& padding) {pTxtPaddingRight->setFloat(padding); });
+        pBindings->push_back(pBinding);
+        pTxtPaddingRight->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+    }
+    { // padding.top
+        auto pBinding = new ControlInspectorBind<float, TuiType>(
+            actionName, nullptr,
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->padding.y; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->padding.y = padding; },
+            [=]{return pTxtPaddingTop->getFloat(); },
+            [=](const float& padding) {pTxtPaddingTop->setFloat(padding); });
+        pBindings->push_back(pBinding);
+        pTxtPaddingTop->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+    }
+    { // padding.bottom
+        auto pBinding = new ControlInspectorBind<float, TuiType>(
+            actionName, nullptr,
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->padding.w; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& padding){pControl->padding.w = padding; },
+            [=]{return pTxtPaddingBottom->getFloat(); },
+            [=](const float& padding) {pTxtPaddingBottom->setFloat(padding); });
+        pBindings->push_back(pBinding);
+        pTxtPaddingBottom->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+    }
+}
+
+template<typename TuiType>
 void BIND_TEXT_COMPONENT(const std::string& name)
 {
     auto pLabel = onut::UILabel::create();
@@ -1873,6 +1995,7 @@ void hookUIEvents(const OUIControlRef& pUIScreen)
     pUIScreen->getChild("btnCreateCheckBox")->onClick = onCreateCheckBox;
     pUIScreen->getChild("btnCreateTextBox")->onClick = onCreateTextBox;
     pUIScreen->getChild("btnCreateTreeView")->onClick = onCreateTreeView;
+    pUIScreen->getChild("btnCreateScrollView")->onClick = onCreateScrollView;
 
     // View
     pUIScreen->getChild("pnlView")->onMouseDown = onSelect;
@@ -2027,4 +2150,14 @@ void hookUIEvents(const OUIControlRef& pUIScreen)
     BIND_NUMERIC_PROPERTY<onut::UITextBox>("Decimal",
                                         [](const OUITextBoxRef& pControl) {return std::to_string(pControl->getDecimalPrecision()); },
                                         [](const OUITextBoxRef& pControl, const std::string& decimal){pControl->setIsDecimalPrecision(std::stoi(decimal)); });
+
+    // UIScrollView
+    BEGIN_BINDINGS(pUIScreen, OUIControl::Type::ScrollView, "pnlInspector_UIScrollView");
+    BIND_BOOL_PROPERTY<onut::UIScrollView>("Scroll Horizontal",
+                                           [](const OUIScrollViewRef& pControl) {return pControl->isScrollH; },
+                                           [](const OUIScrollViewRef& pControl, const bool& isScrollH){pControl->isScrollH = isScrollH; });
+    BIND_BOOL_PROPERTY<onut::UIScrollView>("Scroll Vertical",
+                                           [](const OUIScrollViewRef& pControl) {return pControl->isScrollV; },
+                                           [](const OUIScrollViewRef& pControl, const bool& isScrollV){pControl->isScrollV = isScrollV; });
+    BIND_PADDING_COMPONENT<onut::UIScrollView>("Padding");
 }

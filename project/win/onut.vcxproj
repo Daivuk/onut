@@ -127,6 +127,7 @@
     <ClInclude Include="..\..\include\onut\UIImage.h" />
     <ClInclude Include="..\..\include\onut\UILabel.h" />
     <ClInclude Include="..\..\include\onut\UIPanel.h" />
+    <ClInclude Include="..\..\include\onut\UIScrollView.h" />
     <ClInclude Include="..\..\include\onut\UITextBox.h" />
     <ClInclude Include="..\..\include\onut\UITreeView.h" />
     <ClInclude Include="..\..\include\onut\Updater.h" />
@@ -362,6 +363,7 @@
     <ClCompile Include="..\..\src\UIJson.cpp" />
     <ClCompile Include="..\..\src\UILabel.cpp" />
     <ClCompile Include="..\..\src\UIPanel.cpp" />
+    <ClCompile Include="..\..\src\UIScrollView.cpp" />
     <ClCompile Include="..\..\src\UITextBox.cpp" />
     <ClCompile Include="..\..\src\UITreeView.cpp" />
     <ClCompile Include="..\..\src\Updater.cpp" />

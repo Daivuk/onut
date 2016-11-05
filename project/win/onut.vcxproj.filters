@@ -218,42 +218,6 @@
     <ClInclude Include="..\..\include\onut\Timing.h">
       <Filter>services</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIContext.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIEvents.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIComponents.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIControl.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIButton.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIPanel.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UILabel.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UIImage.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UICheckBox.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UITextBox.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\UITreeView.h">
-      <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\UIJson.h">
-      <Filter>services</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Strings.h">
       <Filter>utilities</Filter>
     </ClInclude>
@@ -668,6 +632,45 @@
     <ClInclude Include="..\..\include\onut\AudioEngine.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIButton.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UICheckBox.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIComponents.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIContext.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIControl.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIEvents.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIImage.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\UIJson.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UILabel.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIPanel.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UITextBox.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UITreeView.h">
+      <Filter>uis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\UIScrollView.h">
+      <Filter>uis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -833,36 +836,6 @@
       <Filter>utilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Timing.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UIContext.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UIButton.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UICheckBox.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UIControl.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UIImage.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UIPanel.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UITextBox.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UILabel.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UITreeView.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\UIJson.cpp">
       <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\onut.cpp" />
@@ -1112,6 +1085,39 @@
     <ClCompile Include="..\..\src\json\json_reader.cpp">
       <Filter>thirdparties\jsoncpp\json</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\UIButton.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UICheckBox.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UIContext.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UIControl.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UIImage.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UIJson.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UILabel.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UIPanel.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UITextBox.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UITreeView.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\UIScrollView.cpp">
+      <Filter>uis</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -1200,6 +1206,9 @@
     </Filter>
     <Filter Include="thirdparties\duktape">
       <UniqueIdentifier>{242f5455-8650-415d-8e00-b9b77ebfe290}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uis">
+      <UniqueIdentifier>{6864e6e3-a5d6-43b0-a800-773872c692ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
