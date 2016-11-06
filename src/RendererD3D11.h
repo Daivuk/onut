@@ -27,7 +27,7 @@ namespace onut
         void draw(uint32_t vertexCount) override;
         void drawIndexed(uint32_t indexCount) override;
 
-        Point getResolution() const override;
+        Point getTrueResolution() const override;
         void onResize(const Point& newSize);
 
         ID3D11Device* getDevice() const;

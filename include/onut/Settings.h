@@ -29,6 +29,12 @@ namespace onut
         const Resolution& getResolution() const { return m_resolution; }
         void setResolution(const Resolution& resolution);
 
+        const Resolution& getRetroResolution() const { return m_retroResolution; }
+        void setRetroResolution(const Resolution& retroResolution);
+
+        bool getIsRetroMode() const { return m_isRetroMode; }
+        void setIsRetroMode(bool isRetroMode);
+
         const std::string& getGameName() const { return m_gameName; }
         void setGameName(const std::string& gameName);
 
@@ -63,6 +69,8 @@ namespace onut
         bool m_isFixedStep = true;
         bool m_isBorderLessFullscreen = false;
         bool m_isEditorMode = false;
+        Resolution m_retroResolution = Resolution{256, 224};
+        bool m_isRetroMode = false;
         UserSettings m_userSettings;
         std::string m_appId = "";
         std::string m_appSecret = "";

@@ -257,8 +257,8 @@ namespace onut
 
             // Render
             oTiming->render();
-            oRenderer->beginFrame();
             oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+            oRenderer->beginFrame();
             onut::js::render();
             if (renderCallback)
             {
@@ -272,10 +272,14 @@ namespace onut
 
             // Draw final render target
             oRenderer->renderStates.renderTarget = nullptr;
+            auto& res = oRenderer->getResolution();
+            oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
+            oRenderer->renderStates.scissorEnabled = false;
+            oRenderer->renderStates.scissor = oRenderer->renderStates.viewport.get();
             oSpriteBatch->begin();
             oSpriteBatch->changeBlendMode(OBlendOpaque);
             oSpriteBatch->changeFiltering(OFilterNearest);
-            oSpriteBatch->drawRect(g_pMainRenderTarget, {0, 0, OScreenWf, OScreenHf});
+            oSpriteBatch->drawRect(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
             oSpriteBatch->end();
             oSpriteBatch->changeBlendMode(OBlendAlpha);
             oSpriteBatch->changeFiltering(OFilterLinear);

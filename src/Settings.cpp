@@ -78,6 +78,16 @@ namespace onut
         m_resolution = resolution;
     }
 
+    void Settings::setRetroResolution(const Resolution& retroResolution)
+    {
+        m_retroResolution = retroResolution;
+    }
+
+    void Settings::setIsRetroMode(bool isRetroMode)
+    {
+        m_isRetroMode = isRetroMode;
+    }
+
     void Settings::setGameName(const std::string& gameName)
     {
         m_gameName = gameName;

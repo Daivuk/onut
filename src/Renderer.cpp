@@ -1,6 +1,7 @@
 // Onut
 #include <onut/IndexBuffer.h>
 #include <onut/Renderer.h>
+#include <onut/Settings.h>
 #include <onut/Shader.h>
 #include <onut/Texture.h>
 #include <onut/VertexBuffer.h>
@@ -272,5 +273,15 @@ namespace onut
         setupEffectRenderStates();
         renderStates.pixelShader = m_pVignettePixelShader;
         draw(6);
+    }
+
+    Point Renderer::getResolution() const
+    {
+        auto& pRenderTarget = renderStates.renderTarget.get();
+        if (pRenderTarget)
+        {
+            return pRenderTarget->getSize();
+        }
+        return getTrueResolution();
     }
 }

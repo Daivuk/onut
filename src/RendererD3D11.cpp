@@ -452,7 +452,8 @@ namespace onut
         renderStates.reset();
 
         // Set viewport/scissor
-        renderStates.viewport = iRect{0, 0, static_cast<int>(m_backBufferDesc.Width), static_cast<int>(m_backBufferDesc.Height)};
+        auto& res = getResolution();
+        renderStates.viewport = iRect{0, 0, res.x, res.y};
         renderStates.scissorEnabled = false;
         renderStates.scissor = renderStates.viewport.get();
 
@@ -483,7 +484,7 @@ namespace onut
         return m_pDeviceContext;
     }
 
-    Point RendererD3D11::getResolution() const
+    Point RendererD3D11::getTrueResolution() const
     {
         return Point(static_cast<int>(m_backBufferDesc.Width), static_cast<int>(m_backBufferDesc.Height));
     }

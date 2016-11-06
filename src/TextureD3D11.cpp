@@ -2,6 +2,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Files.h>
+#include <onut/Settings.h>
 
 // Private
 #include "RendererD3D11.h"
@@ -35,7 +36,13 @@ namespace onut
 
     OTextureRef Texture::createScreenRenderTarget(bool willBeUsedInEffects)
     {
-        auto pRet = createRenderTarget({OScreenW, OScreenH}, willBeUsedInEffects);
+        Point res = oRenderer->getTrueResolution();
+        if (oSettings->getIsRetroMode())
+        {
+            res = oSettings->getRetroResolution();
+        }
+
+        auto pRet = createRenderTarget(res, willBeUsedInEffects);
         if (pRet)
         {
             pRet->m_isScreenRenderTarget = true;
@@ -315,10 +322,14 @@ namespace onut
         {
             if (m_isScreenRenderTarget)
             {
-                if (m_size.x != OScreenW ||
-                    m_size.y != OScreenH)
+                Point res = oRenderer->getTrueResolution();
+                if (oSettings->getIsRetroMode())
                 {
-                    m_size = {OScreenW, OScreenH};
+                    res = oSettings->getRetroResolution();
+                }
+                if (m_size != res)
+                {
+                    m_size = res;
 
                     // Release
                     if (m_pTexture) m_pTexture->Release();

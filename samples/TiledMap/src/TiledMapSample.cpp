@@ -16,6 +16,8 @@ OTiledMapRef pTiledMap;
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
     oSettings->setGameName("Tiled Map Sample");
+    oSettings->setIsRetroMode(true);
+    oSettings->setIsResizableWindow(true);
     ORun(init, update, render);
 }
 
@@ -30,5 +32,6 @@ void update()
 
 void render()
 {
+    pTiledMap->setTransform(Matrix::CreateTranslation(-375.0f, -250.0f, 0.0f));
     pTiledMap->render();
 }
