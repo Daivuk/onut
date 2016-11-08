@@ -180,13 +180,13 @@ namespace onut
         static void newColor(duk_context* ctx, const Color& val)
         {
             duk_push_object(ctx);
-            duk_push_number(ctx, val.x);
+            duk_push_number(ctx, val.r);
             duk_put_prop_string(ctx, -2, "r");
-            duk_push_number(ctx, val.y);
+            duk_push_number(ctx, val.g);
             duk_put_prop_string(ctx, -2, "g");
-            duk_push_number(ctx, val.z);
+            duk_push_number(ctx, val.b);
             duk_put_prop_string(ctx, -2, "b");
-            duk_push_number(ctx, val.w);
+            duk_push_number(ctx, val.a);
             duk_put_prop_string(ctx, -2, "a");
             duk_push_heapptr(ctx, pColorPrototype);
             duk_set_prototype(ctx, -2);
@@ -1955,7 +1955,7 @@ namespace onut
             {
                 auto other = getColor(ctx, 0);
                 JS_THIS_COLOR;
-                newColor(ctx, Color(v.x / other.x, v.y / other.y, v.z / other.z, v.w / other.w));
+                newColor(ctx, Color(v.r / other.r, v.g / other.g, v.b / other.b, v.a / other.a));
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "div");
@@ -1964,7 +1964,7 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 JS_THIS_COLOR;
-                newVector3(ctx, Vector3(v.x, v.y, v.z));
+                newVector3(ctx, Vector3(v.r, v.g, v.b));
                 return 1;
             }, 0);
             duk_put_prop_string(ctx, -2, "toVector3");
@@ -1973,7 +1973,7 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 JS_THIS_COLOR;
-                newVector4(ctx, Vector4(v.x, v.y, v.z, v.w));
+                newVector4(ctx, Vector4(v.r, v.g, v.b, v.a));
                 return 1;
             }, 0);
             duk_put_prop_string(ctx, -2, "toVector4");
@@ -2535,7 +2535,7 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 auto degrees = JS_FLOAT(0);
-                newMatrix(ctx, Matrix::CreateRotationX(DirectX::XMConvertToRadians(degrees)));
+                newMatrix(ctx, Matrix::CreateRotationX(OConvertToRadians(degrees)));
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "createRotationX");
@@ -2544,7 +2544,7 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 auto degrees = JS_FLOAT(0);
-                newMatrix(ctx, Matrix::CreateRotationY(DirectX::XMConvertToRadians(degrees)));
+                newMatrix(ctx, Matrix::CreateRotationY(OConvertToRadians(degrees)));
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "createRotationY");
@@ -2553,7 +2553,7 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 auto degrees = JS_FLOAT(0);
-                newMatrix(ctx, Matrix::CreateRotationZ(DirectX::XMConvertToRadians(degrees)));
+                newMatrix(ctx, Matrix::CreateRotationZ(OConvertToRadians(degrees)));
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "createRotationZ");
@@ -2563,7 +2563,7 @@ namespace onut
             {
                 auto axis = getVector3(ctx, 0);
                 auto degrees = JS_FLOAT(1);
-                newMatrix(ctx, Matrix::CreateFromAxisAngle(axis, DirectX::XMConvertToRadians(degrees)));
+                newMatrix(ctx, Matrix::CreateFromAxisAngle(axis, OConvertToRadians(degrees)));
                 return 1;
             }, 2);
             duk_put_prop_string(ctx, -2, "createFromAxisAngle");

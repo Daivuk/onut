@@ -4,6 +4,9 @@
 #include <onut/Texture.h>
 #include <onut/VertexBuffer.h>
 
+// STL
+#include <cassert>
+
 OPrimitiveBatchRef oPrimitiveBatch;
 
 namespace onut

@@ -79,7 +79,7 @@ void Guard::attack()
     m_pSwordAttackEntity->setDrawIndex(DrawIndexes::SwordAttack);
     if (m_dir == "s")
     {
-        m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));
+        m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(OPIDIV2) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));
         m_pSwordCollider->setSize(Vector2(28, 20));
     }
     else if (m_dir == "e")
@@ -89,12 +89,12 @@ void Guard::attack()
     }
     else if (m_dir == "w")
     {
-        m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(DirectX::XM_PI) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));
+        m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(OPI) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));
         m_pSwordCollider->setSize(Vector2(20, 28));
     }
     else if (m_dir == "n")
     {
-        m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(-DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));
+        m_pSwordAttackEntity->setLocalTransform(Matrix::CreateRotationZ(-OPIDIV2) * Matrix::CreateTranslation(Vector2(0.0f, -4.0f)));
         m_pSwordCollider->setSize(Vector2(28, 20));
     }
     m_pSwordAttackEntity->setVisible(true);

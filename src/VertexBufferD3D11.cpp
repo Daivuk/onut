@@ -2,6 +2,9 @@
 #include "VertexBufferD3D11.h"
 #include "RendererD3D11.h"
 
+// STL
+#include <cassert>
+
 namespace onut
 {
     OVertexBufferRef VertexBuffer::createStatic(const void* pVertexData, uint32_t size)

@@ -504,11 +504,11 @@ namespace onut
                 {
                     pwd.back() = '_';
                 }
-                pFont->draw(pwd, ORectAlign<>(oRect, align), Vector2(align), oColor);
+                pFont->draw(pwd, ORectAlign(oRect, align), Vector2(align), oColor);
             }
             else
             {
-                pFont->draw(textComponent.text, ORectAlign<>(oRect, align), Vector2(align), oColor);
+                pFont->draw(textComponent.text, ORectAlign(oRect, align), Vector2(align), oColor);
             }
         }
     };

@@ -43,9 +43,6 @@
     <ClInclude Include="..\..\include\onut\ContentManager.h">
       <Filter>services</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\Maths.h">
-      <Filter>utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\onut.h" />
     <ClInclude Include="..\..\include\onut\Font.h">
       <Filter>resources</Filter>
@@ -82,9 +79,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Settings.h">
       <Filter>services</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\Point.h">
-      <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Pool.h">
       <Filter>utilities</Filter>
@@ -149,16 +143,7 @@
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h">
       <Filter>thirdparties\tinyxml2</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\simplemath\SimpleMath.h">
-      <Filter>thirdparties\simplemath</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Anim.h">
-      <Filter>utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\Tween.h">
-      <Filter>utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\onut\Curve.h">
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\GamePad.h">
@@ -671,6 +656,39 @@
     <ClInclude Include="..\..\include\onut\UIScrollView.h">
       <Filter>uis</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Vector2.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Vector3.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Tween.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Maths.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Point.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Curve.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Vector4.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Matrix.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Color.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\iRect.h">
+      <Filter>maths</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Align.h">
+      <Filter>maths</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -781,17 +799,8 @@
     <ClCompile Include="..\..\src\tinyxml2\tinyxml2.cpp">
       <Filter>thirdparties\tinyxml2</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp">
-      <Filter>thirdparties\simplemath</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\SpriteAnim.cpp">
       <Filter>resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Tween.cpp">
-      <Filter>utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Curve.cpp">
-      <Filter>utilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GamePad.cpp">
       <Filter>services</Filter>
@@ -916,9 +925,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\SpriteAnimComponent.cpp">
       <Filter>entities\default components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Maths.cpp">
-      <Filter>utilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Collider2DComponent.cpp">
       <Filter>entities\default components</Filter>
@@ -1118,6 +1124,33 @@
     <ClCompile Include="..\..\src\UIScrollView.cpp">
       <Filter>uis</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Vector2.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Tween.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Maths.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Curve.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Vector3.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Vector4.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Color.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Point.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Matrix.cpp">
+      <Filter>maths</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="resources">
@@ -1158,9 +1191,6 @@
     </Filter>
     <Filter Include="thirdparties\tinyxml2">
       <UniqueIdentifier>{a8654ab6-6ce0-4785-9796-6add1e23f92d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="thirdparties\simplemath">
-      <UniqueIdentifier>{76790f6d-533a-4fc6-8cab-5857fbbe8185}</UniqueIdentifier>
     </Filter>
     <Filter Include="thirdparties\braincloud">
       <UniqueIdentifier>{6bcd5563-178b-459f-9d75-1653543c820b}</UniqueIdentifier>
@@ -1209,6 +1239,9 @@
     </Filter>
     <Filter Include="uis">
       <UniqueIdentifier>{6864e6e3-a5d6-43b0-a800-773872c692ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="maths">
+      <UniqueIdentifier>{c209ddac-8bcf-470e-9c9c-47e4b11a88ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 #include <onut/Texture.h>
 
 // STL
+#include <cassert>
 #include <sstream>
 #include <fstream>
 
@@ -208,7 +209,7 @@ namespace onut
                             const OSpriteBatchRef& pSpriteBatch)
     {
         Color outlineColorFinal = outlineColor;
-        outlineColorFinal.w *= color.w;
+        outlineColorFinal.a *= color.a;
 
         Vector2 pos = in_pos;
         if (snapPixels)
@@ -279,7 +280,7 @@ namespace onut
                 r = (static_cast<float>(text[i + 1]) - static_cast<float>('0')) / 9.0f;
                 g = (static_cast<float>(text[i + 2]) - static_cast<float>('0')) / 9.0f;
                 b = (static_cast<float>(text[i + 3]) - static_cast<float>('0')) / 9.0f;
-                curColor = {r, g, b, color.w};
+                curColor = {r, g, b, color.a};
                 curColor.Premultiply();
                 i += 4;
                 continue;

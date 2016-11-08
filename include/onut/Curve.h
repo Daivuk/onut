@@ -1,7 +1,11 @@
 #pragma once
 // Onut
-#include <onut/Maths.h>
+#include <onut/Color.h>
+#include <onut/Matrix.h>
 #include <onut/Point.h>
+#include <onut/Vector2.h>
+#include <onut/Vector3.h>
+#include <onut/Vector4.h>
 
 // STL
 #include <string>

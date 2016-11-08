@@ -1016,8 +1016,8 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
     { // alpha
         auto pBinding = new ControlInspectorBind<float, TuiType>(
             "Alpha", nullptr,
-            [](const std::shared_ptr<TuiType>& pControl) {return pControl->color.w * 100.f; },
-            [](const std::shared_ptr<TuiType>& pControl, const float& alpha){pControl->color.w = alpha / 100.f; pControl->color.pack(); },
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->color.a * 100.f; },
+            [](const std::shared_ptr<TuiType>& pControl, const float& alpha){pControl->color.a = alpha / 100.f; pControl->color.pack(); },
             [=]{return pAlphaText->getFloat(); },
             [=](const float& alpha) {pAlphaText->setFloat(alpha); });
         pBindings->push_back(pBinding);

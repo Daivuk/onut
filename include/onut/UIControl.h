@@ -4,6 +4,7 @@
 #include <onut/UIEvents.h>
 
 // STL
+#include <functional>
 #include <unordered_map>
 #include <vector>
 

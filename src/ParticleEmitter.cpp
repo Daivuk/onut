@@ -135,14 +135,14 @@ namespace onut
             auto randomAngleX = m_pDesc->spread.generateFrom() * .5f;
             auto randomAngleZ = randf(0, 360.f);
 
-            Matrix rotX = Matrix::CreateFromAxisAngle(right, DirectX::XMConvertToRadians(randomAngleX));
-            Matrix rotZ = Matrix::CreateFromAxisAngle(up, DirectX::XMConvertToRadians(randomAngleZ));
+            Matrix rotX = Matrix::CreateFromAxisAngle(right, OConvertToRadians(randomAngleX));
+            Matrix rotZ = Matrix::CreateFromAxisAngle(up, OConvertToRadians(randomAngleZ));
 
             up = Vector3::Transform(up, rotX);
             up = Vector3::Transform(up, rotZ);
             if (m_pDesc->dir.LengthSquared() != 0)
             {
-                Matrix rotDir = Matrix::CreateFromAxisAngle(Vector3(m_pDesc->dir.y, m_pDesc->dir.x, 0), DirectX::XMConvertToRadians(90));
+                Matrix rotDir = Matrix::CreateFromAxisAngle(Vector3(m_pDesc->dir.y, m_pDesc->dir.x, 0), OConvertToRadians(90));
                 up = Vector3::Transform(up, rotDir);
             }
 
