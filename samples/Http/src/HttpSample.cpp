@@ -1,28 +1,18 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Font.h>
 #include <onut/Http.h>
 #include <onut/Input.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
-
-void init();
-void update();
-void render();
 
 std::string originIP;
 std::string userAgent;
 OTextureRef pDownloadedTexture;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("HTTP Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -73,4 +63,8 @@ void render()
     oSpriteBatch->drawRect(pDownloadedTexture, Rect(10, 230, 256, 256));
 
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

@@ -1,21 +1,13 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Curve.h>
 #include <onut/Font.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/Music.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Sound.h>
-
-void init();
-void update();
-void render();
 
 OSoundInstanceRef pLoopingSound;
 OMusicRef pMusic;
@@ -32,11 +24,9 @@ static const double NOTE_FREQUENCIES[8] = {
     523.25, // C5
 };
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Sounds Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -163,4 +153,8 @@ void render()
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", {10, OScreenHf - 30});
 
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

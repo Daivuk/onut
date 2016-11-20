@@ -1,22 +1,12 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
-#include <onut/onut.h>
 #include <onut/PrimitiveBatch.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/Texture.h>
 
-void init();
-void update();
-void render();
-
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Primitives Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -63,4 +53,8 @@ void render()
     oPrimitiveBatch->draw(Vector2(300, 100), Color::White, Vector2(0, 1));
     oPrimitiveBatch->draw(Vector2(400, 100), Color::White, Vector2(1, 1));
     oPrimitiveBatch->end();
+}
+
+void postRender()
+{
 }

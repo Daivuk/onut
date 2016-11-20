@@ -88,7 +88,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\CryptoSample.cpp" />
+    <ClCompile Include="..\..\..\common.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\scripts\CryptoSample.js" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

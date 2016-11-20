@@ -88,10 +88,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\TestSample.cpp" />
+    <None Include="..\..\assets\scripts\TextSample.js" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\scripts\TextSample.js" />
+    <ClCompile Include="..\..\..\common.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

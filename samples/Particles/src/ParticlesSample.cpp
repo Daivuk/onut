@@ -1,30 +1,20 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Anim.h>
 #include <onut/ParticleSystem.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/Font.h>
 #include <onut/Input.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Timing.h>
 
-void init();
-void update();
-void render();
-
 OEmitterInstance emitter;
 OAnimVector3 position;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Particles Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -75,4 +65,8 @@ void render()
     pFont->draw("FPS: " + std::to_string(oTiming->getFPS()), {10, 50});
 
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

@@ -1,16 +1,9 @@
-﻿// Required for WinMain
-#include <Windows.h>
-
-// Oak Nut include
+﻿// Oak Nut include
 #include <onut/Crypto.h>
 #include <onut/Font.h>
-#include <onut/onut.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Renderer.h>
-
-void init();
-void render();
 
 std::string originalText = "One does nut simply";
 std::string based64;
@@ -51,10 +44,9 @@ std::vector<std::pair<std::string, bool>> emails = {
 };
 
 // Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Crypto Sample");
-    ORun(init, nullptr, render);
 }
 
 void init()
@@ -73,6 +65,10 @@ void init()
     {
         email.second = OValidateEmail(email.first);
     }
+}
+
+void update()
+{
 }
 
 void render()
@@ -110,4 +106,8 @@ void render()
     }
 
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

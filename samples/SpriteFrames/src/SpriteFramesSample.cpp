@@ -1,27 +1,17 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Font.h>
 #include <onut/Input.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteAnim.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 
-void init();
-void update();
-void render();
-
 OSpriteAnimInstance spriteAnim;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Sprite Animation Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -76,4 +66,8 @@ void render()
     pFont->draw("Press ^9903^999 to play ^991run fast^999 anim", Vector2(8, 340), OLeft);
     pFont->draw("Press ^9904^999 to play ^991attack^999 anim", Vector2(8, 360), OLeft);
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

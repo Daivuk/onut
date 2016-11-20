@@ -1,26 +1,17 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/IndexBuffer.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/Texture.h>
 #include <onut/VertexBuffer.h>
 
-void init();
-void update();
-void render();
-
 OVertexBufferRef pVertexBuffer;
 OIndexBufferRef pIndexBuffer;
 
 // Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Custom Mesh Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -59,4 +50,8 @@ void render()
     oRenderer->renderStates.indexBuffer = pIndexBuffer;
 
     oRenderer->drawIndexed(6);
+}
+
+void postRender()
+{
 }

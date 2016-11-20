@@ -1,22 +1,14 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/ActionManager.h>
 #include <onut/Anim.h>
 #include <onut/Input.h>
 #include <onut/Font.h>
 #include <onut/Maths.h>
-#include <onut/onut.h>
 #include <onut/Random.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
-
-void init();
-void update();
-void render();
 
 struct Item
 {
@@ -31,12 +23,10 @@ ItemRef pDraggingItem;
 Vector2 dragStartMousePos;
 Vector2 dragStartItemPos;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Undo/Redo Sample");
     oSettings->setIsEditorMode(true);
-    ORun(init, update, render);
 }
 
 void init()
@@ -206,4 +196,8 @@ void render()
 
     // End and flush the batch
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

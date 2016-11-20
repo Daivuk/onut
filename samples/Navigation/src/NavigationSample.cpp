@@ -1,6 +1,3 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/onut.h>
 #include <onut/Renderer.h>
@@ -8,15 +5,9 @@
 #include <onut/UIContext.h>
 #include <onut/UIControl.h>
 
-void init();
-void update();
-void render();
-
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("UI Navigation Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -49,4 +40,8 @@ void render()
 {
     // Clear
     oRenderer->clear(OColorHex(1d232d));
+}
+
+void postRender()
+{
 }

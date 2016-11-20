@@ -1,19 +1,11 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Component.h>
 #include <onut/ContentManager.h>
 #include <onut/Entity.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Timing.h>
-
-void init();
-void update();
-void render();
 
 //--- User defined components
 
@@ -87,11 +79,9 @@ private:
     float m_blink = 0.0f;
 };
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Components Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -148,4 +138,8 @@ void render()
 {
     // Clear
     oRenderer->clear(OColorHex(1d232d));
+}
+
+void postRender()
+{
 }

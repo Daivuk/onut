@@ -1,21 +1,11 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Font.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 
-void init();
-void update();
-void render();
-
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Text Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -54,4 +44,8 @@ void render()
 
     // Pretty outline
     pFont->drawOutlined("Duis aute irure dolor in reprehenderit - Better outlines", {10, 450}, OTopLeft, Color::White, Color(0, 0, 0, .75f), 2.f, false);
+}
+
+void postRender()
+{
 }

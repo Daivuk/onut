@@ -1,9 +1,5 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Maths.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/Shader.h>
@@ -11,18 +7,12 @@
 #include <onut/Texture.h>
 #include <onut/Timing.h>
 
-void init();
-void update();
-void render();
-
 float vertexAnim = 0.0f;
 float pixelAnim = 0.0f;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Shader Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -61,4 +51,8 @@ void render()
     // Draw sprite
     oSpriteBatch->drawSprite(pTexture0, OScreenCenterf);
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

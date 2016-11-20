@@ -1,19 +1,11 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Anim.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
-
-void init();
-void update();
-void render();
 
 OTextureRef pTextureFromFile;
 OTextureRef pTextureFromFileData;
@@ -24,11 +16,9 @@ OTextureRef pDynamic;
 uint8_t dynamicData[128 * 128 * 4];
 OAnimInt dynamicAnim = 0;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Sprites Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -122,4 +112,8 @@ void render()
     pFont->draw("Dynamic", {64 + 512, 140}, OCenter);
     
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

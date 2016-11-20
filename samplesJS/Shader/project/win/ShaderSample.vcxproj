@@ -83,16 +83,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\ShaderSample.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\project\win\onut.vcxproj">
       <Project>{5a0e49d2-55f1-4ab5-94f6-d19f308ecc46}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\scripts\ShaderSample.js" />
     <None Include="..\..\assets\shaders\sample.ps" />
     <None Include="..\..\assets\shaders\sample.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\common.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

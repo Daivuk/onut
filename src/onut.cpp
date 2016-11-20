@@ -300,3 +300,28 @@ namespace onut
         PostQuitMessage(0);
     }
 }
+
+// Main
+void initSettings();
+void init();
+void update();
+void render();
+void postRender();
+
+#if defined(WIN32)
+#include <Windows.h>
+
+int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+{
+    initSettings();
+    onut::run(init, update, render, postRender);
+    return 0;
+}
+#else defined(__GNU__)
+int main(int argc, char** argv)
+{
+    initSettings();
+    onut::run(init, update, render, postRender);
+    return 0;
+}
+#endif

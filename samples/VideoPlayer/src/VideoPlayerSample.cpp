@@ -1,26 +1,16 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/VideoPlayer.h>
 
-void init();
-void update();
-void render();
-
 OVideoPlayerRef pPlayer;
 OTextureRef pVideoTexture;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Video Player Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -45,4 +35,8 @@ void render()
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pVideoTexture, ORectFit(ORectFullScreen, pVideoTexture->getSize()));
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

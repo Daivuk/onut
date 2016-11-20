@@ -1,6 +1,3 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Anim.h>
 #include <onut/Input.h>
@@ -11,18 +8,12 @@
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 
-void init();
-void update();
-void render();
-
 float g_spriteAngle = 0.f;
 OAnimMatrix batchTransform;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Sprites Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -144,4 +135,8 @@ void render()
 
     // End and flush the batch
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }

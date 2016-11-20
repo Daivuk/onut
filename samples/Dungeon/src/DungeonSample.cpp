@@ -1,12 +1,8 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Anim.h>
 #include <onut/ComponentFactory.h>
 #include <onut/Entity.h>
 #include <onut/Input.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
@@ -30,19 +26,12 @@
 #include "TreasureHunter.h"
 #include "Vase.h"
 
-void init();
-void update();
-void render();
-void postRender();
-
 OAnimFloat g_fadeAnim(1.0f);
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Dungeon Game Sample");
     oSettings->setIsResizableWindow(true);
-    ORun(init, update, render, postRender);
 }
 
 void registerComponents()

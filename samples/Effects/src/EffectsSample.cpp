@@ -1,9 +1,5 @@
-// Required for WinMain
-#include <Windows.h>
-
 // Oak Nut include
 #include <onut/Font.h>
-#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
@@ -19,11 +15,9 @@ OTextureRef pCRT = nullptr;
 OTextureRef pCartoon = nullptr;
 OTextureRef pVignette = nullptr;
 
-// Main
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     oSettings->setGameName("Sprites Sample");
-    ORun(init, update, render);
 }
 
 void init()
@@ -92,4 +86,8 @@ void render()
     pFont->draw("Vignette", {128 + 512, 288 + 256 + 8}, OCenter);
 
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }
