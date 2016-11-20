@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include "DocumentView.h"
 #include "events.h"
 #include "menu.h"
@@ -15,16 +14,12 @@
 #include "onut/UIPanel.h"
 #include "onut/Window.h"
 
-void init();
-void update();
-void render();
-
 DocumentView*       g_pDocument = nullptr;
 OUIContextRef g_pUIContext = nullptr;
 OUIControlRef g_pUIScreen = nullptr;
 OUIControlRef g_pPnlRegion = nullptr;
 
-int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
+void initSettings()
 {
     auto screenW = GetSystemMetrics(SM_CXSCREEN) * 4 / 5;
     auto screenH = GetSystemMetrics(SM_CYSCREEN) * 4 / 5;
@@ -35,10 +30,6 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
     oSettings->setGameName("Oak Nut UI Editor");
     oSettings->setIsResizableWindow(true);
     oSettings->setIsEditorMode(true);
-
-    onut::run(init, update, render);
-
-    return 0;
 }
 
 void init()
@@ -99,4 +90,8 @@ void render()
     oSpriteBatch->begin();
     g_pUIScreen->render(g_pUIContext);
     oSpriteBatch->end();
+}
+
+void postRender()
+{
 }
