@@ -41,14 +41,14 @@ void update()
             {
                 {
                     Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
-                    Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45.f)) *
+                    Matrix::CreateRotationZ(OConvertToRadians(45.f)) *
                     Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
                     1.0f,
                     OTweenLinear
                 },
                 {
                     Matrix::CreateTranslation(-OScreenCenterXf, -OScreenCenterYf, 0) *
-                    Matrix::CreateRotationZ(DirectX::XMConvertToRadians(-45.f)) *
+                    Matrix::CreateRotationZ(OConvertToRadians(-45.f)) *
                     Matrix::CreateTranslation(OScreenCenterXf, OScreenCenterYf, 0),
                     2.0f,
                     OTweenLinear
@@ -105,7 +105,7 @@ void render()
 
     // With a custom matrix
     Matrix customTransform = Matrix::Identity;
-    customTransform *= Matrix::CreateRotationZ(DirectX::XMConvertToRadians(g_spriteAngle));
+    customTransform *= Matrix::CreateRotationZ(OConvertToRadians(g_spriteAngle));
     customTransform *= Matrix::CreateScale(4.f, 0.5f, 1.f);
     customTransform *= Matrix::CreateTranslation(520, 120, 0);
     oSpriteBatch->drawSprite(pNutTexture, customTransform, Color::White);

@@ -61,6 +61,7 @@
     <ClInclude Include="..\..\include\list\List.h" />
     <ClInclude Include="..\..\include\micropather\micropather.h" />
     <ClInclude Include="..\..\include\onut\ActionManager.h" />
+    <ClInclude Include="..\..\include\onut\Align.h" />
     <ClInclude Include="..\..\include\onut\Anim.h" />
     <ClInclude Include="..\..\include\onut\Async.h" />
     <ClInclude Include="..\..\include\onut\AudioEngine.h" />
@@ -72,6 +73,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\include\onut\Collider2DComponent.h" />
+    <ClInclude Include="..\..\include\onut\Color.h" />
     <ClInclude Include="..\..\include\onut\Component.h" />
     <ClInclude Include="..\..\include\onut\ComponentFactory.h" />
     <ClInclude Include="..\..\include\onut\Crypto.h" />
@@ -80,6 +82,8 @@
     <ClInclude Include="..\..\include\onut\Dispatcher.h" />
     <ClInclude Include="..\..\include\onut\Entity.h" />
     <ClInclude Include="..\..\include\onut\EntityFactory.h" />
+    <ClInclude Include="..\..\include\onut\iRect.h" />
+    <ClInclude Include="..\..\include\onut\Matrix.h" />
     <ClInclude Include="..\..\include\onut\SceneManager.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
@@ -131,6 +135,9 @@
     <ClInclude Include="..\..\include\onut\UITextBox.h" />
     <ClInclude Include="..\..\include\onut\UITreeView.h" />
     <ClInclude Include="..\..\include\onut\Updater.h" />
+    <ClInclude Include="..\..\include\onut\Vector2.h" />
+    <ClInclude Include="..\..\include\onut\Vector3.h" />
+    <ClInclude Include="..\..\include\onut\Vector4.h" />
     <ClInclude Include="..\..\include\onut\VertexBuffer.h" />
     <ClInclude Include="..\..\include\onut\VideoPlayer.h" />
     <ClInclude Include="..\..\include\onut\Window.h" />
@@ -150,7 +157,6 @@
     <ClInclude Include="..\..\include\rapidjson\reader.h" />
     <ClInclude Include="..\..\include\rapidjson\stringbuffer.h" />
     <ClInclude Include="..\..\include\rapidjson\writer.h" />
-    <ClInclude Include="..\..\include\simplemath\SimpleMath.h" />
     <ClInclude Include="..\..\include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\src\AudioEngineWASAPI.h" />
     <ClInclude Include="..\..\src\braincloud\BrainCloudAsyncMatch.h" />
@@ -302,6 +308,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\Collider2DComponent.cpp" />
+    <ClCompile Include="..\..\src\Color.cpp" />
     <ClCompile Include="..\..\src\Component.cpp" />
     <ClCompile Include="..\..\src\ComponentFactory.cpp" />
     <ClCompile Include="..\..\src\ContentManager.cpp" />
@@ -316,6 +323,8 @@
     <ClCompile Include="..\..\src\json\json_reader.cpp" />
     <ClCompile Include="..\..\src\json\json_value.cpp" />
     <ClCompile Include="..\..\src\json\json_writer.cpp" />
+    <ClCompile Include="..\..\src\Matrix.cpp" />
+    <ClCompile Include="..\..\src\Point.cpp" />
     <ClCompile Include="..\..\src\SceneManager.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
@@ -342,7 +351,6 @@
     <ClCompile Include="..\..\src\RendererD3D11.cpp" />
     <ClCompile Include="..\..\src\Shader.cpp" />
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
-    <ClCompile Include="..\..\src\simplemath\SimpleMath.cpp" />
     <ClCompile Include="..\..\src\SoundComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteAnimComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteComponent.cpp" />
@@ -367,6 +375,9 @@
     <ClCompile Include="..\..\src\UITextBox.cpp" />
     <ClCompile Include="..\..\src\UITreeView.cpp" />
     <ClCompile Include="..\..\src\Updater.cpp" />
+    <ClCompile Include="..\..\src\Vector2.cpp" />
+    <ClCompile Include="..\..\src\Vector3.cpp" />
+    <ClCompile Include="..\..\src\Vector4.cpp" />
     <ClCompile Include="..\..\src\VertexBuffer.cpp" />
     <ClCompile Include="..\..\src\VertexBufferD3D11.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />

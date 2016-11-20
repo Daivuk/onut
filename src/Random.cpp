@@ -77,13 +77,13 @@ namespace onut
         dist *= dist;
         dist = 1 - dist;
         dist *= radius;
-        float angle = ORandFloat(0.0f, DirectX::XM_2PI);
+        float angle = ORandFloat(0.0f, O2PI);
         return{center.x + cosf(angle) * dist, center.y + sinf(angle) * dist};
     }
 
     Vector2 randCircleEdge(const Vector2& center, float radius)
     {
-        float angle = ORandFloat(0.0f, DirectX::XM_2PI);
+        float angle = ORandFloat(0.0f, O2PI);
         return{center.x + cosf(angle), center.y + sinf(angle)};
     }
 
@@ -114,12 +114,12 @@ namespace onut
 
     Color randc(const Color& max)
     {
-        return{randf(max.x), randf(max.y), randf(max.z), randf(max.w)};
+        return{randf(max.r), randf(max.g), randf(max.b), randf(max.a)};
     }
 
     Color randc(const Color& min, const Color& max)
     {
-        return{randf(min.x, max.x), randf(min.y, max.y), randf(min.z, max.z), randf(min.w, max.w)};
+        return{randf(min.r, max.r), randf(min.g, max.g), randf(min.b, max.b), randf(min.a, max.a)};
     }
 
     Color randc(const Color& color, float variation)

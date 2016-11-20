@@ -3,6 +3,9 @@
 #include <onut/Renderer.h>
 #include <onut/Texture.h>
 
+// STL
+#include <cassert>
+
 bool oGenerateMipmaps = true;
 
 namespace onut

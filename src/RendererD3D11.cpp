@@ -497,7 +497,7 @@ namespace onut
             auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(renderStates.renderTarget.get());
             pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
         }
-        m_pDeviceContext->ClearRenderTargetView(pRenderTargetView, &color.x);
+        m_pDeviceContext->ClearRenderTargetView(pRenderTargetView, &color.r);
     }
 
     void RendererD3D11::clearDepth()

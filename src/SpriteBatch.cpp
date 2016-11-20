@@ -7,6 +7,7 @@
 #include <onut/VertexBuffer.h>
 
 // STL
+#include <cassert>
 #include <cmath>
 
 OSpriteBatchRef oSpriteBatch;
@@ -551,7 +552,7 @@ namespace onut
         sizexf *= (uvs.z - uvs.x);
         sizeyf *= (uvs.w - uvs.y);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
-        auto radTheta = DirectX::XMConvertToRadians(rotation);
+        auto radTheta = OConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);
         auto cosTheta = std::cos(radTheta);
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y) * 2.f;
@@ -643,7 +644,7 @@ namespace onut
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
-        auto radTheta = DirectX::XMConvertToRadians(rotation);
+        auto radTheta = OConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);
         auto cosTheta = std::cos(radTheta);
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y) * 2.f;

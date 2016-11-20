@@ -2,6 +2,9 @@
 #include "IndexBufferD3D11.h"
 #include "RendererD3D11.h"
 
+// STL
+#include <cassert>
+
 namespace onut
 {
     OIndexBufferRef IndexBuffer::createStatic(const void* pVertexData, uint32_t size)

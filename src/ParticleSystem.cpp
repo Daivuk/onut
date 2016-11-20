@@ -229,31 +229,31 @@ namespace onut
             }
             else if (name == "startColor")
             {
-                pXMLElement->QueryAttribute("red", &pex.startColor.x);
-                pXMLElement->QueryAttribute("green", &pex.startColor.y);
-                pXMLElement->QueryAttribute("blue", &pex.startColor.z);
-                pXMLElement->QueryAttribute("alpha", &pex.startColor.w);
+                pXMLElement->QueryAttribute("red", &pex.startColor.r);
+                pXMLElement->QueryAttribute("green", &pex.startColor.g);
+                pXMLElement->QueryAttribute("blue", &pex.startColor.b);
+                pXMLElement->QueryAttribute("alpha", &pex.startColor.a);
             }
             else if (name == "startColorVariance")
             {
-                pXMLElement->QueryAttribute("red", &pex.startColorVariance.x);
-                pXMLElement->QueryAttribute("green", &pex.startColorVariance.y);
-                pXMLElement->QueryAttribute("blue", &pex.startColorVariance.z);
-                pXMLElement->QueryAttribute("alpha", &pex.startColorVariance.w);
+                pXMLElement->QueryAttribute("red", &pex.startColorVariance.r);
+                pXMLElement->QueryAttribute("green", &pex.startColorVariance.g);
+                pXMLElement->QueryAttribute("blue", &pex.startColorVariance.b);
+                pXMLElement->QueryAttribute("alpha", &pex.startColorVariance.a);
             }
             else if (name == "finishColor")
             {
-                pXMLElement->QueryAttribute("red", &pex.finishColor.x);
-                pXMLElement->QueryAttribute("green", &pex.finishColor.y);
-                pXMLElement->QueryAttribute("blue", &pex.finishColor.z);
-                pXMLElement->QueryAttribute("alpha", &pex.finishColor.w);
+                pXMLElement->QueryAttribute("red", &pex.finishColor.r);
+                pXMLElement->QueryAttribute("green", &pex.finishColor.g);
+                pXMLElement->QueryAttribute("blue", &pex.finishColor.b);
+                pXMLElement->QueryAttribute("alpha", &pex.finishColor.a);
             }
             else if (name == "finishColorVariance")
             {
-                pXMLElement->QueryAttribute("red", &pex.finishColorVariance.x);
-                pXMLElement->QueryAttribute("green", &pex.finishColorVariance.y);
-                pXMLElement->QueryAttribute("blue", &pex.finishColorVariance.z);
-                pXMLElement->QueryAttribute("alpha", &pex.finishColorVariance.w);
+                pXMLElement->QueryAttribute("red", &pex.finishColorVariance.r);
+                pXMLElement->QueryAttribute("green", &pex.finishColorVariance.g);
+                pXMLElement->QueryAttribute("blue", &pex.finishColorVariance.b);
+                pXMLElement->QueryAttribute("alpha", &pex.finishColorVariance.a);
             }
             else if (name == "maxParticles")
             {
@@ -441,8 +441,8 @@ namespace onut
             pEmitter->speed.to = pex.speed + pex.speedVariance;
 
             pEmitter->dir = Vector3(
-                cosf(DirectX::XMConvertToRadians(pex.angle)),
-                -sinf(DirectX::XMConvertToRadians(pex.angle)),
+                cosf(OConvertToRadians(pex.angle)),
+                -sinf(OConvertToRadians(pex.angle)),
                 0);
 
             pex.startColor.Premultiply();

@@ -6,6 +6,7 @@
 #include <onut/Updater.h>
 
 // STL
+#include <functional>
 #include <vector>
 
 namespace onut

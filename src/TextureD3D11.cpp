@@ -362,7 +362,7 @@ namespace onut
     void TextureD3D11::clearRenderTarget(const Color& color)
     {
         auto pRendererD3D11 = ODynamicCast<ORendererD3D11>(oRenderer);
-        pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, &color.x);
+        pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, &color.r);
     }
 
     void TextureD3D11::blur(float amount)

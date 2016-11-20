@@ -32,12 +32,14 @@ function render()
 
     // Draw stuff to our render target
     Renderer.pushRenderTarget(renderTarget);
+    Renderer.pushViewport(new Rect(0, 0, 256, 256));
     SpriteBatch.begin();
     SpriteBatch.drawRect(textureFromFile, new Rect(0, 0, 128, 128));
     SpriteBatch.drawRect(textureFromFile, new Rect(128, 0, 128, 128));
     SpriteBatch.drawRect(textureFromFile, new Rect(0, 128, 128, 128));
     SpriteBatch.drawRect(textureFromFile, new Rect(128, 128, 128, 128));
     SpriteBatch.end();
+    Renderer.popViewport();
     Renderer.popRenderTarget();
 
     // Update our dynamic texture.

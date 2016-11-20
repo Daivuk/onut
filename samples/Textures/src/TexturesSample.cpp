@@ -79,12 +79,14 @@ void render()
 
     // Draw stuff to our render target
     oRenderer->renderStates.renderTarget.push(pRenderTarget);
+    oRenderer->renderStates.viewport.push({0, 0, pRenderTarget->getSize().x, pRenderTarget->getSize().y});
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFile, {128, 0, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFile, {0, 128, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFile, {128, 128, 128, 128});
     oSpriteBatch->end();
+    oRenderer->renderStates.viewport.pop();
     oRenderer->renderStates.renderTarget.pop();
 
     // Update our dynamic texture

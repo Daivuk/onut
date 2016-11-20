@@ -319,7 +319,7 @@ namespace onut
                         color = Color(0, .35f, 0, .35f);
                         break;
                 }
-                if (isTrigger) color.z = .35f;
+                if (isTrigger) color.b = .35f;
                 
                 oSpriteBatch->drawOutterOutlineRect(Rect(
                     aabb.lowerBound.x * 16.0f + 1,
