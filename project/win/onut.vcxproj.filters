@@ -692,6 +692,9 @@
     <ClInclude Include="..\..\src\WindowWIN32.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\InputDeviceDI8.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -1155,6 +1158,9 @@
       <Filter>maths</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\WindowWIN32.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\InputDeviceDI8.cpp">
       <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>

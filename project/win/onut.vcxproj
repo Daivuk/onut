@@ -211,6 +211,7 @@
     <ClInclude Include="..\..\src\duktape\duktape.h" />
     <ClInclude Include="..\..\src\duktape\duk_config.h" />
     <ClInclude Include="..\..\src\IndexBufferD3D11.h" />
+    <ClInclude Include="..\..\src\InputDeviceDI8.h" />
     <ClInclude Include="..\..\src\JSBindings.h" />
     <ClInclude Include="..\..\src\json\allocator.h" />
     <ClInclude Include="..\..\src\json\assertions.h" />
@@ -320,6 +321,7 @@
     <ClCompile Include="..\..\src\duktape\duktape.c" />
     <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\EntityFactory.cpp" />
+    <ClCompile Include="..\..\src\InputDeviceDI8.cpp" />
     <ClCompile Include="..\..\src\JSBindings.cpp" />
     <ClCompile Include="..\..\src\json\json_reader.cpp" />
     <ClCompile Include="..\..\src\json\json_value.cpp" />

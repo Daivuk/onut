@@ -1,7 +1,6 @@
 // Onut
 #include <onut/GamePad.h>
 #include <onut/Input.h>
-#include <onut/Window.h>
 
 // Private
 #include "InputDevice.h"
@@ -20,7 +19,7 @@ namespace onut
 
     Input::Input(const OWindowRef& pWindow)
     {
-        m_pInputDevice = OInputDevice::create(this, pWindow);
+        m_pInputDevice = OInputDevice::create(this);
 
         m_prevStates = new InputState[STATE_COUNT];
         m_curStates = new InputState[STATE_COUNT];
