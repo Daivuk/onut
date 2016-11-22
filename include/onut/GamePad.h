@@ -2,12 +2,6 @@
 // Onut
 #include <onut/Maths.h>
 
-// Third party
-#if defined(WIN32)
-#include <Windows.h>
-#include <Xinput.h>
-#endif
-
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(GamePad);
@@ -47,27 +41,23 @@ namespace onut
 
         static OGamePadRef create(int index);
 
-        GamePad(int index);
+        virtual ~GamePad();
 
-        void update();
-        bool isConnected() const;
-        bool isPressed(Button button) const;
-        bool isJustPressed(Button button) const;
-        bool isJustReleased(Button button) const;
+        virtual void update() = 0;
+        virtual bool isConnected() const = 0;
+        virtual bool isPressed(Button button) const = 0;
+        virtual bool isJustPressed(Button button) const = 0;
+        virtual bool isJustReleased(Button button) const = 0;
+
         const Vector2& getLeftThumb() const { return m_cachedLeftThumb; }
         const Vector2& getRightThumb() const { return m_cachedRightThumb; }
 
-    private:
-        bool isPressed(Button button, const XINPUT_STATE& state) const;
-
-#if defined(WIN32)
-        XINPUT_STATE    m_currentState;
-        XINPUT_STATE    m_previousState;
-#endif
+    protected:
+        GamePad(int index);
+ 
         Vector2         m_cachedLeftThumb;
         Vector2         m_cachedRightThumb;
         int             m_index = 0;
-        bool            m_isConnected = false;
     };
 };
 
