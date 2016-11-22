@@ -689,6 +689,9 @@
     <ClInclude Include="..\..\include\onut\Align.h">
       <Filter>maths</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\WindowWIN32.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -1150,6 +1153,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Matrix.cpp">
       <Filter>maths</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\WindowWIN32.cpp">
+      <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

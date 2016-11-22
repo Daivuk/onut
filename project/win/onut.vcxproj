@@ -236,6 +236,7 @@
     <ClInclude Include="..\..\src\TextureD3D11.h" />
     <ClInclude Include="..\..\src\UIJson.h" />
     <ClInclude Include="..\..\src\VertexBufferD3D11.h" />
+    <ClInclude Include="..\..\src\WindowWIN32.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />
     <ClInclude Include="..\..\src\zlib\gzguts.h" />
@@ -394,6 +395,7 @@
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\TiledMap.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
+    <ClCompile Include="..\..\src\WindowWIN32.cpp" />
     <ClCompile Include="..\..\src\zlib\adler32.c" />
     <ClCompile Include="..\..\src\zlib\compress.c" />
     <ClCompile Include="..\..\src\zlib\crc32.c" />

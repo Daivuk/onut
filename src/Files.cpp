@@ -10,6 +10,7 @@
 
 // Third party
 #include <dirent/dirent.h>
+#include <windows.h>
 
 namespace onut
 {

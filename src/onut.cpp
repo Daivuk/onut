@@ -92,7 +92,7 @@ namespace onut
         oUpdater = OUpdater::create();
 
         // Window
-        oWindow = OWindow::create(oSettings->getResolution(), oSettings->getIsResizableWindow());
+        oWindow = OWindow::create();
 
         // DirectX
         oRenderer = ORenderer::create(oWindow);

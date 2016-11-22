@@ -20,17 +20,16 @@ namespace onut
     class Window
     {
     public:
-        static OWindowRef create(const Point& resolution, bool isResizable = false);
+        static OWindowRef create();
 
-        Window(const Point& resolution, bool isResizable = false);
         virtual ~Window();
 
 #if defined(WIN32)
-        HWND getHandle();
-        void setCursor(HCURSOR cursor);
-        HCURSOR getCursor() const;
+        virtual HWND getHandle() = 0;
+        virtual void setCursor(HCURSOR cursor) = 0;
+        virtual HCURSOR getCursor() const = 0;
 #endif
-        void setCaption(const std::string& newName);
+        virtual void setCaption(const std::string& newName) = 0;
 
         std::function<void(char)>                   onWrite;
         std::function<void(uintptr_t)>              onKey;
@@ -39,11 +38,8 @@ namespace onut
         std::function<void(const Point& newSize)>   onResize;
         std::function<bool()>                       onQuit;
 
-    private:
-#if defined(WIN32)
-        HWND                                    m_handle;
-        HCURSOR                                 m_cursor;
-#endif
+    protected:
+        Window();
     };
 }
 
