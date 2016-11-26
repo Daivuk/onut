@@ -18,7 +18,7 @@ namespace onut
         HWND getHandle();
         void setCursor(HCURSOR cursor);
         HCURSOR getCursor() const;
-        void setCaption(const std::string& newName);
+        void setCaption(const std::string& newName) override;
 
     private:
         HWND m_handle;

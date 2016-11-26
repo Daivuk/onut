@@ -34,10 +34,10 @@
 #include <onut/UITextBox.h>
 #endif // __unix__
 #include <onut/Updater.h>
-#if !defined(__unix__)
 #include <onut/Window.h>
 
 // Private
+#if !defined(__unix__)
 #include "JSBindings.h"
 #endif // __unix__
 
@@ -49,6 +49,10 @@
 #if !defined(__unix__)
 OTextureRef g_pMainRenderTarget;
 #endif // __unix__
+
+#if defined(__unix__)
+std::atomic<bool> g_bIsRunning;
+#endif
 
 namespace onut
 {
@@ -107,10 +111,10 @@ namespace onut
         // Updater
         oUpdater = OUpdater::create();
 
-#if !defined(__unix__)
         // Window
         oWindow = OWindow::create();
 
+#if !defined(__unix__)
         // Renderer
         oRenderer = ORenderer::create(oWindow);
         oRenderer->init(oWindow);
@@ -178,8 +182,8 @@ namespace onut
         oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
         oRenderer = nullptr;
-        oWindow = nullptr;
 #endif // __unix__
+        oWindow = nullptr;
         oSettings = nullptr;
         oThreadPool = nullptr;
         oTiming = nullptr;
@@ -207,6 +211,8 @@ namespace onut
         // Main loop
 #if defined(WIN32)
         MSG msg = {0};
+#elif defined(__unix__)
+		g_bIsRunning = true;
 #endif // WIN32
         while (true)
         {
@@ -238,6 +244,7 @@ namespace onut
                 }
             }
 #elif defined(__unix__)
+			if (!g_bIsRunning) break;
 #endif
 
             // Sync to main callbacks
@@ -333,9 +340,11 @@ namespace onut
 
     void quit()
     {
-#if !defined(__unix__)
+#if defined(WIN32)
         PostQuitMessage(0);
-#endif // __unix__
+#elif defined(__unix__)
+		g_bIsRunning = false;
+#endif
     }
 }
 
