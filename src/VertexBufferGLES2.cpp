@@ -1,3 +1,4 @@
+#if defined(__unix__)
 // Private
 #include "VertexBufferGLES2.h"
 #include "RendererGLES2.h"
@@ -69,3 +70,5 @@ namespace onut
         return m_size;
     }
 }
+
+#endif

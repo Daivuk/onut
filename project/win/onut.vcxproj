@@ -212,6 +212,7 @@
     <ClInclude Include="..\..\src\duktape\duk_config.h" />
     <ClInclude Include="..\..\src\GamePadXInput.h" />
     <ClInclude Include="..\..\src\IndexBufferD3D11.h" />
+    <ClInclude Include="..\..\src\IndexBufferGLES2.h" />
     <ClInclude Include="..\..\src\InputDeviceDI8.h" />
     <ClInclude Include="..\..\src\JSBindings.h" />
     <ClInclude Include="..\..\src\json\allocator.h" />
@@ -234,11 +235,16 @@
     <ClInclude Include="..\..\src\Particle.h" />
     <ClInclude Include="..\..\src\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\RendererD3D11.h" />
+    <ClInclude Include="..\..\src\RendererGLES2.h" />
     <ClInclude Include="..\..\src\ShaderD3D11.h" />
+    <ClInclude Include="..\..\src\ShaderGLES2.h" />
     <ClInclude Include="..\..\src\TextureD3D11.h" />
+    <ClInclude Include="..\..\src\TextureGLES2.h" />
     <ClInclude Include="..\..\src\UIJson.h" />
     <ClInclude Include="..\..\src\VertexBufferD3D11.h" />
+    <ClInclude Include="..\..\src\VertexBufferGLES2.h" />
     <ClInclude Include="..\..\src\WindowWIN32.h" />
+    <ClInclude Include="..\..\src\WindowX11.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />
     <ClInclude Include="..\..\src\zlib\gzguts.h" />
@@ -323,6 +329,7 @@
     <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\EntityFactory.cpp" />
     <ClCompile Include="..\..\src\GamePadXInput.cpp" />
+    <ClCompile Include="..\..\src\IndexBufferGLES2.cpp" />
     <ClCompile Include="..\..\src\InputDeviceDI8.cpp" />
     <ClCompile Include="..\..\src\JSBindings.cpp" />
     <ClCompile Include="..\..\src\json\json_reader.cpp" />
@@ -330,6 +337,7 @@
     <ClCompile Include="..\..\src\json\json_writer.cpp" />
     <ClCompile Include="..\..\src\Matrix.cpp" />
     <ClCompile Include="..\..\src\Point.cpp" />
+    <ClCompile Include="..\..\src\RendererGLES2.cpp" />
     <ClCompile Include="..\..\src\SceneManager.cpp" />
     <ClCompile Include="..\..\src\Files.cpp" />
     <ClCompile Include="..\..\src\Font.cpp" />
@@ -356,12 +364,14 @@
     <ClCompile Include="..\..\src\RendererD3D11.cpp" />
     <ClCompile Include="..\..\src\Shader.cpp" />
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
+    <ClCompile Include="..\..\src\ShaderGLES2.cpp" />
     <ClCompile Include="..\..\src\SoundComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteAnimComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteComponent.cpp" />
     <ClCompile Include="..\..\src\Strings.cpp" />
     <ClCompile Include="..\..\src\TextComponent.cpp" />
     <ClCompile Include="..\..\src\TextureD3D11.cpp" />
+    <ClCompile Include="..\..\src\TextureGLES2.cpp" />
     <ClCompile Include="..\..\src\ThreadPool.cpp" />
     <ClCompile Include="..\..\src\TiledMapComponent.cpp" />
     <ClCompile Include="..\..\src\Timing.cpp" />
@@ -385,6 +395,7 @@
     <ClCompile Include="..\..\src\Vector4.cpp" />
     <ClCompile Include="..\..\src\VertexBuffer.cpp" />
     <ClCompile Include="..\..\src\VertexBufferD3D11.cpp" />
+    <ClCompile Include="..\..\src\VertexBufferGLES2.cpp" />
     <ClCompile Include="..\..\src\VideoPlayer.cpp" />
     <ClCompile Include="..\..\src\PrimitiveBatch.cpp" />
     <ClCompile Include="..\..\src\Random.cpp" />
@@ -400,6 +411,7 @@
     <ClCompile Include="..\..\src\TiledMap.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
     <ClCompile Include="..\..\src\WindowWIN32.cpp" />
+    <ClCompile Include="..\..\src\WindowX11.cpp" />
     <ClCompile Include="..\..\src\zlib\adler32.c" />
     <ClCompile Include="..\..\src\zlib\compress.c" />
     <ClCompile Include="..\..\src\zlib\crc32.c" />

@@ -53,9 +53,6 @@
     <ClInclude Include="..\..\include\onut\Sound.h">
       <Filter>resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\MFPlayer.h">
-      <Filter>services</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\ForwardDeclaration.h">
       <Filter>utilities</Filter>
     </ClInclude>
@@ -698,6 +695,27 @@
     <ClInclude Include="..\..\src\GamePadXInput.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\MFPlayer.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\VertexBufferGLES2.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\IndexBufferGLES2.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ShaderGLES2.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\TextureGLES2.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\RendererGLES2.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\WindowX11.h">
+      <Filter>services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -762,9 +780,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\MFPlayer.cpp">
-      <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\TiledMap.cpp">
       <Filter>resources</Filter>
@@ -1167,6 +1182,27 @@
       <Filter>services</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GamePadXInput.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MFPlayer.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\VertexBufferGLES2.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\IndexBufferGLES2.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ShaderGLES2.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TextureGLES2.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\RendererGLES2.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\WindowX11.cpp">
       <Filter>services</Filter>
     </ClCompile>
   </ItemGroup>
