@@ -75,7 +75,7 @@ struct Vector3
 
     float Length() const
     {
-        return std::sqrtf(x * x + y * y + z * z);
+        return std::sqrt(x * x + y * y + z * z);
     }
     float LengthSquared() const
     {
@@ -103,7 +103,7 @@ struct Vector3
 
     void Normalize()
     {
-        auto len = std::sqrtf(x * x + y * y + z * z);
+        auto len = std::sqrt(x * x + y * y + z * z);
         if (len > 0.0f)
         {
             len = 1.0f / len;
@@ -114,7 +114,7 @@ struct Vector3
     }
     void Normalize(Vector3& result) const
     {
-        auto len = std::sqrtf(x * x + y * y + z * z);
+        auto len = std::sqrt(x * x + y * y + z * z);
         if (len > 0.0f)
         {
             len = 1.0f / len;
@@ -319,7 +319,7 @@ struct Vector3
         }
         else
         {
-            R = RefractionIndex * IDotN + sqrt(R);
+            R = RefractionIndex * IDotN + std::sqrt(R);
             result = RefractionIndex * Incident - Normal * R;
         }
     }
@@ -337,7 +337,7 @@ struct Vector3
         }
         else
         {
-            R = RefractionIndex * IDotN + sqrt(R);
+            R = RefractionIndex * IDotN + std::sqrt(R);
             result = RefractionIndex * Incident - Normal * R;
         }
         return std::move(result);

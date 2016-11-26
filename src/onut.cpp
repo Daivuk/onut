@@ -1,3 +1,4 @@
+#if !defined(__unix__)
 // Onut includes
 #include <onut/ActionManager.h>
 #include <onut/AudioEngine.h>
@@ -12,7 +13,9 @@
 #include <onut/onut.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
+#endif // __unix__
 #include <onut/Random.h>
+#if !defined(__unix__)
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
@@ -28,18 +31,22 @@
 
 // Private
 #include "JSBindings.h"
+#endif // __unix__
 
 // STL
 #include <cassert>
 #include <mutex>
 #include <sstream>
 
+#if !defined(__unix__)
 OTextureRef g_pMainRenderTarget;
+#endif // __unix__
 
 namespace onut
 {
     void createUI()
     {
+#if !defined(__unix__)
         oUIContext = UIContext::create(Vector2(OScreenWf, OScreenHf));
         oUI = UIControl::create();
         oUI->widthType = UIControl::DimType::Relative;
@@ -72,6 +79,7 @@ namespace onut
             oSpriteBatch->begin();
             oSpriteBatch->drawRect(nullptr, (rect), pPanel->color);
         });
+#endif // __unix__
     }
 
     void createServices()
@@ -79,6 +87,7 @@ namespace onut
         // Random
         randomizeSeed();
 
+#if !defined(__unix__)
         // Thread pool
         oThreadPool = OThreadPool::create();
 
@@ -131,10 +140,15 @@ namespace onut
         oActionManager = ActionManager::create();
 
         g_pMainRenderTarget = OTexture::createScreenRenderTarget();
+        
+        // Initialize Javascript
+        onut::js::init();
+#endif // __unix__
     }
 
     void cleanup()
     {
+#if !defined(__unix__)
         onut::js::shutdown();
 
         g_pMainRenderTarget = nullptr;
@@ -157,6 +171,7 @@ namespace onut
         oWindow = nullptr;
         oSettings = nullptr;
         oThreadPool = nullptr;
+#endif // __unix__
     }
 
     // Start the engine
@@ -172,9 +187,6 @@ namespace onut
 
         createServices();
 
-        // Initialize Javascript
-        onut::js::init();
-
         // Call the user defined init
         if (initCallback)
         {
@@ -182,9 +194,12 @@ namespace onut
         }
 
         // Main loop
+#if defined(WIN32)
         MSG msg = {0};
+#endif // WIN32
         while (true)
         {
+#if defined(WIN32)
             if (oSettings->getIsEditorMode())
             {
                 if (GetMessage(&msg, 0, 0, 0) >= 0)
@@ -211,7 +226,10 @@ namespace onut
                     }
                 }
             }
+#elif defined(__unix__)
+#endif
 
+#if !defined(__unix__)
             // Sync to main callbacks
             oDispatcher->processQueue();
 
@@ -283,13 +301,14 @@ namespace onut
             oSpriteBatch->end();
             oSpriteBatch->changeBlendMode(OBlendAlpha);
             oSpriteBatch->changeFiltering(OFilterLinear);
-
+#endif // __unix__
             if (postRenderCallback)
             {
                 postRenderCallback();
             }
-
+#if !defined(__unix__)
             oRenderer->endFrame();
+#endif // __unix__
         }
 
         cleanup();
@@ -297,7 +316,9 @@ namespace onut
 
     void quit()
     {
+#if !defined(__unix__)
         PostQuitMessage(0);
+#endif // __unix__
     }
 }
 
@@ -317,7 +338,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
     onut::run(init, update, render, postRender);
     return 0;
 }
-#else defined(__GNU__)
+#elif defined(__unix__)
 int main(int argc, char** argv)
 {
     initSettings();

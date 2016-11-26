@@ -69,7 +69,7 @@ struct Matrix
     }
 
     // Assignment operators
-    Matrix& operator= (const Matrix& M) { memcpy_s(this, sizeof(float) * 16, &M, sizeof(float) * 16); return *this; }
+    Matrix& operator= (const Matrix& M) { memcpy(this, &M, sizeof(float) * 16); return *this; }
     Matrix& operator+= (const Matrix& M)
     {
         _11 += M._11;
@@ -88,6 +88,7 @@ struct Matrix
         _42 += M._42;
         _43 += M._43;
         _44 += M._44;
+        return *this;
     }
     Matrix& operator-= (const Matrix& M)
     {
@@ -107,6 +108,7 @@ struct Matrix
         _42 -= M._42;
         _43 -= M._43;
         _44 -= M._44;
+        return *this;
     }
     Matrix& operator*= (const Matrix& M)
     {
@@ -165,6 +167,7 @@ struct Matrix
         _42 *= S;
         _43 *= S;
         _44 *= S;
+        return *this;
     }
     Matrix& operator/= (float S)
     {
@@ -185,6 +188,7 @@ struct Matrix
         _42 *= invS;
         _43 *= invS;
         _44 *= invS;
+        return *this;
     }
 
     // Element-wise divide
@@ -206,6 +210,7 @@ struct Matrix
         _42 /= M._42;
         _43 /= M._43;
         _44 /= M._44;
+        return *this;
     }
 
     // Urnary operators
@@ -497,8 +502,8 @@ struct Matrix
 
     static Matrix CreateRotationX(float radians)
     {
-        auto sinTheta = std::sinf(radians);
-        auto cosTheta = std::cosf(radians);
+        auto sinTheta = std::sin(radians);
+        auto cosTheta = std::cos(radians);
         return Matrix(
             1, 0, 0, 0,
             0, cosTheta, sinTheta, 0,
@@ -507,8 +512,8 @@ struct Matrix
     }
     static Matrix CreateRotationY(float radians)
     {
-        auto sinTheta = std::sinf(radians);
-        auto cosTheta = std::cosf(radians);
+        auto sinTheta = std::sin(radians);
+        auto cosTheta = std::cos(radians);
         return Matrix(
             cosTheta, 0, -sinTheta, 0,
             0, 1, 0, 0,
@@ -517,8 +522,8 @@ struct Matrix
     }
     static Matrix CreateRotationZ(float radians)
     {
-        auto sinTheta = std::sinf(radians);
-        auto cosTheta = std::cosf(radians);
+        auto sinTheta = std::sin(radians);
+        auto cosTheta = std::cos(radians);
         return Matrix(
             cosTheta, sinTheta, 0, 0,
             -sinTheta, cosTheta, 0, 0,
@@ -530,8 +535,8 @@ struct Matrix
 
     static Matrix CreatePerspectiveFieldOfView(float fov, float aspectRatio, float nearPlane, float farPlane)
     {
-        float CosFov = std::cosf(0.5f * fov);
-        float SinFov = std::sinf(0.5f * fov);
+        float CosFov = std::cos(0.5f * fov);
+        float SinFov = std::sin(0.5f * fov);
 
         float Height = CosFov / SinFov;
         float Width = Height / aspectRatio;
@@ -675,12 +680,12 @@ struct Matrix
 
     static Matrix CreateFromYawPitchRoll(float yaw, float pitch, float roll)
     {
-        float cosPhi = cosf(pitch);
-        float sinPhi = sinf(pitch);
-        float cosTheta = cosf(roll);
-        float sinTheta = sinf(roll);
-        float cosPsi = cosf(yaw);
-        float sinPsi = sinf(yaw);
+        float cosPhi = std::cos(pitch);
+        float sinPhi = std::sin(pitch);
+        float cosTheta = std::cos(roll);
+        float sinTheta = std::sin(roll);
+        float cosPsi = std::cos(yaw);
+        float sinPsi = std::sin(yaw);
 
         return Matrix(
             cosTheta * cosPsi, -cosPhi * sinPsi + sinPhi * sinTheta * cosPsi, sinPhi * sinPsi + cosPhi * sinTheta * cosPsi, 0,

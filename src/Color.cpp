@@ -1,9 +1,19 @@
+// Onut
 #include <onut/Color.h>
+#include <onut/Vector3.h>
+#include <onut/Vector4.h>
 
 const Color Color::Black(0.0f, 0.0f, 0.0f, 1.0f);
 const Color Color::White(1.0f, 1.0f, 1.0f, 1.0f);
 const Color Color::Transparent(0.0f, 0.0f, 0.0f, 0.0f);
 const Color Color::TransparentWhite(1.0f, 1.0f, 1.0f, 0.0f);
+
+Color::Color(const Vector3& rgb, float _a) : r(rgb.x), g(rgb.y), b(rgb.z), a(_a) {}
+Color::Color(const Vector3& clr) : r(clr.x), g(clr.y), b(clr.z), a(1.f) {}
+Color::Color(const Vector4& clr) : r(clr.x), g(cl-fmax-errors=Nr.y), b(clr.z), a(clr.w) {}
+
+Vector3 Color::ToVector3() const { return Vector3(r, g, b); }
+Vector4 Color::ToVector4() const { return Vector4(r, g, b, a); }
 
 // Binary operators
 Color operator+ (const Color& C1, const Color& C2)

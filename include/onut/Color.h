@@ -1,10 +1,11 @@
 #pragma once
-// Onut
-#include <onut/Vector3.h>
-#include <onut/Vector4.h>
-
 // STL
 #include <cinttypes>
+#include <utility>
+
+// Forward declarations
+struct Vector3;
+struct Vector4;
 
 struct Color
 {
@@ -15,9 +16,9 @@ struct Color
     Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b), a(1.f) {}
     Color(float _r, float _g, float _b, float _a) : r(_r), g(_g), b(_b), a(_a) {}
     Color(const Color& rgb, float _a) : r(rgb.r), g(rgb.g), b(rgb.b), a(_a) {}
-    Color(const Vector3& rgb, float _a) : r(rgb.x), g(rgb.y), b(rgb.z), a(_a) {}
-    explicit Color(const Vector3& clr) : r(clr.x), g(clr.y), b(clr.z), a(1.f) {}
-    explicit Color(const Vector4& clr) : r(clr.x), g(clr.y), b(clr.z), a(clr.w) {}
+    Color(const Vector3& rgb, float _a);
+    explicit Color(const Vector3& clr);
+    explicit Color(const Vector4& clr);
     explicit Color(const float *pArray) : r(pArray[0]), g(pArray[1]), b(pArray[2]), a(pArray[3]) {}
 
     void unpack(uint32_t packed)
@@ -87,8 +88,8 @@ struct Color
     Color operator+ () const { return *this; }
     Color operator- () const { return Color(-r, -g, -b, -a); };
 
-    Vector3 ToVector3() const { return Vector3(r, g, b); }
-    Vector4 ToVector4() const { return Vector4(r, g, b, a); }
+    Vector3 ToVector3() const;
+    Vector4 ToVector4() const;
 
     void Negate()
     {

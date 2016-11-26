@@ -130,7 +130,7 @@ struct Vector2
 
     inline float Length() const
     {
-        return std::sqrtf(x * x + y * y);
+        return std::sqrt(x * x + y * y);
     }
 
     inline float LengthSquared() const
@@ -148,7 +148,7 @@ struct Vector2
 
     inline void Normalize()
     {
-        auto len = std::sqrtf(x * x + y * y);
+        auto len = std::sqrt(x * x + y * y);
         if (len > 0.0f)
         {
             len = 1.0f / len;
@@ -159,7 +159,7 @@ struct Vector2
 
     inline void Normalize(Vector2& result) const
     {
-        auto len = std::sqrtf(x * x + y * y);
+        auto len = std::sqrt(x * x + y * y);
         if (len > 0.0f)
         {
             len = 1.0f / len;
@@ -359,7 +359,7 @@ struct Vector2
         RY = 1.0f - (RY*RefractionIndex * RefractionIndex);
         if (RX >= 0.0f)
         {
-            RX = (RefractionIndex * Incident.x) - (Normal.x * ((RefractionIndex * IDotN) + sqrtf(RX)));
+            RX = (RefractionIndex * Incident.x) - (Normal.x * ((RefractionIndex * IDotN) + std::sqrt(RX)));
         }
         else
         {
@@ -367,7 +367,7 @@ struct Vector2
         }
         if (RY >= 0.0f)
         {
-            RY = (RefractionIndex * Incident.y) - (Normal.y * ((RefractionIndex * IDotN) + sqrtf(RY)));
+            RY = (RefractionIndex * Incident.y) - (Normal.y * ((RefractionIndex * IDotN) + std::sqrt(RY)));
         }
         else
         {
@@ -387,7 +387,7 @@ struct Vector2
         RY = 1.0f - (RY*RefractionIndex * RefractionIndex);
         if (RX >= 0.0f)
         {
-            RX = (RefractionIndex * Incident.x) - (Normal.x * ((RefractionIndex * IDotN) + sqrtf(RX)));
+            RX = (RefractionIndex * Incident.x) - (Normal.x * ((RefractionIndex * IDotN) + std::sqrt(RX)));
         }
         else
         {
@@ -395,7 +395,7 @@ struct Vector2
         }
         if (RY >= 0.0f)
         {
-            RY = (RefractionIndex * Incident.y) - (Normal.y * ((RefractionIndex * IDotN) + sqrtf(RY)));
+            RY = (RefractionIndex * Incident.y) - (Normal.y * ((RefractionIndex * IDotN) + std::sqrt(RY)));
         }
         else
         {
