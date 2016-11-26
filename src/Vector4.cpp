@@ -149,7 +149,7 @@ float Vector4::Distance(const Vector2& p) const
     auto dy = std::max<float>(y - p.y, p.y - (y + w));
     dx = std::max<float>(0, dx);
     dy = std::max<float>(0, dy);
-    return std::sqrtf(dx*dx + dy*dy);
+    return std::sqrt(dx*dx + dy*dy);
 }
 
 void Vector4::Transform(const Vector4& v, const Matrix& m, Vector4& result)

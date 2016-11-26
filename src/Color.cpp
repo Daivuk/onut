@@ -10,7 +10,7 @@ const Color Color::TransparentWhite(1.0f, 1.0f, 1.0f, 0.0f);
 
 Color::Color(const Vector3& rgb, float _a) : r(rgb.x), g(rgb.y), b(rgb.z), a(_a) {}
 Color::Color(const Vector3& clr) : r(clr.x), g(clr.y), b(clr.z), a(1.f) {}
-Color::Color(const Vector4& clr) : r(clr.x), g(cl-fmax-errors=Nr.y), b(clr.z), a(clr.w) {}
+Color::Color(const Vector4& clr) : r(clr.x), g(clr.y), b(clr.z), a(clr.w) {}
 
 Vector3 Color::ToVector3() const { return Vector3(r, g, b); }
 Vector4 Color::ToVector4() const { return Vector4(r, g, b, a); }

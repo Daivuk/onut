@@ -108,23 +108,23 @@ Matrix Matrix::CreateConstrainedBillboard(const Vector3& object, const Vector3& 
         faceDir.Normalize();
     }
 
-    auto dot = std::fabsf(rotateAxis.Dot(faceDir));
+    auto dot = std::fabs(rotateAxis.Dot(faceDir));
     Vector3 X, Z;
     if (dot > s_minAngle)
     {
         if (objectForward)
         {
             Z = *objectForward;
-            dot = std::fabsf(rotateAxis.Dot(Z));
+            dot = std::fabs(rotateAxis.Dot(Z));
             if (dot > s_minAngle)
             {
-                dot = std::fabsf(rotateAxis.Dot(Vector3(0, 0, -1)));
+                dot = std::fabs(rotateAxis.Dot(Vector3(0, 0, -1)));
                 Z = (dot > s_minAngle) ? Vector3(1, 0, 0) : Vector3(0, 0, -1);
             }
         }
         else
         {
-            dot = std::fabsf(rotateAxis.Dot(Vector3(0, 0, -1)));
+            dot = std::fabs(rotateAxis.Dot(Vector3(0, 0, -1)));
             Z = (dot > s_minAngle) ? Vector3(1, 0, 0) : Vector3(0, 0, -1);
         }
 
@@ -171,8 +171,8 @@ Matrix Matrix::CreateScale(const Vector3& scales)
 
 Matrix Matrix::CreateFromAxisAngle(const Vector3& axis, float angle)
 {
-    float cosTheta = std::cosf(angle);
-    float sinTheta = std::sinf(angle);
+    float cosTheta = std::cos(angle);
+    float sinTheta = std::sin(angle);
     float invCosTheta = 1 - cosTheta;
 
     return Matrix(

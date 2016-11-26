@@ -20,7 +20,9 @@
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
+#endif // __unix__
 #include <onut/ThreadPool.h>
+#if !defined(__unix__)
 #include <onut/Timing.h>
 #include <onut/UIContext.h>
 #include <onut/UIControl.h>
@@ -87,10 +89,10 @@ namespace onut
         // Random
         randomizeSeed();
 
-#if !defined(__unix__)
         // Thread pool
         oThreadPool = OThreadPool::create();
 
+#if !defined(__unix__)
         // Dispatcher
         oDispatcher = ODispatcher::create();
 
