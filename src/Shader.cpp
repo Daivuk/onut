@@ -36,7 +36,11 @@ namespace onut
     static std::string readShaderFileContent(const std::string& filename)
     {
         FILE* pFic;
+#if defined(fopen_s)
         fopen_s(&pFic, filename.c_str(), "rb");
+#else
+        pFic = fopen(filename.c_str(), "rb");
+#endif
         assert(pFic);
         fseek(pFic, 0, SEEK_END);
         auto filesize = static_cast<size_t>(ftell(pFic));
@@ -90,7 +94,6 @@ namespace onut
         ParsedUniforms ret;
 
         // Create uniforms
-        int uniformId = 4;
         std::smatch match;
         size_t offset = 0;
         while (std::regex_search(content.cbegin() + offset, content.cend(), match, std::regex("extern\\s+([\\w]+)\\s+([\\w]+)")))
@@ -134,8 +137,8 @@ namespace onut
                 std::smatch matchProperty;
                 while (std::regex_search(content.cbegin() + propsStart, content.cbegin() + propsEnd, matchProperty, std::regex("([\\w]+)\\s*=\\s*([\\w]+)\\s*;")))
                 {
-                    auto& propName = matchProperty[1].str();
-                    auto& propValue = matchProperty[2].str();
+                    const auto& propName = matchProperty[1].str();
+                    const auto& propValue = matchProperty[2].str();
                     if (propName == "filter")
                     {
                         if (propValue == "nearest")

@@ -4,22 +4,22 @@
 #include <onut/AudioEngine.h>
 //#include <onut/Cloud.h>
 #include <onut/ComponentFactory.h>
-#include <onut/ContentManager.h>
 #endif // __unix__
+#include <onut/ContentManager.h>
 #include <onut/Dispatcher.h>
 #if !defined(__unix__)
 #include <onut/SceneManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#endif // __unix__
 #include <onut/onut.h>
+#if !defined(__unix__)
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
 #endif // __unix__
 #include <onut/Random.h>
-#if !defined(__unix__)
 #include <onut/Renderer.h>
-#endif // __unix__
 #include <onut/Settings.h>
 #if !defined(__unix__)
 #include <onut/SpriteBatch.h>
@@ -114,21 +114,22 @@ namespace onut
         // Window
         oWindow = OWindow::create();
 
-#if !defined(__unix__)
         // Renderer
         oRenderer = ORenderer::create(oWindow);
         oRenderer->init(oWindow);
 
+#if !defined(__unix__)
         // SpriteBatch
         oSpriteBatch = SpriteBatch::create();
         oPrimitiveBatch = PrimitiveBatch::create();
-
+#endif // __unix__
         // Content
         oContentManager = ContentManager::create();
 
         // Cloud
         //oCloud = Cloud::create(oSettings->getAppId(), oSettings->getAppSecret());
 
+#if !defined(__unix__)
         // Mouse/Keyboard
         oInput = OInput::create(oWindow);
 
@@ -178,11 +179,13 @@ namespace onut
         oAudioEngine = nullptr;
         oInput = nullptr;
         //oCloud = nullptr;
+#endif // __unix__
         oContentManager = nullptr;
+#if !defined(__unix__)
         oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
-        oRenderer = nullptr;
 #endif // __unix__
+        oRenderer = nullptr;
         oWindow = nullptr;
         oSettings = nullptr;
         oThreadPool = nullptr;
@@ -302,10 +305,12 @@ namespace onut
             oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
             oRenderer->beginFrame();
             onut::js::render();
+#endif // __unix__
             if (renderCallback)
             {
                 renderCallback();
             }
+#if !defined(__unix__)
             oSceneManager->render();
             oParticleSystemManager->render();
             oSpriteBatch->begin();

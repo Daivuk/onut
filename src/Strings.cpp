@@ -3,11 +3,14 @@
 
 // STL
 #include <algorithm>
+#if defined(WIN32)
 #include <codecvt>
+#endif
 #include <regex>
 
 namespace onut
 {
+#if defined(WIN32)
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> g_stringConverter;
 
     std::wstring utf8ToUtf16(const std::string& utf8)
@@ -19,6 +22,7 @@ namespace onut
     {
         return g_stringConverter.to_bytes(utf16);
     }
+#endif
 
     std::vector<std::string> splitString(const std::string& in_string, char in_delimiter, bool in_removeEmptyElements)
     {
@@ -85,8 +89,8 @@ namespace onut
             offset += m1.position();
             if (std::regex_search(source.cbegin() + offset, source.cend(), m2, std::regex("\\*\\/")))
             {
-                source.erase(source.cbegin() + offset,
-                             source.cbegin() + offset + m2.position() + m2.length());
+                source.erase(source.begin() + offset,
+                             source.begin() + offset + m2.position() + m2.length());
             }
             else break;
         }
@@ -96,8 +100,8 @@ namespace onut
         while (std::regex_search(source.cbegin() + offset, source.cend(), m1, std::regex("\\/\\/.*")))
         {
             offset += m1.position();
-            source.erase(source.cbegin() + offset,
-                         source.cbegin() + offset + m1.length());
+            source.erase(source.begin() + offset,
+                         source.begin() + offset + m1.length());
         }
     }
 

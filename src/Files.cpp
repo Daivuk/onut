@@ -7,10 +7,15 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <string.h>
 
 // Third party
+#if defined(WIN32)
 #include <dirent/dirent.h>
 #include <windows.h>
+#elif defined(__linux__)
+#include <dirent.h>
+#endif
 
 namespace onut
 {
@@ -168,6 +173,7 @@ namespace onut
         return std::move(data);
     }
 
+#if defined(WIN32)
     bool fileExists(const std::string& filename)
     {
         WIN32_FIND_DATAA FindFileData;
@@ -181,7 +187,6 @@ namespace onut
         return found;
     }
 
-#if defined(WIN32)
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {
         auto windowHandle = oWindow->getHandle();
