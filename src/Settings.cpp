@@ -10,6 +10,9 @@ namespace onut
 {
     Settings::Settings()
     {
+        m_isDirty = false;
+        m_isRunning = true;
+        
         // Load settings
         std::ifstream in("../../usersettings.cfg");
         if (!in.fail())

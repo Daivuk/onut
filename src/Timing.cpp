@@ -1,4 +1,3 @@
-#pragma once
 // Onut
 #include <onut/Timing.h>
 

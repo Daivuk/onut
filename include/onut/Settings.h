@@ -75,8 +75,8 @@ namespace onut
         std::string m_appId = "";
         std::string m_appSecret = "";
 
-        std::atomic<bool> m_isDirty = false;
-        std::atomic<bool> m_isRunning = true;
+        std::atomic<bool> m_isDirty;
+        std::atomic<bool> m_isRunning;
         std::thread m_savingThread;
         std::mutex m_mutex;
         std::condition_variable m_conditionVariable;

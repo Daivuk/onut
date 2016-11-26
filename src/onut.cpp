@@ -5,7 +5,9 @@
 //#include <onut/Cloud.h>
 #include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
+#endif // __unix__
 #include <onut/Dispatcher.h>
+#if !defined(__unix__)
 #include <onut/SceneManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
@@ -17,18 +19,22 @@
 #include <onut/Random.h>
 #if !defined(__unix__)
 #include <onut/Renderer.h>
+#endif // __unix__
 #include <onut/Settings.h>
+#if !defined(__unix__)
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #endif // __unix__
 #include <onut/ThreadPool.h>
-#if !defined(__unix__)
 #include <onut/Timing.h>
+#if !defined(__unix__)
 #include <onut/UIContext.h>
 #include <onut/UIControl.h>
 #include <onut/UIPanel.h>
 #include <onut/UITextBox.h>
+#endif // __unix__
 #include <onut/Updater.h>
+#if !defined(__unix__)
 #include <onut/Window.h>
 
 // Private
@@ -92,7 +98,6 @@ namespace onut
         // Thread pool
         oThreadPool = OThreadPool::create();
 
-#if !defined(__unix__)
         // Dispatcher
         oDispatcher = ODispatcher::create();
 
@@ -102,10 +107,11 @@ namespace onut
         // Updater
         oUpdater = OUpdater::create();
 
+#if !defined(__unix__)
         // Window
         oWindow = OWindow::create();
 
-        // DirectX
+        // Renderer
         oRenderer = ORenderer::create(oWindow);
         oRenderer->init(oWindow);
 
@@ -157,8 +163,10 @@ namespace onut
         oActionManager = nullptr;
         oSceneManager = nullptr;
         oComponentFactory = nullptr;
+#endif // __unix__
         oDispatcher = nullptr;
         oUpdater = nullptr;
+#if !defined(__unix__)
         oUI = nullptr;
         oUIContext = nullptr;
         oParticleSystemManager = nullptr;
@@ -171,9 +179,10 @@ namespace onut
         oSpriteBatch = nullptr;
         oRenderer = nullptr;
         oWindow = nullptr;
+#endif // __unix__
         oSettings = nullptr;
         oThreadPool = nullptr;
-#endif // __unix__
+        oTiming = nullptr;
     }
 
     // Start the engine
@@ -231,15 +240,17 @@ namespace onut
 #elif defined(__unix__)
 #endif
 
-#if !defined(__unix__)
             // Sync to main callbacks
             oDispatcher->processQueue();
 
+#if !defined(__unix__)
             // Update
             oAudioEngine->update();
+#endif // __unix__
             auto framesToUpdate = oTiming->update(oSettings->getIsFixedStep());
             while (framesToUpdate--)
             {
+#if !defined(__unix__)
                 oInput->update();
                 POINT cur;
                 GetCursorPos(&cur);
@@ -248,7 +259,9 @@ namespace onut
                 oInput->mousePos.y = cur.y;
                 oInput->mousePosf.x = static_cast<float>(cur.x);
                 oInput->mousePosf.y = static_cast<float>(cur.y);
+#endif // __unix__
                 oUpdater->update();
+#if !defined(__unix__)
                 auto mousePosf = OGetMousePos();
                 if (oUIContext->useNavigation)
                 {
@@ -269,6 +282,7 @@ namespace onut
                 oParticleSystemManager->update();
                 oSceneManager->update();
                 onut::js::update(oTiming->getDeltaTime());
+#endif // __unix__
                 if (updateCallback)
                 {
                     updateCallback();
@@ -277,6 +291,7 @@ namespace onut
 
             // Render
             oTiming->render();
+#if !defined(__unix__)
             oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
             oRenderer->beginFrame();
             onut::js::render();
