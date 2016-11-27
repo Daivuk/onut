@@ -303,7 +303,9 @@ namespace onut
             oTiming->render();
 #if !defined(__unix__)
             oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+#endif // __unix__
             oRenderer->beginFrame();
+#if !defined(__unix__)
             onut::js::render();
 #endif // __unix__
             if (renderCallback)
@@ -335,9 +337,7 @@ namespace onut
             {
                 postRenderCallback();
             }
-#if !defined(__unix__)
             oRenderer->endFrame();
-#endif // __unix__
         }
 
         cleanup();

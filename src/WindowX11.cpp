@@ -9,9 +9,6 @@
 // Internal
 #include "WindowX11.h"
 
-// Third party
-#include <bcm_host.h>
-
 namespace onut
 {
     OWindowRef Window::create()
@@ -21,7 +18,6 @@ namespace onut
 
     WindowX11::WindowX11()
     {
-		bcm_host_init();
     }
 
     WindowX11::~WindowX11()

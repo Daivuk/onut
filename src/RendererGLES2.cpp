@@ -14,9 +14,13 @@
 //#include "TextureD3D11.h"
 //#include "VertexBufferD3D11.h"
 
+// Third party
+#include <bcm_host.h>
+
 // STL
 #include <cassert>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 namespace onut
@@ -41,15 +45,31 @@ namespace onut
     }
 
     RendererGLES2::~RendererGLES2()
-    {
+    { 
+        DISPMANX_UPDATE_HANDLE_T dispman_update;
+        int s;
+
+        dispman_update = vc_dispmanx_update_start(0);
+        s = vc_dispmanx_element_remove(dispman_update, m_dispman_element);
+        assert(s == 0);
+        vc_dispmanx_update_submit_sync(dispman_update);
+        s = vc_dispmanx_display_close(m_dispman_display);
+        assert(s == 0);
+
+        // Release OpenGL resources
+        eglMakeCurrent(m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglDestroyContext(m_display, m_context);
+        eglTerminate(m_display);
     }
 
     void RendererGLES2::createDevice(const OWindowRef& pWindow)
     {
+		bcm_host_init();
+        
+        int32_t success = 0;
+        EGLBoolean result;
         EGLint num_config;
 
-        DISPMANX_ELEMENT_HANDLE_T dispman_element;
-        DISPMANX_DISPLAY_HANDLE_T dispman_display;
         DISPMANX_UPDATE_HANDLE_T dispman_update;
         VC_RECT_T dst_rect;
         VC_RECT_T src_rect;
@@ -68,48 +88,62 @@ namespace onut
 
         // get an EGL display connection
         m_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-        assert(m_display != EGL_NO_DISPLAY);
+        assert(m_display!=EGL_NO_DISPLAY);
 
         // initialize the EGL display connection
-        eglInitialize(m_display, NULL, NULL);
+        result = eglInitialize(m_display, NULL, NULL);
+        assert(EGL_FALSE != result);
 
         // get an appropriate EGL frame buffer configuration
-        eglChooseConfig(m_display, attribute_list, &config, 1, &num_config);
+        result = eglChooseConfig(m_display, attribute_list, &config, 1, &num_config);
+        assert(EGL_FALSE != result);
 
         // create an EGL rendering context
         m_context = eglCreateContext(m_display, config, EGL_NO_CONTEXT, NULL);
-        assert(m_context != EGL_NO_CONTEXT);
+        assert(m_context!=EGL_NO_CONTEXT);
 
         // create an EGL window surface
+        uint32_t screen_width, screen_height;
+        success = graphics_get_display_size(0 /* LCD */, &screen_width, &screen_height);
+        assert(success >= 0);
+        if (oSettings->getBorderlessFullscreen())
+        {
+            m_resolution.x = (int)screen_width;
+            m_resolution.y = (int)screen_height;
+        }
+        else
+        {
+            m_resolution = oSettings->getResolution();
+        }
 
-        m_resolution = oSettings->getResolution();
-        dst_rect.x = 0;
-        dst_rect.y = 0;
-        dst_rect.width = m_resolution.x;
-        dst_rect.height = m_resolution.y;
-
+        dst_rect.x = (screen_width - (uint32_t)m_resolution.x) / 2;
+        dst_rect.y = (screen_height - (uint32_t)m_resolution.y) / 2;
+        dst_rect.width = (uint32_t)m_resolution.x;
+        dst_rect.height = (uint32_t)m_resolution.y;
+          
         src_rect.x = 0;
         src_rect.y = 0;
-        src_rect.width = m_resolution.x << 16;
-        src_rect.height = m_resolution.y << 16;        
+        src_rect.width = (uint32_t)m_resolution.x << 16;
+        src_rect.height = (uint32_t)m_resolution.y << 16;     
 
-        dispman_display = vc_dispmanx_display_open(0 /* LCD */);
+        m_dispman_display = vc_dispmanx_display_open(0 /* LCD */);
         dispman_update = vc_dispmanx_update_start(0);
-         
-        dispman_element = vc_dispmanx_element_add(dispman_update, dispman_display,
-            0/*layer*/, &dst_rect, 0/*src*/,
-            &src_rect, DISPMANX_PROTECTION_NONE, 0 /*alpha*/, 0/*clamp*/, (DISPMANX_TRANSFORM_T)0/*transform*/);
-
-        m_nativeWindow.element = dispman_element;
-        m_nativeWindow.width = m_resolution.x;
-        m_nativeWindow.height = m_resolution.y;
+             
+        m_dispman_element = vc_dispmanx_element_add(dispman_update, m_dispman_display,
+          0/*layer*/, &dst_rect, 0/*src*/,
+          &src_rect, DISPMANX_PROTECTION_NONE, 0 /*alpha*/, 0/*clamp*/, (DISPMANX_TRANSFORM_T)0/*transform*/);
+          
+        m_nativeWindow.element = m_dispman_element;
+        m_nativeWindow.width = (uint32_t)m_resolution.x;
+        m_nativeWindow.height = (uint32_t)m_resolution.y;
         vc_dispmanx_update_submit_sync(dispman_update);
-
+          
         m_surface = eglCreateWindowSurface(m_display, config, &m_nativeWindow, NULL);
         assert(m_surface != EGL_NO_SURFACE);
 
         // connect the context to the surface
-        eglMakeCurrent(m_display, m_surface, m_surface, m_context);
+        result = eglMakeCurrent(m_display, m_surface, m_surface, m_context);
+        assert(EGL_FALSE != result);
     }
 
     void RendererGLES2::createRenderTarget()
@@ -171,10 +205,15 @@ namespace onut
 
     void RendererGLES2::clear(const Color& color)
     {
+        applyRenderStates();
+        glClearColor(color.r, color.g, color.b, color.a);
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     void RendererGLES2::clearDepth()
     {
+        applyRenderStates();
+        glClear(GL_DEPTH_BUFFER_BIT);
     }
 
     void RendererGLES2::setKernelSize(const Vector2& kernelSize)

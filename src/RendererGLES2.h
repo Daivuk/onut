@@ -56,10 +56,12 @@ namespace onut
         void createUniforms();
 
         // Device stuff
+        EGL_DISPMANX_WINDOW_T m_nativeWindow;
+        DISPMANX_DISPLAY_HANDLE_T m_dispman_display;
+        DISPMANX_ELEMENT_HANDLE_T m_dispman_element;
         EGLDisplay m_display;
         EGLSurface m_surface;
         EGLContext m_context;
-        EGL_DISPMANX_WINDOW_T m_nativeWindow;
 
         // Render target
         Point m_resolution;
