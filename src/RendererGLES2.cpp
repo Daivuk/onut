@@ -11,7 +11,7 @@
 //#include "IndexBufferD3D11.h"
 #include "RendererGLES2.h"
 //#include "ShaderD3D11.h"
-//#include "TextureD3D11.h"
+#include "TextureGLES2.h"
 //#include "VertexBufferD3D11.h"
 
 // Third party
@@ -158,6 +158,7 @@ namespace onut
     {
         glCullFace(GL_BACK);
         glDepthFunc(GL_LESS);
+        glEnable(GL_TEXTURE_2D);
     }
 
     void RendererGLES2::createUniforms()
@@ -303,26 +304,62 @@ namespace onut
             m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
             renderStates.renderTarget.resetDirty();
             renderStates.viewport.forceDirty();
-        }
+        }*/
 
         // Textures
+        bool isSampleDirty = 
+            renderStates.sampleFiltering.isDirty() ||
+            renderStates.sampleAddressMode.isDirty();
         for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
             auto& pTextureState = renderStates.textures[i];
-            if (pTextureState.isDirty())
+            if (pTextureState.isDirty() || isSampleDirty)
             {
-                ID3D11ShaderResourceView* pResourceView = nullptr;
-                m_boundTextures[i] = pTextureState.get();
-                if (pTextureState.get() != nullptr)
+                auto pTexture = pTextureState.get().get();
+                if (pTexture != nullptr)
                 {
-                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pTextureState.get());
-                    pResourceView = pRenderTargetD3D11->getD3DResourceView();
+                    auto pTextureEGLS2 = static_cast<TextureGLES2*>(pTexture);
+                    glActiveTexture(GL_TEXTURE0 + i);
+                    glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());
+                    
+                    if (renderStates.sampleFiltering.get() != pTextureEGLS2->filtering)
+                    {
+                        pTextureEGLS2->filtering = renderStates.sampleFiltering.get();
+                        if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        }
+                        else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                        }
+                    }
+                    if (renderStates.sampleAddressMode.get() != pTextureEGLS2->addressMode)
+                    {
+                        pTextureEGLS2->addressMode = renderStates.sampleAddressMode.get();
+                        if (pTextureEGLS2->addressMode == sample::AddressMode::Wrap)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                        }
+                        else if (pTextureEGLS2->addressMode == sample::AddressMode::Clamp)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                        }
+                    }
                 }
-                m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
                 pTextureState.resetDirty();
             }
-        }*/
-
+        }
+        if (isSampleDirty)
+        {
+            renderStates.sampleFiltering.resetDirty();
+            renderStates.sampleAddressMode.resetDirty();
+        }
+        
         // Blend
         if (renderStates.blendMode.isDirty())
         {

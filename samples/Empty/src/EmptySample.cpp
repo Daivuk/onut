@@ -6,6 +6,7 @@
 #include <GLES/gl.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#include <onut/Texture.h>
 #endif
 
 void initSettings()
@@ -22,10 +23,10 @@ struct sVertex
 };
 
 sVertex vertices[4] = {
-    {0, 0, 0, 0, 1, 0, 0, 1},
-    {0, 100, 0, 1, 0, 1, 0, 1},
-    {100, 100, 1, 1, 0, 0, 1, 1},
-    {100, 0, 1, 0, 1, 1, 0, 1}
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {0, 100, 0, 1, 1, 1, 1, 1},
+    {100, 100, 1, 1, 1, 1, 1, 1},
+    {100, 0, 1, 0, 1, 1, 1, 1}
 };
 
 uint16_t indices[6] = {
@@ -34,22 +35,8 @@ uint16_t indices[6] = {
 
 GLuint vbo;
 GLuint ibo;
-GLuint texture2x2;
-
-GLuint createTextureFromData(uint8_t *pData, int w, int h)
-{
-    GLuint texture = 0;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    return texture;
-}
+OTextureRef pTexture1;
+OTextureRef pTexture2;
 #endif
 
 void init()
@@ -67,14 +54,21 @@ void init()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
     //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(uint16_t) * 6, indices);
     
-    // Create a test 2x2 texture
-    uint32_t textureData[4] = {
+    // Create test 2x2 textures
+    uint32_t textureData1[4] = {
         0xFFFFFFFF,
         0xFF888888,
         0xFF888888,
         0xFFFFFFFF
     };
-    texture2x2 = createTextureFromData((uint8_t*)textureData, 2, 2);
+    pTexture1 = OTexture::createFromData((uint8_t*)textureData1, Point(2, 2), false);
+    uint32_t textureData2[4] = {
+        0xFFFF00FF,
+        0xFF888888,
+        0xFF888888,
+        0xFFFF00FF
+    };
+    pTexture2 = OTexture::createFromData((uint8_t*)textureData2, Point(2, 2), false);
 #endif
 }
 
@@ -88,39 +82,10 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
     
 #if defined(__unix__)
-    // Setup states
- /*   glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_ALPHA_TEST);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glViewport(0, 0, OScreenWf, OScreenHf);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    float proj[16] = {
-        2.f / OScreenWf, 0.f,                0.f,                0.f,
-        0.f,           -2.f / OScreenHf,     0.f,                0.f,
-        0.f,            0.f,               -0.000500500493f,    0.f,
-       -1.f,            1.f,                0.5f,               1.f};
-    glMultMatrixf(proj);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();*/
-    
-    // Draw immediate
-  /*  glVertexPointer(2, GL_FLOAT, sizeof(sVertex), vertices);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(sVertex), (float*)vertices + 2);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glColorPointer(4, GL_FLOAT, sizeof(sVertex), (float*)vertices + 4);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glDrawArrays(GL_TRIANGLES, 0, 3);*/
-    
-    // Draw VBO
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture2x2);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    oRenderer->renderStates.sampleFiltering = onut::sample::Filtering::Nearest;
+    oRenderer->renderStates.world = Matrix::CreateTranslation(0, 0, 0);
+    oRenderer->renderStates.textures[0] = pTexture1;
+    oRenderer->applyRenderStates();
     
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -131,7 +96,21 @@ void render()
     glColorPointer(4, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 4));
     glEnableClientState(GL_COLOR_ARRAY);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    oRenderer->renderStates.sampleFiltering = onut::sample::Filtering::Linear;
+    oRenderer->renderStates.world = Matrix::CreateTranslation(300, 0, 0);
+    oRenderer->renderStates.textures[0] = pTexture2;
+    oRenderer->applyRenderStates();
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glVertexPointer(2, GL_FLOAT, sizeof(sVertex), NULL);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 2));
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glColorPointer(4, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 4));
+    glEnableClientState(GL_COLOR_ARRAY);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 #endif
 }
 

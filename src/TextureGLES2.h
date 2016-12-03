@@ -1,10 +1,13 @@
 #pragma once
 #if defined(__unix__)
 // Onut
+#include <onut/SampleMode.h>
 #include <onut/Texture.h>
 
 // Third party
-//#include <d3d11.h>
+#include <GLES/gl.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -32,12 +35,20 @@ namespace onut
 
         void setData(const uint8_t* pData) override;
         void resizeTarget(const Point& size) override;
+        
+        GLuint getHandle() const;
+        
+        // Renderer need to keep track of the sample states per texture in OpenGL
+        sample::Filtering filtering = sample::Filtering::Linear;
+        sample::AddressMode addressMode = sample::AddressMode::Wrap;
 
     protected:
         TextureGLES2() {}
 
     private:
         friend Texture;
+        
+        GLuint m_handle;
     };
 }
 
