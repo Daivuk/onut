@@ -2,15 +2,18 @@
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 
+#if defined(__unix__)
 #include <GLES/gl.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#endif
 
 void initSettings()
 {
     oSettings->setGameName("Empty Sample");
 }
 
+#if defined(__unix__)
 struct sVertex
 {
     float x, y;
@@ -47,9 +50,11 @@ GLuint createTextureFromData(uint8_t *pData, int w, int h)
 
     return texture;
 }
+#endif
 
 void init()
 {
+#if defined(__unix__)
     // Build VBO
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -70,6 +75,7 @@ void init()
         0xFFFFFFFF
     };
     texture2x2 = createTextureFromData((uint8_t*)textureData, 2, 2);
+#endif
 }
 
 void update()
@@ -81,6 +87,7 @@ void render()
     // Clear
     oRenderer->clear(OColorHex(1d232d));
     
+#if defined(__unix__)
     // Setup states
  /*   glDisable(GL_CULL_FACE);
     glDisable(GL_BLEND);
@@ -125,6 +132,7 @@ void render()
     glEnableClientState(GL_COLOR_ARRAY);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
+#endif
 }
 
 void postRender()

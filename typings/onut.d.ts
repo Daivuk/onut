@@ -665,9 +665,13 @@ declare namespace Renderer {
     function pushWorld(world: Matrix);
     function popWorld();
 
-    function setViewProjection(viewProjection: Matrix);
-    function pushViewProjection(viewProjection: Matrix);
-    function popViewProjection();
+    function setProjection(projection: Matrix);
+    function pushProjection(projection: Matrix);
+    function popProjection();
+
+    function setView(view: Matrix);
+    function pushView(view: Matrix);
+    function popView();
 }
 
 // Spritebatch

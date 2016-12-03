@@ -716,11 +716,12 @@ namespace onut
         }
 
         // Transform matrix
-        if (renderStates.viewProjection.isDirty() ||
+        if (renderStates.projection.isDirty() ||
+            renderStates.view.isDirty() ||
             renderStates.world.isDirty())
         {
             auto world = renderStates.world.get();
-            auto finalTransform = world * renderStates.viewProjection.get();
+            auto finalTransform = world * renderStates.view.get() * renderStates.projection.get();
             finalTransform = finalTransform.Transpose();
 
             D3D11_MAPPED_SUBRESOURCE map;
@@ -729,7 +730,8 @@ namespace onut
             m_pDeviceContext->Unmap(m_pViewProj2dBuffer, 0);
             m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
 
-            renderStates.viewProjection.resetDirty();
+            renderStates.projection.resetDirty();
+            renderStates.view.resetDirty();
             renderStates.world.resetDirty();
         }
 

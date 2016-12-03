@@ -7414,22 +7414,40 @@ namespace onut
                 // View Projection Matrix
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    oRenderer->renderStates.viewProjection = JS_MATRIX(0);
+                    oRenderer->renderStates.projection = JS_MATRIX(0);
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("setViewProjection", 1);
+                JS_INTERFACE_FUNCTION_END("setProjection", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    oRenderer->renderStates.viewProjection.push(JS_MATRIX(0));
+                    oRenderer->renderStates.projection.push(JS_MATRIX(0));
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("pushViewProjection", 1);
+                JS_INTERFACE_FUNCTION_END("pushProjection", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    oRenderer->renderStates.viewProjection.pop();
+                    oRenderer->renderStates.projection.pop();
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("popViewProjection", 0);
+                JS_INTERFACE_FUNCTION_END("popProjection", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.view = JS_MATRIX(0);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setView", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.view.push(JS_MATRIX(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushView", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.view.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popView", 0);
             }
             JS_INTERFACE_END("Renderer");
 
