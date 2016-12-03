@@ -36,7 +36,8 @@ namespace onut
         sampleFiltering = OFilterLinear;
         sampleAddressMode = OTextureWrap;
         scissor = viewport = {0, 0, 100, 100};
-        viewProjection = Matrix::Identity;
+        projection = Matrix::Identity;
+        view = Matrix::Identity;
         world = Matrix::Identity;
         depthEnabled = false;
         depthWrite = false;
@@ -48,6 +49,7 @@ namespace onut
         vertexBuffer = nullptr;
         indexBuffer = nullptr;
         renderTarget = nullptr;
+        clearColor = Color::fromHexRGB(0x1d232d);
     }
 
     RenderStates::RenderStates(const RenderStates& other)
@@ -61,7 +63,8 @@ namespace onut
         sampleAddressMode = other.sampleAddressMode;
         viewport = other.viewport;
         scissor = other.scissor;
-        viewProjection = other.viewProjection;
+        projection = other.projection;
+        view = other.view;
         world = other.world;
         depthEnabled = other.depthEnabled;
         depthWrite = other.depthWrite;
@@ -72,6 +75,7 @@ namespace onut
         pixelShader = other.pixelShader;
         vertexBuffer = other.vertexBuffer;
         indexBuffer = other.indexBuffer;
+        clearColor = other.clearColor;
     }
 
     RenderStates& RenderStates::operator=(const RenderStates& other)
@@ -85,7 +89,8 @@ namespace onut
         sampleAddressMode = other.sampleAddressMode;
         viewport = other.viewport;
         scissor = other.scissor;
-        viewProjection = other.viewProjection;
+        projection = other.projection;
+        view = other.view;
         world = other.world;
         depthEnabled = other.depthEnabled;
         depthWrite = other.depthWrite;
@@ -96,6 +101,7 @@ namespace onut
         pixelShader = other.pixelShader;
         vertexBuffer = other.vertexBuffer;
         indexBuffer = other.indexBuffer;
+        clearColor = other.clearColor;
 
         return *this;
     }
@@ -111,7 +117,8 @@ namespace onut
         sampleAddressMode.reset();
         viewport.reset();
         scissor.reset();
-        viewProjection.reset();
+        projection.reset();
+        view.reset();
         world.reset();
         depthEnabled.reset();
         depthWrite.reset();
@@ -123,6 +130,7 @@ namespace onut
         vertexBuffer.reset();
         indexBuffer.reset();
         renderTarget.reset();
+        clearColor.reset();
     }
 
     Renderer::Renderer()
@@ -162,45 +170,44 @@ namespace onut
         renderStates.pixelShader = m_p2DPixelShader;
     }
 
-    Matrix Renderer::build2DCamera(const Vector2& position, float zoom)
+    Renderer::CameraMatrices Renderer::build2DCamera(const Vector2& position, float zoom)
     {
-        auto proj = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
-        auto view = Matrix::CreateTranslation(-position) * Matrix::CreateScale(zoom);
-        view.Invert();
-        auto viewProj = view * proj;
-
-        return viewProj;
+        CameraMatrices ret;
+        ret.projection = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
+        ret.view = Matrix::CreateTranslation(-position) * Matrix::CreateScale(zoom);
+        ret.view.Invert();
+        return std::move(ret);
     }
 
-    Matrix Renderer::build2DCameraOffCenter(const Vector2& position, float zoom)
+    Renderer::CameraMatrices Renderer::build2DCameraOffCenter(const Vector2& position, float zoom)
     {
-        auto proj = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
-        auto view = Matrix::CreateTranslation(-position) *
+        CameraMatrices ret;
+        ret.projection = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
+        ret.view = Matrix::CreateTranslation(-position) *
             Matrix::CreateScale(zoom) *
             Matrix::CreateTranslation({static_cast<float>(getResolution().x) * .5f, static_cast<float>(getResolution().y) * .5f, 0.f});
-        view.Invert();
-        auto viewProj = view * proj;
-
-        return viewProj;
+        ret.view.Invert();
+        return std::move(ret);
     }
 
-    Matrix Renderer::set2DCamera(const Vector2& position, float zoom)
+    Renderer::CameraMatrices Renderer::set2DCamera(const Vector2& position, float zoom)
     {
-        auto viewProj = build2DCamera(position, zoom);
-        set2DCamera(viewProj);
-        return viewProj;
+        auto ret = build2DCamera(position, zoom);
+        set2DCamera(ret);
+        return std::move(ret);
     }
 
-    Matrix Renderer::set2DCameraOffCenter(const Vector2& position, float zoom)
+    Renderer::CameraMatrices Renderer::set2DCameraOffCenter(const Vector2& position, float zoom)
     {
-        auto viewProj = build2DCameraOffCenter(position, zoom);
-        set2DCamera(viewProj);
-        return viewProj;
+        auto ret = build2DCameraOffCenter(position, zoom);
+        set2DCamera(ret);
+        return std::move(ret);
     }
 
-    void Renderer::set2DCamera(const Matrix& viewProj, const Matrix& transform)
+    void Renderer::set2DCamera(const CameraMatrices& camera, const Matrix& transform)
     {
-        renderStates.viewProjection = viewProj;
+        renderStates.projection = camera.projection;
+        renderStates.view = camera.view;
         renderStates.world = transform;
     }
 

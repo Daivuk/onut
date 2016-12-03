@@ -156,6 +156,8 @@ namespace onut
 
     void RendererGLES2::createRenderStates()
     {
+        glCullFace(GL_BACK);
+        glDepthFunc(GL_LESS);
     }
 
     void RendererGLES2::createUniforms()
@@ -205,8 +207,8 @@ namespace onut
 
     void RendererGLES2::clear(const Color& color)
     {
+        renderStates.clearColor = color;
         applyRenderStates();
-        glClearColor(color.r, color.g, color.b, color.a);
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -239,6 +241,30 @@ namespace onut
     void RendererGLES2::draw(uint32_t vertexCount)
     {
         applyRenderStates();
+        
+        // Primitive mode
+    /*    if (renderStates.primitiveMode.isDirty())
+        {
+            switch (renderStates.primitiveMode.get())
+            {
+                case PrimitiveMode::PointList:
+                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+                    break;
+                case PrimitiveMode::LineList:
+                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+                    break;
+                case PrimitiveMode::LineStrip:
+                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+                    break;
+                case PrimitiveMode::TriangleList:
+                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+                    break;
+                case PrimitiveMode::TriangleStrip:
+                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+                    break;
+            }
+            renderStates.primitiveMode.resetDirty();
+        }*/
     }
 
     void RendererGLES2::drawIndexed(uint32_t indexCount)
@@ -248,9 +274,17 @@ namespace onut
 
     void RendererGLES2::applyRenderStates()
     {
+        // Clear color
+        if (renderStates.clearColor.isDirty())
+        {
+            const auto& clearColor = renderStates.clearColor.get();
+            glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+            renderStates.clearColor.resetDirty();
+        }
+        
         // Render target
     /*    if (renderStates.renderTarget.isDirty())
-        {
+        {n
             auto& pRenderTarget = renderStates.renderTarget.get();
             ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
             if (pRenderTarget)
@@ -287,15 +321,42 @@ namespace onut
                 m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
                 pTextureState.resetDirty();
             }
-        }
+        }*/
 
         // Blend
         if (renderStates.blendMode.isDirty())
         {
-            m_pDeviceContext->OMSetBlendState(m_pBlendStates[static_cast<int>(renderStates.blendMode.get())], NULL, 0xffffffff);
+            switch (renderStates.blendMode.get())
+            {
+                case onut::BlendMode::Opaque:
+                    glDisable(GL_BLEND);
+                    break;
+                case onut::BlendMode::Alpha:
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    break;
+                case onut::BlendMode::Add:
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                    break;
+                case onut::BlendMode::PreMultiplied:
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+                    break;
+                case onut::BlendMode::Multiply:
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+                    break;
+                case onut::BlendMode::ForceWrite:
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_ONE, GL_ZERO);
+                    break;
+                default: 
+                    break;
+            }
             renderStates.blendMode.resetDirty();
         }
-
+/*
         // Sampler state
         if (renderStates.sampleFiltering.isDirty() ||
             renderStates.sampleAddressMode.isDirty())
@@ -306,135 +367,109 @@ namespace onut
             renderStates.sampleFiltering.resetDirty();
             renderStates.sampleAddressMode.resetDirty();
         }
-
+*/
         // Viewport
         if (renderStates.viewport.isDirty())
         {
             auto& rect = renderStates.viewport.get();
-            auto d3d11Viewport = CD3D11_VIEWPORT(
-                static_cast<float>(rect.left),
-                static_cast<float>(rect.top),
-                static_cast<float>(rect.right - rect.left),
-                static_cast<float>(rect.bottom - rect.top));
-            m_pDeviceContext->RSSetViewports(1, &d3d11Viewport);
+            glViewport(
+                static_cast<GLint>(rect.left), 
+                static_cast<GLint>(getResolution().y) - static_cast<GLint>(rect.top) - static_cast<GLint>(rect.bottom - rect.top), 
+                static_cast<GLsizei>(rect.right - rect.left),
+                static_cast<GLsizei>(rect.bottom - rect.top));
             renderStates.viewport.resetDirty();
-            renderStates.scissor.forceDirty();
         }
-
+        
         // Scissor enabled
-        if (renderStates.scissorEnabled.isDirty() || renderStates.backFaceCull.isDirty())
+        if (renderStates.scissorEnabled.isDirty())
         {
-            if (renderStates.backFaceCull.get())
+            if (renderStates.scissorEnabled.get())
             {
-                if (renderStates.scissorEnabled.get())
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[3]);
-                }
-                else
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[2]);
-                }
+                glEnable(GL_SCISSOR_TEST);
             }
             else
             {
-                if (renderStates.scissorEnabled.get())
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[1]);
-                }
-                else
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[0]);
-                }
+                glDisable(GL_SCISSOR_TEST);
             }
             renderStates.scissorEnabled.resetDirty();
+        }
+        
+        // Culling
+        if (renderStates.backFaceCull.isDirty())
+        {
+            if (renderStates.backFaceCull.get())
+            {
+                glEnable(GL_CULL_FACE);
+            }
+            else
+            {
+                glDisable(GL_CULL_FACE);
+            }
             renderStates.backFaceCull.resetDirty();
         }
-
+        
         // Scissor
         if (renderStates.scissorEnabled.get() &&
             renderStates.scissor.isDirty())
         {
             auto& rect = renderStates.scissor.get();
-            D3D11_RECT dxRect[1] = {
-                {
-                    static_cast<LONG>(rect.left),
-                    static_cast<LONG>(rect.top),
-                    static_cast<LONG>(rect.right),
-                    static_cast<LONG>(rect.bottom),
-                }
-            };
-            m_pDeviceContext->RSSetScissorRects(1, dxRect);
+            glScissor(
+                static_cast<GLint>(rect.left), 
+                static_cast<GLint>(getResolution().y) - static_cast<GLint>(rect.top) - static_cast<GLint>(rect.bottom - rect.top), 
+                static_cast<GLsizei>(rect.right - rect.left),
+                static_cast<GLsizei>(rect.bottom - rect.top));
             renderStates.scissor.resetDirty();
         }
-
-        // Transform matrix
-        if (renderStates.viewProjection.isDirty() ||
+        
+        // Projection
+        if (renderStates.projection.isDirty())
+        {
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glMultMatrixf(renderStates.projection.get().v);
+            renderStates.projection.resetDirty();
+        }
+        
+        // View * World
+        if (renderStates.view.isDirty() ||
             renderStates.world.isDirty())
         {
-            auto world = renderStates.world.get();
-            auto finalTransform = world * renderStates.viewProjection.get();
-            finalTransform = finalTransform.Transpose();
-
-            D3D11_MAPPED_SUBRESOURCE map;
-            m_pDeviceContext->Map(m_pViewProj2dBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-            memcpy(map.pData, &finalTransform._11, sizeof(finalTransform));
-            m_pDeviceContext->Unmap(m_pViewProj2dBuffer, 0);
-            m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
-
-            renderStates.viewProjection.resetDirty();
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            auto finalTransform = renderStates.world.get() * renderStates.view.get();
+            glMultMatrixf(finalTransform.v);
+            renderStates.view.resetDirty();
             renderStates.world.resetDirty();
         }
-
-        // Depth
-        if (renderStates.depthEnabled.isDirty() ||
-            renderStates.depthWrite.isDirty())
+        
+        // Depth write
+        if (renderStates.depthWrite.isDirty())
         {
-            if (renderStates.depthEnabled.get() || renderStates.depthWrite.get())
+            if (renderStates.depthWrite.get())
             {
-                auto& pRenderTarget = renderStates.renderTarget.get();
-                ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
-                if (pRenderTarget)
-                {
-                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
-                    pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
-                }
-                m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
+                glDepthMask(GL_TRUE);
             }
-            if (!renderStates.depthEnabled.get() && !renderStates.depthWrite.get())
-                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[0], 1);
-            if (renderStates.depthEnabled.get() && renderStates.depthWrite.get())
-                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[1], 1);
-            if (renderStates.depthEnabled.get() && !renderStates.depthWrite.get())
-                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[2], 1);
-            if (!renderStates.depthEnabled.get() && renderStates.depthWrite.get())
-                m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[3], 1);
-            renderStates.depthEnabled.resetDirty();
+            else
+            {
+                glDepthMask(GL_FALSE);
+            }
             renderStates.depthWrite.resetDirty();
         }
-
-        // Primitive mode
-        if (renderStates.primitiveMode.isDirty())
+        
+        // Depth test
+        if (renderStates.depthEnabled.isDirty())
         {
-            switch (renderStates.primitiveMode.get())
+            if (renderStates.depthEnabled.get())
             {
-                case PrimitiveMode::PointList:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-                    break;
-                case PrimitiveMode::LineList:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-                    break;
-                case PrimitiveMode::LineStrip:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-                    break;
-                case PrimitiveMode::TriangleList:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                    break;
-                case PrimitiveMode::TriangleStrip:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-                    break;
+                glEnable(GL_DEPTH_TEST);
             }
-            renderStates.primitiveMode.resetDirty();
+            else
+            {
+                glDisable(GL_DEPTH_TEST);
+            }
+            renderStates.depthEnabled.resetDirty();
         }
+/*
 
         // Shaders
         auto pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());

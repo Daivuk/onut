@@ -74,10 +74,9 @@ namespace onut
 
         void reset()
         {
-            m_isDirty = true;
             if (!m_stack.empty())
             {
-                m_value = m_stack.front();
+                *this = m_stack.front();
                 m_stack.clear();
             }
         }
@@ -120,7 +119,8 @@ namespace onut
         RenderState<sample::AddressMode> sampleAddressMode;
         RenderState<iRect> viewport;
         RenderState<iRect> scissor;
-        RenderState<Matrix> viewProjection;
+        RenderState<Matrix> projection;
+        RenderState<Matrix> view;
         RenderState<Matrix> world;
         RenderState<bool> depthEnabled;
         RenderState<bool> depthWrite;
@@ -132,6 +132,7 @@ namespace onut
         RenderState<OVertexBufferRef> vertexBuffer;
         RenderState<OIndexBufferRef> indexBuffer;
         RenderState<OTextureRef> renderTarget;
+        RenderState<Color> clearColor;
     };
 
     class Renderer
@@ -140,14 +141,20 @@ namespace onut
         static ORendererRef create(const OWindowRef& pWindow);
 
         virtual ~Renderer();
+        
+        struct CameraMatrices
+        {
+            Matrix projection;
+            Matrix view;
+        };
 
         void setupFor2D();
         void setupFor2D(const Matrix& transform);
-        void set2DCamera(const Matrix& viewProj, const Matrix& transform = Matrix::Identity);
-        Matrix set2DCamera(const Vector2& position, float zoom = 1.f);
-        Matrix set2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
-        Matrix build2DCamera(const Vector2& position, float zoom = 1.f);
-        Matrix build2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
+        void set2DCamera(const CameraMatrices& camera, const Matrix& transform = Matrix::Identity);
+        CameraMatrices set2DCamera(const Vector2& position, float zoom = 1.f);
+        CameraMatrices set2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
+        CameraMatrices build2DCamera(const Vector2& position, float zoom = 1.f);
+        CameraMatrices build2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
 
         virtual void clear(const Color& color = {.25f, .5f, 1, 1}) = 0;
         virtual void clearDepth() = 0;
