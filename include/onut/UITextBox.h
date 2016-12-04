@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UITEXTBOX_H_INCLUDED
+#define UITEXTBOX_H_INCLUDED
+
 // Onut
 #include <onut/UIComponents.h>
 #include <onut/UIControl.h>
@@ -81,3 +83,5 @@ namespace onut
         bool m_isSpinning = false;
     };
 };
+
+#endif

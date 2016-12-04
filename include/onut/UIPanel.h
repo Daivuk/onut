@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UIPANEL_H_INCLUDED
+#define UIPANEL_H_INCLUDED
+
 // Onut
 #include <onut/UIControl.h>
 
@@ -28,3 +30,5 @@ namespace onut
         void renderControl(const OUIContextRef& context, const Rect& rect) override;
     };
 };
+
+#endif

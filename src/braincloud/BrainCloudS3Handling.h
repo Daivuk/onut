@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDS3HANDLING_H_INCLUDED
+#define BRAINCLOUDS3HANDLING_H_INCLUDED
+
 
 #include <string>
 
@@ -79,3 +81,4 @@ namespace BrainCloud
         void getFileList(const char * in_category, IServerCallback * in_callback = NULL);
     };
 }
+#endif

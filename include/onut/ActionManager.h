@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ACTIONMANAGER_H_INCLUDED
+#define ACTIONMANAGER_H_INCLUDED
+
 // STL
 #include <functional>
 #include <cinttypes>
@@ -106,3 +108,5 @@ namespace onut
 }
 
 extern OActionManagerRef oActionManager;
+
+#endif

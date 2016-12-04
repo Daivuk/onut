@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AUDIOENGINE_H_INCLUDED
+#define AUDIOENGINE_H_INCLUDED
+
 // STL
 #include <condition_variable>
 #include <mutex>
@@ -38,3 +40,5 @@ namespace onut
 };
 
 extern OAudioEngineRef oAudioEngine;
+
+#endif

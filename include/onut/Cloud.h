@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CLOUD_H_INCLUDED
+#define CLOUD_H_INCLUDED
+
 // Onut
 #include <onut/Updater.h>
 
@@ -83,3 +85,5 @@ namespace onut
 };
 
 extern OCloudRef oCloud;
+
+#endif

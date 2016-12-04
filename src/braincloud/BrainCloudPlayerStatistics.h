@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDPLAYERSTATISTICS_H_INCLUDED
+#define BRAINCLOUDPLAYERSTATISTICS_H_INCLUDED
+
 
 #include <string>
 #include <vector>
@@ -271,3 +273,5 @@ namespace BrainCloud
 	protected:
 	};
 }
+
+#endif

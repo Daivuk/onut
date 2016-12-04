@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MFPLAYER_H_INCLUDED
+#define MFPLAYER_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/VideoPlayer.h>
@@ -58,5 +60,7 @@ namespace onut
         IMFDXGIDeviceManager* m_pDXGIManager = nullptr;
     };
 }
+
+#endif
 
 #endif

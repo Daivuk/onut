@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DOCUMENTVIEW_H_INCLUDED
+#define DOCUMENTVIEW_H_INCLUDED
+
 #include "onut/ContentManager.h"
 #include "onut/UICheckBox.h"
 #include "onut/UIContext.h"
@@ -175,3 +177,5 @@ public:
         }));
     }
 };
+
+#endif

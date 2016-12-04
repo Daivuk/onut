@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMPONENT_H_INCLUDED
+#define COMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Maths.h>
@@ -84,3 +86,5 @@ namespace onut
         LIST_LINK(Component) m_render2DLink;
     };
 };
+
+#endif

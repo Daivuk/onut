@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BLENDMODE_H_INCLUDED
+#define BLENDMODE_H_INCLUDED
+
 
 namespace onut
 {
@@ -21,3 +23,5 @@ namespace onut
 #define OBlendPreMultiplied onut::BlendMode::PreMultiplied
 #define OBlendMultiply onut::BlendMode::Multiply
 #define OBlendForceWrite onut::BlendMode::ForceWrite
+
+#endif

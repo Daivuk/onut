@@ -1,4 +1,6 @@
-#pragma once
+#ifndef OPERATIONPARAM_H_INCLUDED
+#define OPERATIONPARAM_H_INCLUDED
+
 
 #include <string>
 
@@ -350,3 +352,4 @@ namespace BrainCloud {
     };
 
 }
+#endif

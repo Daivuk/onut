@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INPUTDEVICEDI8_H_INCLUDED
+#define INPUTDEVICEDI8_H_INCLUDED
+
 #if defined(WIN32)
 // Internal
 #include "InputDevice.h"
@@ -38,4 +40,6 @@ namespace onut
 }
 
 extern OInputDeviceRef oInputDevice;
+#endif
+
 #endif

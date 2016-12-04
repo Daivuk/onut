@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CLOUDBRAINCLOUD_H_INCLUDED
+#define CLOUDBRAINCLOUD_H_INCLUDED
+
 // Onut
 #include <onut/Cloud.h>
 
@@ -62,3 +64,5 @@ namespace onut
         std::string m_profileId;
     };
 };
+
+#endif

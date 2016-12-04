@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SHADER_H_INCLUDED
+#define SHADER_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/Resource.h>
@@ -127,3 +129,5 @@ namespace onut
 #define OPixelShader onut::Shader::Type::Pixel
 
 OShaderRef OGetShader(const std::string& name);
+
+#endif

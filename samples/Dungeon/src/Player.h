@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PLAYER_H_INCLUDED
+#define PLAYER_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <string>
@@ -54,3 +56,5 @@ private:
     int m_coins = 0;
     std::string m_dir = "s";
 };
+
+#endif

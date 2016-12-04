@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDAUTHENTICATION_H_INCLUDED
+#define BRAINCLOUDAUTHENTICATION_H_INCLUDED
+
 
 #include <string>
 
@@ -221,3 +223,4 @@ namespace BrainCloud
 		void authenticate(const char * in_externalId, const char * in_authenticationToken, const char * in_authenticationType, const char * in_externalAuthName, bool in_forceCreate, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

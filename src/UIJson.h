@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UIJSON_H_INCLUDED
+#define UIJSON_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/UIComponents.h>
@@ -126,3 +128,5 @@ namespace onut
         }
     }
 };
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDGLOBALENTITY_H_INCLUDED
+#define BRAINCLOUDGLOBALENTITY_H_INCLUDED
+
 
 #include <string>
 
@@ -527,3 +529,5 @@ namespace BrainCloud {
 
 }
 
+
+#endif

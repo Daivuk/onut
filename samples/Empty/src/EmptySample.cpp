@@ -7,7 +7,6 @@ void initSettings()
     oSettings->setGameName("Empty Sample");
 }
 
-
 void init()
 {
 }

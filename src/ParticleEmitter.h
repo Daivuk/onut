@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARTICLEEMITTER_H_INCLUDED
+#define PARTICLEEMITTER_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 
@@ -47,3 +49,5 @@ namespace onut
         float m_duration = 0.f;
     };
 }
+
+#endif

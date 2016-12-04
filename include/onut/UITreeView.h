@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UITREEVIEW_H_INCLUDED
+#define UITREEVIEW_H_INCLUDED
+
 // Onut
 #include <onut/UIComponents.h>
 #include <onut/UIControl.h>
@@ -153,3 +155,5 @@ namespace onut
         OUITreeViewItemWeak m_pParent;
     };
 };
+
+#endif

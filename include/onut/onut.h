@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ONUT_H_INCLUDED
+#define ONUT_H_INCLUDED
+
 
 namespace onut
 {
@@ -6,3 +8,5 @@ namespace onut
 }
 
 #define OQuit onut::quit
+
+#endif

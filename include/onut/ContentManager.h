@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CONTENTMANAGER_H_INCLUDED
+#define CONTENTMANAGER_H_INCLUDED
+
 // STL
 #include <mutex>
 #include <string>
@@ -77,3 +79,5 @@ namespace onut
 }
 
 extern OContentManagerRef oContentManager;
+
+#endif

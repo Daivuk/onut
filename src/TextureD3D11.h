@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TEXTURED3D11_H_INCLUDED
+#define TEXTURED3D11_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/Texture.h>
@@ -53,5 +55,7 @@ namespace onut
         ID3D11RenderTargetView* m_pRenderTargetViewFX = nullptr;
     };
 }
+
+#endif
 
 #endif

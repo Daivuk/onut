@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SOUND_H_INCLUDED
+#define SOUND_H_INCLUDED
+
 // Onut
 #include <onut/AudioStream.h>
 #include <onut/Resource.h>
@@ -120,3 +122,5 @@ void OPlayRandomSound(const std::vector<std::string>& sounds, float volume = 1.0
 OSoundInstanceRef OCreateSoundInstance(const std::string& name);
 OSoundCueRef OGetSoundCue(const std::string& name);
 void OPlaySoundCue(const std::string& name, float volume = 1.f, float balance = 0.f, float pitch = 1.f);
+
+#endif

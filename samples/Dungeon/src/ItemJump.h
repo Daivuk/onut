@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ITEMJUMP_H_INCLUDED
+#define ITEMJUMP_H_INCLUDED
+
 #include <onut/Anim.h>
 #include <onut/Component.h>
 
@@ -13,3 +15,5 @@ private:
 
     OAnimVector2 m_anim;
 };
+
+#endif

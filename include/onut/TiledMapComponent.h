@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TILEDMAPCOMPONENT_H_INCLUDED
+#define TILEDMAPCOMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Component.h>
@@ -46,3 +48,5 @@ namespace onut
         std::vector<CollisionTile*> m_collisionTiles;
     };
 };
+
+#endif

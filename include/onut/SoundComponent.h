@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SOUNDCOMPONENT_H_INCLUDED
+#define SOUNDCOMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Component.h>
@@ -44,3 +46,5 @@ namespace onut
         bool m_pitchDirty = false;
     };
 };
+
+#endif

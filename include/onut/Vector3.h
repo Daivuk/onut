@@ -1,4 +1,6 @@
-#pragma once
+#ifndef VECTOR3_H_INCLUDED
+#define VECTOR3_H_INCLUDED
+
 
 #ifdef max
 #undef max
@@ -410,3 +412,5 @@ inline Vector3 operator*(float S, const Vector3& V)
         V.y * S,
         V.z * S);
 }
+
+#endif

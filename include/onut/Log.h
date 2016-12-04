@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LOG_H_INCLUDED
+#define LOG_H_INCLUDED
+
 // STL
 #include <string>
 
@@ -17,3 +19,5 @@ namespace onut
 void OLog(const std::string& message);
 void OLogW(const std::string& message);
 void OLogE(const std::string& message);
+
+#endif

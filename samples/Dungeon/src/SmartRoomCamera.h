@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SMARTROOMCAMERA_H_INCLUDED
+#define SMARTROOMCAMERA_H_INCLUDED
+
 #include "Dungeon.h"
 
 #include <onut/Component.h>
@@ -25,3 +27,5 @@ private:
     std::vector<Point> m_paintQueue;
     const Dungeon::Room* m_pRoom = nullptr;
 };
+
+#endif

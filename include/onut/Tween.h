@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TWEEN_H_INCLUDED
+#define TWEEN_H_INCLUDED
+
 
 namespace onut
 {
@@ -31,3 +33,5 @@ namespace onut
 
 #define OApplyTween onut::applyTween
 #define OInvertTween onut::invertTween
+
+#endif

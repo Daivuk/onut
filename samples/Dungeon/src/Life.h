@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LIFE_H_INCLUDED
+#define LIFE_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
@@ -19,3 +21,5 @@ private:
     int m_amount = 1;
     OSoundRef m_pDamageSound;
 };
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DUNGEON_H_INCLUDED
+#define DUNGEON_H_INCLUDED
+
 // Onut includes
 #include <onut/Maths.h>
 #include <onut/Point.h>
@@ -56,3 +58,5 @@ private:
 };
 
 extern DungeonRef g_pDungeon;
+
+#endif

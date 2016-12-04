@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SPRITEANIMCOMPONENT_H_INCLUDED
+#define SPRITEANIMCOMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Component.h>
@@ -52,3 +54,5 @@ namespace onut
         std::string m_currentlyPlaying;
     };
 };
+
+#endif

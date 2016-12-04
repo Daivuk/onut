@@ -1,4 +1,6 @@
-#pragma once
+#ifndef WINDOWWIN32_H_INCLUDED
+#define WINDOWWIN32_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/Window.h>
@@ -25,5 +27,7 @@ namespace onut
         HCURSOR m_cursor;
     };
 }
+
+#endif
 
 #endif

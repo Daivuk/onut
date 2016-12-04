@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UICONTEXT_H_INCLUDED
+#define UICONTEXT_H_INCLUDED
+
 // Onut
 #include <onut/Crypto.h>
 #include <onut/Maths.h>
@@ -210,3 +212,5 @@ namespace onut
 };
 
 extern OUIContextRef oUIContext;
+
+#endif

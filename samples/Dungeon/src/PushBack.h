@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PUSHBACK_H_INCLUDED
+#define PUSHBACK_H_INCLUDED
+
 #include <onut/Component.h>
 
 class PushBack final : public OComponent
@@ -19,3 +21,5 @@ private:
     Vector2 m_direction;
     OCollider2DComponentRef m_pCollider;
 };
+
+#endif

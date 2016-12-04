@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BAT_H_INCLUDED
+#define BAT_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
@@ -29,3 +31,5 @@ private:
     OSpriteAnimComponentRef m_pSpriteAnimComponent;
     float m_attackDelay = 0.0f;
 };
+
+#endif

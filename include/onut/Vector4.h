@@ -1,4 +1,6 @@
-#pragma once
+#ifndef VECTOR4_H_INCLUDED
+#define VECTOR4_H_INCLUDED
+
 
 #ifdef max
 #undef max
@@ -571,3 +573,5 @@ namespace onut
         return alignedRect(0, 0, size, size, padding, align);
     }
 }
+
+#endif

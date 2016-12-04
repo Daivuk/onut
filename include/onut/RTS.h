@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RTS_H_INCLUDED
+#define RTS_H_INCLUDED
+
 // Onut
 #include <Windows.h>
 #include <string>
@@ -196,3 +198,5 @@ namespace onut
         int m_frame = 0; // Turn frame. 15 Frame per turn (FPT)
     };
 };
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RENDERER_H_INCLUDED
+#define RENDERER_H_INCLUDED
+
 // Onut
 #include <onut/BlendMode.h>
 #include <onut/Maths.h>
@@ -222,3 +224,5 @@ extern ORendererRef oRenderer;
 #define OScreenCenterXf     static_cast<float>(oRenderer->getResolution().x / 2)
 #define OScreenCenterYf     static_cast<float>(oRenderer->getResolution().y / 2)
 #define OScreenRectf        Rect{0, 0, static_cast<float>(oRenderer->getResolution().x), static_cast<float>(oRenderer->getResolution().y)}
+
+#endif

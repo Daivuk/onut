@@ -1,4 +1,6 @@
-#pragma once
+#ifndef IMAGES_H_INCLUDED
+#define IMAGES_H_INCLUDED
+
 // Onut
 #include <onut/Point.h>
 
@@ -14,3 +16,5 @@ namespace onut
     std::vector<uint8_t> convertToPNG(const uint8_t* pData, const Point& size);
     std::vector<uint8_t> loadPNG(const std::vector<uint8_t>& data, Point& size);
 };
+
+#endif

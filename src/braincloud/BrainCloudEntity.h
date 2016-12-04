@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDENTITY_H_INCLUDED
+#define BRAINCLOUDENTITY_H_INCLUDED
+
 
 #include <string>
 
@@ -371,3 +373,4 @@ namespace BrainCloud {
 		
 	};
 }
+#endif

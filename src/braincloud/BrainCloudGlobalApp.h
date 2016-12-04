@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDGLOBALAPP_H_INCLUDED
+#define BRAINCLOUDGLOBALAPP_H_INCLUDED
+
 
 #include "ServiceName.h"
 #include "ServiceOperation.h"
@@ -39,3 +41,4 @@ namespace BrainCloud {
 		
 	};
 }
+#endif

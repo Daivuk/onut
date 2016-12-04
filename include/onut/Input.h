@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INPUT_H_INCLUDED
+#define INPUT_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/Point.h>
@@ -464,3 +466,5 @@ bool OInputPressed(onut::Input::State state);
 bool OInputJustPressed(onut::Input::State state);
 bool OInputJustReleased(onut::Input::State state);
 bool OInputReleased(onut::Input::State state);
+
+#endif

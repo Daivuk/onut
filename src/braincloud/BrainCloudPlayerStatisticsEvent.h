@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDPLAYERSTATISTICSEVENT_H_INCLUDED
+#define BRAINCLOUDPLAYERSTATISTICSEVENT_H_INCLUDED
+
 
 #include <string>
 
@@ -107,3 +109,4 @@ namespace BrainCloud {
 		void triggerPlayerStatisticsEvents(const std::string& in_jsonData, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

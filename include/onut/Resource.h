@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RESOURCE_H_INCLUDED
+#define RESOURCE_H_INCLUDED
+
 // STL
 #include <string>
 
@@ -27,3 +29,5 @@ namespace onut
         std::string m_filename;
     };
 };
+
+#endif

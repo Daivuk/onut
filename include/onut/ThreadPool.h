@@ -1,4 +1,6 @@
-#pragma once
+#ifndef THREADPOOL_H_INCLUDED
+#define THREADPOOL_H_INCLUDED
+
 // onut
 #include <onut/Dispatcher.h>
 
@@ -59,3 +61,5 @@ extern OThreadPoolRef oThreadPool;
 
 #define OWork(...) oThreadPool->doWork(__VA_ARGS__)
 #define OWait oThreadPool->wait
+
+#endif

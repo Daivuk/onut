@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SERVICENAME_H_INCLUDED
+#define SERVICENAME_H_INCLUDED
+
 
 #include <string>
 
@@ -62,3 +64,5 @@ namespace BrainCloud {
 	};
 	
 }
+
+#endif

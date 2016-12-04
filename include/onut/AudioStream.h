@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AUDIOSTREAM_H_INCLUDED
+#define AUDIOSTREAM_H_INCLUDED
+
 
 // Forward declaration
 #include <onut/ForwardDeclaration.h>
@@ -17,3 +19,5 @@ namespace onut
         virtual bool progress(int frameCount, int sampleRate, int channelCount, float* pOut) = 0;
     };
 }
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UISCROLLVIEW_H_INCLUDED
+#define UISCROLLVIEW_H_INCLUDED
+
 // Onut
 #include <onut/UIControl.h>
 
@@ -32,3 +34,5 @@ namespace onut
         float m_scrollV = 0;
     };
 };
+
+#endif

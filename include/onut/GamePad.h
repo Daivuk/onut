@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GAMEPAD_H_INCLUDED
+#define GAMEPAD_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 
@@ -92,3 +94,5 @@ bool OGamePadJustPressed(onut::GamePad::Button button, int gamePadIndex = 0);
 bool OGamePadJustReleased(onut::GamePad::Button button, int gamePadIndex = 0);
 const Vector2& OGetGamePadLeftThumb(int gamePadIndex = 0);
 const Vector2& OGetGamePadRightThumb(int gamePadIndex = 0);
+
+#endif

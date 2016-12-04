@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MP3___H_INCLUDED
+#define MP3___H_INCLUDED
+
 #if defined(WIN32)
 // MP3.h
 #include <windows.h>
@@ -58,5 +60,7 @@ private:
 	__int64 duration;
 
 };
+
+#endif
 
 #endif

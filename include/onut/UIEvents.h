@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UIEVENTS_H_INCLUDED
+#define UIEVENTS_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 
@@ -76,3 +78,5 @@ namespace onut
         OUIContextRef pContext = nullptr;
     };
 };
+
+#endif

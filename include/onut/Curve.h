@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CURVE_H_INCLUDED
+#define CURVE_H_INCLUDED
+
 // Onut
 #include <onut/Color.h>
 #include <onut/Matrix.h>
@@ -38,3 +40,5 @@ namespace onut
 };
 
 #define OLerp onut::lerp
+
+#endif

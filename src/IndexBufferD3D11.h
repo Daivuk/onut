@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INDEXBUFFERD3D11_H_INCLUDED
+#define INDEXBUFFERD3D11_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/IndexBuffer.h>
@@ -33,5 +35,7 @@ namespace onut
         bool m_isDynamic = false;
     };
 };
+
+#endif
 
 #endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TIMER_H_INCLUDED
+#define TIMER_H_INCLUDED
+
 // Onut
 #include <onut/Updater.h>
 
@@ -47,3 +49,5 @@ namespace onut
 }
 
 using OTimer = onut::Timer;
+
+#endif

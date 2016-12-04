@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DAMAGER_H_INCLUDED
+#define DAMAGER_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <vector>
@@ -23,3 +25,5 @@ private:
     int m_damage = 0;
     std::vector<OEntityWeak> m_exclusions;
 };
+
+#endif

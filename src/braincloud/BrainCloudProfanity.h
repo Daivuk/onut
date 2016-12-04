@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDPROFANITY_H_INCLUDED
+#define BRAINCLOUDPROFANITY_H_INCLUDED
+
 
 #include <string>
 
@@ -129,3 +131,5 @@ namespace BrainCloud {
     };
 }
 
+
+#endif

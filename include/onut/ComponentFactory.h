@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMPONENTFACTORY_H_INCLUDED
+#define COMPONENTFACTORY_H_INCLUDED
+
 
 // Onut includes
 #include <onut/CSV.h>
@@ -277,3 +279,5 @@ extern OComponentFactoryRef oComponentFactory;
 #define OBindTextureProperty(__class__, __prop__) OBindProperty(OTextureRef, __class__, __prop__)
 #define OBindTiledMapProperty(__class__, __prop__) OBindProperty(OTiledMapRef, __class__, __prop__)
 #define OBindSpriteAnimProperty(__class__, __prop__) OBindProperty(OSpriteAnimRef, __class__, __prop__)
+
+#endif

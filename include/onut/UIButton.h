@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UIBUTTON_H_INCLUDED
+#define UIBUTTON_H_INCLUDED
+
 // Onut
 #include <onut/UIComponents.h>
 #include <onut/UIControl.h>
@@ -31,3 +33,5 @@ namespace onut
         void renderControl(const OUIContextRef& context, const Rect& rect) override;
     };
 };
+
+#endif

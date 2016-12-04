@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDPUSHNOTIFICATION_H_INCLUDED
+#define BRAINCLOUDPUSHNOTIFICATION_H_INCLUDED
+
 
 #include <string>
 
@@ -133,3 +135,4 @@ namespace BrainCloud {
         void sendRichPushNotification(const char * in_toPlayerId, int32_t in_notificationTemplateId, const char * in_substitutionJson, IServerCallback * in_callback = NULL );
     };
 }
+#endif

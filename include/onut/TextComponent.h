@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TEXTCOMPONENT_H_INCLUDED
+#define TEXTCOMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Component.h>
@@ -37,3 +39,5 @@ namespace onut
         Vector2 m_origin = OCenter;
     };
 };
+
+#endif

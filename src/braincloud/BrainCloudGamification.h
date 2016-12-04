@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDGAMIFICATION_H_INCLUDED
+#define BRAINCLOUDGAMIFICATION_H_INCLUDED
+
 
 #include "BrainCloudTypes.h"
 #include "ServiceName.h"
@@ -538,3 +540,4 @@ namespace BrainCloud {
 
 	};
 }
+#endif

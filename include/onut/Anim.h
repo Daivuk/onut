@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ANIM_H_INCLUDED
+#define ANIM_H_INCLUDED
+
 // Onut
 #include <onut/Curve.h>
 #include <onut/Timing.h>
@@ -386,3 +388,5 @@ using OAnimString = onut::Anim<std::string>;
 #define OSequence(T, ...)                       std::vector<onut::Anim<T>::KeyFrame>(__VA_ARGS__)
 #define OAnimWait(val, t)                       {val,t,OTeleport}
 #define OAnimAppleStyleBounce(from, to)         {from,0.f,OTeleport},{to,.25f,OEaseOut},{from,.5f,OBounceOut}
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DAMAGEFLASHER_H_INCLUDED
+#define DAMAGEFLASHER_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
@@ -20,3 +22,5 @@ private:
     OSpriteAnimComponentRef m_pSpriteAnimComponent;
     OSpriteComponentRef m_pSpriteComponent;
 };
+
+#endif

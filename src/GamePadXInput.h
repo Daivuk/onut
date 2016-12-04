@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GAMEPADXINPUT_H_INCLUDED
+#define GAMEPADXINPUT_H_INCLUDED
+
 #if defined(WIN32)
 // onut
 #include <onut/GamePad.h>
@@ -33,5 +35,7 @@ namespace onut
         bool            m_isConnected = false;
     };
 }
+
+#endif
 
 #endif

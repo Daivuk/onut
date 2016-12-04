@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARTICLESYSTEM_H_INCLUDED
+#define PARTICLESYSTEM_H_INCLUDED
+
 // Onut
 #include <onut/Tween.h>
 #include <onut/Maths.h>
@@ -257,3 +259,5 @@ namespace onut
 }
 
 OParticleSystemRef OGetParticleSystem(const std::string& name);
+
+#endif

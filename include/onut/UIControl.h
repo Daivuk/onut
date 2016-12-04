@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UICONTROL_H_INCLUDED
+#define UICONTROL_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/UIEvents.h>
@@ -276,3 +278,5 @@ inline std::shared_ptr<Tui> OFindUI(const std::string& name)
 }
 
 OUIControlRef OLoadUI(const std::string& filename);
+
+#endif

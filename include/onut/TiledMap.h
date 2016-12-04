@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TILEDMAP_H_INCLUDED
+#define TILEDMAP_H_INCLUDED
+
 // Onut
 #include <onut/Point.h>
 #include <onut/Maths.h>
@@ -122,3 +124,5 @@ namespace onut
 };
 
 OTiledMapRef OGetTiledMap(const std::string& name);
+
+#endif

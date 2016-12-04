@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SHADERGLES2_H_INCLUDED
+#define SHADERGLES2_H_INCLUDED
+
 #if defined(__unix__)
 // Onut
 #include <onut/Shader.h>
@@ -52,5 +54,7 @@ namespace onut
         Uniforms m_uniforms;
     };
 };
+
+#endif
 
 #endif

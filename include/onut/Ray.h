@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RAY_H_INCLUDED
+#define RAY_H_INCLUDED
+
 
 class Ray
 {
@@ -38,3 +40,5 @@ namespace std
         }
     };
 }
+
+#endif

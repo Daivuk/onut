@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ENTITY_H_INCLUDED
+#define ENTITY_H_INCLUDED
+
 // Onut includes
 #include <onut/Maths.h>
 
@@ -128,3 +130,5 @@ namespace onut
         std::string m_name;
     };
 };
+
+#endif

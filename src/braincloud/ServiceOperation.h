@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SERVICEOPERATION_H_INCLUDED
+#define SERVICEOPERATION_H_INCLUDED
+
 
 #include <string>
 
@@ -230,3 +232,4 @@ namespace BrainCloud {
 	};
 	
 }
+#endif

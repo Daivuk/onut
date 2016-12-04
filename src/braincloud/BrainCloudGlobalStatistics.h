@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDGLOBALSTATISTICS_H_INCLUDED
+#define BRAINCLOUDGLOBALSTATISTICS_H_INCLUDED
+
 
 #include <string>
 #include <vector>
@@ -123,3 +125,4 @@ namespace BrainCloud
 		void incrementGlobalGameStat(const std::string& in_jsonData, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

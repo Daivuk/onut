@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GUARD_H_INCLUDED
+#define GUARD_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
@@ -39,3 +41,5 @@ private:
     OCollider2DComponentRef m_pSwordCollider;
     std::string m_resetDir;
 };
+
+#endif

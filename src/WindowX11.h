@@ -1,4 +1,6 @@
-#pragma once
+#ifndef WINDOWX11_H_INCLUDED
+#define WINDOWX11_H_INCLUDED
+
 #if defined(__unix__)
 // Onut
 #include <onut/Window.h>
@@ -20,5 +22,7 @@ namespace onut
     private:
     };
 }
+
+#endif
 
 #endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COLOR_H_INCLUDED
+#define COLOR_H_INCLUDED
+
 // STL
 #include <cinttypes>
 #include <utility>
@@ -239,3 +241,5 @@ Color operator* (float S, const Color& C);
 #define OColorRGBA(r, g, b, a)                  Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f, static_cast<float>(a) / 255.0f)
 #define OColorBGR(b, g, r)                      Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f)
 #define OColorBGRA(b, g, r, a)                  Color(static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f, static_cast<float>(a) / 255.0f)
+
+#endif

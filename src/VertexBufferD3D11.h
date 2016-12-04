@@ -1,4 +1,6 @@
-#pragma once
+#ifndef VERTEXBUFFERD3D11_H_INCLUDED
+#define VERTEXBUFFERD3D11_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/VertexBuffer.h>
@@ -34,5 +36,7 @@ namespace onut
         D3D11_MAPPED_SUBRESOURCE m_mappedVertexBuffer;
     };
 };
+
+#endif
 
 #endif

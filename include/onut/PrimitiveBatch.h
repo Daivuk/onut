@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PRIMITIVEBATCH_H_INCLUDED
+#define PRIMITIVEBATCH_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/PrimitiveMode.h>
@@ -50,3 +52,5 @@ namespace onut
 }
 
 extern OPrimitiveBatchRef oPrimitiveBatch;
+
+#endif

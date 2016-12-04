@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UPDATER_H_INCLUDED
+#define UPDATER_H_INCLUDED
+
 // STL
 #include <vector>
 
@@ -51,3 +53,5 @@ namespace onut
 };
 
 extern OUpdaterRef oUpdater;
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RANDOM_H_INCLUDED
+#define RANDOM_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 
@@ -75,3 +77,5 @@ namespace onut
 #define ORandVector3 onut::rand3f
 #define ORandVector4 onut::rand4f
 #define ORand onut::randt
+
+#endif

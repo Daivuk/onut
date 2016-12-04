@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARTICLE_H_INCLUDED
+#define PARTICLE_H_INCLUDED
+
 // Onut
 #include <onut/Curve.h>
 #include <onut/Maths.h>
@@ -52,3 +54,5 @@ namespace onut
         OTextureRef pTexture;
     };
 }
+
+#endif

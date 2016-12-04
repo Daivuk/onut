@@ -1,4 +1,6 @@
-#pragma once
+#ifndef IBRAINCLOUDCOMMS_H_INCLUDED
+#define IBRAINCLOUDCOMMS_H_INCLUDED
+
 
 #include "BrainCloudTypes.h"
 
@@ -178,3 +180,5 @@ namespace BrainCloud {
 	};
 
 };
+
+#endif

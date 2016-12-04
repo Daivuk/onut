@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CRYPTO_H_INCLUDED
+#define CRYPTO_H_INCLUDED
+
 // STL
 #include <cinttypes>
 #include <string>
@@ -24,3 +26,5 @@ namespace onut
 #define OValidateEmail onut::crypto::validateEmail
 #define OEncodeBase64 onut::crypto::base64_encode
 #define ODecodeBase64 onut::crypto::base64_decode
+
+#endif

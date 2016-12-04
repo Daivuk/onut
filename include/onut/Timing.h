@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TIMING_H_INCLUDED
+#define TIMING_H_INCLUDED
+
 // Onut
 #include <chrono>
 #include <cinttypes>
@@ -63,3 +65,5 @@ extern OTimingRef oTiming;
 
 #define OGetDeltaTime oTiming->getDeltaTime
 #define ODT OGetDeltaTime()
+
+#endif

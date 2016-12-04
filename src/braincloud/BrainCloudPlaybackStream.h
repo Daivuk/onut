@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDPLAYBACKSTREAM_H_INCLUDED
+#define BRAINCLOUDPLAYBACKSTREAM_H_INCLUDED
+
 
 #include <string>
 
@@ -201,3 +203,4 @@ namespace BrainCloud {
 
 	};
 }
+#endif

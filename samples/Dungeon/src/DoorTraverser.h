@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DOORTRAVERSER_H_INCLUDED
+#define DOORTRAVERSER_H_INCLUDED
+
 #include <onut/Anim.h>
 #include <onut/Component.h>
 
@@ -14,3 +16,5 @@ public:
 private:
     OTiledMapComponentRef m_pTiledMapComponent;
 };
+
+#endif

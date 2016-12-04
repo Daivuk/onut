@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDIDENTITY_H_INCLUDED
+#define BRAINCLOUDIDENTITY_H_INCLUDED
+
 
 #include <string>
 
@@ -513,3 +515,5 @@ namespace BrainCloud {
 		void detachIdentity(const char * in_externalId, const char * in_authenticationType, bool in_continueAnon, IServerCallback * in_callback = NULL);
 	};
 }
+
+#endif

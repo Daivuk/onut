@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DISPATCHER_H_INCLUDED
+#define DISPATCHER_H_INCLUDED
+
 // STL
 #include <mutex>
 #include <queue>
@@ -55,3 +57,5 @@ inline void OSync(const std::function<void()>& callback)
 {
     oDispatcher->dispatch(callback);
 }
+
+#endif

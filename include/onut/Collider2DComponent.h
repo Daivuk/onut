@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COLLIDER2DCOMPONENT_H_INCLUDED
+#define COLLIDER2DCOMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Component.h>
@@ -47,3 +49,5 @@ namespace onut
         Vector2 m_velocity;
     };
 };
+
+#endif

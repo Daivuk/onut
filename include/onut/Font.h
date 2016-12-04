@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FONT_H_INCLUDED
+#define FONT_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/Resource.h>
@@ -89,3 +91,5 @@ namespace onut
 }
 
 OFontRef OGetFont(const std::string& name);
+
+#endif

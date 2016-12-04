@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FILES_H_INCLUDED
+#define FILES_H_INCLUDED
+
 // STL
 #include <cinttypes>
 #include <string>
@@ -26,3 +28,5 @@ namespace onut
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename = "");
     std::string showSaveAsDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename = "");
 }
+
+#endif

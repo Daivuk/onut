@@ -1,4 +1,6 @@
-#pragma once
+#ifndef WINDOW_H_INCLUDED
+#define WINDOW_H_INCLUDED
+
 // Onut
 #include <onut/Point.h>
 
@@ -44,3 +46,5 @@ namespace onut
 }
 
 extern OWindowRef oWindow;
+
+#endif

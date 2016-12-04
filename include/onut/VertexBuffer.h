@@ -1,4 +1,6 @@
-#pragma once
+#ifndef VERTEXBUFFER_H_INCLUDED
+#define VERTEXBUFFER_H_INCLUDED
+
 // Onut
 #include <onut/Resource.h>
 
@@ -25,3 +27,5 @@ namespace onut
         VertexBuffer();
     };
 };
+
+#endif

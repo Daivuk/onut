@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MUSIC_H_INCLUDED
+#define MUSIC_H_INCLUDED
+
 // Onut
 #include <onut/Resource.h>
 
@@ -40,3 +42,5 @@ namespace onut
 OMusicRef OGetMusic(const std::string& name);
 void OPlayMusic(const std::string& name);
 void OStopMusic(const std::string& name);
+
+#endif

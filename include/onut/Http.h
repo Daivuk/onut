@@ -1,4 +1,6 @@
-#pragma once
+#ifndef HTTP_H_INCLUDED
+#define HTTP_H_INCLUDED
+
 // STL
 #include <functional>
 #include <string>
@@ -53,3 +55,5 @@ namespace onut
 OTextureRef OHTTPGetTexture(const std::string& url, const onut::http::Arguments& arguments = {}, const onut::http::ErrorCallback& onError = nullptr);
 void OHTTPGetTextureAsync(const std::string& url, const onut::http::Arguments& arguments, const onut::http::TextureCallback& onSuccess = nullptr, const onut::http::ErrorCallback& onError = nullptr);
 void OHTTPGetTextureAsync(const std::string& url, const onut::http::TextureCallback& onSuccess = nullptr, const onut::http::ErrorCallback& onError = nullptr);
+
+#endif

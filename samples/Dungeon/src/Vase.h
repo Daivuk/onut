@@ -1,4 +1,6 @@
-#pragma once
+#ifndef VASE_H_INCLUDED
+#define VASE_H_INCLUDED
+
 #include <onut/Component.h>
 
 class Vase final : public OComponent
@@ -12,3 +14,5 @@ private:
 
     int m_gold = 0;
 };
+
+#endif

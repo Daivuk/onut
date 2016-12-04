@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PRIMITIVEMODE_H_INCLUDED
+#define PRIMITIVEMODE_H_INCLUDED
+
 
 namespace onut
 {
@@ -19,3 +21,5 @@ namespace onut
 #define OPrimitiveLineStrip onut::PrimitiveMode::LineStrip
 #define OPrimitiveTriangleList onut::PrimitiveMode::TriangleList
 #define OPrimitiveTriangleStrip onut::PrimitiveMode::TriangleStrip
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CHEST_H_INCLUDED
+#define CHEST_H_INCLUDED
+
 #include <onut/Component.h>
 
 #include <onut/ForwardDeclaration.h>
@@ -20,3 +22,5 @@ private:
     int m_gold = 0;
     int m_bomb = 0;
 };
+
+#endif

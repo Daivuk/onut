@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDMATCHMAKING_H_INCLUDED
+#define BRAINCLOUDMATCHMAKING_H_INCLUDED
+
 
 #include <string>
 
@@ -264,3 +266,4 @@ namespace BrainCloud {
         void enableMatchMaking(IServerCallback * in_callback = NULL);
     };
 }
+#endif

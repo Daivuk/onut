@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CSV_H_INCLUDED
+#define CSV_H_INCLUDED
+
 // Onut
 #include <onut/Resource.h>
 
@@ -36,3 +38,5 @@ namespace onut
 }
 
 OCSVRef OGetCSV(const std::string& name);
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AUDIOENGINEWASAPI_H_INCLUDED
+#define AUDIOENGINEWASAPI_H_INCLUDED
+
 #if defined(WIN32)
 
 // Onut
@@ -38,5 +40,7 @@ namespace onut
         std::thread m_thread;
     };
 };
+
+#endif
 
 #endif

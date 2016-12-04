@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ALIGN_H_INCLUDED
+#define ALIGN_H_INCLUDED
+
 
 // Alignment
 namespace onut
@@ -26,3 +28,5 @@ namespace onut
 #define OBottomLeft onut::Align::BottomLeft
 #define OBottom onut::Align::Bottom
 #define OBottomRight onut::Align::BottomRight
+
+#endif

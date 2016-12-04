@@ -1,4 +1,6 @@
-#pragma once
+#ifndef JSBINDINGS_H_INCLUDED
+#define JSBINDINGS_H_INCLUDED
+
 
 namespace onut
 {
@@ -10,3 +12,5 @@ namespace onut
         void render();
     }
 }
+
+#endif

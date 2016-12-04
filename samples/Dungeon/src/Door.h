@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DOOR_H_INCLUDED
+#define DOOR_H_INCLUDED
+
 #include <onut/Component.h>
 #include <onut/Point.h>
 #include <onut/TiledMap.h>
@@ -48,3 +50,5 @@ private:
     OEntityWeak m_pTargetDoor;
     bool m_needBomb = false;
 };
+
+#endif

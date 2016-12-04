@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARTICLESYSTEMMANAGER_H_INCLUDED
+#define PARTICLESYSTEMMANAGER_H_INCLUDED
+
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(ParticleSystem)
@@ -63,3 +65,5 @@ extern OParticleSystemManagerRef oParticleSystemManager;
 using OEmitterInstance = OParticleSystemManager::EmitterInstance;
 
 OEmitterInstance OEmitParticles(const char* pName, const Vector3& position, const Vector3& dir = Vector3::UnitZ);
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RENDERERD3D11_H_INCLUDED
+#define RENDERERD3D11_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/Renderer.h>
@@ -75,5 +77,7 @@ namespace onut
         OTextureRef m_boundTextures[RenderStates::MAX_TEXTURES];
     };
 };
+
+#endif
 
 #endif

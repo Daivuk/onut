@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UICOMPONENTS_H_INCLUDED
+#define UICOMPONENTS_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 
@@ -64,3 +66,5 @@ namespace onut
         UIIconComponent() : align(onut::Align::TopLeft) {}
     };
 };
+
+#endif

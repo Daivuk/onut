@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MATRIX_H_INCLUDED
+#define MATRIX_H_INCLUDED
+
 // STL
 #include <cmath>
 #include <memory.h>
@@ -867,3 +869,5 @@ inline Matrix operator* (float S, const Matrix& M)
         M._43 * S,
         M._44 * S);
 }
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SPRITEBATCH_H_INCLUDED
+#define SPRITEBATCH_H_INCLUDED
+
 // Onut
 #include <onut/BlendMode.h>
 #include <onut/Maths.h>
@@ -85,3 +87,5 @@ namespace onut
 }
 
 extern OSpriteBatchRef oSpriteBatch;
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PLANE_H_INCLUDED
+#define PLANE_H_INCLUDED
+
 
 struct Plane : public XMFLOAT4
 {
@@ -43,3 +45,5 @@ struct Plane : public XMFLOAT4
     static Plane Transform(const Plane& plane, const Quaternion& rotation);
     // Input quaternion must be the inverse transpose of the transformation
 };
+
+#endif

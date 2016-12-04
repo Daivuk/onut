@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDTIME_H_INCLUDED
+#define BRAINCLOUDTIME_H_INCLUDED
+
 
 #include <string>
 
@@ -34,3 +36,4 @@ namespace BrainCloud
 		void readServerTime( IServerCallback * in_callback = NULL);
 	};
 }
+#endif

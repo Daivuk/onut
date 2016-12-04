@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SAMPLEMODE_H_INCLUDED
+#define SAMPLEMODE_H_INCLUDED
+
 
 namespace onut
 {
@@ -27,3 +29,5 @@ namespace onut
 
 #define OTextureWrap onut::sample::AddressMode::Wrap
 #define OTextureClamp onut::sample::AddressMode::Clamp
+
+#endif

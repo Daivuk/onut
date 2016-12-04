@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UICHECKBOX_H_INCLUDED
+#define UICHECKBOX_H_INCLUDED
+
 // Onut
 #include <onut/UIComponents.h>
 #include <onut/UIControl.h>
@@ -53,3 +55,5 @@ namespace onut
         bool m_isChecked = false;
     };
 };
+
+#endif

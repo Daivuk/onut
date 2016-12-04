@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDONEWAYMATCH_H_INCLUDED
+#define BRAINCLOUDONEWAYMATCH_H_INCLUDED
+
 
 #include <string>
 
@@ -79,3 +81,4 @@ namespace BrainCloud {
 		void completeMatch(const char * in_playbackStreamId, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

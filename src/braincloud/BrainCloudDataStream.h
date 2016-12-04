@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDDATASTREAM_H_INCLUDED
+#define BRAINCLOUDDATASTREAM_H_INCLUDED
+
 
 #include <string>
 
@@ -67,3 +69,5 @@ namespace BrainCloud {
         
     };
 }
+
+#endif

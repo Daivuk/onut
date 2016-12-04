@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SCENEMANAGER_H_INCLUDED
+#define SCENEMANAGER_H_INCLUDED
+
 
 // Third parties
 #include <list/List.h>
@@ -117,3 +119,5 @@ namespace onut
 };
 
 extern OSceneManagerRef oSceneManager;
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MATHS_H_INCLUDED
+#define MATHS_H_INCLUDED
+
 #include <onut/Color.h>
 #include <onut/Curve.h>
 #include <onut/iRect.h>
@@ -84,3 +86,5 @@ inline Vector4 ORectWorldToLocal(const Vector4& world, const Vector4& parent)
     ret.w /= parent.w;
     return std::move(ret);
 }
+
+#endif

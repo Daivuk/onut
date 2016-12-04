@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MENU_H_INCLUDED
+#define MENU_H_INCLUDED
+
 #include <Windows.h>
 
 const UINT MENU_FILE_NEW = 101;
@@ -17,3 +19,5 @@ const UINT MENU_EDIT_DELETE = 206;
 void buildMenu();
 void onMenu(UINT index);
 void checkShortCut(uintptr_t key);
+
+#endif

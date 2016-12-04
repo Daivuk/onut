@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SHADERD3D11_H_INCLUDED
+#define SHADERD3D11_H_INCLUDED
+
 #if defined(WIN32)
 // Onut
 #include <onut/Shader.h>
@@ -56,5 +58,7 @@ namespace onut
         Uniforms m_uniforms;
     };
 };
+
+#endif
 
 #endif

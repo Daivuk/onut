@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CAMERA2DCOMPONENT_H_INCLUDED
+#define CAMERA2DCOMPONENT_H_INCLUDED
+
 
 // Onut includes
 #include <onut/Component.h>
@@ -32,3 +34,5 @@ namespace onut
         float m_zoom = 1.0f;
     };
 };
+
+#endif

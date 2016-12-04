@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDSOCIALLEADERBOARD_H_INCLUDED
+#define BRAINCLOUDSOCIALLEADERBOARD_H_INCLUDED
+
 
 #include <string>
 #include <vector>
@@ -575,3 +577,4 @@ namespace BrainCloud {
 
 	};
 }
+#endif

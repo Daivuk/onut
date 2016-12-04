@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TEXTUREGLES2_H_INCLUDED
+#define TEXTUREGLES2_H_INCLUDED
+
 #if defined(__unix__)
 // Onut
 #include <onut/SampleMode.h>
@@ -51,5 +53,7 @@ namespace onut
         GLuint m_handle = 0;
     };
 }
+
+#endif
 
 #endif

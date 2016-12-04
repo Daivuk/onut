@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDFRIEND_H_INCLUDED
+#define BRAINCLOUDFRIEND_H_INCLUDED
+
 
 #include <string>
 
@@ -164,3 +166,4 @@ namespace BrainCloud {
         void findPlayerByName( const char * in_searchText, int in_maxResults, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

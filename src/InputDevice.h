@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INPUTDEVICE_H_INCLUDED
+#define INPUTDEVICE_H_INCLUDED
+
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(Input);
@@ -24,3 +26,5 @@ namespace onut
 }
 
 extern OInputDeviceRef oInputDevice;
+
+#endif

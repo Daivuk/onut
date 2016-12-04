@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INDEXBUFFERGLES2_H_INCLUDED
+#define INDEXBUFFERGLES2_H_INCLUDED
+
 #if defined(__unix__)
 // Onut
 #include <onut/IndexBuffer.h>
@@ -36,5 +38,7 @@ namespace onut
         uint8_t* m_pData = nullptr;
     };
 };
+
+#endif
 
 #endif

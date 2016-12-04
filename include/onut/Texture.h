@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TEXTURE_H_INCLUDED
+#define TEXTURE_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/Point.h>
@@ -63,3 +65,5 @@ namespace onut
 }
 
 OTextureRef OGetTexture(const std::string& name);
+
+#endif

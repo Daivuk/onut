@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDREDEMPTIONCODE_H_INCLUDED
+#define BRAINCLOUDREDEMPTIONCODE_H_INCLUDED
+
 
 #include <string>
 
@@ -84,3 +86,4 @@ namespace BrainCloud
         void getRedeemedCodes(const char* in_codeType, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

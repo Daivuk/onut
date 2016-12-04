@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDSTEAM_H_INCLUDED
+#define BRAINCLOUDSTEAM_H_INCLUDED
+
 
 #include <string>
 
@@ -16,3 +18,4 @@ namespace BrainCloud {
 		void getUserInfo(IServerCallback * in_callback = NULL);
 	};
 }
+#endif

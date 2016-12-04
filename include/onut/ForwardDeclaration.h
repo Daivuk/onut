@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FORWARDDECLARATION_H_INCLUDED
+#define FORWARDDECLARATION_H_INCLUDED
+
 // STL
 #include <memory>
 
@@ -20,3 +22,5 @@ using O ## __class__ ## Weak = std::weak_ptr<onut::__class__>;
 class __class__; \
 using __class__ ## Ref = std::shared_ptr<__class__>; \
 using __class__ ## Weak = std::weak_ptr<__class__>;
+
+#endif

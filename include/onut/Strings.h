@@ -1,4 +1,6 @@
-#pragma once
+#ifndef STRINGS_H_INCLUDED
+#define STRINGS_H_INCLUDED
+
 // STL
 #include <string>
 #include <vector>
@@ -21,3 +23,5 @@ namespace onut
     void replace(std::string& source, const std::string& reg, const std::string& substitution);
     std::string replace(const std::string& source, const std::string& reg, const std::string& substitution);
 }
+
+#endif

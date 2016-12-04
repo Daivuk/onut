@@ -1,4 +1,6 @@
-#pragma once
+#ifndef IRECT_H_INCLUDED
+#define IRECT_H_INCLUDED
+
 
 struct iRect
 {
@@ -25,3 +27,5 @@ struct iRect
             other.bottom != bottom;
     }
 };
+
+#endif

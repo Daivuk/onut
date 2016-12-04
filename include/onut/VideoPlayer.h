@@ -1,4 +1,6 @@
-#pragma once
+#ifndef VIDEOPLAYER_H_INCLUDED
+#define VIDEOPLAYER_H_INCLUDED
+
 // Third party
 #if defined(WIN32)
 #include <Windows.h>
@@ -36,3 +38,5 @@ namespace onut
         virtual const OTextureRef& getRenderTarget() = 0;
     };
 }
+
+#endif

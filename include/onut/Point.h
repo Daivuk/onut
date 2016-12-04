@@ -1,4 +1,6 @@
-#pragma once
+#ifndef POINT_H_INCLUDED
+#define POINT_H_INCLUDED
+
 
 struct Point
 {
@@ -120,3 +122,5 @@ struct Point
     int x = 0;
     int y = 0;
 };
+
+#endif

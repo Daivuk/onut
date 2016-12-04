@@ -1,4 +1,6 @@
-#pragma once
+#ifndef INDEXBUFFER_H_INCLUDED
+#define INDEXBUFFER_H_INCLUDED
+
 // Onut
 #include <onut/Resource.h>
 
@@ -25,3 +27,5 @@ namespace onut
         IndexBuffer();
     };
 };
+
+#endif

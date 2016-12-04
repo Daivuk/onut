@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RENDERERGLES2_H_INCLUDED
+#define RENDERERGLES2_H_INCLUDED
+
 #if defined(__unix__)
 // Onut
 #include <onut/Point.h>
@@ -75,3 +77,5 @@ namespace onut
 };
 
 #endif // __unix__
+
+#endif

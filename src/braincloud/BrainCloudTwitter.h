@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRAINCLOUDTWITTER_H_INCLUDED
+#define BRAINCLOUDTWITTER_H_INCLUDED
+
 
 #include <string>
 
@@ -20,3 +22,4 @@ namespace BrainCloud {
         void tweet( const char * in_token, const char * in_secret, const char * in_tweet, const char * in_picture, IServerCallback * in_callback = NULL);
 	};
 }
+#endif

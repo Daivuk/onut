@@ -1,4 +1,6 @@
-#pragma once
+#ifndef POOL_H_INCLUDED
+#define POOL_H_INCLUDED
+
 // STL
 #include <cassert>
 #include <cstdint>
@@ -145,3 +147,5 @@ namespace onut
         size_t m_memorySize = 0;
     };
 }
+
+#endif

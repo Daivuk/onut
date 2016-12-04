@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SPRITEANIM_H_INCLUDED
+#define SPRITEANIM_H_INCLUDED
+
 // Onut
 #include <onut/Maths.h>
 #include <onut/Resource.h>
@@ -97,3 +99,5 @@ namespace onut
 
 OSpriteAnimRef OGetSpriteAnim(const std::string& name);
 OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName);
+
+#endif

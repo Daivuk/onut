@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DEFINES_H_INCLUDED
+#define DEFINES_H_INCLUDED
+
 
 enum DrawIndexes : int
 {
@@ -13,3 +15,5 @@ enum Messages : int
     EnterRoom,
     Reset,
 };
+
+#endif
