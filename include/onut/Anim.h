@@ -57,14 +57,14 @@ namespace onut
             , m_hasCallbacks(other.m_hasCallbacks)
             , m_pMyUpdater(other.m_pMyUpdater)
         {
-            if (m_isPlaying)
+            if (other.isUpdateTargetRegistered())
             {
                 m_pMyUpdater->registerTarget(this);
             }
         }
         Anim& operator=(const Anim& other)
         {
-            if (m_isPlaying)
+            if (isUpdateTargetRegistered())
             {
                 m_pMyUpdater->unregisterTarget(this);
             }
@@ -76,7 +76,7 @@ namespace onut
             m_isPingPonging = other.m_isPingPonging;
             m_hasCallbacks = other.m_hasCallbacks;
             m_pMyUpdater = other.m_pMyUpdater;
-            if (m_isPlaying)
+            if (other.isUpdateTargetRegistered())
             {
                 m_pMyUpdater->registerTarget(this);
             }
