@@ -46,8 +46,24 @@ namespace onut
     OTextureRef Texture::createDynamic(const Point& size)
     {
         auto pRet = std::shared_ptr<TextureGLES2>(new TextureGLES2());
-        assert(false);
+        
+        GLuint handle;
+        glGenTextures(1, &handle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, handle);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        
+        // Because opengl uses a global state and its dumb as fuck
+        oRenderer->renderStates.textures[0].forceDirty();
+
         pRet->m_type = Type::Dynamic;
+        pRet->m_size = size;
+        pRet->m_handle = handle;
+        
         return pRet;
     }
 
@@ -103,6 +119,7 @@ namespace onut
         
         GLuint handle;
         glGenTextures(1, &handle);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, handle);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
 
@@ -110,6 +127,9 @@ namespace onut
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        
+        // Because opengl uses a global state and its dumb as fuck
+        oRenderer->renderStates.textures[0].forceDirty();
 
         pRet->m_type = Type::Static;
         pRet->m_size = size;
@@ -120,8 +140,13 @@ namespace onut
 
     void TextureGLES2::setData(const uint8_t* pData)
     {
-        assert(isDynamic()); // Only dynamic texture can be set data
-        assert(false);
+        assert(isDynamic()); // Only dynamic texture can be set data (But this can actually work in OpenGL)
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
+        
+        // Because opengl uses a global state and its dumb as fuck
+        oRenderer->renderStates.textures[0].forceDirty();
     }
 
     TextureGLES2::~TextureGLES2()
