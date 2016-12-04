@@ -859,6 +859,7 @@ namespace onut
                 UINT offset = 0;
                 m_pDeviceContext->IASetVertexBuffers(0, 1, &pD3DBuffer, &stride, &offset);
             }
+            renderStates.vertexBuffer.resetDirty();
         }
         if (renderStates.indexBuffer.isDirty())
         {
@@ -868,6 +869,7 @@ namespace onut
                 auto pD3DBuffer = pIndexBufferD3D11->getBuffer();
                 m_pDeviceContext->IASetIndexBuffer(pD3DBuffer, DXGI_FORMAT_R16_UINT, 0);
             }
+            renderStates.indexBuffer.resetDirty();
         }
     }
 }
