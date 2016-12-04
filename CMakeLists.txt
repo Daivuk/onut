@@ -23,6 +23,7 @@ add_library(onut STATIC
     src/Curve.cpp 
     src/Dispatcher.cpp 
     src/Files.cpp 
+    src/Font.cpp
     src/IndexBuffer.cpp 
     src/IndexBufferGLES2.cpp 
     src/lodepng/LodePNG.cpp 
