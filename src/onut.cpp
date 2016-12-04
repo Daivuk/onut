@@ -1,22 +1,18 @@
-#if !defined(__unix__)
 // Onut includes
 #include <onut/ActionManager.h>
+#if !defined(__unix__)
 #include <onut/AudioEngine.h>
+#endif // __unix__
 //#include <onut/Cloud.h>
 #include <onut/ComponentFactory.h>
-#endif // __unix__
 #include <onut/ContentManager.h>
 #include <onut/Dispatcher.h>
-#if !defined(__unix__)
 #include <onut/SceneManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
-#endif // __unix__
 #include <onut/onut.h>
-#if !defined(__unix__)
 #include <onut/ParticleSystemManager.h>
-#endif // __unix__
 #include <onut/PrimitiveBatch.h>
 #include <onut/Random.h>
 #include <onut/Renderer.h>
@@ -25,12 +21,10 @@
 #include <onut/Texture.h>
 #include <onut/ThreadPool.h>
 #include <onut/Timing.h>
-#if !defined(__unix__)
 #include <onut/UIContext.h>
 #include <onut/UIControl.h>
 #include <onut/UIPanel.h>
 #include <onut/UITextBox.h>
-#endif // __unix__
 #include <onut/Updater.h>
 #include <onut/Window.h>
 
@@ -56,7 +50,6 @@ namespace onut
 {
     void createUI()
     {
-#if !defined(__unix__)
         oUIContext = UIContext::create(Vector2(OScreenWf, OScreenHf));
         oUI = UIControl::create();
         oUI->widthType = UIControl::DimType::Relative;
@@ -89,7 +82,6 @@ namespace onut
             oSpriteBatch->begin();
             oSpriteBatch->drawRect(nullptr, (rect), pPanel->color);
         });
-#endif // __unix__
     }
 
     void createServices()
@@ -126,12 +118,13 @@ namespace onut
         // Cloud
         //oCloud = Cloud::create(oSettings->getAppId(), oSettings->getAppSecret());
 
-#if !defined(__unix__)
         // Mouse/Keyboard
         oInput = OInput::create(oWindow);
 
+#if !defined(__unix__)
         // Audio
         oAudioEngine = AudioEngine::create();
+#endif // __unix__
 
         // Particles
         oParticleSystemManager = ParticleSystemManager::create();
@@ -149,6 +142,7 @@ namespace onut
         // Undo/Redo for editors
         oActionManager = ActionManager::create();
 
+#if !defined(__unix__)
         g_pMainRenderTarget = OTexture::createScreenRenderTarget();
         
         // Initialize Javascript
@@ -162,21 +156,20 @@ namespace onut
         onut::js::shutdown();
 
         g_pMainRenderTarget = nullptr;
+#endif // __unix__
         oActionManager = nullptr;
         oSceneManager = nullptr;
         oComponentFactory = nullptr;
-#endif // __unix__
         oDispatcher = nullptr;
         oUpdater = nullptr;
-#if !defined(__unix__)
         oUI = nullptr;
         oUIContext = nullptr;
         oParticleSystemManager = nullptr;
-        //delete g_pAudioEngine;
+#if !defined(__unix__)
         oAudioEngine = nullptr;
+#endif // __unix__
         oInput = nullptr;
         //oCloud = nullptr;
-#endif // __unix__
         oContentManager = nullptr;
         oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
@@ -255,8 +248,8 @@ namespace onut
             auto framesToUpdate = oTiming->update(oSettings->getIsFixedStep());
             while (framesToUpdate--)
             {
-#if !defined(__unix__)
                 oInput->update();
+#if defined(WIN32)
                 POINT cur;
                 GetCursorPos(&cur);
                 ScreenToClient(oWindow->getHandle(), &cur);
@@ -264,9 +257,8 @@ namespace onut
                 oInput->mousePos.y = cur.y;
                 oInput->mousePosf.x = static_cast<float>(cur.x);
                 oInput->mousePosf.y = static_cast<float>(cur.y);
-#endif // __unix__
+#endif // WIN32
                 oUpdater->update();
-#if !defined(__unix__)
                 auto mousePosf = OGetMousePos();
                 if (oUIContext->useNavigation)
                 {
@@ -286,6 +278,7 @@ namespace onut
                 }
                 oParticleSystemManager->update();
                 oSceneManager->update();
+#if !defined(__unix__)
                 onut::js::update(oTiming->getDeltaTime());
 #endif // __unix__
                 if (updateCallback)
@@ -307,13 +300,13 @@ namespace onut
             {
                 renderCallback();
             }
-#if !defined(__unix__)
             oSceneManager->render();
             oParticleSystemManager->render();
             oSpriteBatch->begin();
             oUI->render(oUIContext);
             oSpriteBatch->end();
 
+#if !defined(__unix__)
             // Draw final render target
             oRenderer->renderStates.renderTarget = nullptr;
             auto& res = oRenderer->getResolution();

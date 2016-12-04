@@ -274,6 +274,15 @@ namespace onut
         pInstance->m_pSound = OThis;
         return pInstance;
     }
+    
+    SoundInstance::SoundInstance()
+    {
+        m_loop = false;
+        m_volume = 1.f;
+        m_balance = 0.f;
+        m_pitch = 1.f;
+        m_offset = 0;
+    }
 
     SoundInstance::~SoundInstance()
     {

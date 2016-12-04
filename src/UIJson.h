@@ -22,16 +22,16 @@ namespace rapidjson
 namespace onut
 {
     const char* getJsonString(const rapidjson::Value& jsonNode, const char* szDefault = "");
-    float getJsonFloat(const rapidjson::Value& jsonNode, const float default = 0.f);
-    int getJsonInt(const rapidjson::Value& jsonNode, const int default = 0);
-    bool getJsonBool(const rapidjson::Value& jsonNode, const bool default = false);
-    void setJsonFloat(rapidjson::Value& jsonNode, const char* szName, float value, rapidjson::Allocator& allocator, float default = 0.f);
-    void setJsonInt(rapidjson::Value& jsonNode, const char* szName, int value, rapidjson::Allocator& allocator, int default = 0);
-    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const char* szValue, rapidjson::Allocator& allocator, const char* default = "");
-    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const std::string& value, rapidjson::Allocator& allocator, const char* default = "");
-    void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool default = false);
-    void setJsonColor(rapidjson::Value& jsonNode, const char* szName, const Color& value, rapidjson::Allocator& allocator, const Color& default = {1.f, 1.f, 1.f, 1.f});
-    Color getJsonColor(const rapidjson::Value& jsonNode, const Color& default = {1.f, 1.f, 1.f, 1.f});
+    float getJsonFloat(const rapidjson::Value& jsonNode, const float in_default = 0.f);
+    int getJsonInt(const rapidjson::Value& jsonNode, const int in_default = 0);
+    bool getJsonBool(const rapidjson::Value& jsonNode, const bool in_default = false);
+    void setJsonFloat(rapidjson::Value& jsonNode, const char* szName, float value, rapidjson::Allocator& allocator, float in_default = 0.f);
+    void setJsonInt(rapidjson::Value& jsonNode, const char* szName, int value, rapidjson::Allocator& allocator, int in_default = 0);
+    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const char* szValue, rapidjson::Allocator& allocator, const char* in_default = "");
+    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const std::string& value, rapidjson::Allocator& allocator, const char* in_default = "");
+    void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool in_default = false);
+    void setJsonColor(rapidjson::Value& jsonNode, const char* szName, const Color& value, rapidjson::Allocator& allocator, const Color& in_default = {1.f, 1.f, 1.f, 1.f});
+    Color getJsonColor(const rapidjson::Value& jsonNode, const Color& in_default = {1.f, 1.f, 1.f, 1.f});
     Vector4 getJsonPadding(const rapidjson::Value& node);
     void setJsonPadding(rapidjson::Value& node, const Vector4& padding, rapidjson::Allocator& allocator);
     UIFontComponent getJsonFont(const rapidjson::Value& node);
@@ -44,21 +44,21 @@ namespace onut
     void setJsonTextComponent(rapidjson::Value& node, const UITextComponent& textComponent, rapidjson::Allocator& allocator);
 
     template <typename Tmap, typename Tenum>
-    Tenum getJsonEnum(const Tmap& enumMap, const rapidjson::Value& jsonNode, Tenum default)
+    Tenum getJsonEnum(const Tmap& enumMap, const rapidjson::Value& jsonNode, Tenum in_default)
     {
-        Tenum ret = default;
+        Tenum ret = in_default;
         if (jsonNode.IsString())
         {
-            ret = stringToEnum(enumMap, jsonNode.GetString(), default);
+            ret = stringToEnum(enumMap, jsonNode.GetString(), in_default);
         }
         return ret;
     }
 
     template<typename Tmap, typename Tenum>
-    Tenum stringToEnum(const Tmap& map, const std::string& key, Tenum default)
+    Tenum stringToEnum(const Tmap& map, const std::string& key, Tenum in_default)
     {
         auto it = map.find(key);
-        if (it == map.end()) return default;
+        if (it == map.end()) return in_default;
         return it->second;
     }
 
@@ -77,7 +77,7 @@ namespace onut
     }
 
 
-    template <typename Tmap, typename Tenum = Tmap::mapped_type>
+    template <typename Tmap, typename Tenum = typename Tmap::mapped_type>
     Tenum getJsonBitmask(const Tmap& enumMap, const rapidjson::Value& jsonNode)
     {
         uint32_t ret = 0;
@@ -99,7 +99,7 @@ namespace onut
         return (Tenum)ret;
     }
 
-    template <typename Tmap, typename Tenum = Tmap::mapped_type>
+    template <typename Tmap, typename Tenum = typename Tmap::mapped_type>
     void setJsonBitmask(rapidjson::Value& node, const char* szName, const Tmap& enumMap, Tenum value, rapidjson::Allocator& allocator)
     {
         if (value == 0) return;

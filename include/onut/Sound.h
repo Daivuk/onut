@@ -23,6 +23,8 @@ namespace onut
     class SoundInstance final : public AudioStream, public std::enable_shared_from_this<AudioStream>
     {
     public:
+        SoundInstance();
+        
         void play();
         void pause();
         void stop();
@@ -49,11 +51,11 @@ namespace onut
         bool progress(int frameCount, int sampleRate, int channelCount, float* pOut) override;
 
         bool m_isPaused = true;
-        std::atomic<bool> m_loop = false;
-        std::atomic<float> m_volume = 1.f;
-        std::atomic<float> m_balance = 0.f;
-        std::atomic<float> m_pitch = 1.f;
-        std::atomic<int> m_offset = 0;
+        std::atomic<bool> m_loop;
+        std::atomic<float> m_volume;
+        std::atomic<float> m_balance;
+        std::atomic<float> m_pitch;
+        std::atomic<int> m_offset;
         OSoundRef m_pSound;
     };
 

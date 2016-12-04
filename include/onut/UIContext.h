@@ -124,12 +124,12 @@ namespace onut
         template<typename TobjType>
         const IUIRenderCallbackRef getStyle(unsigned int styleId) const
         {
-            auto& mIt = m_callbacks.find(std::type_index(typeid(TobjType)));
+            auto mIt = m_callbacks.find(std::type_index(typeid(TobjType)));
             if (mIt == m_callbacks.end())
             {
                 return nullptr;
             }
-            auto& it = mIt->second.find(styleId);
+            auto it = mIt->second.find(styleId);
             if (it != mIt->second.end())
             {
                 return it->second;
@@ -148,12 +148,12 @@ namespace onut
         template<typename TobjType>
         const IUITextCaretCallbackRef getTextCaretSolver(unsigned int styleId) const
         {
-            auto& mIt = m_textCaretSolvers.find(std::type_index(typeid(TobjType)));
+            auto mIt = m_textCaretSolvers.find(std::type_index(typeid(TobjType)));
             if (mIt == m_textCaretSolvers.end())
             {
                 return nullptr;
             }
-            auto& it = mIt->second.find(styleId);
+            auto it = mIt->second.find(styleId);
             if (it != mIt->second.end())
             {
                 return it->second;
@@ -185,7 +185,7 @@ namespace onut
         void resolve();
         void dispatchEvents();
         void reset();
-        OTextureRef UIContext::getTextureForState(const OUIControlRef& pControl, const std::string &filename);
+        OTextureRef getTextureForState(const OUIControlRef& pControl, const std::string &filename);
 
         RenderStyleMapByType m_callbacks;
         TextCaretStyleMapByType m_textCaretSolvers;

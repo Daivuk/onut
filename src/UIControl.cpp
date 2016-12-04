@@ -230,8 +230,13 @@ namespace onut
 
         // Open json file
         FILE* pFile = nullptr;
+#if defined(WIN32)
         auto fopenRet = fopen_s(&pFile, filename.c_str(), "r");
         assert(!fopenRet);
+#else
+        pFile = fopen(filename.c_str(), "r");
+        assert(pFile);
+#endif
         rapidjson::FileStream is(pFile);
         rapidjson::Document doc;
         doc.ParseStream<0>(is);
@@ -450,8 +455,13 @@ namespace onut
 
         // Open json file
         FILE* pFile = nullptr;
+#if defined(WIN32)
         auto fopenRet = fopen_s(&pFile, filename.c_str(), "wb");
         assert(!fopenRet);
+#else
+        pFile = fopen(filename.c_str(), "wb");
+        assert(pFile);
+#endif
 
         rapidjson::StringBuffer s;
         rapidjson::Writer<rapidjson::StringBuffer> writer(s);
@@ -1383,7 +1393,7 @@ namespace onut
 
     const UIControl::Property& UIControl::getProperty(const std::string& name) const
     {
-        auto& it = m_properties.find(name);
+        auto it = m_properties.find(name);
         return it->second;
     }
 };

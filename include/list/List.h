@@ -331,7 +331,7 @@ private:
     size_t      m_offset;
 
     TLink<T> * GetLinkFromNode(const T * node) const;
-    template<class T, size_t offset> friend class TListDeclare;
+    template<class U, size_t offset> friend class TListDeclare;
 
     // Hide copy-constructor and assignment operator
     TList(const TList &);

@@ -81,12 +81,12 @@ namespace onut
     {
         if (!m_pSpriteAnimInstance) return;
 
-        auto& pTexture = m_pSpriteAnimInstance->getTexture();
+        const auto& pTexture = m_pSpriteAnimInstance->getTexture();
         if (!pTexture) return;
-        auto& uvs = m_pSpriteAnimInstance->getUVs();
-        auto& origin = m_pSpriteAnimInstance->getOrigin();
+        const auto& uvs = m_pSpriteAnimInstance->getUVs();
+        const auto& origin = m_pSpriteAnimInstance->getOrigin();
 
-        auto& transform = getEntity()->getWorldTransform();
+        const auto& transform = getEntity()->getWorldTransform();
         oSpriteBatch->drawSpriteWithUVs(pTexture, transform, Vector2(m_scale), uvs, m_color, origin);
     }
 

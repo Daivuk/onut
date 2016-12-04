@@ -1,6 +1,9 @@
 // Onut
 #include <onut/Crypto.h>
 
+// STL
+#include <string.h>
+
 static bool isCharacter(const char Character)
 {
     return ((Character >= 'a' && Character <= 'z') || (Character >= 'A' && Character <= 'Z'));

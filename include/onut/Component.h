@@ -3,6 +3,7 @@
 
 
 // Onut includes
+#include <onut/Entity.h>
 #include <onut/Maths.h>
 
 // Third parties
@@ -12,7 +13,6 @@
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(Collider2DComponent);
 OForwardDeclare(Component);
-OForwardDeclare(Entity);
 OForwardDeclare(SceneManager);
 
 namespace onut

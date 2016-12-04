@@ -1,6 +1,6 @@
 // Oak Nut include
 #include <onut/Anim.h>
-//#include <onut/Input.h>
+#include <onut/Input.h>
 #include <onut/Maths.h>
 #include <onut/onut.h>
 #include <onut/Renderer.h>
@@ -24,7 +24,7 @@ void init()
 void update()
 {
     g_spriteAngle += ODT * 45.f;
-/*
+
     if (OInputJustPressed(OKeySpaceBar))
     {
         batchTransform.playKeyFrames(
@@ -50,7 +50,7 @@ void update()
                     OTweenLinear
                 }
             });
-    }*/
+    }
 }
 
 void render()

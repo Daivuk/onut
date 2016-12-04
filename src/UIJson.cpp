@@ -30,53 +30,53 @@ namespace onut
         else return szDefault;
     }
 
-    float getJsonFloat(const rapidjson::Value& jsonNode, const float default)
+    float getJsonFloat(const rapidjson::Value& jsonNode, const float in_default)
     {
         if (jsonNode.IsNumber()) return static_cast<float>(jsonNode.GetDouble());
-        else return default;
+        else return in_default;
     }
 
-    int getJsonInt(const rapidjson::Value& jsonNode, const int default)
+    int getJsonInt(const rapidjson::Value& jsonNode, const int in_default)
     {
         if (jsonNode.IsInt()) return jsonNode.GetInt();
-        else return default;
+        else return in_default;
     }
 
-    bool getJsonBool(const rapidjson::Value& jsonNode, const bool default)
+    bool getJsonBool(const rapidjson::Value& jsonNode, const bool in_default)
     {
         if (jsonNode.IsBool()) return jsonNode.GetBool();
-        else return default;
+        else return in_default;
     }
 
-    void setJsonFloat(rapidjson::Value& jsonNode, const char* szName, float value, rapidjson::Allocator& allocator, float default)
+    void setJsonFloat(rapidjson::Value& jsonNode, const char* szName, float value, rapidjson::Allocator& allocator, float in_default)
     {
-        if (value == default) return;
+        if (value == in_default) return;
         jsonNode.AddMember(szName, value, allocator);
     }
 
-    void setJsonInt(rapidjson::Value& jsonNode, const char* szName, int value, rapidjson::Allocator& allocator, int default)
+    void setJsonInt(rapidjson::Value& jsonNode, const char* szName, int value, rapidjson::Allocator& allocator, int in_default)
     {
-        if (value == default) return;
+        if (value == in_default) return;
         jsonNode.AddMember(szName, value, allocator);
     }
 
-    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const char* szValue, rapidjson::Allocator& allocator, const char* default)
+    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const char* szValue, rapidjson::Allocator& allocator, const char* in_default)
     {
-        if (!strcmp(szValue, default)) return;
+        if (!strcmp(szValue, in_default)) return;
         jsonNode.AddMember(szName, szValue, allocator);
     }
 
-    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const std::string& value, rapidjson::Allocator& allocator, const char* default)
+    void setJsonString(rapidjson::Value& jsonNode, const char* szName, const std::string& value, rapidjson::Allocator& allocator, const char* in_default)
     {
-        if (!strcmp(value.c_str(), default)) return;
+        if (!strcmp(value.c_str(), in_default)) return;
         rapidjson::Value jsonValue;
         jsonValue.SetString(value.c_str(), allocator);
         jsonNode.AddMember(szName, jsonValue, allocator);
     }
 
-    void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool default)
+    void setJsonBool(rapidjson::Value& jsonNode, const char* szName, const bool value, rapidjson::Allocator& allocator, bool in_default)
     {
-        if (value == default) return;
+        if (value == in_default) return;
         jsonNode.AddMember(szName, value, allocator);
     }
 
@@ -84,18 +84,22 @@ namespace onut
                              const char* szName,
                              const Color& value,
                              rapidjson::Allocator& allocator,
-                             const Color& default)
+                             const Color& in_default)
     {
-        if (value.pack() == default.pack()) return;
+        if (value.pack() == in_default.pack()) return;
 
         rapidjson::Value jsonValue;
         char buffer[10];
+#if defined(WIN32)
         int len = sprintf_s(buffer, "%08x", value.pack()); // dynamically created string.
+#else
+        int len = sprintf(buffer, "%08x", value.pack()); // dynamically created string.
+#endif
         jsonValue.SetString(buffer, len, allocator);
         jsonNode.AddMember(szName, jsonValue, allocator);
     }
 
-    Color getJsonColor(const rapidjson::Value& jsonNode, const Color& default)
+    Color getJsonColor(const rapidjson::Value& jsonNode, const Color& in_default)
     {
         if (jsonNode.IsString())
         {
@@ -104,14 +108,14 @@ namespace onut
             auto len = jsonNode.GetStringLength();
             if (len != 8)
             {
-                return default;
+                return in_default;
             }
             ret.unpack(static_cast<uint32_t>(strtoul(szStr, NULL, 16)));
             return std::move(ret);
         }
         else
         {
-            return default;
+            return in_default;
         }
     }
 

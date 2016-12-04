@@ -23,47 +23,47 @@
 
 namespace onut
 {
-    inline bool sPfxValueUtils<bool>::getNodeValue(const rapidjson::Value& node)
+    template<> inline bool sPfxValueUtils<bool>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetBool();
     }
 
-    inline float sPfxValueUtils<float>::getNodeValue(const rapidjson::Value& node)
+    template<> inline float sPfxValueUtils<float>::getNodeValue(const rapidjson::Value& node)
     {
         return static_cast<float>(node.GetDouble());
     }
 
-    inline double sPfxValueUtils<double>::getNodeValue(const rapidjson::Value& node)
+    template<> inline double sPfxValueUtils<double>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetDouble();
     }
 
-    inline int sPfxValueUtils<int>::getNodeValue(const rapidjson::Value& node)
+    template<> inline int sPfxValueUtils<int>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetInt();
     }
 
-    inline int64_t sPfxValueUtils<int64_t>::getNodeValue(const rapidjson::Value& node)
+    template<> inline int64_t sPfxValueUtils<int64_t>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetInt64();
     }
 
-    inline std::string sPfxValueUtils<std::string>::getNodeValue(const rapidjson::Value& node)
+    template<> inline std::string sPfxValueUtils<std::string>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetString();
     }
 
-    inline unsigned int sPfxValueUtils<unsigned int>::getNodeValue(const rapidjson::Value& node)
+    template<> inline unsigned int sPfxValueUtils<unsigned int>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetUint();
     }
 
-    inline uint64_t sPfxValueUtils<uint64_t>::getNodeValue(const rapidjson::Value& node)
+    template<> inline uint64_t sPfxValueUtils<uint64_t>::getNodeValue(const rapidjson::Value& node)
     {
         return node.GetUint64();
     }
 
-    inline Vector2 sPfxValueUtils<Vector2>::getNodeValue(const rapidjson::Value& node)
+    template<> inline Vector2 sPfxValueUtils<Vector2>::getNodeValue(const rapidjson::Value& node)
     {
         return{
             static_cast<float>(node[static_cast<decltype(node.Size())>(0)].GetDouble()),
@@ -71,7 +71,7 @@ namespace onut
         };
     }
 
-    inline Vector3 sPfxValueUtils<Vector3>::getNodeValue(const rapidjson::Value& node)
+    template<> inline Vector3 sPfxValueUtils<Vector3>::getNodeValue(const rapidjson::Value& node)
     {
         return{
             static_cast<float>(node[static_cast<decltype(node.Size())>(0)].GetDouble()),
@@ -80,7 +80,7 @@ namespace onut
         };
     }
 
-    inline Vector4 sPfxValueUtils<Vector4>::getNodeValue(const rapidjson::Value& node)
+    template<> inline Vector4 sPfxValueUtils<Vector4>::getNodeValue(const rapidjson::Value& node)
     {
         return{
             static_cast<float>(node[static_cast<decltype(node.Size())>(0)].GetDouble()),
@@ -90,7 +90,7 @@ namespace onut
         };
     }
 
-    inline Color sPfxValueUtils<Color>::getNodeValue(const rapidjson::Value& node)
+    template<> inline Color sPfxValueUtils<Color>::getNodeValue(const rapidjson::Value& node)
     {
         return{
             static_cast<float>(node[static_cast<decltype(node.Size())>(0)].GetDouble()),
@@ -380,8 +380,13 @@ namespace onut
             auto pRet = std::make_shared<OParticleSystem>();
 
             FILE* pFile = nullptr;
+#if defined(WIN32)
             auto fopenRet = fopen_s(&pFile, filename.c_str(), "r");
             assert(!fopenRet);
+#else
+            pFile = fopen(filename.c_str(), "r");
+            assert(pFile);
+#endif
             rapidjson::FileStream is(pFile);
             rapidjson::Document doc;
             doc.ParseStream<0>(is);

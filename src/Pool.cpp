@@ -1,6 +1,9 @@
 // Onut
 #include <onut/Pool.h>
 
+// STL
+#include <memory.h>
+
 namespace onut
 {
     OPoolRef Pool::create(size_t objSize, size_t objCount, FailAction failAction)
