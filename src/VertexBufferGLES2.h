@@ -4,7 +4,9 @@
 #include <onut/VertexBuffer.h>
 
 // Third party
-//#include <d3d11.h>
+#include <GLES/gl.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -22,12 +24,16 @@ namespace onut
         void* map() override;
         void unmap(uint32_t size) override;
         uint32_t size() override;
+        
+        GLuint getHandle() const;
 
     private:
         friend class VertexBuffer;
 
         uint32_t m_size = 0;
         bool m_isDynamic = false;
+        GLuint m_handle = 0;
+        uint8_t* m_pData = nullptr;
     };
 };
 

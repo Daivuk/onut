@@ -7,6 +7,9 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <onut/Texture.h>
+#include <onut/VertexBuffer.h>
+#include <onut/IndexBuffer.h>
+#include <onut/SpriteBatch.h>
 #endif
 
 void initSettings()
@@ -33,17 +36,17 @@ uint16_t indices[6] = {
     0, 1, 2, 0, 2, 3
 };
 
-GLuint vbo;
-GLuint ibo;
 OTextureRef pTexture1;
 OTextureRef pTexture2;
+OIndexBufferRef ibo;
+OVertexBufferRef vbo;
 #endif
 
 void init()
 {
 #if defined(__unix__)
     // Build VBO
-    glGenBuffers(1, &vbo);
+ /*   glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(sVertex) * 4, vertices, GL_DYNAMIC_DRAW);
     //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(sVertex) * 4, vertices);
@@ -52,7 +55,10 @@ void init()
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-    //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(uint16_t) * 6, indices);
+    //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(uint16_t) * 6, indices);*/
+    
+    ibo = OIndexBuffer::createStatic(indices, sizeof(uint16_t) * 6);
+    vbo = OVertexBuffer::createStatic(vertices, sizeof(sVertex) * 4);
     
     // Create test 2x2 textures
     uint32_t textureData1[4] = {
@@ -82,35 +88,12 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
     
 #if defined(__unix__)
-    oRenderer->renderStates.sampleFiltering = onut::sample::Filtering::Nearest;
-    oRenderer->renderStates.world = Matrix::CreateTranslation(0, 0, 0);
-    oRenderer->renderStates.textures[0] = pTexture1;
-    oRenderer->applyRenderStates();
-    
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glVertexPointer(2, GL_FLOAT, sizeof(sVertex), NULL);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 2));
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glColorPointer(4, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 4));
-    glEnableClientState(GL_COLOR_ARRAY);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
-    
-    oRenderer->renderStates.sampleFiltering = onut::sample::Filtering::Linear;
-    oRenderer->renderStates.world = Matrix::CreateTranslation(300, 0, 0);
-    oRenderer->renderStates.textures[0] = pTexture2;
-    oRenderer->applyRenderStates();
-    
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glVertexPointer(2, GL_FLOAT, sizeof(sVertex), NULL);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 2));
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glColorPointer(4, GL_FLOAT, sizeof(sVertex), (float*)(sizeof(GL_FLOAT) * 4));
-    glEnableClientState(GL_COLOR_ARRAY);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
+    oSpriteBatch->begin();
+    oSpriteBatch->changeFiltering(onut::sample::Filtering::Linear);
+    oSpriteBatch->drawRect(pTexture1, Rect(0, 0, 100, 100), Color(1, 1, 1, 1));
+    oSpriteBatch->changeFiltering(onut::sample::Filtering::Nearest);
+    oSpriteBatch->drawRect(pTexture2, Rect(300, 0, 100, 100), Color(1, 1, 1, 1));
+    oSpriteBatch->end();
 #endif
 }
 

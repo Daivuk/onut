@@ -2,7 +2,7 @@
 // Onut
 #include <onut/Resource.h>
 
-// Third party
+// Forward Declarations
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(IndexBuffer)
 

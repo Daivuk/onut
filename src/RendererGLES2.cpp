@@ -1,18 +1,18 @@
 #if defined(__unix__)
 // Onut
-//#include <onut/IndexBuffer.h>
+#include <onut/IndexBuffer.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
-//#include <onut/Texture.h>
-//#include <onut/VertexBuffer.h>
+#include <onut/Texture.h>
+#include <onut/VertexBuffer.h>
 #include <onut/Window.h>
 
 // Private
-//#include "IndexBufferD3D11.h"
+#include "IndexBufferGLES2.h"
 #include "RendererGLES2.h"
 //#include "ShaderD3D11.h"
 #include "TextureGLES2.h"
-//#include "VertexBufferD3D11.h"
+#include "VertexBufferGLES2.h"
 
 // Third party
 #include <bcm_host.h>
@@ -159,6 +159,10 @@ namespace onut
         glCullFace(GL_BACK);
         glDepthFunc(GL_LESS);
         glEnable(GL_TEXTURE_2D);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
     }
 
     void RendererGLES2::createUniforms()
@@ -243,34 +247,58 @@ namespace onut
     {
         applyRenderStates();
         
-        // Primitive mode
-    /*    if (renderStates.primitiveMode.isDirty())
+        GLenum mode = GL_POINTS;
+        switch (renderStates.primitiveMode.get())
         {
-            switch (renderStates.primitiveMode.get())
-            {
-                case PrimitiveMode::PointList:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-                    break;
-                case PrimitiveMode::LineList:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-                    break;
-                case PrimitiveMode::LineStrip:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-                    break;
-                case PrimitiveMode::TriangleList:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                    break;
-                case PrimitiveMode::TriangleStrip:
-                    m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-                    break;
-            }
-            renderStates.primitiveMode.resetDirty();
-        }*/
+            case PrimitiveMode::PointList:
+                mode = GL_POINTS;
+                break;
+            case PrimitiveMode::LineList:
+                mode = GL_LINES;
+                break;
+            case PrimitiveMode::LineStrip:
+                mode = GL_LINE_STRIP;
+                break;
+            case PrimitiveMode::TriangleList:
+                mode = GL_TRIANGLES;
+                break;
+            case PrimitiveMode::TriangleStrip:
+                mode = GL_TRIANGLE_STRIP;
+                break;
+            default:
+                break;
+        }
+
+        glDrawArrays(mode, 0, vertexCount);
     }
 
     void RendererGLES2::drawIndexed(uint32_t indexCount)
     {
         applyRenderStates();
+        
+        GLenum mode = GL_POINTS;
+        switch (renderStates.primitiveMode.get())
+        {
+            case PrimitiveMode::PointList:
+                mode = GL_POINTS;
+                break;
+            case PrimitiveMode::LineList:
+                mode = GL_LINES;
+                break;
+            case PrimitiveMode::LineStrip:
+                mode = GL_LINE_STRIP;
+                break;
+            case PrimitiveMode::TriangleList:
+                mode = GL_TRIANGLES;
+                break;
+            case PrimitiveMode::TriangleStrip:
+                mode = GL_TRIANGLE_STRIP;
+                break;
+            default:
+                break;
+        }
+
+        glDrawElements(mode, indexCount, GL_UNSIGNED_SHORT, NULL);
     }
 
     void RendererGLES2::applyRenderStates()
@@ -393,18 +421,7 @@ namespace onut
             }
             renderStates.blendMode.resetDirty();
         }
-/*
-        // Sampler state
-        if (renderStates.sampleFiltering.isDirty() ||
-            renderStates.sampleAddressMode.isDirty())
-        {
-            m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerStates[
-                static_cast<int>(renderStates.sampleFiltering.get()) * static_cast<int>(sample::AddressMode::COUNT) + 
-                static_cast<int>(renderStates.sampleAddressMode.get())]);
-            renderStates.sampleFiltering.resetDirty();
-            renderStates.sampleAddressMode.resetDirty();
-        }
-*/
+        
         // Viewport
         if (renderStates.viewport.isDirty())
         {
@@ -569,28 +586,30 @@ namespace onut
                 }
             }
         }
-
+*/
         // Vertex/Index buffers
         if (renderStates.vertexBuffer.isDirty())
         {
             if (renderStates.vertexBuffer.get())
             {
-                auto pVertexBufferD3D11 = ODynamicCast<OVertexBufferD3D11>(renderStates.vertexBuffer.get());
-                auto pD3DBuffer = pVertexBufferD3D11->getBuffer();
-                UINT stride = static_cast<UINT>(renderStates.vertexShader.get()->getVertexSize());
-                UINT offset = 0;
-                m_pDeviceContext->IASetVertexBuffers(0, 1, &pD3DBuffer, &stride, &offset);
+                auto handle = static_cast<OVertexBufferGLES2*>(renderStates.vertexBuffer.get().get())->getHandle();
+                glBindBuffer(GL_ARRAY_BUFFER, handle);
+                
+                glVertexPointer(2, GL_FLOAT, 32, NULL);
+                glTexCoordPointer(2, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 2));
+                glColorPointer(4, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 4));
             }
+            renderStates.vertexBuffer.resetDirty();
         }
         if (renderStates.indexBuffer.isDirty())
         {
             if (renderStates.indexBuffer.get())
             {
-                auto pIndexBufferD3D11 = ODynamicCast<OIndexBufferD3D11>(renderStates.indexBuffer.get());
-                auto pD3DBuffer = pIndexBufferD3D11->getBuffer();
-                m_pDeviceContext->IASetIndexBuffer(pD3DBuffer, DXGI_FORMAT_R16_UINT, 0);
+                auto handle = static_cast<OIndexBufferGLES2*>(renderStates.indexBuffer.get().get())->getHandle();
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
             }
-        }*/
+            renderStates.indexBuffer.resetDirty();
+        }
     }
 }
 

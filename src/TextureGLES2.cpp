@@ -151,6 +151,10 @@ namespace onut
 
     TextureGLES2::~TextureGLES2()
     {
+        if (m_handle)
+        {
+            glDeleteTextures(1, &m_handle);
+        }
     }
 
     void TextureGLES2::resizeTarget(const Point& size)

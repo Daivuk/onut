@@ -16,15 +16,13 @@
 #include <onut/onut.h>
 #if !defined(__unix__)
 #include <onut/ParticleSystemManager.h>
-#include <onut/PrimitiveBatch.h>
 #endif // __unix__
+#include <onut/PrimitiveBatch.h>
 #include <onut/Random.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
-#if !defined(__unix__)
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
-#endif // __unix__
 #include <onut/ThreadPool.h>
 #include <onut/Timing.h>
 #if !defined(__unix__)
@@ -118,11 +116,10 @@ namespace onut
         oRenderer = ORenderer::create(oWindow);
         oRenderer->init(oWindow);
 
-#if !defined(__unix__)
         // SpriteBatch
         oSpriteBatch = SpriteBatch::create();
         oPrimitiveBatch = PrimitiveBatch::create();
-#endif // __unix__
+        
         // Content
         oContentManager = ContentManager::create();
 
@@ -181,10 +178,8 @@ namespace onut
         //oCloud = nullptr;
 #endif // __unix__
         oContentManager = nullptr;
-#if !defined(__unix__)
         oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
-#endif // __unix__
         oRenderer = nullptr;
         oWindow = nullptr;
         oSettings = nullptr;

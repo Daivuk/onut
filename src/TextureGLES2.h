@@ -48,7 +48,7 @@ namespace onut
     private:
         friend Texture;
         
-        GLuint m_handle;
+        GLuint m_handle = 0;
     };
 }
 
