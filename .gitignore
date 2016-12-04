@@ -39,3 +39,11 @@ usersettings.cfg
 Debug/
 Release/
 EasyGraphix/
+CMakeFiles/
+bin/
+lib/
+
+#cmake
+CMakeCache.txt
+*.cmake
+Makefile
