@@ -1,21 +1,16 @@
 cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
+
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+set (CMAKE_CXX_STANDARD 11)
+list(APPEND CMAKE_CXX_FLAGS -fmax-errors=3)
 
 project(onut)
-
-add_definitions(-std=gnu++11)
-add_definitions(-fmax-errors=3)
-
-include_directories(
-    /opt/vc/include/
-    /opt/vc/include/interface/vcos/pthreads
-    /opt/vc/include/interface/vmcs_host/linux 
-    ./include 
-    ./src
-    )
 
 add_library(onut STATIC
     src/ActionManager.cpp
@@ -166,3 +161,33 @@ add_library(onut STATIC
     src/zlib/uncompr.c
     src/zlib/zutil.c
     )
+
+target_include_directories(onut
+    PUBLIC
+        /opt/vc/include/
+        /opt/vc/include/interface/vcos/pthreads
+        /opt/vc/include/interface/vmcs_host/linux 
+        ./include 
+    PRIVATE
+        ./src
+)
+
+target_link_libraries(onut
+    PUBLIC
+        -L/opt/vc/lib/
+        -lbcm_host 
+        -lvcos 
+        -lvchiq_arm
+        -lEGL
+        -lGLESv2 
+        -lEGL 
+        -lGLESv2 
+        -lpthread 
+        -lrt 
+        -ldl
+)
+
+add_subdirectory(samples/Sprites)
+add_subdirectory(samples/SpriteFrames)
+add_subdirectory(samples/Text)
+
