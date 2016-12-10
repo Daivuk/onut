@@ -312,27 +312,20 @@ namespace onut
         }
         
         // Render target
-    /*    if (renderStates.renderTarget.isDirty())
-        {n
+        if (renderStates.renderTarget.isDirty())
+        {
             auto& pRenderTarget = renderStates.renderTarget.get();
-            ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
             if (pRenderTarget)
             {
-                auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
-                pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
-                for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
-                {
-                    if (m_boundTextures[i] == pRenderTarget)
-                    {
-                        ID3D11ShaderResourceView* pResourceView = nullptr;
-                        m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
-                    }
-                }
+                auto pRenderTargetGLES2 = ODynamicCast<OTextureGLES2>(pRenderTarget);
+                auto frameBuffer = pRenderTargetGLES2->getFramebuffer();
+                glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
             }
-            m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
-            renderStates.renderTarget.resetDirty();
-            renderStates.viewport.forceDirty();
-        }*/
+            else
+            {
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            }
+        }
 
         // Textures
         bool isSampleDirty = 

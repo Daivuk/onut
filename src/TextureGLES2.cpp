@@ -21,8 +21,34 @@ namespace onut
     {
         auto pRet = std::shared_ptr<TextureGLES2>(new TextureGLES2());
         pRet->m_size = size;
-        assert(false);
         pRet->m_type = Type::RenderTarget;
+        
+        GLuint frameBuffer;
+        glGenFramebuffers(1, &frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        
+        GLuint handle;
+        glGenTextures(1, &handle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, handle, 0);
+        
+        assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+        
+        pRet->m_frameBuffer = frameBuffer;
+        pRet->m_handle = handle;
+        
+        // Because opengl uses a global state and its dumb as fuck
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].forceDirty();
+        
         return pRet;
     }
 
@@ -155,6 +181,10 @@ namespace onut
         {
             glDeleteTextures(1, &m_handle);
         }
+        if (m_frameBuffer)
+        {
+            glDeleteFramebuffers(1, &m_frameBuffer);
+        }
     }
 
     void TextureGLES2::resizeTarget(const Point& size)
@@ -200,6 +230,11 @@ namespace onut
     GLuint TextureGLES2::getHandle() const
     {
         return m_handle;
+    }
+
+    GLuint TextureGLES2::getFramebuffer() const
+    {
+        return m_frameBuffer;
     }
 }
 

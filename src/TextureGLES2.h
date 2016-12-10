@@ -39,6 +39,7 @@ namespace onut
         void resizeTarget(const Point& size) override;
         
         GLuint getHandle() const;
+        GLuint getFramebuffer() const;
         
         // Renderer need to keep track of the sample states per texture in OpenGL
         sample::Filtering filtering = sample::Filtering::Linear;
@@ -51,6 +52,7 @@ namespace onut
         friend Texture;
         
         GLuint m_handle = 0;
+        GLuint m_frameBuffer = 0;
     };
 }
 

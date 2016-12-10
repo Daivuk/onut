@@ -1,8 +1,6 @@
 // Onut includes
 #include <onut/ActionManager.h>
-#if !defined(__unix__)
 #include <onut/AudioEngine.h>
-#endif // __unix__
 //#include <onut/Cloud.h>
 #include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
@@ -121,10 +119,8 @@ namespace onut
         // Mouse/Keyboard
         oInput = OInput::create(oWindow);
 
-#if !defined(__unix__)
         // Audio
         oAudioEngine = AudioEngine::create();
-#endif // __unix__
 
         // Particles
         oParticleSystemManager = ParticleSystemManager::create();
@@ -165,9 +161,7 @@ namespace onut
         oUI = nullptr;
         oUIContext = nullptr;
         oParticleSystemManager = nullptr;
-#if !defined(__unix__)
         oAudioEngine = nullptr;
-#endif // __unix__
         oInput = nullptr;
         //oCloud = nullptr;
         oContentManager = nullptr;
@@ -241,10 +235,8 @@ namespace onut
             // Sync to main callbacks
             oDispatcher->processQueue();
 
-#if !defined(__unix__)
             // Update
             oAudioEngine->update();
-#endif // __unix__
             auto framesToUpdate = oTiming->update(oSettings->getIsFixedStep());
             while (framesToUpdate--)
             {

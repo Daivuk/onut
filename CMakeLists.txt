@@ -17,6 +17,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3")
 add_library(onut STATIC
     src/ActionManager.cpp
     src/AudioEngine.cpp
+    src/AudioEngineLinux.cpp
     src/Box2D/Collision/Shapes/b2ChainShape.cpp
     src/Box2D/Collision/Shapes/b2CircleShape.cpp
     src/Box2D/Collision/Shapes/b2EdgeShape.cpp
@@ -192,7 +193,11 @@ target_link_libraries(onut
         -ldl
 )
 
-add_subdirectory(samples/Sprites)
-add_subdirectory(samples/SpriteFrames)
-add_subdirectory(samples/Text)
-
+add_subdirectory(samples/Animations) # AnimationsSample
+add_subdirectory(samples/Crypto) # CryptoSample
+add_subdirectory(samples/Dungeon) # DungeonSample
+add_subdirectory(samples/Sprites) # SpritesSample
+add_subdirectory(samples/SpriteFrames) # SpriteFramesSample
+add_subdirectory(samples/Text) # TextSample
+add_subdirectory(samples/Textures) # TexturesSample
+add_subdirectory(samples/TiledMap) # TiledMapSample
