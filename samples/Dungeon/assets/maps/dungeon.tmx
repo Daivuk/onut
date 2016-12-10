@@ -425,7 +425,7 @@
   </object>
   <object id="60" name="camera" x="416" y="480" width="16" height="16">
    <properties>
-    <property name="Camera2DComponent:Zoom" value="4"/>
+    <property name="Camera2DComponent:Zoom" value="1"/>
     <property name="SmartRoomCamera" value=""/>
    </properties>
   </object>

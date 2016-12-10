@@ -4,6 +4,7 @@
 #include <onut/Entity.h>
 #include <onut/Input.h>
 #include <onut/Renderer.h>
+#include <onut/SceneManager.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 
@@ -31,6 +32,7 @@ OAnimFloat g_fadeAnim(1.0f);
 void initSettings()
 {
     oSettings->setGameName("Dungeon Game Sample");
+    oSettings->setIsRetroMode(true);
     oSettings->setIsResizableWindow(true);
 }
 
@@ -167,4 +169,7 @@ void postRender()
 
         oSpriteBatch->end();
     }
+
+    // Draw some useful debug info from the scene manager
+    oSceneManager->DrawDebugInfo();
 }

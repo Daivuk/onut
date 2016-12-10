@@ -258,12 +258,12 @@ namespace onut
         if (m_entities.empty()) return;
 
 #if defined(_DEBUG)
-        int renderCount = 0;
+        m_renderCount = 0;
 #endif
         for (auto pComponent = m_pComponentRenders->Head(); pComponent; pComponent = pComponent->m_renderLink.Next())
         {
 #if defined(_DEBUG)
-            ++renderCount;
+            ++m_renderCount;
 #endif
             pComponent->onRender();
         }
@@ -283,12 +283,12 @@ namespace onut
         transform._42 = std::roundf(transform._42);
         oSpriteBatch->begin(transform);
 #if defined(_DEBUG)
-        int render2DCount = 0;
+        m_render2DCount = 0;
 #endif
         for (auto pComponent = m_pComponentRender2Ds->Head(); pComponent; pComponent = pComponent->m_render2DLink.Next())
         {
 #if defined(_DEBUG)
-            ++render2DCount;
+            ++m_render2DCount;
 #endif
             pComponent->onRender2d();
         }
@@ -338,7 +338,10 @@ namespace onut
 #endif
 
         oSpriteBatch->end();
+    }
 
+    void SceneManager::DrawDebugInfo()
+    {
 #if defined(_DEBUG)
         int updateCount = 0;
         for (auto pComponent = m_pComponentUpdates->Head(); pComponent; pComponent = pComponent->m_updateLink.Next())
@@ -351,8 +354,8 @@ namespace onut
             oSpriteBatch->begin();
             oSpriteBatch->drawRect(nullptr, {0, 16, 200, 100}, Color(0, 0, 0, .75f));
             pFont->draw("Updatables: " + std::to_string(updateCount), {0, 20});
-            pFont->draw("Renderables: " + std::to_string(renderCount), {0, 40});
-            pFont->draw("Renderables 2D: " + std::to_string(render2DCount), {0, 60});
+            pFont->draw("Renderables: " + std::to_string(m_renderCount), {0, 40});
+            pFont->draw("Renderables 2D: " + std::to_string(m_render2DCount), {0, 60});
             pFont->draw("Components: " + std::to_string(g_componentCount), {0, 80});
             pFont->draw("Entities: " + std::to_string(g_entityCount), {0, 100});
             oSpriteBatch->end();

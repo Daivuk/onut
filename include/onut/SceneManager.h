@@ -47,6 +47,9 @@ namespace onut
 
         void boardcastMessage(int messageId, void* pData = nullptr);
 
+        // This will only display info in _DEBUG
+        void DrawDebugInfo();
+
     private:
         friend class Entity;
         friend class Component;
@@ -115,6 +118,11 @@ namespace onut
         b2World* m_pPhysic2DWorld;
         Physic2DContactListener* m_pPhysic2DContactListener;
         OUpdaterRef m_pUpdater;
+
+#if defined(_DEBUG)
+        int m_renderCount = 0;
+        int m_render2DCount = 0;
+#endif
     };
 };
 
