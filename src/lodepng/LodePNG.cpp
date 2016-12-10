@@ -323,7 +323,7 @@ unsigned lodepng_load_file(unsigned char** out, size_t* outsize, const char* fil
     *out = 0;
     *outsize = 0;
 
-#if defined(fopen_s)
+#if defined(WIN32)
     fopen_s(&file, filename, "rb");
 #else
     file = fopen(filename, "rb");
@@ -348,7 +348,7 @@ unsigned lodepng_load_file(unsigned char** out, size_t* outsize, const char* fil
 /*write given buffer to the file, overwriting the file, it doesn't append to it.*/
 unsigned lodepng_save_file(const unsigned char* buffer, size_t buffersize, const char* filename) {
     FILE* file = nullptr;
-#if defined(fopen_s)
+#if defined(WIN32)
     fopen_s(&file, filename, "wb");
 #else
     file = fopen(filename, "wb");

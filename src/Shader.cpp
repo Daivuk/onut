@@ -36,7 +36,7 @@ namespace onut
     static std::string readShaderFileContent(const std::string& filename)
     {
         FILE* pFic;
-#if defined(fopen_s)
+#if defined(WIN32)
         fopen_s(&pFic, filename.c_str(), "rb");
 #else
         pFic = fopen(filename.c_str(), "rb");

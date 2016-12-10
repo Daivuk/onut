@@ -34,6 +34,8 @@ void initSettings()
     oSettings->setGameName("Dungeon Game Sample");
     oSettings->setIsRetroMode(true);
     oSettings->setIsResizableWindow(true);
+    oSettings->setRetroResolution(Point(192, 144));
+    oSettings->setResolution(oSettings->getRetroResolution() * 4);
 }
 
 void registerComponents()

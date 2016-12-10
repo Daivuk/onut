@@ -173,6 +173,8 @@ namespace onut
         m_pDeviceContext->Flush();
         m_pDeviceContext->ClearState();
 
+        renderStates = RenderStates();
+
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
         m_pRenderTargetView = nullptr;
 

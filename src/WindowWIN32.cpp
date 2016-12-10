@@ -31,19 +31,20 @@ namespace onut
         }
         else if (msg == WM_SIZE)
         {
+            Point newRes(static_cast<int>(LOWORD(lparam)), static_cast<int>(HIWORD(lparam)));
             if (oRenderer)
             {
-                oRenderer->onResize(Point{static_cast<int>(LOWORD(lparam)), static_cast<int>(HIWORD(lparam))});
+                oRenderer->onResize(newRes);
             }
             if (oUIContext)
             {
-                oUIContext->resize(Vector2{static_cast<float>(LOWORD(lparam)), static_cast<float>(HIWORD(lparam))});
+                oUIContext->resize(Vector2{static_cast<float>(newRes.x), static_cast<float>(newRes.y)});
             }
             if (oWindow)
             {
                 if (oWindow->onResize)
                 {
-                    oWindow->onResize(Point{static_cast<int>(LOWORD(lparam)), static_cast<int>(HIWORD(lparam))});
+                    oWindow->onResize(newRes);
                 }
             }
             return 0;
