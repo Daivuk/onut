@@ -274,11 +274,13 @@ namespace onut
                 auto mousePosf = OGetMousePos();
                 if (oUIContext->useNavigation)
                 {
-                    oUI->update(oUIContext, Vector2(mousePosf.x, mousePosf.y), OGamePadPressed(OGamePadA) || OInputJustPressed(OKeyEnter), false, false,
-                                OGamePadJustPressed(OGamePadDPadLeft) || OGamePadJustPressed(OGamePadLeftThumbLeft) || OInputJustPressed(OKeyLeft),
-                                OGamePadJustPressed(OGamePadDPadRight) || OGamePadJustPressed(OGamePadLeftThumbRight) || OInputJustPressed(OKeyRight),
-                                OGamePadJustPressed(OGamePadDPadUp) || OGamePadJustPressed(OGamePadLeftThumbUp) || OInputJustPressed(OKeyUp),
-                                OGamePadJustPressed(OGamePadDPadDown) || OGamePadJustPressed(OGamePadLeftThumbDown) || OInputJustPressed(OKeyDown),
+                    oUI->update(oUIContext, Vector2(mousePosf.x, mousePosf.y), 
+                                OGamePadPressed(OGamePadA) || OInputJustPressed(OKeyEnter) || OInputJustPressed(OXArcadeLButton1), 
+                                false, false,
+                                OGamePadJustPressed(OGamePadDPadLeft) || OGamePadJustPressed(OGamePadLeftThumbLeft) || OInputJustPressed(OKeyLeft) || OInputJustPressed(OXArcadeLJoyLeft),
+                                OGamePadJustPressed(OGamePadDPadRight) || OGamePadJustPressed(OGamePadLeftThumbRight) || OInputJustPressed(OKeyRight) || OInputJustPressed(OXArcadeLJoyRight),
+                                OGamePadJustPressed(OGamePadDPadUp) || OGamePadJustPressed(OGamePadLeftThumbUp) || OInputJustPressed(OKeyUp) || OInputJustPressed(OXArcadeLJoyUp),
+                                OGamePadJustPressed(OGamePadDPadDown) || OGamePadJustPressed(OGamePadLeftThumbDown) || OInputJustPressed(OKeyDown) || OInputJustPressed(OXArcadeLJoyDown),
                                 0.f);
                 }
                 else
