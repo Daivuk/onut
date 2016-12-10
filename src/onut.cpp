@@ -249,6 +249,13 @@ namespace onut
             while (framesToUpdate--)
             {
                 oInput->update();
+#if defined(__unix__)
+                if (OInputPressed(OKeyLeftAlt) && OInputPressed(OKeyF4))
+                {
+                    g_bIsRunning = false;
+                    break;
+                }
+#endif
 #if defined(WIN32)
                 POINT cur;
                 GetCursorPos(&cur);
