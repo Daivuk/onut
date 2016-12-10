@@ -9,7 +9,7 @@
 namespace onut
 {
 #if defined(_DEBUG)
-    std::atomic<int> g_entityCount = 0;
+    std::atomic<int> g_entityCount;
 #endif
 
     OEntityRef Entity::create(const OSceneManagerRef& in_pSceneManager)

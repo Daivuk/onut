@@ -9,7 +9,7 @@
 namespace onut
 {
 #if defined(_DEBUG)
-    std::atomic<int> g_componentCount = 0;
+    std::atomic<int> g_componentCount;
 #endif
 
     Component::Component(int flags)

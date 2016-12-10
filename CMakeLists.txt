@@ -2,17 +2,26 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
 
+project(onut)
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
-
-project(onut)
+if (NOT ONUT_SHOW_FPS)
+    set(ONUT_SHOW_FPS 1)
+endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-endif ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3")
+endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3")
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-D_DEBUG)
+endif()
+if (ONUT_SHOW_FPS EQUAL 1)
+    add_definitions(-DONUT_SHOW_FPS)
+endif()
 
 add_library(onut STATIC
     src/ActionManager.cpp

@@ -18,7 +18,7 @@ namespace onut
     {
         int keyb = pKeyMap[key / 8];
         int mask = 1 << (key % 8);
-        return !(keyb & mask);
+        return (keyb & mask);
     }
     
     OInputDeviceRef InputDevice::create(OInput* pInput)
@@ -29,10 +29,13 @@ namespace onut
     InputDeviceLinux::InputDeviceLinux(OInput* pInput)
         : InputDevice(pInput)
     {
-        memset(m_previousKeyMap, 0, sizeof(m_keyMap));
+        memset(m_keyMap, 0, sizeof(m_keyMap));
         memset(m_previousKeyMap, 0, sizeof(m_previousKeyMap));
         
-        m_initTimer.start(std::chrono::seconds(1), [this]
+        // Delay the initialization so keyup events can be sent in the OS.
+        // I know this is silly, but once I switch to SDL2 it won't be an 
+        // issue anymore
+        m_initTimer.start(std::chrono::milliseconds(500), [this]
         {
             auto files = onut::findAllFiles("/dev/input/by-path/", "*", false);
             for (const auto& file : files)
@@ -42,18 +45,8 @@ namespace onut
                     m_fd = open(file.c_str(), O_RDONLY | O_NONBLOCK);
                     if (m_fd != -1)
                     {
-                        // Make sure we send up event for keys that were down before grabbing exclusivity
-                     /*   ioctl(m_fd, EVIOCGKEY(sizeof(m_keyMap)), m_keyMap);
-                        for (int i = 0; i < KEY_MAX; ++i)
-                        {
-                            if (isKeyDown(m_keyMap, i))
-                            {
-                            }
-                        }*/
-                        
                         int grab = 1;
                         ioctl(m_fd, EVIOCGRAB, &grab);
-                        
                         break;
                     }
                 }

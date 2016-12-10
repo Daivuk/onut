@@ -61,6 +61,10 @@ namespace onut
         m_pComponentUpdates = new TList<Component>(offsetOf(&Component::m_updateLink));
         m_pComponentRenders = new TList<Component>(offsetOf(&Component::m_renderLink));
         m_pComponentRender2Ds = new TList<Component>(offsetOf(&Component::m_render2DLink));
+#if defined(_DEBUG)
+        g_componentCount = 0;
+        g_entityCount = 0;
+#endif
     }
 
     SceneManager::~SceneManager()

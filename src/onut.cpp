@@ -44,6 +44,10 @@ OTextureRef g_pMainRenderTarget;
 std::atomic<bool> g_bIsRunning;
 #endif
 
+#if defined(ONUT_SHOW_FPS)
+OFontRef g_pFont;
+#endif
+            
 namespace onut
 {
     void createUI()
@@ -186,6 +190,10 @@ namespace onut
         alreadyRan = true;
 
         createServices();
+        
+#if defined(ONUT_SHOW_FPS)
+        g_pFont = OGetFont("font.fnt");
+#endif
 
         // Call the user defined init
         if (initCallback)
@@ -324,6 +332,15 @@ namespace onut
             {
                 postRenderCallback();
             }
+            
+#if defined(ONUT_SHOW_FPS)
+            auto pFont = OGetFont("font.fnt");
+            if (pFont)
+            {
+                pFont->draw("FPS: " + std::to_string(oTiming->getFPS()), {0, 0});
+            }
+#endif
+
             oRenderer->endFrame();
         }
 
