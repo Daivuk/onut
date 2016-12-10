@@ -1,19 +1,22 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-set (CMAKE_CXX_STANDARD 11)
-list(APPEND CMAKE_CXX_FLAGS -fmax-errors=3)
-
 project(onut)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+endif ()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3")
 
 add_library(onut STATIC
     src/ActionManager.cpp
+    src/AudioEngine.cpp
     src/Box2D/Collision/Shapes/b2ChainShape.cpp
     src/Box2D/Collision/Shapes/b2CircleShape.cpp
     src/Box2D/Collision/Shapes/b2EdgeShape.cpp
@@ -111,6 +114,8 @@ add_library(onut STATIC
     src/Settings.cpp 
     src/Shader.cpp 
     src/ShaderGLES2.cpp 
+    src/Sound.cpp
+    src/SoundComponent.cpp
     src/SpriteAnim.cpp
     src/SpriteAnimComponent.cpp
     src/SpriteBatch.cpp 

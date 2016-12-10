@@ -8,6 +8,9 @@
 // Third partyes
 #include <tinyxml2/tinyxml2.h>
 
+// STL
+#include <cassert>
+
 namespace onut
 {
     OSoundRef Sound::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
@@ -40,7 +43,11 @@ namespace onut
         };
 
         FILE* pFic;
+#if defined(WIN32)
         fopen_s(&pFic, filename.c_str(), "rb");
+#else
+        pFic = fopen(filename.c_str(), "rb");
+#endif
         assert(pFic);
 
         int32_t chunkid = 0;

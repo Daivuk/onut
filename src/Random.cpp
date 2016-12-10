@@ -132,38 +132,38 @@ namespace onut
         return randc(randv(palette), variation);
     }
 
-    int randt(const int& min, const int& max)
+    template<> int randt<int>(const int& min, const int& max)
     {
         return randi(min, max);
     }
 
-    int randt(const int& max)
+    template<> int randt<int>(const int& max)
     {
         return randi(max);
     }
 
-    unsigned int randt(const unsigned int& min, const unsigned int& max)
+    template<> unsigned int randt<unsigned int>(const unsigned int& min, const unsigned int& max)
     {
         auto range = max - min + 1;
         return rand() % range + min;
     }
 
-    unsigned int randt(const unsigned int& max)
+    template<> unsigned int randt<unsigned int>(const unsigned int& max)
     {
         return rand() % (max + 1);
     }
 
-    float randt(const float& min, const float& max)
+    template<> float randt<float>(const float& min, const float& max)
     {
         return randf(min, max);
     }
 
-    float randt(const float& max)
+    template<> float randt<float>(const float& max)
     {
         return randf(max);
     }
 
-    double randt(const double& min, const double& max)
+    template<> double randt<double>(const double& min, const double& max)
     {
         auto rnd = rand();
         auto rndf = static_cast<double>(rnd) / static_cast<double>(RAND_MAX - 1);
@@ -171,7 +171,7 @@ namespace onut
         return rndf + min;
     }
 
-    double randt(const double& max)
+    template<> double randt<double>(const double& max)
     {
         auto rnd = rand();
         auto rndf = static_cast<double>(rnd) / static_cast<double>(RAND_MAX - 1);
@@ -179,42 +179,42 @@ namespace onut
         return rndf;
     }
 
-    Vector2 randt(const Vector2& min, const Vector2& max)
+    template<> Vector2 randt<Vector2>(const Vector2& min, const Vector2& max)
     {
         return rand2f(min, max);
     }
 
-    Vector2 randt(const Vector2& max)
+    template<> Vector2 randt<Vector2>(const Vector2& max)
     {
         return rand2f(max);
     }
 
-    Vector3 randt(const Vector3& min, const Vector3& max)
+    template<> Vector3 randt<Vector3>(const Vector3& min, const Vector3& max)
     {
         return rand3f(min, max);
     }
 
-    Vector3 randt(const Vector3& max)
+    template<> Vector3 randt<Vector3>(const Vector3& max)
     {
         return rand3f(max);
     }
 
-    Vector4 randt(const Vector4& min, const Vector4& max)
+    template<> Vector4 randt<Vector4>(const Vector4& min, const Vector4& max)
     {
         return rand4f(min, max);
     }
 
-    Vector4 randt(const Vector4& max)
+    template<> Vector4 randt<Vector4>(const Vector4& max)
     {
         return rand4f(max);
     }
 
-    Color randt(const Color& min, const Color& max)
+    template<> Color randt<Color>(const Color& min, const Color& max)
     {
         return randc(min, max);
     }
 
-    Color randt(const Color& max)
+    template<> Color randt<Color>(const Color& max)
     {
         return randc(max);
     }

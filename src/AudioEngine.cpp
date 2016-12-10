@@ -4,6 +4,7 @@
 
 // STL
 #include <algorithm>
+#include <memory.h>
 
 OAudioEngineRef oAudioEngine;
 
