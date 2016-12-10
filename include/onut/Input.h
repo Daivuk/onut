@@ -109,6 +109,72 @@ namespace onut
             KeyOEM102 = 0x56, /* <> or \| on RT 102-key keyboard (Non-U.S.) */
             KeyF11 = 0x57,
             KeyF12 = 0x58,
+#if defined(__unix__)
+            KeyF13 = 183, /* (NEC PC98) */
+            KeyF14 = 184, /* (NEC PC98) */
+            KeyF15 = 185, /* (NEC PC98) */
+            KeyKana = 90, /* (Japanese keyboard) */
+            KeyAbntC1 = 0x73, /* /? on Brazilian keyboard */
+            KeyConvert = 0x79, /* (Japanese keyboard) */
+            KeyNoConvert = 0x7B, /* (Japanese keyboard) */
+            KeyYen = 124, /* (Japanese keyboard) */
+            KeyAbntC2 = 0x7E, /* Numpad . on Brazilian keyboard */
+            KeyNumPadEquals = 117, /* = on numeric keypad (NEC PC98) */
+            KeyPreviousTrack = 165, /* Previous Track (OINPUT_CIRCUMFLEX on Japanese keyboard) */
+            KeyAt = 0x91, /* (NEC PC98) */
+            KeyColon = 0x92, /* (NEC PC98) */
+            KeyUnderline = 0x93, /* (NEC PC98) */
+            KeyKanji = 0x94, /* (Japanese keyboard) */
+            KeyStop = 128, /* (NEC PC98) */
+            KeyAx = 0x96, /* (Japan AX) */
+            KeyUnlabeled = 0x97, /* (J3100) */
+            KeyNextTrack = 163, /* Next Track */
+            KeyNumPadEnter = 96, /* Enter on numeric keypad */
+            KeyRightControl = 97,
+            KeyMute = 113, /* Mute */
+            KeyCalculator = 140, /* Calculator */
+            KeyPlayPause = 164, /* Play / Pause */
+            KeyMediaStop = 166, /* Media Stop */
+            KeyVolumeDown = 114, /* Volume - */
+            KeyVolumeUp = 115, /* Volume + */
+            KeyWebHome = 172, /* Web home */
+            KeyNumPadComma = 121, /* , on numeric keypad (NEC PC98) */
+            KeyNumPadDivide = 98, /* / on numeric keypad */
+            Key_SYSRQ = 99,
+            KeyRightAlt = 100, /* right Alt */
+            KeyAltCar = KeyRightAlt, /* right Alt */
+            KeyPause = 119, /* Pause */
+            KeyHome = 102, /* Home on arrow keypad */
+            KeyUp = 103, /* UpArrow on arrow keypad */
+            KeyPageUp = 104, /* PgUp on arrow keypad */
+            KeyLeft = 105, /* LeftArrow on arrow keypad */
+            KeyRight = 106, /* RightArrow on arrow keypad */
+            KeyEnd = 107, /* End on arrow keypad */
+            KeyDown = 108, /* DownArrow on arrow keypad */
+            KeyPageDown = 109, /* PgDn on arrow keypad */
+            KeyInsert = 110, /* Insert on arrow keypad */
+            KeyDelete = 111, /* Delete on arrow keypad */
+            KeyLeftWindows = 0xDB, /* Left Windows key */
+            KeyRightWindows = 0xDC, /* Right Windows key */
+            KeyAppMenu = 0xDD, /* AppMenu key */
+            KeyPower = 116, /* System Power */
+            KeySleep = 142, /* System Sleep */
+            KeyWake = 143, /* System Wake */
+            KeyWebSearch = 217, /* Web Search */
+            KeyWebFavorites = 0x16c, /* Web Favorites */
+            KeyWebRefresh = 173, /* Web Refresh */
+            KeyWebStop = 0xE8, /* Web Stop */
+            KeyWebForward = 0x115, /* Web Forward */
+            KeyWebBack = 0x116, /* Web Back */
+            KeyMyComputer = 0xEB, /* My Computer */
+            KeyMailL = 155, /* Mail */
+            KeyMediaSelect = 0xED, /* Media Select */
+
+            /*
+            *  Alternate names for keys originally not used on US keyboards.
+            */
+            KeyCircomflex = KeyPreviousTrack, /* Japanese keyboard */
+#else
             KeyF13 = 0x64, /* (NEC PC98) */
             KeyF14 = 0x65, /* (NEC PC98) */
             KeyF15 = 0x66, /* (NEC PC98) */
@@ -173,6 +239,7 @@ namespace onut
             *  Alternate names for keys originally not used on US keyboards.
             */
             KeyCircomflex = KeyPreviousTrack, /* Japanese keyboard */
+#endif
 
             /*
             * X-Arcade
