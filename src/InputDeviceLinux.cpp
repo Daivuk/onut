@@ -14,13 +14,6 @@
 
 namespace onut
 {
-    static bool isKeyDown(char* pKeyMap, int key)
-    {
-        int keyb = pKeyMap[key / 8];
-        int mask = 1 << (key % 8);
-        return (keyb & mask);
-    }
-    
     OInputDeviceRef InputDevice::create(OInput* pInput)
     {
         return std::shared_ptr<InputDeviceLinux>(new InputDeviceLinux(pInput));
@@ -47,7 +40,7 @@ namespace onut
                     if (fd != -1)
                     {
                         int grab = 1;
-                        ioctl(m_fd, EVIOCGRAB, &grab);
+                        ioctl(fd, EVIOCGRAB, &grab);
                         m_devices.push_back(fd);
                     }
                 }
@@ -59,44 +52,47 @@ namespace onut
     InputDeviceLinux::~InputDeviceLinux()
     {
         m_initTimer.stop(false);
-        if (m_fd != -1)
+        for (auto fd : m_devices)
         {
-            
-            ioctl(m_fd, EVIOCGRAB, NULL);
-            close(m_fd);
+            if (fd != -1)
+            {
+                ioctl(fd, EVIOCGRAB, NULL);
+                close(fd);
+            }
         }
     }
 
     void InputDeviceLinux::readKeyboard()
     {
-        if (m_fd != -1)
+        memset(m_states, 0, sizeof(m_states));
+        
+        for (auto fd : m_devices)
         {
-            for (auto fd : m_devices)
+            ioctl(fd, EVIOCGKEY(sizeof(m_keyMap)), m_keyMap);
+
+            for (int i = 0; i < KEY_MAX; ++i)
             {
-                ioctl(fd, EVIOCGKEY(sizeof(m_keyMap)), m_keyMap);
-
-                for (int i = 0; i < KEY_MAX; ++i)
-                {
-                    m_states[i] = isKeyDown(m_keyMap, i);
-                }
-
-                for (int i = 0; i < KEY_MAX; ++i)
-                {
-                    auto isDown = m_states[i];
-                    auto isPreviousDown = m_previousStates[i];
-                    if (!isPreviousDown && isDown)
-                    {
-                        m_pInput->setStateDown(static_cast<onut::Input::State>(i));
-                    }
-                    else if (isPreviousDown && !isDown)
-                    {
-                        m_pInput->setStateUp(static_cast<onut::Input::State>(i));
-                    }
-                }
+                int keyb = m_keyMap[i / 8];
+                int mask = 1 << (i % 8);
+                m_states[i] |= (keyb & mask);
             }
-            
-            memcpy(m_previousStates, m_states, sizeof(m_states));
         }
+
+        for (int i = 0; i < KEY_MAX; ++i)
+        {
+            auto isDown = m_states[i];
+            auto isPreviousDown = m_previousStates[i];
+            if (!isPreviousDown && isDown)
+            {
+                m_pInput->setStateDown(static_cast<onut::Input::State>(i));
+            }
+            else if (isPreviousDown && !isDown)
+            {
+                m_pInput->setStateUp(static_cast<onut::Input::State>(i));
+            }
+        }
+        
+        memcpy(m_previousStates, m_states, sizeof(m_states));
     }
 
     void InputDeviceLinux::readMouse()

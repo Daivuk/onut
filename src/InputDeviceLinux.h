@@ -29,7 +29,7 @@ namespace onut
         void readMouse() override;
 
         std::vector<int> m_devices;
-        bool m_keyMap[KEY_MAX / 8 + 1];
+        char m_keyMap[KEY_MAX / 8 + 1];
         bool m_states[KEY_MAX];
         bool m_previousStates[KEY_MAX];
 

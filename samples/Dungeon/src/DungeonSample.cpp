@@ -36,6 +36,7 @@ void initSettings()
     oSettings->setIsResizableWindow(true);
     oSettings->setRetroResolution(Point(192, 144));
     oSettings->setResolution(oSettings->getRetroResolution() * 4);
+    //oSettings->setBorderlessFullscreen(true);
 }
 
 void registerComponents()

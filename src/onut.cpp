@@ -36,9 +36,7 @@
 #include <mutex>
 #include <sstream>
 
-#if !defined(__unix__)
 OTextureRef g_pMainRenderTarget;
-#endif // __unix__
 
 #if defined(__unix__)
 std::atomic<bool> g_bIsRunning;
@@ -142,9 +140,16 @@ namespace onut
         // Undo/Redo for editors
         oActionManager = ActionManager::create();
 
+#if defined(__unix__)
+        if (oSettings->getIsRetroMode())
+        {
+#endif // __unix__
+            g_pMainRenderTarget = OTexture::createScreenRenderTarget();
+#if defined(__unix__)
+        }
+#endif // __unix__
+
 #if !defined(__unix__)
-        g_pMainRenderTarget = OTexture::createScreenRenderTarget();
-        
         // Initialize Javascript
         onut::js::init();
 #endif // __unix__
@@ -154,9 +159,9 @@ namespace onut
     {
 #if !defined(__unix__)
         onut::js::shutdown();
+#endif // __unix__
 
         g_pMainRenderTarget = nullptr;
-#endif // __unix__
         oActionManager = nullptr;
         oSceneManager = nullptr;
         oComponentFactory = nullptr;
@@ -296,8 +301,13 @@ namespace onut
 
             // Render
             oTiming->render();
-#if !defined(__unix__)
-            oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+#if defined(__unix__)
+            if (oSettings->getIsRetroMode())
+            {
+#endif // __unix__
+                oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+#if defined(__unix__)
+            }
 #endif // __unix__
             oRenderer->beginFrame();
 #if !defined(__unix__)
@@ -313,20 +323,29 @@ namespace onut
             oUI->render(oUIContext);
             oSpriteBatch->end();
 
-#if !defined(__unix__)
-            // Draw final render target
-            oRenderer->renderStates.renderTarget = nullptr;
-            auto& res = oRenderer->getResolution();
-            oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
-            oRenderer->renderStates.scissorEnabled = false;
-            oRenderer->renderStates.scissor = oRenderer->renderStates.viewport.get();
-            oSpriteBatch->begin();
-            oSpriteBatch->changeBlendMode(OBlendOpaque);
-            oSpriteBatch->changeFiltering(OFilterNearest);
-            oSpriteBatch->drawRect(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
-            oSpriteBatch->end();
-            oSpriteBatch->changeBlendMode(OBlendAlpha);
-            oSpriteBatch->changeFiltering(OFilterLinear);
+#if defined(__unix__)
+            if (oSettings->getIsRetroMode())
+            {
+#endif // __unix__
+                // Draw final render target
+                oRenderer->renderStates.renderTarget = nullptr;
+                const auto& res = oRenderer->getResolution();
+                oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
+                oRenderer->renderStates.scissorEnabled = false;
+                oRenderer->renderStates.scissor = oRenderer->renderStates.viewport.get();
+                oSpriteBatch->begin();
+                oSpriteBatch->changeBlendMode(OBlendOpaque);
+                oSpriteBatch->changeFiltering(OFilterNearest);
+#if defined(__unix__)
+                oSpriteBatch->drawRectWithUVs(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()), Vector4(0, 1, 1, 0));
+#else
+                oSpriteBatch->drawRect(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
+#endif // __unix__
+                oSpriteBatch->end();
+                oSpriteBatch->changeBlendMode(OBlendAlpha);
+                oSpriteBatch->changeFiltering(OFilterLinear);
+#if defined(__unix__)
+            }
 #endif // __unix__
             if (postRenderCallback)
             {
