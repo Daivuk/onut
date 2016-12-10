@@ -27,11 +27,12 @@ namespace onut
     private:
         void readKeyboard() override;
         void readMouse() override;
-        
-        int m_fd = -1;
-        char m_keyMap[KEY_MAX / 8 + 1];
-        char m_previousKeyMap[KEY_MAX / 8 + 1];
-        
+
+        std::vector<int> m_devices;
+        bool m_keyMap[KEY_MAX / 8 + 1];
+        bool m_states[KEY_MAX];
+        bool m_previousStates[KEY_MAX];
+
         OTimer m_initTimer;
     };
 }

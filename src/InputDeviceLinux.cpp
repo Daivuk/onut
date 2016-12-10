@@ -30,7 +30,8 @@ namespace onut
         : InputDevice(pInput)
     {
         memset(m_keyMap, 0, sizeof(m_keyMap));
-        memset(m_previousKeyMap, 0, sizeof(m_previousKeyMap));
+        memset(m_states, 0, sizeof(m_states));
+        memset(m_previousStates, 0, sizeof(m_previousStates));
         
         // Delay the initialization so keyup events can be sent in the OS.
         // I know this is silly, but once I switch to SDL2 it won't be an 
@@ -42,16 +43,16 @@ namespace onut
             {
                 if (file.find("event-kbd") != std::string::npos)
                 {
-                    m_fd = open(file.c_str(), O_RDONLY | O_NONBLOCK);
-                    if (m_fd != -1)
+                    int fd = open(file.c_str(), O_RDONLY | O_NONBLOCK);
+                    if (fd != -1)
                     {
                         int grab = 1;
                         ioctl(m_fd, EVIOCGRAB, &grab);
-                        break;
+                        m_devices.push_back(fd);
                     }
                 }
             }
-            assert(m_fd != -1);
+            assert(!m_devices.empty());
         });
     }
 
@@ -70,24 +71,31 @@ namespace onut
     {
         if (m_fd != -1)
         {
-            ioctl(m_fd, EVIOCGKEY(sizeof(m_keyMap)), m_keyMap);
-            
-            for (int i = 0; i < KEY_MAX; ++i)
+            for (auto fd : m_devices)
             {
-                auto isDown = isKeyDown(m_keyMap, i);
-                auto isPreviousDown = isKeyDown(m_previousKeyMap, i);
-                
-                if (!isPreviousDown && isDown)
+                ioctl(fd, EVIOCGKEY(sizeof(m_keyMap)), m_keyMap);
+
+                for (int i = 0; i < KEY_MAX; ++i)
                 {
-                    m_pInput->setStateDown(static_cast<onut::Input::State>(i));
+                    m_states[i] = isKeyDown(m_keyMap, i);
                 }
-                else if (isPreviousDown && !isDown)
+
+                for (int i = 0; i < KEY_MAX; ++i)
                 {
-                    m_pInput->setStateUp(static_cast<onut::Input::State>(i));
+                    auto isDown = m_states[i];
+                    auto isPreviousDown = m_previousStates[i];
+                    if (!isPreviousDown && isDown)
+                    {
+                        m_pInput->setStateDown(static_cast<onut::Input::State>(i));
+                    }
+                    else if (isPreviousDown && !isDown)
+                    {
+                        m_pInput->setStateUp(static_cast<onut::Input::State>(i));
+                    }
                 }
             }
             
-            memcpy(m_previousKeyMap, m_keyMap, sizeof(m_keyMap));
+            memcpy(m_previousStates, m_states, sizeof(m_states));
         }
     }
 
