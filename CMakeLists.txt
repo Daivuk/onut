@@ -106,6 +106,7 @@ add_library(onut STATIC
     src/Maths.cpp 
     src/Matrix.cpp 
     src/micropather.cpp
+    src/Music.cpp
     src/onut.cpp 
     src/Particle.cpp
     src/ParticleEmitter.cpp
@@ -203,8 +204,15 @@ target_link_libraries(onut
 )
 
 add_subdirectory(samples/Animations) # AnimationsSample
+add_subdirectory(samples/Components) # ComponentsSample
 add_subdirectory(samples/Crypto) # CryptoSample
+add_subdirectory(samples/CustomMesh) # CustomMeshSample
 add_subdirectory(samples/Dungeon) # DungeonSample
+add_subdirectory(samples/Entities) # EntitiesSample
+add_subdirectory(samples/Navigation) # NavigationSample
+add_subdirectory(samples/Particles) # ParticlesSample
+add_subdirectory(samples/Primitives) # PrimitivesSample
+add_subdirectory(samples/Sounds) # SoundsSample
 add_subdirectory(samples/Sprites) # SpritesSample
 add_subdirectory(samples/SpriteFrames) # SpriteFramesSample
 add_subdirectory(samples/Text) # TextSample

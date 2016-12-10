@@ -9,6 +9,9 @@
 #include <onut/SpriteBatch.h>
 #include <onut/Sound.h>
 
+// STL
+#include <cmath>
+
 OSoundInstanceRef pLoopingSound;
 OMusicRef pMusic;
 OSoundRef pNotes[8];
@@ -47,7 +50,7 @@ void init()
 
             // Fade out
             float fadeOut = (float)((double)(50000 - i) / 50000.0);
-            fadeOut = std::powf(fadeOut, 4);
+            fadeOut = std::pow(fadeOut, 4.0f);
             pSampleBuffer[i] *= fadeOut;
         }
         pNotes[note] = OSound::createFromData(pSampleBuffer, 50000, 1, 44100);

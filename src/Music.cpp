@@ -17,11 +17,13 @@ namespace onut
     {
         auto pRet = std::shared_ptr<OMusic>(new OMusic());
 
+#if defined(WIN32)
         auto cmd = utf8ToUtf16(filename);
         if (!pRet->m_pMp3->Load(cmd.c_str()))
         {
             return nullptr;
         }
+#endif
 
         return pRet;
     }
