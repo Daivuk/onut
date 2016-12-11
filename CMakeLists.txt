@@ -206,6 +206,8 @@ target_link_libraries(onut
         -ldl
 )
 
+add_subdirectory(JSStandAlone) # JSStandAlone
+
 add_subdirectory(samples/Animations) # AnimationsSample
 add_subdirectory(samples/Components) # ComponentsSample
 add_subdirectory(samples/Crypto) # CryptoSample
