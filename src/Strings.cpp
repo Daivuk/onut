@@ -54,6 +54,59 @@ namespace onut
         return elems;
     }
 
+    std::vector<std::string> splitString(const std::string& in_string, const std::string& in_delimeters)
+    {
+        std::vector<std::string> elems;
+        unsigned int start = 0;
+        unsigned int end = 0;
+        for (; end < in_string.length(); ++end)
+        {
+            for (auto c : in_delimeters)
+            {
+                if (in_string[end] == c)
+                {
+                    if (end - start)
+                    {
+                        elems.push_back(in_string.substr(start, end - start));
+                    }
+                    start = end + 1;
+                }
+            }
+        }
+        if (start == in_string.length())
+        {
+            elems.push_back("");
+        }
+        if (start < in_string.length())
+        {
+            if (end - start)
+            {
+                elems.push_back(in_string.substr(start, end - start));
+            }
+        }
+        return elems;
+    }
+
+    std::string trim(const std::string& str)
+    {
+        auto s = str.find_first_not_of(" \t\n\r");
+        if (s == std::string::npos)
+        {
+            return "";
+        }
+        std::string ret;
+        if (s > 0)
+        {
+            ret = str.substr(s);
+        }
+        else
+        {
+            ret = str;
+        }
+        s = ret.find_last_not_of(" \t\n\r");
+        return ret.substr(0, s + 1);
+    }
+
     std::string removeChars(const std::string& str, const std::string& charsToRemove)
     {
         auto ret = str;

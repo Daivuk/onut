@@ -88,55 +88,61 @@ namespace onut
         randomizeSeed();
 
         // Thread pool
-        oThreadPool = OThreadPool::create();
+        if (!oThreadPool) oThreadPool = OThreadPool::create();
 
         // Dispatcher
-        oDispatcher = ODispatcher::create();
+        if (!oDispatcher) oDispatcher = ODispatcher::create();
 
         // Timing class
-        oTiming = OTiming::create();
+        if (!oTiming) oTiming = OTiming::create();
 
         // Updater
-        oUpdater = OUpdater::create();
+        if (!oUpdater) oUpdater = OUpdater::create();
 
         // Window
-        oWindow = OWindow::create();
+        if (!oWindow) oWindow = OWindow::create();
 
         // Renderer
-        oRenderer = ORenderer::create(oWindow);
-        oRenderer->init(oWindow);
+        if (!oRenderer)
+        {
+            oRenderer = ORenderer::create(oWindow);
+            oRenderer->init(oWindow);
+        }
 
         // SpriteBatch
-        oSpriteBatch = SpriteBatch::create();
-        oPrimitiveBatch = PrimitiveBatch::create();
+        if (!oSpriteBatch) oSpriteBatch = SpriteBatch::create();
+        if (!oPrimitiveBatch) oPrimitiveBatch = PrimitiveBatch::create();
         
         // Content
-        oContentManager = ContentManager::create();
+        if (!oContentManager) oContentManager = ContentManager::create();
 
         // Cloud
         //oCloud = Cloud::create(oSettings->getAppId(), oSettings->getAppSecret());
 
         // Mouse/Keyboard
-        oInput = OInput::create(oWindow);
+        if (!oInput) oInput = OInput::create(oWindow);
 
         // Audio
-        oAudioEngine = AudioEngine::create();
+        if (!oAudioEngine) oAudioEngine = AudioEngine::create();
 
         // Particles
-        oParticleSystemManager = ParticleSystemManager::create();
+        if (!oParticleSystemManager) oParticleSystemManager = ParticleSystemManager::create();
 
         // UI Context
         createUI();
 
         // Component factory
-        oComponentFactory = ComponentFactory::create();
-        oComponentFactory->registerDefaultComponents();
+        if (!oComponentFactory)
+        {
+            oComponentFactory = ComponentFactory::create();
+            oComponentFactory->registerDefaultComponents();
+        }
 
         // Entity Manager
-        oSceneManager = SceneManager::create();
+        if (!oSceneManager) oSceneManager = SceneManager::create();
 
         // Undo/Redo for editors
-        oActionManager = ActionManager::create();
+        if (!oActionManager) oActionManager = ActionManager::create();
 
 #if defined(__unix__)
         if (oSettings->getIsRetroMode())
@@ -375,11 +381,20 @@ void update();
 void render();
 void postRender();
 
+std::vector<std::string> OArguments;
+
 #if defined(WIN32)
 #include <Windows.h>
 
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
+    int argc;
+    auto cmdLineW = onut::utf8ToUtf16(cmdLine);
+    auto argvW = CommandLineToArgvW(cmdLineW.c_str(), &argc);
+    for (int i = 0; i < argc; ++i)
+    {
+        OArguments.push_back(onut::utf16ToUtf8(argvW[i]));
+    }
     initSettings();
     onut::run(init, update, render, postRender);
     return 0;
@@ -387,6 +402,10 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 #elif defined(__unix__)
 int main(int argc, char** argv)
 {
+    for (int i = 1; i < argc; ++i)
+    {
+        OArguments.push_back(argv[i]);
+    }
     initSettings();
     onut::run(init, update, render, postRender);
     return 0;

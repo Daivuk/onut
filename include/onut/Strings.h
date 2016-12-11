@@ -16,6 +16,7 @@ namespace onut
     std::string removeChars(const std::string& str, const std::string& charsToRemove);
     std::string toUpper(const std::string& str);
     std::string toLower(const std::string& str);
+    std::string trim(const std::string& str);
 
     // Regex stuff
     void stripOutComments(std::string& source);
