@@ -215,7 +215,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static Vector2 getVector2(duk_context *ctx, duk_idx_t index, const Vector2& default = Vector2::Zero)
+        static Vector2 getVector2(duk_context *ctx, duk_idx_t index, const Vector2& in_default = Vector2::Zero)
         {
             if (duk_is_object(ctx, index))
             {
@@ -228,10 +228,10 @@ namespace onut
                 auto s = (float)duk_to_number(ctx, index);
                 return Vector2(s, s);
             }
-            return default;
+            return in_default;
         }
 
-        static Point getPoint(duk_context *ctx, duk_idx_t index, const Point& default = Point(0, 0))
+        static Point getPoint(duk_context *ctx, duk_idx_t index, const Point& in_default = Point(0, 0))
         {
             if (duk_is_object(ctx, index))
             {
@@ -244,10 +244,10 @@ namespace onut
                 auto s = duk_to_int(ctx, index);
                 return Point(s, s);
             }
-            return default;
+            return in_default;
         }
 
-        static Vector3 getVector3(duk_context *ctx, duk_idx_t index, const Vector3& default = Vector3::Zero)
+        static Vector3 getVector3(duk_context *ctx, duk_idx_t index, const Vector3& in_default = Vector3::Zero)
         {
             if (duk_is_object(ctx, index))
             {
@@ -261,10 +261,10 @@ namespace onut
                 auto s = (float)duk_to_number(ctx, index);
                 return Vector3(s, s, s);
             }
-            return default;
+            return in_default;
         }
 
-        static Vector4 getVector4(duk_context *ctx, duk_idx_t index, const Vector4& default = Vector4::Zero)
+        static Vector4 getVector4(duk_context *ctx, duk_idx_t index, const Vector4& in_default = Vector4::Zero)
         {
             if (duk_is_object(ctx, index))
             {
@@ -279,10 +279,10 @@ namespace onut
                 auto s = (float)duk_to_number(ctx, index);
                 return Vector4(s, s, s, s);
             }
-            return default;
+            return in_default;
         }
 
-        static Vector4 getRect(duk_context *ctx, duk_idx_t index, const Vector4& default = Vector4::Zero)
+        static Vector4 getRect(duk_context *ctx, duk_idx_t index, const Vector4& in_default = Vector4::Zero)
         {
             if (duk_is_object(ctx, index))
             {
@@ -297,10 +297,10 @@ namespace onut
                 auto s = (float)duk_to_number(ctx, index);
                 return Rect(s, s, s, s);
             }
-            return default;
+            return in_default;
         }
 
-        static iRect getiRect(duk_context *ctx, duk_idx_t index, const iRect& default = {0, 0, 1, 1})
+        static iRect getiRect(duk_context *ctx, duk_idx_t index, const iRect& in_default = {0, 0, 1, 1})
         {
             if (duk_is_object(ctx, index))
             {
@@ -315,10 +315,10 @@ namespace onut
                 INT_PROP(s, index);
                 return iRect{s, s, s, s};
             }
-            return default;
+            return in_default;
         }
 
-        static Color getColor(duk_context *ctx, duk_idx_t index, const Color& default = Color::White)
+        static Color getColor(duk_context *ctx, duk_idx_t index, const Color& in_default = Color::White)
         {
             if (duk_is_object(ctx, index))
             {
@@ -333,12 +333,12 @@ namespace onut
                 auto s = (float)duk_to_number(ctx, index);
                 return Color(s, s, s, s);
             }
-            return default;
+            return in_default;
         }
 
-        static Matrix getMatrix(duk_context *ctx, duk_idx_t index, const Matrix& default = Matrix::Identity)
+        static Matrix getMatrix(duk_context *ctx, duk_idx_t index, const Matrix& in_default = Matrix::Identity)
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
             Matrix ret;
             FLOAT_PROP2(ret._11, "_11", index);
             FLOAT_PROP2(ret._12, "_12", index);
@@ -359,33 +359,33 @@ namespace onut
             return std::move(ret);
         }
 
-        static bool getBool(duk_context *ctx, duk_idx_t index, bool default = false)
+        static bool getBool(duk_context *ctx, duk_idx_t index, bool in_default = false)
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_boolean(ctx, index) == 1 ? true : false;
         }
 
-        static float getFloat(duk_context *ctx, duk_idx_t index, float default = 0.0f)
+        static float getFloat(duk_context *ctx, duk_idx_t index, float in_default = 0.0f)
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return (float)duk_to_number(ctx, index);
         }
 
-        static unsigned int getUInt(duk_context *ctx, duk_idx_t index, unsigned int default = 0)
+        static unsigned int getUInt(duk_context *ctx, duk_idx_t index, unsigned int in_default = 0)
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_uint(ctx, index);
         }
 
-        static int getInt(duk_context *ctx, duk_idx_t index, int default = 0)
+        static int getInt(duk_context *ctx, duk_idx_t index, int in_default = 0)
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_int(ctx, index);
         }
 
-        static const char* getString(duk_context *ctx, duk_idx_t index, const char* default = "")
+        static const char* getString(duk_context *ctx, duk_idx_t index, const char* in_default = "")
         {
-            if (duk_is_null_or_undefined(ctx, index)) return default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_string(ctx, index);
         }
 

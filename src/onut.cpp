@@ -27,9 +27,7 @@
 #include <onut/Window.h>
 
 // Private
-#if !defined(__unix__)
 #include "JSBindings.h"
-#endif // __unix__
 
 // STL
 #include <cassert>
@@ -149,17 +147,13 @@ namespace onut
         }
 #endif // __unix__
 
-#if !defined(__unix__)
         // Initialize Javascript
         onut::js::init();
-#endif // __unix__
     }
 
     void cleanup()
     {
-#if !defined(__unix__)
         onut::js::shutdown();
-#endif // __unix__
 
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
@@ -292,9 +286,7 @@ namespace onut
                 }
                 oParticleSystemManager->update();
                 oSceneManager->update();
-#if !defined(__unix__)
                 onut::js::update(oTiming->getDeltaTime());
-#endif // __unix__
                 if (updateCallback)
                 {
                     updateCallback();
@@ -312,9 +304,7 @@ namespace onut
             }
 #endif // __unix__
             oRenderer->beginFrame();
-#if !defined(__unix__)
             onut::js::render();
-#endif // __unix__
             if (renderCallback)
             {
                 renderCallback();

@@ -98,6 +98,7 @@ add_library(onut STATIC
     src/Input.cpp
     src/InputDevice.cpp
     src/InputDeviceLinux.cpp
+    src/JSBindings.cpp
     src/json/json_reader.cpp
     src/json/json_value.cpp
     src/json/json_writer.cpp
@@ -159,6 +160,8 @@ add_library(onut STATIC
     src/Vector4.cpp 
     src/VertexBuffer.cpp 
     src/VertexBufferGLES2.cpp 
+    src/VideoPlayer.cpp
+    src/VideoPlayerLinux.cpp
     src/Window.cpp 
     src/WindowX11.cpp 
     src/zlib/adler32.c
