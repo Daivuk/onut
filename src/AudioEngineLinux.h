@@ -5,7 +5,7 @@
 #include <onut/AudioEngine.h>
 
 // Third party
-#include "pi_audio.h"
+#include "audioplay/audioplay.h"
 
 // STL
 #include <atomic>

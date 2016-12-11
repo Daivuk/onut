@@ -22,11 +22,17 @@ endif()
 if (ONUT_SHOW_FPS EQUAL 1)
     add_definitions(-DONUT_SHOW_FPS)
 endif()
+add_definitions(-DHAVE_LIBOPENMAX=2)
+add_definitions(-DOMX)
+add_definitions(-DOMX_SKIP64BIT)
+add_definitions(-DUSE_EXTERNAL_OMX)
+add_definitions(-DUSE_VCHIQ_ARM)
 
 add_library(onut STATIC
     src/ActionManager.cpp
     src/AudioEngine.cpp
     src/AudioEngineLinux.cpp
+    src/audioplay/audioplay.c
     src/Box2D/Collision/Shapes/b2ChainShape.cpp
     src/Box2D/Collision/Shapes/b2CircleShape.cpp
     src/Box2D/Collision/Shapes/b2EdgeShape.cpp
@@ -183,7 +189,7 @@ add_library(onut STATIC
 
 target_include_directories(onut
     PUBLIC
-        /opt/vc/include/
+        /opt/vc/include
         /opt/vc/include/interface/vcos/pthreads
         /opt/vc/include/interface/vmcs_host/linux 
         ./include 
@@ -194,6 +200,7 @@ target_include_directories(onut
 target_link_libraries(onut
     PUBLIC
         -L/opt/vc/lib/
+        -L${CMAKE_SOURCE_DIR}/lib/linux/
         -lbcm_host 
         -lvcos 
         -lvchiq_arm
@@ -204,6 +211,8 @@ target_link_libraries(onut
         -lpthread 
         -lrt 
         -ldl
+        -lilclient
+        -lopenmaxil
 )
 
 add_subdirectory(JSStandAlone) # JSStandAlone
