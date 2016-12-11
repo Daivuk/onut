@@ -7,6 +7,7 @@
 // STL
 #include <cassert>
 #include <chrono>
+#include <limits>
 
 namespace onut
 {
@@ -29,6 +30,7 @@ namespace onut
             m_isRunning = true;
             m_thread = std::thread(std::bind(&AudioEngineLinux::threadMain, this));
         }
+        m_pFloatBuffer = new float[m_frameCount * m_channelCount];
     }
 
     AudioEngineLinux::~AudioEngineLinux()
@@ -39,6 +41,7 @@ namespace onut
             if (m_thread.joinable()) m_thread.join();
             audioplay_delete(m_pHandle);
         }
+        delete [] m_pFloatBuffer;
     }
 
     void AudioEngineLinux::threadMain()
@@ -51,7 +54,17 @@ namespace onut
             
             if (pBuffer)
             {
-                progressInstances(m_frameCount, getSampleRate(), m_channelCount, (float*)pBuffer);
+                progressInstances(m_frameCount, getSampleRate(), m_channelCount, m_pFloatBuffer);
+                int16_t* pOut = (int16_t*)pBuffer;
+                auto len = m_frameCount * m_channelCount;
+                float clamped;
+                for (int i = 0; i < len; ++i)
+                {
+                    clamped = m_pFloatBuffer[i];
+                    clamped *= 0.5f;
+                    clamped = std::max(-1.0f, std::min(clamped, 1.0f));
+                    pOut[i] = (int16_t)(clamped * (float)std::numeric_limits<int16_t>::max());
+                }
                 audioplay_play_buffer(m_pHandle, pBuffer, m_bufferSize);
             }
             else
