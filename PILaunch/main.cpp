@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include <string.h>
+
 #if defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
 #pragma comment (lib, "Ws2_32.lib")
@@ -17,11 +19,21 @@
 #include <process.h>
 #include <Tlhelp32.h>
 #include <winbase.h>
-#include <string.h>
 #include "dirent.h"
+#define IS_SOCKET_VALID(__socket__) (__socket__ != INVALID_SOCKET)
 #elif defined(__unix__)
 #include <dirent.h>
-#error
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+typedef int SOCKET;
+#define IS_SOCKET_VALID(__socket__) (__socket__ >= 0)
+#define INVALID_SOCKET (-1)
+#define closesocket close
+#define SD_SEND SHUT_WR
 #endif
 
 #if defined(WIN32)
@@ -258,6 +270,9 @@ void handlePacket(const std::vector<char>& content)
 #if defined(WIN32)
         // Kill teh process
         killProcessByName("onut.exe");
+#else
+        // Kill teh process
+        system("pkill JSStandAlone");
 #endif
     }
     else if (command == "PLAY")
@@ -269,6 +284,13 @@ void handlePacket(const std::vector<char>& content)
 
         // Launch onut in that folder
         std::string cmdLine = "start onut " + serverPath;
+        system(cmdLine.c_str());
+#else
+        // Kill teh process
+        system("pkill JSStandAlone");
+        
+        // Launch onut in that folder
+        std::string cmdLine = "~/github/onut/JSStandAlone/bin/linux/JSStandAlone " + serverPath + " &";
         system(cmdLine.c_str());
 #endif
     }
@@ -306,19 +328,27 @@ void handlePacket(const std::vector<char>& content)
 
 int server(const std::string& path, const std::string& port)
 {
+#if defined(WIN32)
     WSADATA wsaData;
+#endif
     int iResult;
-
+    
     SOCKET ListenSocket = INVALID_SOCKET;
     SOCKET ClientSocket = INVALID_SOCKET;
 
+    std::vector<char> content;
+
+#if defined(WIN32)
     struct addrinfo *result = NULL;
     struct addrinfo hints;
+#else
+    struct sockaddr_in serv_addr, cli_addr;
+#endif
 
     char recvbuf[DEFAULT_BUFLEN];
     int recvbuflen = DEFAULT_BUFLEN;
-    std::vector<char> content;
-
+    
+#if defined(WIN32)
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0)
@@ -327,7 +357,7 @@ int server(const std::string& path, const std::string& port)
         return 1;
     }
 
-    ZeroMemory(&hints, sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -344,7 +374,7 @@ int server(const std::string& path, const std::string& port)
 
     // Create a SOCKET for connecting to server
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-    if (ListenSocket == INVALID_SOCKET)
+    if (!IS_SOCKET_VALID(ListenSocket))
     {
         printf("socket failed with error: %ld\n", WSAGetLastError());
         freeaddrinfo(result);
@@ -364,7 +394,36 @@ int server(const std::string& path, const std::string& port)
     }
 
     freeaddrinfo(result);
+#else
+    ListenSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (!IS_SOCKET_VALID(ListenSocket)) 
+    {
+        printf("socket failed\n");
+        return 1;
+    }
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    int portno = 3333;
+    try
+    {
+        portno = std::stoi(port);
+    }
+    catch(...)
+    {
+        printf("wrong port number, defaulting to 3333\n");
+    }
+    serv_addr.sin_port = htons(portno);
+    iResult = bind(ListenSocket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    if (iResult < 0)
+    {
+        closesocket(ListenSocket);
+        printf("bind failed\n");
+        return 1;
+    }
+#endif
 
+#if defined(WIN32)
     iResult = listen(ListenSocket, SOMAXCONN);
     if (iResult == SOCKET_ERROR)
     {
@@ -373,16 +432,29 @@ int server(const std::string& path, const std::string& port)
         WSACleanup();
         return 1;
     }
+#else
+    iResult = listen(ListenSocket, SOMAXCONN);
+    if (iResult == -1)
+    {
+        closesocket(ListenSocket);
+        printf("listen failed\n");
+        return 1;
+    }
+#endif
 
     while (1)
     {
         // Accept a client socket
         ClientSocket = accept(ListenSocket, NULL, NULL);
-        if (ClientSocket == INVALID_SOCKET)
+        if (!IS_SOCKET_VALID(ClientSocket))
         {
-            printf("accept failed with error: %d\n", WSAGetLastError());
             closesocket(ListenSocket);
+#if defined(WIN32)
+            printf("accept failed with error: %d\n", WSAGetLastError());
             WSACleanup();
+#else
+            printf("accept failed\n");
+#endif
             return 1;
         }
 
@@ -399,9 +471,13 @@ int server(const std::string& path, const std::string& port)
             }
             else if (iResult < 0)
             {
-                printf("recv failed with error: %d\n", WSAGetLastError());
                 closesocket(ClientSocket);
+#if defined(WIN32)
+                printf("recv failed with error: %d\n", WSAGetLastError());
                 WSACleanup();
+#else
+                printf("recv failed\n");
+#endif
                 return 1;
             }
 
@@ -409,6 +485,7 @@ int server(const std::string& path, const std::string& port)
 
         // shutdown the connection since we're done
         iResult = shutdown(ClientSocket, SD_SEND);
+#if defined(WIN32)
         if (iResult == SOCKET_ERROR)
         {
             printf("shutdown failed with error: %d\n", WSAGetLastError());
@@ -416,6 +493,14 @@ int server(const std::string& path, const std::string& port)
             WSACleanup();
             return 1;
         }
+#else
+        if (iResult == -1)
+        {
+            printf("shutdown failed\n");
+            closesocket(ClientSocket);
+            return 1;
+        }
+#endif
 
         // cleanup
         closesocket(ClientSocket);
@@ -428,7 +513,9 @@ int server(const std::string& path, const std::string& port)
 
     // No longer need server socket
     closesocket(ListenSocket);
+#if defined(WIN32)
     WSACleanup();
+#endif
     
     return 0;
 }
