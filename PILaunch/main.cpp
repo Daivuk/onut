@@ -324,6 +324,13 @@ void handlePacket(const std::vector<char>& content)
             std::cout << "FILE: " << filename << std::endl;
         }
     }
+    else if (command == "DEL")
+    {
+        if (strCnt < 2) return;
+        std::string filename = content.data() + command.size() + 1;
+        remove(filename.c_str());
+        std::cout << "DELETE: " << filename << std::endl;
+    }
     else if (command == "CLEAR")
     {
         auto filenames = findAllFiles(serverPath, "*", true);
@@ -619,6 +626,15 @@ void sendFile(const std::string& filename, const std::string& path, const std::s
     }
 }
 
+void sendDeleteFile(const std::string& filename, const std::string& path, const std::string& ip, const std::string& port)
+{
+    auto relPath = getFilename(filename);
+    std::vector<char> content(4 + relPath.size() + 1, '\0');
+    memcpy(content.data(), "DEL", 3);
+    memcpy(content.data() + 4, relPath.data(), relPath.size());
+    sendData(content.data(), content.size(), ip, port);
+}
+
 void sendCommand(const std::string& command, const std::string& ip, const std::string& port)
 {
     sendData(command.data(), command.size() + 1, ip, port);
@@ -697,6 +713,33 @@ int client(const std::string& path)
                 }
             }
 
+            // Send deleted files
+            std::vector<std::string> deletedFiles;
+            auto it = files.begin();
+            for (; it != files.end();)
+            {
+                bool exists = false;
+                for (const auto& filename : filenames)
+                {
+                    if (filename == it->filename)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists)
+                {
+                    deletedFiles.push_back(it->filename);
+                    it = files.erase(it);
+                    continue;
+                }
+                ++it;
+            }
+            for (auto& filename : deletedFiles)
+            {
+                sendDeleteFile(filename, path, ip, port);
+            }
+
             // Send modified files
             for (auto& file : files)
             {
@@ -718,6 +761,7 @@ int client(const std::string& path)
         }
         else if (command == "CLEAR")
         {
+            files.clear();
             sendCommand("CLEAR", ip, port);
         }
     }
