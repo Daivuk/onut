@@ -891,10 +891,9 @@ declare class Entity {
     setStatic(_static: boolean);
     getName(): string;
     setName(name: string);
-    getComponent(type: Object): Component;
-    getParentComponent(type: Object): Component;
-    addComponent(type: Object): Component;
-    addComponent(component: Component);
+    getComponent(type: string): Component;
+    getParentComponent(type: string): Component;
+    addComponent(type: string): Component;
     sendMessage(id: string, data: Object);
     getDrawIndex(): number;
     setDrawIndex(drawIndex: number);
@@ -910,9 +909,25 @@ declare class Component {
     getEntity(): Entity;
     isEnabled(): boolean;
     setEnabled(enabled: boolean);
-    getComponent(type: Object): Component;
-    getParentComponent(type: Object): Component;
+    getComponent(type: string): Component;
+    getParentComponent(type: string): Component;
     sendMessage(id: string, data: Object);
     broadcastMessage(id: string, data: Object);
     destroy();
+
+// The followings are callbacks to components.
+/*
+    onCreate();
+    onUpdate(dt: number);
+    onRender();
+    onRender2d();
+    onMessage(id: string, data: Object);
+    onAddChild(child: Entity);
+    onRemoveChild(child: Entity);
+    onTriggerEnter(collider: Collider2DComponent);
+    onTriggerLeave(collider: Collider2DComponent);
+    onEnable();
+    onDisable();
+    onDestroy();
+*/
 }

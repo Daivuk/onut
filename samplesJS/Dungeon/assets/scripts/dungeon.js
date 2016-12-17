@@ -10,7 +10,6 @@ function Dungeon(filename) {
     var m_width = 0;
     var m_height = 0;
     var m_player = null;
-    var m_dungeonEntity;
     var m_rooms = [];
     var m_tiledMap = null;
     
@@ -26,7 +25,7 @@ function Dungeon(filename) {
 
         // Get the TiledMap from this entity
         var tiledMapComponent = m_dungeonEntity.getComponent(TiledMapComponent) as TiledMapComponent;
-        m_tiledMap = tiledMapComponent.getTiledMap();
+        m_tiledMap = getTiledMap(filename);
 
         // Store map dimensions
         m_width = m_tiledMap.getWidth();

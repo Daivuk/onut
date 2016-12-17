@@ -42,6 +42,83 @@
 // STL
 #include <set>
 
+// Forward declare
+#include <onut/ForwardDeclaration.h>
+ForwardDeclare(JSComponentDefinition);
+
+class JSComponentDefinition
+{
+public:
+    std::string name;
+
+    bool has_onCreate = false;
+    bool has_onUpdate = false;
+    bool has_onRender = false;
+    bool has_onRender2d = false;
+    bool has_onMessage = false;
+    bool has_onAddChild = false;
+    bool has_onRemoveChild = false;
+    bool has_onTriggerEnter = false;
+    bool has_onTriggerLeave = false;
+    bool has_onEnable = false;
+    bool has_onDisable = false;
+    bool has_onDestroy = false;
+};
+
+class JSComponent : public OComponent
+{
+public:
+    void onCreate()
+    {
+    }
+
+    void onUpdate()
+    {
+    }
+
+    void onRender()
+    {
+    }
+
+    void onRender2d()
+    {
+    }
+
+    void onMessage(int messageId, void* pData)
+    {
+    }
+
+    void onAddChild(const OEntityRef& pChild)
+    {
+    }
+
+    void onRemoveChild(const OEntityRef& pChild)
+    {
+    }
+
+    void onTriggerEnter(const OCollider2DComponentRef& pCollider)
+    {
+    }
+
+    void onTriggerLeave(const OCollider2DComponentRef& pCollider)
+    {
+    }
+
+    void onEnable()
+    {
+    }
+
+    void onDisable()
+    {
+    }
+
+    void onDestroy()
+    {
+    }
+
+    JSComponentDefinitionRef pDefinition;
+};
+
 namespace onut
 {
     namespace js
@@ -88,6 +165,8 @@ namespace onut
 
         void* pVideoPlayerPrototype = nullptr;
         void* pEntityPrototype = nullptr;
+
+        std::unordered_map<std::string, JSComponentDefinitionRef> jsComponentDefinitions;
 
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
@@ -8444,7 +8523,7 @@ namespace onut
             JS_INTERFACE_END("Loop");
 
             // Component bullshit
-            JS_GLOBAL_FUNCTION_BEGIN
+       /*     JS_GLOBAL_FUNCTION_BEGIN
             {
                 auto componentName = JS_STRING(0);
                 if (duk_get_global_string(ctx, componentName))
@@ -8462,7 +8541,7 @@ namespace onut
                     addJSComponentBindings(ctx);
 
                     // Check it's callbacks
-               /*     if (duk_get_prop_string(ctx, -3, "onCreate"))
+                    if (duk_get_prop_string(ctx, -3, "onCreate"))
                     {
                         pJSComponentType->p_onCreate = duk_get_heapptr(ctx, -3);
                         duk_pop(ctx);
@@ -8478,14 +8557,14 @@ namespace onut
                         pJSComponentType->flags |= OComponent::FLAG_RENDERABLE;
                         pJSComponentType->p_onRender = duk_get_heapptr(ctx, -3);
                         duk_pop(ctx);
-                    }*/
-                /*    if (duk_get_prop_string(ctx, -1, "onRender2d"))
+                    }
+                    if (duk_get_prop_string(ctx, -1, "onRender2d"))
                     {
                         pJSComponentType->flags |= OComponent::FLAG_RENDERABLE_2D;
                         pJSComponentType->p_onRender2d = duk_get_heapptr(ctx, -3);
                         duk_pop(ctx);
-                    }*/
-              /*      if (duk_get_prop_string(ctx, -3, "onMessage"))
+                    }
+                    if (duk_get_prop_string(ctx, -3, "onMessage"))
                     {
                         pJSComponentType->p_onMessage = duk_get_heapptr(ctx, -3);
                         duk_pop(ctx);
@@ -8530,7 +8609,7 @@ namespace onut
                     {
                         pJSComponentType->p_onDestroy = duk_get_heapptr(ctx, -3);
                         duk_pop(ctx);
-                    }*/
+                    }
 
                     // Register it
                     jsComponentTypesByName[componentName] = pJSComponentType;
@@ -8539,7 +8618,7 @@ namespace onut
                 return 0;
             }
             JS_GLOBAL_FUNCTION_END("registerComponent", 1);
-
+            */
             createMathsBinding();
             createResourceBindings();
             createAnimBindings();
@@ -8563,11 +8642,86 @@ namespace onut
             // Execute them
             for (auto& filename : scriptFilenames)
             {
-                if (duk_peval_file(pContext, filename.c_str()) != 0)
+                // Check to see if it's a component
+           /*     auto fileData = onut::getFileData(filename);
+                const char* componentPragma = "\"component\"";
+                auto componentPragmaLen = strlen(componentPragma);
+                bool isComponent = false;
+                if (fileData.size() >= componentPragmaLen + 1)
                 {
-                    OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
+#if defined(WIN32)
+                    if (!_strnicmp((const char*)fileData.data(), componentPragma, componentPragmaLen))
+#else
+                    if (!strnicmp((const char*)fileData.data(), componentPragma, componentPragmaLen))
+#endif
+                    {
+                        // It's a component!
+                        isComponent = true;
+                        fileData.push_back((uint8_t)'\n');
+                        fileData.push_back((uint8_t)'}');
+                        fileData.push_back((uint8_t)'\0');
+
+                        // Get component name from the filename
+                        auto componentName = onut::getFilenameWithoutExtension(filename);
+
+                        // Erase "component" pragma with spaces
+                        for (decltype(componentPragmaLen) i = 0; i < componentPragmaLen + 1; ++i) fileData[i] = ' ';
+
+                        // Wrap a "function" around the whole thing
+                        std::string header = "var " + componentName + " = function() {\n";
+                        fileData.insert(fileData.begin(), header.size(), ' ');
+                        memcpy(fileData.data(), header.data(), header.size());
+
+                        // Eval
+                        std::string fileString = (const char*)fileData.data();
+                        if (duk_peval_string(pContext, fileString.c_str()) != 0)
+                        {
+                            duk_pop(pContext);
+                            OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
+                        }
+                        else
+                        {
+                            duk_pop(pContext);
+
+                            // Find callbacks
+                            auto pJSComponentDefinition = OMake<JSComponentDefinition>();
+
+                            //if (duk_get_global_string(pContext, componentName.c_str()))
+                            //{
+                            //    duk_get_prop_string(pContext, -1, "onUpdate");
+                            //    duk_pop(pContext);
+                            //}
+
+                            //if (duk_peval_string(pContext, ("typeof " + componentName + ".onUpdate !== \"undefined\"").c_str()) == 0)
+                            //{
+                            //    auto ret = duk_to_boolean(pContext, 0);
+                            //    ret = true;
+                            //}
+                            if (duk_get_global_string(pContext, componentName.c_str()))
+                            {
+                                duk_push_object(pContext);
+                                if (duk_get_prop_string(pContext, -1, "onUpdate"))
+                                {
+                                    pJSComponentDefinition->has_onUpdate = true;
+                                    duk_pop(pContext);
+                                }
+                                duk_pop(pContext);
+                                duk_pop(pContext);
+                            }
+
+                            jsComponentDefinitions[componentName] = pJSComponentDefinition;
+                        }
+                    }
                 }
-                duk_pop(pContext);
+
+                if (!isComponent)
+                {*/
+                    if (duk_peval_file(pContext, filename.c_str()) != 0)
+                    {
+                        OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
+                    }
+                    duk_pop(pContext);
+          //      }
             }
         }
 

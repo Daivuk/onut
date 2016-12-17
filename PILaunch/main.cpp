@@ -324,6 +324,14 @@ void handlePacket(const std::vector<char>& content)
             std::cout << "FILE: " << filename << std::endl;
         }
     }
+    else if (command == "CLEAR")
+    {
+        auto filenames = findAllFiles(serverPath, "*", true);
+        for (const auto& filename : filenames)
+        {
+            remove(filename.c_str());
+        }
+    }
 }
 
 int server(const std::string& path, const std::string& port)
@@ -707,6 +715,10 @@ int client(const std::string& path)
         {
             // Force stop the game
             sendCommand("STOP", ip, port);
+        }
+        else if (command == "CLEAR")
+        {
+            sendCommand("CLEAR", ip, port);
         }
     }
 

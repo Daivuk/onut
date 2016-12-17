@@ -1,3 +1,4 @@
+/*
 function WhiteSquareComponent() {
     this.size = 64;
 }
@@ -45,7 +46,7 @@ var entity = Entity.create();
 entity.setStatic(true); // This square will not update and his rendering will potentially be batched.
 entity.addComponent(WhiteSquareComponent);
 entity.setTransform(Matrix.createTranslation(new Vector3(screen.x / 4, screen.y / 4, 0)));
-
+*/
 // Rotating square
 //entity = Entity.create();
 //entity.addComponent("WhiteSquareComponent");
