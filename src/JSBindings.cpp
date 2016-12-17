@@ -4039,6 +4039,109 @@ namespace onut
             }, 4);
             duk_put_prop_string(ctx, -2, "setTileAt");
 
+            // getObjectCount
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto layerName = JS_STRING(0, "");
+                        auto pLayer = dynamic_cast<OTiledMap::ObjectLayer*>((*ppTiledMap)->getLayer(layerName));
+                        if (pLayer)
+                        {
+                            duk_push_uint(ctx, (duk_uint_t)pLayer->objectCount);
+                            return 1;
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_INT(0);
+                        auto pLayer = dynamic_cast<OTiledMap::ObjectLayer*>((*ppTiledMap)->getLayer(layer));
+                        if (pLayer)
+                        {
+                            duk_push_uint(ctx, (duk_uint_t)pLayer->objectCount);
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getObjectCount");
+
+            // getObject
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    OTiledMap::ObjectLayer* pLayer = nullptr;
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto layerName = JS_STRING(0, "");
+                        pLayer = dynamic_cast<OTiledMap::ObjectLayer*>((*ppTiledMap)->getLayer(layerName));
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_INT(0);
+                        pLayer = dynamic_cast<OTiledMap::ObjectLayer*>((*ppTiledMap)->getLayer(layer));
+                    }
+                    if (pLayer)
+                    {
+                        int index = -1;
+                        if (duk_is_string(ctx, 1))
+                        {
+                            auto name = JS_STRING(1);
+                            for (int i = 0; i < (int)pLayer->objectCount; ++i)
+                            {
+                                if (pLayer->pObjects[i].name == name)
+                                {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (duk_is_number(ctx, 1))
+                        {
+                            index = JS_INT(1, 0);
+                        }
+                        if (index >= 0 && index < (int)pLayer->objectCount)
+                        {
+                            const auto& object = pLayer->pObjects[index];
+                            duk_push_object(ctx);
+                            
+                            newVector2(ctx, object.position);
+                            duk_put_prop_string(ctx, -2, "position");
+                            newVector2(ctx, object.size);
+                            duk_put_prop_string(ctx, -2, "size");
+                            duk_push_uint(ctx, (duk_uint_t)object.id);
+                            duk_put_prop_string(ctx, -2, "id");
+                            duk_push_string(ctx, object.name.c_str());
+                            duk_put_prop_string(ctx, -2, "name");
+                            duk_push_string(ctx, object.type.c_str());
+                            duk_put_prop_string(ctx, -2, "type");
+                            duk_push_object(ctx);
+                            for (const auto& kv : object.properties)
+                            {
+                                duk_push_string(ctx, kv.second.c_str());
+                                duk_put_prop_string(ctx, -2, kv.first.c_str());
+                            }
+                            duk_put_prop_string(ctx, -2, "properties");
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "getObject");
+
             // Done with the object
             pTiledMapPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
