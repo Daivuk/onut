@@ -4246,12 +4246,18 @@ namespace onut
             {
                 auto animName = JS_STRING(0);
                 auto fps = JS_FLOAT(1, 0.f);
+                auto force = JS_BOOL(2, false);
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
                 if (ppSpriteAnimInstance)
                 {
-                    (*ppSpriteAnimInstance)->play(animName, fps);
+                    auto pSpriteAnimInstance = *ppSpriteAnimInstance;
+                    if (force || (pSpriteAnimInstance->getCurrentAnim() &&
+                        pSpriteAnimInstance->getCurrentAnim()->name != animName))
+                    {
+                        pSpriteAnimInstance->play(animName, fps);
+                    }
                 }
                 return 0;
             }, 2);
@@ -4262,12 +4268,18 @@ namespace onut
             {
                 auto animName = JS_STRING(0);
                 auto fps = JS_FLOAT(1, 0.f);
+                auto force = JS_BOOL(2, false);
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
                 if (ppSpriteAnimInstance)
                 {
-                    (*ppSpriteAnimInstance)->playBackward(animName, fps);
+                    auto pSpriteAnimInstance = *ppSpriteAnimInstance;
+                    if (force || (pSpriteAnimInstance->getCurrentAnim() &&
+                        pSpriteAnimInstance->getCurrentAnim()->name != animName))
+                    {
+                        pSpriteAnimInstance->playBackward(animName, fps);
+                    }
                 }
                 return 0;
             }, 2);
