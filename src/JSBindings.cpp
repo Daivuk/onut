@@ -440,6 +440,7 @@ namespace onut
 
         static bool getBool(duk_context *ctx, duk_idx_t index, bool in_default = false)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_boolean(ctx, index) == 1 ? true : false;
         }

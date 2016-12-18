@@ -457,6 +457,8 @@ int server(const std::string& path, const std::string& port)
     }
 #endif
 
+    std::cout << "running...\n";
+
     while (1)
     {
         // Accept a client socket
@@ -667,6 +669,7 @@ int client(const std::string& path)
     std::vector<std::string> filenames;
     std::string ip;
     std::string port;
+    std::cout << "running...\n";
     while (true)
     {
         std::cout << "> ";
