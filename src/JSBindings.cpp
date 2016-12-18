@@ -296,6 +296,7 @@ namespace onut
 
         static Vector2 getVector2(duk_context *ctx, duk_idx_t index, const Vector2& in_default = Vector2::Zero)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 FLOAT_PROP(x, index);
@@ -312,6 +313,7 @@ namespace onut
 
         static Point getPoint(duk_context *ctx, duk_idx_t index, const Point& in_default = Point(0, 0))
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 INT_PROP(x, index);
@@ -328,6 +330,7 @@ namespace onut
 
         static Vector3 getVector3(duk_context *ctx, duk_idx_t index, const Vector3& in_default = Vector3::Zero)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 FLOAT_PROP(x, index);
@@ -345,6 +348,7 @@ namespace onut
 
         static Vector4 getVector4(duk_context *ctx, duk_idx_t index, const Vector4& in_default = Vector4::Zero)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 FLOAT_PROP(x, index);
@@ -363,6 +367,7 @@ namespace onut
 
         static Vector4 getRect(duk_context *ctx, duk_idx_t index, const Vector4& in_default = Vector4::Zero)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 FLOAT_PROP(x, index);
@@ -381,6 +386,7 @@ namespace onut
 
         static iRect getiRect(duk_context *ctx, duk_idx_t index, const iRect& in_default = {0, 0, 1, 1})
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 INT_PROP(x, index);
@@ -399,6 +405,7 @@ namespace onut
 
         static Color getColor(duk_context *ctx, duk_idx_t index, const Color& in_default = Color::White)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_object(ctx, index))
             {
                 FLOAT_PROP(r, index);
@@ -417,6 +424,7 @@ namespace onut
 
         static Matrix getMatrix(duk_context *ctx, duk_idx_t index, const Matrix& in_default = Matrix::Identity)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
             Matrix ret;
             FLOAT_PROP2(ret._11, "_11", index);
@@ -447,24 +455,28 @@ namespace onut
 
         static float getFloat(duk_context *ctx, duk_idx_t index, float in_default = 0.0f)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return (float)duk_to_number(ctx, index);
         }
 
         static unsigned int getUInt(duk_context *ctx, duk_idx_t index, unsigned int in_default = 0)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_uint(ctx, index);
         }
 
         static int getInt(duk_context *ctx, duk_idx_t index, int in_default = 0)
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_int(ctx, index);
         }
 
         static const char* getString(duk_context *ctx, duk_idx_t index, const char* in_default = "")
         {
+            if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
             return duk_to_string(ctx, index);
         }
@@ -472,6 +484,7 @@ namespace onut
         template<typename Tresource>
         static std::shared_ptr<Tresource> getResource(duk_context *ctx, duk_idx_t index)
         {
+            if (index >= duk_get_top(ctx)) return nullptr;
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
             if (duk_is_string(ctx, index))
@@ -497,6 +510,7 @@ namespace onut
 
         static OSpriteAnimInstanceRef getSpriteAnimInstance(duk_context *ctx, duk_idx_t index)
         {
+            if (index >= duk_get_top(ctx)) return nullptr;
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
             if (duk_is_string(ctx, index))
@@ -522,6 +536,7 @@ namespace onut
 
         static OEmitterInstance* getParticleEmitter(duk_context *ctx, duk_idx_t index)
         {
+            if (index >= duk_get_top(ctx)) return nullptr;
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
             duk_get_prop_string(ctx, index, "\xff""\xff""data");
@@ -534,6 +549,7 @@ namespace onut
         template<typename Ttype>
         static std::shared_ptr<Ttype> getRefType(duk_context *ctx, duk_idx_t index)
         {
+            if (index >= duk_get_top(ctx)) return nullptr;
             if (duk_is_null_or_undefined(ctx, index)) return nullptr;
 
             duk_get_prop_string(ctx, index, "\xff""\xff""data");
@@ -597,6 +613,7 @@ namespace onut
 
         static FunctionRef getFunction(duk_context* ctx, int index)
         {
+            if (index >= duk_get_top(ctx)) return nullptr;
             if (duk_is_function(ctx, index))
             {
                 auto pFunction = OMake<Function>(ctx, index);
