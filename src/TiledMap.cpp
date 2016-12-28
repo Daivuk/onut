@@ -291,6 +291,7 @@ namespace onut
 
     TiledMap::~TiledMap()
     {
+        if (m_pCollisionTiles) delete[] m_pCollisionTiles;
         if (m_layers)
         {
             for (auto i = 0; i < m_layerCount; ++i)
@@ -309,6 +310,22 @@ namespace onut
             if (m_layers[i]->name == name) return m_layers[i];
         }
         return nullptr;
+    }
+
+    bool* TiledMap::generateCollisions(const std::string &collisionLayerName)
+    {
+        if (m_pCollisionTiles) return m_pCollisionTiles;
+        auto pLayer = dynamic_cast<TileLayer*>(getLayer(collisionLayerName));
+        if (pLayer)
+        {
+            int len = m_width * m_height;
+            m_pCollisionTiles = new bool[len];
+            for (int i = 0; i < len; ++i)
+            {
+                m_pCollisionTiles[i] = pLayer->tileIds[i] == 0;
+            }
+        }
+        return m_pCollisionTiles;
     }
 
     TiledMap::TileSet* TiledMap::getTileSet(int index) const

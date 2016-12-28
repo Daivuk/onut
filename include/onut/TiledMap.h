@@ -86,8 +86,10 @@ namespace onut
         TileSet* getTileSet(const std::string& name) const;
 
         int getLayerCount() const { return m_layerCount; }
-        Layer *getLayer(int index) const { return m_layers[index]; }
-        Layer *getLayer(const std::string &name) const;
+        Layer* getLayer(int index) const { return m_layers[index]; }
+        Layer* getLayer(const std::string &name) const;
+        bool* generateCollisions(const std::string &collisionLayerName);
+        bool* getCollisionTiles() const { return m_pCollisionTiles; }
 
         const OTextureRef& getMinimap();
 
@@ -120,6 +122,7 @@ namespace onut
         Matrix m_transform = Matrix::Identity;
         onut::sample::Filtering m_filtering = OFilterNearest;
         OTextureRef m_pMinimap;
+        bool* m_pCollisionTiles = nullptr;
     };
 };
 

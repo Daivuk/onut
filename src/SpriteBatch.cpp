@@ -549,8 +549,8 @@ namespace onut
         auto textureSize = m_pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
-        sizexf *= (uvs.z - uvs.x);
-        sizeyf *= (uvs.w - uvs.y);
+        sizexf *= std::abs(uvs.z - uvs.x);
+        sizeyf *= std::abs(uvs.w - uvs.y);
         auto hSize = Vector2(sizexf * .5f * scale, sizeyf * .5f * scale);
         auto radTheta = OConvertToRadians(rotation);
         auto sinTheta = std::sin(radTheta);

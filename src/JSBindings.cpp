@@ -2833,6 +2833,7 @@ namespace onut
         {
             duk_push_object(ctx);
             auto ppTiledMap = new OTiledMapRef(pTiledMap);
+            pTiledMap->generateCollisions("collisions");
             duk_push_pointer(ctx, ppTiledMap);
             duk_put_prop_string(ctx, -2, "\xff""\xff""data");
             duk_push_heapptr(ctx, pTiledMapPrototype);
@@ -4159,6 +4160,63 @@ namespace onut
                 return 0;
             }, 2);
             duk_put_prop_string(ctx, -2, "getObject");
+
+            // Perform 2d collisions on the tiledmap
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        auto pTiles = pTiledMap->getCollisionTiles();
+                        if (pTiles)
+                        {
+                            auto from = JS_VECTOR2(0);
+                            auto to = JS_VECTOR2(1);
+                            auto size = JS_VECTOR2(2);
+                            auto ret = onut::tilesCollision(from, to, size, pTiles, pTiledMap->getWidth(), pTiledMap->getHeight(), pTiledMap->getTileSize());
+                            newVector2(ctx, ret);
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "collision");
+
+            // Set a tile to be passable or not
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        auto pTiles = pTiledMap->getCollisionTiles();
+                        if (pTiles)
+                        {
+                            auto x = JS_INT(0, -1);
+                            auto y = JS_INT(1, -1);
+                            auto passable = JS_BOOL(2, true);
+                            if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
+                            {
+                                pTiles[y * pTiledMap->getHeight() + x] = passable;
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "setCollision");
 
             // Done with the object
             pTiledMapPrototype = duk_get_heapptr(ctx, -1);
