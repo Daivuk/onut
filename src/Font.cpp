@@ -49,7 +49,7 @@ namespace onut
         std::vector<std::string> split;
         while (!in.eof())
         {
-            split = splitString(line, ' ');
+            split = splitString(line, " \n\r");
             std::string command = split[0];
             if (command == "info") {}
             else if (command == "common")
@@ -74,7 +74,6 @@ namespace onut
 
                 // Load its texture
                 pNewPage->pTexture = pContentManager->getResourceAs<OTexture>(pNewPage->file);
-                OLog("font texture: " + std::to_string((uintptr_t)pNewPage->pTexture.get()));
             }
             else if (command == "chars")
             {
