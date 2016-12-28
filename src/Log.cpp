@@ -64,7 +64,7 @@ namespace onut
         if (pFont)
         {
             Vector2 pos(0.0f, OScreenHf - 12.f);
-            for (auto& rit = s_logHistory.rbegin(); rit != s_logHistory.rend(); ++rit)
+            for (auto rit = s_logHistory.rbegin(); rit != s_logHistory.rend(); ++rit)
             {
                 pFont->draw(*rit, pos);
                 pos.y -= 12.f;
