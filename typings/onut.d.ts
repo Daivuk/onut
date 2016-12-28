@@ -283,6 +283,12 @@ declare class Matrix {
 }
 
 // Anims
+declare class BoolKeyframe {
+    value: boolean;
+    duration: number;
+    tween: Tween;
+    callback: Function;
+}
 declare class BoolAnim {
     constructor();
     constructor(value: boolean);
@@ -291,11 +297,17 @@ declare class BoolAnim {
     playSingle(from: boolean, to: boolean, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: boolean, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: boolean, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: boolean, keyFrames: BoolKeyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class NumberKeyframe {
+    value: number;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class NumberAnim {
     constructor();
@@ -305,11 +317,17 @@ declare class NumberAnim {
     playSingle(from: number, to: number, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: number, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: number, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: number, keyFrames: NumberKeyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class Vector2Keyframe {
+    value: Vector2;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class Vector2Anim {
     constructor();
@@ -319,11 +337,17 @@ declare class Vector2Anim {
     playSingle(from: Vector2, to: Vector2, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: Vector2, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: Vector2, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: Vector2, keyFrames: Vector2Keyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class Vector3Keyframe {
+    value: Vector3;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class Vector3Anim {
     constructor();
@@ -333,11 +357,17 @@ declare class Vector3Anim {
     playSingle(from: Vector3, to: Vector3, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: Vector3, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: Vector3, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: Vector3, keyFrames: Vector3Keyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class Vector4Keyframe {
+    value: Vector4;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class Vector4Anim {
     constructor();
@@ -347,11 +377,17 @@ declare class Vector4Anim {
     playSingle(from: Vector4, to: Vector4, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: Vector4, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: Vector4, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: Vector4, keyFrames: Vector4Keyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class RectKeyframe {
+    value: Rect;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class RectAnim {
     constructor();
@@ -361,11 +397,17 @@ declare class RectAnim {
     playSingle(from: Rect, to: Rect, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: Rect, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: Rect, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: Rect, keyFrames: RectKeyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class MatrixKeyframe {
+    value: Matrix;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class MatrixAnim {
     constructor();
@@ -375,11 +417,17 @@ declare class MatrixAnim {
     playSingle(from: Matrix, to: Matrix, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: Matrix, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: Matrix, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: Matrix, keyFrames: MatrixKeyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
     isPlaying(): boolean;
+}
+declare class ColorKeyframe {
+    value: Color;
+    duration: number;
+    tween: Tween;
+    callback: Function;
 }
 declare class ColorAnim {
     constructor();
@@ -389,7 +437,7 @@ declare class ColorAnim {
     playSingle(from: Color, to: Color, duration: number, tween: Tween, loop: Loop, callback: () => void);
     queue(to: Color, duration: number, tween: Tween, callback: () => void);
     play(loop: Loop);
-    playKeyFrames(from: Color, keyFrames: Object[], loop: Loop);
+    playKeyFrames(from: Color, keyFrames: ColorKeyframe[], loop: Loop);
     stop();
     stopAndGoToEnd();
     pause();
@@ -506,6 +554,14 @@ declare class SoundInstance {
 declare function createSoundInstance(filename: string): SoundInstance;
 
 // TiledMap
+declare class TiledMapObject {
+    position: Vector2;
+    size: Vector2;
+    id: number;
+    name: string;
+    type: string;
+    properties: Object;
+}
 declare class TiledMap {
     static createFromFile(filename: string): TiledMap;
 
@@ -516,6 +572,13 @@ declare class TiledMap {
     getTileAt(layerName: string, x: number, y: number): number;
     setTileAt(layerIndex: number, x: number, y: number, tile: number);
     setTileAt(layerName: string, x: number, y: number, tile: number);
+    getObjectCount(layerIndex: number): number;
+    getObjectCount(layerName: string): number;
+    getObject(layerIndex: number, objectIndex: number): TiledMapObject;
+    getObject(layerName: string, objectIndex: number): TiledMapObject;
+    getObject(layerIndex: number, objectName: string): TiledMapObject;
+    getObject(layerName: string, objectName: string): TiledMapObject;
+    getLayerIndex(layerName: string): number;
 
     render();
     render(rect: Rect);
@@ -524,6 +587,9 @@ declare class TiledMap {
     renderLayer(layerIndex: number, rect: Rect);
     renderLayer(layerName: string);
     renderLayer(layerName: string, rect: Rect);
+
+    collision(from: Vector2, to: Vector2, size: Vector2): Vector2;
+    setCollision(x: number, y: number, passable: boolean);
 }
 /** Same as TiledMap.createFromFile */
 declare function getTiledMap(filename: string): TiledMap;
@@ -539,10 +605,10 @@ declare function getTiledMap(filename: string): SpriteAnim;
 
 // SpriteAnimInstance
 declare class SpriteAnimInstance {
-    play(animName: String);
-    play(animName: string, fps: number);
-    playBackward(animName: String);
-    playBackward(animName: String, fps: number);
+    play(animName: String, force: boolean);
+    play(animName: string, fps: number, force: boolean);
+    playBackward(animName: String, force: boolean);
+    playBackward(animName: String, fps: number, force: boolean);
     queue(animName: String);
     stop();
     stopAndReset();
@@ -891,9 +957,10 @@ declare class Entity {
     setStatic(_static: boolean);
     getName(): string;
     setName(name: string);
-    getComponent(type: string): Component;
-    getParentComponent(type: string): Component;
-    addComponent(type: string): Component;
+    getComponent(type: Object): Component;
+    getParentComponent(type: Object): Component;
+    addComponent(type: Object): Component;
+    addComponent(component: Component);
     sendMessage(id: string, data: Object);
     getDrawIndex(): number;
     setDrawIndex(drawIndex: number);
@@ -909,25 +976,9 @@ declare class Component {
     getEntity(): Entity;
     isEnabled(): boolean;
     setEnabled(enabled: boolean);
-    getComponent(type: string): Component;
-    getParentComponent(type: string): Component;
+    getComponent(type: Object): Component;
+    getParentComponent(type: Object): Component;
     sendMessage(id: string, data: Object);
     broadcastMessage(id: string, data: Object);
     destroy();
-
-// The followings are callbacks to components.
-/*
-    onCreate();
-    onUpdate(dt: number);
-    onRender();
-    onRender2d();
-    onMessage(id: string, data: Object);
-    onAddChild(child: Entity);
-    onRemoveChild(child: Entity);
-    onTriggerEnter(collider: Collider2DComponent);
-    onTriggerLeave(collider: Collider2DComponent);
-    onEnable();
-    onDisable();
-    onDestroy();
-*/
 }

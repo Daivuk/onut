@@ -1,0 +1,10 @@
+resolution=500x500
+retroResolution=256x160
+retroMode=true
+gameName=GameJam
+resizableWindow=false
+fullscreen=true
+fixedStep=false
+appId=0
+appSecret=0
+onScreenLog=true
