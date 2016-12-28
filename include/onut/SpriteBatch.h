@@ -73,6 +73,7 @@ namespace onut
         SVertexP2T2C4* m_pMappedVertexBuffer = nullptr;
 
         bool m_isDrawing = false;
+        bool m_snapToPixel = false;
 
         OTextureRef m_pTexWhite = nullptr;
 

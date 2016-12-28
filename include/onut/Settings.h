@@ -62,6 +62,9 @@ namespace onut
         void setUserSetting(const SettingKey& key, const SettingValue& value);
         const SettingValue& getUserSetting(const SettingKey& key);
 
+        bool getShowOnScreenLog() const { return m_showOnScreenLog; }
+        void setShowOnScreenLog(bool showOnScreenLog);
+
     private:
         using UserSettings = std::unordered_map<SettingKey, SettingValue>;
 
@@ -76,6 +79,7 @@ namespace onut
         UserSettings m_userSettings;
         std::string m_appId = "";
         std::string m_appSecret = "";
+        bool m_showOnScreenLog = false;
 
         std::atomic<bool> m_isDirty;
         std::atomic<bool> m_isRunning;

@@ -14,6 +14,9 @@ namespace onut
     };
 
     void log(LogSeverity logSeverity, const std::string& message);
+
+    void initLog();
+    void drawLog();
 };
 
 void OLog(const std::string& message);

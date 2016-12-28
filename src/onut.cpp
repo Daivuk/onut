@@ -9,6 +9,7 @@
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/Log.h>
 #include <onut/onut.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
@@ -301,6 +302,10 @@ namespace onut
 
             // Render
             oTiming->render();
+            if (oSettings->getShowOnScreenLog() && oSettings->getIsRetroMode())
+            {
+                oRenderer->clear(Color::Black);
+            }
 #if defined(__unix__)
             if (oSettings->getIsRetroMode())
             {
@@ -339,6 +344,11 @@ namespace onut
 #else
                 oSpriteBatch->drawRect(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
 #endif // __unix__
+                // Show the log
+                if (oSettings->getShowOnScreenLog())
+                {
+                    onut::drawLog();
+                }
                 oSpriteBatch->end();
                 oSpriteBatch->changeBlendMode(OBlendAlpha);
                 oSpriteBatch->changeFiltering(OFilterLinear);
@@ -396,6 +406,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
         OArguments.push_back(onut::utf16ToUtf8(argvW[i]));
     }
     initSettings();
+    onut::initLog();
     onut::run(init, update, render, postRender);
     return 0;
 }

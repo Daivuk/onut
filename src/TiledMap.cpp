@@ -312,6 +312,15 @@ namespace onut
         return nullptr;
     }
 
+    int TiledMap::getLayerIndex(const std::string &name) const
+    {
+        for (int i = 0; i < m_layerCount; ++i)
+        {
+            if (m_layers[i]->name == name) return i;
+        }
+        return -1;
+    }
+
     bool* TiledMap::generateCollisions(const std::string &collisionLayerName)
     {
         if (m_pCollisionTiles) return m_pCollisionTiles;

@@ -4218,6 +4218,26 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "setCollision");
 
+            // getLayerIndex
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        duk_push_int(ctx, (duk_int_t)pTiledMap->getLayerIndex(JS_STRING(0, "")));
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getLayerIndex");
+
             // Done with the object
             pTiledMapPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -8821,11 +8841,17 @@ namespace onut
             // Search for all scripts
             auto& searchPaths = oContentManager->getSearchPaths();
             std::set<std::string> scriptFilenames;
+            std::string mainJS;
             for (auto& searchPath : searchPaths)
             {
                 auto ret = onut::findAllFiles(searchPath, "js");
                 for (auto& filename : ret)
                 {
+                    if (onut::toUpper(onut::getFilename(filename)) == "MAIN.JS")
+                    {
+                        mainJS = filename;
+                        continue;
+                    }
                     scriptFilenames.insert(filename);
                 }
             }
@@ -8913,6 +8939,15 @@ namespace onut
                     }
                     duk_pop(pContext);
           //      }
+            }
+
+            if (!mainJS.empty())
+            {
+                if (duk_peval_file(pContext, mainJS.c_str()) != 0)
+                {
+                    OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
+                }
+                duk_pop(pContext);
             }
         }
 

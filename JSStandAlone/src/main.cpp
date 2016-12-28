@@ -95,6 +95,11 @@ void initSettings()
                 {
                     oSettings->setAppSecret(value);
                 }
+                else if (what == "ONSCREENLOG")
+                {
+                    value = onut::toUpper(value);
+                    oSettings->setShowOnScreenLog(value == "TRUE" || value == "1" || value == "ON");
+                }
             }
             fic.close();
         }

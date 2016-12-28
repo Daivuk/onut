@@ -2,6 +2,7 @@
 #include <onut/IndexBuffer.h>
 #include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
+#include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/VertexBuffer.h>
@@ -40,6 +41,8 @@ namespace onut
             indices[i * 6 + 5] = i * 4 + 0;
         }
         m_pIndexBuffer = OIndexBuffer::createStatic(indices, sizeof(indices));
+
+        m_snapToPixel = oSettings->getIsRetroMode();
     }
 
     SpriteBatch::~SpriteBatch()
@@ -51,9 +54,16 @@ namespace onut
         begin(Matrix::Identity, blendMode);
     }
 
-    void SpriteBatch::begin(const Matrix& transform, BlendMode blendMode)
+    void SpriteBatch::begin(const Matrix& in_transform, BlendMode blendMode)
     {
         assert(!m_isDrawing); // Cannot call begin() twice without calling end()
+
+        auto transform = in_transform;
+        if (m_snapToPixel)
+        {
+            transform._41 = std::round(transform._41);
+            transform._42 = std::round(transform._42);
+        }
 
         oRenderer->setupFor2D(transform);
 
@@ -704,6 +714,21 @@ namespace onut
         {
             return; // Nothing to flush
         }
+
+        if (m_snapToPixel)
+        {
+            auto len = m_spriteCount * 4;
+            auto pVert = m_pMappedVertexBuffer;
+            float xy[2];
+            for (unsigned int i = 0; i < len; ++i, ++pVert)
+            {
+                memcpy(xy, pVert, sizeof(xy));
+                xy[0] = std::round(xy[0]);
+                xy[1] = std::round(xy[1]);
+                memcpy(pVert, xy, sizeof(xy));
+            }
+        }
+
         m_pVertexBuffer->unmap(sizeof(SVertexP2T2C4) * m_spriteCount * 4);
 
         oRenderer->renderStates.textures[0] = m_pTexture;

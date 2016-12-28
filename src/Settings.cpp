@@ -127,6 +127,11 @@ namespace onut
         m_appSecret = appSecret;
     }
 
+    void Settings::setShowOnScreenLog(bool showOnScreenLog)
+    {
+        m_showOnScreenLog = showOnScreenLog;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);

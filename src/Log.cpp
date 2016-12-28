@@ -1,5 +1,9 @@
 // Onut
 #include <onut/Log.h>
+#include <onut/Font.h>
+#include <onut/Renderer.h>
+#include <onut/Settings.h>
+#include <onut/SpriteBatch.h>
 
 // Third party
 #if defined(WIN32)
@@ -10,9 +14,20 @@
 #if !defined(WIN32)
 #include <iostream>
 #endif
+#include <mutex>
+#include <vector>
 
 namespace onut
 {
+    static bool s_showOnScreenLog = false;
+    static std::mutex s_onScreenLogMutex;
+    static std::vector<std::string> s_logHistory;
+
+    void initLog()
+    {
+        s_showOnScreenLog = oSettings->getShowOnScreenLog();
+    }
+
     void log(LogSeverity logSeverity, const std::string& message)
     {
         std::string output;
@@ -34,6 +49,27 @@ namespace onut
 #else
         std::cout << output;
 #endif
+        if (s_showOnScreenLog)
+        {
+            s_onScreenLogMutex.lock();
+            s_logHistory.push_back(message);
+            while (s_logHistory.size() > 10) s_logHistory.erase(s_logHistory.begin());
+            s_onScreenLogMutex.unlock();
+        }
+    }
+
+    void drawLog()
+    {
+        auto pFont = OGetFont("font.fnt");
+        if (pFont)
+        {
+            Vector2 pos(0.0f, OScreenHf - 12.f);
+            for (auto& rit = s_logHistory.rbegin(); rit != s_logHistory.rend(); ++rit)
+            {
+                pFont->draw(*rit, pos);
+                pos.y -= 12.f;
+            }
+        }
     }
 };
 
