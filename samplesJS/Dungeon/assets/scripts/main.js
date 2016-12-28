@@ -39,7 +39,7 @@ function render()
         SpriteBatch.end();
     }
 
-    //SpriteBatch.begin();
-    //SpriteBatch.drawText(font, JSON.stringify(ent_player));
-    //SpriteBatch.end();
+    SpriteBatch.begin();
+    SpriteBatch.drawText(font, "Hello World");
+    SpriteBatch.end();
 }

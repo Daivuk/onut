@@ -1,6 +1,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Font.h>
+#include <onut/Log.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Strings.h>
 #include <onut/Texture.h>
@@ -73,6 +74,7 @@ namespace onut
 
                 // Load its texture
                 pNewPage->pTexture = pContentManager->getResourceAs<OTexture>(pNewPage->file);
+                OLog("font texture: " + std::to_string((uintptr_t)pNewPage->pTexture.get()));
             }
             else if (command == "chars")
             {
