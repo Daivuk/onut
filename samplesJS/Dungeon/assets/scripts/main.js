@@ -5,9 +5,8 @@ var player = player_init();
 
 doors_init();
 room_init();
-var startRoom = room_getAt(Math.floor(player.position.x / 16), Math.floor(player.position.y / 16));
-room_show(startRoom);
-var camera = new Vector2(startRoom.center);
+var currentRoom = room_getAt(Math.floor(player.position.x / 16), Math.floor(player.position.y / 16));
+room_show(currentRoom);
 
 function drawEntity(entity)
 {
@@ -16,8 +15,11 @@ function drawEntity(entity)
 
 function update(dt)
 {
-    if (fadeAnim.isPlaying()) return;
-    player_update(dt, player);
+    if (!fadeAnim.isPlaying())
+    {
+        player_update(dt, player);
+    }
+    camera = room_calculateCameraPos(currentRoom, player.position);
 }
 
 function render()

@@ -63,9 +63,8 @@ function player_update(dt, entity)
                 fadeAnim.queue(1, 0.5, Tween.LINEAR, function() 
                 {
                     door_traverse(entity, door);
-                    var newRoom = room_getAt(Math.floor(entity.position.x / 16), Math.floor(entity.position.y / 16));
-                    room_show(newRoom);
-                    camera = new Vector2(newRoom.center);
+                    currentRoom = room_getAt(Math.floor(entity.position.x / 16), Math.floor(entity.position.y / 16));
+                    room_show(currentRoom);
                 });
                 fadeAnim.queue(0, 0.5);
                 fadeAnim.play(false);

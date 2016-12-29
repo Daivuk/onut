@@ -52,6 +52,8 @@ function room_createAt(x, y)
     }
 
     room.center = room.topLeft.add(room.bottomRight.add(1)).mul(8);
+    room.topLeft = room.topLeft.mul(16);
+    room.bottomRight = room.bottomRight.mul(16);
 
     return room;
 }
@@ -97,4 +99,22 @@ function room_show(room)
         var y = Math.floor(tiles[i] / mapSize.x);
         tiledMap.setTileAt(fowLayer, x, y, 0);
     }
+}
+
+function room_calculateCameraPos(room, position)
+{
+    var camPos = new Vector2(position);
+    if (room.bottomRight.x - room.topLeft.x > 160)
+    {
+        camPos.x = Math.max(camPos.x, room.topLeft.x + 80);
+        camPos.x = Math.min(camPos.x, room.bottomRight.x - 64);
+    }
+    else camPos.x = room.center.x;
+    if (room.bottomRight.y - room.topLeft.y > 112)
+    {
+        camPos.y = Math.max(camPos.y, room.topLeft.y + 56);
+        camPos.y = Math.min(camPos.y, room.bottomRight.y - 40);
+    }
+    else camPos.y = room.center.y;
+    return camPos;
 }
