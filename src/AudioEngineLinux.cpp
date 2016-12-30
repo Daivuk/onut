@@ -54,6 +54,13 @@ namespace onut
             
             if (pBuffer)
             {
+                while (1)
+                {
+                    auto latency = audioplay_get_latency(m_pHandle);
+                    if (latency < (getSampleRate() * (m_minLatency + 10)) / 1000) break;
+                    std::this_thread::sleep_for(std::chrono::microseconds(10));
+                }
+
                 progressInstances(m_frameCount, getSampleRate(), m_channelCount, m_pFloatBuffer);
                 int16_t* pOut = (int16_t*)pBuffer;
                 auto len = m_frameCount * m_channelCount;
