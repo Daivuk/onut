@@ -1,3 +1,12 @@
+// Print log
+function print(arg: string);
+
+// Delay function
+function setTimeout(callback: Function, timeMS: number);
+
+// Call at the begining of the next frame
+function defer(callback: Function);
+
 // Maths
 declare class Vector2 {
     static distance(v1: Vector2, v2: Vector2): number;
@@ -747,7 +756,7 @@ declare namespace SpriteBatch {
     function end();
 
     function drawRect(texture: Texture, rect: Rect, color: Color);
-    function drawinclinedRect(texture: Texture, rect: Rect, incliinedRatio: number, color: Color);
+    function drawInclinedRect(texture: Texture, rect: Rect, inclinedRatio: number, color: Color);
     function drawRectWithColors(texture: Texture, rect: Rect, topLeft: Color, bottomLeft: Color, bottomRight: Color, topRight: Color);
     function drawRectWithUVs(texture: Texture, rect: Rect, uvs: Vector4, color: Color);
     function draw4Corner(texture: Texture, rect: Rect, color: Color);

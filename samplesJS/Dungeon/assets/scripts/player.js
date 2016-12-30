@@ -1,13 +1,13 @@
 // Constants
-var MOV_SPEED = 64;
+var PLAYER_MOV_SPEED = 64;
+var PLAYER_DAMAGE = 1;
+var PLAYER_DAMAGE_RADIUS = 8;
+var PLAYER_DAMAGE_OFFSET = 8;
 
 function player_init(entity)
 {
-    // Center the player on the tile
-    entity.position = entity.size.div(2).add(entity.position);
-
-    // Force the size on th eplayer
-    entity.size = new Vector2(8, 8);
+    // Player is smaller
+    entity.size = new Vector2(4, 4);
 
     // Anims
     entity.spriteAnim = playSpriteAnim("baltAnims.spriteanim", "idle_s"),
@@ -31,14 +31,21 @@ function player_doneAttacking(entity)
     entity.isAttacking = false;
 }
 
-function player_updateControls(dt, entity)
+function player_updateControls(entity, dt)
 {
     if (Input.isJustDown(Key.XARCADE_LBUTTON_1) || Input.isJustDown(Key.SPACE_BAR))
     {
         entity.isAttacking = true;
         entity.attackAnim.play("attack");
         entity.spriteAnim.play("attack_" + entity.dir);
-        setTimeout(function() {entity.isAttacking = false}, 250);
+        playSound("swoosh.wav");
+        setTimeout(function() {player_doneAttacking(entity)}, 250);
+
+        // Damage area in front of us
+        if (entity.dir == "e") radiusDamage(Entity, entity.position.add(new Vector2(PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
+        else if (entity.dir == "s") radiusDamage(entity, entity.position.add(new Vector2(0, PLAYER_DAMAGE_OFFSET)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
+        else if (entity.dir == "w") radiusDamage(Entity, entity.position.add(new Vector2(-PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
+        else if (entity.dir == "n") radiusDamage(entity, entity.position.add(new Vector2(0, -PLAYER_DAMAGE_OFFSET - 2)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
         return;
     }
 
@@ -73,37 +80,32 @@ function player_updateControls(dt, entity)
 
     // move + collisions
     var previousPosition = entity.position;
-    var newPosition = entity.position.add(dir.mul(MOV_SPEED * dt));
+    var newPosition = entity.position.add(dir.mul(PLAYER_MOV_SPEED * dt));
 
     // Check if the new position overlap a door, and trigger it
     for (var i = 0; i < doors.length; ++i) 
     {
         var door = doors[i];
-        if (door.isOpen) 
+        var isTouching = 
+            newPosition.x + entity.size.x >= door.position.x - door.size.x &&
+            newPosition.x - entity.size.x <= door.position.x + door.size.x &&
+            newPosition.y + entity.size.y >= door.position.y - door.size.y &&
+            newPosition.y - entity.size.y <= door.position.y + door.size.y;
+
+        if (isTouching)
         {
-            if (newPosition.x + entity.size.x / 2 >= door.position.x + 4 &&
-                newPosition.x - entity.size.x / 2 <= door.position.x + door.size.x - 4 &&
-                newPosition.y + entity.size.y / 2 >= door.position.y + 4 &&
-                newPosition.y - entity.size.y / 2 <= door.position.y + door.size.y - 4) 
+            if (door.isOpen) 
             {
                 fadeAnim.queue(1, 0.5, Tween.LINEAR, function() 
                 {
                     door_traverse(entity, door);
-                    currentRoom = room_getAt(Math.floor(entity.position.x / 16), Math.floor(entity.position.y / 16));
-                    room_show(currentRoom);
                 });
                 fadeAnim.queue(0, 0.5);
                 fadeAnim.play(false);
                 entity.spriteAnim.play("idle_" + entity.dir);
                 return;
             }
-        }
-        else 
-        {
-            if (newPosition.x + entity.size.x / 2 >= door.position.x &&
-                newPosition.x - entity.size.x / 2 <= door.position.x + door.size.x &&
-                newPosition.y + entity.size.y / 2 >= door.position.y &&
-                newPosition.y - entity.size.y / 2 <= door.position.y + door.size.y) 
+            else 
             {
                 door_open(door);
             }
@@ -113,15 +115,11 @@ function player_updateControls(dt, entity)
     entity.position = tiledMap.collision(previousPosition, newPosition, entity.size);
 }
 
-function player_update(dt, entity)
+function player_update(entity, dt)
 {
-    if (entity.isAttacking)
+    if (!entity.isAttacking)
     {
-        // Do a damage radius
-    }
-    else
-    {
-        player_updateControls(dt, entity);
+        player_updateControls(entity, dt);
     }
 }
 

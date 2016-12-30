@@ -7400,6 +7400,21 @@ namespace onut
             }
             JS_GLOBAL_FUNCTION_END("setTimeout", 2);
 
+            // defer
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto callback = getFunction(ctx, 0);
+                if (callback)
+                {
+                    oDispatcher->dispatch([ctx, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                    });
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("defer", 2);
+
             // oRenderer
             JS_INTERFACE_BEGIN();
             {
@@ -8984,7 +8999,7 @@ namespace onut
                 duk_push_number(pContext, (duk_double_t)dt);
                 if (duk_pcall(pContext, 1) != 0)
                 {
-                    OLog(std::string("call failed: ") + duk_safe_to_string(pContext, -1));
+                    OLog(std::string("update, call failed: ") + duk_safe_to_string(pContext, -1));
                     pUpdatePtr = nullptr;
                 }
                 duk_pop(pContext);
@@ -9001,7 +9016,7 @@ namespace onut
                 duk_push_heapptr(pContext, pRenderPtr);
                 if (duk_pcall(pContext, 0) != 0)
                 {
-                    OLog(std::string("call failed: ") + duk_safe_to_string(pContext, -1));
+                    OLog(std::string("render, call failed: ") + duk_safe_to_string(pContext, -1));
                     pRenderPtr = nullptr;
                 }
                 duk_pop(pContext);

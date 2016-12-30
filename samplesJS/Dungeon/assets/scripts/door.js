@@ -1,13 +1,29 @@
 var doors = [];
-var doorsById = {};
 
 function door_init(entity)
 {
-    
+    entity.isOpen = false;
+    doors.push(entity);
+
+    // Link doors
+    var targetId = entity.properties["Door:Target"];
+    if (targetId)
+    {
+        for (var i = 0; i < entities.length; ++i) 
+        {
+            var other = entities[i];
+            if (other.id == targetId) 
+            {
+                entity.target = other;
+                other.target = entity;
+            }
+        }
+    }
 }
 
-function door_openTiles(x, y, sx, sy) 
+function door_openTiles(door, x, y, sx, sy) 
 {
+    var w = tiledMap.getSize().x;
     for (var j = y; j < y + sy; ++j)
     {
         for (var i = x; i < x + sx; ++i) 
@@ -23,11 +39,14 @@ function door_open(door)
 {
     var target = door.target;
 
-    door_openTiles(door.position.x / 16, door.position.y / 16, door.size.x / 16, door.size.y / 16);
-    door_openTiles(target.position.x / 16, target.position.y / 16, target.size.x / 16, target.size.y / 16);
+    door_openTiles(door, (door.position.x - door.size.x) / 16, (door.position.y - door.size.y) / 16, door.size.x / 8, door.size.y / 8);
+    door_openTiles(target, (target.position.x - target.size.x) / 16, (target.position.y - target.size.y) / 16, target.size.x / 8, target.size.y / 8);
 
     door.isOpen = true;
     target.isOpen = true;
+
+    door.size = door.size.sub(5);
+    target.size = target.size.sub(5);
 
     playSound("prisonDoorOpen.wav");
 }
@@ -35,57 +54,29 @@ function door_open(door)
 function door_traverse(entity, door)
 {
     var target = door.target;
-
     if (door.position.x < target.position.x)
     {
-        entity.position.x = target.position.x + target.size.x - 2 + entity.size.x / 2;
-        entity.position.y = target.position.y + target.size.y / 2;
+        entity.position.x = target.position.x + target.size.x + entity.size.x + 2;
+        entity.position.y = target.position.y;
     }
     else if (door.position.x > target.position.x)
     {
-        entity.position.x = target.position.x + 2 - entity.size.x / 2;
-        entity.position.y = target.position.y + target.size.y / 2;
+        entity.position.x = target.position.x - target.size.x - entity.size.x - 2;
+        entity.position.y = target.position.y;
     }
     else if (door.position.y < target.position.y) 
     {
-        entity.position.y = target.position.y + target.size.y - 2 + entity.size.y / 2;
-        entity.position.x = target.position.x + target.size.x / 2;
+        entity.position.y = target.position.y + target.size.y + entity.size.y + 2;
+        entity.position.x = target.position.x;
     }
     else if (door.position.y > target.position.y)
     {
-        entity.position.y = target.position.y + 2 - entity.size.y / 2;
-        entity.position.x = target.position.x + target.size.x / 2;
+        entity.position.y = target.position.y - target.size.y - entity.size.y - 2;
+        entity.position.x = target.position.x;
     }
-}
-
-function door_create(mapObj)
-{
-    entities.push(mapObj);
-}
-
-function doors_init() 
-{
-    // Parse map entities
-    var objCount = tiledMap.getObjectCount("entities");
-    for (var i = 0; i < objCount; ++i) 
+    entity.room = target.room;
+    if (entity == player)
     {
-        var obj = tiledMap.getObject("entities", i);
-        if (obj.type == "door")
-        { 
-            obj.isOpen = false;
-            doorsById[obj.id] = obj;
-            doors.push(obj);
-        }
-    }
-
-    // Link doors
-    for (var i = 0; i < doors.length; ++i) 
-    {
-        var target = doorsById[doors[i].properties["Door:Target"]];
-        if (target) 
-        {
-            target.target = doors[i];
-            doors[i].target = target;
-        }
+        room_show(entity.room);
     }
 }

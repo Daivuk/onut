@@ -37,9 +37,9 @@ function room_createAt(x, y)
         if (tiledMap.getTileAt(roomLayer, x, y + 1) != 0 && !(((y + 1) * w + x) in room.tiles)) toCheck[(y + 1) * w + x] = true;
         if (tiledMap.getTileAt(roomLayer, x, y - 1) != 0 && !(((y - 1) * w + x) in room.tiles)) toCheck[(y - 1) * w + x] = true;
         room.tiles[toCheckValue] = true;
-        for (var j = y - 2; j <= y + 2; ++j)
+        for (var j = y - 1; j <= y + 1; ++j)
         {
-            for (var i = x - 2; i <= x + 2; ++i)
+            for (var i = x - 1; i <= x + 1; ++i)
             {
                 room.tilesToReveal[j * w + i] = true;
             }
@@ -58,7 +58,7 @@ function room_createAt(x, y)
     return room;
 }
 
-function room_init()
+function rooms_init()
 {
     var roomLayer = tiledMap.getLayerIndex("room");
     var mapSize = tiledMap.getSize();

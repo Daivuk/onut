@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="91">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="92">
  <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16">
   <image source="../textures/sheet.png" width="304" height="304"/>
  </tileset>
@@ -13,7 +13,7 @@
  </layer>
  <layer name="obj" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3YwQ3CMAwF0E6ABBsgwSzACsAObIEQG3Rb0isXIuFgEr0n+Wb9+tLUzTQBAADAd24VPcdSpw89c2VWjy6lrhV9j9aDQLB1qU1Azq7UPiAH4Fcid5ZR9x8YVdTeErVHAZDnkD1AsnNFz6r5FGRxjwkwtuUbHvX/e3/LXTwDcrPM2QM05J7yf2wTnx35/jOWns9uAAAA6NELC226PgBAAAA=
+   H4sIAAAAAAAAC+3YwQnCQBAF0FQgaAeC1qK2oPZgFyJ2kG7dXHNx0VnHLO/B3IafuSQZZhgAAADgO7eKnmOp05uesTJriS6lrhV9j9aDQLB1qU1Azq7UPiAH4Fcid5Ze9x/o1Xxv+XSHj9qjAMhzyB4g2bmiZ9V8CrK4YwL0bfqHR93t77PcyTMgN8uYPUBD7pT/Y5v47Mj3n74s+dsNAAAAS/QCMYIizgBAAAA=
   </data>
  </layer>
  <objectgroup name="entities">
@@ -477,6 +477,13 @@
     <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
    </properties>
   </object>
+  <object id="91" type="vase" x="432" y="432" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="3"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer name="fow" width="64" height="64">
   <data encoding="base64" compression="gzip">
@@ -485,12 +492,12 @@
  </layer>
  <layer name="collisions" width="64" height="64" visible="0" opacity="0.41">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3UWxaCIBRAUZuu8x9A/2Xx5ops1to/Rskh5XwdxwkAAACNPkfN96IberXX9q+6Bzn9qesr78Hu/VctNf3R65+xN9Hr0K9f/7i+1vM/uqNHe0v/inugf+/+q5aa/uj1A/SSGtHr0z+v/9+1J/r1X+/0DOj3/u/cD0816h1e5WzIPc9Kzr+rz0t/+057kBol/TnzZ/aP6End5479JWsv3a+a+TOf/5pnZKf+VFPLXAAAAODbGx7fr0IAQAAA
+   H4sIAAAAAAAAC+3UWxaCIBRAUZuu8x9A/2Xx5ops1to/Rskh5XwdxwkAAACNPkfN96IberXX9q+6Bzn9qesr78Hu/VctNf3R65+xN9Hr0K9f/7i+1vM/uqNHe0v/inugf+/+VGNuf/T6AXpJjej16Z/X/+/aE/36r3d6BvR7/3fuh6ca9Q6vcjbknmcl59/V56W/fac9SI2S/pz5M/tH9KTuc8f+krWX7lfN/JnPf80zslN/qqllLgAAAPDtDXdXnVQAQAAA
   </data>
  </layer>
  <layer name="room" width="64" height="64" visible="0" opacity="0.65">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3YSw5AQABEQa7r/gcQS78YZHymqxI7Fm8SndB1AAAAcM/Qr6+9e648+3X69evP7S/RclsJ/fpb7U/fP/369ef2AyxtbVvSziX3H7W3fgb6s/snye2T9H5oVY33+U87ceabv7Tr7Fa+eVZP93/t34n+7P4S+uvuHwAAADA3ApDQUhkAQAAA
+   H4sIAAAAAAAAC+3TQQ6AIAwAQf2u/3+A4S5aogZtZxJumLBQlwUAAIA7trW/entGvv06/fr169dfsz8ic1tE5v7q869fv379+mv2w5Gz2a4w55X7o+1Z70C/fv11+5vK7U31/szeeM8/zUnknKPzP/qvzLyrWf3R/fr169c/k/7n+wEAAODKDiaMHSAAQAAA
   </data>
  </layer>
 </map>
