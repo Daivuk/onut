@@ -7375,6 +7375,24 @@ namespace onut
             }
             JS_GLOBAL_FUNCTION_END("print", 1);
 
+            // setTimeout
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto callback = getFunction(ctx, 0);
+                auto duration = JS_UINT(1, 0);
+                if (callback)
+                {
+                    auto pTimer = new OTimer();
+                    pTimer->start(std::chrono::milliseconds(duration), [ctx, pTimer, callback]
+                    {
+                        if (callback->push(ctx)) callback->call(ctx, 0);
+                        delete pTimer;
+                    });
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("setTimeout", 2);
+
             // oRenderer
             JS_INTERFACE_BEGIN();
             {

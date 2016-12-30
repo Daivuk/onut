@@ -7,15 +7,31 @@ function player_init()
     var player = {
         position: ent_player.size.div(2).add(ent_player.position),
         spriteAnim: playSpriteAnim("baltAnims.spriteanim", "idle_s"),
+        attackAnim: createSpriteAnimInstance("swordAttack.spriteanim"),
         dir: "s",
         size: new Vector2(8, 8),
-        stepDelay: 0
+        stepDelay: 0,
+        isAttacking: false
     }
     return player;
 }
 
-function player_update(dt, entity)
+function player_doneAttacking(entity)
 {
+
+}
+
+function player_updateControls(dt, entity)
+{
+    if (Input.isJustDown(Key.XARCADE_LBUTTON_1) || Input.isJustDown(Key.SPACE_BAR))
+    {
+        entity.isAttacking = true;
+        entity.attackAnim.play("attack");
+        entity.spriteAnim.play("attack_" + entity.dir);
+        setTimeout(function() {player_doneAttacking(entity)}, 5000);
+        return;
+    }
+
     // Find the new direction
     var dir = new Vector2(0, 0);
 
@@ -85,4 +101,22 @@ function player_update(dt, entity)
     }
 
     entity.position = tiledMap.collision(previousPosition, newPosition, entity.size);
+}
+
+function player_update(dt, entity)
+{
+    if (entity.isAttacking)
+    {
+        // Do a damage radius
+    }
+    else
+    {
+        player_updateControls(dt, entity);
+    }
+}
+
+function player_drawSpecials(entity)
+{
+    if (!entity.attackAnim.isPlaying()) return;
+    SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position, Color.WHITE, 0, 1);
 }

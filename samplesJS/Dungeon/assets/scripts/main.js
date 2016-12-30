@@ -30,7 +30,8 @@ function render()
     
     SpriteBatch.begin(transform);
     tiledMap.render();
-    drawEntity(player)
+    drawEntity(player);
+    player_drawSpecials(player);
     SpriteBatch.end();
 
     // Fade
