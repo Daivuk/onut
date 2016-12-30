@@ -7382,12 +7382,19 @@ namespace onut
                 auto duration = JS_UINT(1, 0);
                 if (callback)
                 {
-                    auto pTimer = new OTimer();
-                    pTimer->start(std::chrono::milliseconds(duration), [ctx, pTimer, callback]
+                    if (duration == 0)
                     {
                         if (callback->push(ctx)) callback->call(ctx, 0);
-                        delete pTimer;
-                    });
+                    }
+                    else
+                    {
+                        auto pTimer = new OTimer();
+                        pTimer->start(std::chrono::milliseconds(duration), [ctx, pTimer, callback]
+                        {
+                            if (callback->push(ctx)) callback->call(ctx, 0);
+                            delete pTimer;
+                        });
+                    }
                 }
                 return 0;
             }
