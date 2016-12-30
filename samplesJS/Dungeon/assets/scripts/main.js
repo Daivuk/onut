@@ -15,13 +15,18 @@ var updateEntities = [];
 var drawEntities = [];
 var drawOverlayEntities = [];
 var damageEntities = [];
+var touchEntities = [];
+var triggerEntities = [];
 
 // Parse map entities
 var objCount = tiledMap.getObjectCount("entities");
 var objInitFns = {
     "start_location": player_init,
     "door": door_init,
-    "vase": vase_init
+    "vase": vase_init,
+    "chest": chest_init,
+    "crumble": crumble_init,
+    "stairs": stairs_init
 };
 for (var i = 0; i < objCount; ++i) 
 {
@@ -40,16 +45,25 @@ for (var i = 0; i < objCount; ++i)
     // Find the room in which the entity is
     entity.room = room_getAt(Math.floor(entity.position.x / 16), Math.floor(entity.position.y / 16));
 
-    // Add entity to various lists
-    entities.push(entity);
-    if (entity.updateFn) updateEntities.push(entity);
-    if (entity.drawFn) drawEntities.push(entity);
-    if (entity.drawOverlayFn) drawOverlayEntities.push(entity);
-    if (entity.damageFn) damageEntities.push(entity);
+    entity_add(entity);
 }
 
 // Show the start room
 room_show(player.room);
+
+// Add entity
+function entity_add(entity)
+{
+    entities.push(entity);
+
+    // Add entity to various lists
+    if (entity.updateFn) updateEntities.push(entity);
+    if (entity.drawFn) drawEntities.push(entity);
+    if (entity.drawOverlayFn) drawOverlayEntities.push(entity);
+    if (entity.damageFn) damageEntities.push(entity);
+    if (entity.touchFn) touchEntities.push(entity);
+    if (entity.isTrigger) triggerEntities.push(entity);
+}
 
 function entity_draw(entity)
 {
@@ -68,22 +82,63 @@ function radiusDamage(fromEntity, position, radius, damage)
             entity.position.y + entity.size.y >= position.y - radius &&
             entity.position.y - entity.size.y <= position.y + radius)
         {
-            entity.damageFn(entity, damage);
+            entity.damageFn(entity, fromEntity, damage);
         }
     }
 }
 
-function spawnItem(position, type)
+function entity_kill(entity)
 {
-    var entity = {};
-    entity.position = position;
-    bouncingItem_init(entity, type);
-    entities.push(entity);
-    drawEntities.push(entity);
+    var hasUpdate = false;
+    var hasDraw = false;
+    var hasDrawOverlay = false;
+    var hasDamage = false;
+    var hasTouch = false;
+    var isTrigger = entity.isTrigger;
+
+    if (entity.updateFn) {hasUpdate = true; entity.updateFn = null;}
+    if (entity.drawFn) {hasDraw = true; entity.drawFn = null;}
+    if (entity.drawOverlayFn) {hasDrawOverlay = true; entity.drawOverlayFn = null;}
+    if (entity.damageFn) {hasDamage = true; entity.damageFn = null;}
+    if (entity.touchFn) {hasTouch = true; entity.touchFn = null;}
+    if (isTrigger) entity.isTrigger = false;
+
+    defer(function()
+    {
+        entities.splice(entities.indexOf(entity), 1);
+        if (isTrigger) triggerEntities.splice(triggerEntities.indexOf(entity), 1);
+        if (hasUpdate) updateEntities.splice(updateEntities.indexOf(entity), 1);
+        if (hasDraw) drawEntities.splice(drawEntities.indexOf(entity), 1);
+        if (hasDrawOverlay) drawOverlayEntities.splice(drawOverlayEntities.indexOf(entity), 1);
+        if (hasDamage) damageEntities.splice(damageEntities.indexOf(entity), 1);
+        if (hasTouch) touchEntities.splice(touchEntities.indexOf(entity), 1);
+    });
 }
 
 function update(dt)
 {
+    // Update entities
+    if (!fadeAnim.isPlaying())
+    {
+        // Touch events first
+        for (var i = 0; i < touchEntities.length; ++i)
+        {
+            var touchEntity = touchEntities[i];
+            if (!touchEntity.touchFn) continue;
+            for (var j = 0; j < triggerEntities.length; ++j)
+            {
+                var triggerEntity = triggerEntities[j];
+                if (touchEntity.position.x + touchEntity.size.x >= triggerEntity.position.x - triggerEntity.size.x &&
+                    touchEntity.position.x - touchEntity.size.x <= triggerEntity.position.x + triggerEntity.size.x &&
+                    touchEntity.position.y + touchEntity.size.y >= triggerEntity.position.y - triggerEntity.size.y &&
+                    touchEntity.position.y - touchEntity.size.y <= triggerEntity.position.y + triggerEntity.size.y)
+                {
+                    touchEntity.touchFn(touchEntity, triggerEntity);
+                }
+            }
+        }
+    }
+
     if (!fadeAnim.isPlaying())
     {
         for (var i = 0; i < drawEntities.length; ++i)
@@ -104,7 +159,7 @@ function render()
     SpriteBatch.begin(transform);
     tiledMap.render();
     // We always draw upper entities first so they render in the right order
-    drawEntities.sort(function(a, b){return a.position.y < b.position.y});
+    drawEntities.sort(function(a, b){return a.position.y < b.position.y ? -1 : 1});
     for (var i = 0; i < drawEntities.length; ++i)
     {
         var entity = drawEntities[i];
@@ -122,11 +177,33 @@ function render()
     }*/
     SpriteBatch.end();
 
+    // Draw in screen space now
+    SpriteBatch.begin();
+
     // Fade
     if (fadeAnim.isPlaying())
     {
-        SpriteBatch.begin();
         SpriteBatch.drawRect(null, new Rect(0, 0, Renderer.getResolution()), new Color(0, 0, 0, fadeAnim.get()));
         SpriteBatch.end();
     }
+
+    // Player's life
+    for (var i = 0; i < player.life; ++i)
+    {
+        SpriteBatch.drawSprite(getTexture("heart.PNG"), new Vector2(8 + i * 8, 8));
+    }
+
+    // Player's gold
+    for (var i = 0; i < player.gold; ++i)
+    {
+        SpriteBatch.drawSprite(getTexture("coinIcon.PNG"), new Vector2(Renderer.getResolution().x - 8 - i * 2, 8));
+    }
+
+    // Player's bombs
+    for (var i = 0; i < player.bomb; ++i)
+    {
+        SpriteBatch.drawSprite(getTexture("bombIcon.PNG"), new Vector2(Renderer.getResolution().x - 8 - i * 8, 8 + 12));
+    }
+
+    SpriteBatch.end();
 }

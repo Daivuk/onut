@@ -1,9 +1,6 @@
-var doors = [];
-
 function door_init(entity)
 {
     entity.isOpen = false;
-    doors.push(entity);
 
     // Link doors
     var targetId = entity.properties["Door:Target"];
@@ -19,6 +16,9 @@ function door_init(entity)
             }
         }
     }
+
+    // Touch callback
+    entity.touchFn = door_touch;
 }
 
 function door_openTiles(door, x, y, sx, sy) 
@@ -78,5 +78,37 @@ function door_traverse(entity, door)
     if (entity == player)
     {
         room_show(entity.room);
+    }
+}
+
+function door_touch(entity, fromEntity)
+{
+    if (fromEntity != player) return; // Only player can open/traverse doors
+
+    if (entity.isOpen) 
+    {
+        for (var i = 0; i < entities.length; ++i)
+        {
+            var other = entities[i];
+            if (other.roomLeaveFn) other.roomLeaveFn(other);
+        }
+        fadeAnim.queue(1, 0.5, Tween.LINEAR, function() 
+        {
+            door_traverse(fromEntity, entity);
+        });
+        fadeAnim.queue(0, 0.5, Tween.LINEAR, function()
+        {
+            for (var i = 0; i < entities.length; ++i)
+            {
+                var other = entities[i];
+                if (other.roomEnterFn) other.roomEnterFn(other);
+            }
+        });
+        fadeAnim.play(false);
+        return;
+    }
+    else 
+    {
+        door_open(entity);
     }
 }

@@ -16,6 +16,7 @@
 #include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/Music.h>
+#include <onut/onut.h>
 #include <onut/ParticleSystem.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
@@ -7374,6 +7375,14 @@ namespace onut
                 return 0;
             }
             JS_GLOBAL_FUNCTION_END("print", 1);
+
+            // Exit function
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                OQuit();
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("quit", 0);
 
             // setTimeout
             JS_GLOBAL_FUNCTION_BEGIN

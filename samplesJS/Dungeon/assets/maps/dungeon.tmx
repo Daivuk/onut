@@ -8,12 +8,12 @@
  </tileset>
  <layer name="tiles" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   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
+   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
   </data>
  </layer>
  <layer name="obj" width="64" height="64">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3YwQnCQBAF0FQgaAeC1qK2oPZgFyJ2kG7dXHNx0VnHLO/B3IafuSQZZhgAAADgO7eKnmOp05uesTJriS6lrhV9j9aDQLB1qU1Azq7UPiAH4Fcid5Ze9x/o1Xxv+XSHj9qjAMhzyB4g2bmiZ9V8CrK4YwL0bfqHR93t77PcyTMgN8uYPUBD7pT/Y5v47Mj3n74s+dsNAAAAS/QCMYIizgBAAAA=
+   H4sIAAAAAAAAC+3YwQ3CMAwF0E6ABBsgwSzACsAObIEQG3Rb0isXIuFgEr0n+Wb9+tLUzTQBAADAd24VPcdSpw89c2VWjy6lrhV9j9aDQLB1qU1Azq7UPiAH4Fcid5ZR9x8YVdTeErVHAZDnkD1AsnNFz6r5FGRxjwkwtuUbHvX/e3/LXTwDcrPM2QM05J7yf2wTnx35/jOWns9uAAAA6NELC226PgBAAAA=
   </data>
  </layer>
  <objectgroup name="entities">
@@ -477,13 +477,6 @@
     <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
    </properties>
   </object>
-  <object id="91" type="vase" x="432" y="432" width="16" height="16">
-   <properties>
-    <property name="Collider2DComponent:Size" value="16,16"/>
-    <property name="Static" value="true"/>
-    <property name="Vase:Gold" value="3"/>
-   </properties>
-  </object>
  </objectgroup>
  <layer name="fow" width="64" height="64">
   <data encoding="base64" compression="gzip">
@@ -492,7 +485,7 @@
  </layer>
  <layer name="collisions" width="64" height="64" visible="0" opacity="0.41">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3UWxaCIBRAUZuu8x9A/2Xx5ops1to/Rskh5XwdxwkAAACNPkfN96IberXX9q+6Bzn9qesr78Hu/VctNf3R65+xN9Hr0K9f/7i+1vM/uqNHe0v/inugf+/+VGNuf/T6AXpJjej16Z/X/+/aE/36r3d6BvR7/3fuh6ca9Q6vcjbknmcl59/V56W/fac9SI2S/pz5M/tH9KTuc8f+krWX7lfN/JnPf80zslN/qqllLgAAAPDtDXdXnVQAQAAA
+   H4sIAAAAAAAAC+3UWxaCIBRAUZuu8x9A/2Xx5ops1to/Rskh5XwdxwkAAACNPkfN96IberXX9q+6Bzn9qesr78Hu/VctNf3R65+xN9Hr0K9f/7i+1vM/uqNHe0v/inugf+/+q5aa/uj1A/SSGtHr0z+v/9+1J/r1X+/0DOj3/u/cD0816h1e5WzIPc9Kzr+rz0t/+057kBol/TnzZ/aP6End5479JWsv3a+a+TOf/5pnZKf+VFPLXAAAAODbGx7fr0IAQAAA
   </data>
  </layer>
  <layer name="room" width="64" height="64" visible="0" opacity="0.65">

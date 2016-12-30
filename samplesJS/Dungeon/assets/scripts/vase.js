@@ -7,7 +7,7 @@ function vase_init(entity)
     entity.damageFn = vase_damage;
 }
 
-function vase_damage(entity, amount)
+function vase_damage(entity, fromEntity, amount)
 {
     var x = Math.floor(entity.position.x / 16);
     var y = Math.floor(entity.position.y / 16);
@@ -23,11 +23,14 @@ function vase_damage(entity, amount)
     {
         for (var i = 0; i < entity.gold; ++i)
         {
-            spawnItem(entity.position, "gold");
+            setTimeout(function()
+            {
+                spawnItem(entity.position, "gold");
+                playSound("gold.wav", 1 / (i + 1));
+                ++player.gold;
+            }, i * 500);
         }
-        playSound("gold.wav");
     }
-
-    // Unregister to listening to damage
-    entity.damageFn = null;
+    
+    entity_kill(entity);
 }

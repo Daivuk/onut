@@ -17,13 +17,25 @@ function player_init(entity)
     entity.dir = "s";
     entity.stepDelay = 0;
     entity.isAttacking = false;
+    entity.life = 3;
+    entity.bomb = 0;
+    entity.gold = 0;
 
     // callbacks
     entity.updateFn = player_update;
     entity.drawFn = entity_draw;
     entity.drawOverlayFn = player_drawOverlay;
+    entity.roomLeaveFn = player_roomLeave;
+
+    // So we can touch things
+    entity.isTrigger = true;
 
     player = entity;
+}
+
+function player_roomLeave(entity)
+{
+    entity.spriteAnim.play("idle_" + entity.dir);
 }
 
 function player_doneAttacking(entity)
@@ -47,6 +59,15 @@ function player_updateControls(entity, dt)
         else if (entity.dir == "w") radiusDamage(Entity, entity.position.add(new Vector2(-PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
         else if (entity.dir == "n") radiusDamage(entity, entity.position.add(new Vector2(0, -PLAYER_DAMAGE_OFFSET - 2)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
         return;
+    }
+
+    if (Input.isJustDown(Key.XARCADE_LBUTTON_2) || Input.isJustDown(Key.B))
+    {
+        if (entity.bomb > 0)
+        {
+            --entity.bomb;
+            spawnBomb(entity.position.add(new Vector2(0, 1)));
+        }
     }
 
     // Find the new direction
@@ -81,36 +102,6 @@ function player_updateControls(entity, dt)
     // move + collisions
     var previousPosition = entity.position;
     var newPosition = entity.position.add(dir.mul(PLAYER_MOV_SPEED * dt));
-
-    // Check if the new position overlap a door, and trigger it
-    for (var i = 0; i < doors.length; ++i) 
-    {
-        var door = doors[i];
-        var isTouching = 
-            newPosition.x + entity.size.x >= door.position.x - door.size.x &&
-            newPosition.x - entity.size.x <= door.position.x + door.size.x &&
-            newPosition.y + entity.size.y >= door.position.y - door.size.y &&
-            newPosition.y - entity.size.y <= door.position.y + door.size.y;
-
-        if (isTouching)
-        {
-            if (door.isOpen) 
-            {
-                fadeAnim.queue(1, 0.5, Tween.LINEAR, function() 
-                {
-                    door_traverse(entity, door);
-                });
-                fadeAnim.queue(0, 0.5);
-                fadeAnim.play(false);
-                entity.spriteAnim.play("idle_" + entity.dir);
-                return;
-            }
-            else 
-            {
-                door_open(door);
-            }
-        }
-    }
 
     entity.position = tiledMap.collision(previousPosition, newPosition, entity.size);
 }

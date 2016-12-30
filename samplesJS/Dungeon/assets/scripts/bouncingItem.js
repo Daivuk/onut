@@ -1,10 +1,24 @@
+function spawnItem(position, type)
+{
+    var entity = {};
+    entity.position = new Vector2(position);
+    entity.size = new Vector2(0, 0);
+    bouncingItem_init(entity, type);
+    entity_add(entity);
+}
+
 function bouncingItem_init(entity, type)
 {
-    entity.z = new NumberAnim();
     entity.drawFn = bouncingItem_draw;
-    entity.z.queue(16, .5, Tween.EASE_OUT);
-    entity.z.queue(0, 1, Tween.BOUNCE_OUT);
+
+    entity.z = new NumberAnim();
+    entity.z.queue(16, .25, Tween.EASE_OUT);
+    entity.z.queue(0, .75, Tween.BOUNCE_OUT);
     entity.z.play(false);
+
+    // Randomize a bit his position
+    entity.position.x += Math.random() * 12 - 6;
+    entity.position.y += Math.random() * 12 - 6;
     
     switch (type)
     {
@@ -16,13 +30,11 @@ function bouncingItem_init(entity, type)
             break;
     }
 
-    // Delete after 3 sec
+    // Delete after 2 sec
     setTimeout(function()
     {
-        entity.drawFn = null;
-        entities.splice(entities.indexOf(entity), 1);
-        drawEntities.splice(drawEntities.indexOf(entity), 1);
-    }, 3000);
+        entity_kill(entity);
+    }, 2000);
 }
 
 function bouncingItem_draw(entity)
