@@ -1,6 +1,11 @@
 var doors = [];
 var doorsById = {};
 
+function door_init(entity)
+{
+    
+}
+
 function door_openTiles(x, y, sx, sy) 
 {
     for (var j = y; j < y + sy; ++j)
@@ -51,6 +56,11 @@ function door_traverse(entity, door)
         entity.position.y = target.position.y + 2 - entity.size.y / 2;
         entity.position.x = target.position.x + target.size.x / 2;
     }
+}
+
+function door_create(mapObj)
+{
+    entities.push(mapObj);
 }
 
 function doors_init() 

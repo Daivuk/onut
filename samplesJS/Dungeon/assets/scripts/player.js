@@ -1,19 +1,29 @@
 // Constants
 var MOV_SPEED = 64;
 
-function player_init()
+function player_init(entity)
 {
-    var ent_player = tiledMap.getObject("entities", "player");
-    var player = {
-        position: ent_player.size.div(2).add(ent_player.position),
-        spriteAnim: playSpriteAnim("baltAnims.spriteanim", "idle_s"),
-        attackAnim: createSpriteAnimInstance("swordAttack.spriteanim"),
-        dir: "s",
-        size: new Vector2(8, 8),
-        stepDelay: 0,
-        isAttacking: false
-    }
-    return player;
+    // Center the player on the tile
+    entity.position = entity.size.div(2).add(entity.position);
+
+    // Force the size on th eplayer
+    entity.size = new Vector2(8, 8);
+
+    // Anims
+    entity.spriteAnim = playSpriteAnim("baltAnims.spriteanim", "idle_s"),
+    entity.attackAnim = createSpriteAnimInstance("swordAttack.spriteanim"),
+
+    // Misc
+    entity.dir = "s";
+    entity.stepDelay = 0;
+    entity.isAttacking = false;
+
+    // callbacks
+    entity.updateFn = player_update;
+    entity.drawFn = entity_draw;
+    entity.drawOverlayFn = player_drawOverlay;
+
+    player = entity;
 }
 
 function player_doneAttacking(entity)
@@ -115,8 +125,11 @@ function player_update(dt, entity)
     }
 }
 
-function player_drawSpecials(entity)
+function player_drawOverlay(entity)
 {
     if (!entity.attackAnim.isPlaying()) return;
-    SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position);
+    if (entity.dir == "e") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position);
+    else if (entity.dir == "s") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position, Color.WHITE, 90);
+    else if (entity.dir == "w") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position.add(new Vector2(0, -4)), Color.WHITE, 180);
+    else if (entity.dir == "n") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position.add(new Vector2(0, -2)), Color.WHITE, -90);
 }

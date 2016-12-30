@@ -8960,7 +8960,7 @@ namespace onut
                 {*/
                     if (duk_peval_file(pContext, filename.c_str()) != 0)
                     {
-                        OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
+                        OLog(onut::getFilename(filename) + std::string(", eval failed: ") + duk_safe_to_string(pContext, -1));
                     }
                     duk_pop(pContext);
           //      }
@@ -8970,7 +8970,7 @@ namespace onut
             {
                 if (duk_peval_file(pContext, mainJS.c_str()) != 0)
                 {
-                    OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
+                    OLog(onut::getFilename(mainJS) + std::string(", eval failed: ") + duk_safe_to_string(pContext, -1));
                 }
                 duk_pop(pContext);
             }
