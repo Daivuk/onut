@@ -15,8 +15,10 @@ function stairs_touch(stairs, fromEntity)
         if (other.roomLeaveFn) other.roomLeaveFn(other);
     }
     
-    fadeAnim.playSingle(0, 1, 2, Tween.LINEAR, Loop.NONE, function()
+    fadeAnim.queue(1, 2, Tween.LINEAR, function()
     {
         quit();
     });
+    fadeAnim.queue(1, 10);
+    fadeAnim.play(Loop.NONE);
 }

@@ -26,6 +26,7 @@ function player_init(entity)
     entity.drawFn = entity_draw;
     entity.drawOverlayFn = player_drawOverlay;
     entity.roomLeaveFn = player_roomLeave;
+    entity.damageFn = player_damage;
 
     // So we can touch things
     entity.isTrigger = true;
@@ -54,9 +55,9 @@ function player_updateControls(entity, dt)
         setTimeout(function() {player_doneAttacking(entity)}, 250);
 
         // Damage area in front of us
-        if (entity.dir == "e") radiusDamage(Entity, entity.position.add(new Vector2(PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
+        if (entity.dir == "e") radiusDamage(entity, entity.position.add(new Vector2(PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
         else if (entity.dir == "s") radiusDamage(entity, entity.position.add(new Vector2(0, PLAYER_DAMAGE_OFFSET)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
-        else if (entity.dir == "w") radiusDamage(Entity, entity.position.add(new Vector2(-PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
+        else if (entity.dir == "w") radiusDamage(entity, entity.position.add(new Vector2(-PLAYER_DAMAGE_OFFSET, -4)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
         else if (entity.dir == "n") radiusDamage(entity, entity.position.add(new Vector2(0, -PLAYER_DAMAGE_OFFSET - 2)), PLAYER_DAMAGE_RADIUS, PLAYER_DAMAGE);
         return;
     }
@@ -121,4 +122,24 @@ function player_drawOverlay(entity)
     else if (entity.dir == "s") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position, Color.WHITE, 90);
     else if (entity.dir == "w") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position.add(new Vector2(0, -4)), Color.WHITE, 180);
     else if (entity.dir == "n") SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position.add(new Vector2(0, -2)), Color.WHITE, -90);
+}
+
+function player_damage(entity, fromEntity, amount)
+{
+    entity.life = Math.max(0, entity.life - amount);
+    if (entity.life == 0)
+    {
+        // Ded
+        entity.spriteAnim.play("die");
+            
+        playSound("gameover.wav");
+
+        fadeAnim.queue(0, 1);
+        fadeAnim.queue(1, 1, Tween.LINEAR, function()
+        {
+            quit();
+        });
+        fadeAnim.queue(1, 10);
+        fadeAnim.play(Loop.NONE);
+    }
 }

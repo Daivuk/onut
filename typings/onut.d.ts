@@ -7,6 +7,9 @@ function setTimeout(callback: Function, timeMS: number);
 // Call at the begining of the next frame
 function defer(callback: Function);
 
+// Quit the game
+function quit();
+
 // Maths
 declare class Vector2 {
     static distance(v1: Vector2, v2: Vector2): number;
