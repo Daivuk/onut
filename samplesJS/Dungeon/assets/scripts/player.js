@@ -18,7 +18,7 @@ function player_init()
 
 function player_doneAttacking(entity)
 {
-
+    entity.isAttacking = false;
 }
 
 function player_updateControls(dt, entity)
@@ -28,7 +28,7 @@ function player_updateControls(dt, entity)
         entity.isAttacking = true;
         entity.attackAnim.play("attack");
         entity.spriteAnim.play("attack_" + entity.dir);
-        setTimeout(function() {player_doneAttacking(entity)}, 5000);
+        setTimeout(function() {entity.isAttacking = false}, 250);
         return;
     }
 
@@ -118,5 +118,5 @@ function player_update(dt, entity)
 function player_drawSpecials(entity)
 {
     if (!entity.attackAnim.isPlaying()) return;
-    SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position, Color.WHITE, 0, 1);
+    SpriteBatch.drawSpriteAnim(entity.attackAnim, entity.position);
 }

@@ -4349,8 +4349,8 @@ namespace onut
                 if (ppSpriteAnimInstance)
                 {
                     auto pSpriteAnimInstance = *ppSpriteAnimInstance;
-                    if (force || (pSpriteAnimInstance->getCurrentAnim() &&
-                        pSpriteAnimInstance->getCurrentAnim()->name != animName))
+                    if (force || ((pSpriteAnimInstance->getCurrentAnim() &&
+                        pSpriteAnimInstance->getCurrentAnim()->name != animName) || !pSpriteAnimInstance->isPlaying()))
                     {
                         pSpriteAnimInstance->play(animName, fps);
                     }
