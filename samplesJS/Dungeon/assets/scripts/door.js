@@ -81,34 +81,38 @@ function door_traverse(entity, door)
     }
 }
 
-function door_touch(entity, fromEntity)
+function door_touch(door, fromEntity)
 {
     if (fromEntity != player) return; // Only player can open/traverse doors
 
-    if (entity.isOpen) 
+    if (door.isOpen) 
     {
-        for (var i = 0; i < entities.length; ++i)
-        {
-            var other = entities[i];
-            if (other.roomLeaveFn) other.roomLeaveFn(other);
-        }
+        fromEntity.spriteAnim.play("idle_" + fromEntity.dir);
         fadeAnim.queue(1, 0.5, Tween.LINEAR, function() 
         {
-            door_traverse(fromEntity, entity);
-        });
-        fadeAnim.queue(0, 0.5, Tween.LINEAR, function()
-        {
+            // Notify room leave
             for (var i = 0; i < entities.length; ++i)
             {
                 var other = entities[i];
-                if (other.roomEnterFn) other.roomEnterFn(other);
+                if (other.roomLeaveFn) other.roomLeaveFn(other, fromEntity.room);
+            }
+
+            // Traverse door
+            door_traverse(fromEntity, door);
+
+            // Notify room enter
+            for (var i = 0; i < entities.length; ++i)
+            {
+                var other = entities[i];
+                if (other.roomEnterFn) other.roomEnterFn(other, fromEntity.room);
             }
         });
-        fadeAnim.play(false);
+        fadeAnim.queue(0, 0.5);
+        fadeAnim.play();
         return;
     }
     else 
     {
-        door_open(entity);
+        door_open(door);
     }
 }

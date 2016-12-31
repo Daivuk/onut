@@ -26,7 +26,9 @@ var objInitFns = {
     "vase": vase_init,
     "chest": chest_init,
     "crumble": crumble_init,
-    "stairs": stairs_init
+    "stairs": stairs_init,
+    "guard": guard_init,
+    "bat": bat_init
 };
 for (var i = 0; i < objCount; ++i) 
 {
@@ -194,13 +196,13 @@ function render()
     }
 
     // Player's gold
-    for (var i = 0; i < player.gold; ++i)
+    for (var i = 0; i < player.inventory.gold; ++i)
     {
         SpriteBatch.drawSprite(getTexture("coinIcon.PNG"), new Vector2(Renderer.getResolution().x - 8 - i * 2, 8));
     }
 
     // Player's bombs
-    for (var i = 0; i < player.bomb; ++i)
+    for (var i = 0; i < player.inventory.bomb; ++i)
     {
         SpriteBatch.drawSprite(getTexture("bombIcon.PNG"), new Vector2(Renderer.getResolution().x - 8 - i * 8, 8 + 12));
     }

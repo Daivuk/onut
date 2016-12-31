@@ -50,25 +50,25 @@
     <frame id="19" flipH="true"/>
     <frame id="16" flipH="true"/>
   </anim>
-  <anim name="attack_s" fps="24" loop="false" next="idle">
+  <anim name="attack_s" fps="24" loop="false" next="idle_s">
     <frame id="6"/>
     <frame id="2"/>
     <frame id="7" repeat="4"/>
     <frame id="0"/>
   </anim>
-  <anim name="attack_n" fps="24" loop="false" next="idle">
+  <anim name="attack_n" fps="24" loop="false" next="idle_n">
     <frame id="14"/>
     <frame id="10"/>
     <frame id="15" repeat="4"/>
     <frame id="8"/>
   </anim>
-  <anim name="attack_w" fps="24" loop="false" next="idle">
+  <anim name="attack_w" fps="24" loop="false" next="idle_w">
     <frame id="20"/>
     <frame id="19"/>
     <frame id="21" repeat="4"/>
     <frame id="16"/>
   </anim>
-  <anim name="attack_e" fps="24" loop="false" next="idle">
+  <anim name="attack_e" fps="24" loop="false" next="idle_e">
     <frame id="20" flipH="true"/>
     <frame id="19" flipH="true"/>
     <frame id="21" repeat="4" flipH="true"/>
