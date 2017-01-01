@@ -30,6 +30,14 @@
 #include <onut/TiledMap.h>
 #include <onut/TiledMapComponent.h>
 #include <onut/Timing.h>
+#include <onut/UICheckBox.h>
+#include <onut/UIButton.h>
+#include <onut/UIContext.h>
+#include <onut/UIControl.h>
+#include <onut/UIPanel.h>
+#include <onut/UIImage.h>
+#include <onut/UILabel.h>
+#include <onut/UITextBox.h>
 #include <onut/VertexBuffer.h>
 #include <onut/VideoPlayer.h>
 
@@ -124,6 +132,8 @@ namespace onut
 {
     namespace js
     {
+        std::unordered_map<std::string, OUIControlRef> UImap;
+
         static void createBindings();
         static void evalScripts();
 
@@ -166,6 +176,8 @@ namespace onut
 
         void* pVideoPlayerPrototype = nullptr;
         void* pEntityPrototype = nullptr;
+
+        void* pUIPrototype = nullptr;
 
         std::unordered_map<std::string, JSComponentDefinitionRef> jsComponentDefinitions;
 
@@ -482,6 +494,25 @@ namespace onut
             return duk_to_string(ctx, index);
         }
 
+        static OUIControlRef getUI(duk_context *ctx, duk_idx_t index, const OUIControlRef& in_default = nullptr)
+        {
+            if (index >= duk_get_top(ctx)) return in_default;
+            if (duk_is_null_or_undefined(ctx, index)) return in_default;
+
+            duk_get_prop_string(ctx, index, "\xff""\xff""data");
+            auto pp = (OUIControlRef*)(duk_to_pointer(ctx, -1));
+            duk_pop(ctx);
+
+            if (pp)
+            {
+                return *pp;
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
         template<typename Tresource>
         static std::shared_ptr<Tresource> getResource(duk_context *ctx, duk_idx_t index)
         {
@@ -598,7 +629,7 @@ namespace onut
 
             ~Function()
             {
-                if (!m_name.empty())
+                if (!m_name.empty() && pContext)
                 {
                     duk_push_global_stash(m_ctx);
                     duk_del_prop_string(m_ctx, -1, m_name.c_str());
@@ -658,6 +689,8 @@ namespace onut
 
 #define JS_ENTITY(__index__) getRefType<OEntity>(ctx, __index__)
 #define JS_COMPONENT(__index__) getRefType<OComponent>(ctx, __index__)
+
+#define JS_UI(...) getUI(ctx, __VA_ARGS__)
 
         void init()
         {
@@ -2768,6 +2801,16 @@ namespace onut
             duk_put_prop_string(ctx, -2, "IDENTITY");
 
             duk_put_global_string(ctx, "Matrix");
+        }
+        
+        static void newUI(duk_context* ctx, const OUIControlRef& pUIControl)
+        {
+            duk_push_object(ctx);
+            auto ppUIControl = new OUIControlRef(pUIControl);
+            duk_push_pointer(ctx, ppUIControl);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pUIPrototype);
+            duk_set_prototype(ctx, -2);
         }
         
         static void newTexture(duk_context* ctx, const OTextureRef& pTexture)
@@ -7364,6 +7407,804 @@ namespace onut
             createEntityBindings();
         }
 
+        static void createUIBindings()
+        {
+            auto ctx = pContext;
+
+            // UI() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~UI()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    delete ppUIControl;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // getName()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    duk_push_string(ctx, pUIControl->name.c_str());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getName");
+
+            // setName(name)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto nameBefore = pUIControl->name;
+                    pUIControl->name = JS_STRING(0, nameBefore.c_str());
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setName");
+
+            // getRect()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    newRect(ctx, pUIControl->rect);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getRect");
+
+            // setRect(rect)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto rectBefore = pUIControl->rect;
+                    pUIControl->rect = JS_RECT(0, rectBefore);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setRect");
+
+            // isVisible()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    duk_push_boolean(ctx, (duk_bool_t)pUIControl->isVisible);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isVisible");
+
+            // setVisible(visible)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->isVisible = JS_BOOL(0, pUIControl->isVisible);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setVisible");
+
+            // isEnabled()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    duk_push_boolean(ctx, (duk_bool_t)pUIControl->isEnabled);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isEnabled");
+
+            // setEnabled(enabled)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->isEnabled = JS_BOOL(0, pUIControl->isEnabled);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setEnabled");
+
+            // isClickThrough()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    duk_push_boolean(ctx, (duk_bool_t)pUIControl->isClickThrough);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isClickThrough");
+
+            // setClickThrough(enabled)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->isClickThrough = JS_BOOL(0, pUIControl->isClickThrough);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setClickThrough");
+
+            // getChecked()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUICheckBox = dynamic_cast<OUICheckBox*>(pUIControl);
+                    if (pUICheckBox)
+                    {
+                        duk_push_boolean(ctx, (duk_bool_t)pUICheckBox->getIsChecked());
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getChecked");
+
+            // setChecked(checked)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUICheckBox = dynamic_cast<OUICheckBox*>(pUIControl);
+                    if (pUICheckBox)
+                    {
+                        pUICheckBox->setIsChecked(JS_BOOL(0, pUICheckBox->getIsChecked()));
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setChecked");
+
+            // getTexture()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUICheckBox = dynamic_cast<OUICheckBox*>(pUIControl);
+                    if (pUICheckBox)
+                    {
+                        newTexture(ctx, pUICheckBox->iconComponent.background.image.pTexture);
+                        return 1;
+                    }
+                    auto pUIImage = dynamic_cast<OUIImage*>(pUIControl);
+                    if (pUIImage)
+                    {
+                        newTexture(ctx, pUIImage->scale9Component.image.pTexture);
+                        return 1;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        newTexture(ctx, pUIButton->scale9Component.image.pTexture);
+                        return 1;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        newTexture(ctx, pUITextField->scale9Component.image.pTexture);
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getTexture");
+
+            // setTexture(texture)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUICheckBox = dynamic_cast<OUICheckBox*>(pUIControl);
+                    if (pUICheckBox)
+                    {
+                        pUICheckBox->iconComponent.background.image.pTexture = JS_TEXTURE(0);
+                        return 0;
+                    }
+                    auto pUIImage = dynamic_cast<OUIImage*>(pUIControl);
+                    if (pUIImage)
+                    {
+                        pUIImage->scale9Component.image.pTexture = JS_TEXTURE(0);
+                        return 0;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        pUIButton->scale9Component.image.pTexture = JS_TEXTURE(0);
+                        return 0;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        pUITextField->scale9Component.image.pTexture = JS_TEXTURE(0);
+                        return 0;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setTexture");
+
+            // getText()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUILabel = dynamic_cast<OUILabel*>(pUIControl);
+                    if (pUILabel)
+                    {
+                        duk_push_string(ctx, pUILabel->textComponent.text.c_str());
+                        return 1;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        duk_push_string(ctx, pUIButton->textComponent.text.c_str());
+                        return 1;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        duk_push_string(ctx, pUITextField->textComponent.text.c_str());
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getText");
+
+            // setText(text)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUILabel = dynamic_cast<OUILabel*>(pUIControl);
+                    if (pUILabel)
+                    {
+                        pUILabel->textComponent.text = JS_STRING(0);
+                        return 0;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        pUIButton->textComponent.text = JS_STRING(0);
+                        return 0;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        pUITextField->textComponent.text = JS_STRING(0);
+                        return 0;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setText");
+
+            // getFont()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUILabel = dynamic_cast<OUILabel*>(pUIControl);
+                    if (pUILabel)
+                    {
+                        duk_push_string(ctx, pUILabel->textComponent.font.typeFace.c_str());
+                        return 1;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        duk_push_string(ctx, pUIButton->textComponent.font.typeFace.c_str());
+                        return 1;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        duk_push_string(ctx, pUITextField->textComponent.font.typeFace.c_str());
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getFont");
+
+            // setFont(font)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUILabel = dynamic_cast<OUILabel*>(pUIControl);
+                    if (pUILabel)
+                    {
+                        pUILabel->textComponent.font.typeFace = JS_STRING(0);
+                        return 0;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        pUIButton->textComponent.font.typeFace = JS_STRING(0);
+                        return 0;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        pUITextField->textComponent.font.typeFace = JS_STRING(0);
+                        return 0;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setFont");
+
+            // getColor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUIPanel = dynamic_cast<OUIPanel*>(pUIControl);
+                    if (pUIPanel)
+                    {
+                        newColor(ctx, pUIPanel->color);
+                        return 1;
+                    }
+                    auto pUIImage = dynamic_cast<OUIImage*>(pUIControl);
+                    if (pUIImage)
+                    {
+                        newColor(ctx, pUIImage->scale9Component.image.color);
+                        return 1;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        newColor(ctx, pUIButton->scale9Component.image.color);
+                        return 1;
+                    }
+                    auto pUICheckBox = dynamic_cast<OUICheckBox*>(pUIControl);
+                    if (pUICheckBox)
+                    {
+                        newColor(ctx, pUICheckBox->iconComponent.background.image.color);
+                        return 1;
+                    }
+                    auto pUITextBox = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextBox)
+                    {
+                        newColor(ctx, pUITextBox->scale9Component.image.color);
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getColor");
+
+            // setColor(font)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUIPanel = dynamic_cast<OUIPanel*>(pUIControl);
+                    if (pUIPanel)
+                    {
+                        pUIPanel->color = JS_COLOR(0, pUIPanel->color);
+                        return 0;
+                    }
+                    auto pUIImage = dynamic_cast<OUIImage*>(pUIControl);
+                    if (pUIImage)
+                    {
+                        pUIImage->scale9Component.image.color = JS_COLOR(0, pUIImage->scale9Component.image.color);
+                        return 0;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        pUIButton->scale9Component.image.color = JS_COLOR(0, pUIButton->scale9Component.image.color);
+                        return 0;
+                    }
+                    auto pUICheckBox = dynamic_cast<OUICheckBox*>(pUIControl);
+                    if (pUICheckBox)
+                    {
+                        pUICheckBox->iconComponent.background.image.color = JS_COLOR(0, pUICheckBox->iconComponent.background.image.color);
+                        return 0;
+                    }
+                    auto pUITextBox = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextBox)
+                    {
+                        pUITextBox->scale9Component.image.color = JS_COLOR(0, pUITextBox->scale9Component.image.color);
+                        return 0;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setColor");
+
+            // getTextColor()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUILabel = dynamic_cast<OUILabel*>(pUIControl);
+                    if (pUILabel)
+                    {
+                        newColor(ctx, pUILabel->textComponent.font.color);
+                        return 1;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        newColor(ctx, pUIButton->textComponent.font.color);
+                        return 1;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        newColor(ctx, pUITextField->textComponent.font.color);
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getTextColor");
+
+            // setTextColor(color)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto pUILabel = dynamic_cast<OUILabel*>(pUIControl);
+                    if (pUILabel)
+                    {
+                        pUILabel->textComponent.font.color = JS_COLOR(0, pUILabel->textComponent.font.color);
+                        return 0;
+                    }
+                    auto pUIButton = dynamic_cast<OUIButton*>(pUIControl);
+                    if (pUIButton)
+                    {
+                        pUIButton->textComponent.font.color = JS_COLOR(0, pUIButton->textComponent.font.color);
+                        return 0;
+                    }
+                    auto pUITextField = dynamic_cast<OUITextBox*>(pUIControl);
+                    if (pUITextField)
+                    {
+                        pUITextField->textComponent.font.color = JS_COLOR(0, pUITextField->textComponent.font.color);
+                        return 0;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setTextColor");
+
+            // add(child)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->add(JS_UI(0));
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "add");
+
+            // insert(child, before)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->insert(JS_UI(0), JS_UI(1));
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "insert");
+
+            // remove(child)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->remove(JS_UI(0));
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "remove");
+
+            // removeAll(child)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    pUIControl->removeAll();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "removeAll");
+
+            // getChildCount()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    duk_push_uint(ctx, (duk_uint_t)pUIControl->getChildren().size());
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getChildCount");
+
+            // getChild()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto pChild = pUIControl->getChild(JS_STRING(0), JS_BOOL(1, true));
+                        if (pChild)
+                        {
+                            newUI(ctx, pChild);
+                            return 1;
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto index = JS_UINT(0);
+                        if (index >= 0 && index < pUIControl->getChildren().size())
+                        {
+                            newUI(ctx, pUIControl->getChildren()[index]);
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "getChild");
+
+            // getParent()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    if (pUIControl->getParent())
+                    {
+                        newUI(ctx, pUIControl->getParent());
+                        return 1;
+                    }
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getParent");
+
+            // copy()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    newUI(ctx, pUIControl->copy());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "copy");
+
+            // setOnClick(callback)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    auto callback = getFunction(ctx, 0);
+                    if (callback)
+                    {
+                        pUIControl->onClick = [ctx, callback](const OUIControlRef& pControl, const UIMouseEvent& evt)
+                        {
+                            if (callback->push(ctx)) callback->call(ctx, 0);
+                        };
+                    }
+                    else
+                    {
+                        pUIControl->onClick = nullptr;
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setOnClick");
+
+            // Done with the object
+            pUIPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // creates ...
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUIControl::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "create");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUILabel::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createLabel");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUIPanel::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFrame");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUIImage::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createImage");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUIButton::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createButton");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUITextBox::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createTextField");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUICheckBox::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createCheckBox");
+
+            duk_put_global_string(ctx, "UI");
+        }
+
         static void createBindings()
         {
             auto ctx = pContext;
@@ -8525,6 +9366,44 @@ namespace onut
             }
             JS_GLOBAL_FUNCTION_END("emitParticles", 3);
 
+            // UIs
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto UIfilename = JS_STRING(0);
+                if (UImap.find(UIfilename) != UImap.end()) return 0; // Already loaded
+                UImap[UIfilename] = OUIControl::createFromFile(UIfilename);
+                oUI->add(UImap[UIfilename]);
+                newUI(ctx, UImap[UIfilename]);
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("loadUI", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto UIfilename = JS_STRING(0);
+                if (UImap.find(UIfilename) == UImap.end()) return 0; // Not loaded
+                oUI->remove(UImap[UIfilename]);
+                UImap.erase(UImap.find(UIfilename));
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("unloadUI", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto pUIControl = OFindUI(JS_STRING(0));
+                if (pUIControl)
+                {
+                    newUI(ctx, pUIControl);
+                    return 1;
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("findUI", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                oUIContext->useNavigation = JS_BOOL(0, false);
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("setUINavigation", 1);
+
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)
             JS_INTERFACE_BEGIN();
@@ -8894,6 +9773,7 @@ namespace onut
             createResourceBindings();
             createAnimBindings();
             createObjectBindings();
+            createUIBindings();
         }
 
         static void evalScripts()

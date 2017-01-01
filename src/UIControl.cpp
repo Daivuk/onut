@@ -603,6 +603,8 @@ namespace onut
 
     void UIControl::add(OUIControlRef pChild)
     {
+        if (!pChild) return;
+
         if (auto pParent = pChild->m_pParent.lock())
         {
             pParent->remove(pChild);
@@ -614,6 +616,7 @@ namespace onut
 
     void UIControl::insert(OUIControlRef pChild, const OUIControlRef& pBefore)
     {
+        if (!pChild) return;
         if (auto pParent = pChild->m_pParent.lock())
         {
             pParent->remove(pChild);

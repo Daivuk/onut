@@ -1,14 +1,14 @@
 // Print log
-function print(arg: string);
+declare function print(arg: string);
 
 // Delay function
-function setTimeout(callback: Function, timeMS: number);
+declare function setTimeout(callback: Function, timeMS: number);
 
 // Call at the begining of the next frame
-function defer(callback: Function);
+declare function defer(callback: Function);
 
 // Quit the game
-function quit();
+declare function quit();
 
 // Maths
 declare class Vector2 {
@@ -678,6 +678,57 @@ declare class IndexBuffer {
     setData(data: Uint16Array);
     getCount(): number;
 }
+
+// UI
+declare class UI {
+    static create(): UI;
+    static createLabel(): UI;
+    static createFrame(): UI;
+    static createImage(): UI;
+    static createButton(): UI;
+    static createTextField(): UI;
+    static createCheckBox(): UI;
+
+    getName(): string;
+    setName(name: string);
+    getRect(): Rect;
+    setRect(rect: Rect);
+    isVisible(): boolean;
+    setVisible(visible: boolean);
+    isEnabled(): boolean;
+    setEnabled(enabled: boolean);
+    isClickThrough(): boolean;
+    setClickThrough(clickThough: boolean);
+    getChecked(): boolean;
+    setChecked(checked: boolean);
+    getTexture(): Texture;
+    setTexture(texture: Texture);
+    getText(): string;
+    setText(text: string);
+    getFont(): string;
+    setFont(font: string);
+    getColor(): Color;
+    setColor(color: Color);
+    getTextColor(): Color;
+    setTextColor(color: Color);
+
+    add(child: UI);
+    insert(before: UI, child: UI);
+    remove(child: UI);
+    removeAll();
+    getChildCount(): number;
+    getChild(index: number): UI;
+    getChild(name: string, deepSearch: boolean = true): UI;
+    getParent(): UI;
+
+    copy(): UI;
+    
+    setOnClick(callback: Function);
+}
+declare function loadUI(filename: string): UI;
+declare function unloadUI(filename: string);
+declare function findUI(name: string): UI;
+declare function setUINavigation(useNav: boolean);
 
 // Renderer
 declare namespace Renderer {
