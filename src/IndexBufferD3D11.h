@@ -33,6 +33,7 @@ namespace onut
         ID3D11Buffer* m_pBuffer = nullptr;
         uint32_t m_size = 0;
         bool m_isDynamic = false;
+        D3D11_MAPPED_SUBRESOURCE m_mappedIndexBuffer;
     };
 };
 

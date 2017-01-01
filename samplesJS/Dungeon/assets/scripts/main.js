@@ -186,7 +186,6 @@ function render()
     if (fadeAnim.isPlaying())
     {
         SpriteBatch.drawRect(null, new Rect(0, 0, Renderer.getResolution()), new Color(0, 0, 0, fadeAnim.get()));
-        SpriteBatch.end();
     }
 
     // Player's life

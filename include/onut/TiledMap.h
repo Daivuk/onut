@@ -13,8 +13,10 @@
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager);
+OForwardDeclare(IndexBuffer);
 OForwardDeclare(Texture);
 OForwardDeclare(TiledMap);
+OForwardDeclare(VertexBuffer);
 
 namespace onut
 {
@@ -107,11 +109,27 @@ namespace onut
             Vector4 UVs;
         };
 
+        struct Chunk
+        {
+            OVertexBufferRef pVertexBuffer;
+            OIndexBufferRef pIndexBuffer;
+            TileSet *pTileset = nullptr;
+            int tileCount = 0;
+            bool isDirty = true;
+            bool isSizeDirty = true;
+            int x, y;
+        };
+
         struct TileLayerInternal : public TileLayer
         {
             virtual ~TileLayerInternal();
             Tile *tiles = nullptr;
+            Chunk *chunks = nullptr;
+            int chunkPitch = 0;
+            int chunkRows = 0;
         };
+
+        void refreshChunk(Chunk* pChunk, TileLayerInternal* pLayer);
 
         int m_width = 0;
         int m_height = 0;

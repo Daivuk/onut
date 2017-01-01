@@ -17,8 +17,25 @@ namespace onut
     OIndexBufferRef IndexBuffer::createDynamic(uint32_t size)
     {
         auto pRet = OMake<IndexBufferD3D11>();
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDevice = pRendererD3D11->getDevice();
+
         pRet->m_isDynamic = true;
-        assert(false);
+
+        // Set up the description of the static vertex buffer.
+        D3D11_BUFFER_DESC vertexBufferDesc;
+        vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        vertexBufferDesc.ByteWidth = size;
+        vertexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        vertexBufferDesc.MiscFlags = 0;
+        vertexBufferDesc.StructureByteStride = 0;
+
+        auto ret = pDevice->CreateBuffer(&vertexBufferDesc, nullptr, &pRet->m_pBuffer);
+        assert(ret == S_OK);
+
+        pRet->m_size = size;
+
         return pRet;
     }
 
@@ -73,7 +90,9 @@ namespace onut
         }
         else
         {
-            assert(false);
+            auto pData = map();
+            memcpy(pData, pVertexData, size);
+            unmap(size);
         }
     }
 
@@ -82,6 +101,9 @@ namespace onut
         assert(m_isDynamic);
         if (m_isDynamic)
         {
+            auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+            pRendererD3D11->getDeviceContext()->Map(m_pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &m_mappedIndexBuffer);
+            return m_mappedIndexBuffer.pData;
         }
         return nullptr;
     }
@@ -91,6 +113,8 @@ namespace onut
         assert(m_isDynamic);
         if (m_isDynamic)
         {
+            auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+            pRendererD3D11->getDeviceContext()->Unmap(m_pBuffer, 0);
         }
     }
 

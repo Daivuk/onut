@@ -34,6 +34,8 @@ namespace onut
         auto ret = pDevice->CreateBuffer(&vertexBufferDesc, nullptr, &pRet->m_pBuffer);
         assert(ret == S_OK);
 
+        pRet->m_size = size;
+
         return pRet;
     }
 

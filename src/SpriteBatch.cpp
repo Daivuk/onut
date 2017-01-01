@@ -56,7 +56,7 @@ namespace onut
 
     void SpriteBatch::begin(const Matrix& in_transform, BlendMode blendMode)
     {
-        assert(!m_isDrawing); // Cannot call begin() twice without calling end()
+        if (m_isDrawing) return;
 
         auto transform = in_transform;
         if (m_snapToPixel)
@@ -697,7 +697,7 @@ namespace onut
 
     void SpriteBatch::end()
     {
-        assert(m_isDrawing); // Should call begin() before calling end()
+        if (!m_isDrawing) return;
 
         m_isDrawing = false;
         if (m_spriteCount)

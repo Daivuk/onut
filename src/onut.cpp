@@ -302,7 +302,9 @@ namespace onut
 
             // Render
             oTiming->render();
+#if !defined(ONUT_SHOW_FPS)
             if (oSettings->getShowOnScreenLog() && oSettings->getIsRetroMode())
+#endif
             {
                 oRenderer->clear(Color::Black);
             }

@@ -21,6 +21,13 @@ namespace onut
     class SpriteBatch
     {
     public:
+        struct SVertexP2T2C4
+        {
+            Vector2 position;
+            Vector2 texCoord;
+            Color   color;
+        };
+
         static OSpriteBatchRef create();
 
         SpriteBatch();
@@ -59,13 +66,6 @@ namespace onut
         void flush();
 
     private:
-        struct SVertexP2T2C4
-        {
-            Vector2 position;
-            Vector2 texCoord;
-            Color   color;
-        };
-
         static const int MAX_SPRITE_COUNT = 300;
 
         OVertexBufferRef m_pVertexBuffer;

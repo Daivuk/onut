@@ -2,11 +2,13 @@
 #include <onut/ContentManager.h>
 #include <onut/Crypto.h>
 #include <onut/Files.h>
+#include <onut/IndexBuffer.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Strings.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
+#include <onut/VertexBuffer.h>
 
 // Third party
 #include <tinyxml2/tinyxml2.h>
@@ -15,8 +17,12 @@
 // STL
 #include <cassert>
 
+#include <onut/Sound.h>
+
 namespace onut
 {
+    static const int CHUNK_SIZE = 16;
+
     TiledMap::Layer::~Layer()
     {
     }
@@ -34,6 +40,7 @@ namespace onut
     TiledMap::TileLayerInternal::~TileLayerInternal()
     {
         if (tiles) delete[] tiles;
+        if (chunks) delete[] chunks;
     }
 
     OTiledMapRef TiledMap::createFromFile(const std::string &filename, const OContentManagerRef& in_pContentManager)
@@ -207,6 +214,9 @@ namespace onut
 
                 // Resolve the tiles to tilesets
                 pLayer.tiles = new Tile[len];
+                pLayer.chunkPitch = (pLayer.width + (CHUNK_SIZE - 1)) / CHUNK_SIZE;
+                pLayer.chunkRows = (pLayer.height + (CHUNK_SIZE - 1)) / CHUNK_SIZE;
+                pLayer.chunks = new Chunk[pLayer.chunkPitch * pLayer.chunkRows];
                 for (int i = 0; i < len; ++i)
                 {
                     auto pTile = pLayer.tiles + i;
@@ -233,6 +243,23 @@ namespace onut
                     pTile->rect.y = static_cast<float>((i / pLayer.width) * pTileSet->tileHeight);
                     pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
                     pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
+
+                    auto x = (i % pLayer.width) / CHUNK_SIZE;
+                    auto y = (i / pLayer.width) / CHUNK_SIZE;
+                    auto pChunk = pLayer.chunks + (y * pLayer.chunkPitch + x);
+                    pChunk->tileCount++;
+                }
+                
+                len = pLayer.chunkPitch * pLayer.chunkRows;
+                auto pChunk = pLayer.chunks;
+                for (int i = 0; i < len; ++i, ++pChunk)
+                {
+                    pChunk->x = (i % pLayer.chunkPitch) * CHUNK_SIZE;
+                    pChunk->y = (i / pLayer.chunkPitch) * CHUNK_SIZE;
+
+                    if (!pChunk->tileCount) continue;
+
+                    pRet->refreshChunk(pChunk, &pLayer);
                 }
 
                 pRet->m_layerCount++;
@@ -426,6 +453,77 @@ namespace onut
         renderLayer(rect, getLayer(name));
     }
 
+    void TiledMap::refreshChunk(Chunk* pChunk, TileLayerInternal* pLayer)
+    {
+        if (pChunk->isSizeDirty)
+        {
+            // Indices
+            pChunk->pIndexBuffer = OIndexBuffer::createDynamic(pChunk->tileCount * sizeof(uint16_t) * 6);
+            auto pIndices = (uint16_t*)pChunk->pIndexBuffer->map();
+            for (int j = 0; j < pChunk->tileCount; ++j)
+            {
+                pIndices[j * 6 + 0] = j * 4 + 0;
+                pIndices[j * 6 + 1] = j * 4 + 1;
+                pIndices[j * 6 + 2] = j * 4 + 2;
+                pIndices[j * 6 + 3] = j * 4 + 0;
+                pIndices[j * 6 + 4] = j * 4 + 2;
+                pIndices[j * 6 + 5] = j * 4 + 3;
+            }
+            pChunk->pIndexBuffer->unmap(pChunk->tileCount * sizeof(uint16_t) * 6);
+        }
+
+        // Vertices
+        if (pChunk->isSizeDirty)
+        {
+            pChunk->pVertexBuffer = OVertexBuffer::createDynamic(pChunk->tileCount * sizeof(OSpriteBatch::SVertexP2T2C4) * 4);
+        }
+        auto pVertices = (OSpriteBatch::SVertexP2T2C4*)pChunk->pVertexBuffer->map();
+        int j = 0;
+        int layerW = pLayer->width;
+        int layerH = pLayer->height;
+        auto layerTiles = pLayer->tiles;
+        for (int y = pChunk->y; y < pChunk->y + CHUNK_SIZE && y < layerH; ++y)
+        {
+            for (int x = pChunk->x; x < pChunk->x + CHUNK_SIZE && x < layerW; ++x)
+            {
+                auto& tile = layerTiles[y * pLayer->width + x];
+                if (!tile.pTileset) continue;
+
+                pChunk->pTileset = tile.pTileset;
+
+                auto& vert0 = pVertices[j * 4 + 0];
+                auto& vert1 = pVertices[j * 4 + 1];
+                auto& vert2 = pVertices[j * 4 + 2];
+                auto& vert3 = pVertices[j * 4 + 3];
+
+                vert0.color = Color::White;
+                vert1.color = Color::White;
+                vert2.color = Color::White;
+                vert3.color = Color::White;
+
+                vert0.texCoord.x = tile.UVs.x;
+                vert0.texCoord.y = tile.UVs.y;
+                vert1.texCoord.x = tile.UVs.x;
+                vert1.texCoord.y = tile.UVs.w;
+                vert2.texCoord.x = tile.UVs.z;
+                vert2.texCoord.y = tile.UVs.w;
+                vert3.texCoord.x = tile.UVs.z;
+                vert3.texCoord.y = tile.UVs.y;
+
+                vert0.position = tile.rect.TopLeft();
+                vert1.position = tile.rect.BottomLeft();
+                vert2.position = tile.rect.BottomRight();
+                vert3.position = tile.rect.TopRight();
+
+                ++j;
+            }
+        }
+        pChunk->pVertexBuffer->unmap(pChunk->tileCount * sizeof(OSpriteBatch::SVertexP2T2C4) * 4);
+
+        pChunk->isDirty = false;
+        pChunk->isSizeDirty = false;
+    }
+
     void TiledMap::renderLayer(const iRect &in_rect, Layer *in_pLayer)
     {
         if (!in_pLayer->isVisible) return;
@@ -438,7 +536,42 @@ namespace onut
         rect.top = std::max<>(0, rect.top);
         rect.right = std::min<>((m_width - 1), rect.right);
         rect.bottom = std::min<>((m_height - 1), rect.bottom);
+        
+        rect.left /= CHUNK_SIZE;
+        rect.top /= CHUNK_SIZE;
+        rect.right /= CHUNK_SIZE;
+        rect.bottom /= CHUNK_SIZE;
 
+        bool isInBatch = oSpriteBatch->isInBatch();
+        if (isInBatch)
+        {
+            oSpriteBatch->end();
+            oRenderer->setupFor2D(oSpriteBatch->getTransform() * getTransform());
+        }
+        else
+        {
+            oRenderer->setupFor2D(getTransform());
+        }
+        oRenderer->renderStates.sampleFiltering = m_filtering;
+        for (int y = rect.top; y <= rect.bottom; ++y)
+        {
+            for (int x = rect.left; x <= rect.right; ++x)
+            {
+                auto pChunk = pLayer->chunks + (y * pLayer->chunkPitch + x);
+                if (!pChunk->tileCount) continue;
+                if (pChunk->isDirty) refreshChunk(pChunk, pLayer);
+                oRenderer->renderStates.textures[0] = pChunk->pTileset->pTexture;
+                oRenderer->renderStates.vertexBuffer = pChunk->pVertexBuffer;
+                oRenderer->renderStates.indexBuffer = pChunk->pIndexBuffer;
+                oRenderer->drawIndexed(pChunk->tileCount * 6);
+            }
+        }
+        if (isInBatch)
+        {
+            oSpriteBatch->begin(oSpriteBatch->getTransform());
+        }
+
+        /*
         bool manageSB = !oSpriteBatch->isInBatch();
         if (manageSB)
         {
@@ -457,7 +590,7 @@ namespace onut
                 oSpriteBatch->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
             }
         }
-        if (manageSB) oSpriteBatch->end();
+        if (manageSB) oSpriteBatch->end();*/
     }
 
     const OTextureRef& TiledMap::getMinimap()
@@ -495,14 +628,29 @@ namespace onut
     void TiledMap::setTileAt(TileLayer *pLayer, int x, int y, uint32_t tileId)
     {
         if (x < 0 || y < 0 || x >= pLayer->width || y >= pLayer->height) return;
+        auto i = (y * pLayer->width + x);
+        if (pLayer->tileIds[i] == tileId) return;
 
         auto pInternalLayer = (TileLayerInternal*)pLayer;
-        pLayer->tileIds[y * pInternalLayer->width + x] = tileId;
-        auto i = (y * pInternalLayer->width + x);
+
+        auto chunkX = (i % pInternalLayer->width) / CHUNK_SIZE;
+        auto chunkY = (i / pInternalLayer->width) / CHUNK_SIZE;
+        auto pChunk = pInternalLayer->chunks + (chunkY * pInternalLayer->chunkPitch + chunkX);
+        pChunk->isDirty = true;
+
+        if (pLayer->tileIds[i] == 0)
+        {
+            pChunk->tileCount++;
+            pChunk->isSizeDirty = true;
+        }
+
+        pLayer->tileIds[i] = tileId;
         auto pTile = pInternalLayer->tiles + i;
         if (tileId == 0)
         {
             pTile->pTileset = nullptr;
+            pChunk->tileCount--;
+            pChunk->isSizeDirty = true;
             return;
         }
         auto pTileSet = m_tileSets;
