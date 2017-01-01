@@ -9370,9 +9370,11 @@ namespace onut
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 auto UIfilename = JS_STRING(0);
-                if (UImap.find(UIfilename) != UImap.end()) return 0; // Already loaded
-                UImap[UIfilename] = OUIControl::createFromFile(UIfilename);
-                oUI->add(UImap[UIfilename]);
+                if (UImap.find(UIfilename) == UImap.end())
+                {
+                    UImap[UIfilename] = OUIControl::createFromFile(UIfilename);
+                    oUI->add(UImap[UIfilename]);
+                }
                 newUI(ctx, UImap[UIfilename]);
                 return 1;
             }

@@ -4,6 +4,7 @@ var fadeAnim = new NumberAnim(0);;
 var tiledMap = null;
 var player = {};
 var camera = new Vector2();
+var ui = null;
 
 // For optimization, we have different lists wether an entity is updatable/drawable/etc
 var entities = [];
@@ -14,10 +15,25 @@ var damageEntities = [];
 var touchEntities = [];
 var triggerEntities = [];
 
-restartLevel();
+var gameState = "mainMenu";
+
+goMainMenu();
+
+function goMainMenu()
+{
+    gameState = "mainMenu";
+    setUINavigation(true);
+    ui = loadUI("mainMenu.json");
+    ui.setVisible(true);
+    findUI("btnPlay").setOnClick(restartLevel);
+    findUI("btnQuit").setOnClick(quit);
+}
 
 function restartLevel()
 {
+    gameState = "play";
+    ui.setVisible(false);
+
     fadeAnim = new NumberAnim(0);
     tiledMap = getFreshTiledMap("dungeon.tmx");
     player = {};
@@ -137,6 +153,8 @@ function entity_kill(entity)
 
 function update(dt)
 {
+    if (gameState == "mainMenu") return;
+
     // Update entities
     if (!fadeAnim.isPlaying())
     {
@@ -172,6 +190,8 @@ function update(dt)
 
 function render()
 {
+    if (gameState == "mainMenu") return;
+
     Renderer.clear(Color.BLACK);
 
     var transform = Matrix.createTranslation(new Vector3(-camera.x + 128, -camera.y + 80));

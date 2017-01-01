@@ -1,7 +1,7 @@
 resolution=800x600
 retroResolution=256x160
 retroMode=true
-gameName=GameJam
+gameName=Dungeon
 resizableWindow=false
 fullscreen=true
 fixedStep=false

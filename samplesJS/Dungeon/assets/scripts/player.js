@@ -139,7 +139,7 @@ function player_damage(entity, fromEntity, amount)
         fadeAnim.queue(0, 1);
         fadeAnim.queue(1, 1, Tween.LINEAR, function()
         {
-            restartLevel();
+            goMainMenu();
         });
         fadeAnim.queue(1, 10);
         fadeAnim.play(Loop.NONE);

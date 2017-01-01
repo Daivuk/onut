@@ -819,6 +819,13 @@ namespace onut
     bool isReallyEnabled(const OUIControlRef& pControl)
     {
         if (!pControl) return true;
+        if (!pControl->getParent())
+        {
+            if (pControl != oUI)
+            {
+                return false;
+            }
+        }
         return pControl->isEnabled && isReallyEnabled(pControl->getParent());
     }
 
