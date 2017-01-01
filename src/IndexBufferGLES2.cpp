@@ -78,7 +78,7 @@ namespace onut
         assert(m_isDynamic);
         if (m_isDynamic)
         {
-            assert(false);
+            return m_pData;
         }
         return nullptr;
     }
