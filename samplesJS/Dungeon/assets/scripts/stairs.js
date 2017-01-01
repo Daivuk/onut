@@ -17,7 +17,7 @@ function stairs_touch(stairs, fromEntity)
     
     fadeAnim.queue(1, 2, Tween.LINEAR, function()
     {
-        quit();
+        goMainMenu();
     });
     fadeAnim.queue(1, 10);
     fadeAnim.play(Loop.NONE);

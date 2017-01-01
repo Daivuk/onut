@@ -24,7 +24,7 @@ function goMainMenu()
     gameState = "mainMenu";
     setUINavigation(true);
     ui = loadUI("mainMenu.json");
-    ui.setVisible(true);
+  //  ui.setVisible(true);
     findUI("btnPlay").setOnClick(restartLevel);
     findUI("btnQuit").setOnClick(quit);
 }
@@ -32,7 +32,8 @@ function goMainMenu()
 function restartLevel()
 {
     gameState = "play";
-    ui.setVisible(false);
+  //  ui.setVisible(false);
+    unloadUI("mainMenu.json");
 
     fadeAnim = new NumberAnim(0);
     tiledMap = getFreshTiledMap("dungeon.tmx");
