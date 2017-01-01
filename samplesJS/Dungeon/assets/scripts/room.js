@@ -104,16 +104,16 @@ function room_show(room)
 function room_calculateCameraPos(room, position)
 {
     var camPos = new Vector2(position);
-    if (room.bottomRight.x - room.topLeft.x > 160)
+    if (room.bottomRight.x - room.topLeft.x > 192)
     {
-        camPos.x = Math.max(camPos.x, room.topLeft.x + 80);
-        camPos.x = Math.min(camPos.x, room.bottomRight.x - 64);
+        camPos.x = Math.max(camPos.x, room.topLeft.x + 96);
+        camPos.x = Math.min(camPos.x, room.bottomRight.x - 80);
     }
     else camPos.x = room.center.x;
-    if (room.bottomRight.y - room.topLeft.y > 112)
+    if (room.bottomRight.y - room.topLeft.y > 144)
     {
-        camPos.y = Math.max(camPos.y, room.topLeft.y + 56);
-        camPos.y = Math.min(camPos.y, room.bottomRight.y - 40);
+        camPos.y = Math.max(camPos.y, room.topLeft.y + 72);
+        camPos.y = Math.min(camPos.y, room.bottomRight.y - 56);
     }
     else camPos.y = room.center.y;
     return camPos;

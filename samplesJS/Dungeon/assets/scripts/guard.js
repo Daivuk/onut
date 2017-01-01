@@ -191,6 +191,8 @@ function guard_update(entity, dt)
         entity.spriteAnim.play("idle_" + entity.dir);
         setTimeout(function() 
         {
+            if (entity.life == 0) return;
+            
             entity.attackAnim.play("attack");
             entity.spriteAnim.play("attack_" + entity.dir);
             playSound("swoosh.wav");
