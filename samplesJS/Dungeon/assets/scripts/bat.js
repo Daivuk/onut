@@ -1,6 +1,6 @@
 var BAT_MOV_SPEED = 24;
 
-function bat_init()
+function bat_init(entity)
 {
     // Bat is smaller
     entity.size = new Vector2(4, 4);

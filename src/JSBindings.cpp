@@ -8472,6 +8472,17 @@ namespace onut
             JS_GLOBAL_FUNCTION_END("getTiledMap", 1);
             JS_GLOBAL_FUNCTION_BEGIN
             {
+                auto resName = JS_STRING(0);
+                if (oContentManager->isResourceLoaded(resName))
+                {
+                    oContentManager->removeResource(OGetTiledMap(resName));
+                }
+                newTiledMap(ctx, OGetTiledMap(resName));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getFreshTiledMap", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
                 auto spriteAnim = OGetSpriteAnim(JS_STRING(0));
                 if (spriteAnim)
                 {

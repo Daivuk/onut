@@ -60,6 +60,8 @@ function room_createAt(x, y)
 
 function rooms_init()
 {
+    rooms = [];
+
     var roomLayer = tiledMap.getLayerIndex("room");
     var mapSize = tiledMap.getSize();
     for (var y = 0; y < mapSize.y; ++y)

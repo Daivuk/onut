@@ -1,13 +1,9 @@
 // Globals
-var fadeAnim = new NumberAnim(0);
 var font = getFont("font.fnt");
-var tiledMap = getTiledMap("dungeon.tmx");
+var fadeAnim = new NumberAnim(0);;
+var tiledMap = null;
 var player = {};
-var currentRoom = {};
 var camera = new Vector2();
-
-// Generate rooms
-rooms_init();
 
 // For optimization, we have different lists wether an entity is updatable/drawable/etc
 var entities = [];
@@ -18,40 +14,62 @@ var damageEntities = [];
 var touchEntities = [];
 var triggerEntities = [];
 
-// Parse map entities
-var objCount = tiledMap.getObjectCount("entities");
-var objInitFns = {
-    "start_location": player_init,
-    "door": door_init,
-    "vase": vase_init,
-    "chest": chest_init,
-    "crumble": crumble_init,
-    "stairs": stairs_init,
-    "guard": guard_init,
-    "bat": bat_init
-};
-for (var i = 0; i < objCount; ++i) 
+restartLevel();
+
+function restartLevel()
 {
-    var entity = tiledMap.getObject("entities", i);
-    var initFn = objInitFns[entity.type];
+    fadeAnim = new NumberAnim(0);
+    tiledMap = getFreshTiledMap("dungeon.tmx");
+    player = {};
+    camera = new Vector2();
+        
+    entities = [];
+    updateEntities = [];
+    drawEntities = [];
+    drawOverlayEntities = [];
+    damageEntities = [];
+    touchEntities = [];
+    triggerEntities = [];
 
-    // Center the entity on the tile
-    entity.position = entity.size.div(2).add(entity.position);
+    // Generate rooms
+    rooms_init();
 
-    // Halve size
-    entity.size = entity.size.div(2);
+    // Parse map entities
+    var objCount = tiledMap.getObjectCount("entities");
+    var objInitFns = {
+        "start_location": player_init,
+        "door": door_init,
+        "vase": vase_init,
+        "chest": chest_init,
+        "crumble": crumble_init,
+        "stairs": stairs_init,
+        "guard": guard_init,
+        "bat": bat_init
+    };
 
-    // Call init function based on type
-    if (initFn) initFn(entity);
+    for (var i = 0; i < objCount; ++i) 
+    {
+        var entity = tiledMap.getObject("entities", i);
+        var initFn = objInitFns[entity.type];
 
-    // Find the room in which the entity is
-    entity.room = room_getAt(Math.floor(entity.position.x / 16), Math.floor(entity.position.y / 16));
+        // Center the entity on the tile
+        entity.position = entity.size.div(2).add(entity.position);
 
-    entity_add(entity);
+        // Halve size
+        entity.size = entity.size.div(2);
+
+        // Call init function based on type
+        if (initFn) initFn(entity);
+
+        // Find the room in which the entity is
+        entity.room = room_getAt(Math.floor(entity.position.x / 16), Math.floor(entity.position.y / 16));
+
+        entity_add(entity);
+    }
+
+    // Show the start room
+    room_show(player.room);
 }
-
-// Show the start room
-room_show(player.room);
 
 // Add entity
 function entity_add(entity)

@@ -605,6 +605,7 @@ declare class TiledMap {
 }
 /** Same as TiledMap.createFromFile */
 declare function getTiledMap(filename: string): TiledMap;
+declare function getFreshTiledMap(filename: string): TiledMap; // Reloads the map to its initial state
 
 // Sprite Anim
 declare class SpriteAnim {

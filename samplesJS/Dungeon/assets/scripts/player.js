@@ -125,7 +125,7 @@ function player_draw(entity)
 
 function player_damage(entity, fromEntity, amount)
 {
-    if (entity.hitFlashAnim.isPlaying()) return; // Can't hit while in flashing mode
+    if (entity.hitFlashAnim.isPlaying() || entity.life == 0) return; // Can't hit while in flashing mode
     entity.life = Math.max(0, entity.life - amount);
     if (entity.life == 0)
     {
@@ -139,7 +139,7 @@ function player_damage(entity, fromEntity, amount)
         fadeAnim.queue(0, 1);
         fadeAnim.queue(1, 1, Tween.LINEAR, function()
         {
-            quit();
+            restartLevel();
         });
         fadeAnim.queue(1, 10);
         fadeAnim.play(Loop.NONE);
