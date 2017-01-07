@@ -86,7 +86,7 @@ struct Vector3
 
     float Dot(const Vector3& V) const
     {
-        return x * V.x + y * V.z + z * V.z;
+        return x * V.x + y * V.y + z * V.z;
     }
     void Cross(const Vector3& V, Vector3& result) const
     {

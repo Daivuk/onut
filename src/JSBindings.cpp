@@ -22,6 +22,7 @@
 #include <onut/PrimitiveBatch.h>
 #include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
+#include <onut/Settings.h>
 #include <onut/Shader.h>
 #include <onut/Sound.h>
 #include <onut/SpriteAnim.h>
@@ -176,6 +177,9 @@ namespace onut
 
         void* pVideoPlayerPrototype = nullptr;
         void* pEntityPrototype = nullptr;
+
+        void* pBinaryFileWriterPrototype = nullptr;
+        void* pBinaryFileReaderPrototype = nullptr;
 
         void* pUIPrototype = nullptr;
 
@@ -6540,6 +6544,406 @@ namespace onut
             duk_put_global_string(ctx, "MatrixAnim");
         }
 
+        static void createBinaryFileReaderBindings()
+        {
+            auto ctx = pContext;
+
+            // BinaryFileReader() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                auto filename = JS_STRING(0);
+                auto foundFilename = oContentManager->findResourceFile(filename);
+                if (foundFilename.empty()) return DUK_RET_URI_ERROR;
+                FILE* pFile = nullptr;
+#if defined(WIN32)
+                fopen_s(&pFile, foundFilename.c_str(), "rb");
+#else
+                pFile = fopen(foundFilename.c_str(), "rb");
+#endif
+                if (!pFile) return DUK_RET_URI_ERROR;
+
+                duk_push_this(ctx);
+                duk_push_pointer(ctx, pFile);
+                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+
+                return 0;
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~BinaryFileReader()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    fclose(pFile);
+                    pFile = nullptr;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+#define READ_INT_TYPE(__type__, __fn__) \
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1); \
+                if (pFile) \
+                 { \
+                    __type__ val; \
+                    fread(&val, sizeof(__type__), 1, pFile); \
+                    duk_push_number(ctx, (duk_double_t)val); \
+                    return 1; \
+                } \
+                return 0; \
+            }, 0); \
+            duk_put_prop_string(ctx, -2, #__fn__);
+            READ_INT_TYPE(int8_t, readInt8);
+            READ_INT_TYPE(int16_t, readInt16);
+            READ_INT_TYPE(int32_t, readInt32);
+            READ_INT_TYPE(uint8_t, readUInt8);
+            READ_INT_TYPE(uint16_t, readUInt16);
+            READ_INT_TYPE(uint32_t, readUInt32);
+            READ_INT_TYPE(float, readFloat);
+
+            // readString
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    std::string val;
+                    char c;
+                    do
+                    {
+                        fread(&c, sizeof(c), 1, pFile);
+                        if (c) val += c;
+                    } while (c);
+                    duk_push_string(ctx, val.c_str());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readString");
+
+            // Vectors
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    Vector2 val;
+                    fread(&val, sizeof(float), 2, pFile);
+                    newVector2(ctx, val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readVector2");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    Vector3 val;
+                    fread(&val, sizeof(float), 3, pFile);
+                    newVector3(ctx, val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readVector3");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    Vector4 val;
+                    fread(&val, sizeof(float), 4, pFile);
+                    newVector4(ctx, val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readVector4");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    Matrix val;
+                    fread(&val, sizeof(float), 16, pFile);
+                    newMatrix(ctx, val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readMatrix");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    Rect val;
+                    fread(&val, sizeof(float), 4, pFile);
+                    newRect(ctx, val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readRect");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    Color val;
+                    fread(&val, sizeof(float), 4, pFile);
+                    newColor(ctx, val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readColor");
+
+            // Done with the object
+            pBinaryFileReaderPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            duk_put_global_string(ctx, "BinaryFileReader");
+        }
+
+        static void createBinaryFileWriterBindings()
+        {
+            auto ctx = pContext;
+
+            // BinaryFileWriter() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                auto filename = JS_STRING(0);
+                auto foundFilename = oContentManager->findResourceFile(filename);
+                if (foundFilename.empty())
+                {
+                    if (oContentManager->getSearchPaths().empty()) foundFilename = filename;
+                    else foundFilename = oContentManager->getSearchPaths().front() + "/" + filename;
+                }
+                FILE* pFile = nullptr;
+#if defined(WIN32)
+                fopen_s(&pFile, foundFilename.c_str(), "wb");
+#else
+                pFile = fopen(foundFilename.c_str(), "wb");
+#endif
+                if (!pFile) return DUK_RET_URI_ERROR;
+
+                duk_push_this(ctx);
+                duk_push_pointer(ctx, pFile);
+                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+
+                return 0;
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~BinaryFileWriter()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    fclose(pFile);
+                    pFile = nullptr;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+#define WRITE_INT_TYPE(__type__, __fn__) \
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1); \
+                if (pFile) \
+                { \
+                    __type__ val = (__type__)JS_INT(0); \
+                    fwrite(&val, sizeof(__type__), 1, pFile); \
+                    return 0; \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__fn__);
+#define WRITE_UINT_TYPE(__type__, __fn__) \
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1); \
+                if (pFile) \
+                { \
+                    __type__ val = (__type__)JS_UINT(0); \
+                    fwrite(&val, sizeof(__type__), 1, pFile); \
+                    return 0; \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__fn__);
+            WRITE_INT_TYPE(int8_t, writeInt8);
+            WRITE_INT_TYPE(int16_t, writeInt16);
+            WRITE_INT_TYPE(int32_t, writeInt32);
+            WRITE_UINT_TYPE(uint8_t, writeUInt8);
+            WRITE_UINT_TYPE(uint16_t, writeUInt16);
+            WRITE_UINT_TYPE(uint32_t, writeUInt32);
+
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_FLOAT(0);
+                    fwrite(&val, sizeof(val), 1, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "writeFloat");
+
+            // writeString
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    std::string val = JS_STRING(0);
+                    fwrite(val.c_str(), 1, val.size() + 1, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeString");
+
+            // Vectors
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_VECTOR2(0);
+                    fwrite(&val, sizeof(float), 2, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeVector2");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_VECTOR3(0);
+                    fwrite(&val, sizeof(float), 3, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeVector3");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_VECTOR4(0);
+                    fwrite(&val, sizeof(float), 4, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeVector4");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_MATRIX(0);
+                    fwrite(&val, sizeof(float), 16, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeMatrix");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_RECT(0);
+                    fwrite(&val, sizeof(float), 4, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeRect");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    auto val = JS_COLOR(0);
+                    fwrite(&val, sizeof(float), 4, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "writeColor");
+
+            // Done with the object
+            pBinaryFileWriterPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            duk_put_global_string(ctx, "BinaryFileWriter");
+        }
+
         static void createVideoPlayerBindings()
         {
             auto ctx = pContext;
@@ -7405,6 +7809,12 @@ namespace onut
         {
             createVideoPlayerBindings();
             createEntityBindings();
+        }
+
+        static void createFileBindings()
+        {
+            createBinaryFileReaderBindings();
+            createBinaryFileWriterBindings();
         }
 
         static void createUIBindings()
@@ -8277,7 +8687,21 @@ namespace onut
 
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    newVector2(ctx, OScreenf);
+                    oRenderer->clearDepth();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("clearDepth", 1);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    if (oSettings->getIsRetroMode())
+                    {
+                        newVector2(ctx, Vector2((float)oSettings->getRetroResolution().x, (float)oSettings->getRetroResolution().y));
+                    }
+                    else
+                    {
+                        newVector2(ctx, OScreenf);
+                    }
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getResolution", 0);
@@ -8628,6 +9052,60 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popView", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.depthEnabled = JS_BOOL(0, false);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setDepthEnabled", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.depthEnabled.push(JS_BOOL(0, false));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushDepthEnabled", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.depthEnabled.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popDepthEnabled", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.depthWrite = JS_BOOL(0, true);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setDepthWrite", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.depthWrite.push(JS_BOOL(0, true));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushDepthWrite", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.depthWrite.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popDepthWrite", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.backFaceCull = JS_BOOL(0, false);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setBackFaceCull", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.backFaceCull.push(JS_BOOL(0, false));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("pushBackFaceCull", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->renderStates.backFaceCull.pop();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("popBackFaceFull", 0);
             }
             JS_INTERFACE_END("Renderer");
 
@@ -9226,10 +9704,13 @@ namespace onut
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN
             {
+                auto prev = oGenerateMipmaps;
+                oGenerateMipmaps = JS_BOOL(1, true);
                 newTexture(ctx, OGetTexture(JS_STRING(0)));
+                oGenerateMipmaps = prev;
                 return 1;
             }
-            JS_GLOBAL_FUNCTION_END("getTexture", 1);
+            JS_GLOBAL_FUNCTION_END("getTexture", 2);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 newFont(ctx, OGetFont(JS_STRING(0)));
@@ -9776,6 +10257,7 @@ namespace onut
             createAnimBindings();
             createObjectBindings();
             createUIBindings();
+            createFileBindings();
         }
 
         static void evalScripts()

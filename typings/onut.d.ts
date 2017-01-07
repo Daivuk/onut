@@ -802,6 +802,18 @@ declare namespace Renderer {
     function setView(view: Matrix);
     function pushView(view: Matrix);
     function popView();
+
+    function setDepthEnabled(depthEnabled: boolean);
+    function pushDepthEnabled(depthEnabled: boolean);
+    function popDepthEnabled();
+
+    function setDepthWrite(depthWrite: boolean);
+    function pushDepthWrite(depthWrite: boolean);
+    function popDepthWrite();
+
+    function setBackFaceCull(backFaceCull: boolean);
+    function pushBackFaceCull(backFaceCull: boolean);
+    function popBackFaceCull();
 }
 
 // Spritebatch
