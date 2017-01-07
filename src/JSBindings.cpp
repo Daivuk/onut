@@ -467,6 +467,7 @@ namespace onut
         {
             if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
+            if (!duk_is_boolean(ctx, index)) return in_default;
             return duk_to_boolean(ctx, index) == 1 ? true : false;
         }
 
@@ -474,6 +475,7 @@ namespace onut
         {
             if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
+            if (!duk_is_number(ctx, index)) return in_default;
             return (float)duk_to_number(ctx, index);
         }
 
@@ -481,6 +483,7 @@ namespace onut
         {
             if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
+            if (!duk_is_number(ctx, index)) return in_default;
             return duk_to_uint(ctx, index);
         }
 
@@ -488,6 +491,7 @@ namespace onut
         {
             if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
+            if (!duk_is_number(ctx, index)) return in_default;
             return duk_to_int(ctx, index);
         }
 
@@ -495,6 +499,7 @@ namespace onut
         {
             if (index >= duk_get_top(ctx)) return in_default;
             if (duk_is_null_or_undefined(ctx, index)) return in_default;
+            if (!duk_is_string(ctx, index)) return in_default;
             return duk_to_string(ctx, index);
         }
 
@@ -6613,6 +6618,22 @@ namespace onut
             READ_INT_TYPE(uint32_t, readUInt32);
             READ_INT_TYPE(float, readFloat);
 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    uint8_t val;
+                    fread(&val, sizeof(uint8_t), 1, pFile);
+                    duk_push_boolean(ctx, (duk_bool_t)val);
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "readBool");
+
             // readString
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6835,6 +6856,21 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "writeFloat");
 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto pFile = (FILE*)duk_to_pointer(ctx, -1);
+                if (pFile)
+                {
+                    uint8_t val = JS_BOOL(0) ? 1 : 0;
+                    fwrite(&val, sizeof(uint8_t), 1, pFile);
+                    return 0;
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "writeBool");
+
             // writeString
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6848,7 +6884,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeString");
 
             // Vectors
@@ -6864,7 +6900,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeVector2");
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6878,7 +6914,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeVector3");
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6892,7 +6928,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeVector4");
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6906,7 +6942,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeMatrix");
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6920,7 +6956,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeRect");
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -6934,7 +6970,7 @@ namespace onut
                     return 0;
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "writeColor");
 
             // Done with the object
