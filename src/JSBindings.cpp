@@ -1179,6 +1179,16 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "mul");
 
+            // transform(matrix)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto matrix = JS_MATRIX(0);
+                JS_THIS_VECTOR3;
+                newVector3(ctx, Vector3::Transform(v, matrix));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "transform");
+
             // div(other)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -1210,7 +1220,7 @@ namespace onut
             // dot(other)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
-                auto other = getVector2(ctx, 0);
+                auto other = getVector3(ctx, 0);
                 JS_THIS_VECTOR3;
                 duk_push_number(ctx, (duk_double_t)v.Dot(other));
                 return 1;
@@ -1220,9 +1230,9 @@ namespace onut
             // cross(other)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
-                auto other = getVector2(ctx, 0);
+                auto other = getVector3(ctx, 0);
                 JS_THIS_VECTOR3;
-                newVector2(ctx, v.Cross(other));
+                newVector3(ctx, v.Cross(other));
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "cross");
@@ -1559,6 +1569,16 @@ namespace onut
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "mul");
+
+            // transform(matrix)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto matrix = JS_MATRIX(0);
+                JS_THIS_VECTOR4;
+                newVector4(ctx, Vector4::Transform(v, matrix));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "transform");
 
             // div(other)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -9318,7 +9338,24 @@ namespace onut
             {
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    newVector2(ctx, oInput->mousePosf);
+                    if (oSettings->getIsRetroMode())
+                    {
+                        auto realRes = oRenderer->getTrueResolution();
+                        auto retroRes = oSettings->getRetroResolution();
+                        auto rect = ORectSmartFit(Rect(0, 0, (float)realRes.x, (float)realRes.y), Vector2((float)retroRes.x, (float)retroRes.y));
+                        auto mousePos = oInput->mousePosf;
+                        mousePos.x -= rect.x;
+                        mousePos.y -= rect.y;
+                        mousePos.x /= rect.z;
+                        mousePos.y /= rect.w;
+                        mousePos.x *= (float)retroRes.x;
+                        mousePos.y *= (float)retroRes.y;
+                        newVector2(ctx, mousePos);
+                    }
+                    else
+                    {
+                        newVector2(ctx, oInput->mousePosf);
+                    }
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getMousePos", 0);
@@ -9742,9 +9779,17 @@ namespace onut
             {
                 auto prev = oGenerateMipmaps;
                 oGenerateMipmaps = JS_BOOL(1, true);
-                newTexture(ctx, OGetTexture(JS_STRING(0)));
+                auto pTex = OGetTexture(JS_STRING(0));
                 oGenerateMipmaps = prev;
-                return 1;
+                if (pTex)
+                {
+                    newTexture(ctx, pTex);
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
             }
             JS_GLOBAL_FUNCTION_END("getTexture", 2);
             JS_GLOBAL_FUNCTION_BEGIN
@@ -10110,7 +10155,7 @@ namespace onut
                 JS_ENUM("MOUSE_4", onut::Input::State::Mouse4);
                 JS_ENUM("MOUSE_X", onut::Input::State::MouseX);
                 JS_ENUM("MOUSE_Y", onut::Input::State::MouseY);
-                JS_ENUM("MouseZ", onut::Input::State::MouseZ);
+                JS_ENUM("MOUSE_Z", onut::Input::State::MouseZ);
                 JS_ENUM("XARCADE_LEFT_PADDLE", onut::Input::State::XArcadeLeftPaddle);
                 JS_ENUM("XARCADE_RIGHT_PADDLE", onut::Input::State::XArcadeRightPaddle);
                 JS_ENUM("XARCADE_1_PLAYER", onut::Input::State::XArcade1Player);

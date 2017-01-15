@@ -169,11 +169,26 @@ namespace onut
                 parsed.source.insert(match.position(), "float4 main(oPSInput oInput) : SV_TARGET\n{\n    float4 oColor;\n");
 
                 size_t offset = match.position() + match.length();
-                if (std::regex_search(parsed.source.cbegin() + offset, parsed.source.cend(), match, std::regex("\\}")))
+                int braceDeep = 0;
+                while (offset < parsed.source.size())
                 {
-                    parsed.source.insert(offset + match.position(), "    return oColor;\n");
+                    auto c = parsed.source[offset];
+                    if (c == '{')
+                    {
+                        ++braceDeep;
+                    }
+                    else if (c == '}')
+                    {
+                        --braceDeep;
+                        if (braceDeep == 0)
+                        {
+                            break;
+                        }
+                    }
+                    ++offset;
                 }
-                else assert(false); // No matching closing } to main function
+                parsed.source.insert(offset, "    return oColor;\n");
+                if (braceDeep != 0) assert(false); // No matching closing } to main function
             }
             else assert(false); // Shader should include "void main()"
 
@@ -233,10 +248,12 @@ namespace onut
             }
 
             // Create textures samplers
-            for (auto& texture : parsed.textures)
+            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
             {
-                std::string samplerStr = "Texture2D " + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
-                samplerStr += "SamplerState sampler_" + texture.name + "\n{\n";
+                const auto& texture = *rit;
+
+                std::string samplerStr = "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
+          /*      std::string samplerStr = "SamplerState sampler_" + texture.name + "\n{\n";
                 switch (texture.filter)
                 {
                     case ParsedTexture::Filter::Nearest:
@@ -273,8 +290,17 @@ namespace onut
                         samplerStr += "    AddressV = Wrap;\n";
                         break;
                 }
-                samplerStr += "};\n\n";
+                samplerStr += "};\n\n";*/
                 parsed.source.insert(0, samplerStr);
+            }
+
+            // Create textures
+            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
+            {
+                const auto& texture = *rit;
+
+                std::string textureStr = "Texture2D " + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                parsed.source.insert(0, textureStr);
             }
 
             // Now compile it
@@ -283,6 +309,62 @@ namespace onut
             if (pRetD3D11)
             {
                 pRetD3D11->m_uniforms = uniforms;
+
+                // Create textures samplers
+                if (!parsed.textures.empty())
+                {
+                    pRetD3D11->m_samplerStatesCount = (int)parsed.textures.size();
+                    pRetD3D11->m_ppSampleStates = new ID3D11SamplerState*[pRetD3D11->m_samplerStatesCount];
+                    int i = 0;
+                    for (auto& texture : parsed.textures)
+                    {
+                        D3D11_SAMPLER_DESC samplerState;
+                        memset(&samplerState, 0, sizeof(samplerState));
+                        samplerState.MaxAnisotropy = 1;
+                        samplerState.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+                        samplerState.MaxLOD = D3D11_FLOAT32_MAX;
+
+                        switch (texture.filter)
+                        {
+                            case ParsedTexture::Filter::Nearest:
+                                samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+                                break;
+                            case ParsedTexture::Filter::Linear:
+                                samplerState.Filter = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+                                break;
+                            case ParsedTexture::Filter::Bilinear:
+                                samplerState.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+                                break;
+                            case ParsedTexture::Filter::Trilinear:
+                                samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+                                break;
+                            case ParsedTexture::Filter::Anisotropic:
+                                samplerState.Filter = D3D11_FILTER_ANISOTROPIC;
+                                break;
+                        }
+                        switch (texture.repeatX)
+                        {
+                            case ParsedTexture::Repeat::Clamp:
+                                samplerState.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+                                break;
+                            case ParsedTexture::Repeat::Wrap:
+                                samplerState.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+                                break;
+                        }
+                        switch (texture.repeatY)
+                        {
+                            case ParsedTexture::Repeat::Clamp:
+                                samplerState.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+                                break;
+                            case ParsedTexture::Repeat::Wrap:
+                                samplerState.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+                                break;
+                        }
+                        samplerState.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+                        pDevice->CreateSamplerState(&samplerState, &pRetD3D11->m_ppSampleStates[i]);
+                        ++i;
+                    }
+                }
             }
 
             return pRet;
@@ -420,6 +502,11 @@ namespace onut
 
     ShaderD3D11::~ShaderD3D11()
     {
+        for (int i = 0; i < m_samplerStatesCount; ++i)
+        {
+            m_ppSampleStates[i]->Release();
+        }
+        if (m_ppSampleStates) delete[] m_ppSampleStates;
         for (auto& pUniform : m_uniforms)
         {
             pUniform.pBuffer->Release();
@@ -455,6 +542,16 @@ namespace onut
     ID3D11InputLayout* ShaderD3D11::getInputLayout() const
     {
         return m_pInputLayout;
+    }
+
+    ID3D11SamplerState** ShaderD3D11::getSamplerStates() const
+    {
+        return m_ppSampleStates;
+    }
+
+    int ShaderD3D11::getSamplerStatesCount() const
+    {
+        return m_samplerStatesCount;
     }
 
     int ShaderD3D11::getUniformId(const std::string& varName) const

@@ -33,6 +33,8 @@ namespace onut
         ID3D11VertexShader* getVertexShader() const;
         ID3D11PixelShader* getPixelShader() const;
         ID3D11InputLayout* getInputLayout() const;
+        ID3D11SamplerState** getSamplerStates() const;
+        int getSamplerStatesCount() const;
         Uniforms& getUniforms();
 
         int getUniformId(const std::string& varName) const override;
@@ -54,6 +56,8 @@ namespace onut
         ID3D11VertexShader* m_pVertexShader = nullptr;
         ID3D11PixelShader* m_pPixelShader = nullptr;
         ID3D11InputLayout* m_pInputLayout = nullptr;
+        ID3D11SamplerState** m_ppSampleStates = nullptr;
+        int m_samplerStatesCount = 0;
 
         Uniforms m_uniforms;
     };

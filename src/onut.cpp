@@ -342,9 +342,9 @@ namespace onut
                 oSpriteBatch->changeBlendMode(OBlendOpaque);
                 oSpriteBatch->changeFiltering(OFilterNearest);
 #if defined(__unix__)
-                oSpriteBatch->drawRectWithUVs(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()), Vector4(0, 1, 1, 0));
+                oSpriteBatch->drawRectWithUVs(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()), Vector4(0, 1, 1, 0));
 #else
-                oSpriteBatch->drawRect(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
+                oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
 #endif // __unix__
                 // Show the log
                 if (oSettings->getShowOnScreenLog())

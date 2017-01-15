@@ -546,6 +546,23 @@ inline Rect ORectFit(const TparentRect& parentRect, const Tsize& size)
     return std::move(ret);
 }
 
+// Smart fit is like OFitRect but avoids distortion
+template<typename TparentRect, typename Tsize>
+inline Rect ORectSmartFit(const TparentRect& parentRect, const Tsize& size)
+{
+    Rect ret;
+
+    float scale = std::min<>((float)parentRect.z / (float)size.x, (float)parentRect.w / (float)size.y);
+    scale = std::floor(scale);
+
+    ret.x = (float)parentRect.x + (float)parentRect.z * .5f - (float)std::ceil(size.x * scale * .5f);
+    ret.y = (float)parentRect.y + (float)parentRect.w * .5f - (float)std::ceil(size.y * scale * .5f);
+    ret.z = (float)size.x * scale;
+    ret.w = (float)size.y * scale;
+
+    return std::move(ret);
+};
+
 namespace onut
 {
     /**
