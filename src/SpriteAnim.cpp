@@ -86,6 +86,9 @@ namespace onut
             anim.duration = (float)anim.frames.size() / (float)fps;
         }
 
+        pRet->m_size.x = spriteW;
+        pRet->m_size.y = spriteH;
+
         return pRet;
     }
 

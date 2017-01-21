@@ -4375,9 +4375,12 @@ namespace onut
             // createFromFile(filename)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
+                auto prev = oGenerateMipmaps;
+                oGenerateMipmaps = JS_BOOL(1, true);
                 newSpriteAnim(ctx, OGetSpriteAnim(duk_get_string(ctx, 0)));
+                oGenerateMipmaps = prev;
                 return 1;
-            }, 1);
+            }, 2);
             duk_put_prop_string(ctx, -2, "createFromFile");
 
             duk_put_global_string(ctx, "SpriteAnim");
@@ -4608,6 +4611,22 @@ namespace onut
                 return 0;
             }, 0);
             duk_put_prop_string(ctx, -2, "getOrigin");
+
+            // getSize
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    const auto& size = (*ppSpriteAnimInstance)->getDefinition()->getSize();
+                    newVector2(ctx, Vector2((float)size.x, (float)size.y));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getSize");
 
             // setFPS
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t

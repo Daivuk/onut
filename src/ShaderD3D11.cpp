@@ -479,6 +479,13 @@ namespace onut
             OLog(pError);
             return nullptr;
         }
+#else
+        if (errorBlob)
+        {
+            char* pError = (char*)errorBlob->GetBufferPointer();
+            MessageBoxA(nullptr, pError, "Shader compilation error", MB_OK);
+            return nullptr;
+        }
 #endif
 
         return shaderBlob;

@@ -208,9 +208,9 @@ Matrix Matrix::CreateLookAt(const Vector3& position, const Vector3& target, cons
 
 Matrix Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up)
 {
-    auto zaxis = -(forward);
-    zaxis.Normalize();
-    auto yaxis = up;
+    auto yaxis = forward;
+    yaxis.Normalize();
+    auto zaxis = up;
     auto xaxis = yaxis.Cross(zaxis);
     xaxis.Normalize();
     yaxis = zaxis.Cross(xaxis);

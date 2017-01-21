@@ -46,12 +46,14 @@ namespace onut
         Anim* getAnim(const std::string& name);
         std::vector<std::string> getAnimNames() const;
         std::string getFilename() const { return m_filename; }
+        const Point& getSize() const { return m_size; }
 
     private:
         using AnimMap = std::unordered_map<std::string, Anim>;
 
         AnimMap m_anims;
         std::string m_filename;
+        Point m_size;
     };
 }
 
