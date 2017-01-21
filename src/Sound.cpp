@@ -120,8 +120,8 @@ namespace onut
                         {
                             for (int i = 0; i < len; ++i)
                             {
-                                int8_t sample16 = *(int8_t*)(pData + (i * 2));
-                                pBuffer[i] = (float)sample16 / (float)std::numeric_limits<int8_t>::max();
+                                uint8_t sampleU8 = *(uint8_t*)(pData + i);
+                                pBuffer[i] = ((float)sampleU8 - 128.0f) / (float)std::numeric_limits<int8_t>::max();
                             }
                             break;
                         }
