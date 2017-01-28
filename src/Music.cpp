@@ -35,13 +35,13 @@ namespace onut
 #endif
     }
 
-    void Music::play()
+    void Music::play(bool loop)
     {
 #if defined(WIN32)
         if (m_isPlaying) return;
-
+        m_loop = loop;
         setVolume(m_volume);
-        if (!m_pMp3->Play())
+        if (!m_pMp3->Play(m_loop))
         {
             return;
         }
@@ -86,7 +86,7 @@ namespace onut
         if (!m_isPlaying)
         {
             m_isPlaying = true;
-            m_pMp3->Play();
+            m_pMp3->Play(m_loop);
         }
 #endif
     }
@@ -114,10 +114,10 @@ OMusicRef OGetMusic(const std::string& name)
     return oContentManager->getResourceAs<OMusic>(name);
 }
 
-void OPlayMusic(const std::string& name)
+void OPlayMusic(const std::string& name, bool loop)
 {
     auto pMusic = OGetMusic(name);
-    if (pMusic) pMusic->play();
+    if (pMusic) pMusic->play(loop);
 }
 
 void OStopMusic(const std::string& name)

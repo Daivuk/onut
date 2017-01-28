@@ -1,6 +1,8 @@
 #ifndef MP3___H_INCLUDED
 #define MP3___H_INCLUDED
 
+#include <onut/Updater.h>
+
 #if defined(WIN32)
 // MP3.h
 #include <windows.h>
@@ -9,7 +11,7 @@
 #include <strmif.h>
 #include <control.h>
 
-class Mp3
+class Mp3 : public onut::UpdateTarget
 {
 
 public:
@@ -19,7 +21,7 @@ public:
 	bool Load(LPCWSTR filename);
 	void Cleanup();
 
-	bool Play();
+	bool Play(bool loop = false);
 	bool Pause();
 	bool Stop();
 	
@@ -50,6 +52,8 @@ public:
 	bool SetPositions(__int64* pCurrent, __int64* pStop, bool bAbsolutePositioning);
 
 private:
+    void update() override;
+
 	IGraphBuilder *  pigb;
 	IMediaControl *  pimc;
 	IMediaEventEx *  pimex;
@@ -58,6 +62,7 @@ private:
 	bool    ready;
 	// Duration of the MP3.
 	__int64 duration;
+    bool m_loop = false;
 
 };
 

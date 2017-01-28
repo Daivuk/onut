@@ -3482,10 +3482,10 @@ namespace onut
                 auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
                 if (ppMusic)
                 {
-                    (*ppMusic)->play();
+                    (*ppMusic)->play(JS_BOOL(0, true));
                 }
                 return 0;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "play");
 
             // stop()
@@ -4420,14 +4420,13 @@ namespace onut
             {
                 auto animName = JS_STRING(0);
                 auto fps = JS_FLOAT(1, 0.f);
-                auto force = JS_BOOL(2, false);
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
                 if (ppSpriteAnimInstance)
                 {
                     auto pSpriteAnimInstance = *ppSpriteAnimInstance;
-                    if (force || ((pSpriteAnimInstance->getCurrentAnim() &&
+                    if (((pSpriteAnimInstance->getCurrentAnim() &&
                         pSpriteAnimInstance->getCurrentAnim()->name != animName) || !pSpriteAnimInstance->isPlaying()))
                     {
                         pSpriteAnimInstance->play(animName, fps);
@@ -4436,6 +4435,23 @@ namespace onut
                 return 0;
             }, 2);
             duk_put_prop_string(ctx, -2, "play");
+
+            // forcePlay
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto animName = JS_STRING(0);
+                auto fps = JS_FLOAT(1, 0.f);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    auto pSpriteAnimInstance = *ppSpriteAnimInstance;
+                    pSpriteAnimInstance->play(animName, fps);
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "forcePlay");
 
             // playBackward
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -4456,7 +4472,7 @@ namespace onut
                     }
                 }
                 return 0;
-            }, 2);
+            }, 3);
             duk_put_prop_string(ctx, -2, "playBackward");
 
             // queue
@@ -9869,6 +9885,18 @@ namespace onut
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getMusic", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                auto music = OGetMusic(JS_STRING(0));
+                if (music)
+                {
+                    music->play(JS_BOOL(1, true));
+                    newMusic(ctx, music);
+                    return 1;
+                }
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("playMusic", 2);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 newSound(ctx, OGetSound(JS_STRING(0)));

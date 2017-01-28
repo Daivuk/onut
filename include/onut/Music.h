@@ -19,7 +19,7 @@ namespace onut
     public:
         static OMusicRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);
 
-        void play();
+        void play(bool loop = false);
         void stop();
         void pause();
         void resume();
@@ -36,11 +36,12 @@ namespace onut
 #endif
         float m_volume = 1.f;
         bool m_isPlaying = false;
+        bool m_loop = false;
     };
 }
 
 OMusicRef OGetMusic(const std::string& name);
-void OPlayMusic(const std::string& name);
+void OPlayMusic(const std::string& name, bool loop = false);
 void OStopMusic(const std::string& name);
 
 #endif

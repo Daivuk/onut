@@ -1,6 +1,7 @@
 #if defined(WIN32)
 // MP3.cpp
 #pragma comment(lib, "strmiids.lib")
+#pragma comment(lib, "Winmm.lib")
 #include "mp3/Mp3.h"
 #include <uuids.h>
 
@@ -80,18 +81,19 @@ bool Mp3::Load(LPCWSTR szFile)
 			{
 				pims->SetTimeFormat(&TIME_FORMAT_MEDIA_TIME);
 				pims->GetDuration(&duration); // returns 10,000,000 for a second.
-				duration = duration;
 			}
 		}
 	}
 	return ready;
 }
 
-bool Mp3::Play()
+bool Mp3::Play(bool loop)
 {
 	if (ready&&pimc)
 	{
+        m_loop = loop;
 		HRESULT hr = pimc->Run();
+        oUpdater->registerTarget(this);
 		return SUCCEEDED(hr);
 	}
 	return false;
@@ -100,8 +102,9 @@ bool Mp3::Play()
 bool Mp3::Pause()
 {
 	if (ready&&pimc)
-	{
-		HRESULT hr = pimc->Pause();
+    {
+        oUpdater->unregisterTarget(this);
+        HRESULT hr = pimc->Pause();
 		return SUCCEEDED(hr);
 	}
 	return false;
@@ -110,8 +113,9 @@ bool Mp3::Pause()
 bool Mp3::Stop()
 {
 	if (ready&&pimc)
-	{
-		HRESULT hr = pimc->Stop();
+    {
+        oUpdater->unregisterTarget(this);
+        HRESULT hr = pimc->Stop();
 		return SUCCEEDED(hr);
 	}
 	return false;
@@ -188,6 +192,22 @@ bool Mp3::SetPositions(__int64* pCurrent, __int64* pStop, bool bAbsolutePosition
 	}
 
 	return false;
+}
+
+void Mp3::update()
+{
+    long evCode;
+    bool donePlaying = WaitForCompletion(0, &evCode);
+    if (donePlaying)
+    {
+        if (m_loop)
+        {
+            oUpdater->unregisterTarget(this);
+            __int64 current = 0;
+            SetPositions(&current, &duration, true);
+            Play(m_loop);
+        }
+    }
 }
 
 //Alan
