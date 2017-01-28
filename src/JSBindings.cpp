@@ -12,6 +12,7 @@
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Http.h>
+#include <onut/Images.h>
 #include <onut/IndexBuffer.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
@@ -41,6 +42,7 @@
 #include <onut/UITextBox.h>
 #include <onut/VertexBuffer.h>
 #include <onut/VideoPlayer.h>
+#include <onut/Window.h>
 
 // Private includes
 #include "JSBindings.h"
@@ -9401,6 +9403,51 @@ namespace onut
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getValue", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto visible = JS_BOOL(0);
+#if defined(WIN32)
+                    static bool prevState = true;
+                    if (prevState != visible)
+                    {
+                        ShowCursor(visible ? TRUE : FALSE);
+                        prevState = visible;
+                    }
+#else
+#endif
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setMouseVisible", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto filename = JS_STRING(0);
+                    auto x = JS_INT(1);
+                    auto y = JS_INT(2);
+#if defined(WIN32)
+                    static std::unordered_map<std::string, HCURSOR> cursors;
+                    auto it = cursors.find(filename);
+                    if (it == cursors.end())
+                    {
+                        auto fullPath = oContentManager->findResourceFile(filename);
+                        if (!fullPath.empty())
+                        {
+                            auto hCursor = onut::pngToCursor(fullPath, Point(x, y));
+                            if (hCursor)
+                            {
+                                cursors[filename] = hCursor;
+                                oWindow->setCursor(hCursor);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        oWindow->setCursor(it->second);
+                    }
+#else
+#endif
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setMouseIcon", 3);
             }
             JS_INTERFACE_END("Input");
 
@@ -10130,7 +10177,7 @@ namespace onut
                 JS_ENUM("VOLUME_UP", onut::Input::State::KeyVolumeUp); 
                 JS_ENUM("WEB_HOME", onut::Input::State::KeyWebHome); 
                 JS_ENUM("NUM_PAD_COMMA", onut::Input::State::KeyNumPadComma);
-                JS_ENUM("NUM_PAD_DIVICE", onut::Input::State::KeyNumPadDivide); 
+                JS_ENUM("NUM_PAD_DIVIDE", onut::Input::State::KeyNumPadDivide); 
                 JS_ENUM("SYSRQ", onut::Input::State::Key_SYSRQ);
                 JS_ENUM("RIGHT_ALT", onut::Input::State::KeyRightAlt); 
                 JS_ENUM("ALT_CAR", onut::Input::State::KeyAltCar); 

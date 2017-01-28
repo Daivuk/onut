@@ -249,7 +249,8 @@ namespace onut
 
     OTextureRef SpriteAnimInstance::getTexture() const
     {
-        if (m_pCurrentAnim)
+        auto frameId = getFrameId();
+        if (m_pCurrentAnim && frameId >= 0 && frameId < (int)m_pCurrentAnim->frames.size())
         {
             return m_pCurrentAnim->frames[getFrameId()].pTexture;
         }
@@ -258,7 +259,8 @@ namespace onut
 
     const Vector4& SpriteAnimInstance::getUVs() const
     {
-        if (m_pCurrentAnim)
+        auto frameId = getFrameId();
+        if (m_pCurrentAnim && frameId >= 0 && frameId < (int)m_pCurrentAnim->frames.size())
         {
             return m_pCurrentAnim->frames[getFrameId()].UVs;
         }
@@ -268,7 +270,8 @@ namespace onut
 
     const Vector2& SpriteAnimInstance::getOrigin() const
     {
-        if (m_pCurrentAnim)
+        auto frameId = getFrameId();
+        if (m_pCurrentAnim && frameId >= 0 && frameId < (int)m_pCurrentAnim->frames.size())
         {
             return m_pCurrentAnim->frames[getFrameId()].origin;
         }
