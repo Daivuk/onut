@@ -11,13 +11,18 @@ namespace onut
     void Particle::update()
     {
         float dt = ODT;
+        if (delay > 0)
+        {
+            delay -= dt;
+            return;
+        }
         float t = 1 - life;
         life -= delta * dt;
         if (life < 0.f) life = 0.f;
 
         // Animate position with velocity
-        position += velocity * dt;
-        velocity += pDesc->gravity * dt;
+        position += (vel + velocity.value) * dt;
+        vel += gravity.value * dt;
         angle.from += rotation.value * dt;
         angle.to += rotation.value * dt;
 
@@ -31,8 +36,8 @@ namespace onut
             radial *= radialAccel.value;
             tagent *= tangentAccel.value;
 
-            auto accel = pDesc->gravity + radial + tagent;
-            velocity += accel * dt;
+            auto accel = gravity.value + radial + tagent;
+            vel += accel * dt;
         }
         //else if (pEmitter->getDesc()->accelType == sEmitterDesc::AccelType::Radial)
         //{
@@ -48,6 +53,8 @@ namespace onut
         //}
 
         // Animate constant properties
+        velocity.update(t);
+        gravity.update(t);
         color.update(t);
         angle.update(t);
         size.update(t);

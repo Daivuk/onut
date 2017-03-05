@@ -43,6 +43,23 @@ namespace onut
         if (chunks) delete[] chunks;
     }
 
+    OTiledMapRef TiledMap::create(int width, int height, int tileSize)
+    {
+        auto pRet = std::make_shared<OTiledMap>();
+
+        pRet->m_width = width;
+        pRet->m_height = height;
+        pRet->m_tileSize = tileSize;
+        auto len = width  * height;
+        pRet->m_pCollisionTiles = new bool[len];
+        for (int i = 0; i < len; ++i)
+        {
+            pRet->m_pCollisionTiles[i] = true;
+        }
+
+        return pRet;
+    }
+
     OTiledMapRef TiledMap::createFromFile(const std::string &filename, const OContentManagerRef& in_pContentManager)
     {
         OContentManagerRef pContentManager = in_pContentManager;
@@ -339,6 +356,42 @@ namespace onut
         return nullptr;
     }
 
+    TiledMap::Layer* TiledMap::addLayer(const std::string &name)
+    {
+        Layer** ppNewLayers = new Layer*[m_layerCount + 1];
+        memcpy(ppNewLayers, m_layers, sizeof(Layer*) * m_layerCount);
+        delete[] m_layers;
+        m_layers = ppNewLayers;
+        m_layers[m_layerCount] = new TileLayerInternal();
+        auto &pLayer = *(TileLayerInternal*)m_layers[m_layerCount];
+
+        pLayer.name = name;
+        pLayer.width = m_width;
+        pLayer.height = m_height;
+        auto len = pLayer.width * pLayer.height;
+        pLayer.tileIds = new uint32_t[len];
+        memset(pLayer.tileIds, 0, sizeof(uint32_t) * len);
+
+        // Resolve the tiles to tilesets
+        pLayer.tiles = new Tile[len];
+        pLayer.chunkPitch = (pLayer.width + (CHUNK_SIZE - 1)) / CHUNK_SIZE;
+        pLayer.chunkRows = (pLayer.height + (CHUNK_SIZE - 1)) / CHUNK_SIZE;
+        pLayer.chunks = new Chunk[pLayer.chunkPitch * pLayer.chunkRows];
+
+        len = pLayer.chunkPitch * pLayer.chunkRows;
+        auto pChunk = pLayer.chunks;
+        for (int i = 0; i < len; ++i, ++pChunk)
+        {
+            pChunk->x = (i % pLayer.chunkPitch) * CHUNK_SIZE;
+            pChunk->y = (i / pLayer.chunkPitch) * CHUNK_SIZE;
+
+            if (!pChunk->tileCount) continue;
+        }
+
+        ++m_layerCount;
+        return m_layers[m_layerCount - 1];
+    }
+
     int TiledMap::getLayerIndex(const std::string &name) const
     {
         for (int i = 0; i < m_layerCount; ++i)
@@ -377,6 +430,26 @@ namespace onut
             if (m_tileSets[i].name == name) return m_tileSets + i;
         }
         return nullptr;
+    }
+
+    TiledMap::TileSet* TiledMap::addTileSet(const OTextureRef& pTexture, const std::string& name)
+    {
+        TileSet* pNewTileSets = new TileSet[m_tilesetCount + 1];
+        int idStart = 1;
+        for (int i = 0; i < m_tilesetCount; ++i)
+        {
+            pNewTileSets[i] = m_tileSets[i];
+            idStart = m_tileSets[i].firstId + ((m_tileSets[i].pTexture->getSize().x / m_tileSets[i].tileWidth) * (m_tileSets[i].pTexture->getSize().y / m_tileSets[i].tileHeight));
+        }
+        delete[] m_tileSets;
+        m_tileSets = pNewTileSets;
+        m_tileSets[m_tilesetCount].firstId = idStart;
+        m_tileSets[m_tilesetCount].tileWidth = m_tileSize;
+        m_tileSets[m_tilesetCount].tileHeight = m_tileSize;
+        m_tileSets[m_tilesetCount].pTexture = pTexture;
+        m_tileSets[m_tilesetCount].name = name;
+        ++m_tilesetCount;
+        return m_tileSets + (m_tilesetCount - 1);
     }
 
     static iRect getScreenRECTFromTransform(const Matrix& transform, const Point& tileSize)

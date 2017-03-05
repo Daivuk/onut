@@ -187,6 +187,15 @@ namespace onut
 
         std::unordered_map<std::string, JSComponentDefinitionRef> jsComponentDefinitions;
 
+        void updateViewport()
+        {
+            auto& pRenderTarget = oRenderer->renderStates.renderTarget.get();
+            Point resolution;
+            if (pRenderTarget) resolution = pRenderTarget->getSize();
+            else resolution = oRenderer->getTrueResolution();
+            oRenderer->renderStates.viewport = iRect{0, 0, resolution.x, resolution.y};
+        }
+
         // Helpers
 #define FLOAT_PROP(__name__, __index__) \
             auto __name__ = 0.0f; \
@@ -4313,11 +4322,57 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "getLayerIndex");
 
+            // addLayer
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        pTiledMap->addLayer(JS_STRING(0));
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "addLayer");
+
+            // addTileSet
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        pTiledMap->addTileSet(JS_TEXTURE(0), "");
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "addTileSet");
+
             // Done with the object
             pTiledMapPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
 
             // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newTiledMap(ctx, OTiledMap::create(JS_INT(0), JS_INT(1), JS_INT(2)));
+                return 1;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "create");
+
+            // create(filename)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 newTiledMap(ctx, OGetTiledMap(duk_get_string(ctx, 0)));
@@ -8818,6 +8873,7 @@ namespace onut
                 {
                     auto pTexture = JS_TEXTURE(0);
                     oRenderer->renderStates.renderTarget = pTexture;
+                    updateViewport();
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setRenderTarget", 1);
@@ -8825,12 +8881,14 @@ namespace onut
                 {
                     auto pTexture = JS_TEXTURE(0);
                     oRenderer->renderStates.renderTarget.push(pTexture);
+                    updateViewport();
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("pushRenderTarget", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     oRenderer->renderStates.renderTarget.pop();
+                    updateViewport();
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popRenderTarget", 0);
@@ -9362,6 +9420,25 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("draw", 3);
             }
             JS_INTERFACE_END("PrimitiveBatch");
+
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    srand((unsigned int)JS_UINT(0));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("seed", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    int mod = JS_INT(0);
+                    duk_double_t val = (duk_double_t)((int)rand() % mod);
+                    duk_push_number(ctx, val);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getNext", 1);
+            }
+            JS_INTERFACE_END("Random");
 
             // oInput
             JS_INTERFACE_BEGIN();

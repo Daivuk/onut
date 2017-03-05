@@ -64,6 +64,7 @@ namespace onut
             Object *pObjects = nullptr;
         };
 
+        static OTiledMapRef create(int width, int height, int tileSize);
         static OTiledMapRef createFromFile(const std::string &filename, const OContentManagerRef& pContentManager = nullptr);
 
         ~TiledMap();
@@ -86,6 +87,7 @@ namespace onut
 
         TileSet* getTileSet(int index) const;
         TileSet* getTileSet(const std::string& name) const;
+        TileSet* addTileSet(const OTextureRef& pTexture, const std::string& name);
 
         int getLayerCount() const { return m_layerCount; }
         Layer* getLayer(int index) const { return m_layers[index]; }
@@ -93,6 +95,7 @@ namespace onut
         int getLayerIndex(const std::string &name) const;
         bool* generateCollisions(const std::string &collisionLayerName);
         bool* getCollisionTiles() const { return m_pCollisionTiles; }
+        Layer* addLayer(const std::string &name);
 
         const OTextureRef& getMinimap();
 

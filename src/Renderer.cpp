@@ -174,7 +174,8 @@ namespace onut
     Renderer::CameraMatrices Renderer::build2DCamera(const Vector2& position, float zoom)
     {
         CameraMatrices ret;
-        ret.projection = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
+        const auto& viewport = renderStates.viewport.get();
+        ret.projection = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(viewport.right - viewport.left), static_cast<float>(viewport.bottom - viewport.top), 0, -999, 999);
         ret.view = Matrix::CreateTranslation(-position) * Matrix::CreateScale(zoom);
         ret.view.Invert();
         return std::move(ret);
@@ -183,10 +184,11 @@ namespace onut
     Renderer::CameraMatrices Renderer::build2DCameraOffCenter(const Vector2& position, float zoom)
     {
         CameraMatrices ret;
-        ret.projection = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(getResolution().x), static_cast<float>(getResolution().y), 0, -999, 999);
+        const auto& viewport = renderStates.viewport.get();
+        ret.projection = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(viewport.right - viewport.left), static_cast<float>(viewport.bottom - viewport.top), 0, -999, 999);
         ret.view = Matrix::CreateTranslation(-position) *
             Matrix::CreateScale(zoom) *
-            Matrix::CreateTranslation({static_cast<float>(getResolution().x) * .5f, static_cast<float>(getResolution().y) * .5f, 0.f});
+            Matrix::CreateTranslation({static_cast<float>(viewport.right - viewport.left) * .5f, static_cast<float>(viewport.bottom - viewport.top) * .5f, 0.f});
         ret.view.Invert();
         return std::move(ret);
     }

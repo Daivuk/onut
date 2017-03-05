@@ -37,12 +37,15 @@ namespace onut
 
         OParticleEmitterDescRef pDesc;
         float life;
+        float delay;
         float delta;
         ParticleEmitter* pEmitter = nullptr;
 
         Vector3 position;
-        Vector3 velocity;
+        Vector3 vel;
 
+        Range<Vector3> velocity;
+        Range<Vector3> gravity;
         Range<Color> color;
         Range<float> angle;
         Range<float> size;

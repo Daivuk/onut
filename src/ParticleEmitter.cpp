@@ -109,7 +109,11 @@ namespace onut
 
         for (decltype(m_particles.size()) i = 0; i < m_particles.size(); ++i)
         {
-            m_pParticleSystemManager->renderParticle(m_particles[i], camRight, camUp);
+            auto pParticle = m_particles[i];
+            if (pParticle->delay <= 0)
+            {
+                m_pParticleSystemManager->renderParticle(pParticle, camRight, camUp);
+            }
         }
     }
 
@@ -150,8 +154,9 @@ namespace onut
             pParticle->pEmitter = this;
 
             pParticle->position = spawnPos + m_pDesc->position.generate();
-            pParticle->velocity = up * m_pDesc->speed.generate();
 
+            pParticle->velocity.from = up * m_pDesc->speed.generateFrom();
+            pParticle->velocity.to = up * m_pDesc->speed.generateTo();
             pParticle->color.to = m_pDesc->color.generateTo(pParticle->color.from = m_pDesc->color.generateFrom());
             pParticle->angle.to = m_pDesc->angle.generateTo(pParticle->angle.from = m_pDesc->angle.generateFrom());
             pParticle->size.to = m_pDesc->size.generateTo(pParticle->size.from = m_pDesc->size.generateFrom());
@@ -159,6 +164,7 @@ namespace onut
             pParticle->rotation.to = m_pDesc->rotation.generateTo(pParticle->rotation.from = m_pDesc->rotation.generateFrom());
             pParticle->radialAccel.to = m_pDesc->radialAccel.generateTo(pParticle->radialAccel.from = m_pDesc->radialAccel.generateFrom());
             pParticle->tangentAccel.to = m_pDesc->tangentAccel.generateTo(pParticle->tangentAccel.from = m_pDesc->tangentAccel.generateFrom());
+            pParticle->gravity.to = m_pDesc->gravity.generateTo(pParticle->gravity.from = m_pDesc->gravity.generateFrom());
 
             pParticle->color.update(0);
             pParticle->angle.update(0);
@@ -174,6 +180,7 @@ namespace onut
             }
 
             pParticle->life = 1.f;
+            pParticle->delay = m_pDesc->delay.generate();
             pParticle->delta = 1.f / m_pDesc->life.generate();
 
             m_particles.push_back(pParticle);

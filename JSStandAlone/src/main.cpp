@@ -100,6 +100,11 @@ void initSettings()
                     value = onut::toUpper(value);
                     oSettings->setShowOnScreenLog(value == "TRUE" || value == "1" || value == "ON");
                 }
+                else if (what == "EDITORMODE")
+                {
+                    value = onut::toUpper(value);
+                    oSettings->setIsEditorMode(value == "TRUE" || value == "1" || value == "ON");
+                }
             }
             fic.close();
         }

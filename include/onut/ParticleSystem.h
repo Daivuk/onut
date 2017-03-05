@@ -229,14 +229,15 @@ namespace onut
         Textures textures;
         sPfxValue<float> spread = 0;
         Vector3 dir = Vector3(0, 0, 0);
-        sPfxRange<float> speed = 0;
+        sPfxValue<float> speed = 0;
         sPfxValue<Color> color = Color::White;
         sPfxValue<float> angle = 0;
         sPfxValue<float> size = 1;
         sPfxValue<unsigned int> image_index = 0;
         sPfxRange<float> life = 1;
+        sPfxRange<float> delay = 0;
         sPfxRange<Vector3> position = Vector3(0, 0, 0);
-        Vector3 gravity = Vector3(0, 0, 0);
+        sPfxValue<Vector3> gravity = Vector3(0, 0, 0);
         sPfxRange<float> duration = 0;
         sPfxValue<float> rotation = 0;
         sPfxValue<float> radialAccel = 0;

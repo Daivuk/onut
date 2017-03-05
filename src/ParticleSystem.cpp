@@ -411,7 +411,9 @@ namespace onut
                 pEmitter->size = jsonEmitter["size"];
                 pEmitter->image_index = jsonEmitter["image_index"];
                 pEmitter->life = jsonEmitter["life"];
+                pEmitter->delay = jsonEmitter["delay"];
                 pEmitter->position = jsonEmitter["position"];
+                pEmitter->gravity = jsonEmitter["gravity"];
                 const auto& images = jsonEmitter["images"];
                 for (decltype(images.Size()) j = 0; j < images.Size(); ++j)
                 {
@@ -442,8 +444,8 @@ namespace onut
                 pEmitter->textures.push_back(pContentManager->getResourceAs<OTexture>(pex.texture.c_str()));
             }
             pEmitter->spread = pex.angleVariance;
-            pEmitter->speed.from = pex.speed - pex.speedVariance;
-            pEmitter->speed.to = pex.speed + pex.speedVariance;
+            pEmitter->speed.value.from = pex.speed - pex.speedVariance;
+            pEmitter->speed.value.to = pex.speed + pex.speedVariance;
 
             pEmitter->dir = Vector3(
                 cosf(OConvertToRadians(pex.angle)),
