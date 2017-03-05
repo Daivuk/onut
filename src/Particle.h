@@ -4,6 +4,7 @@
 // Onut
 #include <onut/Curve.h>
 #include <onut/Maths.h>
+#include <onut/Tween.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -24,9 +25,11 @@ namespace onut
             Ttype from;
             Ttype to;
             Ttype value;
+            Tween tween;
 
             void update(float t)
             {
+                t = OApplyTween(t, tween);
                 value = OLerp(from, to, t);
             }
         };

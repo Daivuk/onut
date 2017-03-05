@@ -228,7 +228,7 @@ namespace onut
         unsigned int capacity = 100;
         Textures textures;
         sPfxValue<float> spread = 0;
-        Vector3 dir = Vector3(0, 0, 0);
+        sPfxRange<Vector3> dir = Vector3(0, 0, 0);
         sPfxValue<float> speed = 0;
         sPfxValue<Color> color = Color::White;
         sPfxValue<float> angle = 0;

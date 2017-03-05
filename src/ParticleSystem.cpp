@@ -414,6 +414,7 @@ namespace onut
                 pEmitter->delay = jsonEmitter["delay"];
                 pEmitter->position = jsonEmitter["position"];
                 pEmitter->gravity = jsonEmitter["gravity"];
+                pEmitter->dir = jsonEmitter["direction"];
                 const auto& images = jsonEmitter["images"];
                 for (decltype(images.Size()) j = 0; j < images.Size(); ++j)
                 {

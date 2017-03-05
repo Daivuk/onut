@@ -144,9 +144,9 @@ namespace onut
 
             up = Vector3::Transform(up, rotX);
             up = Vector3::Transform(up, rotZ);
-            if (m_pDesc->dir.LengthSquared() != 0)
+            if (m_pDesc->dir.from.LengthSquared() != 0)
             {
-                Matrix rotDir = Matrix::CreateFromAxisAngle(Vector3(m_pDesc->dir.y, m_pDesc->dir.x, 0), OConvertToRadians(90));
+                Matrix rotDir = Matrix::CreateFromAxisAngle(Vector3(m_pDesc->dir.from.y, m_pDesc->dir.from.x, 0), OConvertToRadians(90));
                 up = Vector3::Transform(up, rotDir);
             }
 
@@ -166,6 +166,18 @@ namespace onut
             pParticle->tangentAccel.to = m_pDesc->tangentAccel.generateTo(pParticle->tangentAccel.from = m_pDesc->tangentAccel.generateFrom());
             pParticle->gravity.to = m_pDesc->gravity.generateTo(pParticle->gravity.from = m_pDesc->gravity.generateFrom());
 
+            pParticle->velocity.tween = m_pDesc->speed.tween;
+            pParticle->gravity.tween = m_pDesc->gravity.tween;
+            pParticle->color.tween = m_pDesc->color.tween;
+            pParticle->angle.tween = m_pDesc->angle.tween;
+            pParticle->size.tween = m_pDesc->size.tween;
+            pParticle->image_index.tween = m_pDesc->image_index.tween;
+            pParticle->rotation.tween = m_pDesc->rotation.tween;
+            pParticle->radialAccel.tween = m_pDesc->radialAccel.tween;
+            pParticle->tangentAccel.tween = m_pDesc->tangentAccel.tween;
+
+            pParticle->velocity.update(0);
+            pParticle->gravity.update(0);
             pParticle->color.update(0);
             pParticle->angle.update(0);
             pParticle->size.update(0);
