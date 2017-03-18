@@ -146,7 +146,7 @@ namespace onut
         m_speed = framePerSecond;
     }
 
-    void SpriteAnimInstance::play(const std::string& animName, float framePerSecond)
+    void SpriteAnimInstance::play(const std::string& animName, float framePerSecond, int offset)
     {
         stop();
         if (m_pSpriteAnim)
@@ -158,7 +158,7 @@ namespace onut
                 {
                     m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
                 }
-                m_frame = 0.f;
+                m_frame = (float)(offset % m_pCurrentAnim->frames.size());
                 if (framePerSecond == 0)
                 {
                     m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
@@ -319,11 +319,11 @@ OSpriteAnimRef OGetSpriteAnim(const std::string& name)
     return oContentManager->getResourceAs<OSpriteAnim>(name);
 }
 
-OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName)
+OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName, int offset)
 {
     auto pSpriteAnim = OGetSpriteAnim(filename);
 
     auto pRet = std::make_shared<OSpriteAnimInstance>(pSpriteAnim);
-    pRet->play(animName);
+    pRet->play(animName, 0.0f, offset);
     return pRet;
 }

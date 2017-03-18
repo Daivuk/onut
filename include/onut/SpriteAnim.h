@@ -66,7 +66,7 @@ namespace onut
         SpriteAnimInstance(const OSpriteAnimRef& pSpriteAnim);
         SpriteAnimInstance(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
 
-        void play(const std::string& animName, float framePerSecond = 0.f);
+        void play(const std::string& animName, float framePerSecond = 0.f, int offset = 0);
         void playBackward(const std::string& animName, float framePerSecond = 0.f);
         void queueAnim(const std::string& animName);
         void stop(bool reset = false);
@@ -100,6 +100,6 @@ namespace onut
 };
 
 OSpriteAnimRef OGetSpriteAnim(const std::string& name);
-OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName);
+OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName, int offset = 0);
 
 #endif

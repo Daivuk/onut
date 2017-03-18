@@ -293,7 +293,6 @@ namespace onut
 
     SoundInstance::~SoundInstance()
     {
-        stop();
     }
 
     void SoundInstance::setLoop(bool loop)

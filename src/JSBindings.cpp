@@ -9319,6 +9319,12 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("drawSprite", 6);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    oSpriteBatch->drawSpriteWithUVs(JS_TEXTURE(0), JS_VECTOR2(1), JS_VECTOR4(2), JS_COLOR(3), JS_FLOAT(4, 0.0f), JS_FLOAT(5, 1.0f), JS_VECTOR2(6, Vector2(.5f, .5f)));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("drawSpriteWithUVs", 7);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     auto pSpriteAnimInstance = JS_SPRITE_ANIM_INSTANCE(0);
                     if (pSpriteAnimInstance)
                     {
@@ -10065,13 +10071,13 @@ namespace onut
                 if (spriteAnim)
                 {
                     auto pRet = OMake<OSpriteAnimInstance>(spriteAnim);
-                    pRet->play(JS_STRING(1));
+                    pRet->play(JS_STRING(1), 0.0f, JS_INT(2));
                     newSpriteAnimInstance(ctx, pRet);
                     return 1;
                 }
                 return 0;
             }
-            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 2);
+            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 3);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 newParticleSystem(ctx, OGetParticleSystem(JS_STRING(0)));
@@ -10399,6 +10405,29 @@ namespace onut
                 JS_ENUM("PING_PONG_LOOP", OPingPongLoop);
             }
             JS_INTERFACE_END("Loop");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("UNKONWN", 0);
+                JS_ENUM("RASPBERRY_PI", 1);
+            }
+            JS_INTERFACE_END("Platform");
+
+            // System
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+#if defined(__unix__)
+                    duk_push_int(ctx, 1);
+#else
+                    duk_push_int(ctx, 0);
+#endif
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getPlatform", 0);
+            }
+            JS_INTERFACE_END("System");
+
 
             // Component bullshit
        /*     JS_GLOBAL_FUNCTION_BEGIN

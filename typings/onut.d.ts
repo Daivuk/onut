@@ -109,6 +109,7 @@ declare class Vector3 {
     cross(other: Vector3): Vector3;
     clamp(min: Vector3, max: Vector3): Vector3;
     normalize(): Vector3;
+    transform(matrix: Matrix): Vector3;
 
     x: number;
     y: number;
@@ -169,6 +170,7 @@ declare class Vector4 {
     cross(other: Vector4): Vector4;
     clamp(min: Vector4, max: Vector4): Vector4;
     normalize(): Vector4;
+    transform(matrix: Matrix): Vector4;
 
     x: number;
     y: number;
@@ -477,7 +479,7 @@ declare class Texture {
     setData(data: ArrayBuffer);
 }
 /** Same as Texture.createFromFile */
-declare function getTexture(filename: string): Texture;
+declare function getTexture(filename: string, generateMipmaps: boolean): Texture;
 
 // Video Player
 declare class VideoPlayer {
@@ -493,6 +495,47 @@ declare class VideoPlayer {
     togglePlayPause();
     update();
     getRenderTarget(): Texture;
+}
+
+// Binary File IO
+declare class BinaryFileReader {
+    constructor(filename: string);
+
+    readBool(): boolean;
+    readInt8(): number;
+    readInt16(): number;
+    readInt32(): number;
+    readUInt8(): number;
+    readUInt16(): number;
+    readUInt32(): number;
+    readFloat(): number;
+    readString(): string;
+    readVector2(): Vector2;
+    readVector3(): Vector3;
+    readVector4(): Vector4;
+    readMatrix(): Matrix;
+    readRect(): Rect;
+    readColor(): Color;
+}
+
+declare class BinaryFileWriter {
+    constructor(filename: string);
+
+    writeBool(b: boolean);
+    writeInt8(n: number);
+    writeInt16(n: number);
+    writeInt32(n: number);
+    writeUInt8(n: number);
+    writeUInt16(n: number);
+    writeUInt32(n: number);
+    writeFloat(n: number);
+    writeString(s: string);
+    writeVector2(v: Vector2);
+    writeVector3(v: Vector3);
+    writeVector4(v: Vector4);
+    writeMatrix(m: Matrix);
+    writeRect(r: Matrix);
+    writeColor(c: Matrix);
 }
 
 // Font
@@ -522,7 +565,7 @@ declare class Music {
     static createFromFile(filename: string): Music;
 
     setVolume(volume: number);
-    play();
+    play(loop: boolean);
     stop();
     pause();
     resume();
@@ -530,6 +573,7 @@ declare class Music {
 }
 /** Same as Music.createFromFile */
 declare function getMusic(filename: string): Music;
+declare function playMusic(filename: string, loop: boolean): Music;
 
 // Sound
 declare class Sound {
@@ -575,6 +619,7 @@ declare class TiledMapObject {
     properties: Object;
 }
 declare class TiledMap {
+    static create(width: number, height: number, tileSize: number): TiledMap;
     static createFromFile(filename: string): TiledMap;
 
     getSize(): Vector2;
@@ -591,6 +636,8 @@ declare class TiledMap {
     getObject(layerIndex: number, objectName: string): TiledMapObject;
     getObject(layerName: string, objectName: string): TiledMapObject;
     getLayerIndex(layerName: string): number;
+    addLayer(layerName: string);
+    addTileSet(texture: Texture);
 
     render();
     render(rect: Rect);
@@ -609,7 +656,7 @@ declare function getFreshTiledMap(filename: string): TiledMap; // Reloads the ma
 
 // Sprite Anim
 declare class SpriteAnim {
-    static createFromFile(filename: string): SpriteAnim;
+    static createFromFile(filename: string, generateMipmaps: boolean): SpriteAnim;
 
     createInstance(): SpriteAnimInstance;
 }
@@ -618,8 +665,10 @@ declare function getTiledMap(filename: string): SpriteAnim;
 
 // SpriteAnimInstance
 declare class SpriteAnimInstance {
-    play(animName: String, force: boolean);
-    play(animName: string, fps: number, force: boolean);
+    play(animName: string);
+    play(animName: string, fps: number);
+    forcePlay(animName: string);
+    forcePlay(animName: string, fps: number);
     playBackward(animName: String, force: boolean);
     playBackward(animName: String, fps: number, force: boolean);
     queue(animName: String);
@@ -633,11 +682,12 @@ declare class SpriteAnimInstance {
     getTexture(): Texture;
     getUVs(): Vector4;
     getOrigin(): Vector2;
+    getSize(): Vector2;
 }
 /** Same as spriteAnim.createInstance */
 declare function createSpriteAnimInstance(filename: string): SpriteAnimInstance;
 /** Same as spriteAnim.createInstance then calling play on the returned instance */
-declare function playSpriteAnim(filename: string, animName: string): SpriteAnimInstance;
+declare function playSpriteAnim(filename: string, animName: string, offset: number): SpriteAnimInstance;
 
 // ParticleSystem
 declare class ParticleSystem {
@@ -830,6 +880,7 @@ declare namespace SpriteBatch {
     function drawRectScaled9(texture: Texture, rect: Rect, padding: Vector4, color: Color);
     function drawRectScaled9RepeatCenters(texture: Texture, rect: Rect, padding: Vector4, color: Color);
     function drawSprite(texture: Texture, position: Vector2, color: Color, rotation: number, scale: number, origin: Vector2);
+    function drawSpriteWithUVs(texture: Texture, position: Vector2, uvs: Vector4, color: Color, rotation: number, scale: number, origin: Vector2);
     function drawSpriteAnim(spriteAnim: SpriteAnimInstance, position: Vector2, color: Color, rotation: number, scale: number);
     function drawTransformedSprite(texture: Texture, transform: Matrix, color: Color, scale: Vector2, origin: Vector2);
     function drawTransformedSpriteAnim(spriteAnim: SpriteAnimInstance, transform: Matrix, color: Color, scale: Vector2);
@@ -861,6 +912,8 @@ declare namespace Input {
     function isJustDown(key: Key): boolean;
     function isJustUp(key: Key): boolean;
     function getValue(key: Key): number;
+    function setMouseIcon(iconFilename: string, xHotspot: number, yHotspot: number);
+    function setMouseVisible(visible: boolean);
 }
 
 // GamePad
@@ -902,6 +955,12 @@ declare namespace Timing {
     function getRenderDeltaTime(): number;
     function getTotalElapsed(): number;
     function getFPS(): number;
+}
+
+// Random
+declare namespace Random {
+    function seed(seed: number);
+    function getNext(max: number): number;
 }
 
 // Blend mode
@@ -967,13 +1026,34 @@ declare enum Key {
     MY_COMPUTER, MAIL_L, MEDIA_SELECT,
     CIRCOMFLEX,
     MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_X, MOUSE_Y, MOUSE_Z,
-    XARCADE_LEFT_PADDLE, XARCADE_RIGHT_PADDLE, XARCADE_1_PLAYER, XARCADE_2_PLAYER,
-    XARCADE_LJOY_LEFT, XARCADE_LJOY_RIGHT, XARCADE_LJOY_UP, XARCADE_LJOY_DOWN,
-    XARCADE_RJOY_LEFT, XARCADE_RJOY_RIGHT, XARCADE_RJOY_UP, XARCADE_RJOY_DOWN,
-    XARCADE_LBUTTON_1, XARCADE_LBUTTON_2, XARCADE_LBUTTON_3, XARCADE_LBUTTON_4,
-    XARCADE_LBUTTON_5, XARCADE_LBUTTON_6, XARCADE_LBUTTON_7, XARCADE_LBUTTON_8,
-    XARCADE_RBUTTON_1, XARCADE_RBUTTON_2, XARCADE_RBUTTON_3, XARCADE_RBUTTON_4,
-    XARCADE_RBUTTON_5, XARCADE_RBUTTON_6, XARCADE_RBUTTON_7, XARCADE_RBUTTON_8
+    XARCADE_LEFT_PADDLE, // 3
+    XARCADE_RIGHT_PADDLE, // 4
+    XARCADE_1_PLAYER, // 1
+    XARCADE_2_PLAYER, // 2
+    XARCADE_LJOY_LEFT,  // Num4
+    XARCADE_LJOY_RIGHT, // Num6
+    XARCADE_LJOY_UP, // Num8
+    XARCADE_LJOY_DOWN, // Num2
+    XARCADE_RJOY_LEFT, // D
+    XARCADE_RJOY_RIGHT, // G
+    XARCADE_RJOY_UP, // R
+    XARCADE_RJOY_DOWN, // F
+    XARCADE_LBUTTON_1, // LCtrl
+    XARCADE_LBUTTON_2, // LAlt
+    XARCADE_LBUTTON_3, // Space
+    XARCADE_LBUTTON_4, // LShift
+    XARCADE_LBUTTON_5, // Z
+    XARCADE_LBUTTON_6, // X 
+    XARCADE_LBUTTON_7, // C 
+    XARCADE_LBUTTON_8, // 5
+    XARCADE_RBUTTON_1, // A
+    XARCADE_RBUTTON_2, // S
+    XARCADE_RBUTTON_3, // Q
+    XARCADE_RBUTTON_4, // W
+    XARCADE_RBUTTON_5, // E
+    XARCADE_RBUTTON_6, // [
+    XARCADE_RBUTTON_7, // ]
+    XARCADE_RBUTTON_8  // 6
 }
 
 declare enum Button {
@@ -1011,6 +1091,15 @@ declare enum Loop {
     LOOP,
     PING_PONG,
     PING_PONG_LOOP
+}
+
+declare enum Platform {
+    UNKNOWN,
+    RASPBERRY_PI
+}
+
+declare namespace System {
+    function getPlatform(): Platform;
 }
 
 declare class Entity {
