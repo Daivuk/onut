@@ -402,10 +402,13 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 {
     int argc;
     auto cmdLineW = onut::utf8ToUtf16(cmdLine);
-    auto argvW = CommandLineToArgvW(cmdLineW.c_str(), &argc);
-    for (int i = 0; i < argc; ++i)
+    if (!cmdLineW.empty())
     {
-        OArguments.push_back(onut::utf16ToUtf8(argvW[i]));
+        auto argvW = CommandLineToArgvW(cmdLineW.c_str(), &argc);
+        for (int i = 0; i < argc; ++i)
+        {
+            OArguments.push_back(onut::utf16ToUtf8(argvW[i]));
+        }
     }
     initSettings();
     onut::initLog();
