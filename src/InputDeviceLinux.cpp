@@ -34,7 +34,6 @@ namespace onut
             auto files = onut::findAllFiles("/dev/input/by-path/", "*", false);
             for (const auto& file : files)
             {
-                OLog("Input device: " + file);
                 if (file.find("event-kbd") != std::string::npos)
                 {
                     int fd = open(file.c_str(), O_RDONLY | O_NONBLOCK);
