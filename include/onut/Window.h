@@ -32,6 +32,7 @@ namespace onut
         virtual HCURSOR getCursor() const = 0;
 #endif
         virtual void setCaption(const std::string& newName) = 0;
+        virtual void setFullscreen(bool isFullscreen) {}
 
         std::function<void(char)>                   onWrite;
         std::function<void(uintptr_t)>              onKey;

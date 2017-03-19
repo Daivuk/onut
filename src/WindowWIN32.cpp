@@ -141,8 +141,8 @@ namespace onut
     WindowWIN32::WindowWIN32()
         : m_cursor(0)
     {
-        auto bIsFullscreen = oSettings->getBorderlessFullscreen();
-        Point resolution = oSettings->getResolution();
+        m_isFullScreen = oSettings->getBorderlessFullscreen();
+        m_resSetting = oSettings->getResolution();
 
         // Define window style
         WNDCLASS wc = {0};
@@ -156,7 +156,7 @@ namespace onut
         auto screenW = GetSystemMetrics(SM_CXSCREEN);
         auto screenH = GetSystemMetrics(SM_CYSCREEN);
 
-        if (bIsFullscreen)
+        if (m_isFullScreen)
         {
             oSettings->setResolution({screenW, screenH});
             long posX = 0;
@@ -169,8 +169,8 @@ namespace onut
         }
         else
         {
-            auto posX = (screenW - resolution.x) / 2;
-            auto posY = (screenH - resolution.y) / 2;
+            auto posX = (screenW - m_resSetting.x) / 2;
+            auto posY = (screenH - m_resSetting.y) / 2;
 
             // Create the window
             if (!oSettings->getIsResizableWindow())
@@ -178,7 +178,7 @@ namespace onut
                 m_handle = CreateWindow(L"OakNutWindow",
                                         utf8ToUtf16(oSettings->getGameName()).c_str(),
                                         WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
-                                        posX, posY, resolution.x, resolution.y,
+                                        posX, posY, m_resSetting.x, m_resSetting.y,
                                         nullptr, nullptr, nullptr, nullptr);
             }
             else
@@ -186,16 +186,16 @@ namespace onut
                 m_handle = CreateWindow(L"OakNutWindow",
                                         utf8ToUtf16(oSettings->getGameName()).c_str(),
                                         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                        posX, posY, resolution.x, resolution.y,
+                                        posX, posY, m_resSetting.x, m_resSetting.y,
                                         nullptr, nullptr, nullptr, nullptr);
             }
 
             RECT clientRect;
             GetClientRect(m_handle, &clientRect);
-            auto wDiff = resolution.x - (clientRect.right - clientRect.left);
-            auto hDiff = resolution.y - (clientRect.bottom - clientRect.top);
-            auto newW = resolution.x + wDiff;
-            auto newH = resolution.y + hDiff;
+            auto wDiff = m_resSetting.x - (clientRect.right - clientRect.left);
+            auto hDiff = m_resSetting.y - (clientRect.bottom - clientRect.top);
+            auto newW = m_resSetting.x + wDiff;
+            auto newH = m_resSetting.y + hDiff;
             posX = (screenW - newW) / 2;
             posY = (screenH - newH) / 2;
             SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
@@ -227,6 +227,54 @@ namespace onut
     void WindowWIN32::setCaption(const std::string& newName)
     {
         SetWindowTextA(m_handle, newName.c_str());
+    }
+
+    void WindowWIN32::setFullscreen(bool isFullscreen)
+    {
+        if (m_isFullScreen == isFullscreen || !m_handle) return; // Do nothing
+        m_isFullScreen = isFullscreen;
+
+        // Centered position
+        auto screenW = GetSystemMetrics(SM_CXSCREEN);
+        auto screenH = GetSystemMetrics(SM_CYSCREEN);
+
+        if (m_isFullScreen)
+        {
+            oSettings->setResolution({screenW, screenH});
+            SetWindowLong(m_handle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+            SetWindowPos(m_handle, NULL, 0, 0, screenW, screenH, 0);
+            oRenderer->onResize(Point(screenW, screenH));
+            if (oWindow->onResize)
+            {
+                oWindow->onResize(Point(screenW, screenH));
+            }
+        }
+        else
+        {
+            auto posX = (screenW - m_resSetting.x) / 2;
+            auto posY = (screenH - m_resSetting.y) / 2;
+
+            // Create the window
+            if (!oSettings->getIsResizableWindow())
+            {
+                SetWindowLong(m_handle, GWL_STYLE, WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE);
+            }
+            else
+            {
+                SetWindowLong(m_handle, GWL_STYLE, WS_POPUP | WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+            }
+            SetWindowPos(m_handle, NULL, posX, posY, m_resSetting.x, m_resSetting.y, 0);
+
+            RECT clientRect;
+            GetClientRect(m_handle, &clientRect);
+            auto wDiff = m_resSetting.x - (clientRect.right - clientRect.left);
+            auto hDiff = m_resSetting.y - (clientRect.bottom - clientRect.top);
+            auto newW = m_resSetting.x + wDiff;
+            auto newH = m_resSetting.y + hDiff;
+            posX = (screenW - newW) / 2;
+            posY = (screenH - newH) / 2;
+            SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
+        }
     }
 }
 

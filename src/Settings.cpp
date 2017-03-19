@@ -1,5 +1,6 @@
 // Onut
 #include <onut/Settings.h>
+#include <onut/Window.h>
 
 // STL
 #include <fstream>
@@ -104,6 +105,10 @@ namespace onut
     void Settings::setBorderlessFullscreen(bool isBorderLessFullscreen)
     {
         m_isBorderLessFullscreen = isBorderLessFullscreen;
+        if (oWindow)
+        {
+            oWindow->setFullscreen(m_isBorderLessFullscreen);
+        }
     }
 
     void Settings::setIsFixedStep(bool isFixedStep)

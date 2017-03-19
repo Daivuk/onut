@@ -21,10 +21,13 @@ namespace onut
         void setCursor(HCURSOR cursor);
         HCURSOR getCursor() const;
         void setCaption(const std::string& newName) override;
+        void setFullscreen(bool isFullscreen) override;
 
     private:
         HWND m_handle;
         HCURSOR m_cursor;
+        bool m_isFullScreen = false;
+        Point m_resSetting;
     };
 }
 

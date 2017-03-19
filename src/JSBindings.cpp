@@ -10425,6 +10425,12 @@ namespace onut
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getPlatform", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oSettings->setBorderlessFullscreen(JS_BOOL(0, true));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setFullscreen", 1);
             }
             JS_INTERFACE_END("System");
 
