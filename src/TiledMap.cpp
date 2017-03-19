@@ -131,6 +131,8 @@ namespace onut
                 assert(pLayer.width);
                 pLayer.height = pXMLLayer->IntAttribute("height");
                 assert(pLayer.height);
+                pLayer.opacity = 1.0f;
+                pXMLLayer->QueryFloatAttribute("opacity", &pLayer.opacity);
                 pRet->m_width = std::max<>(pRet->m_width, pLayer.width);
                 pRet->m_height = std::max<>(pRet->m_height, pLayer.height);
                 auto len = pLayer.width * pLayer.height;
@@ -555,6 +557,7 @@ namespace onut
         int layerW = pLayer->width;
         int layerH = pLayer->height;
         auto layerTiles = pLayer->tiles;
+        auto color = Color::White * pLayer->opacity;
         for (int y = pChunk->y; y < pChunk->y + CHUNK_SIZE && y < layerH; ++y)
         {
             for (int x = pChunk->x; x < pChunk->x + CHUNK_SIZE && x < layerW; ++x)
@@ -569,10 +572,10 @@ namespace onut
                 auto& vert2 = pVertices[j * 4 + 2];
                 auto& vert3 = pVertices[j * 4 + 3];
 
-                vert0.color = Color::White;
-                vert1.color = Color::White;
-                vert2.color = Color::White;
-                vert3.color = Color::White;
+                vert0.color = color;
+                vert1.color = color;
+                vert2.color = color;
+                vert3.color = color;
 
                 vert0.texCoord.x = tile.UVs.x;
                 vert0.texCoord.y = tile.UVs.y;
@@ -643,52 +646,11 @@ namespace onut
         {
             oSpriteBatch->begin(oSpriteBatch->getTransform());
         }
-
-        /*
-        bool manageSB = !oSpriteBatch->isInBatch();
-        if (manageSB)
-        {
-            auto transform = getTransform();
-            transform._41 = std::roundf(transform._41);
-            transform._42 = std::roundf(transform._42);
-            oSpriteBatch->begin(transform);
-        }
-        oSpriteBatch->changeFiltering(m_filtering);
-        for (int y = rect.top; y <= rect.bottom; ++y)
-        {
-            Tile *pTile = pLayer->tiles + y * m_width + rect.left;
-            for (int x = rect.left; x <= rect.right; ++x, ++pTile)
-            {
-                if (!pTile->pTileset) continue;
-                oSpriteBatch->drawRectWithUVs(pTile->pTileset->pTexture, pTile->rect, pTile->UVs);
-            }
-        }
-        if (manageSB) oSpriteBatch->end();*/
     }
 
     const OTextureRef& TiledMap::getMinimap()
     {
-//        //if (pMinimap) return pMinimap;
-//        if (!m_tilesetCount) return nullptr;
-//
-//        pMinimap = OTexture::createRenderTarget({m_width, m_height});
-//        oRenderer->bindRenderTarget(pMinimap);
-//
-//        auto tileWidth = m_tileSets[0].tileWidth;
-//
-//        setTransform(Matrix::CreateScale(1.f / static_cast<float>(tileWidth)));
-//        egStatePush();
-//        egFilter(EG_FILTER_TRILINEAR);
-//        auto h = 32768 / m_width / 4;
-//        for (auto y = 0; y < m_height; y += h)
-//        {
-//            render({0, y, m_width, std::min<>(y + h, m_height)});
-//        }
-//        egPostProcess();
-//        egStatePop();
-//
-//        oRenderer->bindRenderTarget(nullptr);
-//        return pMinimap;
+        m_pMinimap = OTexture::createRenderTarget(Point(m_width, m_height));
         return m_pMinimap;
     }
 

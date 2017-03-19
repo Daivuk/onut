@@ -35,6 +35,7 @@ namespace onut
             virtual ~TileLayer();
             int width;
             int height;
+            float opacity;
             uint32_t *tileIds = nullptr;
         };
 
