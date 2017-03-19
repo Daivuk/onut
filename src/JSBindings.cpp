@@ -4293,7 +4293,7 @@ namespace onut
                             auto passable = JS_BOOL(2, true);
                             if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
                             {
-                                pTiles[y * pTiledMap->getHeight() + x] = passable;
+                                pTiles[y * pTiledMap->getWidth() + x] = passable;
                             }
                         }
                     }
@@ -4301,6 +4301,35 @@ namespace onut
                 return 0;
             }, 3);
             duk_put_prop_string(ctx, -2, "setCollision");
+
+            // Get a tile to be passable or not
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        auto pTiles = pTiledMap->getCollisionTiles();
+                        if (pTiles)
+                        {
+                            auto x = JS_INT(0, -1);
+                            auto y = JS_INT(1, -1);
+                            if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
+                            {
+                                duk_push_boolean(ctx, pTiles[y * pTiledMap->getWidth() + x] ? 1 : 0);
+                                return 1;
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "getCollision");
 
             // getLayerIndex
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
