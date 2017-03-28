@@ -94,6 +94,7 @@
     <ClInclude Include="..\..\include\onut\EntityFactory.h" />
     <ClInclude Include="..\..\include\onut\iRect.h" />
     <ClInclude Include="..\..\include\onut\Matrix.h" />
+    <ClInclude Include="..\..\include\onut\Multiplayer.h" />
     <ClInclude Include="..\..\include\onut\SceneManager.h" />
     <ClInclude Include="..\..\include\onut\Files.h" />
     <ClInclude Include="..\..\include\onut\Font.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="..\..\include\onut\SampleMode.h" />
     <ClInclude Include="..\..\include\onut\Settings.h" />
     <ClInclude Include="..\..\include\onut\Shader.h" />
+    <ClInclude Include="..\..\include\onut\SocketTCP.h" />
     <ClInclude Include="..\..\include\onut\Sound.h" />
     <ClInclude Include="..\..\include\onut\SoundComponent.h" />
     <ClInclude Include="..\..\include\onut\SpriteAnim.h" />
@@ -250,6 +252,7 @@
     <ClInclude Include="..\..\src\RendererGLES2.h" />
     <ClInclude Include="..\..\src\ShaderD3D11.h" />
     <ClInclude Include="..\..\src\ShaderGLES2.h" />
+    <ClInclude Include="..\..\src\SocketTCP_Win32.h" />
     <ClInclude Include="..\..\src\TextureD3D11.h" />
     <ClInclude Include="..\..\src\TextureGLES2.h" />
     <ClInclude Include="..\..\src\UIJson.h" />
@@ -352,6 +355,7 @@
     <ClCompile Include="..\..\src\json\json_value.cpp" />
     <ClCompile Include="..\..\src\json\json_writer.cpp" />
     <ClCompile Include="..\..\src\Matrix.cpp" />
+    <ClCompile Include="..\..\src\Multiplayer.cpp" />
     <ClCompile Include="..\..\src\Point.cpp" />
     <ClCompile Include="..\..\src\RendererGLES2.cpp" />
     <ClCompile Include="..\..\src\SceneManager.cpp" />
@@ -381,6 +385,8 @@
     <ClCompile Include="..\..\src\Shader.cpp" />
     <ClCompile Include="..\..\src\ShaderD3D11.cpp" />
     <ClCompile Include="..\..\src\ShaderGLES2.cpp" />
+    <ClCompile Include="..\..\src\SocketTCP.cpp" />
+    <ClCompile Include="..\..\src\SocketTCP_Win32.cpp" />
     <ClCompile Include="..\..\src\SoundComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteAnimComponent.cpp" />
     <ClCompile Include="..\..\src\SpriteComponent.cpp" />
@@ -515,7 +521,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>D3DCompiler.lib;Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;D3DCompiler.lib;Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Lib>
@@ -567,7 +573,7 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>D3DCompiler.lib;Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;D3DCompiler.lib;Winhttp.lib;Mfplat.lib;dxgi.lib;d3d11.lib;xinput.lib;dinput8.lib;dxguid.lib;msxml6.lib;comsuppwd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Lib>

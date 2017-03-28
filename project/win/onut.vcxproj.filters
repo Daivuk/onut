@@ -716,6 +716,15 @@
     <ClInclude Include="..\..\src\WindowX11.h">
       <Filter>services</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\onut\Multiplayer.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\SocketTCP.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SocketTCP_Win32.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\zlib\gzlib.c">
@@ -1204,6 +1213,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\WindowX11.cpp">
       <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Multiplayer.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SocketTCP_Win32.cpp">
+      <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SocketTCP.cpp">
+      <Filter>utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

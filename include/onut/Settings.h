@@ -65,6 +65,12 @@ namespace onut
         bool getShowOnScreenLog() const { return m_showOnScreenLog; }
         void setShowOnScreenLog(bool showOnScreenLog);
 
+        std::string getMatchMakingAddress() const { return m_matchMakingAddress; }
+        void setMatchMakingAddress(const std::string& matchMakingAddress);
+
+        int getMatchMakingPort() const { return m_matchMakingPort; }
+        void setMatchMakingPort(int matchMakingPort);
+
     private:
         using UserSettings = std::unordered_map<SettingKey, SettingValue>;
 
@@ -80,6 +86,8 @@ namespace onut
         std::string m_appId = "";
         std::string m_appSecret = "";
         bool m_showOnScreenLog = false;
+        std::string m_matchMakingAddress = "192.168.1.112";
+        int m_matchMakingPort = 4444;
 
         std::atomic<bool> m_isDirty;
         std::atomic<bool> m_isRunning;

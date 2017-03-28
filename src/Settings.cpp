@@ -137,6 +137,16 @@ namespace onut
         m_showOnScreenLog = showOnScreenLog;
     }
 
+    void Settings::setMatchMakingAddress(const std::string& matchMakingAddress)
+    {
+        m_matchMakingAddress = matchMakingAddress;
+    }
+
+    void Settings::setMatchMakingPort(int matchMakingPort)
+    {
+        m_matchMakingPort = matchMakingPort;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);

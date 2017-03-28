@@ -132,6 +132,8 @@ add_library(onut STATIC
     src/Settings.cpp 
     src/Shader.cpp 
     src/ShaderGLES2.cpp 
+    src/SocketTCP.cpp
+    src/SocketTCP_Unix.cpp
     src/Sound.cpp
     src/SoundComponent.cpp
     src/SpriteAnim.cpp

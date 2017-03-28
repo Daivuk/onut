@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Particles", "Particles\project\win\Particles.vcxproj", "{949E5B14-195A-4AB4-990C-F1574F5055AE}"
 EndProject
@@ -62,6 +62,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dungeon", "Dungeon\project\win\Dungeon.vcxproj", "{DD68AA05-7910-411C-996D-156D9F946FC1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderSample", "Shader\project\win\ShaderSample.vcxproj", "{C9580935-6215-43EA-BDF1-106D94D6B1CA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Multiplayer", "Multiplayer\project\win\Multiplayer.vcxproj", "{3AE26431-E4C7-499E-9923-29D5410E4EC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -177,6 +179,10 @@ Global
 		{C9580935-6215-43EA-BDF1-106D94D6B1CA}.Debug|Win32.Build.0 = Debug|Win32
 		{C9580935-6215-43EA-BDF1-106D94D6B1CA}.Release|Win32.ActiveCfg = Release|Win32
 		{C9580935-6215-43EA-BDF1-106D94D6B1CA}.Release|Win32.Build.0 = Release|Win32
+		{3AE26431-E4C7-499E-9923-29D5410E4EC1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3AE26431-E4C7-499E-9923-29D5410E4EC1}.Debug|Win32.Build.0 = Debug|Win32
+		{3AE26431-E4C7-499E-9923-29D5410E4EC1}.Release|Win32.ActiveCfg = Release|Win32
+		{3AE26431-E4C7-499E-9923-29D5410E4EC1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -210,5 +216,6 @@ Global
 		{5B232BC5-6E7E-4DA1-A2C5-1CE1CEAF4811} = {EA1213E7-4804-4594-A944-35D5A4117E51}
 		{DD68AA05-7910-411C-996D-156D9F946FC1} = {5B232BC5-6E7E-4DA1-A2C5-1CE1CEAF4811}
 		{C9580935-6215-43EA-BDF1-106D94D6B1CA} = {CBA6D869-48D0-4B6D-A0A8-49A98CB12B31}
+		{3AE26431-E4C7-499E-9923-29D5410E4EC1} = {CBA6D869-48D0-4B6D-A0A8-49A98CB12B31}
 	EndGlobalSection
 EndGlobal

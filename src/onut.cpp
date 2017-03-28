@@ -10,6 +10,7 @@
 #include <onut/GamePad.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
+#include <onut/Multiplayer.h>
 #include <onut/onut.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
@@ -129,6 +130,9 @@ namespace onut
         // Particles
         if (!oParticleSystemManager) oParticleSystemManager = ParticleSystemManager::create();
 
+        // Multiplayer
+        if (!oMultiplayer) oMultiplayer = Multiplayer::create();
+
         // UI Context
         createUI();
 
@@ -170,6 +174,7 @@ namespace onut
         oUpdater = nullptr;
         oUI = nullptr;
         oUIContext = nullptr;
+        oMultiplayer = nullptr;
         oParticleSystemManager = nullptr;
         oAudioEngine = nullptr;
         oInput = nullptr;
