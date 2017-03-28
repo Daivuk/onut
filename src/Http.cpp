@@ -98,6 +98,8 @@ namespace onut
                 }
                 return "";
             }
+#else
+            return "";
 #endif
         }
 
@@ -230,6 +232,8 @@ namespace onut
                 }
                 return{};
             }
+#else
+            return {};
 #endif
         }
 

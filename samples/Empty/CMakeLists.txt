@@ -8,16 +8,16 @@ elseif (WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./bin/win)
 endif()
 
-project(ComponentsSample)
+project(EmptySample)
 
 include_directories(
     ./src
 )
     
-add_executable(ComponentsSample
-    src/ComponentsSample.cpp
+add_executable(EmptySample
+    src/EmptySample.cpp
 )
 
-target_link_libraries(ComponentsSample 
+target_link_libraries(EmptySample 
     onut
 )

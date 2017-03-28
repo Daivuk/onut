@@ -245,7 +245,7 @@ namespace onut
                         continue;
                     }
                     auto pTileSet = pRet->m_tileSets;
-                    for (int j = 0; j < pRet->m_tilesetCount; ++j, pTileSet)
+                    for (int j = 0; j < pRet->m_tilesetCount; ++j, ++pTileSet)
                     {
                         if (pTileSet->firstId > static_cast<int>(tileId)) break;
                     }
@@ -689,7 +689,7 @@ namespace onut
             return;
         }
         auto pTileSet = m_tileSets;
-        for (int j = 0; j < m_tilesetCount; ++j, pTileSet)
+        for (int j = 0; j < m_tilesetCount; ++j, ++pTileSet)
         {
             if (pTileSet->firstId > static_cast<int>(tileId)) break;
         }

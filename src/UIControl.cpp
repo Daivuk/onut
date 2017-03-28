@@ -734,7 +734,7 @@ namespace onut
                              const Rect& parentRect,
                              OUIControlRef& pHoverControl)
     {
-        if (!isVisible || isClickThrough && bIgnoreClickThrough) return;
+        if (!isVisible || (isClickThrough && bIgnoreClickThrough)) return;
 
         Rect worldRect = getWorldRect(parentRect);
         auto itend = m_children.rend();

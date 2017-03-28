@@ -8669,7 +8669,7 @@ namespace onut
                     else if (duk_is_number(ctx, 0))
                     {
                         auto index = JS_UINT(0);
-                        if (index >= 0 && index < pUIControl->getChildren().size())
+                        if (index < pUIControl->getChildren().size())
                         {
                             newUI(ctx, pUIControl->getChildren()[index]);
                             return 1;
@@ -8926,7 +8926,7 @@ namespace onut
                 {
                     auto pTexture = JS_TEXTURE(0);
                     auto index = JS_UINT(1);
-                    if (index >= 0 && index < 8)
+                    if (index < 8)
                         oRenderer->renderStates.textures[index] = pTexture;
                     return 0;
                 }
@@ -8935,7 +8935,7 @@ namespace onut
                 {
                     auto pTexture = JS_TEXTURE(0);
                     auto index = JS_UINT(1);
-                    if (index >= 0 && index < 8)
+                    if (index < 8)
                         oRenderer->renderStates.textures[index].push(pTexture);
                     return 0;
                 }
@@ -8943,7 +8943,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto index = JS_UINT(0);
-                    if (index >= 0 && index < 8)
+                    if (index < 8)
                         oRenderer->renderStates.textures[index].pop();
                     return 0;
                 }

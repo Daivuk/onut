@@ -13,7 +13,7 @@
 #if defined(WIN32)
 #include <dirent/dirent.h>
 #include <windows.h>
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 #include <dirent.h>
 #endif
 

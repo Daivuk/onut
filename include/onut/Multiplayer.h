@@ -79,7 +79,7 @@ namespace onut
         std::string m_modeId;
 
         OSocketTCPRef m_pMatchMakingSocket;
-        std::atomic<bool> m_isMatchMaking = false;
+        std::atomic<bool> m_isMatchMaking;
         ThreadRef m_pMatchMakingThread;
         std::mutex m_matchMakingMutex;
     };

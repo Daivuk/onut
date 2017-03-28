@@ -420,7 +420,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
     onut::run(init, update, render, postRender);
     return 0;
 }
-#elif defined(__unix__)
+#else
 int main(int argc, char** argv)
 {
     for (int i = 1; i < argc; ++i)

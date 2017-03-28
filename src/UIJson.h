@@ -12,6 +12,9 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+// STL
+#include <vector>
+
 // Forward
 namespace rapidjson
 {

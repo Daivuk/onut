@@ -43,7 +43,9 @@ distribution.
 
 #include "micropather/micropather.h"
 
+#if !defined(GRINLIZ_NO_STL)
 using namespace std;
+#endif
 using namespace micropather;
 
 class OpenQueue

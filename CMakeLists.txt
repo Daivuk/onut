@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
+# Output directories
+if (UNIX AND NOT APPLE)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
+elseif (APPLE)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/osx)
+elseif (WIN32)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/win)
+endif()
 
 project(onut)
 
@@ -11,28 +18,66 @@ if (NOT ONUT_SHOW_FPS)
     set(ONUT_SHOW_FPS 1)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+# Some compiler flags
+if (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+endif()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3")
 endif()
 
+# Pre processors
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-D_DEBUG)
 endif()
 if (ONUT_SHOW_FPS EQUAL 1)
     add_definitions(-DONUT_SHOW_FPS)
 endif()
-add_definitions(-DHAVE_LIBOPENMAX=2)
-add_definitions(-DOMX)
-add_definitions(-DOMX_SKIP64BIT)
-add_definitions(-DUSE_EXTERNAL_OMX)
-add_definitions(-DUSE_VCHIQ_ARM)
+if (RPI)
+    add_definitions(-DHAVE_LIBOPENMAX=2)
+    add_definitions(-DOMX)
+    add_definitions(-DOMX_SKIP64BIT)
+    add_definitions(-DUSE_EXTERNAL_OMX)
+    add_definitions(-DUSE_VCHIQ_ARM)
+endif()
 
-add_library(onut STATIC
+# Add RaspberryPI specific source files
+if (RPI)
+    list(APPEND src_files
+        src/AudioEngineLinux.cpp
+        src/audioplay/audioplay.c
+        src/GamePadLinux.cpp
+        src/InputDeviceLinux.cpp
+        src/VideoPlayerLinux.cpp
+        src/IndexBufferGLES2.cpp 
+        src/RendererGLES2.cpp 
+        src/ShaderGLES2.cpp 
+        src/TextureGLES2.cpp 
+        src/VertexBufferGLES2.cpp 
+        src/WindowX11.cpp 
+    )
+endif()
+
+# Add OSX specific source files
+if (APPLE)
+    list(APPEND src_files
+        src/AudioEngineCoreAudio.cpp
+        src/GamePadOSX.cpp
+        src/InputDeviceOSX.cpp
+        src/VideoPlayerOSX.cpp
+        src/IndexBufferGL.cpp 
+        src/RendererGL.cpp 
+        src/ShaderGL.cpp 
+        src/TextureGL.cpp 
+        src/VertexBufferGL.cpp 
+        src/WindowOSX.cpp 
+    )
+endif()
+
+# Add common source files
+list(APPEND src_files
     src/ActionManager.cpp
     src/AudioEngine.cpp
-    src/AudioEngineLinux.cpp
-    src/audioplay/audioplay.c
     src/Box2D/Collision/Shapes/b2ChainShape.cpp
     src/Box2D/Collision/Shapes/b2CircleShape.cpp
     src/Box2D/Collision/Shapes/b2EdgeShape.cpp
@@ -96,14 +141,11 @@ add_library(onut STATIC
     src/Files.cpp 
     src/Font.cpp
     src/GamePad.cpp
-    src/GamePadLinux.cpp
     src/Http.cpp
     src/Images.cpp
     src/IndexBuffer.cpp 
-    src/IndexBufferGLES2.cpp 
     src/Input.cpp
     src/InputDevice.cpp
-    src/InputDeviceLinux.cpp
     src/JSBindings.cpp
     src/json/json_reader.cpp
     src/json/json_value.cpp
@@ -113,6 +155,7 @@ add_library(onut STATIC
     src/Maths.cpp 
     src/Matrix.cpp 
     src/micropather.cpp
+    src/Multiplayer.cpp
     src/Music.cpp
     src/onut.cpp 
     src/Particle.cpp
@@ -126,12 +169,10 @@ add_library(onut STATIC
     src/Random.cpp 
     src/Ray.cpp
     src/Renderer.cpp 
-    src/RendererGLES2.cpp 
     src/Resource.cpp 
     src/SceneManager.cpp
     src/Settings.cpp 
     src/Shader.cpp 
-    src/ShaderGLES2.cpp 
     src/SocketTCP.cpp
     src/SocketTCP_Unix.cpp
     src/Sound.cpp
@@ -143,7 +184,6 @@ add_library(onut STATIC
     src/Strings.cpp 
     src/TextComponent.cpp
     src/Texture.cpp 
-    src/TextureGLES2.cpp 
     src/ThreadPool.cpp 
     src/TiledMap.cpp
     src/TiledMapComponent.cpp
@@ -167,11 +207,8 @@ add_library(onut STATIC
     src/Vector3.cpp 
     src/Vector4.cpp 
     src/VertexBuffer.cpp 
-    src/VertexBufferGLES2.cpp 
     src/VideoPlayer.cpp
-    src/VideoPlayerLinux.cpp
     src/Window.cpp 
-    src/WindowX11.cpp 
     src/zlib/adler32.c
     src/zlib/compress.c
     src/zlib/crc32.c
@@ -187,35 +224,57 @@ add_library(onut STATIC
     src/zlib/trees.c
     src/zlib/uncompr.c
     src/zlib/zutil.c
-    )
+)
 
-target_include_directories(onut
+add_library(onut STATIC ${src_files})
+
+# Libraries
+if (RPI)
+    list(APPEND includes
+        PUBLIC
+            /opt/vc/include
+            /opt/vc/include/interface/vmcs_host/linux
+    )
+endif()
+list(APPEND includes
     PUBLIC
-        /opt/vc/include
-        /opt/vc/include/interface/vcos/pthreads
-        /opt/vc/include/interface/vmcs_host/linux 
         ./include 
     PRIVATE
         ./src
 )
 
-target_link_libraries(onut
-    PUBLIC
-        -L/opt/vc/lib/
-        -L${CMAKE_SOURCE_DIR}/lib/linux/
-        -lbcm_host 
-        -lvcos 
-        -lvchiq_arm
-        -lEGL
-        -lGLESv2 
-        -lEGL 
-        -lGLESv2 
-        -lpthread 
-        -lrt 
-        -ldl
-        -lilclient
-        -lopenmaxil
-)
+if (UNIX AND NOT APPLE) # Only required on linux if we use std::thread
+    find_package(Threads)
+    list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+endif()
+if (UNIX AND NOT RPI)
+    find_package(OpenGL REQUIRED)
+    list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
+    list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
+endif()
+
+if (RPI)  
+    list(APPEND libs
+        PUBLIC
+            -L/opt/vc/lib/
+            -L${CMAKE_SOURCE_DIR}/lib/linux/
+            -lbcm_host 
+            -lvcos 
+            -lvchiq_arm
+            -lEGL
+            -lGLESv2 
+            -lEGL 
+            -lGLESv2 
+            -lrt 
+            -ldl
+            -lilclient
+            -lopenmaxil
+    )
+endif()
+
+# Include libs and includes
+target_include_directories(onut ${includes})
+target_link_libraries(onut ${libs})
 
 add_subdirectory(JSStandAlone) # JSStandAlone
 
@@ -224,7 +283,9 @@ add_subdirectory(samples/Components) # ComponentsSample
 add_subdirectory(samples/Crypto) # CryptoSample
 add_subdirectory(samples/CustomMesh) # CustomMeshSample
 add_subdirectory(samples/Dungeon) # DungeonSample
+add_subdirectory(samples/Empty) # EmptySample
 add_subdirectory(samples/Entities) # EntitiesSample
+add_subdirectory(samples/Multiplayer) # MultiplayerSample
 add_subdirectory(samples/Navigation) # NavigationSample
 add_subdirectory(samples/Particles) # ParticlesSample
 add_subdirectory(samples/Primitives) # PrimitivesSample

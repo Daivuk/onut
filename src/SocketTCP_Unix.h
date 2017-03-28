@@ -1,29 +1,41 @@
 #ifndef SOCKET_TCP_UNIX_H_INCLUDED
 #define SOCKET_TCP_UNIX_H_INCLUDED
 
-#include "SocketTCP.h"
+// Onut
+#include <onut/SocketTCP.h>
 
+// STL
+#include <vector>
+
+// System
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 
-class SocketTCP_Unix final : public SocketTCP
+// Forward
+#include <onut/ForwardDeclaration.h>
+OForwardDeclare(SocketTCP_Unix)
+
+namespace onut
 {
-public:
-    SocketTCP_Unix();
-    virtual ~SocketTCP_Unix();
+    class SocketTCP_Unix final : public SocketTCP
+    {
+    public:
+        SocketTCP_Unix();
+        virtual ~SocketTCP_Unix();
 
-    SocketTCPRef accept() override;
-    bool recv(vector<uint8_t> &out) override;
-    void send(const void *pData, int size) override;
-    void close() override;
+        OSocketTCPRef accept() override;
+        bool recv(std::vector<uint8_t> &out) override;
+        void send(const void *pData, int size) override;
+        void close() override;
 
-private:
-    friend class SocketTCP;
+    private:
+        friend class SocketTCP;
 
-    int m_socket = -1;
-    char m_recvbuf[512];
-};
+        int m_socket = -1;
+        char m_recvbuf[512];
+    };
+}
 
 #endif

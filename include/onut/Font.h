@@ -7,6 +7,7 @@
 
 // STL
 #include <unordered_map>
+#include <vector>
 
 // Forward
 #include <onut/ForwardDeclaration.h>

@@ -67,7 +67,8 @@ namespace onut
     }
 
     Multiplayer::Multiplayer()
-    {    
+    {
+        m_isMatchMaking = false;
 #if defined(WIN32)
         // Initialize Winsock
         int ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -178,7 +179,7 @@ namespace onut
                 return;
             }
 
-            // Did we reach end of text?
+            //ï¿½Did we reach end of text?
             size_t nullPos = std::string::npos;
             for (size_t i = 0; i < data.size(); ++i)
             {
@@ -212,7 +213,7 @@ namespace onut
                 Lobby lobby;
                 for (size_t i = 0; i < jsTeams.size(); ++i)
                 {
-                    const auto& jsTeam = jsTeams[i];
+                    const auto& jsTeam = jsTeams[(int)i];
                     if (!jsTeam.isArray())
                     {
                         OLog("Invalid match making json");
@@ -223,7 +224,7 @@ namespace onut
                     }
                     for (size_t j = 0; j < jsTeam.size(); ++j)
                     {
-                        const auto& jsPlayer = jsTeam[j];
+                        const auto& jsPlayer = jsTeam[(int)j];
                         if (!jsPlayer.isObject())
                         {
                             OLog("Invalid match making json");
