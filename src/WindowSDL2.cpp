@@ -7,6 +7,7 @@
 
 // Internal
 #include "WindowSDL2.h"
+#include "InputDeviceSDL2.h"
 
 // STL
 #include <cassert>
@@ -78,14 +79,23 @@ namespace onut
         if (!m_pWindow) return false;
 
         SDL_Event event;
-        if (SDL_PollEvent(&event))
+        auto pInputDeviceSDL2 = ODynamicCast<InputDeviceSDL2>(oInputDevice);
+        bool hadEvents = false;
+        while (SDL_PollEvent(&event))
         {
+            hadEvents = true;
+
             switch (event.type)
             {
                 case SDL_QUIT:
                     return false;
             }
+
+            // Everytime we poll, we need to update inputs
+            pInputDeviceSDL2->updateSDL2();
         }
+
+        if (!hadEvents) pInputDeviceSDL2->updateSDL2();
 
         return true;
     }

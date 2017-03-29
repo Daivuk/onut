@@ -68,7 +68,7 @@ if (APPLE)
     list(APPEND src_files
         src/AudioEngineCoreAudio.cpp
         src/GamePadOSX.cpp
-        src/InputDeviceOSX.cpp
+        src/InputDeviceSDL2.cpp
         src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
         src/RendererGL.cpp 
@@ -84,7 +84,7 @@ if (UNIX AND NOT APPLE AND NOT RPI)
     list(APPEND src_files
         src/AudioEngineLinux.cpp
         src/GamePadLinux.cpp
-        src/InputDeviceLinux.cpp
+        src/InputDeviceSDL2.cpp
         src/VideoPlayerLinux.cpp
         src/IndexBufferGL.cpp 
         src/RendererGL.cpp 

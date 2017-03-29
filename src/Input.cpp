@@ -20,6 +20,7 @@ namespace onut
     Input::Input(const OWindowRef& pWindow)
     {
         m_pInputDevice = OInputDevice::create(this);
+        oInputDevice = m_pInputDevice;
 
         m_prevStates = new InputState[STATE_COUNT];
         m_curStates = new InputState[STATE_COUNT];
@@ -35,6 +36,7 @@ namespace onut
 
     Input::~Input()
     {
+        oInputDevice = nullptr;
         delete[] m_prevStates;
         delete[] m_curStates;
         delete[] m_states;

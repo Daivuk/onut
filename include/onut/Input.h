@@ -23,6 +23,208 @@ namespace onut
         {
             None = 0,
 
+#if defined(__APPLE__) // SDL2 scancode map
+            KeyEscape = 41,
+            Key1 = 30,
+            Key2 = 31,
+            Key3 = 32,
+            Key4 = 33,
+            Key5 = 34,
+            Key6 = 35,
+            Key7 = 36,
+            Key8 = 37,
+            Key9 = 38,
+            Key0 = 39,
+            KeyMinus = 45, /* - on main keyboard */
+            KeyEquals = 46,
+            KeyBackspace = 42, /* backspace */
+            KeyTab = 43,
+            KeyQ = 20,
+            KeyW = 26,
+            KeyE = 8,
+            KeyR = 21,
+            KeyT = 23,
+            KeyY = 28,
+            KeyU = 24,
+            KeyI = 12,
+            KeyO = 18,
+            KeyP = 19,
+            KeyLeftBracket = 47,
+            KeyRightBracket = 48,
+            KeyEnter = 40, /* Enter on main keyboard */
+            KeyLeftControl = 224,
+            KeyA = 4,
+            KeyS = 22,
+            KeyD = 7,
+            KeyF = 9,
+            KeyG = 10,
+            KeyH = 11,
+            KeyJ = 13,
+            KeyK = 14,
+            KeyL = 15,
+            KeySemiColon = 51,
+            KeyApostrophe = 52,
+            KeyGrave = 53,    /* accent grave */
+            KeyLeftShift = 225,
+            KeyBackslash = 49,
+            KeyZ = 29,
+            KeyX = 27,
+            KeyC = 6,
+            KeyV = 25,
+            KeyB = 5,
+            KeyN = 17,
+            KeyM = 16,
+            KeyComma = 54,
+            KeyPeriod = 55, /* . on main keyboard */
+            KeySlash = 56, /* / on main keyboard */
+            KeyRightShift = 229,
+            KeyMultiply = 85, /* * on numeric keypad */
+            KeyLeftAlt = 226, /* left Alt */
+            KeySpaceBar = 44,
+            KeyCapsLock = 57,
+            KeyF1 = 58,
+            KeyF2 = 59,
+            KeyF3 = 60,
+            KeyF4 = 61,
+            KeyF5 = 62,
+            KeyF6 = 63,
+            KeyF7 = 64,
+            KeyF8 = 65,
+            KeyF9 = 66,
+            KeyF10 = 67,
+            KeyNumLock = 83,
+            KeyScrollLock = 71, /* Scroll Lock */
+            KeyNumPad7 = 95,
+            KeyNumPad8 = 96,
+            KeyNumPad9 = 97,
+            KeyNumPadMinus = 86, /* - on numeric keypad */
+            KeyNumPad4 = 92,
+            KeyNumPad5 = 93,
+            KeyNumPad6 = 94,
+            KeyNumPadAdd = 87, /* + on numeric keypad */
+            KeyNumPad1 = 89,
+            KeyNumPad2 = 90,
+            KeyNumPad3 = 91,
+            KeyNumPad0 = 98,
+            KeyNumPadPeriod = 99, /* . on numeric keypad */
+            KeyF11 = 68,
+            KeyF12 = 69,
+            KeyF13 = 104, /* (NEC PC98) */
+            KeyF14 = 105, /* (NEC PC98) */
+            KeyF15 = 106, /* (NEC PC98) */
+            KeyNumPadEquals = 103, /* = on numeric keypad (NEC PC98) */
+            KeyPreviousTrack = 259, /* Previous Track (OINPUT_CIRCUMFLEX on Japanese keyboard) */
+            KeyAt = 206, /* (NEC PC98) */
+            KeyColon = 203, /* (NEC PC98) */
+            KeyStop = 120, /* (NEC PC98) */
+            KeyNextTrack = 258, /* Next Track */
+            KeyNumPadEnter = 88, /* Enter on numeric keypad */
+            KeyRightControl = 228,
+            KeyMute = 262, /* Mute */
+            KeyCalculator = 226, /* Calculator */
+            KeyPlayPause = 261, /* Play / Pause */
+            KeyMediaStop = 260, /* Media Stop */
+            KeyVolumeDown = 129, /* Volume - */
+            KeyVolumeUp = 128, /* Volume + */
+            KeyWebHome = 269, /* Web home */
+            KeyNumPadComma = 133, /* , on numeric keypad (NEC PC98) */
+            KeyNumPadDivide = 84, /* / on numeric keypad */
+            Key_SYSRQ = 154,
+            KeyRightAlt = 230, /* right Alt */
+            KeyAltCar = KeyRightAlt, /* right Alt */
+            KeyPause = 72, /* Pause */
+            KeyHome = 74, /* Home on arrow keypad */
+            KeyUp = 82, /* UpArrow on arrow keypad */
+            KeyPageUp = 75, /* PgUp on arrow keypad */
+            KeyLeft = 80, /* LeftArrow on arrow keypad */
+            KeyRight = 79, /* RightArrow on arrow keypad */
+            KeyEnd = 77, /* End on arrow keypad */
+            KeyDown = 81, /* DownArrow on arrow keypad */
+            KeyPageDown = 78, /* PgDn on arrow keypad */
+            KeyInsert = 73, /* Insert on arrow keypad */
+            KeyDelete = 76, /* Delete on arrow keypad */
+            KeyLeftWindows = 227, /* Left Windows key */
+            KeyRightWindows = 231, /* Right Windows key */
+            KeyAppMenu = 118, /* AppMenu key */
+            KeyPower = 102, /* System Power */
+            KeySleep = 282, /* System Sleep */
+            KeyWebSearch = 268, /* Web Search */
+            KeyWebFavorites = 112, /* Web Favorites */
+            KeyWebRefresh = 273, /* Web Refresh */
+            KeyWebStop = 272, /* Web Stop */
+            KeyWebForward = 271, /* Web Forward */
+            KeyWebBack = 270, /* Web Back */
+            KeyMyComputer = 267, /* My Computer */
+            KeyMailL = 265, /* Mail */
+            KeyMediaSelect = 263, /* Media Select */
+
+            /*
+            *  Alternate names for keys originally not used on US keyboards.
+            */
+            KeyCircomflex = KeyPreviousTrack, /* Japanese keyboard */
+
+            /*
+            * X-Arcade
+            */
+            XArcadeLeftPaddle = Key3, /* Key3 */
+            XArcadeRightPaddle = Key4, /* Key4 */
+
+            XArcade1Player = Key1, /* Key1 */
+            XArcade2Player = Key2, /* Key2 */
+
+            XArcadeLJoyLeft = KeyNumPad4, /* KeyNumPad4 */
+            XArcadeLJoyRight = KeyNumPad6, /* KeyNumPad6 */
+            XArcadeLJoyUp = KeyNumPad8, /* KeyNumPad8 */
+            XArcadeLJoyDown = KeyNumPad2, /* KeyNumPad2 */
+
+            XArcadeRJoyLeft = KeyD, /* KeyD */
+            XArcadeRJoyRight = KeyG, /* KeyG */
+            XArcadeRJoyUp = KeyR, /* KeyR */
+            XArcadeRJoyDown = KeyF, /* KeyF */
+
+            XArcadeLButton1 = KeyLeftControl, /* KeyLeftControl */
+            XArcadeLButton2 = KeyLeftAlt, /* KeyLeftAlt */
+            XArcadeLButton3 = KeySpaceBar, /* KeySpaceBar */
+            XArcadeLButton4 = KeyLeftShift, /* KeyLeftShift */
+            XArcadeLButton5 = KeyZ, /* KeyZ */
+            XArcadeLButton6 = KeyX, /* KeyX */
+            XArcadeLButton7 = KeyC, /* KeyC */
+            XArcadeLButton8 = Key5, /* Key5 */
+
+            XArcadeRButton1 = KeyA, /* KeyA */
+            XArcadeRButton2 = KeyS, /* KeyS */
+            XArcadeRButton3 = KeyQ, /* KeyQ */
+            XArcadeRButton4 = KeyW, /* KeyW */
+            XArcadeRButton5 = KeyE, /* KeyE */
+            XArcadeRButton6 = KeyLeftBracket, /* KeyLeftBracket */
+            XArcadeRButton7 = KeyRightBracket, /* KeyRightBracket */
+            XArcadeRButton8 = Key6, /* Key6 */
+
+            /*
+            * Mouse
+            */
+            Mouse1 = 285,
+            Mouse2,
+            Mouse3,
+            Mouse4,
+            MouseX,
+            MouseY,
+            MouseZ,
+
+            // ??? Those won't work with SDL because I don't know how to match their codes
+            KeyOEM102,
+            KeyKana, /* (Japanese keyboard) */
+            KeyAbntC1, /* /? on Brazilian keyboard */
+            KeyConvert, /* (Japanese keyboard) */
+            KeyNoConvert, /* (Japanese keyboard) */
+            KeyYen, /* (Japanese keyboard) */
+            KeyAbntC2, /* Numpad . on Brazilian keyboard */
+            KeyUnderline, /* (NEC PC98) */
+            KeyKanji, /* (Japanese keyboard) */
+            KeyAx, /* (Japan AX) */
+            KeyUnlabeled, /* (J3100) */
+            KeyWake, /* System Wake */
+#else
             KeyEscape = 0x01,
             Key1 = 0x02,
             Key2 = 0x03,
@@ -109,7 +311,7 @@ namespace onut
             KeyOEM102 = 0x56, /* <> or \| on RT 102-key keyboard (Non-U.S.) */
             KeyF11 = 0x57,
             KeyF12 = 0x58,
-#if defined(__unix__)
+#if defined(__rpi__)
             KeyF13 = 183, /* (NEC PC98) */
             KeyF14 = 184, /* (NEC PC98) */
             KeyF15 = 185, /* (NEC PC98) */
@@ -174,7 +376,7 @@ namespace onut
             *  Alternate names for keys originally not used on US keyboards.
             */
             KeyCircomflex = KeyPreviousTrack, /* Japanese keyboard */
-#else
+#else // __rpi__
             KeyF13 = 0x64, /* (NEC PC98) */
             KeyF14 = 0x65, /* (NEC PC98) */
             KeyF15 = 0x66, /* (NEC PC98) */
@@ -239,7 +441,7 @@ namespace onut
             *  Alternate names for keys originally not used on US keyboards.
             */
             KeyCircomflex = KeyPreviousTrack, /* Japanese keyboard */
-#endif
+#endif // else __rpi__
 
             /*
             * X-Arcade
@@ -288,6 +490,7 @@ namespace onut
             MouseX = 260,
             MouseY = 261,
             MouseZ = 262,
+#endif // __APPLE__
 
             STATE_COUNT
         };
