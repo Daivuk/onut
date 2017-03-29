@@ -291,6 +291,10 @@ if (UNIX AND NOT RPI) # On Raspberry Pi we use video core directly and opengl es
     find_package(SDL2 REQUIRED)
     list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${SDL2_LIBRARY})
+
+    find_package(CURL REQUIRED)
+    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${CURL_LIBRARIES})
 endif()
 find_package(Socket)
 list(APPEND libs PUBLIC ${Socket_LIBRARIES})
