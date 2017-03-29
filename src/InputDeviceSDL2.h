@@ -34,6 +34,8 @@ namespace onut
 
         std::vector<Uint8> m_previousKeyboardState;
         std::vector<Uint8> m_keyboardState;
+        Uint8 m_previousMouseState[3];
+        Uint8 m_mouseState[3];
 
         bool bSwaped = true;
     };

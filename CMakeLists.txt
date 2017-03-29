@@ -337,3 +337,4 @@ add_subdirectory(samples/SpriteFrames) # SpriteFramesSample
 add_subdirectory(samples/Text) # TextSample
 add_subdirectory(samples/Textures) # TexturesSample
 add_subdirectory(samples/TiledMap) # TiledMapSample
+add_subdirectory(samples/UI) # UISample
