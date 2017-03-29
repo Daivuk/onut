@@ -55,7 +55,7 @@ namespace onut
 
     void AudioEngineSDL2::audioCallback(Uint8 *stream, int len)
     {
-        progressInstances(len / sizeof(float) / (int)m_audioSpec.channels, 
+        progressInstances(len / sizeof(float) / (int)m_audioSpec.channels, 
                           (int)m_audioSpec.freq, 
                           (int)m_audioSpec.channels, 
                           (float*)stream);
