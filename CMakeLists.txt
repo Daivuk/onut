@@ -66,7 +66,7 @@ endif()
 # Add OSX specific source files
 if (APPLE)
     list(APPEND src_files
-        src/AudioEngineCoreAudio.cpp
+        src/AudioEngineSDL2.cpp
         src/GamePadOSX.cpp
         src/InputDeviceSDL2.cpp
         src/VideoPlayerOSX.cpp
@@ -82,7 +82,7 @@ endif()
 # Add Linux specific source files
 if (UNIX AND NOT APPLE AND NOT RPI)
     list(APPEND src_files
-        src/AudioEngineLinux.cpp
+        src/AudioEngineSDL2.cpp
         src/GamePadLinux.cpp
         src/InputDeviceSDL2.cpp
         src/VideoPlayerLinux.cpp
