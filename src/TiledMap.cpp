@@ -247,7 +247,7 @@ namespace onut
                     auto pTileSet = pRet->m_tileSets;
                     for (int j = 0; j < pRet->m_tilesetCount; ++j, ++pTileSet)
                     {
-                        if (pTileSet->firstId > static_cast<int>(tileId)) break;
+                        if (pTileSet->firstId <= static_cast<int>(tileId)) break;
                     }
                     pTile->pTileset = pTileSet;
                     auto texSize = pTileSet->pTexture->getSize();
@@ -483,7 +483,9 @@ namespace onut
         if (!m_tileSets) return;
         Matrix transform = getTransform();
         if (oSpriteBatch->isInBatch()) transform = transform * oSpriteBatch->getTransform();
+        oRenderer->renderStates.blendMode.push(OBlendPreMultiplied);
         render(getScreenRECTFromTransform(transform, {m_tileSets->tileWidth, m_tileSets->tileHeight}));
+        oRenderer->renderStates.blendMode.pop();
     }
 
     void TiledMap::renderLayer(int index)
@@ -691,7 +693,7 @@ namespace onut
         auto pTileSet = m_tileSets;
         for (int j = 0; j < m_tilesetCount; ++j, ++pTileSet)
         {
-            if (pTileSet->firstId > static_cast<int>(tileId)) break;
+            if (pTileSet->firstId <= static_cast<int>(tileId)) break;
         }
         pTile->pTileset = pTileSet;
         auto texSize = pTileSet->pTexture->getSize();
