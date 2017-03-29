@@ -35,7 +35,7 @@
 Thumbs.db
 usersettings.cfg
 
-#folders
+# folders
 Debug/
 Release/
 EasyGraphix/
@@ -43,7 +43,10 @@ CMakeFiles/
 bin/
 lib/
 
-#cmake
+# cmake
 CMakeCache.txt
 *.cmake
 Makefile
+
+# apple
+.DS_Store

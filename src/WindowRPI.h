@@ -1,22 +1,23 @@
-#ifndef WINDOWOSX_H_INCLUDED
-#define WINDOWOSX_H_INCLUDED
+#ifndef WINDOWRPI_H_INCLUDED
+#define WINDOWRPI_H_INCLUDED
 
 // Onut
 #include <onut/Window.h>
 
 // Forward Declaration
 #include <onut/ForwardDeclaration.h>
-OForwardDeclare(WindowOSX)
+OForwardDeclare(WindowRPI)
 
 namespace onut
 {
-    class WindowOSX final : public Window
+    class WindowRPI final : public Window
     {
     public:
-        WindowOSX();
-        ~WindowOSX();
+        WindowRPI();
+        ~WindowRPI();
 
         void setCaption(const std::string& newName) override;
+        bool pollEvents() override;
 
     private:
     };

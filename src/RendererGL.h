@@ -8,6 +8,7 @@
 // Third party
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
+#include <SDL.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -52,6 +53,8 @@ namespace onut
         void createUniforms();
 
         // Device stuff
+        SDL_Window* m_pSDLWindow = nullptr;
+        SDL_GLContext m_glContext;
 
         // Render target
         Point m_resolution;

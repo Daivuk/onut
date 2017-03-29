@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+# Setup modules path
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+
 # Output directories
 if (UNIX AND NOT APPLE)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
@@ -11,6 +14,7 @@ endif()
 
 project(onut)
 
+# Setup some vars
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
@@ -34,6 +38,7 @@ if (ONUT_SHOW_FPS EQUAL 1)
     add_definitions(-DONUT_SHOW_FPS)
 endif()
 if (RPI)
+    add_definitions(-D__rpi__)
     add_definitions(-DHAVE_LIBOPENMAX=2)
     add_definitions(-DOMX)
     add_definitions(-DOMX_SKIP64BIT)
@@ -44,17 +49,17 @@ endif()
 # Add RaspberryPI specific source files
 if (RPI)
     list(APPEND src_files
-        src/AudioEngineLinux.cpp
+        src/AudioEngineRPI.cpp
         src/audioplay/audioplay.c
-        src/GamePadLinux.cpp
-        src/InputDeviceLinux.cpp
+        src/GamePadRPI.cpp
+        src/InputDeviceRPI.cpp
         src/VideoPlayerLinux.cpp
         src/IndexBufferGLES2.cpp 
         src/RendererGLES2.cpp 
         src/ShaderGLES2.cpp 
         src/TextureGLES2.cpp 
         src/VertexBufferGLES2.cpp 
-        src/WindowX11.cpp 
+        src/WindowRPI.cpp 
     )
 endif()
 
@@ -70,7 +75,39 @@ if (APPLE)
         src/ShaderGL.cpp 
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
-        src/WindowOSX.cpp 
+        src/WindowSDL2.cpp 
+    )
+endif()
+
+# Add Linux specific source files
+if (UNIX AND NOT APPLE AND NOT RPI)
+    list(APPEND src_files
+        src/AudioEngineLinux.cpp
+        src/GamePadLinux.cpp
+        src/InputDeviceLinux.cpp
+        src/VideoPlayerLinux.cpp
+        src/IndexBufferGL.cpp 
+        src/RendererGL.cpp 
+        src/ShaderGL.cpp 
+        src/TextureGL.cpp 
+        src/VertexBufferGL.cpp 
+        src/WindowSDL2.cpp 
+    )
+endif()
+
+# Add Win32 specific source files
+if (WIN32)
+    list(APPEND src_files
+        src/AudioEngineWASAPI.cpp
+        src/GamePadXInput.cpp
+        src/InputDeviceDI8.cpp
+        src/MFPlayer.cpp
+        src/IndexBufferD3D11.cpp 
+        src/RendererD3D11.cpp 
+        src/ShaderD3D11.cpp 
+        src/TextureD3D11.cpp 
+        src/VertexBufferD3D11.cpp 
+        src/WindowWIN32.cpp 
     )
 endif()
 
@@ -152,7 +189,6 @@ list(APPEND src_files
     src/json/json_writer.cpp
     src/lodepng/LodePNG.cpp 
     src/Log.cpp 
-    src/Maths.cpp 
     src/Matrix.cpp 
     src/micropather.cpp
     src/Multiplayer.cpp
@@ -247,11 +283,17 @@ if (UNIX AND NOT APPLE) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if (UNIX AND NOT RPI)
+if (UNIX AND NOT RPI) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
+
+    find_package(SDL2 REQUIRED)
+    list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
+    list(APPEND libs PUBLIC ${SDL2_LIBRARY})
 endif()
+find_package(Socket)
+list(APPEND libs PUBLIC ${Socket_LIBRARIES})
 
 if (RPI)  
     list(APPEND libs

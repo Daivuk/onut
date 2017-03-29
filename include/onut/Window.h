@@ -33,6 +33,7 @@ namespace onut
 #endif
         virtual void setCaption(const std::string& newName) = 0;
         virtual void setFullscreen(bool isFullscreen) {}
+        virtual bool pollEvents() = 0;
 
         std::function<void(char)>                   onWrite;
         std::function<void(uintptr_t)>              onKey;

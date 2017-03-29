@@ -12,6 +12,7 @@
 //#include "ShaderD3D11.h"
 #include "TextureGL.h"
 #include "VertexBufferGL.h"
+#include "WindowSDL2.h"
 
 // STL
 #include <cassert>
@@ -42,10 +43,32 @@ namespace onut
 
     RendererGL::~RendererGL()
     {
+        if (m_pSDLWindow)
+        {
+            SDL_GL_DeleteContext(m_glContext);
+        }
     }
 
     void RendererGL::createDevice(const OWindowRef& pWindow)
     {
+        m_pSDLWindow = ODynamicCast<OWindowSDL2>(pWindow)->getSDLWindow();
+        assert(m_pSDLWindow);
+
+        SDL_GetWindowSize(m_pSDLWindow, &m_resolution.x, &m_resolution.y);
+
+        m_glContext = SDL_GL_CreateContext(m_pSDLWindow);
+
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        SDL_GL_SetSwapInterval(1);
+
+#if defined(__APPLE_)
+        glewExperimental = GL_TRUE;
+        glewInit();
+#endif
     }
 
     void RendererGL::createRenderTarget()
@@ -88,8 +111,7 @@ namespace onut
 
     void RendererGL::endFrame()
     {
-        // Swap the buffer!
-        //glSwapBuffers(m_display, m_surface);
+        SDL_GL_SwapWindow(m_pSDLWindow);
     }
 
     Point RendererGL::getTrueResolution() const

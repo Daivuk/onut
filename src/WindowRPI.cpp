@@ -7,25 +7,30 @@
 //#include <onut/UIContext.h>
 
 // Internal
-#include "WindowX11.h"
+#include "WindowRPI.h"
 
 namespace onut
 {
     OWindowRef Window::create()
     {
-        return std::shared_ptr<Window>(new WindowX11());
+        return std::shared_ptr<Window>(new WindowRPI());
     }
 
-    WindowX11::WindowX11()
+    WindowRPI::WindowRPI()
     {
     }
 
-    WindowX11::~WindowX11()
+    WindowRPI::~WindowRPI()
     {
     }
 
-    void WindowX11::setCaption(const std::string& newName)
+    void WindowRPI::setCaption(const std::string& newName)
     {
+    }
+
+    bool WindowRPI::pollEvents()
+    {
+        return true;
     }
 }
 

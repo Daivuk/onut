@@ -22,6 +22,7 @@ namespace onut
         HCURSOR getCursor() const;
         void setCaption(const std::string& newName) override;
         void setFullscreen(bool isFullscreen) override;
+        bool pollEvents() override;
 
     private:
         HWND m_handle;

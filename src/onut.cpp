@@ -38,9 +38,7 @@
 
 OTextureRef g_pMainRenderTarget;
 
-#if defined(__unix__)
 std::atomic<bool> g_bIsRunning;
-#endif
 
 #if defined(ONUT_SHOW_FPS)
 OFontRef g_pFont;
@@ -149,12 +147,12 @@ namespace onut
         // Undo/Redo for editors
         if (!oActionManager) oActionManager = ActionManager::create();
 
-#if defined(__unix__)
+#if !defined(WIN32)
         if (oSettings->getIsRetroMode())
         {
 #endif // __unix__
             g_pMainRenderTarget = OTexture::createScreenRenderTarget();
-#if defined(__unix__)
+#if !defined(WIN32)
         }
 #endif // __unix__
 
@@ -213,43 +211,11 @@ namespace onut
         }
 
         // Main loop
-#if defined(WIN32)
-        MSG msg = {0};
-#elif defined(__unix__)
-		g_bIsRunning = true;
-#endif // WIN32
+        g_bIsRunning = true;
         while (true)
         {
-#if defined(WIN32)
-            if (oSettings->getIsEditorMode())
-            {
-                if (GetMessage(&msg, 0, 0, 0) >= 0)
-                {
-                    TranslateMessage(&msg);
-                    DispatchMessage(&msg);
-
-                    if (msg.message == WM_QUIT)
-                    {
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-                {
-                    TranslateMessage(&msg);
-                    DispatchMessage(&msg);
-
-                    if (msg.message == WM_QUIT)
-                    {
-                        break;
-                    }
-                }
-            }
-#elif defined(__unix__)
-			if (!g_bIsRunning) break;
-#endif
+            if (!oWindow->pollEvents()) break;
+            if (!g_bIsRunning) break;
 
             // Sync to main callbacks
             oDispatcher->processQueue();
@@ -260,7 +226,7 @@ namespace onut
             while (framesToUpdate--)
             {
                 oInput->update();
-#if defined(__unix__)
+#if defined(__rpi__)
                 if (OInputPressed(OKeyLeftAlt) && OInputPressed(OKeyF4))
                 {
                     g_bIsRunning = false;
@@ -313,12 +279,12 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
-#if defined(__unix__)
+#if !defined(WIN32)
             if (oSettings->getIsRetroMode())
             {
 #endif // __unix__
                 oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
-#if defined(__unix__)
+#if !defined(WIN32)
             }
 #endif // __unix__
             oRenderer->beginFrame();
@@ -333,7 +299,7 @@ namespace onut
             oUI->render(oUIContext);
             oSpriteBatch->end();
 
-#if defined(__unix__)
+#if !defined(WIN32)
             if (oSettings->getIsRetroMode())
             {
 #endif // __unix__
@@ -346,7 +312,7 @@ namespace onut
                 oSpriteBatch->begin();
                 oSpriteBatch->changeBlendMode(OBlendOpaque);
                 oSpriteBatch->changeFiltering(OFilterNearest);
-#if defined(__unix__)
+#if !defined(WIN32)
                 oSpriteBatch->drawRectWithUVs(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()), Vector4(0, 1, 1, 0));
 #else
                 oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
@@ -359,7 +325,7 @@ namespace onut
                 oSpriteBatch->end();
                 oSpriteBatch->changeBlendMode(OBlendAlpha);
                 oSpriteBatch->changeFiltering(OFilterLinear);
-#if defined(__unix__)
+#if !defined(WIN32)
             }
 #endif // __unix__
             if (postRenderCallback)
@@ -385,7 +351,7 @@ namespace onut
     {
 #if defined(WIN32)
         PostQuitMessage(0);
-#elif defined(__unix__)
+#else
 		g_bIsRunning = false;
 #endif
     }

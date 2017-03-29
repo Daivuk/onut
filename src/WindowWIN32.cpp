@@ -276,6 +276,38 @@ namespace onut
             SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
         }
     }
+
+    bool WindowWIN32::pollEvents()
+    {
+        MSG msg = {0};
+        if (oSettings->getIsEditorMode())
+        {
+            if (GetMessage(&msg, 0, 0, 0) >= 0)
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+
+                if (msg.message == WM_QUIT)
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+
+                if (msg.message == WM_QUIT)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
 
 #endif
