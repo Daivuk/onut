@@ -89,6 +89,53 @@ namespace onut
             {
                 case SDL_QUIT:
                     return false;
+                case SDL_TEXTINPUT:
+                {
+                    auto len = strlen(event.text.text);
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        auto c = event.text.text[i];
+                        if (oWindow)
+                        {
+                            if (oWindow->onWrite)
+                            {
+                                oWindow->onWrite(c);
+                            }
+                        }
+                    }
+                    break;
+                }
+                case SDL_KEYDOWN:
+                {
+                    if (oWindow)
+                    {
+                        if (oWindow->onKey)
+                        {
+                            oWindow->onKey(static_cast<uintptr_t>(event.key.keysym.sym));
+
+                            if (oWindow->onWrite)
+                            {
+                                switch (event.key.keysym.scancode)
+                                {
+                                    case SDL_SCANCODE_BACKSPACE:
+                                        oWindow->onWrite('\b');
+                                        break;
+                                    case SDL_SCANCODE_RETURN:
+                                        oWindow->onWrite('\r');
+                                        break;
+                                    case SDL_SCANCODE_ESCAPE:
+                                        oWindow->onWrite('\x1b');
+                                        break;
+                                    case SDL_SCANCODE_TAB:
+                                        oWindow->onWrite('\t');
+                                        break;
+                                    default: break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
             }
 
             // Everytime we poll, we need to update inputs
