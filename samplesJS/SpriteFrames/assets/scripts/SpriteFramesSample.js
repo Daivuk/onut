@@ -10,11 +10,11 @@ function update(dt)
     }
     if (Input.isJustDown(Key._2))
     {
-        spriteAnim.play("run");
+        spriteAnim.forcePlay("run");
     }
     if (Input.isJustDown(Key._3))
     {
-        spriteAnim.play("run", 20);
+        spriteAnim.forcePlay("run", 20);
     }
     if (Input.isJustDown(Key._4))
     {
