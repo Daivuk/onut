@@ -133,6 +133,11 @@ cmake .
 make DungeonSample
 ```
 
+To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release .
+```
+
 Some third parties might need to be installed. SDL2 and CURL. Follow online instructions on how to install them using brew. You will also need to install brew if not installed. SDL2 might give you a little bit trouble creating symlink. Google around there are instructions how to get those working.
 
 To run a javascript sample on OSX, simply type this in command line:
@@ -145,7 +150,7 @@ The JSStandAlone app takes 1 argument, the path to where your assets/scripts are
 Use cmake to compile the engine, JSStandAlone and samples.
 Make sure to define RPI to 1. It uses different frameworks than standard Linux.
 ```bash
-cmake -DRPI .
+cmake -DRPI=1 .
 make
 ```
 
@@ -153,14 +158,19 @@ All apps and samples executable will be into subfolder: `[sample_path]/bin/linux
 
 To compile only JSStandAlone:
 ```bash
-cmake .
+cmake -DRPI=1 .
 make JSStandAlone
 ```
 
 To compile any of the C++ samples only:
 ```bash
-cmake .
+cmake -DRPI=1 .
 make DungeonSample
+```
+
+To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
+```bash
+cmake -DRPI=1 -DCMAKE_BUILD_TYPE=Release .
 ```
 
 To run a javascript sample on Raspberry PI, simply type this in command line:
