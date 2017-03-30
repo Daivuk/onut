@@ -187,4 +187,4 @@ See `onut/samples/` and `onut/samplesJS/` folders to learn how to use onut.
 Enjoy!
 
 ## Mentions
-_Logo design by Stéphane Yilmaz_
+_Logo design by Pixilabs Software Inc._
