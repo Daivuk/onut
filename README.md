@@ -101,10 +101,21 @@ function render() {
 }
 ```
 
+## OSX
+Use cmake to compile the engine, JSStandAlone and samples.
+```bash
+cmake .
+```
+Some third parties might need to be installed. SDL2 and CURL. Follow online instructions on how to install them using brew. You will also need to install brew if not installed. SDL2 might give you a little bit trouble creating symlink. Google around there are instructions how to get those working.
+
 ## Raspberry PI 2 B
-Use cmake to compile the engine and JSStandAlone.
+Use cmake to compile the engine, JSStandAlone and samples.
+Make sure to define RPI to 1. It uses different frameworks than standard Linux.
+```bash
+cmake -DRPI .
+```
 
 ## Samples
-See the `onut/samples/Samples.sln` and `onut/samplesJS/` folders to learn how to use onut.
+See `onut/samples/` and `onut/samplesJS/` folders to learn how to use onut.
 
 Enjoy!
