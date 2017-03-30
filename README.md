@@ -1,6 +1,5 @@
 ![Oak Nut logo](logo_small.png)
-# onut
-## Oak Nut engine.
+# Oak Nut engine.
 2D Game engine focused on rapid development. Aimed at Game Jams.
 
 List of jam projects using it:
@@ -174,3 +173,6 @@ The JSStandAlone app takes 1 argument, the path to where your assets/scripts are
 See `onut/samples/` and `onut/samplesJS/` folders to learn how to use onut.
 
 Enjoy!
+
+## Mentions
+_Logo design by Stéphane Yilmaz_
