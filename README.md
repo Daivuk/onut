@@ -1,6 +1,6 @@
 ![Oak Nut logo](logo_small.png)
 # Oak Nut engine.
-2D Game engine focused on rapid development. Aimed at Game Jams.
+Commonly called "onut". Game engine focused on rapid development. Aimed at Game Jams.
 
 List of jam projects using it:
 
