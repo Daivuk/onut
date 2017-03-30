@@ -1,4 +1,4 @@
-![Oak Nut logo](https://github.com/Daivuk/onut/blob/master/logo_small.png)
+![Oak Nut logo](logo_small.png)
 # onut
 ## Oak Nut engine.
 2D Game engine focused on rapid development. Aimed at Game Jams.
