@@ -173,6 +173,8 @@ To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
 cmake -DRPI=1 -DCMAKE_BUILD_TYPE=Release .
 ```
 
+Some third parties might need to be installed. CURL. Follow online instructions on how to install them using apt-get.
+
 To run a javascript sample on Raspberry PI, simply type this in command line:
 ```bash
 ./JSStandAlone/bin/linux/JSStandAlone ./samplesJS/Dungeon/
