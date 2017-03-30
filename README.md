@@ -7,12 +7,48 @@ List of jam projects using it:
 * Ottawa Game Jam 2015 - [Cannon Fodder Commander ](https://www.youtube.com/watch?v=Jac9r32uIv0)
 * Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
 * Ottawa Game Jam 2016 - [Spy Satellite Showdown ](https://www.youtube.com/watch?v=NHyGlVm2ICA)
-* Linux Game Jam 2017 - [Retro Game War ](https://www.youtube.com/watch?v=iCbK8YiOAUQ)
+* Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
+
+Supported platforms:
+
+* Windows desktop (Only tested on Windows 10)
+* OS X
+* Raspberry PI (Only tested on model 2B)
+
+See subsection on how to compile and run on each platforms:
+
+* [Windows](##-windows)
+* [OS X](##-os-x)
+* [Raspberry PI](##-raspberry-pi)
 
 ## Windows
 ### Prerequisites
-* Windows 10
 * Visual Studio 2013 for windows Desktop (Express or Community)
+
+### JavaScript Game
+#### Compile the executable
+1. Clone onut somewhere on your PC.
+2. Open the solution `[onut path]/JSStandAlone/JSStandAlone.sln`
+3. Build in release.
+
+#### Setting up your JavaScript project
+Recommended to use Visual Studio Code.
+1. Create a folder for your game somehere on your PC
+2. Copy `[onut path]/jsconfig.json`, `[onut path]/typings/onut.d.ts` to YourGame path.
+3. Create a `settings.txt` file. Refer to samples to see what can be put in there
+4. Copy the JSStandAlone.exe to YourGame path.
+5. Create assets and javascript files
+6. `main.js` will always be the last JavaScript file executed, use it to initialize stuff.
+
+#### main.js
+```javascript
+function update(dt) {
+    // Update your game here
+}
+
+function render() {
+}
+```
 
 ### C++ game
 
@@ -76,44 +112,62 @@ void postRender()
 ```
 Look at samples to see what can be done here.
 
-### JavaScript Game
-#### Compile the executable
-1. Clone onut somewhere on your PC.
-2. Open the solution `[onut path]/JSStandAlone/JSStandAlone.sln`
-3. Build in release.
-
-#### Setting up your JavaScript project
-Recommended to use Visual Studio Code.
-1. Create a folder for your game somehere on your PC
-2. Copy `[onut path]/jsconfig.json`, `[onut path]/typings/onut.d.ts` to YourGame path.
-3. Create a `settings.txt` file. Refer to samples to see what can be put in there
-4. Copy the JSStandAlone.exe to YourGame path.
-5. Create assets and javascript files
-6. `main.js` will always be the last JavaScript file executed, use it to initialize stuff.
-
-#### main.js
-```javascript
-function update(dt) {
-    // Update your game here
-}
-
-function render() {
-}
-```
-
-## OSX
+## OS X
 Use cmake to compile the engine, JSStandAlone and samples.
 ```bash
 cmake .
+make
 ```
+
+All apps and samples executable will be into subfolder: `[sample_path]/bin/osx/`
+
+To compile only JSStandAlone:
+```bash
+cmake .
+make JSStandAlone
+```
+
+To compile any of the C++ samples only:
+```bash
+cmake .
+make DungeonSample
+```
+
 Some third parties might need to be installed. SDL2 and CURL. Follow online instructions on how to install them using brew. You will also need to install brew if not installed. SDL2 might give you a little bit trouble creating symlink. Google around there are instructions how to get those working.
 
-## Raspberry PI 2 B
+To run a javascript sample on OSX, simply type this in command line:
+```bash
+./JSStandAlone/bin/osx/JSStandAlone ./samplesJS/Dungeon/
+```
+The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
+
+## Raspberry PI
 Use cmake to compile the engine, JSStandAlone and samples.
 Make sure to define RPI to 1. It uses different frameworks than standard Linux.
 ```bash
 cmake -DRPI .
+make
 ```
+
+All apps and samples executable will be into subfolder: `[sample_path]/bin/linux/`
+
+To compile only JSStandAlone:
+```bash
+cmake .
+make JSStandAlone
+```
+
+To compile any of the C++ samples only:
+```bash
+cmake .
+make DungeonSample
+```
+
+To run a javascript sample on Raspberry PI, simply type this in command line:
+```bash
+./JSStandAlone/bin/linux/JSStandAlone ./samplesJS/Dungeon/
+```
+The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
 
 ## Samples
 See `onut/samples/` and `onut/samplesJS/` folders to learn how to use onut.
