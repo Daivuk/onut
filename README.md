@@ -17,9 +17,9 @@ Supported platforms:
 
 See subsection on how to compile and run on each platforms:
 
-* [Windows](##-windows)
-* [OS X](##-os-x)
-* [Raspberry PI](##-raspberry-pi)
+* [Windows](#windows)
+* [OS X](#os-x)
+* [Raspberry PI](#raspberry-pi)
 
 ## Windows
 ### Prerequisites
