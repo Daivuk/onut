@@ -5,8 +5,12 @@
 #include <onut/IndexBuffer.h>
 
 // Third party
+#if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
+#else
+#include <GL/glew.h>
+#endif
 
 // Forward
 #include <onut/ForwardDeclaration.h>

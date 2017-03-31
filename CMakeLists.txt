@@ -67,7 +67,7 @@ endif()
 if (APPLE)
     list(APPEND src_files
         src/AudioEngineSDL2.cpp
-        src/GamePadOSX.cpp
+        src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
         src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
@@ -83,7 +83,7 @@ endif()
 if (UNIX AND NOT APPLE AND NOT RPI)
     list(APPEND src_files
         src/AudioEngineSDL2.cpp
-        src/GamePadLinux.cpp
+        src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
         src/VideoPlayerLinux.cpp
         src/IndexBufferGL.cpp 
@@ -291,6 +291,10 @@ if (UNIX AND NOT RPI) # On Raspberry Pi we use video core directly and opengl es
     find_package(SDL2 REQUIRED)
     list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${SDL2_LIBRARY})
+
+    find_package(GLEW REQUIRED)
+    list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
 endif()
 if (UNIX)
     find_package(CURL REQUIRED)

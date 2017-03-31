@@ -1,20 +1,20 @@
-#ifndef GAMEPADOSX_H_INCLUDED
-#define GAMEPADOSX_H_INCLUDED
+#ifndef GAMEPADSDL2_H_INCLUDED
+#define GAMEPADSDL2_H_INCLUDED
 
 // onut
 #include <onut/GamePad.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
-OForwardDeclare(GamePadOSX);
+OForwardDeclare(GamePadSDL2);
 
 namespace onut
 {
-    class GamePadOSX final : public GamePad
+    class GamePadSDL2 final : public GamePad
     {
     public:
-        GamePadOSX(int index);
-        ~GamePadOSX();
+        GamePadSDL2(int index);
+        ~GamePadSDL2();
 
         void update() override;
         bool isConnected() const override;
