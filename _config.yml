@@ -1,1 +1,4 @@
 theme: jekyll-theme-cayman
+title: Oak Nut Engine
+description: Easy to use game engine. Supports C++ and Javascript!
+avatar: icon.png
