@@ -1,66 +1,327 @@
-// Print log
-declare function print(arg: string);
+/**
+ * Output log to the terminal.
+ * Log can also be displayed on the screen if setup in your settings.
+ *
+ * @param {string} text - Text to output to log.
+ */
+declare function print(text: string);
 
-// Delay function
+/**
+ * Calls a function after a amount of time.
+ *
+ * @param {Function} callback - Function or lambda to call
+ * @param {number} timeMS - Delay in miliseconds. Passing 0 will call the function at the beggining of the next frame.
+ */
 declare function setTimeout(callback: Function, timeMS: number);
 
-// Call at the begining of the next frame
+/**
+ * Calls a function at the begining of the next frame.
+ * This is exactly the same as calling #setTimeout with 0 delay.
+ * 
+ * @param {Function} callback - Function or lambda to call
+ */
 declare function defer(callback: Function);
 
-// Quit the game
+/**
+ * Quits the game at the end of the frame.
+ */
 declare function quit();
 
-// Maths
+/**
+ * Represents a 2 dimensional mathematical vector.
+ */
 declare class Vector2 {
-    static distance(v1: Vector2, v2: Vector2): number;
-    static distanceSquared(v1: Vector2, v2: Vector2): number;
+    /**
+     * Calculates the distance between 2 points.
+     *
+     * @param {Vector2} p1 - First point
+     * @param {vector2} p2 - Second point
+     *
+     * @return {number} Distance between the 2 points.
+     */
+    static distance(p1: Vector2, p2: Vector2): number;
+    
+    /**
+     * Calculates the squared distance between 2 points.
+     * This call is faster than #Vector2::distance, so can be used when comparing distances.
+     *
+     * @param {Vector2} p1 - First point
+     * @param {vector2} p2 - Second point
+     *
+     * @return {number} Squared distance between the 2 points.
+     */
+    static distanceSquared(p1: Vector2, p2: Vector2): number;
+    
+    /**
+     * Calculate the minimum value for each separate components of the vectors.
+     *
+     * @param {Vector2} v1 - First vector
+     * @param {Vector2} v2 - Second vector
+     *
+     * @return {Vector2} Vector containing the minimum value in X and Y separately.
+     */
     static min(v1: Vector2, v2: Vector2): Vector2;
+    
+    /**
+     * Calculate the maximum value for each separate components of the vectors.
+     *
+     * @param {Vector2} v1 - First vector
+     * @param {Vector2} v2 - Second vector
+     *
+     * @return {Vector2} Vector containing the maximum value in X and Y separately.
+     */
     static max(v1: Vector2, v2: Vector2): Vector2;
+    
+    /**
+     * Interpolate between 2 vector linearly.
+     *
+     * @param {Vector2} from - Source value.
+     * @param {Vector2} to - Destination value.
+     * @param {number} t - Percentage to interpolate in the range [0, 1]. If 0 is passed, from is returned. If 1 is passed, to is returned.
+     *
+     * @return {Vector2} The interpolated value. from + (to - from) * t
+     */
     static lerp(from: Vector2, to: Vector2, t: number): Vector2;
+    
+    /**
+     * Interpolate between 2 vector linearly by smoothing out each sides.
+     * Think of it as a EASE_BOTH tween.
+     *
+     * @param {Vector2} from - Source value.
+     * @param {Vector2} to - Destination value.
+     * @param {number} t - Percentage to interpolate in the range [0, 1]. If 0 is passed, from is returned. If 1 is passed, to is returned.
+     *
+     * @return {Vector2} The interpolated value. from + (to - from) * (t * t * (3 - 2t))
+     */
     static smoothStep(from: Vector2, to: Vector2, t: number): Vector2;
-    static barycentric(v1: Vector2, v2: Vector2, v3: Vector2, f: number, g: number): Vector2;
-    static catmullRom(v1: Vector2, v2: Vector2, v3: Vector2, v4: Vector2, t: number): Vector2;
-    static hermite(v1: Vector2, t1: Vector2, v2: Vector2, t2: Vector2, t: number): Vector2;
+    
+    /**
+     * Calculates the position inside a triangle
+     *
+     * @param {Vector2} p1 - First point of a triangle
+     * @param {Vector2} p2 - Second point of a triangle
+     * @param {Vector2} p3 - Third point of a triangle
+     * @param {number} f - Barycentric coordinate which expresses the weighting factor toward p2
+     * @param {number} g - Barycentric coordinate which expresses the weighting factor toward p3
+     *
+     * @return {Vector2} Returns a point containing coordinates of a point specified in barycentric (areal) coordinates relative to a 2D triangle.
+     */
+    static barycentric(p1: Vector2, p2: Vector2, p3: Vector2, f: number, g: number): Vector2;
+    
+    /**
+     * Performs a Catmull-Rom interpolation using the specified positions.
+     *
+     * @param {Vector2} p1 - The first position of the interpolation
+     * @param {Vector2} p2 - The second position of the interpolation
+     * @param {Vector2} p3 - The third position of the interpolation
+     * @param {Vector2} p4 - The fourth position of the interpolation
+     * @param {number} t - Weighting factor
+     *
+     * @return {Vector2} The interpolated position
+     */
+    static catmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: number): Vector2;
+    
+    /**
+     * Performs a Hermite spline interpolation.
+     *
+     * @param {Vector2} p1 - First position
+     * @param {Vector2} t1 - First tangent
+     * @param {Vector2} p2 - Second position
+     * @param {Vector2} t2 - Second tangent
+     * @param {number} t - Weighting factor
+     *
+     * @return {Vector2} The interpolated position
+     */
+    static hermite(p1: Vector2, t1: Vector2, p2: Vector2, t2: Vector2, t: number): Vector2;
+    
+    /**
+     * Performs a bezier spline interpolation.
+     *
+     * @param {Vector2} p1 - First position
+     * @param {Vector2} p2 - First control point
+     * @param {Vector2} p3 - Second position
+     * @param {Vector2} p4 - Second control point
+     * @param {number} t - Weighting factor
+     *
+     * @return {Vector2} The interpolated position
+     */
     static bezier(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: number): Vector2;
+    
+    /**
+     * Determines the reflect vector of the given vector and normal.
+     *
+     * @param {Vector2} ivec - Source vector
+     * @param {Vector2} nvec - Normal of ivec
+     *
+     * @return {Vector2} Reflected vector
+     */
     static reflect(ivec: Vector2, nvec: Vector2): Vector2;
+    
+    /**
+     * Refracts a vector.
+     *
+     * @param {Vector2} ivec - Source vector
+     * @param {Vector2} nvec - Normal of ivec
+     * @param {number} refractionIndex
+     *
+     * @return {Vector2} Refracted vector
+     */
     static refract(ivec: Vector2, nvec: Vector2, refractionIndex: number): Vector2;
 
+    /// [0, 0]
     static ZERO: Vector2;
+    /// [1, 1]
     static ONE: Vector2;
+    /// [1, 0]
     static UNIT_X: Vector2;
+    /// [0, 1]
     static UNIT_Y: Vector2;
 
+    /// [0, 0]
     static TOP_LEFT: Vector2;
+    /// [.5, 0]
     static TOP: Vector2;
+    /// [1, 0]
     static TOP_RIGHT: Vector2;
+    /// [0, .5]
     static LEFT: Vector2;
+    /// [.5, .5]
     static CENTER: Vector2;
+    /// [1, .5]
     static RIGHT: Vector2;
+    /// [0, 1]
     static BOTTOM_LEFT: Vector2;
+    /// [.5, 1]
     static BOTTOM: Vector2;
+    /// [1, 1]
     static BOTTOM_RIGHT: Vector2;
 
-    /** (0, 0) */
+    /**
+     * Construct a Vector2 with values [0, 0]
+     */
     constructor();
-    /** (s, s) */
+    
+    /**
+     * Construct a Vector2 with a single scalar value
+     *
+     * @param {number} s - Values to affect into x and y
+     */
     constructor(s: number);
-    /** (x, y) */
+    
+    /**
+     * Construct a Vector2 with values
+     *
+     * @param {number} x - Values to affect into x
+     * @param {number} y - Values to affect into y
+     */
     constructor(x: number, y: number);
+    
+    /**
+     * Construct a Vector2 with another vector.
+     *
+     * @param {Vector2} other - Will copy x,y from other
+     */
     constructor(other: Vector2);
 
+    /**
+     * Compares x,y with another vector
+     *
+     * @param {Vector2} other - The other vector to compare x,y with.
+     *
+     * @return {boolean} true if the vectors identical.
+     */
     isEqual(other: Vector2): boolean;
+    
+    /**
+     * Adds another vector
+     *
+     * @param {Vector2} other - The other vector to add
+     *
+     * @return {boolean} The resulting addition.
+     */
     add(other: Vector2): Vector2;
+    
+    /**
+     * Substacts another vector
+     *
+     * @param {Vector2} other - The other vector to substract
+     *
+     * @return {Vector2} The resulting substraction.
+     */
     sub(other: Vector2): Vector2;
+    
+    /**
+     * Multiplies another vector.
+     * This multiplies both components individually. This is NOT a dot product!
+     *
+     * @param {Vector2} other - The other vector to multiply
+     *
+     * @return {Vector2} The resulting multiplication.
+     */
     mul(other: Vector2): Vector2;
+    
+    /**
+     * Divides another vector
+     *
+     * @param {Vector2} other - The other vector to devide
+     *
+     * @return {Vector2} The resulting division.
+     */
     div(other: Vector2): Vector2;
+    
+    /**
+     * Get the magnitude of the vector.
+     *
+     * @return {number} The magnitude of the vector
+     */
     length(): number;
+    
+    /**
+     * Get the squared magnitude of the vector.
+     *
+     * @return {number} The squared of the vector
+     */
     lengthSquared(): number;
+    
+    /**
+     * Performs a dot product.
+     *
+     * @param {Vector2} other - The other vector to dot product with.
+     *
+     * @return {number} The resulting dot product.
+     */
     dot(other: Vector2): number;
-    cross(other: Vector2): Vector2;
+    
+    /**
+     * Performs a cross product.
+     * A cross product in 2D doesn't necessarly make sense on its own. A vector3 is returned.
+     *
+     * @param {Vector2} other - The other vector to cross product with.
+     *
+     * @return {Vector3} The resulting cross product, in 3 dimensions.
+     */
+    cross(other: Vector2): Vector3;
+    
+    /**
+     * Clamps the vector between min and max ranges
+     *
+     * @param {Vector2} min - Minimum values
+     * @param {Vector2} max - Maximum values
+     *
+     * @return {Vector2} Clamped vector
+     */
     clamp(min: Vector2, max: Vector2): Vector2;
+    
+    /**
+     * Normalize the vector.
+     *
+     * @return {Vector2} The normalized vector.
+     */
     normalize(): Vector2;
 
+    /// x component
     x: number;
+    /// y component
     y: number;
 }
 
