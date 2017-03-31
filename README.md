@@ -2,6 +2,44 @@
 # Oak Nut engine.
 Commonly called "onut". Game engine focused on rapid development. Aimed at Game Jams.
 
+## Quick javascript samples
+
+### Load image and draw a sprite
+```javascript
+var texture = getTexture("image.png");
+
+function render() {
+    // Begin a batch
+    SpriteBatch.begin();
+    
+    // Draw a sprite at screen coordinates x=200, y=100 from top left corner.
+    SpriteBatch.drawSprite(texture, new Vector2(200, 100));
+    
+    // End and flush the batch
+    SpriteBatch.end();
+}
+```
+
+### Animate
+```javascript
+function update(dt) {
+    spriteAngle += dt * 45; // Will rotate 45 degree per second
+}
+
+function render() {
+    ...
+    
+    // Draw a sprite at with an animated angle
+    SpriteBatch.drawSprite(texture, new Vector2(200, 100), Color.WHITE, spriteAngle);
+    
+    ...
+}
+```
+
+See `onut/samplesJS/` folders for more detailed samples.
+
+## Overview
+
 List of jam projects using it:
 
 * Ottawa Game Jam 2015 - [Cannon Fodder Commander ](https://www.youtube.com/watch?v=Jac9r32uIv0)
@@ -216,11 +254,6 @@ To run a javascript sample on Raspberry PI, simply type this in command line:
 ./JSStandAlone/bin/linux/JSStandAlone ./samplesJS/Dungeon/
 ```
 The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
-
-## Samples
-See `onut/samples/` and `onut/samplesJS/` folders to learn how to use onut.
-
-Enjoy!
 
 ## Mentions
 _Logo design by Pixilabs Software Inc._
