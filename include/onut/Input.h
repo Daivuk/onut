@@ -23,7 +23,7 @@ namespace onut
         {
             None = 0,
 
-#if defined(__APPLE__) // SDL2 scancode map
+#if defined(__APPLE__) || (defined(__unix__) && !defined(__rpi__)) // SDL2 scancode map
             KeyEscape = 41,
             Key1 = 30,
             Key2 = 31,

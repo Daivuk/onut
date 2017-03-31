@@ -6744,7 +6744,8 @@ namespace onut
                 if (pFile) \
                  { \
                     __type__ val; \
-                    fread(&val, sizeof(__type__), 1, pFile); \
+                    auto readret = fread(&val, sizeof(__type__), 1, pFile); \
+                    (void)readret; \
                     duk_push_number(ctx, (duk_double_t)val); \
                     return 1; \
                 } \
@@ -6767,7 +6768,8 @@ namespace onut
                 if (pFile)
                 {
                     uint8_t val;
-                    fread(&val, sizeof(uint8_t), 1, pFile);
+                    auto readret = fread(&val, sizeof(uint8_t), 1, pFile);
+                    (void)readret;
                     duk_push_boolean(ctx, (duk_bool_t)val);
                     return 1;
                 }
@@ -6787,7 +6789,8 @@ namespace onut
                     char c;
                     do
                     {
-                        fread(&c, sizeof(c), 1, pFile);
+                        auto readret = fread(&c, sizeof(c), 1, pFile);
+                        (void)readret;
                         if (c) val += c;
                     } while (c);
                     duk_push_string(ctx, val.c_str());
@@ -6806,7 +6809,8 @@ namespace onut
                 if (pFile)
                 {
                     Vector2 val;
-                    fread(&val, sizeof(float), 2, pFile);
+                    auto readret = fread(&val, sizeof(float), 2, pFile);
+                    (void)readret;
                     newVector2(ctx, val);
                     return 1;
                 }
@@ -6821,7 +6825,8 @@ namespace onut
                 if (pFile)
                 {
                     Vector3 val;
-                    fread(&val, sizeof(float), 3, pFile);
+                    auto readret = fread(&val, sizeof(float), 3, pFile);
+                    (void)readret;
                     newVector3(ctx, val);
                     return 1;
                 }
@@ -6836,7 +6841,8 @@ namespace onut
                 if (pFile)
                 {
                     Vector4 val;
-                    fread(&val, sizeof(float), 4, pFile);
+                    auto readret = fread(&val, sizeof(float), 4, pFile);
+                    (void)readret;
                     newVector4(ctx, val);
                     return 1;
                 }
@@ -6851,7 +6857,8 @@ namespace onut
                 if (pFile)
                 {
                     Matrix val;
-                    fread(&val, sizeof(float), 16, pFile);
+                    auto readret = fread(&val, sizeof(float), 16, pFile);
+                    (void)readret;
                     newMatrix(ctx, val);
                     return 1;
                 }
@@ -6866,7 +6873,8 @@ namespace onut
                 if (pFile)
                 {
                     Rect val;
-                    fread(&val, sizeof(float), 4, pFile);
+                    auto readret = fread(&val, sizeof(float), 4, pFile);
+                    (void)readret;
                     newRect(ctx, val);
                     return 1;
                 }
@@ -6881,7 +6889,8 @@ namespace onut
                 if (pFile)
                 {
                     Color val;
-                    fread(&val, sizeof(float), 4, pFile);
+                    auto readret = fread(&val, sizeof(float), 4, pFile);
+                    (void)readret;
                     newColor(ctx, val);
                     return 1;
                 }

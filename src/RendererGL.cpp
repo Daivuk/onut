@@ -67,8 +67,8 @@ namespace onut
 
 #if defined(__APPLE_)
         glewExperimental = GL_TRUE;
-        glewInit();
 #endif
+        glewInit();
     }
 
     void RendererGL::createRenderTarget()
