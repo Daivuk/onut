@@ -13,12 +13,14 @@ Supported platforms:
 
 * Windows desktop (Only tested on Windows 10)
 * OS X
+* Linux (Only tested on Xubuntu)
 * Raspberry PI (Only tested on model 2B)
 
 See subsection on how to compile and run on each platforms:
 
 * [Windows](#windows)
 * [OS X](#os-x)
+* [Linux](#linux)
 * [Raspberry PI](#raspberry-pi)
 
 ## Windows
@@ -143,6 +145,40 @@ Some third parties might need to be installed. SDL2 and CURL. Follow online inst
 To run a javascript sample on OSX, simply type this in command line:
 ```bash
 ./JSStandAlone/bin/osx/JSStandAlone ./samplesJS/Dungeon/
+```
+The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
+
+## Linux
+Use cmake to compile the engine, JSStandAlone and samples.
+```bash
+cmake .
+make
+```
+
+All apps and samples executable will be into subfolder: `[sample_path]/bin/linux/`
+
+To compile only JSStandAlone:
+```bash
+cmake .
+make JSStandAlone
+```
+
+To compile any of the C++ samples only:
+```bash
+cmake .
+make DungeonSample
+```
+
+To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release .
+```
+
+Some third parties might need to be installed. OpenGL, Glew, SDL2 and CURL. Follow online instructions on how to install them using apt-get.
+
+To run a javascript sample on Linux, simply type this in command line:
+```bash
+./JSStandAlone/bin/linux/JSStandAlone ./samplesJS/Dungeon/
 ```
 The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
 
