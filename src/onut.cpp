@@ -393,6 +393,7 @@ int main(int argc, char** argv)
     {
         OArguments.push_back(argv[i]);
     }
+    if (argc == 1 || argc == 0) OArguments.push_back(".");
     initSettings();
     onut::run(init, update, render, postRender);
     return 0;
