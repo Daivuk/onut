@@ -61,6 +61,7 @@ if (RPI)
         src/VideoPlayerLinux.cpp
         src/IndexBufferGLES2.cpp 
         src/HttpCURL.cpp
+        src/MusicRPI.cpp
         src/RendererGLES2.cpp 
         src/ShaderGLES2.cpp 
         src/TextureGLES2.cpp 
@@ -78,6 +79,7 @@ if (APPLE)
         src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
+        src/MusicSDL2.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
         src/TextureGL.cpp 
@@ -95,6 +97,7 @@ if (LINUX)
         src/VideoPlayerLinux.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
+        src/MusicSDL2.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
         src/TextureGL.cpp 
@@ -111,6 +114,7 @@ if (WIN32)
         src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
         src/MFPlayer.cpp
+        src/MusicWIN32.cpp
         src/IndexBufferD3D11.cpp 
         src/RendererD3D11.cpp 
         src/ShaderD3D11.cpp 
@@ -305,6 +309,10 @@ if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2
     find_package(SDL2 REQUIRED)
     list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${SDL2_LIBRARY})
+
+    find_package(SDL2_mixer REQUIRED)
+    list(APPEND includes PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${SDL2_MIXER_LIBRARIES})
 endif()
 if (UNIX)
     find_package(CURL REQUIRED)

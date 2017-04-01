@@ -8,35 +8,27 @@
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager)
 OForwardDeclare(Music)
-#if defined(WIN32)
-class Mp3;
-#endif
 
 namespace onut
 {
-    class Music final : public Resource
+    class Music : public Resource
     {
     public:
         static OMusicRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);
 
-        void play(bool loop = false);
-        void stop();
-        void pause();
-        void resume();
-        void setVolume(float volume);
+        virtual ~Music();
 
-        bool isPlaying() const { return m_isPlaying; }
-        bool isDone();
+        virtual void play(bool loop = false) = 0;
+        virtual void stop() = 0;
+        virtual void pause() = 0;
+        virtual void resume() = 0;
+        virtual void setVolume(float volume) = 0;
 
-    private:
+        virtual bool isPlaying() const = 0;
+        virtual bool isDone() = 0;
+
+    protected:
         Music();
-
-#if defined(WIN32)
-        std::shared_ptr<Mp3> m_pMp3;
-#endif
-        float m_volume = 1.f;
-        bool m_isPlaying = false;
-        bool m_loop = false;
     };
 }
 
