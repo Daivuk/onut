@@ -1,42 +1,42 @@
 // Internal
-#include "GamePadLinux.h"
+#include "GamePadRPI.h"
 
 namespace onut
 {
     OGamePadRef GamePad::create(int index)
     {
-        return std::shared_ptr<GamePadLinux>(new GamePadLinux(index));
+        return std::shared_ptr<GamePadRPI>(new GamePadRPI(index));
     }
 
-    GamePadLinux::GamePadLinux(int index)
+    GamePadRPI::GamePadRPI(int index)
         : GamePad(index)
     {
     }
 
-    GamePadLinux::~GamePadLinux()
+    GamePadRPI::~GamePadRPI()
     {
     }
 
-    void GamePadLinux::update()
+    void GamePadRPI::update()
     {
     }
 
-    bool GamePadLinux::isConnected() const
-    {
-        return false;
-    }
-
-    bool GamePadLinux::isPressed(Button button) const
+    bool GamePadRPI::isConnected() const
     {
         return false;
     }
 
-    bool GamePadLinux::isJustPressed(Button button) const
+    bool GamePadRPI::isPressed(Button button) const
     {
         return false;
     }
 
-    bool GamePadLinux::isJustReleased(Button button) const
+    bool GamePadRPI::isJustPressed(Button button) const
+    {
+        return false;
+    }
+
+    bool GamePadRPI::isJustReleased(Button button) const
     {
         return false;
     }

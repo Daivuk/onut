@@ -1,21 +1,20 @@
-#ifndef GAMEPADLINUX_H_INCLUDED
-#define GAMEPADLINUX_H_INCLUDED
+#ifndef GAMEPADRPI_H_INCLUDED
+#define GAMEPADRPI_H_INCLUDED
 
-#if defined(__unix__)
 // onut
 #include <onut/GamePad.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
-OForwardDeclare(GamePadLinux);
+OForwardDeclare(GamePadRPI);
 
 namespace onut
 {
-    class GamePadLinux final : public GamePad
+    class GamePadRPI final : public GamePad
     {
     public:
-        GamePadLinux(int index);
-        ~GamePadLinux();
+        GamePadRPI(int index);
+        ~GamePadRPI();
 
         void update() override;
         bool isConnected() const override;
@@ -26,7 +25,5 @@ namespace onut
     private:
     };
 }
-
-#endif
 
 #endif

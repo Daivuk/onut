@@ -4,7 +4,7 @@
 #include <onut/Log.h>
 
 // Private
-#include "InputDeviceLinux.h"
+#include "InputDeviceRPI.h"
 
 // STL
 #include <cassert>
