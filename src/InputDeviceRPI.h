@@ -1,6 +1,5 @@
-#ifndef INPUTDEVICELINUX_H_INCLUDED
-#define INPUTDEVICELINUX_H_INCLUDED
-#if defined(__unix__)
+#ifndef INPUTDEVICERPI_H_INCLUDED
+#define INPUTDEVICERPI_H_INCLUDED
 
 // Onut
 #include <onut/Timer.h>
@@ -18,11 +17,11 @@ OForwardDeclare(InputDevice);
 
 namespace onut
 {
-    class InputDeviceLinux final : public InputDevice
+    class InputDeviceRPI final : public InputDevice
     {
     public:
-        InputDeviceLinux(OInput* pInput);
-        ~InputDeviceLinux();
+        InputDeviceRPI(OInput* pInput);
+        ~InputDeviceRPI();
 
     private:
         void readKeyboard() override;
@@ -36,7 +35,5 @@ namespace onut
         OTimer m_initTimer;
     };
 }
-
-#endif
 
 #endif

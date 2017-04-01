@@ -1,4 +1,3 @@
-#if defined(__unix__)
 // Onut
 #include <onut/Files.h>
 #include <onut/Input.h>
@@ -16,10 +15,10 @@ namespace onut
 {
     OInputDeviceRef InputDevice::create(OInput* pInput)
     {
-        return std::shared_ptr<InputDeviceLinux>(new InputDeviceLinux(pInput));
+        return std::shared_ptr<InputDeviceRPI>(new InputDeviceRPI(pInput));
     }
 
-    InputDeviceLinux::InputDeviceLinux(OInput* pInput)
+    InputDeviceRPI::InputDeviceRPI(OInput* pInput)
         : InputDevice(pInput)
     {
         memset(m_keyMap, 0, sizeof(m_keyMap));
@@ -49,7 +48,7 @@ namespace onut
         });
     }
 
-    InputDeviceLinux::~InputDeviceLinux()
+    InputDeviceRPI::~InputDeviceRPI()
     {
         m_initTimer.stop(false);
         for (auto fd : m_devices)
@@ -62,7 +61,7 @@ namespace onut
         }
     }
 
-    void InputDeviceLinux::readKeyboard()
+    void InputDeviceRPI::readKeyboard()
     {
         memset(m_states, 0, sizeof(m_states));
         
@@ -95,9 +94,7 @@ namespace onut
         memcpy(m_previousStates, m_states, sizeof(m_states));
     }
 
-    void InputDeviceLinux::readMouse()
+    void InputDeviceRPI::readMouse()
     {
     }
 }
-
-#endif
