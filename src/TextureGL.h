@@ -53,8 +53,10 @@ namespace onut
     private:
         friend Texture;
         
-        GLuint m_handle = 0;
+        mutable GLuint m_handle = 0;
         GLuint m_frameBuffer = 0;
+        mutable bool m_isDirty = false;
+        mutable std::vector<uint8_t> m_dirtyData;
     };
 }
 

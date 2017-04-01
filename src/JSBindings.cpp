@@ -9646,7 +9646,7 @@ namespace onut
 
             // Http
 #define JS_HTTP_ARGUMENTS(__index__) \
-    onut::http::Arguments arguments; \
+    OHttp::Arguments arguments; \
     if (duk_is_object(ctx, __index__)) \
     { \
         auto str = duk_json_encode(ctx, __index__); \
@@ -9669,7 +9669,7 @@ namespace onut
                     auto url = JS_STRING(0);
                     JS_HTTP_ARGUMENTS(1);
                     auto onErrorFn = duk_get_heapptr(ctx, 2);
-                    auto ret = onut::http::getString(url, arguments, [onErrorFn, ctx](long code, std::string message)
+                    auto ret = oHttp->getString(url, arguments, [onErrorFn, ctx](long code, std::string message)
                     {
                         if (onErrorFn)
                         {
@@ -9706,7 +9706,7 @@ namespace onut
                         duk_dup(ctx, 3);
                         duk_put_prop_string(ctx, -2, keyFAIL.c_str());
                     }
-                    onut::http::getStringAsync(url, arguments,
+                    oHttp->getStringAsync(url, arguments,
                                                [requestId, ctx, keyOK, keyFAIL](std::string ret)
                     {
                         duk_push_global_stash(ctx);
@@ -9742,7 +9742,7 @@ namespace onut
                     auto url = JS_STRING(0);
                     JS_HTTP_ARGUMENTS(1);
                     auto onErrorFn = duk_get_heapptr(ctx, 2);
-                    auto ret = onut::http::getString(url, arguments, [onErrorFn, ctx](long code, std::string message)
+                    auto ret = oHttp->post(url, arguments, [onErrorFn, ctx](long code, std::string message)
                     {
                         if (onErrorFn)
                         {
@@ -9779,7 +9779,7 @@ namespace onut
                         duk_dup(ctx, 3);
                         duk_put_prop_string(ctx, -2, keyFAIL.c_str());
                     }
-                    onut::http::getStringAsync(url, arguments,
+                    oHttp->getStringAsync(url, arguments,
                                                [requestId, ctx, keyOK, keyFAIL](std::string ret)
                     {
                         duk_push_global_stash(ctx);

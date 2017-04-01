@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+# Easier defines
+if (UNIX AND NOT RPI AND NOT APPLE)
+    set(LINUX 1)
+endif()
+
 # Setup modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 # Output directories
-if (UNIX AND NOT APPLE)
+if (LINUX OR RPI)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
 elseif (APPLE)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/osx)
@@ -55,6 +60,7 @@ if (RPI)
         src/InputDeviceRPI.cpp
         src/VideoPlayerLinux.cpp
         src/IndexBufferGLES2.cpp 
+        src/HttpCURL.cpp
         src/RendererGLES2.cpp 
         src/ShaderGLES2.cpp 
         src/TextureGLES2.cpp 
@@ -71,6 +77,7 @@ if (APPLE)
         src/InputDeviceSDL2.cpp
         src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
+        src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
         src/TextureGL.cpp 
@@ -80,13 +87,14 @@ if (APPLE)
 endif()
 
 # Add Linux specific source files
-if (UNIX AND NOT APPLE AND NOT RPI)
+if (LINUX)
     list(APPEND src_files
         src/AudioEngineSDL2.cpp
         src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
         src/VideoPlayerLinux.cpp
         src/IndexBufferGL.cpp 
+        src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
         src/TextureGL.cpp 
@@ -101,6 +109,7 @@ if (WIN32)
         src/AudioEngineWASAPI.cpp
         src/GamePadXInput.cpp
         src/InputDeviceDI8.cpp
+        src/HttpXMLHTTPRequest.cpp
         src/MFPlayer.cpp
         src/IndexBufferD3D11.cpp 
         src/RendererD3D11.cpp 
@@ -279,16 +288,16 @@ list(APPEND includes
         ./src
 )
 
-if (UNIX AND NOT APPLE) # Only required on linux if we use std::thread
+if (LINUX OR RPI) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if (UNIX AND NOT APPLE AND NOT RPI)
+if (LINUX)
     find_package(GLEW REQUIRED)
     list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
     list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
 endif()
-if (UNIX AND NOT RPI) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
+if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
@@ -337,6 +346,7 @@ add_subdirectory(samples/CustomMesh) # CustomMeshSample
 add_subdirectory(samples/Dungeon) # DungeonSample
 add_subdirectory(samples/Empty) # EmptySample
 add_subdirectory(samples/Entities) # EntitiesSample
+add_subdirectory(samples/Http) # HttpSample
 add_subdirectory(samples/Multiplayer) # MultiplayerSample
 add_subdirectory(samples/Navigation) # NavigationSample
 add_subdirectory(samples/Particles) # ParticlesSample

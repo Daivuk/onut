@@ -9,6 +9,7 @@
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/Http.h>
 #include <onut/Log.h>
 #include <onut/Multiplayer.h>
 #include <onut/onut.h>
@@ -128,6 +129,9 @@ namespace onut
         // Particles
         if (!oParticleSystemManager) oParticleSystemManager = ParticleSystemManager::create();
 
+        // Http
+        if (!oHttp) oHttp = Http::create();
+
         // Multiplayer
         if (!oMultiplayer) oMultiplayer = Multiplayer::create();
 
@@ -173,6 +177,7 @@ namespace onut
         oUI = nullptr;
         oUIContext = nullptr;
         oMultiplayer = nullptr;
+        oHttp = nullptr;
         oParticleSystemManager = nullptr;
         oAudioEngine = nullptr;
         oInput = nullptr;

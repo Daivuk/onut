@@ -4,8 +4,6 @@
 // Private
 #include "AudioEngineSDL2.h"
 
-#error Purposely fail build here - testing build server
-
 // STL
 #include <cassert>
 

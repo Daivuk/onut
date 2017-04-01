@@ -141,24 +141,14 @@ namespace onut
     OTextureRef Texture::createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps)
     {
         auto pRet = std::shared_ptr<TextureGL>(new TextureGL());
-        
-        GLuint handle;
-        glGenTextures(1, &handle);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, handle);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        pRet->m_isDirty = true;
+        pRet->m_dirtyData = std::vector<uint8_t>(pData, pData + (size.x * size.y * 4));
         
         // Because opengl uses a global state and its dumb as fuck
         oRenderer->renderStates.textures[0].forceDirty();
 
         pRet->m_type = Type::Static;
         pRet->m_size = size;
-        pRet->m_handle = handle;
         
         return pRet;
     }
@@ -228,6 +218,24 @@ namespace onut
     
     GLuint TextureGL::getHandle() const
     {
+        if (m_isDirty)
+        {
+            m_isDirty = false;
+
+            GLuint handle;
+            glGenTextures(1, &handle);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, handle);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_dirtyData.data());
+            m_dirtyData.clear();
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+            m_handle = handle;
+        }
         return m_handle;
     }
 
