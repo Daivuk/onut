@@ -40,21 +40,26 @@ See `onut/samplesJS/` folders for more detailed samples.
 
 ## Overview
 
-List of jam projects using it:
+### List of jam projects using it:
 
 * Ottawa Game Jam 2015 - [Cannon Fodder Commander ](https://www.youtube.com/watch?v=Jac9r32uIv0)
 * Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
 * Ottawa Game Jam 2016 - [Spy Satellite Showdown ](https://www.youtube.com/watch?v=NHyGlVm2ICA)
 * Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
 
-Supported platforms:
+### Supported platforms
+Here is a table of features with partial support.
 
-* Windows desktop (Only tested on Windows 10)
-* OS X
-* Linux (Only tested on Xubuntu)
-* Raspberry PI (Only tested on model 2B)
+| Feature | Windows | OS X | Linux | Raspberry PI |
+|:-------:|:-------:|:----:|:-----:|:------------:|
+| Cloud | _disabled_ | | |
+| Effects | SUPPORTED | | | |
+| Shaders | SUPPORTED | | | |
+| Game Pads | SUPPORTED | | | |
+| Music | SUPPORTED | | | |
+| Video Player | SUPPORTED | | | |
 
-See subsection on how to compile and run on each platforms:
+### See subsection on how to compile and run on each platforms
 
 * [Windows](#windows)
 * [OS X](#os-x)
