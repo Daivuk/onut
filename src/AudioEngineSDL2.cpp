@@ -33,14 +33,6 @@ namespace onut
             return;
         }
 
-        int mixRet = 0;
-        if (mixRet = Mix_Init(MIX_INIT_MP3) != MIX_INIT_MP3)
-        {
-            OLog("Failed to Mix_Init(MIX_INIT_MP3): " + std::to_string(mixRet));
-            //assert(false);
-            //return;
-        }
-
         memset(&m_audioSpec, 0, sizeof(m_audioSpec));
         m_audioSpec.freq = 44100;
         m_audioSpec.format = AUDIO_F32;
@@ -61,7 +53,6 @@ namespace onut
 
     AudioEngineSDL2::~AudioEngineSDL2()
     {
-        Mix_Quit();
         SDL_CloseAudio();
     }
 

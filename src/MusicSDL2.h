@@ -6,8 +6,6 @@
 #include <onut/Resource.h>
 
 // Third party
-#include <SDL.h>
-#include <SDL_mixer.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -33,7 +31,6 @@ namespace onut
     private:
         friend class Music;
 
-        Mix_Music *m_pMusic = nullptr;
         float m_volume = 1.f;
         bool m_isPlaying = false;
         bool m_loop = false;

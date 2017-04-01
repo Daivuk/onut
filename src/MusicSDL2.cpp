@@ -18,13 +18,6 @@ namespace onut
     {
         auto pRet = std::shared_ptr<MusicSDL2>(new MusicSDL2());
 
-        pRet->m_pMusic = Mix_LoadMUS(filename.c_str());
-        if (!pRet->m_pMusic)
-        {
-            OLog("Failed to load music: " + filename);
-            //return nullptr;
-        }
-
         return pRet;
     }
 
@@ -34,19 +27,15 @@ namespace onut
 
     MusicSDL2::~MusicSDL2()
     {
-        if (m_pMusic)
-        {
-            Mix_FreeMusic(m_pMusic);
-        }
     }
 
     void MusicSDL2::play(bool loop)
     {
-        if (m_isPlaying || !m_pMusic) return;
+        if (m_isPlaying) return;
         m_loop = loop;
         setVolume(m_volume);
 
-        m_isPlaying = Mix_PlayMusic(m_pMusic, m_loop ? -1 : 1) == 0;
+        // m_isPlaying = Mix_PlayMusic(m_pMusic, m_loop ? -1 : 1) == 0;
     }
 
     void MusicSDL2::setVolume(float volume)

@@ -309,10 +309,6 @@ if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2
     find_package(SDL2 REQUIRED)
     list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${SDL2_LIBRARY})
-
-    find_package(SDL2_mixer REQUIRED)
-    list(APPEND includes PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
-    list(APPEND libs PUBLIC ${SDL2_MIXER_LIBRARIES})
 endif()
 if (UNIX)
     find_package(CURL REQUIRED)
