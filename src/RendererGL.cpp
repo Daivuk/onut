@@ -65,10 +65,9 @@ namespace onut
 
         SDL_GL_SetSwapInterval(1);
 
-#if defined(__APPLE_)
-        glewExperimental = GL_TRUE;
-#endif
+#if !defined(__APPLE__)
         glewInit();
+#endif
     }
 
     void RendererGL::createRenderTarget()

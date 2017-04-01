@@ -283,6 +283,11 @@ if (UNIX AND NOT APPLE) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
+if (UNIX AND NOT APPLE AND NOT RPI)
+    find_package(GLEW REQUIRED)
+    list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
+endif()
 if (UNIX AND NOT RPI) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
@@ -291,10 +296,6 @@ if (UNIX AND NOT RPI) # On Raspberry Pi we use video core directly and opengl es
     find_package(SDL2 REQUIRED)
     list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${SDL2_LIBRARY})
-
-    find_package(GLEW REQUIRED)
-    list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
-    list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
 endif()
 if (UNIX)
     find_package(CURL REQUIRED)
