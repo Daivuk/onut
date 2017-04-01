@@ -1,5 +1,5 @@
 // Private
-#include "AudioEngineLinux.h"
+#include "AudioEngineRPI.h"
 
 // Onut
 #include <onut/Log.h>
@@ -13,10 +13,10 @@ namespace onut
 {
     OAudioEngineRef AudioEngine::create()
     {
-        return std::shared_ptr<AudioEngine>(new AudioEngineLinux());
+        return std::shared_ptr<AudioEngine>(new AudioEngineRPI());
     }
 
-    AudioEngineLinux::AudioEngineLinux()
+    AudioEngineRPI::AudioEngineRPI()
     {
         m_isRunning = false;
         auto ret = audioplay_create(&m_pHandle, m_sampleRate, m_channelCount, m_bitDepth, m_bufferCount, m_bufferSize);
@@ -28,12 +28,12 @@ namespace onut
         else
         {
             m_isRunning = true;
-            m_thread = std::thread(std::bind(&AudioEngineLinux::threadMain, this));
+            m_thread = std::thread(std::bind(&AudioEngineRPI::threadMain, this));
         }
         m_pFloatBuffer = new float[m_frameCount * m_channelCount];
     }
 
-    AudioEngineLinux::~AudioEngineLinux()
+    AudioEngineRPI::~AudioEngineRPI()
     {
         if (m_pHandle)
         {
@@ -44,7 +44,7 @@ namespace onut
         delete [] m_pFloatBuffer;
     }
 
-    void AudioEngineLinux::threadMain()
+    void AudioEngineRPI::threadMain()
     {
         uint8_t* pBuffer;
         
@@ -81,16 +81,16 @@ namespace onut
         }
     }
 
-    void AudioEngineLinux::update()
+    void AudioEngineRPI::update()
     {
     }
 
-    int AudioEngineLinux::getSampleRate() const
+    int AudioEngineRPI::getSampleRate() const
     {
         return m_sampleRate;
     }
 
-    int AudioEngineLinux::getChannels() const
+    int AudioEngineRPI::getChannels() const
     {
         return m_channelCount;
     }

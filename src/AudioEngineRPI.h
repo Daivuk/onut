@@ -1,5 +1,5 @@
-#ifndef AUDIOENGINELINUX_H_INCLUDED
-#define AUDIOENGINELINUX_H_INCLUDED
+#ifndef AUDIOENGINERPI_H_INCLUDED
+#define AUDIOENGINERPI_H_INCLUDED
 
 // Onut
 #include <onut/AudioEngine.h>
@@ -13,11 +13,11 @@
 
 namespace onut
 {
-    class AudioEngineLinux final : public AudioEngine
+    class AudioEngineRPI final : public AudioEngine
     {
     public:
-        AudioEngineLinux();
-        ~AudioEngineLinux();
+        AudioEngineRPI();
+        ~AudioEngineRPI();
 
     private:
         void update() override;
