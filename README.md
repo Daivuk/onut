@@ -48,16 +48,17 @@ See `onut/samplesJS/` folders for more detailed samples.
 * Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
 
 ### Supported platforms
-Here is a table of features with partial support.
+Here is a table of features with partial support. For a full list of features, check the samples/ and samplesJS/.
 
 | Feature | Windows | OS X | Linux | Raspberry PI |
 |:-------:|:-------:|:----:|:-----:|:------------:|
+| CMake | | X | X | X | X |
 | Cloud | _disabled_ | | |
-| Effects | SUPPORTED | | | |
-| Shaders | SUPPORTED | | | |
-| Game Pads | SUPPORTED | | | |
-| Music | SUPPORTED | | | |
-| Video Player | SUPPORTED | | | |
+| Effects | X | | | |
+| Shaders | X | | | |
+| Game Pads | X | | | |
+| Music | X | | | |
+| Video Player | X | | | |
 
 ### See subsection on how to compile and run on each platforms
 
