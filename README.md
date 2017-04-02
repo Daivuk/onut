@@ -241,7 +241,7 @@ Here is a table of features with support per platform and availability to the ja
 | Effects | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
 | Shaders | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
 | Game Pads | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
-| Native Cursor | :white_check_mark: | :x: | :x: | :x: | :white_check_marck:
+| Native Cursor | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
 | Mouse | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
 | Audio Stream | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
 | Curves | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
