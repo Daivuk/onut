@@ -1,10 +1,12 @@
 // Onut
 #include <onut/ContentManager.h>
-#include <onut/Music.h>
 #include <onut/Strings.h>
 
 // Third party
 #include <mp3/Mp3.h>
+
+// Internal
+#include "MusicWin32.h"
 
 // STL
 #include <cassert>

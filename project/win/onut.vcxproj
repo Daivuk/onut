@@ -225,6 +225,7 @@
     <ClInclude Include="..\..\src\duktape\duktape.h" />
     <ClInclude Include="..\..\src\duktape\duk_config.h" />
     <ClInclude Include="..\..\src\GamePadXInput.h" />
+    <ClInclude Include="..\..\src\HttpXMLHTTPRequest.h" />
     <ClInclude Include="..\..\src\IndexBufferD3D11.h" />
     <ClInclude Include="..\..\src\IndexBufferGLES2.h" />
     <ClInclude Include="..\..\src\InputDeviceDI8.h" />
@@ -246,6 +247,7 @@
     <ClInclude Include="..\..\src\MFPlayer.h" />
     <ClInclude Include="..\..\src\InputDevice.h" />
     <ClInclude Include="..\..\src\mp3\Mp3.h" />
+    <ClInclude Include="..\..\src\MusicWIN32.h" />
     <ClInclude Include="..\..\src\Particle.h" />
     <ClInclude Include="..\..\src\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\RendererD3D11.h" />
@@ -259,7 +261,6 @@
     <ClInclude Include="..\..\src\VertexBufferD3D11.h" />
     <ClInclude Include="..\..\src\VertexBufferGLES2.h" />
     <ClInclude Include="..\..\src\WindowWIN32.h" />
-    <ClInclude Include="..\..\src\WindowX11.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />
     <ClInclude Include="..\..\src\zlib\gzguts.h" />
@@ -348,6 +349,7 @@
     <ClCompile Include="..\..\src\Entity.cpp" />
     <ClCompile Include="..\..\src\EntityFactory.cpp" />
     <ClCompile Include="..\..\src\GamePadXInput.cpp" />
+    <ClCompile Include="..\..\src\HttpXMLHTTPRequest.cpp" />
     <ClCompile Include="..\..\src\IndexBufferGLES2.cpp" />
     <ClCompile Include="..\..\src\InputDeviceDI8.cpp" />
     <ClCompile Include="..\..\src\JSBindings.cpp" />
@@ -356,6 +358,7 @@
     <ClCompile Include="..\..\src\json\json_writer.cpp" />
     <ClCompile Include="..\..\src\Matrix.cpp" />
     <ClCompile Include="..\..\src\Multiplayer.cpp" />
+    <ClCompile Include="..\..\src\MusicWIN32.cpp" />
     <ClCompile Include="..\..\src\Point.cpp" />
     <ClCompile Include="..\..\src\RendererGLES2.cpp" />
     <ClCompile Include="..\..\src\SceneManager.cpp" />
@@ -371,7 +374,6 @@
     <ClCompile Include="..\..\src\Curve.cpp" />
     <ClCompile Include="..\..\src\LodePNG\LodePNG.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
-    <ClCompile Include="..\..\src\Maths.cpp" />
     <ClCompile Include="..\..\src\MFPlayer.cpp" />
     <ClCompile Include="..\..\src\micropather.cpp" />
     <ClCompile Include="..\..\src\mp3\Mp3.cpp" />
@@ -433,7 +435,6 @@
     <ClCompile Include="..\..\src\TiledMap.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
     <ClCompile Include="..\..\src\WindowWIN32.cpp" />
-    <ClCompile Include="..\..\src\WindowX11.cpp" />
     <ClCompile Include="..\..\src\zlib\adler32.c" />
     <ClCompile Include="..\..\src\zlib\compress.c" />
     <ClCompile Include="..\..\src\zlib\crc32.c" />

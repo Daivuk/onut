@@ -65,9 +65,6 @@
     <ClInclude Include="..\..\include\onut\Log.h">
       <Filter>utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\onut\Http.h">
-      <Filter>utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Async.h">
       <Filter>utilities</Filter>
     </ClInclude>
@@ -713,9 +710,6 @@
     <ClInclude Include="..\..\src\RendererGLES2.h">
       <Filter>services</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\WindowX11.h">
-      <Filter>services</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\onut\Multiplayer.h">
       <Filter>services</Filter>
     </ClInclude>
@@ -724,6 +718,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\SocketTCP_Win32.h">
       <Filter>utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\onut\Http.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\HttpXMLHTTPRequest.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MusicWIN32.h">
+      <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -797,9 +800,6 @@
       <Filter>resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
-      <Filter>utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Http.cpp">
       <Filter>utilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Settings.cpp">
@@ -1163,9 +1163,6 @@
     <ClCompile Include="..\..\src\Tween.cpp">
       <Filter>maths</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Maths.cpp">
-      <Filter>maths</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Curve.cpp">
       <Filter>maths</Filter>
     </ClCompile>
@@ -1211,9 +1208,6 @@
     <ClCompile Include="..\..\src\RendererGLES2.cpp">
       <Filter>services</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\WindowX11.cpp">
-      <Filter>services</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Multiplayer.cpp">
       <Filter>services</Filter>
     </ClCompile>
@@ -1222,6 +1216,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\SocketTCP.cpp">
       <Filter>utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Http.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\HttpXMLHTTPRequest.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MusicWIN32.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
