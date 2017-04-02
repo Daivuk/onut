@@ -8,15 +8,7 @@ endif()
 # Setup modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
-# Output directories
-if (LINUX OR RPI)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
-elseif (APPLE)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/osx)
-elseif (WIN32)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/win)
-endif()
-
+# project name
 project(onut)
 
 # Setup some vars
@@ -50,6 +42,9 @@ if (RPI)
     add_definitions(-DUSE_EXTERNAL_OMX)
     add_definitions(-DUSE_VCHIQ_ARM)
 endif()
+if (WIN32)
+    add_definitions(-DNOMINMAX)
+endif()
 
 # Add RaspberryPI specific source files
 if (RPI)
@@ -64,6 +59,7 @@ if (RPI)
         src/MusicRPI.cpp
         src/RendererGLES2.cpp 
         src/ShaderGLES2.cpp 
+        src/SocketTCP_Unix.cpp
         src/TextureGLES2.cpp 
         src/VertexBufferGLES2.cpp 
         src/WindowRPI.cpp 
@@ -82,6 +78,7 @@ if (APPLE)
         src/MusicSDL2.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
+        src/SocketTCP_Unix.cpp
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
@@ -100,6 +97,7 @@ if (LINUX)
         src/MusicSDL2.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
+        src/SocketTCP_Unix.cpp
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
@@ -114,10 +112,12 @@ if (WIN32)
         src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
         src/MFPlayer.cpp
+        src/mp3/Mp3.cpp
         src/MusicWIN32.cpp
         src/IndexBufferD3D11.cpp 
         src/RendererD3D11.cpp 
         src/ShaderD3D11.cpp 
+        src/SocketTCP_Win32.cpp
         src/TextureD3D11.cpp 
         src/VertexBufferD3D11.cpp 
         src/WindowWIN32.cpp 
@@ -223,7 +223,6 @@ list(APPEND src_files
     src/Settings.cpp 
     src/Shader.cpp 
     src/SocketTCP.cpp
-    src/SocketTCP_Unix.cpp
     src/Sound.cpp
     src/SoundComponent.cpp
     src/SpriteAnim.cpp
@@ -315,6 +314,10 @@ if (UNIX)
     list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
     list(APPEND libs PUBLIC ${CURL_LIBRARIES})
 endif()
+if (WIN32)
+    find_package(DirectX11 REQUIRED)
+    list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
+endif()
 find_package(Socket)
 list(APPEND libs PUBLIC ${Socket_LIBRARIES})
 
@@ -334,6 +337,16 @@ if (RPI)
             -ldl
             -lilclient
             -lopenmaxil
+    )
+endif()
+
+if (WIN32)
+    list(APPEND libs
+        PUBLIC
+            Mfplat
+            msxml6
+            comsuppwd
+            Winhttp
     )
 endif()
 

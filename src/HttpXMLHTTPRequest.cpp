@@ -35,6 +35,7 @@ namespace onut
         HRESULT hr;
         CComPtr<IXMLHTTPRequest> request;
 
+        CoInitializeEx(NULL, COINIT_MULTITHREADED);
         hr = request.CoCreateInstance(CLSID_XMLHTTP60);
         hr = request->open(_bstr_t("POST"),
                             _bstr_t(url.c_str()),
@@ -122,6 +123,7 @@ namespace onut
         HRESULT hr;
         CComPtr<IXMLHTTPRequest> request;
 
+        CoInitializeEx(NULL, COINIT_MULTITHREADED);
         hr = request.CoCreateInstance(CLSID_XMLHTTP60);
         hr = request->open(_bstr_t("GET"),
                             _bstr_t(fullUrl.c_str()),

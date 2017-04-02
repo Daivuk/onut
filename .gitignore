@@ -32,7 +32,11 @@
 *.suo
 *.sdf
 *.opensdf
-Thumbs.db
+*.vcxproj
+*.filters
+*.sln
+*.db
+*.opendb
 usersettings.cfg
 
 # folders

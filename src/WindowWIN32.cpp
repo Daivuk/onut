@@ -145,12 +145,12 @@ namespace onut
         m_resSetting = oSettings->getResolution();
 
         // Define window style
-        WNDCLASS wc = {0};
+        WNDCLASSA wc = {0};
         wc.style = CS_OWNDC;
         wc.lpfnWndProc = WinProc;
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-        wc.lpszClassName = L"OakNutWindow";
-        RegisterClass(&wc);
+        wc.lpszClassName = "OakNutWindow";
+        RegisterClassA(&wc);
 
         // Centered position
         auto screenW = GetSystemMetrics(SM_CXSCREEN);
@@ -161,8 +161,8 @@ namespace onut
             oSettings->setResolution({screenW, screenH});
             long posX = 0;
             long posY = 0;
-            m_handle = CreateWindow(L"OakNutWindow",
-                                    utf8ToUtf16(oSettings->getGameName()).c_str(),
+            m_handle = CreateWindowA("OakNutWindow",
+                                    oSettings->getGameName().c_str(),
                                     WS_POPUP | WS_VISIBLE,
                                     posX, posY, screenW, screenH,
                                     nullptr, nullptr, nullptr, nullptr);
@@ -175,16 +175,16 @@ namespace onut
             // Create the window
             if (!oSettings->getIsResizableWindow())
             {
-                m_handle = CreateWindow(L"OakNutWindow",
-                                        utf8ToUtf16(oSettings->getGameName()).c_str(),
+                m_handle = CreateWindowA("OakNutWindow",
+                                        oSettings->getGameName().c_str(),
                                         WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
                                         posX, posY, m_resSetting.x, m_resSetting.y,
                                         nullptr, nullptr, nullptr, nullptr);
             }
             else
             {
-                m_handle = CreateWindow(L"OakNutWindow",
-                                        utf8ToUtf16(oSettings->getGameName()).c_str(),
+                m_handle = CreateWindowA("OakNutWindow",
+                                        oSettings->getGameName().c_str(),
                                         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                         posX, posY, m_resSetting.x, m_resSetting.y,
                                         nullptr, nullptr, nullptr, nullptr);

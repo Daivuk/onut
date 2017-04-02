@@ -15,6 +15,7 @@
 #include "VertexBufferD3D11.h"
 
 // STL
+#include <cassert>
 #include <fstream>
 #include <vector>
 
@@ -101,7 +102,7 @@ namespace onut
         // Check for error
         if (result != S_OK)
         {
-            MessageBox(nullptr, L"D3D11CreateDeviceAndSwapChain", L"Error", MB_OK);
+            MessageBoxA(nullptr, "D3D11CreateDeviceAndSwapChain", "Error", MB_OK);
             exit(0);
         }
     }
@@ -115,7 +116,7 @@ namespace onut
         auto result = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
         if (result != S_OK)
         {
-            MessageBox(nullptr, L"m_pSwapChain->GetBuffer", L"Error", MB_OK);
+            MessageBoxA(nullptr, "m_pSwapChain->GetBuffer", "Error", MB_OK);
             abort();
         }
         backBuffer->GetDesc(&m_backBufferDesc);
@@ -124,7 +125,7 @@ namespace onut
         result = m_pDevice->CreateRenderTargetView(backBuffer, nullptr, &m_pRenderTargetView);
         if (result != S_OK)
         {
-            MessageBox(nullptr, L"m_pDevice->CreateRenderTargetView", L"Error", MB_OK);
+            MessageBoxA(nullptr, "m_pDevice->CreateRenderTargetView", "Error", MB_OK);
             abort();
         }
 
@@ -147,7 +148,7 @@ namespace onut
         result = m_pDevice->CreateTexture2D(&depthBufferDesc, NULL, &pDepthStencilBuffer);
         if (result != S_OK)
         {
-            MessageBox(nullptr, L"Failed DepthStencil CreateTexture2D", L"Error", MB_OK);
+            MessageBoxA(nullptr, "Failed DepthStencil CreateTexture2D", "Error", MB_OK);
             abort();
         }
 
@@ -160,7 +161,7 @@ namespace onut
         result = m_pDevice->CreateDepthStencilView(pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
         if (result != S_OK)
         {
-            MessageBox(nullptr, L"m_pDevice->CreateDepthStencilView", L"Error", MB_OK);
+            MessageBoxA(nullptr, "m_pDevice->CreateDepthStencilView", "Error", MB_OK);
             abort();
         }
 

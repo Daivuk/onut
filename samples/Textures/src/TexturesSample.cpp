@@ -1,5 +1,6 @@
 // Oak Nut include
 #include <onut/Anim.h>
+#include <onut/ContentManager.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Renderer.h>
@@ -23,11 +24,13 @@ void initSettings()
 
 void init()
 {
-    // From file
-    pTextureFromFile = OTexture::createFromFile("../../assets/textures/onutLogo.png");
+    auto filename = oContentManager->findResourceFile("onutLogo.png");
+
+    // From file (Easiest way is to let the content manager find it using OGetTexture)
+    pTextureFromFile = OTexture::createFromFile(filename);
 
     // From file data
-    auto fileData = onut::getFileData("../../assets/textures/onutLogo.png");
+    auto fileData = onut::getFileData(filename);
     pTextureFromFileData = OTexture::createFromFileData(fileData.data(), fileData.size());
 
     // From raw data
