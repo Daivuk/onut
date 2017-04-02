@@ -68,23 +68,32 @@ Here is a table of features with partial support. For a full list of features, c
 * [Raspberry PI](#raspberry-pi)
 
 ## Windows
-### Prerequisites
-* Visual Studio 2013 for windows Desktop (Express or Community)
+Use cmake to compile the engine, JSStandAlone and samples.
+```bash
+cmake .
+```
+
+Open onut.sln solution into visual studio. Build/Run projects.
+
+To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release .
+```
 
 ### JavaScript Game
 #### Compile the executable
 1. Clone onut somewhere on your PC.
-2. Open the solution `[onut path]/JSStandAlone/JSStandAlone.sln`
-3. Build in release.
+2. Generate using cmake.
+3. Build the JSStandAlone project in release.
+4. Copy the executable to your game's folder.
 
 #### Setting up your JavaScript project
 Recommended to use Visual Studio Code.
 1. Create a folder for your game somehere on your PC
 2. Copy `[onut path]/jsconfig.json`, `[onut path]/typings/onut.d.ts` to YourGame path.
 3. Create a `settings.txt` file. Refer to samples to see what can be put in there
-4. Copy the JSStandAlone.exe to YourGame path.
-5. Create assets and javascript files
-6. `main.js` will always be the last JavaScript file executed, use it to initialize stuff.
+4. Create assets and javascript files
+5. `main.js` will always be the last JavaScript file executed, use it to initialize stuff.
 
 #### main.js
 ```javascript
@@ -105,33 +114,8 @@ The default asset search paths are configured for this structure. _But it easy t
 * `YourGame\`
   * `assets\` Put game assets in here
     * ...
-  * `project\`
-    * `win\` Windows configuration
-      * `YourGame.sln` Your game solution
-      * `YourGame.vcxproj` Your game project
-      * `YourGame.vcxproj.filters`
   * `src\` Your game source code (.h and .cpp)
-
-#### Setup project
-Make sure to follow the recommended folder structure when doing those steps.
-1. Clone onut somewhere on your PC.
-2. Open Visual Studio and create a new empty win32 solution and project for your game.
-2. Add onut project to your solution.
-  * Right click your solution -> Add -> Existing project -> `[onut path]\project\win\onut.vcxproj`
-4. Add build dependancies for your game to include `onut`.
-  * Right click YourGame project -> Build Dependencies -> Project Dependencies -> Check mark `onut`
-5. Add references to `onut` from your game.
-  * Right click YourGame project -> Add -> References -> Add New Reference -> Check mark `onut`
-6. Add include path to your game source and onut includes
-  * Right click YourGame project -> Properties -> Configuration Properties -> C/C++ -> General -> Additional Include Directories. Add the following
-    * `../../src`
-    * `[onut path]/include`
-7. Use static runtime libraries. This will make sharing your game .exe easier, and onut is built like that by default.
-  * Right click YourGame project -> Properties
-  * Top left, in the Configuration dropdown, Select `Debug`.
-  * Configuration Properties -> C/C++ -> Code Generation -> Runtime Library. Choose `Multi-threaded Debug (/MTd)`
-  * Top left, in the Configuration dropdown, Select `Release`.
-  * Configuration Properties -> C/C++ -> Code Generation -> Runtime Library. Choose `Multi-threaded (/MT)`
+  * .. projects files or your CMakeLists.txt
 
 #### main.cpp
 Make sure to define those 5 functions. Otherwise you will get unresolved errors.
@@ -165,8 +149,6 @@ cmake .
 make
 ```
 
-All apps and samples executable will be into subfolder: `[sample_path]/bin/osx/`
-
 To compile only JSStandAlone:
 ```bash
 cmake .
@@ -188,7 +170,7 @@ Some third parties might need to be installed. SDL2 and CURL. Follow online inst
 
 To run a javascript sample on OSX, simply type this in command line:
 ```bash
-./JSStandAlone/bin/osx/JSStandAlone ./samplesJS/Dungeon/
+./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
 ```
 The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
 
@@ -198,8 +180,6 @@ Use cmake to compile the engine, JSStandAlone and samples.
 cmake .
 make
 ```
-
-All apps and samples executable will be into subfolder: `[sample_path]/bin/linux/`
 
 To compile only JSStandAlone:
 ```bash
@@ -222,7 +202,7 @@ Some third parties might need to be installed. OpenGL, Glew, SDL2 and CURL. Foll
 
 To run a javascript sample on Linux, simply type this in command line:
 ```bash
-./JSStandAlone/bin/linux/JSStandAlone ./samplesJS/Dungeon/
+./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
 ```
 The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
 
@@ -233,8 +213,6 @@ Make sure to define RPI to 1. It uses different frameworks than standard Linux.
 cmake -DRPI=1 .
 make
 ```
-
-All apps and samples executable will be into subfolder: `[sample_path]/bin/linux/`
 
 To compile only JSStandAlone:
 ```bash
@@ -257,7 +235,7 @@ Some third parties might need to be installed. CURL. Follow online instructions 
 
 To run a javascript sample on Raspberry PI, simply type this in command line:
 ```bash
-./JSStandAlone/bin/linux/JSStandAlone ./samplesJS/Dungeon/
+./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
 ```
 The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
 
