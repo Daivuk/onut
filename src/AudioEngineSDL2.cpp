@@ -4,9 +4,6 @@
 // Private
 #include "AudioEngineSDL2.h"
 
-// Third parties
-#include <SDL_mixer.h>
-
 // STL
 #include <cassert>
 
