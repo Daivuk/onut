@@ -52,7 +52,6 @@ See `onut/samplesJS/` folders for more detailed samples.
 * [Windows](#windows)
 * [OS X](#os-x)
 * [Linux](#linux)
-* [Raspberry PI](#raspberry-pi)
 
 ## Windows
 Use cmake to compile the engine, JSStandAlone and samples.
@@ -193,89 +192,56 @@ To run a javascript sample on Linux, simply type this in command line:
 ```
 The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
 
-## Raspberry PI
-Use cmake to compile the engine, JSStandAlone and samples.
-Make sure to define RPI to 1. It uses different frameworks than standard Linux.
-```bash
-cmake -DRPI=1 .
-make
-```
-
-To compile only JSStandAlone:
-```bash
-cmake -DRPI=1 .
-make JSStandAlone
-```
-
-To compile any of the C++ samples only:
-```bash
-cmake -DRPI=1 .
-make DungeonSample
-```
-
-To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
-```bash
-cmake -DRPI=1 -DCMAKE_BUILD_TYPE=Release .
-```
-
-Some third parties might need to be installed. CURL. Follow online instructions on how to install them using apt-get.
-
-To run a javascript sample on Raspberry PI, simply type this in command line:
-```bash
-./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
-```
-The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
-
 ### Supported features
 Here is a table of features with support per platform and availability to the javascript bindings. For a full list of features, check the samples/ and samplesJS/.
 
-| Feature | Windows | OS X | Linux | Raspberry PI | Javascript Bindings |
+| Feature | Windows | OS X | Linux | Javascript Bindings |
 |:-------:|:-------:|:----:|:-----:|:------------:|:-:|
-| Multiplayer | :x: | :x: | :x: | :x: | :x:
-| System Info | :x: | :x: | :x: | :x: | partial
-| Cloud | _disabled_ | :x: | :x: | :x: | :x:
-| File utils | :white_check_mark: | :x: | :x: | :x: | :x:
-| File Dialogs | :white_check_mark: | :x: | :x: | :x: | :x:
-| Music | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
-| Video Player | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
-| Effects | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
-| Shaders | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
-| Game Pads | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
-| Native Cursor | :white_check_mark: | :x: | :x: | :x: | :white_check_mark:
-| Mouse | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
-| Audio Stream | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| Curves | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| Entity/Components | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| Box2D | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| Path Finding | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| XML Parser | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| Thread Pool | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| CSV | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| Images | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| TCP Sockets | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:
-| UI | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | partial
-| Settings | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | partial
-| Random | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | partial
-| CMake | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | n/a
-| Log | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Maths | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Anims | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Textures | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| File IO | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Bitmap Fonts | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Sounds | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| TiledMaps | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Sprite Anims | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Particles | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Vertex Buffers | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Renderer | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| SpriteBatch | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| PrimitiveBatch | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Keyboard | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Http | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Basic Hash | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Sha1 | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-| Base64 | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
+| Multiplayer | | | |
+| System Info | | | | partial
+| Cloud | _disabled_ | | |
+| File utils | ✓ | | |
+| File Dialogs | ✓ | | |
+| Music | ✓ | | | ✓
+| Video Player | ✓ | | | ✓
+| Effects | ✓ | | | ✓
+| Shaders | ✓ | | | ✓
+| Game Pads | ✓ | ✓ | ✓ | ✓
+| Native Cursor | ✓ | | | ✓
+| Mouse | ✓ | ✓ | ✓ | ✓
+| Audio Stream | ✓ | ✓ | ✓ |
+| Curves | ✓ | ✓ | ✓ |
+| Entity/Components | ✓ | ✓ | ✓ |
+| Box2D | ✓ | ✓ | ✓ |
+| Path Finding | ✓ | ✓ | ✓ |
+| XML Parser | ✓ | ✓ | ✓ |
+| Thread Pool | ✓ | ✓ | ✓ |
+| CSV | ✓ | ✓ | ✓ |
+| Images | ✓ | ✓ | ✓ |
+| TCP Sockets | ✓ | ✓ | ✓ |
+| UI | ✓ | ✓ | ✓ | partial
+| Settings | ✓ | ✓ | ✓ | partial
+| Random | ✓ | ✓ | ✓ | partial
+| CMake | ✓ | ✓ | ✓ | n/a
+| Log | ✓ | ✓ | ✓ | ✓
+| Maths | ✓ | ✓ | ✓ | ✓
+| Anims | ✓ | ✓ | ✓ | ✓
+| Textures | ✓ | ✓ | ✓ | ✓
+| File IO | ✓ | ✓ | ✓ | ✓
+| Bitmap Fonts | ✓ | ✓ | ✓ | ✓
+| Sounds | ✓ | ✓ | ✓ | ✓
+| TiledMaps | ✓ | ✓ | ✓ | ✓
+| Sprite Anims | ✓ | ✓ | ✓ | ✓
+| Particles | ✓ | ✓ | ✓ | ✓
+| Vertex Buffers | ✓ | ✓ | ✓ | ✓
+| Renderer | ✓ | ✓ | ✓ | ✓
+| SpriteBatch | ✓ | ✓ | ✓ | ✓
+| PrimitiveBatch | ✓ | ✓ | ✓ | ✓
+| Keyboard | ✓ | ✓ | ✓ | ✓
+| Http | ✓ | ✓ | ✓ | ✓
+| Basic Hash | ✓ | ✓ | ✓ | ✓
+| Sha1 | ✓ | ✓ | ✓ | ✓
+| Base64 | ✓ | ✓ | ✓ | ✓
 
 ## Mentions
 _Logo design by Pixilabs Software Inc._
