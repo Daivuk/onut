@@ -195,53 +195,53 @@ The JSStandAlone app takes 1 argument, the path to where your assets/scripts are
 ### Supported features
 Here is a table of features with support per platform and availability to the javascript bindings. For a full list of features, check the samples/ and samplesJS/.
 
-| Feature | Windows | OS X | Linux | Javascript Bindings |
-|:-------:|:-------:|:----:|:-----:|:------------:|:-:|
-| Multiplayer | | | |
-| System Info | | | | partial
-| Cloud | _disabled_ | | |
-| File utils | ✓ | | |
-| File Dialogs | ✓ | | |
-| Music | ✓ | | | ✓
-| Video Player | ✓ | | | ✓
-| Effects | ✓ | | | ✓
-| Shaders | ✓ | | | ✓
-| Game Pads | ✓ | ✓ | ✓ | ✓
-| Native Cursor | ✓ | | | ✓
-| Mouse | ✓ | ✓ | ✓ | ✓
-| Audio Stream | ✓ | ✓ | ✓ |
-| Curves | ✓ | ✓ | ✓ |
-| Entity/Components | ✓ | ✓ | ✓ |
-| Box2D | ✓ | ✓ | ✓ |
-| Path Finding | ✓ | ✓ | ✓ |
-| XML Parser | ✓ | ✓ | ✓ |
-| Thread Pool | ✓ | ✓ | ✓ |
-| CSV | ✓ | ✓ | ✓ |
-| Images | ✓ | ✓ | ✓ |
-| TCP Sockets | ✓ | ✓ | ✓ |
-| UI | ✓ | ✓ | ✓ | partial
-| Settings | ✓ | ✓ | ✓ | partial
-| Random | ✓ | ✓ | ✓ | partial
-| CMake | ✓ | ✓ | ✓ | n/a
-| Log | ✓ | ✓ | ✓ | ✓
-| Maths | ✓ | ✓ | ✓ | ✓
-| Anims | ✓ | ✓ | ✓ | ✓
-| Textures | ✓ | ✓ | ✓ | ✓
-| File IO | ✓ | ✓ | ✓ | ✓
-| Bitmap Fonts | ✓ | ✓ | ✓ | ✓
-| Sounds | ✓ | ✓ | ✓ | ✓
-| TiledMaps | ✓ | ✓ | ✓ | ✓
-| Sprite Anims | ✓ | ✓ | ✓ | ✓
-| Particles | ✓ | ✓ | ✓ | ✓
-| Vertex Buffers | ✓ | ✓ | ✓ | ✓
-| Renderer | ✓ | ✓ | ✓ | ✓
-| SpriteBatch | ✓ | ✓ | ✓ | ✓
-| PrimitiveBatch | ✓ | ✓ | ✓ | ✓
-| Keyboard | ✓ | ✓ | ✓ | ✓
-| Http | ✓ | ✓ | ✓ | ✓
-| Basic Hash | ✓ | ✓ | ✓ | ✓
-| Sha1 | ✓ | ✓ | ✓ | ✓
-| Base64 | ✓ | ✓ | ✓ | ✓
+| Feature           | Windows    | OS X | Linux | Javascript Bindings |
+|:-----------------:|:----------:|:----:|:-----:|:-------------------:|
+| Multiplayer       |            |      |       |                     |
+| System Info       |            |      |       | partial             |
+| Cloud             | _disabled_ |      |       |                     |
+| File utils        | ✓          |      |       |                     |
+| File Dialogs      | ✓          |      |       |                     |
+| Music             | ✓          |      |       | ✓                   |
+| Video Player      | ✓          |      |       | ✓                   |
+| Effects           | ✓          |      |       | ✓                   |
+| Shaders           | ✓          |      |       | ✓                   |
+| Game Pads         | ✓          | ✓    | ✓     | ✓                   |
+| Native Cursor     | ✓          |      |       | ✓                   |
+| Mouse             | ✓          | ✓    | ✓     | ✓                   |
+| Audio Stream      | ✓          | ✓    | ✓     |                     |
+| Curves            | ✓          | ✓    | ✓     |                     |
+| Entity/Components | ✓          | ✓    | ✓     |                     |
+| Box2D             | ✓          | ✓    | ✓     |                     |
+| Path Finding      | ✓          | ✓    | ✓     |                     |
+| XML Parser        | ✓          | ✓    | ✓     |                     |
+| Thread Pool       | ✓          | ✓    | ✓     |                     |
+| CSV               | ✓          | ✓    | ✓     |                     |
+| Images            | ✓          | ✓    | ✓     |                     |
+| TCP Sockets       | ✓          | ✓    | ✓     |                     |
+| UI                | ✓          | ✓    | ✓     | partial             |
+| Settings          | ✓          | ✓    | ✓     | partial             |
+| Random            | ✓          | ✓    | ✓     | partial             |
+| CMake             | ✓          | ✓    | ✓     | n/a                 |
+| Log               | ✓          | ✓    | ✓     | ✓                   |
+| Maths             | ✓          | ✓    | ✓     | ✓                   |
+| Anims             | ✓          | ✓    | ✓     | ✓                   |
+| Textures          | ✓          | ✓    | ✓     | ✓                   |
+| File IO           | ✓          | ✓    | ✓     | ✓                   |
+| Bitmap Fonts      | ✓          | ✓    | ✓     | ✓                   |
+| Sounds            | ✓          | ✓    | ✓     | ✓                   |
+| TiledMaps         | ✓          | ✓    | ✓     | ✓                   |
+| Sprite Anims      | ✓          | ✓    | ✓     | ✓                   |
+| Particles         | ✓          | ✓    | ✓     | ✓                   |
+| Vertex Buffers    | ✓          | ✓    | ✓     | ✓                   |
+| Renderer          | ✓          | ✓    | ✓     | ✓                   |
+| SpriteBatch       | ✓          | ✓    | ✓     | ✓                   |
+| PrimitiveBatch    | ✓          | ✓    | ✓     | ✓                   |
+| Keyboard          | ✓          | ✓    | ✓     | ✓                   |
+| Http              | ✓          | ✓    | ✓     | ✓                   |
+| Basic Hash        | ✓          | ✓    | ✓     | ✓                   |
+| Sha1              | ✓          | ✓    | ✓     | ✓                   |
+| Base64            | ✓          | ✓    | ✓     | ✓                   |
 
 ## Mentions
 _Logo design by Pixilabs Software Inc._
