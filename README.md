@@ -197,51 +197,51 @@ Here is a table of features with support per platform and availability to the ja
 
 | Feature           | Windows    | OS X | Linux | Javascript Bindings |
 |:-----------------:|:----------:|:----:|:-----:|:-------------------:|
-| Multiplayer       |            |      |       |                     |
-| System Info       |            |      |       | partial             |
-| Cloud             | _disabled_ |      |       |                     |
-| File utils        | ✓          |      |       |                     |
-| File Dialogs      | ✓          |      |       |                     |
-| Music             | ✓          |      |       | ✓                   |
-| Video Player      | ✓          |      |       | ✓                   |
-| Effects           | ✓          |      |       | ✓                   |
-| Shaders           | ✓          |      |       | ✓                   |
-| Game Pads         | ✓          | ✓    | ✓     | ✓                   |
-| Native Cursor     | ✓          |      |       | ✓                   |
-| Mouse             | ✓          | ✓    | ✓     | ✓                   |
+| Anims             | ✓          | ✓    | ✓     | ✓                   |
 | Audio Stream      | ✓          | ✓    | ✓     |                     |
-| Curves            | ✓          | ✓    | ✓     |                     |
-| Entity/Components | ✓          | ✓    | ✓     |                     |
+| Base64            | ✓          | ✓    | ✓     | ✓                   |
+| Bitmap Fonts      | ✓          | ✓    | ✓     | ✓                   |
 | Box2D             | ✓          | ✓    | ✓     |                     |
-| Path Finding      | ✓          | ✓    | ✓     |                     |
-| XML Parser        | ✓          | ✓    | ✓     |                     |
-| Thread Pool       | ✓          | ✓    | ✓     |                     |
-| CSV               | ✓          | ✓    | ✓     |                     |
-| Images            | ✓          | ✓    | ✓     |                     |
-| TCP Sockets       | ✓          | ✓    | ✓     |                     |
-| UI                | ✓          | ✓    | ✓     | partial             |
-| Settings          | ✓          | ✓    | ✓     | partial             |
-| Random            | ✓          | ✓    | ✓     | partial             |
+| Cloud             | _disabled_ |      |       |                     |
 | CMake             | ✓          | ✓    | ✓     | n/a                 |
+| CSV               | ✓          | ✓    | ✓     |                     |
+| Curves            | ✓          | ✓    | ✓     |                     |
+| Effects           | ✓          |      |       | ✓                   |
+| Entity/Components | ✓          | ✓    | ✓     |                     |
+| File Dialogs      | ✓          |      |       |                     |
+| File IO           | ✓          | ✓    | ✓     | ✓                   |
+| File utils        | ✓          |      |       |                     |
+| Game Pads         | ✓          | ✓    | ✓     | ✓                   |
+| Hash              | ✓          | ✓    | ✓     | ✓                   |
+| Http              | ✓          | ✓    | ✓     | ✓                   |
+| Images            | ✓          | ✓    | ✓     |                     |
+| Keyboard          | ✓          | ✓    | ✓     | ✓                   |
 | Log               | ✓          | ✓    | ✓     | ✓                   |
 | Maths             | ✓          | ✓    | ✓     | ✓                   |
-| Anims             | ✓          | ✓    | ✓     | ✓                   |
-| Textures          | ✓          | ✓    | ✓     | ✓                   |
-| File IO           | ✓          | ✓    | ✓     | ✓                   |
-| Bitmap Fonts      | ✓          | ✓    | ✓     | ✓                   |
-| Sounds            | ✓          | ✓    | ✓     | ✓                   |
-| TiledMaps         | ✓          | ✓    | ✓     | ✓                   |
-| Sprite Anims      | ✓          | ✓    | ✓     | ✓                   |
+| Mouse             | ✓          | ✓    | ✓     | ✓                   |
+| Multiplayer       |            |      |       |                     |
+| Music             | ✓          |      |       | ✓                   |
+| Native Cursor     | ✓          |      |       | ✓                   |
+| Path Finding      | ✓          | ✓    | ✓     |                     |
 | Particles         | ✓          | ✓    | ✓     | ✓                   |
-| Vertex Buffers    | ✓          | ✓    | ✓     | ✓                   |
-| Renderer          | ✓          | ✓    | ✓     | ✓                   |
-| SpriteBatch       | ✓          | ✓    | ✓     | ✓                   |
 | PrimitiveBatch    | ✓          | ✓    | ✓     | ✓                   |
-| Keyboard          | ✓          | ✓    | ✓     | ✓                   |
-| Http              | ✓          | ✓    | ✓     | ✓                   |
-| Basic Hash        | ✓          | ✓    | ✓     | ✓                   |
+| Random            | ✓          | ✓    | ✓     | partial             |
+| Renderer          | ✓          | ✓    | ✓     | ✓                   |
+| Settings          | ✓          | ✓    | ✓     | partial             |
 | Sha1              | ✓          | ✓    | ✓     | ✓                   |
-| Base64            | ✓          | ✓    | ✓     | ✓                   |
+| Shaders           | ✓          |      |       | ✓                   |
+| Sounds            | ✓          | ✓    | ✓     | ✓                   |
+| Sprite Anims      | ✓          | ✓    | ✓     | ✓                   |
+| SpriteBatch       | ✓          | ✓    | ✓     | ✓                   |
+| System Info       |            |      |       | partial             |
+| TCP Sockets       | ✓          | ✓    | ✓     |                     |
+| Textures          | ✓          | ✓    | ✓     | ✓                   |
+| TiledMaps         | ✓          | ✓    | ✓     | ✓                   |
+| Thread Pool       | ✓          | ✓    | ✓     |                     |
+| UI                | ✓          | ✓    | ✓     | partial             |
+| Vertex Buffers    | ✓          | ✓    | ✓     | ✓                   |
+| Video Player      | ✓          |      |       | ✓                   |
+| XML Parser        | ✓          | ✓    | ✓     |                     |
 
 ## Mentions
 _Logo design by Pixilabs Software Inc._
