@@ -159,6 +159,14 @@ namespace onut
                                 {
                                     OLog("Controller removed: " + std::to_string(i));
                                     pGamePad->onRemoved();
+                                    // Move down the controllers after
+                                    for (; i < 3; ++i)
+                                    {
+                                        auto pGamePadFrom = ODynamicCast<GamePadSDL2>(OGetGamePad(i + 1));
+                                        auto pGamePadTo = ODynamicCast<GamePadSDL2>(OGetGamePad(i));
+                                        pGamePadTo->setSDLController(pGamePadFrom->getSDLController());
+                                        pGamePadFrom->setSDLController(nullptr);
+                                    }
                                     break;
                                 }
                             }

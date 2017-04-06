@@ -32,6 +32,7 @@ namespace onut
         void onRemoved();
 
         SDL_GameController* getSDLController() const;
+        void setSDLController(SDL_GameController* pSDLController);
         void updateSDL2();
 
     private:

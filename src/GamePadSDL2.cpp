@@ -19,8 +19,6 @@ namespace onut
     GamePadSDL2::GamePadSDL2(int index)
         : GamePad(index)
     {
-        m_pSDLGamePad = SDL_GameControllerOpen(index);
-
         m_previousState.resize(SDL_CONTROLLER_BUTTON_MAX, 0);
         m_state.resize(SDL_CONTROLLER_BUTTON_MAX, 0);
     }
@@ -149,6 +147,11 @@ namespace onut
             SDL_GameControllerClose(m_pSDLGamePad);
             m_pSDLGamePad = nullptr;
         }
+    }
+
+    void GamePadSDL2::setSDLController(SDL_GameController* pSDLController)
+    {
+        m_pSDLGamePad = pSDLController;
     }
 
     SDL_GameController* GamePadSDL2::getSDLController() const
