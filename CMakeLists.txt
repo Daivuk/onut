@@ -363,6 +363,7 @@ add_subdirectory(samples/CustomMesh) # CustomMeshSample
 add_subdirectory(samples/Dungeon) # DungeonSample
 add_subdirectory(samples/Empty) # EmptySample
 add_subdirectory(samples/Entities) # EntitiesSample
+add_subdirectory(samples/GamePads) # GamePadsSample
 add_subdirectory(samples/Http) # HttpSample
 add_subdirectory(samples/Multiplayer) # MultiplayerSample
 add_subdirectory(samples/Navigation) # NavigationSample

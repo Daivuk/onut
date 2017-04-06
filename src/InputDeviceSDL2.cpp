@@ -27,6 +27,8 @@ namespace onut
         m_previousMouseState[0] = 0;
         m_previousMouseState[1] = 1;
         m_previousMouseState[2] = 2;
+
+        SDL_Init(SDL_INIT_GAMECONTROLLER);
     }
 
     InputDeviceSDL2::~InputDeviceSDL2()

@@ -14,7 +14,7 @@ namespace onut
     }
 }
 
-const OGamePadRef& OGetGamePad(int index)
+OGamePadRef OGetGamePad(int index)
 {
     return oInput->getGamePad(index);
 }

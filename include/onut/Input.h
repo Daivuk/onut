@@ -513,7 +513,7 @@ namespace onut
         bool isStateJustUp(State state) const;
         float getStateValue(State state) const;
 
-        const OGamePadRef& getGamePad(int index) const;
+        OGamePadRef getGamePad(int index) const;
 
         Point mousePos;
         Vector2 mousePosf;

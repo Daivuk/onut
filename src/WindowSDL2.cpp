@@ -1,13 +1,12 @@
 // Onut
+#include <onut/GamePad.h>
 #include <onut/Log.h>
-//#include <onut/Renderer.h>
 #include <onut/Settings.h>
-//#include <onut/Strings.h>
-//#include <onut/UIContext.h>
 
 // Internal
 #include "WindowSDL2.h"
 #include "InputDeviceSDL2.h"
+#include "GamePadSDL2.h"
 
 // STL
 #include <cassert>
@@ -136,13 +135,63 @@ namespace onut
                     }
                     break;
                 }
+                case SDL_CONTROLLERDEVICEADDED:
+                {
+                    OLog("Controller added: " + std::to_string(event.cdevice.which));
+                    auto pGamePad = ODynamicCast<GamePadSDL2>(OGetGamePad(event.cdevice.which));
+                    if (pGamePad)
+                    {
+                        pGamePad->onAdded();
+                    }
+                    break;
+                }
+                case SDL_CONTROLLERDEVICEREMOVED:
+                {
+                    SDL_GameController* pFromInstanceId = SDL_GameControllerFromInstanceID(event.cdevice.which);
+                    if (pFromInstanceId)
+                    {
+                        for (int i = 0; i < 4; ++i)
+                        {
+                            auto pGamePad = ODynamicCast<GamePadSDL2>(OGetGamePad(i));
+                            if (pGamePad)
+                            {
+                                if (pGamePad->getSDLController() == pFromInstanceId)
+                                {
+                                    OLog("Controller removed: " + std::to_string(i));
+                                    pGamePad->onRemoved();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
             }
 
             // Everytime we poll, we need to update inputs
             pInputDeviceSDL2->updateSDL2();
+            for (int i = 0; i < 4; ++i)
+            {
+                auto pGamePad = ODynamicCast<GamePadSDL2>(OGetGamePad(i));
+                if (pGamePad)
+                {
+                    pGamePad->updateSDL2();
+                }
+            }
         }
 
-        if (!hadEvents) pInputDeviceSDL2->updateSDL2();
+        if (!hadEvents)
+        {
+            pInputDeviceSDL2->updateSDL2();
+            for (int i = 0; i < 4; ++i)
+            {
+                auto pGamePad = ODynamicCast<GamePadSDL2>(OGetGamePad(i));
+                if (pGamePad)
+                {
+                    pGamePad->updateSDL2();
+                }
+            }
+        }
 
         return true;
     }

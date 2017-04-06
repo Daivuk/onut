@@ -88,7 +88,7 @@ namespace onut
 #define OGamePadRightThumbUp onut::GamePad::Button::RightThumbStickUp
 #define OGamePadRightThumbDown onut::GamePad::Button::RightThumbStickDown
 
-const OGamePadRef& OGetGamePad(int index);
+OGamePadRef OGetGamePad(int index);
 bool OGamePadPressed(onut::GamePad::Button button, int gamePadIndex = 0);
 bool OGamePadJustPressed(onut::GamePad::Button button, int gamePadIndex = 0);
 bool OGamePadJustReleased(onut::GamePad::Button button, int gamePadIndex = 0);

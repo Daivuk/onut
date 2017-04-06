@@ -4,6 +4,12 @@
 // onut
 #include <onut/GamePad.h>
 
+// Third party
+#include <SDL.h>
+
+// STL
+#include <vector>
+
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(GamePadSDL2);
@@ -22,7 +28,22 @@ namespace onut
         bool isJustPressed(Button button) const override;
         bool isJustReleased(Button button) const override;
 
+        void onAdded();
+        void onRemoved();
+
+        SDL_GameController* getSDLController() const;
+        void updateSDL2();
+
     private:
+        bool isPressed(Button button, const std::vector<Uint8>& state) const;
+
+        std::vector<Uint8> m_previousState;
+        std::vector<Uint8> m_state;
+        SDL_GameController* m_pSDLGamePad = nullptr;
+        float m_lTrigger = 0;
+        float m_rTrigger = 0;
+
+        bool bSwaped = true;
     };
 }
 

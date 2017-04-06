@@ -120,9 +120,9 @@ namespace onut
         ++m_frameId;
     }
 
-    const OGamePadRef& Input::getGamePad(int index) const
+    OGamePadRef Input::getGamePad(int index) const
     {
-        assert(index >= 0 && index < GAME_PAD_COUNT && "Invalid GamePad Index");
+        if (index < 0 || index >= 4) return nullptr;
         return m_gamePads[index];
     }
 }
