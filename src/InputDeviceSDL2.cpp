@@ -1,6 +1,8 @@
 // Onut
+#include <onut/ContentManager.h>
 #include <onut/Files.h>
 #include <onut/Input.h>
+#include <onut/Images.h>
 #include <onut/Log.h>
 
 // Private
@@ -29,10 +31,17 @@ namespace onut
         m_previousMouseState[2] = 2;
 
         SDL_Init(SDL_INIT_GAMECONTROLLER);
+
+        m_pArrowCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     }
 
     InputDeviceSDL2::~InputDeviceSDL2()
     {
+        for (const auto& kv : m_cursors)
+        {
+            SDL_FreeCursor(kv.second);
+        }
+        SDL_FreeCursor(m_pArrowCursor);
     }
 
     void InputDeviceSDL2::readKeyboard()
@@ -125,5 +134,55 @@ namespace onut
         if (mouseR || bSwaped) m_mouseState[2] = mouseR ? 1 : 0;
 
         bSwaped = false;
+    }
+
+    void InputDeviceSDL2::setMouseVisible(bool isCursorVisible)
+    {
+        SDL_ShowCursor(isCursorVisible ? SDL_ENABLE : SDL_DISABLE);
+    }
+
+    void InputDeviceSDL2::setMouseIcon(const std::string& name, const Point& hotSpot)
+    {
+        auto it = m_cursors.find(name);
+        if (it == m_cursors.end())
+        {
+            auto fullPath = oContentManager->findResourceFile(name);
+            if (!fullPath.empty())
+            {
+                Point size;
+                auto pngData = onut::loadPNG(fullPath, size);
+                if (!pngData.empty())
+                {
+                    auto pSurface = SDL_CreateRGBSurfaceFrom(pngData.data(),
+                                      size.x,
+                                      size.y,
+                                      32,
+                                      size.x * 4,
+                                      0x000000ff,
+                                      0x0000ff00,
+                                      0x00ff0000,
+                                      0xff000000);
+                    if (pSurface)
+                    {
+                        auto pCursor = SDL_CreateColorCursor(pSurface, hotSpot.x, hotSpot.y);
+                        if (pCursor)
+                        {
+                            m_cursors[name] = pCursor;
+                            SDL_SetCursor(pCursor);
+                        }
+                        SDL_FreeSurface(pSurface);
+                    }
+                }
+            }
+        }
+        else
+        {
+            SDL_SetCursor(it->second);
+        }
+    }
+
+    void InputDeviceSDL2::unsetMouseIcon()
+    {
+        SDL_SetCursor(m_pArrowCursor);
     }
 }

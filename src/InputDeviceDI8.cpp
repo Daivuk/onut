@@ -158,6 +158,33 @@ namespace onut
         m_pInput->setStateValue(OMouseY, (float)mouseState.lY);
         m_pInput->setStateValue(OMouseZ, (float)mouseState.lZ);
     }
+
+    void InputDeviceDI8::setCursorVisible(bool isCursorVisible)
+    {
+        ShowCursor(isCursorVisible ? TRUE : FALSE);
+    }
+
+    /*
+                    auto it = cursors.find(filename);
+                    if (it == cursors.end())
+                    {
+                        auto fullPath = oContentManager->findResourceFile(filename);
+                        if (!fullPath.empty())
+                        {
+                            auto hCursor = onut::pngToCursor(fullPath, Point(x, y));
+                            if (hCursor)
+                            {
+                                cursors[filename] = hCursor;
+                                oWindow->setCursor(hCursor);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        oWindow->setCursor(it->second);
+                    }
+
+    */
 }
 
 #endif

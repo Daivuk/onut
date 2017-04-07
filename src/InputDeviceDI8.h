@@ -1,13 +1,16 @@
 #ifndef INPUTDEVICEDI8_H_INCLUDED
 #define INPUTDEVICEDI8_H_INCLUDED
 
-#if defined(WIN32)
 // Internal
 #include "InputDevice.h"
+
+// STL
+#include <unordered_map>
 
 // Third party
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+#include <Windows.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -23,6 +26,8 @@ namespace onut
         InputDeviceDI8(OInput* pInput);
         ~InputDeviceDI8();
 
+        void setCursorVisible(bool isCursorVisible) override;
+
     private:
         void readKeyboard() override;
         void readMouse() override;
@@ -36,10 +41,10 @@ namespace onut
 
         DIMOUSESTATE mouseState;
         DIMOUSESTATE previousMouseState;
+
+        std::unordered_map<std::string, HCURSOR> cursors;
     };
 }
 
 extern OInputDeviceRef oInputDevice;
-#endif
-
 #endif

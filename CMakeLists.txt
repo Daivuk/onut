@@ -359,6 +359,7 @@ add_subdirectory(JSStandAlone) # JSStandAlone
 add_subdirectory(samples/Animations) # AnimationsSample
 add_subdirectory(samples/Components) # ComponentsSample
 add_subdirectory(samples/Crypto) # CryptoSample
+add_subdirectory(samples/Cursor) # CursorSample
 add_subdirectory(samples/CustomMesh) # CustomMeshSample
 add_subdirectory(samples/Dungeon) # DungeonSample
 add_subdirectory(samples/Empty) # EmptySample

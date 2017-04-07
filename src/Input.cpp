@@ -125,6 +125,25 @@ namespace onut
         if (index < 0 || index >= 4) return nullptr;
         return m_gamePads[index];
     }
+
+    void Input::setMouseVisible(bool isCursorVisible)
+    {
+        if (m_isCursorVisible != isCursorVisible)
+        {
+            m_pInputDevice->setMouseVisible(isCursorVisible);
+            m_isCursorVisible = isCursorVisible;
+        }
+    }
+
+    void Input::setMouseIcon(const std::string& name, const Point& hotSpot)
+    {
+        m_pInputDevice->setMouseIcon(name, hotSpot);
+    }
+
+    void Input::unsetMouseIcon()
+    {
+        m_pInputDevice->unsetMouseIcon();
+    }
 }
 
 const Vector2& OGetMousePos()

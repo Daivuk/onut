@@ -16,6 +16,10 @@ namespace onut
 
         void update();
 
+        virtual void setMouseVisible(bool isCursorVisible) = 0;
+        virtual void setMouseIcon(const std::string& name, const Point& hotSpot) = 0;
+        virtual void unsetMouseIcon() = 0;
+
     protected:
         InputDevice(OInput* pInput);
         virtual void readKeyboard() = 0;

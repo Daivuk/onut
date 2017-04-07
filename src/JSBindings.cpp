@@ -9543,45 +9543,23 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto visible = JS_BOOL(0);
-#if defined(WIN32)
-                    static bool prevState = true;
-                    if (prevState != visible)
-                    {
-                        ShowCursor(visible ? TRUE : FALSE);
-                        prevState = visible;
-                    }
-#else
-#endif
+                    oInput->setMouseVisible(visible);
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setMouseVisible", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    auto filename = JS_STRING(0);
-                    auto x = JS_INT(1);
-                    auto y = JS_INT(2);
-#if defined(WIN32)
-                    static std::unordered_map<std::string, HCURSOR> cursors;
-                    auto it = cursors.find(filename);
-                    if (it == cursors.end())
+                    if (duk_is_null_or_undefined(ctx, 0))
                     {
-                        auto fullPath = oContentManager->findResourceFile(filename);
-                        if (!fullPath.empty())
-                        {
-                            auto hCursor = onut::pngToCursor(fullPath, Point(x, y));
-                            if (hCursor)
-                            {
-                                cursors[filename] = hCursor;
-                                oWindow->setCursor(hCursor);
-                            }
-                        }
+                        oInput->unsetMouseIcon();
                     }
                     else
                     {
-                        oWindow->setCursor(it->second);
+                        auto filename = JS_STRING(0);
+                        auto x = JS_INT(1);
+                        auto y = JS_INT(2);
+                        oInput->setMouseIcon(filename, Point(x, y));
                     }
-#else
-#endif
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setMouseIcon", 3);

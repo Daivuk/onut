@@ -515,6 +515,10 @@ namespace onut
 
         OGamePadRef getGamePad(int index) const;
 
+        void setMouseVisible(bool isCursorVisible);
+        void setMouseIcon(const std::string& name, const Point& hotSpot);
+        void unsetMouseIcon();
+
         Point mousePos;
         Vector2 mousePosf;
 
@@ -533,6 +537,7 @@ namespace onut
         InputState*	m_states;
         InputState*	m_statesRestore;
         OGamePadRef m_gamePads[GAME_PAD_COUNT];
+        bool m_isCursorVisible = true;
     };
 }
 

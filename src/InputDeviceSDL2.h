@@ -12,6 +12,7 @@
 
 // STL
 #include <vector>
+#include <unordered_map>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -28,6 +29,10 @@ namespace onut
 
         void updateSDL2();
 
+        void setMouseVisible(bool isCursorVisible) override;
+        void setMouseIcon(const std::string& name, const Point& hotSpot) override;
+        void unsetMouseIcon() override;
+
     private:
         void readKeyboard() override;
         void readMouse() override;
@@ -38,6 +43,9 @@ namespace onut
         Uint8 m_mouseState[3];
 
         bool bSwaped = true;
+        
+        std::unordered_map<std::string, SDL_Cursor*> m_cursors;
+        SDL_Cursor* m_pArrowCursor = nullptr;
     };
 }
 
