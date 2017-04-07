@@ -147,7 +147,8 @@ namespace onut
                 }
                 case SDL_CONTROLLERDEVICEREMOVED:
                 {
-                    SDL_GameController* pFromInstanceId = SDL_GameControllerFromInstanceID(event.cdevice.which);
+#if SDL_VERSION_ATLEAST(2, 0, 4)
+                    SDL_, GameController* pFromInstanceId = SDL_GameControllerFromInstanceID(event.cdevice.which);
                     if (pFromInstanceId)
                     {
                         for (int i = 0; i < 4; ++i)
@@ -172,6 +173,7 @@ namespace onut
                             }
                         }
                     }
+#endif
                     break;
                 }
             }
