@@ -198,7 +198,7 @@ Here is a table of features with support per platform and availability to the ja
 | Feature           | Windows    | OS X | Linux | Javascript Bindings |
 |:-----------------:|:----------:|:----:|:-----:|:-------------------:|
 | Anims             | ✓          | ✓    | ✓     | ✓                   |
-| Audio Stream      | ✓          | ✓    | ✓     |                     |
+| Audio Stream      | ✓          | ✓    | ✓     | _unplanned_         |
 | Base64            | ✓          | ✓    | ✓     | ✓                   |
 | Bitmap Fonts      | ✓          | ✓    | ✓     | ✓                   |
 | Box2D             | ✓          | ✓    | ✓     |                     |
@@ -208,20 +208,20 @@ Here is a table of features with support per platform and availability to the ja
 | Curves            | ✓          | ✓    | ✓     |                     |
 | Effects           | ✓          |      |       | ✓                   |
 | Entity/Components | ✓          | ✓    | ✓     |                     |
-| File Dialogs      | ✓          |      |       |                     |
+| File Dialogs      | ✓          |      |       | _unplanned_         |
 | File IO           | ✓          | ✓    | ✓     | ✓                   |
-| File utils        | ✓          |      |       |                     |
+| File utils        | ✓          |      |       | _unplanned_         |
 | Game Pads         | ✓          | ✓    | ✓     | ✓                   |
 | Hash              | ✓          | ✓    | ✓     | ✓                   |
 | Http              | ✓          | ✓    | ✓     | ✓                   |
-| Images            | ✓          | ✓    | ✓     |                     |
+| Images            | ✓          | ✓    | ✓     | _unplanned_         |
 | Keyboard          | ✓          | ✓    | ✓     | ✓                   |
 | Log               | ✓          | ✓    | ✓     | ✓                   |
 | Maths             | ✓          | ✓    | ✓     | ✓                   |
 | Mouse             | ✓          | ✓    | ✓     | ✓                   |
 | Multiplayer       |            |      |       |                     |
 | Music             | ✓          |      |       | ✓                   |
-| Native Cursor     | ✓          |      |       | ✓                   |
+| Native Cursor     | ✓          | ✓    | ✓     | ✓                   |
 | Path Finding      | ✓          | ✓    | ✓     |                     |
 | Particles         | ✓          | ✓    | ✓     | ✓                   |
 | PrimitiveBatch    | ✓          | ✓    | ✓     | ✓                   |
@@ -237,11 +237,10 @@ Here is a table of features with support per platform and availability to the ja
 | TCP Sockets       | ✓          | ✓    | ✓     |                     |
 | Textures          | ✓          | ✓    | ✓     | ✓                   |
 | TiledMaps         | ✓          | ✓    | ✓     | ✓                   |
-| Thread Pool       | ✓          | ✓    | ✓     |                     |
+| Thread Pool       | ✓          | ✓    | ✓     | n/a                 |
 | UI                | ✓          | ✓    | ✓     | partial             |
 | Vertex Buffers    | ✓          | ✓    | ✓     | ✓                   |
 | Video Player      | ✓          |      |       | ✓                   |
-| XML Parser        | ✓          | ✓    | ✓     |                     |
 
 ## Mentions
 _Logo design by Pixilabs Software Inc._
