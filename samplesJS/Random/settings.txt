@@ -1,0 +1,2 @@
+retroResolution=200x200
+retroMode=true

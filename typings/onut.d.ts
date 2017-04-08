@@ -1220,8 +1220,31 @@ declare namespace Timing {
 
 // Random
 declare namespace Random {
-    function seed(seed: number);
+    function setSeed(seed: number);
+    function randomizeSeed();
     function getNext(max: number): number;
+    function randInt(max: number): number;
+    function randInt(min: number, max: number): number;
+    function randBool(): boolean;
+    function randBool(chances: number): boolean;
+    function randNumber(max: number): number;
+    function randNumber(min: number, max: number): number;
+    function randVector2(max: Vector2): Vector2;
+    function randVector2(min: Vector2, max: Vector2): Vector2;
+    function randVector3(max: Vector3): Vector3;
+    function randVector3(min: Vector3, max: Vector3): Vector3;
+    function randVector4(max: Vector4): Vector4;
+    function randVector4(min: Vector4, max: Vector4): Vector4;
+    function randCircle(center: Vector2, radius: number): Vector2;
+    function randCircleEdge(center: Vector2, radius: number): Vector2;
+    function randColor(): Color;
+    function randColor(apha: number): Color;
+    function randColor(max: Color): Color;
+    function randColor(min: Color, max: Color): Color;
+    function randColor(color: Color): Color;
+    function randColor(color: Color, variation: number): Color;
+    function randPalette(palette: Array): Color;
+    function randPalette(palette: Array, variation: number): Color;
 }
 
 // Blend mode

@@ -22,6 +22,7 @@
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
 #include <onut/PrimitiveMode.h>
+#include <onut/Random.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/Shader.h>
@@ -9469,18 +9470,138 @@ namespace onut
             {
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    srand((unsigned int)JS_UINT(0));
+                    setSeed((unsigned int)JS_UINT(0));
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("seed", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    randomizeSeed();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("randomizeSeed", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     int mod = JS_INT(0);
-                    duk_double_t val = (duk_double_t)((int)rand() % mod);
+                    duk_double_t val = (duk_double_t)(randi() % mod);
                     duk_push_number(ctx, val);
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getNext", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    int min = JS_INT(0);
+                    int max = JS_INT(1);
+                    if (duk_is_number(ctx, 1)) duk_push_number(ctx, (duk_double_t)randi(min, max));
+                    else duk_push_number(ctx, (duk_double_t)randi(min));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randInt", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto chances = JS_FLOAT(0, .5f);
+                    duk_push_boolean(ctx, randb(chances));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randBool", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto min = JS_FLOAT(0);
+                    auto max = JS_FLOAT(1);
+                    if (duk_is_number(ctx, 1)) duk_push_number(ctx, (duk_double_t)randf(min, max));
+                    else duk_push_number(ctx, (duk_double_t)randf(min));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randNumber", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto min = JS_VECTOR2(0);
+                    auto max = JS_VECTOR2(1);
+                    if (duk_is_object(ctx, 1)) newVector2(ctx, rand2f(min, max));
+                    else newVector2(ctx, rand2f(min));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randVector2", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto min = JS_VECTOR3(0);
+                    auto max = JS_VECTOR3(1);
+                    if (duk_is_object(ctx, 1)) newVector3(ctx, rand3f(min, max));
+                    else newVector3(ctx, rand3f(min));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randVector3", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto min = JS_VECTOR4(0);
+                    auto max = JS_VECTOR4(1);
+                    if (duk_is_object(ctx, 1)) newVector4(ctx, rand4f(min, max));
+                    else newVector4(ctx, rand4f(min));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randVector4", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto center = JS_VECTOR2(0);
+                    auto radius = JS_FLOAT(1);
+                    newVector2(ctx, randCircle(center, radius));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randCircle", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto center = JS_VECTOR2(0);
+                    auto radius = JS_FLOAT(1);
+                    newVector2(ctx, randCircleEdge(center, radius));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randCircleEdge", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    if (duk_is_number(ctx, 0))
+                    {
+                        newColor(ctx, randc(JS_FLOAT(0, 1.0f)));
+                    }
+                    else if (duk_is_object(ctx, 0)) 
+                    {
+                        if (duk_is_object(ctx, 1)) 
+                        {
+                            newColor(ctx, randc(JS_COLOR(0), JS_COLOR(1)));
+                        }
+                        else if (duk_is_number(ctx, 1))
+                        {
+                            newColor(ctx, randc(JS_COLOR(0), JS_FLOAT(1)));
+                        }
+                        else
+                        {
+                            newColor(ctx, randc(JS_COLOR(0)));
+                        }
+                    }
+                    else
+                    {
+                        newColor(ctx, randc());
+                    }
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("randColor", 4);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    if (duk_is_array(ctx, 0))
+                    {
+                        Palette palette;
+                        auto len = duk_get_length(ctx, 0);
+                        for (decltype(len) i = 0; i < len; ++i)
+                        {
+                            duk_get_prop_index(ctx, 0, i);
+                            palette.push_back(JS_COLOR(-1));
+                            duk_pop(ctx);
+                        }
+                        newColor(ctx, randc(palette, JS_FLOAT(1)));
+                        return 1;
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("randPalette", 2);
             }
             JS_INTERFACE_END("Random");
 

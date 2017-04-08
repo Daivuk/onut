@@ -84,7 +84,7 @@ namespace onut
     Vector2 randCircleEdge(const Vector2& center, float radius)
     {
         float angle = ORandFloat(0.0f, O2PI);
-        return{center.x + cosf(angle), center.y + sinf(angle)};
+        return{center.x + cosf(angle) * radius, center.y + sinf(angle) * radius};
     }
 
     Vector3 rand3f(const Vector3& max)
@@ -109,7 +109,7 @@ namespace onut
 
     Color randc(float alpha)
     {
-        return{randf(1.f), randf(1.f), randf(1.f), alpha};
+        return{randf(1.f) * alpha, randf(1.f) * alpha, randf(1.f) * alpha, alpha};
     }
 
     Color randc(const Color& max)
@@ -122,9 +122,20 @@ namespace onut
         return{randf(min.r, max.r), randf(min.g, max.g), randf(min.b, max.b), randf(min.a, max.a)};
     }
 
+    static float saturate(float a)
+    {
+        return std::min(1.0f, std::max(a, 0.0f));
+    }
+
     Color randc(const Color& color, float variation)
     {
-        return color;
+        // TODO: Use HSB instead
+        return Color(
+            saturate(randf(color.r - variation, color.r + variation)),
+            saturate(randf(color.g - variation, color.g + variation)),
+            saturate(randf(color.b - variation, color.b + variation)),
+            color.a
+        );
     }
 
     Color randc(const std::vector<Color>& palette, float variation)

@@ -370,6 +370,7 @@ add_subdirectory(samples/Multiplayer) # MultiplayerSample
 add_subdirectory(samples/Navigation) # NavigationSample
 add_subdirectory(samples/Particles) # ParticlesSample
 add_subdirectory(samples/Primitives) # PrimitivesSample
+add_subdirectory(samples/Random) # RandomSample
 add_subdirectory(samples/Sounds) # SoundsSample
 add_subdirectory(samples/Sprites) # SpritesSample
 add_subdirectory(samples/SpriteFrames) # SpriteFramesSample

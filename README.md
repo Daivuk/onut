@@ -231,7 +231,7 @@ Here is a table of features with support per platform and availability to the ja
 | Path Finding      | ✓          | ✓    | ✓     |                     |
 | Particles         | ✓          | ✓    | ✓     | ✓                   |
 | PrimitiveBatch    | ✓          | ✓    | ✓     | ✓                   |
-| Random            | ✓          | ✓    | ✓     | partial             |
+| Random            | ✓          | ✓    | ✓     | ✓                   |
 | Renderer          | ✓          | ✓    | ✓     | ✓                   |
 | Settings          | ✓          | ✓    | ✓     | partial             |
 | Sha1              | ✓          | ✓    | ✓     | ✓                   |
