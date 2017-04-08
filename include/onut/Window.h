@@ -28,8 +28,6 @@ namespace onut
 
 #if defined(WIN32)
         virtual HWND getHandle() = 0;
-        virtual void setCursor(HCURSOR cursor) = 0;
-        virtual HCURSOR getCursor() const = 0;
 #endif
         virtual void setCaption(const std::string& newName) = 0;
         virtual void setFullscreen(bool isFullscreen) {}

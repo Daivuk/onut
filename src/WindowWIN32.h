@@ -1,7 +1,6 @@
 #ifndef WINDOWWIN32_H_INCLUDED
 #define WINDOWWIN32_H_INCLUDED
 
-#if defined(WIN32)
 // Onut
 #include <onut/Window.h>
 
@@ -18,20 +17,15 @@ namespace onut
         ~WindowWIN32();
 
         HWND getHandle();
-        void setCursor(HCURSOR cursor);
-        HCURSOR getCursor() const;
         void setCaption(const std::string& newName) override;
         void setFullscreen(bool isFullscreen) override;
         bool pollEvents() override;
 
     private:
         HWND m_handle;
-        HCURSOR m_cursor;
         bool m_isFullScreen = false;
         Point m_resSetting;
     };
 }
-
-#endif
 
 #endif

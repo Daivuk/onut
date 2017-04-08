@@ -136,27 +136,24 @@ namespace onut
         auto pngData = onut::loadPNG(filename, size);
         if (!pngData.empty())
         {
-            if (size.x == GetSystemMetrics(SM_CXCURSOR) && size.y == GetSystemMetrics(SM_CYCURSOR))
-            {
-                auto b = createHBitmapFromData(pngData.data(), size);
-                HBITMAP hAndMask = NULL, hXorMask = NULL;
-                GetMaskBitmaps(b, RGB(255, 0, 255), hAndMask, hXorMask);
+            auto b = createHBitmapFromData(pngData.data(), size);
+            HBITMAP hAndMask = NULL, hXorMask = NULL;
+            GetMaskBitmaps(b, RGB(255, 0, 255), hAndMask, hXorMask);
 
-                ICONINFO iconinfo = {0};
-                iconinfo.fIcon = FALSE;
-                iconinfo.xHotspot = center.x;
-                iconinfo.yHotspot = center.y;
-                iconinfo.hbmMask = hAndMask;
-                iconinfo.hbmColor = hXorMask;
+            ICONINFO iconinfo = {0};
+            iconinfo.fIcon = FALSE;
+            iconinfo.xHotspot = center.x;
+            iconinfo.yHotspot = center.y;
+            iconinfo.hbmMask = hAndMask;
+            iconinfo.hbmColor = hXorMask;
 
-                HCURSOR hCursor = ::CreateIconIndirect(&iconinfo);
+            HCURSOR hCursor = ::CreateIconIndirect(&iconinfo);
 
-                DeleteObject(hAndMask);
-                DeleteObject(hXorMask);
-                DeleteObject(b);
+            DeleteObject(hAndMask);
+            DeleteObject(hXorMask);
+            DeleteObject(b);
 
-                return hCursor;
-            }
+            return hCursor;
         }
         return NULL;
     }

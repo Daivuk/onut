@@ -1,5 +1,3 @@
-#if defined(WIN32)
-
 // Onut
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
@@ -7,6 +5,7 @@
 #include <onut/UIContext.h>
 
 // Internal
+#include "InputDeviceDI8.h"
 #include "WindowWIN32.h"
 
 // Third party
@@ -51,12 +50,16 @@ namespace onut
         }
         else if (msg == WM_SETCURSOR)
         {
-            if (oWindow)
+            if (oInputDevice)
             {
-                if (oWindow->getCursor())
+                auto pInputDeviceDI8 = ODynamicCast<InputDeviceDI8>(oInputDevice);
+                if (pInputDeviceDI8)
                 {
-                    SetCursor(oWindow->getCursor());
-                    return 0;
+                    if (pInputDeviceDI8->getCursor())
+                    {
+                        SetCursor(pInputDeviceDI8->getCursor());
+                        return 0;
+                    }
                 }
             }
         }
@@ -139,7 +142,6 @@ namespace onut
     }
 
     WindowWIN32::WindowWIN32()
-        : m_cursor(0)
     {
         m_isFullScreen = oSettings->getBorderlessFullscreen();
         m_resSetting = oSettings->getResolution();
@@ -211,17 +213,6 @@ namespace onut
     HWND WindowWIN32::getHandle()
     {
         return m_handle;
-    }
-
-    void WindowWIN32::setCursor(HCURSOR cursor)
-    {
-        m_cursor = cursor;
-        SetCursor(m_cursor);
-    }
-
-    HCURSOR WindowWIN32::getCursor() const
-    {
-        return m_cursor;
     }
 
     void WindowWIN32::setCaption(const std::string& newName)
@@ -309,5 +300,3 @@ namespace onut
         return true;
     }
 }
-
-#endif

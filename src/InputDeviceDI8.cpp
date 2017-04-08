@@ -1,6 +1,7 @@
-#if defined(WIN32)
 // Onut
+#include <onut/ContentManager.h>
 #include <onut/Input.h>
+#include <onut/Images.h>
 #include <onut/Window.h>
 
 // Private
@@ -18,6 +19,7 @@ namespace onut
     InputDeviceDI8::InputDeviceDI8(OInput* pInput)
         : InputDevice(pInput)
     {
+        unsetMouseIcon();
         HRESULT result;
 
         // Initialize DirectInput
@@ -159,32 +161,49 @@ namespace onut
         m_pInput->setStateValue(OMouseZ, (float)mouseState.lZ);
     }
 
-    void InputDeviceDI8::setCursorVisible(bool isCursorVisible)
+    void InputDeviceDI8::setMouseVisible(bool isCursorVisible)
     {
         ShowCursor(isCursorVisible ? TRUE : FALSE);
     }
 
-    /*
-                    auto it = cursors.find(filename);
-                    if (it == cursors.end())
-                    {
-                        auto fullPath = oContentManager->findResourceFile(filename);
-                        if (!fullPath.empty())
-                        {
-                            auto hCursor = onut::pngToCursor(fullPath, Point(x, y));
-                            if (hCursor)
-                            {
-                                cursors[filename] = hCursor;
-                                oWindow->setCursor(hCursor);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        oWindow->setCursor(it->second);
-                    }
+    void InputDeviceDI8::setMouseIcon(const std::string& name, const Point& hotSpot)
+    {
+        auto it = m_cursors.find(name);
+        if (it == m_cursors.end())
+        {
+            auto fullPath = oContentManager->findResourceFile(name);
+            if (!fullPath.empty())
+            {
+                auto hCursor = onut::pngToCursor(fullPath, hotSpot);
+                if (hCursor)
+                {
+                    m_cursors[name] = hCursor;
+                    m_cursor = hCursor;
+                    SetCursor(hCursor);
+                }
+            }
+        }
+        else
+        {
+            m_cursor = it->second;
+            SetCursor(it->second);
+        }
+    }
 
-    */
+    void InputDeviceDI8::unsetMouseIcon()
+    {
+        m_cursor = LoadCursor(nullptr, IDC_ARROW);
+        SetCursor(m_cursor);
+    }
+
+    HCURSOR InputDeviceDI8::getCursor() const
+    {
+        return m_cursor;
+    }
+
+    void InputDeviceDI8::setCursor(HCURSOR cursor)
+    {
+        m_cursor = cursor;
+        SetCursor(cursor);
+    }
 }
-
-#endif

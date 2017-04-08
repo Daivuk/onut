@@ -26,7 +26,12 @@ namespace onut
         InputDeviceDI8(OInput* pInput);
         ~InputDeviceDI8();
 
-        void setCursorVisible(bool isCursorVisible) override;
+        void setMouseVisible(bool isCursorVisible) override;
+        void setMouseIcon(const std::string& name, const Point& hotSpot) override;
+        void unsetMouseIcon() override;
+
+        HCURSOR getCursor() const;
+        void setCursor(HCURSOR cursor);
 
     private:
         void readKeyboard() override;
@@ -42,7 +47,8 @@ namespace onut
         DIMOUSESTATE mouseState;
         DIMOUSESTATE previousMouseState;
 
-        std::unordered_map<std::string, HCURSOR> cursors;
+        HCURSOR m_cursor;
+        std::unordered_map<std::string, HCURSOR> m_cursors;
     };
 }
 
