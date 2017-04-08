@@ -1356,7 +1356,9 @@ declare enum Loop {
 
 declare enum Platform {
     UNKNOWN,
-    RASPBERRY_PI
+    WINDOWS,
+    OSX,
+    LINUX
 }
 
 declare namespace System {

@@ -55,9 +55,9 @@ See `onut/samplesJS/` folders for more detailed samples.
 
 ### Release history
 
-* Onut 1.0 - Bark - Feb 6, 2016
-* Onut 2.0 - Root (The Cleanup release) - Apr 3, 2016
-* Onut 3.0 - Leaf (The JavaScript release) - _tbh_
+* Onut 1.0 - **Bark** - Feb 6, 2016
+* Onut 2.0 - **Root** (The Cleanup release) - Apr 3, 2016
+* Onut 3.0 - **Leaf** (The JavaScript release) - _tbh_
 
 ## Windows
 Use cmake to compile the engine, JSStandAlone and samples.
@@ -239,7 +239,7 @@ Here is a table of features with support per platform and availability to the ja
 | Sounds            | ✓          | ✓    | ✓     | ✓                   |
 | Sprite Anims      | ✓          | ✓    | ✓     | ✓                   |
 | SpriteBatch       | ✓          | ✓    | ✓     | ✓                   |
-| System Info       |            |      |       | partial             |
+| System Info       | n/a        | n/a  | n/a   | ✓                   |
 | TCP Sockets       | ✓          | ✓    | ✓     |                     |
 | Textures          | ✓          | ✓    | ✓     | ✓                   |
 | TiledMaps         | ✓          | ✓    | ✓     | ✓                   |

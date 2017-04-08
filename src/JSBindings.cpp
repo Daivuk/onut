@@ -10424,7 +10424,9 @@ namespace onut
             JS_INTERFACE_BEGIN();
             {
                 JS_ENUM("UNKONWN", 0);
-                JS_ENUM("RASPBERRY_PI", 1);
+                JS_ENUM("WINDOWS", 1);
+                JS_ENUM("OSX", 2);
+                JS_ENUM("LINUX", 3);
             }
             JS_INTERFACE_END("Platform");
 
@@ -10434,6 +10436,12 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
 #if defined(__unix__)
+    #if defined(__APPLE__)
+                    duk_push_int(ctx, 2);
+    #else
+                    duk_push_int(ctx, 3);
+    #endif
+#elif defined(WIN32)
                     duk_push_int(ctx, 1);
 #else
                     duk_push_int(ctx, 0);
