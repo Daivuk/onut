@@ -153,11 +153,6 @@ cmake .
 make DungeonSample
 ```
 
-To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
-```bash
-cmake -DCMAKE_BUILD_TYPE=Release .
-```
-
 Some third parties might need to be installed. SDL2 and CURL. Follow online instructions on how to install them using brew. You will also need to install brew if not installed. SDL2 might give you a little bit trouble creating symlink. Google around there are instructions how to get those working.
 
 To run a javascript sample on OSX, simply type this in command line:
@@ -183,11 +178,6 @@ To compile any of the C++ samples only:
 ```bash
 cmake .
 make DungeonSample
-```
-
-To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
-```bash
-cmake -DCMAKE_BUILD_TYPE=Release .
 ```
 
 Some third parties might need to be installed. OpenGL, Glew, SDL2 and CURL. Follow online instructions on how to install them using apt-get.
