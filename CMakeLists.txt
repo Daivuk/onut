@@ -12,19 +12,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 project(onut)
 
 # Setup some vars
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
-endif()
 if (NOT ONUT_SHOW_FPS)
     set(ONUT_SHOW_FPS 1)
 endif()
 
 # Some compiler flags
-if (UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-endif()
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=3")
+set(CMAKE_CXX_STANDARD 11)
+if (MSVC) # Multi core in VS
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP")
 endif()
 
 # Pre processors
