@@ -12,15 +12,7 @@
 #include <vector>
 
 // Shaders
-#include "_2dvs.cso.h"
-#include "_2dps.cso.h"
-#include "blurvs.cso.h"
-#include "blurhps.cso.h"
-#include "blurvps.cso.h"
-#include "sepia.cso.h"
-#include "crt.cso.h"
-#include "cartoon.cso.h"
-#include "vignette.cso.h"
+#include "default_shaders.h"
 
 ORendererRef oRenderer;
 
@@ -219,19 +211,19 @@ namespace onut
 #if !defined(__unix__)
         // Create 2D shaders
         {
-            m_p2DVertexShader = OShader::createFromBinaryData(_2dvs_cso, sizeof(_2dvs_cso), OVertexShader, {{2, "POSITION"}, {2, "TEXCOORD"}, {4, "COLOR"}});
-            m_p2DPixelShader = OShader::createFromBinaryData(_2dps_cso, sizeof(_2dps_cso), OPixelShader);
+            m_p2DVertexShader = OShader::createFromSource(SHADER_SRC_2D_VS, OVertexShader);
+            m_p2DPixelShader = OShader::createFromSource(SHADER_SRC_2D_PS, OPixelShader);
         }
 
         // Effects
         {
-            m_pEffectsVertexShader = OShader::createFromBinaryData(blurvs_cso, sizeof(blurvs_cso), OVertexShader, {{2, "POSITION"}});
-            m_pBlurHPixelShader = OShader::createFromBinaryData(blurhps_cso, sizeof(blurhps_cso), OPixelShader);
-            m_pBlurVPixelShader = OShader::createFromBinaryData(blurvps_cso, sizeof(blurvps_cso), OPixelShader);
-            m_pSepiaPixelShader = OShader::createFromBinaryData(sepia_cso, sizeof(sepia_cso), OPixelShader);
-            m_pCRTPixelShader = OShader::createFromBinaryData(crt_cso, sizeof(crt_cso), OPixelShader);
-            m_pCartoonPixelShader = OShader::createFromBinaryData(cartoon_cso, sizeof(cartoon_cso), OPixelShader);
-            m_pVignettePixelShader = OShader::createFromBinaryData(vignette_cso, sizeof(vignette_cso), OPixelShader);
+            m_pEffectsVertexShader = OShader::createFromSource(SHADER_SRC_EFFECTS_VS, OVertexShader);
+            m_pBlurHPixelShader = OShader::createFromSource(SHADER_SRC_BLURH_PS, OPixelShader);
+            m_pBlurVPixelShader = OShader::createFromSource(SHADER_SRC_BLURV_PS, OPixelShader);
+            m_pSepiaPixelShader = OShader::createFromSource(SHADER_SRC_SEPIA_PS, OPixelShader);
+            m_pCRTPixelShader = OShader::createFromSource(SHADER_SRC_CRT_PS, OPixelShader);
+            m_pCartoonPixelShader = OShader::createFromSource(SHADER_SRC_CARTOON_PS, OPixelShader);
+            m_pVignettePixelShader = OShader::createFromSource(SHADER_SRC_VIGNETTE_PS, OPixelShader);
         }
 #endif
     }
@@ -245,6 +237,36 @@ namespace onut
         renderStates.sampleAddressMode = OTextureClamp;
         renderStates.vertexShader = m_pEffectsVertexShader;
         renderStates.vertexBuffer = m_pEffectsVertexBuffer;
+    }
+
+    void Renderer::setSepia(const Vector3& tone, float saturation, float sepiaAmount)
+    {
+        m_pSepiaPixelShader->setVector3(0, tone);
+        m_pSepiaPixelShader->setFloat(1, 1.f - saturation);
+        m_pSepiaPixelShader->setFloat(2, sepiaAmount);
+    }
+
+    void Renderer::setVignette(const Vector2& kernelSize, float amount)
+    {
+        m_pVignettePixelShader->setVector2(0, kernelSize);
+        m_pVignettePixelShader->setFloat(1, amount);
+    }
+
+    void Renderer::setCartoon(const Vector3& tone)
+    {
+        m_pCartoonPixelShader->setVector3(0, tone);
+    }
+
+    void Renderer::setCRT(const Vector2& resolution)
+    {
+        m_pCRTPixelShader->setVector2(0, { resolution.x, resolution.y });
+        m_pCRTPixelShader->setVector2(1, { 1.f / resolution.x, 1.f / resolution.y });
+    }
+
+    void Renderer::setKernelSize(const Vector2& kernelSize)
+    {
+        m_pBlurHPixelShader->setVector2(0, kernelSize);
+        m_pBlurVPixelShader->setVector2(0, kernelSize);
     }
 
     void Renderer::drawBlurH()

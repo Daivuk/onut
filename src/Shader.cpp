@@ -1,5 +1,6 @@
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Files.h>
 #include <onut/Shader.h>
 #include <onut/Strings.h>
 
@@ -9,6 +10,53 @@
 
 namespace onut
 {
+    static std::string readShaderFileContent(const std::string& filename)
+    {
+        FILE* pFic;
+#if defined(WIN32)
+        fopen_s(&pFic, filename.c_str(), "rb");
+#else
+        pFic = fopen(filename.c_str(), "rb");
+#endif
+        assert(pFic);
+        fseek(pFic, 0, SEEK_END);
+        auto filesize = static_cast<size_t>(ftell(pFic));
+        fseek(pFic, 0, SEEK_SET);
+        std::string content;
+        content.resize(filesize + 1);
+        fread(const_cast<char*>(content.data()), 1, filesize, pFic);
+        content[filesize] = '\0';
+        fclose(pFic);
+
+        return std::move(content);
+    }
+
+    OShaderRef Shader::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+    {
+        // Set the shader type
+        auto ext = onut::getExtension(filename);
+        if (ext == "VS")
+        {
+            return createFromSourceFile(filename, OVertexShader);
+        }
+        else if (ext == "PS")
+        {
+            return createFromSourceFile(filename, OPixelShader);
+        }
+        else
+        {
+            assert(false);
+        }
+
+        return nullptr;
+    }
+
+    OShaderRef Shader::createFromSourceFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
+    {
+        auto content = readShaderFileContent(filename);
+        return createFromSource(content, in_type, vertexElements);
+    }
+
     Shader::VertexElement::VertexElement(uint32_t in_size, const std::string& in_semanticName)
         : size(in_size)
         , semanticName(in_semanticName)
@@ -31,27 +79,6 @@ namespace onut
     uint32_t Shader::getVertexSize() const
     {
         return m_vertexSize;
-    }
-
-    static std::string readShaderFileContent(const std::string& filename)
-    {
-        FILE* pFic;
-#if defined(WIN32)
-        fopen_s(&pFic, filename.c_str(), "rb");
-#else
-        pFic = fopen(filename.c_str(), "rb");
-#endif
-        assert(pFic);
-        fseek(pFic, 0, SEEK_END);
-        auto filesize = static_cast<size_t>(ftell(pFic));
-        fseek(pFic, 0, SEEK_SET);
-        std::string content;
-        content.resize(filesize + 1);
-        fread(const_cast<char*>(content.data()), 1, filesize, pFic);
-        content[filesize] = '\0';
-        fclose(pFic);
-
-        return std::move(content);
     }
 
     Shader::ParsedElements Shader::parseElements(std::string& content, const std::string& type)
@@ -221,11 +248,11 @@ namespace onut
         return std::move(ret);
     }
 
-    Shader::ParsedVS Shader::parseVertexShader(const std::string& filename)
+    Shader::ParsedVS Shader::parseVertexShader(const std::string& in_content)
     {
         ParsedVS ret;
 
-        std::string content = readShaderFileContent(filename);
+        auto content = in_content;
 
         onut::stripOutComments(content);
 
@@ -237,11 +264,11 @@ namespace onut
         return std::move(ret);
     }
 
-    Shader::ParsedPS Shader::parsePixelShader(const std::string& filename)
+    Shader::ParsedPS Shader::parsePixelShader(const std::string& in_content)
     {
         ParsedPS ret;
 
-        std::string content = readShaderFileContent(filename);
+        auto content = in_content;
 
         onut::stripOutComments(content);
 

@@ -223,26 +223,6 @@ namespace onut
         glClear(GL_DEPTH_BUFFER_BIT);
     }
 
-    void RendererGLES2::setKernelSize(const Vector2& kernelSize)
-    {
-    }
-
-    void RendererGLES2::setCRT(const Vector2& resolution)
-    {
-    }
-
-    void RendererGLES2::setCartoon(const Vector3& tone)
-    {
-    }
-
-    void RendererGLES2::setVignette(const Vector2& kernelSize, float amount)
-    {
-    }
-
-    void RendererGLES2::setSepia(const Vector3& tone, float saturation, float sepiaAmount)
-    {
-    }
-
     void RendererGLES2::draw(uint32_t vertexCount)
     {
         applyRenderStates();

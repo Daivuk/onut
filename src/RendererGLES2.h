@@ -39,15 +39,6 @@ namespace onut
         EGLSurface getSurface() const;
         EGLContext getContext() const;
 
-        // For effects
-        void setKernelSize(const Vector2& kernelSize);
-        void setSepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
-                      float saturation = .25f, // 0 - 1
-                      float sepiaAmount = .75f); // 0 - 1
-        void setCRT(const Vector2& kernelSize);
-        void setCartoon(const Vector3& tone);
-        void setVignette(const Vector2& kernelSize, float amount = .5f);
-
         void applyRenderStates() override;
         void init(const OWindowRef& pWindow) override;
 

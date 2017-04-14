@@ -19,20 +19,7 @@
 
 namespace onut
 {
-    OShaderRef Shader::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
-    {
-        return nullptr;
-    }
-
     OShaderRef Shader::createFromBinaryFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
-    {
-        auto pRet = std::make_shared<OShaderGLES2>();
-        pRet->m_type = in_type;
-        assert(false);
-        return pRet;
-    }
-
-    OShaderRef Shader::createFromSourceFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
     {
         auto pRet = std::make_shared<OShaderGLES2>();
         pRet->m_type = in_type;

@@ -380,6 +380,7 @@ add_subdirectory(samples/Crypto) # CryptoSample
 add_subdirectory(samples/Cursor) # CursorSample
 add_subdirectory(samples/CustomMesh) # CustomMeshSample
 add_subdirectory(samples/Dungeon) # DungeonSample
+add_subdirectory(samples/Effects) # EffectsSample
 add_subdirectory(samples/Empty) # EmptySample
 add_subdirectory(samples/Entities) # EntitiesSample
 add_subdirectory(samples/GamePads) # GamePadsSample
@@ -389,6 +390,7 @@ add_subdirectory(samples/Navigation) # NavigationSample
 add_subdirectory(samples/Particles) # ParticlesSample
 add_subdirectory(samples/Primitives) # PrimitivesSample
 add_subdirectory(samples/Random) # RandomSample
+add_subdirectory(samples/Shader) # ShaderSample
 add_subdirectory(samples/Sounds) # SoundsSample
 add_subdirectory(samples/Sprites) # SpritesSample
 add_subdirectory(samples/SpriteFrames) # SpriteFramesSample

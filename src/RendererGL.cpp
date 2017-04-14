@@ -181,26 +181,6 @@ namespace onut
         glClear(GL_DEPTH_BUFFER_BIT);
     }
 
-    void RendererGL::setKernelSize(const Vector2& kernelSize)
-    {
-    }
-
-    void RendererGL::setCRT(const Vector2& resolution)
-    {
-    }
-
-    void RendererGL::setCartoon(const Vector3& tone)
-    {
-    }
-
-    void RendererGL::setVignette(const Vector2& kernelSize, float amount)
-    {
-    }
-
-    void RendererGL::setSepia(const Vector3& tone, float saturation, float sepiaAmount)
-    {
-    }
-
     void RendererGL::draw(uint32_t vertexCount)
     {
         applyRenderStates();

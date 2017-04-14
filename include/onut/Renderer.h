@@ -170,13 +170,13 @@ namespace onut
         virtual void onResize(const Point& newSize) = 0;
 
         // For effects
-        virtual void setKernelSize(const Vector2& kernelSize) = 0;
-        virtual void setSepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
+        void setKernelSize(const Vector2& kernelSize);
+        void setSepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
                       float saturation = .25f, // 0 - 1
-                      float sepiaAmount = .75f) = 0; // 0 - 1
-        virtual void setCRT(const Vector2& kernelSize) = 0;
-        virtual void setCartoon(const Vector3& tone) = 0;
-        virtual void setVignette(const Vector2& kernelSize, float amount = .5f) = 0;
+                      float sepiaAmount = .75f); // 0 - 1
+        void setCRT(const Vector2& kernelSize);
+        void setCartoon(const Vector3& tone);
+        void setVignette(const Vector2& kernelSize, float amount = .5f);
         void drawBlurH();
         void drawBlurV();
         void drawSepia();

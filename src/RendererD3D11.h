@@ -72,7 +72,6 @@ namespace onut
         // Constant buffers
         ID3D11Buffer* m_pViewProj2dBuffer = nullptr;
         ID3D11Buffer* m_pKernelSizeBuffer = nullptr;
-        ID3D11Buffer* m_pSepiaBuffer = nullptr;
 
         OTextureRef m_boundTextures[RenderStates::MAX_TEXTURES];
     };

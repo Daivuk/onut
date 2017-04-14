@@ -19,29 +19,15 @@
 
 namespace onut
 {
-    //ID3D11PixelShader* RendererD3D11::create2DShader(const std::string& filename, const VertexElements& vertexElements)
-    //{
-    //    ID3D11PixelShader* pRet = nullptr;
-
-    //    std::ifstream psFile(filename, std::ios::binary);
-    //    std::vector<char> psData = {std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>()};
-
-    //    auto ret = m_pDevice->CreatePixelShader(psData.data(), psData.size(), nullptr, &pRet);
-    //    assert(ret == S_OK);
-
-    //    return pRet;
-    //}
-
-    OShaderRef Shader::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+    OShaderRef Shader::createFromSource(const std::string& source, Type in_type, const VertexElements& vertexElements)
     {
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDevice = pRendererD3D11->getDevice();
 
         // Set the shader type
-        auto ext = onut::getExtension(filename);
-        if (ext == "VS")
+        if (in_type == OVertexShader)
         {
-            auto parsed = parseVertexShader(filename);
+            auto parsed = parseVertexShader(source);
             std::smatch match;
 
             // Add engine default constant buffers
@@ -68,7 +54,7 @@ namespace onut
             }
             else assert(false); // Shader should include "void main()"
 
-            // Replace element variables with structs
+                                // Replace element variables with structs
             for (auto& element : parsed.inputs)
             {
                 onut::replace(parsed.source, "\\b" + element.name + "\\b", "oInput." + element.name);
@@ -87,14 +73,14 @@ namespace onut
             for (auto& element : parsed.inputs)
             {
                 std::string semanticName = "INPUT_ELEMENT" + std::to_string(semanticIndex++);
-                vertexElements.push_back({element.size, "INPUT_ELEMENT"});
+                vertexElements.push_back({ element.size, "INPUT_ELEMENT" });
                 switch (element.size)
                 {
-                    case 1: elementStructsSource += "    float "; break;
-                    case 2: elementStructsSource += "    float2 "; break;
-                    case 3: elementStructsSource += "    float3 "; break;
-                    case 4: elementStructsSource += "    float4 "; break;
-                    default: assert(false);
+                case 1: elementStructsSource += "    float "; break;
+                case 2: elementStructsSource += "    float2 "; break;
+                case 3: elementStructsSource += "    float3 "; break;
+                case 4: elementStructsSource += "    float4 "; break;
+                default: assert(false);
                 }
                 elementStructsSource += element.name + " : " + semanticName + ";\n";
             }
@@ -109,11 +95,11 @@ namespace onut
                 std::string semanticName = "OUTPUT_ELEMENT" + std::to_string(semanticIndex++);
                 switch (element.size)
                 {
-                    case 1: elementStructsSource += "    float "; break;
-                    case 2: elementStructsSource += "    float2 "; break;
-                    case 3: elementStructsSource += "    float3 "; break;
-                    case 4: elementStructsSource += "    float4 "; break;
-                    default: assert(false);
+                case 1: elementStructsSource += "    float "; break;
+                case 2: elementStructsSource += "    float2 "; break;
+                case 3: elementStructsSource += "    float3 "; break;
+                case 4: elementStructsSource += "    float4 "; break;
+                default: assert(false);
                 }
                 elementStructsSource += element.name + " : " + semanticName + ";\n";
             }
@@ -143,7 +129,7 @@ namespace onut
             }
 
             // Now compile it
-            auto pRet = createFromSource(parsed.source, Type::Vertex, vertexElements);
+            auto pRet = createFromNativeSource(parsed.source, Type::Vertex, vertexElements);
             auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
             if (pRetD3D11)
             {
@@ -152,9 +138,9 @@ namespace onut
 
             return pRet;
         }
-        else if (ext == "PS")
+        else if (in_type == OPixelShader)
         {
-            auto parsed = parsePixelShader(filename);
+            auto parsed = parsePixelShader(source);
             std::smatch match;
 
             // Add engine default constant buffers
@@ -192,7 +178,7 @@ namespace onut
             }
             else assert(false); // Shader should include "void main()"
 
-            // Replace element variables with structs
+                                // Replace element variables with structs
             for (auto& element : parsed.inputs)
             {
                 onut::replace(parsed.source, "\\b" + element.name + "\\b", "oInput." + element.name);
@@ -214,11 +200,11 @@ namespace onut
                 std::string semanticName = "OUTPUT_ELEMENT" + std::to_string(semanticIndex++);
                 switch (element.size)
                 {
-                    case 1: elementStructsSource += "    float "; break;
-                    case 2: elementStructsSource += "    float2 "; break;
-                    case 3: elementStructsSource += "    float3 "; break;
-                    case 4: elementStructsSource += "    float4 "; break;
-                    default: assert(false);
+                case 1: elementStructsSource += "    float "; break;
+                case 2: elementStructsSource += "    float2 "; break;
+                case 3: elementStructsSource += "    float3 "; break;
+                case 4: elementStructsSource += "    float4 "; break;
+                default: assert(false);
                 }
                 elementStructsSource += element.name + " : " + semanticName + ";\n";
             }
@@ -253,44 +239,6 @@ namespace onut
                 const auto& texture = *rit;
 
                 std::string samplerStr = "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
-          /*      std::string samplerStr = "SamplerState sampler_" + texture.name + "\n{\n";
-                switch (texture.filter)
-                {
-                    case ParsedTexture::Filter::Nearest:
-                        samplerStr += "    Filter = MIN_MAG_MIP_POINT;\n";
-                        break;
-                    case ParsedTexture::Filter::Linear:
-                        samplerStr += "    Filter = MIN_POINT_MAG_LINEAR_MIP_POINT;\n";
-                        break;
-                    case ParsedTexture::Filter::Bilinear:
-                        samplerStr += "    Filter = MIN_MAG_LINEAR_MIP_POINT;\n";
-                        break;
-                    case ParsedTexture::Filter::Trilinear:
-                        samplerStr += "    Filter = MIN_MAG_MIP_LINEAR;\n";
-                        break;
-                    case ParsedTexture::Filter::Anisotropic:
-                        samplerStr += "    Filter = ANISOTROPIC;\n";
-                        break;
-                }
-                switch (texture.repeatX)
-                {
-                    case ParsedTexture::Repeat::Clamp:
-                        samplerStr += "    AddressU = Clamp;\n";
-                        break;
-                    case ParsedTexture::Repeat::Wrap:
-                        samplerStr += "    AddressU = Wrap;\n";
-                        break;
-                }
-                switch (texture.repeatY)
-                {
-                    case ParsedTexture::Repeat::Clamp:
-                        samplerStr += "    AddressV = Clamp;\n";
-                        break;
-                    case ParsedTexture::Repeat::Wrap:
-                        samplerStr += "    AddressV = Wrap;\n";
-                        break;
-                }
-                samplerStr += "};\n\n";*/
                 parsed.source.insert(0, samplerStr);
             }
 
@@ -304,7 +252,7 @@ namespace onut
             }
 
             // Now compile it
-            auto pRet = createFromSource(parsed.source, Type::Pixel);
+            auto pRet = createFromNativeSource(parsed.source, Type::Pixel);
             auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
             if (pRetD3D11)
             {
@@ -326,39 +274,39 @@ namespace onut
 
                         switch (texture.filter)
                         {
-                            case ParsedTexture::Filter::Nearest:
-                                samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-                                break;
-                            case ParsedTexture::Filter::Linear:
-                                samplerState.Filter = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-                                break;
-                            case ParsedTexture::Filter::Bilinear:
-                                samplerState.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-                                break;
-                            case ParsedTexture::Filter::Trilinear:
-                                samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-                                break;
-                            case ParsedTexture::Filter::Anisotropic:
-                                samplerState.Filter = D3D11_FILTER_ANISOTROPIC;
-                                break;
+                        case ParsedTexture::Filter::Nearest:
+                            samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+                            break;
+                        case ParsedTexture::Filter::Linear:
+                            samplerState.Filter = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+                            break;
+                        case ParsedTexture::Filter::Bilinear:
+                            samplerState.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+                            break;
+                        case ParsedTexture::Filter::Trilinear:
+                            samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+                            break;
+                        case ParsedTexture::Filter::Anisotropic:
+                            samplerState.Filter = D3D11_FILTER_ANISOTROPIC;
+                            break;
                         }
                         switch (texture.repeatX)
                         {
-                            case ParsedTexture::Repeat::Clamp:
-                                samplerState.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-                                break;
-                            case ParsedTexture::Repeat::Wrap:
-                                samplerState.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-                                break;
+                        case ParsedTexture::Repeat::Clamp:
+                            samplerState.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+                            break;
+                        case ParsedTexture::Repeat::Wrap:
+                            samplerState.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+                            break;
                         }
                         switch (texture.repeatY)
                         {
-                            case ParsedTexture::Repeat::Clamp:
-                                samplerState.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-                                break;
-                            case ParsedTexture::Repeat::Wrap:
-                                samplerState.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-                                break;
+                        case ParsedTexture::Repeat::Clamp:
+                            samplerState.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+                            break;
+                        case ParsedTexture::Repeat::Wrap:
+                            samplerState.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+                            break;
                         }
                         samplerState.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
                         pDevice->CreateSamplerState(&samplerState, &pRetD3D11->m_ppSampleStates[i]);
@@ -378,14 +326,6 @@ namespace onut
     }
 
     OShaderRef Shader::createFromBinaryFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
-    {
-        auto pRet = std::make_shared<OShaderD3D11>();
-        pRet->m_type = in_type;
-        assert(false);
-        return pRet;
-    }
-
-    OShaderRef Shader::createFromSourceFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
     {
         auto pRet = std::make_shared<OShaderD3D11>();
         pRet->m_type = in_type;
@@ -491,7 +431,7 @@ namespace onut
         return shaderBlob;
     }
 
-    OShaderRef Shader::createFromSource(const std::string& source, Type in_type, const VertexElements& vertexElements)
+    OShaderRef Shader::createFromNativeSource(const std::string& source, Type in_type, const VertexElements& vertexElements)
     {
         ID3DBlob* pBlob = nullptr;
         switch (in_type)

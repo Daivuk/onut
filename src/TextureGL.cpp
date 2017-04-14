@@ -188,32 +188,26 @@ namespace onut
 
     void TextureGL::clearRenderTarget(const Color& color)
     {
-        assert(false);
     }
 
     void TextureGL::blur(float amount)
     {
-        assert(false);
     }
 
     void TextureGL::sepia(const Vector3& tone, float saturation, float sepiaAmount)
     {
-        assert(false);
     }
 
     void TextureGL::crt()
     {
-        assert(false);
     }
 
     void TextureGL::cartoon(const Vector3& tone)
     {
-        assert(false);
     }
 
     void TextureGL::vignette(float amount)
     {
-        assert(false);
     }
     
     GLuint TextureGL::getHandle() const

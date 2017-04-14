@@ -1,4 +1,3 @@
-#if defined(WIN32)
 // Onut
 #include <onut/IndexBuffer.h>
 #include <onut/Renderer.h>
@@ -48,7 +47,6 @@ namespace onut
     {
         if (m_pViewProj2dBuffer) m_pViewProj2dBuffer->Release();
         if (m_pKernelSizeBuffer) m_pKernelSizeBuffer->Release();
-        if (m_pSepiaBuffer) m_pSepiaBuffer->Release();
 
         if (m_pRenderTargetView) m_pRenderTargetView->Release();
 
@@ -442,11 +440,6 @@ namespace onut
             auto ret = m_pDevice->CreateBuffer(&cbDesc, nullptr, &m_pKernelSizeBuffer);
             assert(ret == S_OK);
         }
-        {
-            D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Vector4) * 2, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-            auto ret = m_pDevice->CreateBuffer(&cbDesc, nullptr, &m_pSepiaBuffer);
-            assert(ret == S_OK);
-        }
     }
 
     void RendererD3D11::beginFrame()
@@ -506,83 +499,6 @@ namespace onut
     void RendererD3D11::clearDepth()
     {
         m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-    }
-
-    void RendererD3D11::setKernelSize(const Vector2& kernelSize)
-    {
-        D3D11_MAPPED_SUBRESOURCE map;
-        m_pDeviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        Vector4 kernelSize4(kernelSize.x, kernelSize.y, 0, 0);
-        memcpy(map.pData, &kernelSize4.x, sizeof(kernelSize4));
-        m_pDeviceContext->Unmap(m_pKernelSizeBuffer, 0);
-        m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
-    }
-
-    void RendererD3D11::setCRT(const Vector2& resolution)
-    {
-        struct sCRT
-        {
-            Vector2 res;
-            Vector2 pixel;
-        };
-        sCRT crt = {{resolution.x, resolution.y}, {1.f / resolution.x, 1.f / resolution.y}};
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        m_pDeviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &crt, sizeof(crt));
-        m_pDeviceContext->Unmap(m_pKernelSizeBuffer, 0);
-        m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
-    }
-
-    void RendererD3D11::setCartoon(const Vector3& tone)
-    {
-        struct sCartoon
-        {
-            Vector3 tone;
-            float padding;
-        };
-        sCartoon cartoon = {tone};
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        m_pDeviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &cartoon, sizeof(cartoon));
-        m_pDeviceContext->Unmap(m_pKernelSizeBuffer, 0);
-        m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
-    }
-
-    void RendererD3D11::setVignette(const Vector2& kernelSize, float amount)
-    {
-        struct sVignette
-        {
-            Vector2 kernelSize;
-            float amount;
-            float padding;
-        };
-        sVignette vignette = {kernelSize, amount};
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        m_pDeviceContext->Map(m_pKernelSizeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &vignette, sizeof(vignette));
-        m_pDeviceContext->Unmap(m_pKernelSizeBuffer, 0);
-        m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pKernelSizeBuffer);
-    }
-
-    void RendererD3D11::setSepia(const Vector3& tone, float saturation, float sepiaAmount)
-    {
-        struct sSepia
-        {
-            Vector3 tone;
-            float desaturation;
-            float sepia;
-            Vector3 padding;
-        };
-        sSepia sepia = {tone, 1.f - saturation, sepiaAmount};
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        m_pDeviceContext->Map(m_pSepiaBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &sepia, sizeof(sepia));
-        m_pDeviceContext->Unmap(m_pSepiaBuffer, 0);
-        m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pSepiaBuffer);
     }
 
     void RendererD3D11::draw(uint32_t vertexCount)
@@ -886,5 +802,3 @@ namespace onut
         }
     }
 }
-
-#endif

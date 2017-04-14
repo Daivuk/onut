@@ -38,6 +38,7 @@ namespace onut
         static OShaderRef createFromSourceFile(const std::string& filename, Type in_type, const VertexElements& vertexElements = {});
         static OShaderRef createFromBinaryData(const uint8_t* pData, uint32_t size, Type in_type, const VertexElements& vertexElements = {});
         static OShaderRef createFromSource(const std::string& source, Type in_type, const VertexElements& vertexElements = {});
+        static OShaderRef createFromNativeSource(const std::string& source, Type in_type, const VertexElements& vertexElements = {});
 
         virtual ~Shader();
 
@@ -115,8 +116,8 @@ namespace onut
         static ParsedElements parseElements(std::string& content, const std::string& type);
         static ParsedUniforms parseUniforms(std::string& content);
         static ParsedTextures parseTextures(std::string& content);
-        static ParsedVS parseVertexShader(const std::string& filename);
-        static ParsedPS parsePixelShader(const std::string& filename);
+        static ParsedVS parseVertexShader(const std::string& content);
+        static ParsedPS parsePixelShader(const std::string& content);
 
         Type m_type;
         uint32_t m_vertexSize = 0;
