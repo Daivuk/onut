@@ -29,6 +29,9 @@ endif()
 if (ONUT_SHOW_FPS EQUAL 1)
     add_definitions(-DONUT_SHOW_FPS)
 endif()
+if (ONUT_USE_OPENGL EQUAL 1)
+    add_definitions(-DONUT_USE_OPENGL)
+endif()
 if (RPI)
     add_definitions(-D__rpi__)
     add_definitions(-DHAVE_LIBOPENMAX=2)
@@ -86,7 +89,6 @@ if (LINUX)
         src/AudioEngineSDL2.cpp
         src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
-        src/VideoPlayerLinux.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
         src/MusicSDL2.cpp
@@ -106,17 +108,30 @@ if (WIN32)
         src/GamePadXInput.cpp
         src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
-        src/MFPlayer.cpp
         src/mp3/Mp3.cpp
         src/MusicWIN32.cpp
-        src/IndexBufferD3D11.cpp 
-        src/RendererD3D11.cpp 
-        src/ShaderD3D11.cpp 
         src/SocketTCP_Win32.cpp
-        src/TextureD3D11.cpp 
-        src/VertexBufferD3D11.cpp 
         src/WindowWIN32.cpp 
     )
+    if (ONUT_USE_OPENGL EQUAL 1)
+        list(APPEND src_files
+            src/IndexBufferGL.cpp 
+            src/RendererGL.cpp 
+            src/ShaderGL.cpp 
+            src/TextureGL.cpp 
+            src/VertexBufferGL.cpp 
+            src/VideoPlayerEmpty.cpp
+        )
+    else()
+        list(APPEND src_files
+            src/IndexBufferD3D11.cpp 
+            src/RendererD3D11.cpp 
+            src/ShaderD3D11.cpp 
+            src/TextureD3D11.cpp 
+            src/VertexBufferD3D11.cpp 
+            src/MFPlayer.cpp
+        )
+    endif()
 endif()
 
 # Add common source files
@@ -310,6 +325,14 @@ if (UNIX)
     list(APPEND libs PUBLIC ${CURL_LIBRARIES})
 endif()
 if (WIN32)
+    if (ONUT_USE_OPENGL EQUAL 1)
+        find_package(OpenGL REQUIRED)
+        list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
+        list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
+
+        link_directories(./lib/win/Release/)
+        list(APPEND libs PUBLIC glew32s)
+    endif()
     find_package(DirectX11 REQUIRED)
     list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
 endif()

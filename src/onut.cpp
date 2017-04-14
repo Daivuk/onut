@@ -284,12 +284,12 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
-#if !defined(WIN32)
+#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
             if (oSettings->getIsRetroMode())
             {
 #endif // __unix__
                 oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
-#if !defined(WIN32)
+#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
             }
 #endif // __unix__
             oRenderer->beginFrame();
@@ -304,7 +304,7 @@ namespace onut
             oUI->render(oUIContext);
             oSpriteBatch->end();
 
-#if !defined(WIN32)
+#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
             if (oSettings->getIsRetroMode())
             {
 #endif // __unix__
@@ -317,7 +317,7 @@ namespace onut
                 oSpriteBatch->begin();
                 oSpriteBatch->changeBlendMode(OBlendOpaque);
                 oSpriteBatch->changeFiltering(OFilterNearest);
-#if !defined(WIN32)
+#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
                 oSpriteBatch->drawRectWithUVs(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()), Vector4(0, 1, 1, 0));
 #else
                 oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
@@ -330,7 +330,7 @@ namespace onut
                 oSpriteBatch->end();
                 oSpriteBatch->changeBlendMode(OBlendAlpha);
                 oSpriteBatch->changeFiltering(OFilterLinear);
-#if !defined(WIN32)
+#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
             }
 #endif // __unix__
             if (postRenderCallback)

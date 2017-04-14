@@ -6,13 +6,10 @@
 #include <onut/Renderer.h>
 
 // Third party
-#if defined(__APPLE__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#else
-#include <GL/glew.h>
+#include "gl_includes.h"
+#if defined(WIN32)
+#include <Windows.h>
 #endif
-#include <SDL.h>
 
 // Forward
 #include <onut/ForwardDeclaration.h>
@@ -57,8 +54,14 @@ namespace onut
         void createUniforms();
 
         // Device stuff
+#if defined(WIN32)
+        HGLRC m_hRC = nullptr;  // Permanent Rendering Context
+        HDC m_hDC = nullptr;  // Private GDI Device Context
+        HWND m_hWnd = nullptr; // Holds Our Window Handle
+#else
         SDL_Window* m_pSDLWindow = nullptr;
         SDL_GLContext m_glContext;
+#endif
 
         // Render target
         Point m_resolution;

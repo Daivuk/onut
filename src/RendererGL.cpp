@@ -12,7 +12,11 @@
 //#include "ShaderD3D11.h"
 #include "TextureGL.h"
 #include "VertexBufferGL.h"
-#include "WindowSDL2.h"
+#if defined(WIN32)
+    #include "WindowWIN32.h"
+#else
+    #include "WindowSDL2.h"
+#endif
 
 // STL
 #include <cassert>
@@ -43,14 +47,55 @@ namespace onut
 
     RendererGL::~RendererGL()
     {
+#if defined(WIN32)
+        wglMakeCurrent(NULL, NULL);
+        wglDeleteContext(m_hRC);
+        ReleaseDC(m_hWnd, m_hDC);
+#else
         if (m_pSDLWindow)
         {
             SDL_GL_DeleteContext(m_glContext);
         }
+#endif
     }
 
     void RendererGL::createDevice(const OWindowRef& pWindow)
     {
+#if defined(WIN32)
+        m_hWnd = pWindow->getHandle();
+
+        // Initialize OpenGL
+        GLuint PixelFormat;
+        static PIXELFORMATDESCRIPTOR pfd =  // pfd Tells Windows How We Want Things To Be
+        {
+            sizeof(PIXELFORMATDESCRIPTOR),  // Size Of This Pixel Format Descriptor
+            1,                              // Version Number
+            PFD_DRAW_TO_WINDOW |            // Format Must Support Window
+            PFD_SUPPORT_OPENGL |            // Format Must Support OpenGL
+            PFD_DOUBLEBUFFER,               // Must Support Double Buffering
+            PFD_TYPE_RGBA,                  // Request An RGBA Format
+            32,                             // Select Our Color Depth
+            0, 0, 0, 0, 0, 0,               // Color Bits Ignored
+            0,                              // No Alpha Buffer
+            0,                              // Shift Bit Ignored
+            0,                              // No Accumulation Buffer
+            0, 0, 0, 0,                     // Accumulation Bits Ignored
+            16,                             // 16Bit Z-Buffer (Depth Buffer)
+            0,                              // No Stencil Buffer
+            0,                              // No Auxiliary Buffer
+            PFD_MAIN_PLANE,                 // Main Drawing Layer
+            0,                              // Reserved
+            0, 0, 0                         // Layer Masks Ignored
+        };
+
+        m_hDC = GetDC(m_hWnd);
+        PixelFormat = ChoosePixelFormat(m_hDC, &pfd);
+        SetPixelFormat(m_hDC, PixelFormat, &pfd);
+        m_hRC = wglCreateContext(m_hDC);
+        wglMakeCurrent(m_hDC, m_hRC);
+
+        m_resolution = oSettings->getResolution();
+#else
         m_pSDLWindow = ODynamicCast<OWindowSDL2>(pWindow)->getSDLWindow();
         assert(m_pSDLWindow);
 
@@ -64,6 +109,7 @@ namespace onut
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
         SDL_GL_SetSwapInterval(1);
+#endif
 
 #if !defined(__APPLE__)
         glewInit();
@@ -110,7 +156,11 @@ namespace onut
 
     void RendererGL::endFrame()
     {
+#if defined(WIN32)
+        SwapBuffers(m_hDC);
+#else
         SDL_GL_SwapWindow(m_pSDLWindow);
+#endif
     }
 
     Point RendererGL::getTrueResolution() const

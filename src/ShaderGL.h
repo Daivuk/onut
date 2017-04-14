@@ -5,6 +5,7 @@
 #include <onut/Shader.h>
 
 // Third party
+#include "gl_includes.h"
 
 // Forward
 #include <onut/ForwardDeclaration.h>

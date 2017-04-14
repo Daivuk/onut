@@ -47,6 +47,7 @@ namespace onut
 
     bool VideoPlayerLinux::isPlaying() const
     {
+        return false;
     }
 
     void VideoPlayerLinux::update()
