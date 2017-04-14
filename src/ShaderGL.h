@@ -47,11 +47,19 @@ namespace onut
         friend class Shader;
         friend class RendererGL;
 
-      //  ID3D11VertexShader* m_pVertexShader = nullptr;
-      //  ID3D11PixelShader* m_pPixelShader = nullptr;
-      //  ID3D11InputLayout* m_pInputLayout = nullptr;
+        GLenum m_shader = 0;
 
         Uniforms m_uniforms;
+
+        struct Program
+        {
+            OShaderWeak pVertexShader;
+            GLenum m_program = 0;
+        };
+
+        using Programs = std::vector<Program>;
+
+        Programs m_programs;
     };
 };
 
