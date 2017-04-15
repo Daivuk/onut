@@ -26,7 +26,6 @@
 *.exe
 *.out
 *.app
-*
 
 # Other project stuff
 *.user
