@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
+option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
+option(ONUT_SHOW_FPS "Show the FPS" ON)
+option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
+
 # Easier defines
 if (UNIX AND NOT RPI AND NOT APPLE)
     set(LINUX 1)
@@ -26,7 +31,7 @@ endif()
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-D_DEBUG)
 endif()
-if (ONUT_SHOW_FPS EQUAL 1)
+if (ONUT_SHOW_FPS)
     add_definitions(-DONUT_SHOW_FPS)
 endif()
 if (ONUT_USE_OPENGL EQUAL 1)
@@ -372,29 +377,33 @@ endif()
 target_include_directories(onut ${includes})
 target_link_libraries(onut ${libs})
 
-add_subdirectory(JSStandAlone) # JSStandAlone
+if (ONUT_BUILD_STANDALONE)
+    add_subdirectory(JSStandAlone) # JSStandAlone
+endif()
 
-add_subdirectory(samples/Animations) # AnimationsSample
-add_subdirectory(samples/Components) # ComponentsSample
-add_subdirectory(samples/Crypto) # CryptoSample
-add_subdirectory(samples/Cursor) # CursorSample
-add_subdirectory(samples/CustomMesh) # CustomMeshSample
-add_subdirectory(samples/Dungeon) # DungeonSample
-add_subdirectory(samples/Effects) # EffectsSample
-add_subdirectory(samples/Empty) # EmptySample
-add_subdirectory(samples/Entities) # EntitiesSample
-add_subdirectory(samples/GamePads) # GamePadsSample
-add_subdirectory(samples/Http) # HttpSample
-add_subdirectory(samples/Multiplayer) # MultiplayerSample
-add_subdirectory(samples/Navigation) # NavigationSample
-add_subdirectory(samples/Particles) # ParticlesSample
-add_subdirectory(samples/Primitives) # PrimitivesSample
-add_subdirectory(samples/Random) # RandomSample
-add_subdirectory(samples/Shader) # ShaderSample
-add_subdirectory(samples/Sounds) # SoundsSample
-add_subdirectory(samples/Sprites) # SpritesSample
-add_subdirectory(samples/SpriteFrames) # SpriteFramesSample
-add_subdirectory(samples/Text) # TextSample
-add_subdirectory(samples/Textures) # TexturesSample
-add_subdirectory(samples/TiledMap) # TiledMapSample
-add_subdirectory(samples/UI) # UISample
+if (ONUT_BUILD_SAMPLES)
+    add_subdirectory(samples/Animations) # AnimationsSample
+    add_subdirectory(samples/Components) # ComponentsSample
+    add_subdirectory(samples/Crypto) # CryptoSample
+    add_subdirectory(samples/Cursor) # CursorSample
+    add_subdirectory(samples/CustomMesh) # CustomMeshSample
+    add_subdirectory(samples/Dungeon) # DungeonSample
+    add_subdirectory(samples/Effects) # EffectsSample
+    add_subdirectory(samples/Empty) # EmptySample
+    add_subdirectory(samples/Entities) # EntitiesSample
+    add_subdirectory(samples/GamePads) # GamePadsSample
+    add_subdirectory(samples/Http) # HttpSample
+    add_subdirectory(samples/Multiplayer) # MultiplayerSample
+    add_subdirectory(samples/Navigation) # NavigationSample
+    add_subdirectory(samples/Particles) # ParticlesSample
+    add_subdirectory(samples/Primitives) # PrimitivesSample
+    add_subdirectory(samples/Random) # RandomSample
+    add_subdirectory(samples/Shader) # ShaderSample
+    add_subdirectory(samples/Sounds) # SoundsSample
+    add_subdirectory(samples/Sprites) # SpritesSample
+    add_subdirectory(samples/SpriteFrames) # SpriteFramesSample
+    add_subdirectory(samples/Text) # TextSample
+    add_subdirectory(samples/Textures) # TexturesSample
+    add_subdirectory(samples/TiledMap) # TiledMapSample
+    add_subdirectory(samples/UI) # UISample
+endif()

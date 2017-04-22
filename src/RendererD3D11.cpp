@@ -563,27 +563,6 @@ namespace onut
             renderStates.blendMode.resetDirty();
         }
 
-        // Sampler state
-        auto pPixelShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
-        if (pPixelShaderD3D11 && pPixelShaderD3D11->getSamplerStatesCount())
-        {
-            if (renderStates.pixelShader.isDirty())
-            {
-                m_pDeviceContext->PSSetSamplers(0, (UINT)pPixelShaderD3D11->getSamplerStatesCount(), pPixelShaderD3D11->getSamplerStates());
-                renderStates.sampleFiltering.forceDirty();
-                renderStates.sampleAddressMode.forceDirty();
-            }
-        }
-        else if (renderStates.sampleFiltering.isDirty() ||
-            renderStates.sampleAddressMode.isDirty())
-        {
-            m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerStates[
-                static_cast<int>(renderStates.sampleFiltering.get()) * static_cast<int>(sample::AddressMode::COUNT) + 
-                static_cast<int>(renderStates.sampleAddressMode.get())]);
-            renderStates.sampleFiltering.resetDirty();
-            renderStates.sampleAddressMode.resetDirty();
-        }
-
         // Viewport
         if (renderStates.viewport.isDirty())
         {
@@ -747,6 +726,7 @@ namespace onut
             }
         }
 
+        auto pPixelShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
         pShaderD3D11 = pPixelShaderD3D11;
         if (pShaderD3D11)
         {
@@ -775,6 +755,23 @@ namespace onut
                     }
                 }
             }
+        }
+
+        // Sampler state
+        if (pPixelShaderD3D11 && pPixelShaderD3D11->getSamplerStatesCount() && renderStates.pixelShader.isDirty())
+        {
+            m_pDeviceContext->PSSetSamplers(0, (UINT)pPixelShaderD3D11->getSamplerStatesCount(), pPixelShaderD3D11->getSamplerStates());
+            renderStates.sampleFiltering.forceDirty();
+            renderStates.sampleAddressMode.forceDirty();
+        }
+        else if (renderStates.sampleFiltering.isDirty() ||
+            renderStates.sampleAddressMode.isDirty())
+        {
+            m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerStates[
+                static_cast<int>(renderStates.sampleFiltering.get()) * static_cast<int>(sample::AddressMode::COUNT) +
+                    static_cast<int>(renderStates.sampleAddressMode.get())]);
+            renderStates.sampleFiltering.resetDirty();
+            renderStates.sampleAddressMode.resetDirty();
         }
 
         // Vertex/Index buffers

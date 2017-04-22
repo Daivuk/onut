@@ -9,7 +9,7 @@
 // Private
 #include "IndexBufferGL.h"
 #include "RendererGL.h"
-//#include "ShaderD3D11.h"
+#include "ShaderGL.h"
 #include "TextureGL.h"
 #include "VertexBufferGL.h"
 #if defined(WIN32)
@@ -454,11 +454,15 @@ namespace onut
             }
             renderStates.depthEnabled.resetDirty();
         }
-/*
 
         // Shaders
-        auto pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());
-        if (pShaderD3D11)
+        if (renderStates.vertexShader.isDirty() ||
+            renderStates.pixelShader.isDirty())
+        {
+        }
+        /*
+        auto pShaderGL = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
+        if (pShaderGL)
         {
             if (renderStates.vertexShader.isDirty())
             {
@@ -476,7 +480,7 @@ namespace onut
             else
             {
                 auto& uniforms = pShaderD3D11->getUniforms();
-                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
+                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)*
                 {
                     auto& uniform = uniforms[i];
                     if (uniform.dirty)
@@ -517,7 +521,7 @@ namespace onut
                 }
             }
         }
-*/
+        */
         // Vertex/Index buffers
         if (renderStates.vertexBuffer.isDirty())
         {
