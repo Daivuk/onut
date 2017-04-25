@@ -54,3 +54,28 @@ Makefile
 
 # apple
 .DS_Store
+
+# Samples
+JSStandAlone/JSStandAlone
+samples/Animations/AnimationsSample
+samples/Components/ComponentsSample
+samples/Crypto/CryptoSample
+samples/Cursor/CursorSample
+samples/CustomMesh/CustomMeshSample
+samples/Dungeon/DungeonSample
+samples/Empty/EmptySample
+samples/Entities/EntitiesSample
+samples/GamePads/GamePadsSample
+samples/Http/HttpSample
+samples/Multiplayer/MultiplayerSample
+samples/Navigation/NavigationSample
+samples/Particles/ParticlesSample
+samples/Primitives/PrimitivesSample
+samples/Random/RandomSample
+samples/Sounds/SoundsSample
+samples/SpriteFrames/SpriteFramesSample
+samples/Sprites/SpritesSample
+samples/Text/TextSample
+samples/Textures/TexturesSample
+samples/TiledMap/TiledMapSample
+samples/UI/UISample

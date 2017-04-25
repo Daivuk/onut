@@ -182,6 +182,7 @@ namespace onut
 
     OShaderRef Shader::createFromNativeSource(const std::string& source, Type in_type, const VertexElements& vertexElements)
     {
+        return nullptr;
         auto pRet = std::make_shared<ShaderGL>();
         pRet->m_type = in_type;
 
