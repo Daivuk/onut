@@ -103,6 +103,7 @@ if (LINUX)
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
+        src/VideoPlayerLinux.cpp
     )
 endif()
 
