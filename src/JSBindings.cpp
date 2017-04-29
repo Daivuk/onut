@@ -8725,31 +8725,49 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "copy");
 
-            // setOnClick(callback)
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
-                if (ppUIControl)
-                {
-                    auto pUIControl = ppUIControl->get();
-                    auto callback = getFunction(ctx, 0);
-                    if (callback)
-                    {
-                        pUIControl->onClick = [ctx, callback](const OUIControlRef& pControl, const UIMouseEvent& evt)
-                        {
-                            if (callback->push(ctx)) callback->call(ctx, 0);
-                        };
-                    }
-                    else
-                    {
-                        pUIControl->onClick = nullptr;
-                    }
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setOnClick");
+#define UI_MOUSE_EVENT(__jsname__, __oname__) \
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1); \
+                if (ppUIControl) \
+                { \
+                    auto pUIControl = ppUIControl->get(); \
+                    auto callback = getFunction(ctx, 0); \
+                    if (callback) \
+                    { \
+                        pUIControl->__oname__ = [ctx, callback](const OUIControlRef& pControl, const UIMouseEvent& evt) \
+                        { \
+                            if (callback->push(ctx)) callback->call(ctx, 0); \
+                        }; \
+                    } \
+                    else \
+                    { \
+                        pUIControl->onClick = nullptr; \
+                    } \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__jsname__);
+
+            UI_MOUSE_EVENT(setOnClick, onClick);
+            UI_MOUSE_EVENT(setOnDoubleClick, onDoubleClick);
+            UI_MOUSE_EVENT(setOnMouseMove, onMouseMove);
+            UI_MOUSE_EVENT(setOnMouseDown, onMouseDown);
+            UI_MOUSE_EVENT(setOnMouseUp, onMouseUp);
+            UI_MOUSE_EVENT(setOnMouseEnter, onMouseEnter);
+            UI_MOUSE_EVENT(setOnMouseLeave, onMouseLeave);
+
+            UI_MOUSE_EVENT(setOnRightClick, onRightClick);
+            UI_MOUSE_EVENT(setOnRightDoubleClick, onRightDoubleClick);
+            UI_MOUSE_EVENT(setOnRightMouseDown, onRightMouseDown);
+            UI_MOUSE_EVENT(setOnRightMouseUp, onRightMouseUp);
+
+            UI_MOUSE_EVENT(setOnMiddleClick, onMiddleClick);
+            UI_MOUSE_EVENT(setOnMiddleDoubleClick, onMiddleDoubleClick);
+            UI_MOUSE_EVENT(setOnMiddleMouseDown, onMiddleMouseDown);
+            UI_MOUSE_EVENT(setOnMiddleMouseUp, onMiddleMouseUp);
 
             // Done with the object
             pUIPrototype = duk_get_heapptr(ctx, -1);
