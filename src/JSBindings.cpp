@@ -9473,7 +9473,7 @@ namespace onut
                     setSeed((unsigned int)JS_UINT(0));
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("seed", 1);
+                JS_INTERFACE_FUNCTION_END("setSeed", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     randomizeSeed();

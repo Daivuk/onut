@@ -62,10 +62,14 @@ namespace onut
                 int id = 0;
                 bool isFlipH = false;
                 bool isFlipV = false;
+                int offsetX = 0;
+                int offsetY = 0;
                 pXMLFrame->QueryAttribute("id", &id);
                 pXMLFrame->QueryAttribute("repeat", &repeat);
                 pXMLFrame->QueryAttribute("flipH", &isFlipH);
                 pXMLFrame->QueryAttribute("flipV", &isFlipV);
+                pXMLFrame->QueryAttribute("offsetX", &offsetX);
+                pXMLFrame->QueryAttribute("offsetY", &offsetY);
                 int col = id % (pTexture->getSize().x / spriteW);
                 int row = id / (pTexture->getSize().x / spriteW);
                 col *= spriteW;
@@ -75,6 +79,8 @@ namespace onut
                     (float)row / (float)pTexture->getSize().y,
                     (float)(col + spriteW) / (float)pTexture->getSize().x,
                     (float)(row + spriteH) / (float)pTexture->getSize().y);
+                frame.origin.x -= (float)offsetX / (float)spriteW;
+                frame.origin.y -= (float)offsetY / (float)spriteH;
                 if (isFlipH) std::swap(frame.UVs.x, frame.UVs.z);
                 if (isFlipV) std::swap(frame.UVs.y, frame.UVs.w);
                 for (auto i = 0; i < repeat; ++i)
