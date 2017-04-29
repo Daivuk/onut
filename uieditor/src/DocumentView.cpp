@@ -133,22 +133,22 @@ DocumentView::DocumentView(const std::string& filename)
     m_gizmoHandles[7] = m_pGizmo->getChild("bottomRightHandle");
     m_pGizmo->onMouseDown = std::bind(&DocumentView::onGizmoStart, this, std::placeholders::_1, std::placeholders::_2);
     m_pGizmo->onMouseUp = std::bind(&DocumentView::onGizmoEnd, this, std::placeholders::_1, std::placeholders::_2);
-    m_pGizmo->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEALL); };
-    m_pGizmo->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+    m_pGizmo->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZEALL); };
+    m_pGizmo->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curARROW); };
     for (auto& pGizmoHandle : m_gizmoHandles)
     {
         pGizmoHandle->onMouseDown = std::bind(&DocumentView::onGizmoHandleStart, this, std::placeholders::_1, std::placeholders::_2);
         pGizmoHandle->onMouseUp = std::bind(&DocumentView::onGizmoHandleEnd, this, std::placeholders::_1, std::placeholders::_2);
-        pGizmoHandle->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curARROW); };
+        pGizmoHandle->onMouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curARROW); };
     }
-    m_gizmoHandles[0]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENWSE); };
-    m_gizmoHandles[1]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENS); };
-    m_gizmoHandles[2]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENESW); };
-    m_gizmoHandles[3]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEWE); };
-    m_gizmoHandles[4]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZEWE); };
-    m_gizmoHandles[5]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENESW); };
-    m_gizmoHandles[6]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENS); };
-    m_gizmoHandles[7]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){oWindow->setCursor(curSIZENWSE); };
+    m_gizmoHandles[0]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZENWSE); };
+    m_gizmoHandles[1]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZENS); };
+    m_gizmoHandles[2]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZENESW); };
+    m_gizmoHandles[3]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZEWE); };
+    m_gizmoHandles[4]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZEWE); };
+    m_gizmoHandles[5]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZENESW); };
+    m_gizmoHandles[6]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZENS); };
+    m_gizmoHandles[7]->onMouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curSIZENWSE); };
 
     // Add some dummy nodes in the scene graph for show
     m_pSceneGraph = g_pUIScreen->getChild<onut::UITreeView>("sceneGraph");
@@ -275,7 +275,7 @@ void DocumentView::onGizmoHandleEnd(const OUIControlRef& pControl, const onut::U
 void DocumentView::onGizmoStart(const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
 {
     static HCURSOR curSIZEALL = LoadCursor(nullptr, IDC_SIZEALL);
-    oWindow->setCursor(curSIZEALL);
+    SetCursor(curSIZEALL);
     m_state = eDocumentState::MOVING_GIZO;
     m_bStartMoving = false;
     m_mousePosOnDown = {mouseEvent.mousePos.x, mouseEvent.mousePos.y};

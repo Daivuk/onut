@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
+option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
 option(ONUT_SHOW_FPS "Show the FPS" ON)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
 
@@ -380,6 +381,10 @@ target_link_libraries(onut ${libs})
 
 if (ONUT_BUILD_STANDALONE)
     add_subdirectory(JSStandAlone) # JSStandAlone
+endif()
+
+if (ONUT_BUILD_UI_EDITOR)
+    add_subdirectory(uieditor) # uieditor
 endif()
 
 if (ONUT_BUILD_SAMPLES)
