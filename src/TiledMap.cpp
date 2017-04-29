@@ -367,6 +367,7 @@ namespace onut
         m_layers[m_layerCount] = new TileLayerInternal();
         auto &pLayer = *(TileLayerInternal*)m_layers[m_layerCount];
 
+        pLayer.opacity = 1.0f;
         pLayer.name = name;
         pLayer.width = m_width;
         pLayer.height = m_height;
@@ -386,8 +387,6 @@ namespace onut
         {
             pChunk->x = (i % pLayer.chunkPitch) * CHUNK_SIZE;
             pChunk->y = (i / pLayer.chunkPitch) * CHUNK_SIZE;
-
-            if (!pChunk->tileCount) continue;
         }
 
         ++m_layerCount;
