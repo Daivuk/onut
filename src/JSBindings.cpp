@@ -10826,7 +10826,26 @@ namespace onut
                 duk_push_number(pContext, (duk_double_t)dt);
                 if (duk_pcall(pContext, 1) != 0)
                 {
-                    OLog(std::string("update, call failed: ") + duk_safe_to_string(pContext, -1));
+                    auto ctx = pContext;
+                    std::string log = "update, call failed: ";
+
+                    // .stack, .fileName, and .lineNumber
+                    if (duk_is_error(ctx, -1)) 
+                    {
+                        /* Accessing .stack might cause an error to be thrown, so wrap this
+                        * access in a duk_safe_call() if it matters.
+                        */
+                        duk_get_prop_string(ctx, -1, "stack");
+                        log += duk_safe_to_string(ctx, -1);
+                        duk_pop(ctx);
+                    }
+                    else 
+                    {
+                        /* Non-Error value, coerce safely to string. */
+                        log += duk_safe_to_string(ctx, -1);
+                    }
+
+                    OLog(log);
                     pUpdatePtr = nullptr;
                 }
                 duk_pop(pContext);
@@ -10843,7 +10862,26 @@ namespace onut
                 duk_push_heapptr(pContext, pRenderPtr);
                 if (duk_pcall(pContext, 0) != 0)
                 {
-                    OLog(std::string("render, call failed: ") + duk_safe_to_string(pContext, -1));
+                    auto ctx = pContext;
+                    std::string log = "update, call failed: ";
+
+                    // .stack, .fileName, and .lineNumber
+                    if (duk_is_error(ctx, -1))
+                    {
+                        /* Accessing .stack might cause an error to be thrown, so wrap this
+                        * access in a duk_safe_call() if it matters.
+                        */
+                        duk_get_prop_string(ctx, -1, "stack");
+                        log += duk_safe_to_string(ctx, -1);
+                        duk_pop(ctx);
+                    }
+                    else
+                    {
+                        /* Non-Error value, coerce safely to string. */
+                        log += duk_safe_to_string(ctx, -1);
+                    }
+
+                    OLog(log);
                     pRenderPtr = nullptr;
                 }
                 duk_pop(pContext);

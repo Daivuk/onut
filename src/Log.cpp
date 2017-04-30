@@ -3,6 +3,7 @@
 #include <onut/Font.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
+#include <onut/Strings.h>
 #include <onut/SpriteBatch.h>
 
 // Third party
@@ -51,8 +52,9 @@ namespace onut
 #endif
         if (s_showOnScreenLog)
         {
+            auto split = onut::splitString(message, '\n');
             s_onScreenLogMutex.lock();
-            s_logHistory.push_back(message);
+            for (const auto& line : split) s_logHistory.push_back(line);
             while (s_logHistory.size() > 10) s_logHistory.erase(s_logHistory.begin());
             s_onScreenLogMutex.unlock();
         }
