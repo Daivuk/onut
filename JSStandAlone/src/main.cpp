@@ -3,6 +3,7 @@
 #include <onut/onut.h>
 #include <onut/Settings.h>
 #include <onut/Strings.h>
+#include <onut/Timing.h>
 
 #include <fstream>
 
@@ -85,6 +86,15 @@ void initSettings()
             {
                 value = onut::toUpper(value);
                 oSettings->setIsFixedStep(value == "TRUE" || value == "1" || value == "ON");
+            }
+            else if (what == "UPDATEFPS")
+            {
+                try
+                {
+                    auto fps = std::stoi(value);
+                    oTiming = OTiming::create((uint32_t)fps);
+                }
+                catch (...) {}
             }
             else if (what == "APPID")
             {
