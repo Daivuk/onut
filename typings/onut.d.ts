@@ -899,6 +899,10 @@ declare class TiledMap {
     getLayerIndex(layerName: string): number;
     addLayer(layerName: string);
     addTileSet(texture: Texture);
+    getOpacity(layerIndex: number): number;
+    getOpacity(layerName: string): number;
+    setOpacity(layerIndex: number, opacity: number);
+    setOpacity(layerName: string, opacity: number);
 
     render();
     render(rect: Rect);
@@ -911,6 +915,9 @@ declare class TiledMap {
     collision(from: Vector2, to: Vector2, size: Vector2): Vector2;
     setCollision(x: number, y: number, passable: boolean);
     getCollision(x: number, y: number): boolean;
+    setTileCost(x: number, y: number, tileCost: number); // 0 = impassable, 1 = normal, >1 = expensive
+    getTileCost(x: number, y: number): number;
+    getPath(fromX: number, fromY: number, toX: number, toY: number, type: PathType): Array;
 }
 /** Same as TiledMap.createFromFile */
 declare function getTiledMap(filename: string): TiledMap;
@@ -1036,6 +1043,22 @@ declare class UI {
     copy(): UI;
     
     setOnClick(callback: Function);
+    setOnDoubleClick(callback: Function);
+    setOnMouseMove(callback: Function);
+    setOnMouseDown(callback: Function);
+    setOnMouseUp(callback: Function);
+    setOnMouseEnter(callback: Function);
+    setOnMouseLeave(callback: Function);
+
+    setOnRightClick(callback: Function);
+    setOnRightDoubleClick(callback: Function);
+    setOnRightMouseDown(callback: Function);
+    setOnRightMouseUp(callback: Function);
+
+    setOnMiddleClick(callback: Function);
+    setOnMiddleDoubleClick(callback: Function);
+    setOnMiddleMouseDown(callback: Function);
+    setOnMiddleMouseUp(callback: Function);
 }
 declare function loadUI(filename: string): UI;
 declare function unloadUI(filename: string);
@@ -1383,6 +1406,12 @@ declare enum Platform {
     WINDOWS,
     OSX,
     LINUX
+}
+
+declare enum PathType {
+    STRAIGHT,
+    ALLOW_DIAGONAL,
+    CROSS_CORNERS
 }
 
 declare namespace System {

@@ -51,10 +51,10 @@ namespace onut
         pRet->m_height = height;
         pRet->m_tileSize = tileSize;
         auto len = width  * height;
-        pRet->m_pCollisionTiles = new bool[len];
+        pRet->m_pCollisionTiles = new float[len];
         for (int i = 0; i < len; ++i)
         {
-            pRet->m_pCollisionTiles[i] = true;
+            pRet->m_pCollisionTiles[i] = 1.0f;
         }
 
         return pRet;
@@ -337,6 +337,7 @@ namespace onut
 
     TiledMap::~TiledMap()
     {
+        if (m_pMicroPather) delete m_pMicroPather;
         if (m_pCollisionTiles) delete[] m_pCollisionTiles;
         if (m_layers)
         {
@@ -402,19 +403,27 @@ namespace onut
         return -1;
     }
 
-    bool* TiledMap::generateCollisions(const std::string &collisionLayerName)
+    float* TiledMap::generateCollisions(const std::string &collisionLayerName)
     {
         if (m_pCollisionTiles) return m_pCollisionTiles;
+        int len = m_width * m_height;
+        m_pCollisionTiles = new float[len];
         auto pLayer = dynamic_cast<TileLayer*>(getLayer(collisionLayerName));
         if (pLayer)
         {
-            int len = m_width * m_height;
-            m_pCollisionTiles = new bool[len];
             for (int i = 0; i < len; ++i)
             {
-                m_pCollisionTiles[i] = pLayer->tileIds[i] == 0;
+                m_pCollisionTiles[i] = (pLayer->tileIds[i] == 0) ? 1.0f : 0.0f;
             }
         }
+        else
+        {
+            for (int i = 0; i < len; ++i)
+            {
+                m_pCollisionTiles[i] = 1.0f;
+            }
+        }
+        m_pMicroPather = new micropather::MicroPather(this, (unsigned int)len, 8, true);
         return m_pCollisionTiles;
     }
 
@@ -712,6 +721,191 @@ namespace onut
     void TiledMap::setFiltering(onut::sample::Filtering filtering)
     {
         m_filtering = filtering;
+    }
+
+    static inline Point stateToMap(void* state, int w)
+    {
+        auto statei = (uintptr_t)state;
+        return Point(
+            (int)statei % w,
+            (int)statei / w
+        );
+    }
+
+    static inline void* mapToState(const Point& point, int w)
+    {
+        auto statei = (uintptr_t)(point.y * w + point.x);
+        return (void*)statei;
+    }
+
+    static float DIAGONAL_COST = 1.4142135623730950488016887242097f;
+
+    static inline float calcCost(int kFrom, int kTo, float multiplier, float* pCollisions) 
+    {
+        auto tileCost1 = pCollisions[kFrom];
+        auto tileCost2 = pCollisions[kTo];
+        return (tileCost1 + tileCost2) * 0.5f * multiplier;
+    }
+
+    /**
+        Return the least possible cost between 2 states. For example, if your pathfinding
+        is based on distance, this is simply the straight distance between 2 points on the
+        map. If you pathfinding is based on minimum time, it is the minimal travel time
+        between 2 points given the best possible terrain.
+    */
+    float TiledMap::LeastCostEstimate(void* stateStart, void* stateEnd)
+    {
+        // Manathan
+        //function heuristic(node) =
+        //    dx = abs(node.x - goal.x)
+        //    dy = abs(node.y - goal.y)
+        //    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+        auto node = stateToMap(stateStart, m_width);
+        auto goal = stateToMap(stateEnd, m_width);
+        auto dx = std::abs(node.x - goal.x);
+        auto dy = std::abs(node.y - goal.y);
+        return (float)(dx + dy) + (DIAGONAL_COST - 2) * (float)std::min(dx, dy);
+    }
+
+    static inline float getTileCostAt(int x, int y, int w, int h, float* pCollisions)
+    {
+        if (x < 0 || x >= w || y < 0 || y >= h) return 0.0f;
+        return pCollisions[y * w + x];
+    }
+
+    /**
+        Return the exact cost from the given state to all its neighboring states. This
+        may be called multiple times, or cached by the solver. It *must* return the same
+        exact values for every call to MicroPather::Solve(). It should generally be a simple,
+        fast function with no callbacks into the pather.
+    */
+    void TiledMap::AdjacentCost(void* state, MP_VECTOR< micropather::StateCost > *adjacent)
+    {
+        auto mapPos = stateToMap(state, m_width);
+        auto k = mapPos.y * m_width + mapPos.x;
+        auto w = m_width;
+        auto h = m_height;
+        auto allowDiagonal = m_pathType & PATH_ALLOW_DIAGONAL;
+
+        if (allowDiagonal)
+        {
+            float costs[8] = {
+                getTileCostAt(mapPos.x - 1, mapPos.y - 1, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x, mapPos.y - 1, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x + 1, mapPos.y - 1, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x - 1, mapPos.y, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x + 1, mapPos.y, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x - 1, mapPos.y + 1, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x, mapPos.y + 1, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x + 1, mapPos.y + 1, w, h, m_pCollisionTiles)
+            };
+
+            auto crossCorners = m_pathType & PATH_CROSS_CORNERS;
+
+            if (crossCorners)
+            {
+                if (costs[0] > 0.0f && (costs[1] > 0.0f || costs[3]) > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), calcCost(k, k - w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                if (costs[1] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTiles) });
+                if (costs[2] > 0.0f && (costs[1] > 0.0f || costs[4]) > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), calcCost(k, k - w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+
+                if (costs[3] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTiles) });
+                if (costs[4] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTiles) });
+
+                if (costs[5] > 0.0f && (costs[3] > 0.0f || costs[6]) > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), calcCost(k, k + w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                if (costs[6] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTiles) });
+                if (costs[7] > 0.0f && (costs[4] > 0.0f || costs[6]) > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), calcCost(k, k + w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+            }
+            else
+            {
+                if (costs[0] > 0.0f && costs[1] > 0.0f && costs[3] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), calcCost(k, k - w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                if (costs[1] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTiles) });
+                if (costs[2] > 0.0f && costs[1] > 0.0f && costs[4] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), calcCost(k, k - w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+
+                if (costs[3] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTiles) });
+                if (costs[4] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTiles) });
+
+                if (costs[5] > 0.0f && costs[3] > 0.0f && costs[6] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), calcCost(k, k + w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                if (costs[6] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTiles) });
+                if (costs[7] > 0.0f && costs[4] > 0.0f && costs[6] > 0.0f)
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), calcCost(k, k + w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+            }
+        }
+        else
+        {
+            float costs[4] = {
+                getTileCostAt(mapPos.x, mapPos.y - 1, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x - 1, mapPos.y, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x + 1, mapPos.y, w, h, m_pCollisionTiles),
+                getTileCostAt(mapPos.x, mapPos.y + 1, w, h, m_pCollisionTiles)
+            };
+
+            if (costs[0] > 0.0f)
+                adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTiles) });
+            if (costs[1] > 0.0f)
+                adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTiles) });
+            if (costs[2] > 0.0f)
+                adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTiles) });
+            if (costs[3] > 0.0f)
+                adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTiles) });
+        }
+    }
+
+    /**
+        This function is only used in DEBUG mode - it dumps output to stdout. Since void*
+        aren't really human readable, normally you print out some concise info (like "(1,2)")
+        without an ending newline.
+    */
+    void TiledMap::PrintStateInfo(void* state)
+    {
+        (void)state;
+    }
+
+    void TiledMap::resetPath()
+    {
+        if (m_pMicroPather) m_pMicroPather->Reset();
+    }
+
+    TiledMap::Path TiledMap::getPath(const Point& from, const Point& to, int type)
+    {
+        Path ret;
+        getPath(from, to, ret, type);
+        return std::move(ret);
+    }
+
+    void TiledMap::getPath(const Point& from, const Point& to, Path& path, int type)
+    {
+        path.clear();
+
+        if (!m_pMicroPather) return;
+
+        if (type != m_pathType) m_pMicroPather->Reset();
+        m_pathType = type;
+        float cost = 0.0f;
+        m_cachedPath.clear();
+
+        m_pMicroPather->Solve(mapToState(from, m_width), mapToState(to, m_width), &m_cachedPath, &cost);
+
+        auto len = m_cachedPath.size();
+        auto w = m_width;
+        for (unsigned int i = 0; i < len; ++i)
+        {
+            path.push_back(stateToMap(m_cachedPath[i], w));
+        }
     }
 };
 

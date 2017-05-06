@@ -4067,6 +4067,72 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "setFilter");
 
+            // getOpacity
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto layerName = JS_STRING(0, "");
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layerName));
+                        if (pLayer)
+                        {
+                            duk_push_number(ctx, (duk_double_t)pLayer->opacity);
+                            return 1;
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_INT(0);
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layer));
+                        if (pLayer)
+                        {
+                            duk_push_number(ctx, (duk_double_t)pLayer->opacity);
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getOpacity");
+
+            // setOpacity
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    if (duk_is_string(ctx, 0))
+                    {
+                        auto layerName = JS_STRING(0, "");
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layerName));
+                        if (pLayer)
+                        {
+                            pLayer->opacity = JS_FLOAT(1, 1);
+                        }
+                    }
+                    else if (duk_is_number(ctx, 0))
+                    {
+                        auto layer = JS_INT(0);
+                        auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layer));
+                        if (pLayer)
+                        {
+                            pLayer->opacity = JS_FLOAT(1, 1);
+                        }
+                    }
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setOpacity");
+
             // getTileAt
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -4294,7 +4360,8 @@ namespace onut
                             auto passable = JS_BOOL(2, true);
                             if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
                             {
-                                pTiles[y * pTiledMap->getWidth() + x] = passable;
+                                pTiles[y * pTiledMap->getWidth() + x] = passable ? 1.0f : 0.0f;
+                                pTiledMap->resetPath();
                             }
                         }
                     }
@@ -4322,7 +4389,7 @@ namespace onut
                             auto y = JS_INT(1, -1);
                             if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
                             {
-                                duk_push_boolean(ctx, pTiles[y * pTiledMap->getWidth() + x] ? 1 : 0);
+                                duk_push_boolean(ctx, pTiles[y * pTiledMap->getWidth() + x] == 0.0f ? 0 : 1);
                                 return 1;
                             }
                         }
@@ -4331,6 +4398,98 @@ namespace onut
                 return 0;
             }, 2);
             duk_put_prop_string(ctx, -2, "getCollision");
+
+            // Set a tile to be passable or not
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        auto pTiles = pTiledMap->getCollisionTiles();
+                        if (pTiles)
+                        {
+                            auto x = JS_INT(0, -1);
+                            auto y = JS_INT(1, -1);
+                            auto tileCost = JS_FLOAT(2, 1.0f);
+                            if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
+                            {
+                                pTiles[y * pTiledMap->getWidth() + x] = tileCost;
+                                pTiledMap->resetPath();
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "setTileCost");
+
+            // Get a tile to be passable or not
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                if (ppTiledMap)
+                {
+                    duk_pop(ctx);
+                    auto pTiledMap = ppTiledMap->get();
+                    if (pTiledMap)
+                    {
+                        auto pTiles = pTiledMap->getCollisionTiles();
+                        if (pTiles)
+                        {
+                            auto x = JS_INT(0, -1);
+                            auto y = JS_INT(1, -1);
+                            if (x >= 0 && x < pTiledMap->getWidth() && y >= 0 && y < pTiledMap->getHeight())
+                            {
+                                duk_push_number(ctx, (duk_double_t)pTiles[y * pTiledMap->getWidth() + x]);
+                                return 1;
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "getTileCost");
+
+            // Get a path
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                if (duk_is_number(ctx, 0) &&
+                    duk_is_number(ctx, 1) &&
+                    duk_is_number(ctx, 2) &&
+                    duk_is_number(ctx, 3))
+                {
+                    duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                    auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                    if (ppTiledMap)
+                    {
+                        duk_pop(ctx);
+                        auto pTiledMap = ppTiledMap->get();
+                        if (pTiledMap)
+                        {
+                            auto path = pTiledMap->getPath(Point(JS_INT(0), JS_INT(1)), Point(JS_INT(2), JS_INT(3)), JS_INT(4, OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS));
+                            auto arr_idx = duk_push_array(ctx);
+                            for (size_t i = 0; i < path.size(); ++i)
+                            {
+                                const auto& pos = path[i];
+                                newVector2(ctx, Vector2((float)pos.x, (float)pos.y));
+                                duk_put_prop_index(ctx, arr_idx, i);
+                            }
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 5);
+            duk_put_prop_string(ctx, -2, "getPath");
 
             // getLayerIndex
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -10568,6 +10727,13 @@ namespace onut
                 JS_ENUM("LINUX", 3);
             }
             JS_INTERFACE_END("Platform");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("STRAIGHT", 0);
+                JS_ENUM("ALLOW_DIAGONAL", OTiledMap::PATH_ALLOW_DIAGONAL);
+                JS_ENUM("CROSS_CORNERS", OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS);
+            }
+            JS_INTERFACE_END("PathType");
 
             // System
             JS_INTERFACE_BEGIN();

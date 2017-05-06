@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" nextobjectid="1">
  <tileset firstgid="1" name="terrain_atlas" tilewidth="32" tileheight="32">
-  <image source="../textures/terrain_atlas.png" width="1024" height="1024"/>
+  <image source="../../../../samples/TiledMap/assets/textures/terrain_atlas.png" width="1024" height="1024"/>
   <terraintypes>
    <terrain name="New Terrain" tile="394"/>
    <terrain name="New Terrain" tile="800"/>
@@ -39,17 +39,22 @@
  </layer>
  <layer name="Tile Layer 2" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJxjYKAMsAExOw7MQaHZxAA1IFbHgTXoYL8bELtD8SIgXozE96CD/WlAnA7Fh4D4MBI/gw72twFxOxQ/AuLHSPwOOtg/CnCDKiYGhmogrmEaGPtnAe2dDcRzkOz/wjgwboEBERLDgpphOAnodxMSzcEWhuhAECgnBMTCBMzeRKOwNwTaawTExgOUzgKB9gYBcfAA2T8KRsFwAYOxzhiqYDQshycYjddRMFwAAMPHIh8=
+   eJxjYKAMsAExOw7MQaHZxAA1IFbHgTXoYL8bELtD8SIgXozE96CD/WlAnA7Fh4D4MBI/gw72twFxOxQ/AuLHSPwOOtg/CnCDKiYGhmogrmEaGPtnAe2dDcRzkOz/wjgwboEBERLDgpphOAnodxMSzcEWhuhAECgnBMTCBMzeRKOwNwTaawTExgOUzgKB9gYBcfAA2T8KRsFwAYOxziAF3B9EZcBQD8tRgB2MxusoGC4AAFNAIwA=
   </data>
  </layer>
  <layer name="Tile Layer 3" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJxjYEAFakCsTgBrMNAODLT9bkDsTgB7UGiHORNuuTQgTieAM8iw8xgjcepoZT+xoA2I2wngDiLNmgn08ywgnk2k30kBJ4kwcydQzS4g3k0D+4kBN4H23gLi2zjsPwoVt8CTHtHDcAKQnghln6CDv9DDcAOQ3kjH8EQPwwtA+uIAxecoGP7ADE9eHAW4ATHlMTEAV51xnE55nl51Bq50RqjOIAXQov4lJX8M9vp3qAJatquIAZTEKzXKV2rE69FBmibwtQXJBfj6O7QA1KgLiO0vDXUAACA5QPw=
+   eJxjYEAFakCsTgBrMNAODLT9bkDsTgB7UGiHORNuuTQgTieAM8iw8xgjcepoZT+xoA2I2wngDiLNmgn08ywgnk2k30kBJ4kwcydQzS4g3k0D+4kBN4H23gLi2zjsPwoVt8CTHtHDcAKQnghln6CDv9DDcAOQ3kjH8EQPwwtA+uIAxecoGP7ADE9eHAW4ATHlMTEAV51xnE55nl51Bq50RqjOIAT2I5lLi/qXlPwx2OvfoQpo2a4iBlASr9QoX6kRr0cHaZrA1xYkF+Dr79ACUKMuILa/NNQBAGojQb0=
   </data>
  </layer>
  <layer name="Tile Layer 4" width="32" height="32">
   <data encoding="base64" compression="zlib">
    eJxjYMAPuhgZGCyYGBh6GAkopBEA2W9Ghv2MVHLvNKA504F4xgD5fxvQ3u1AvGOA7L8GtPc6EN8A4oUDYP83oL3fgfgHEOcx0d9+MaCd4kAsMQB2j4KRCdYyD7QLIIBrkLhjMAG90TChCQgbLV9HwSgYcmA1sDw8DcTczJCy0ZvO5WM30L43QPwKiNcxQ/jn6egGbWYIBrmhH4h1gJhvtI4YBUMEAACYwxdI
+  </data>
+ </layer>
+ <layer name="collisions" width="32" height="32" visible="0" opacity="0.73">
+  <data encoding="base64" compression="zlib">
+   eJztU0EKwCAMc0/y/5/baTCG1TaJ3QYt5CBK0tS0H631QoGAVW/rZ/bxVf3r7u9/4OHwFOLnfs6Yg7eQHCo8MKXO1YhTqT/jRPcxmutZLtn3zEwi+p57ZS/MPym10ZygvUR5rLdqfYtL6f/ZO6uv8L6aJevXW+yeoLor3l2eo5mJaiO7xkLhd0cv2doFHU5XcJNF
   </data>
  </layer>
 </map>

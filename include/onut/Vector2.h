@@ -511,6 +511,8 @@ namespace onut
 {
     Vector2 tilesCollision(const Vector2& from, const Vector2& to, const Vector2& size,
                            bool* pPassableTiles, int width, int height, int tileSize);
+    Vector2 tilesCollision(const Vector2& from, const Vector2& to, const Vector2& size,
+                           float* pPassableTiles, int width, int height, int tileSize);
 }
 
 #endif

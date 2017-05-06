@@ -7,6 +7,9 @@
 #include <onut/Resource.h>
 #include <onut/SampleMode.h>
 
+// Thirs party
+#include <micropather/micropather.h>
+
 // STL
 #include <unordered_map>
 
@@ -20,7 +23,7 @@ OForwardDeclare(VertexBuffer);
 
 namespace onut
 {
-    class TiledMap final : public Resource
+    class TiledMap final : public Resource, public micropather::Graph
     {
     public:
         struct Layer
@@ -94,9 +97,16 @@ namespace onut
         Layer* getLayer(int index) const { return m_layers[index]; }
         Layer* getLayer(const std::string &name) const;
         int getLayerIndex(const std::string &name) const;
-        bool* generateCollisions(const std::string &collisionLayerName);
-        bool* getCollisionTiles() const { return m_pCollisionTiles; }
+        float* generateCollisions(const std::string &collisionLayerName);
+        float* getCollisionTiles() const { return m_pCollisionTiles; }
         Layer* addLayer(const std::string &name);
+        void resetPath();
+
+        using Path = std::vector<Point>;
+        static const int PATH_ALLOW_DIAGONAL = 0x1;
+        static const int PATH_CROSS_CORNERS = 0x2;
+        Path getPath(const Point& from, const Point& to, int type = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS);
+        void getPath(const Point& from, const Point& to, Path& path, int type = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS);
 
         const OTextureRef& getMinimap();
 
@@ -134,6 +144,9 @@ namespace onut
         };
 
         void refreshChunk(Chunk* pChunk, TileLayerInternal* pLayer);
+        float LeastCostEstimate(void* stateStart, void* stateEnd) override;
+        void AdjacentCost(void* state, MP_VECTOR< micropather::StateCost > *adjacent) override;
+        void PrintStateInfo(void* state) override;
 
         int m_width = 0;
         int m_height = 0;
@@ -145,7 +158,10 @@ namespace onut
         Matrix m_transform = Matrix::Identity;
         onut::sample::Filtering m_filtering = OFilterNearest;
         OTextureRef m_pMinimap;
-        bool* m_pCollisionTiles = nullptr;
+        micropather::MicroPather *m_pMicroPather = nullptr;
+        float* m_pCollisionTiles = nullptr;
+        int m_pathType = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS;
+        MP_VECTOR<void*> m_cachedPath;
     };
 };
 

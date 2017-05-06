@@ -1,0 +1,2 @@
+resolution = 1024x768
+onScreenLog = true
