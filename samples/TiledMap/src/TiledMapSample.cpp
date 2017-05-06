@@ -7,6 +7,7 @@ OTiledMapRef pTiledMap;
 OTiledMap::Path path1;
 OTiledMap::Path path2;
 OTiledMap::Path path3;
+OTiledMap::Path path4;
 
 void initSettings()
 {
@@ -21,6 +22,7 @@ void init()
     path1 = pTiledMap->getPath(Point(13, 27), Point(6, 12), OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS);
     path2 = pTiledMap->getPath(Point(13, 27), Point(6, 12), 0);
     path3 = pTiledMap->getPath(Point(13, 27), Point(6, 12), OTiledMap::PATH_ALLOW_DIAGONAL);
+    path4 = pTiledMap->getPath(Point(13, 27), Point(1, 30), OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS); // Impossible, will get closest
 }
 
 void update()
@@ -50,6 +52,7 @@ void render()
     drawPath(path1, transform, Color(1, 0, 0));
     drawPath(path2, transform, Color(0, 1, 0));
     drawPath(path3, transform, Color(0, 0, 1));
+    drawPath(path4, transform, Color(1, 0, 1));
 }
 
 void postRender()

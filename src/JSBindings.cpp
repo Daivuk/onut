@@ -4475,7 +4475,8 @@ namespace onut
                         auto pTiledMap = ppTiledMap->get();
                         if (pTiledMap)
                         {
-                            auto path = pTiledMap->getPath(Point(JS_INT(0), JS_INT(1)), Point(JS_INT(2), JS_INT(3)), JS_INT(4, OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS));
+                            static OTiledMap::Path path;
+                            pTiledMap->getPath(Point(JS_INT(0), JS_INT(1)), Point(JS_INT(2), JS_INT(3)), path, JS_INT(4, OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS));
                             auto arr_idx = duk_push_array(ctx);
                             for (size_t i = 0; i < path.size(); ++i)
                             {
@@ -4490,6 +4491,43 @@ namespace onut
                 return 0;
             }, 5);
             duk_put_prop_string(ctx, -2, "getPath");
+
+            // Get a path with cost
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                if (duk_is_number(ctx, 0) &&
+                    duk_is_number(ctx, 1) &&
+                    duk_is_number(ctx, 2) &&
+                    duk_is_number(ctx, 3))
+                {
+                    duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                    auto ppTiledMap = (OTiledMapRef*)duk_to_pointer(ctx, -1);
+                    if (ppTiledMap)
+                    {
+                        duk_pop(ctx);
+                        auto pTiledMap = ppTiledMap->get();
+                        if (pTiledMap)
+                        {
+                            auto path = pTiledMap->getPathWithCost(Point(JS_INT(0), JS_INT(1)), Point(JS_INT(2), JS_INT(3)), JS_INT(4, OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS));
+                            duk_push_object(ctx);
+                            auto arr_idx = duk_push_array(ctx);
+                            for (size_t i = 0; i < path.path.size(); ++i)
+                            {
+                                const auto& pos = path.path[i];
+                                newVector2(ctx, Vector2((float)pos.x, (float)pos.y));
+                                duk_put_prop_index(ctx, arr_idx, i);
+                            }
+                            duk_put_prop_string(ctx, -2, "path");
+                            duk_push_number(ctx, path.cost);
+                            duk_put_prop_string(ctx, -2, "cost");
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
+            }, 5);
+            duk_put_prop_string(ctx, -2, "getPathWithCost");
 
             // getLayerIndex
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t

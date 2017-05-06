@@ -3,6 +3,7 @@
 #include <onut/Crypto.h>
 #include <onut/Files.h>
 #include <onut/IndexBuffer.h>
+#include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Strings.h>
@@ -51,11 +52,6 @@ namespace onut
         pRet->m_height = height;
         pRet->m_tileSize = tileSize;
         auto len = width  * height;
-        pRet->m_pCollisionTiles = new float[len];
-        for (int i = 0; i < len; ++i)
-        {
-            pRet->m_pCollisionTiles[i] = 1.0f;
-        }
 
         return pRet;
     }
@@ -338,7 +334,7 @@ namespace onut
     TiledMap::~TiledMap()
     {
         if (m_pMicroPather) delete m_pMicroPather;
-        if (m_pCollisionTiles) delete[] m_pCollisionTiles;
+        if (m_pCollisionTileCost) delete[] m_pCollisionTileCost;
         if (m_layers)
         {
             for (auto i = 0; i < m_layerCount; ++i)
@@ -405,26 +401,26 @@ namespace onut
 
     float* TiledMap::generateCollisions(const std::string &collisionLayerName)
     {
-        if (m_pCollisionTiles) return m_pCollisionTiles;
+        if (m_pCollisionTileCost) return m_pCollisionTileCost;
         int len = m_width * m_height;
-        m_pCollisionTiles = new float[len];
+        m_pCollisionTileCost = new float[len];
         auto pLayer = dynamic_cast<TileLayer*>(getLayer(collisionLayerName));
         if (pLayer)
         {
             for (int i = 0; i < len; ++i)
             {
-                m_pCollisionTiles[i] = (pLayer->tileIds[i] == 0) ? 1.0f : 0.0f;
+                m_pCollisionTileCost[i] = (pLayer->tileIds[i] == 0) ? 1.0f : 0.0f;
             }
         }
         else
         {
             for (int i = 0; i < len; ++i)
             {
-                m_pCollisionTiles[i] = 1.0f;
+                m_pCollisionTileCost[i] = 1.0f;
             }
         }
         m_pMicroPather = new micropather::MicroPather(this, (unsigned int)len, 8, true);
-        return m_pCollisionTiles;
+        return m_pCollisionTileCost;
     }
 
     TiledMap::TileSet* TiledMap::getTileSet(int index) const
@@ -790,78 +786,118 @@ namespace onut
         if (allowDiagonal)
         {
             float costs[8] = {
-                getTileCostAt(mapPos.x - 1, mapPos.y - 1, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x, mapPos.y - 1, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x + 1, mapPos.y - 1, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x - 1, mapPos.y, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x + 1, mapPos.y, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x - 1, mapPos.y + 1, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x, mapPos.y + 1, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x + 1, mapPos.y + 1, w, h, m_pCollisionTiles)
+                getTileCostAt(mapPos.x - 1, mapPos.y - 1, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x, mapPos.y - 1, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x + 1, mapPos.y - 1, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x - 1, mapPos.y, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x + 1, mapPos.y, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x - 1, mapPos.y + 1, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x, mapPos.y + 1, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x + 1, mapPos.y + 1, w, h, m_pCollisionTileCost)
             };
 
             auto crossCorners = m_pathType & PATH_CROSS_CORNERS;
 
             if (crossCorners)
             {
-                if (costs[0] > 0.0f && (costs[1] > 0.0f || costs[3]) > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), calcCost(k, k - w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                if (costs[0] > 0.0f && (costs[1] > 0.0f || costs[3] > 0.0f))
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), calcCost(k, k - w - 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), 1000000 });
                 if (costs[1] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTiles) });
-                if (costs[2] > 0.0f && (costs[1] > 0.0f || costs[4]) > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), calcCost(k, k - w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), 1000000 });
+                if (costs[2] > 0.0f && (costs[1] > 0.0f || costs[4] > 0.0f))
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), calcCost(k, k - w + 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), 1000000 });
 
                 if (costs[3] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), 1000000 });
                 if (costs[4] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), 1000000 });
 
-                if (costs[5] > 0.0f && (costs[3] > 0.0f || costs[6]) > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), calcCost(k, k + w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                if (costs[5] > 0.0f && (costs[3] > 0.0f || costs[6] > 0.0f))
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), calcCost(k, k + w - 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), 1000000 });
                 if (costs[6] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTiles) });
-                if (costs[7] > 0.0f && (costs[4] > 0.0f || costs[6]) > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), calcCost(k, k + w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), 1000000 });
+                if (costs[7] > 0.0f && (costs[4] > 0.0f || costs[6] > 0.0f))
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), calcCost(k, k + w + 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), 1000000 });
             }
             else
             {
                 if (costs[0] > 0.0f && costs[1] > 0.0f && costs[3] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), calcCost(k, k - w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), calcCost(k, k - w - 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y - 1), w), 1000000 });
                 if (costs[1] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), 1000000 });
                 if (costs[2] > 0.0f && costs[1] > 0.0f && costs[4] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), calcCost(k, k - w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), calcCost(k, k - w + 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y - 1), w), 1000000 });
 
                 if (costs[3] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), 1000000 });
                 if (costs[4] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), 1000000 });
 
                 if (costs[5] > 0.0f && costs[3] > 0.0f && costs[6] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), calcCost(k, k + w - 1, DIAGONAL_COST, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), calcCost(k, k + w - 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y + 1), w), 1000000 });
                 if (costs[6] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), 1000000 });
                 if (costs[7] > 0.0f && costs[4] > 0.0f && costs[6] > 0.0f)
-                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), calcCost(k, k + w + 1, DIAGONAL_COST, m_pCollisionTiles) });
+                    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), calcCost(k, k + w + 1, DIAGONAL_COST, m_pCollisionTileCost) });
+                //else
+                //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y + 1), w), 1000000 });
             }
         }
         else
         {
             float costs[4] = {
-                getTileCostAt(mapPos.x, mapPos.y - 1, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x - 1, mapPos.y, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x + 1, mapPos.y, w, h, m_pCollisionTiles),
-                getTileCostAt(mapPos.x, mapPos.y + 1, w, h, m_pCollisionTiles)
+                getTileCostAt(mapPos.x, mapPos.y - 1, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x - 1, mapPos.y, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x + 1, mapPos.y, w, h, m_pCollisionTileCost),
+                getTileCostAt(mapPos.x, mapPos.y + 1, w, h, m_pCollisionTileCost)
             };
 
             if (costs[0] > 0.0f)
-                adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTiles) });
+                adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), calcCost(k, k - w, 1.0f, m_pCollisionTileCost) });
+            //else
+            //    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y - 1), w), 1000000 });
             if (costs[1] > 0.0f)
-                adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTiles) });
+                adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), calcCost(k, k - 1, 1.0f, m_pCollisionTileCost) });
+            //else
+            //    adjacent->push_back({ mapToState(Point(mapPos.x - 1, mapPos.y), w), 1000000 });
             if (costs[2] > 0.0f)
-                adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTiles) });
+                adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), calcCost(k, k + 1, 1.0f, m_pCollisionTileCost) });
+            //else
+            //    adjacent->push_back({ mapToState(Point(mapPos.x + 1, mapPos.y), w), 1000000 });
             if (costs[3] > 0.0f)
-                adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTiles) });
+                adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), calcCost(k, k + w, 1.0f, m_pCollisionTileCost) });
+            //else
+            //    adjacent->push_back({ mapToState(Point(mapPos.x, mapPos.y + 1), w), 1000000 });
         }
     }
 
@@ -898,13 +934,54 @@ namespace onut
         float cost = 0.0f;
         m_cachedPath.clear();
 
-        m_pMicroPather->Solve(mapToState(from, m_width), mapToState(to, m_width), &m_cachedPath, &cost);
+        //auto timeBefore = std::chrono::steady_clock::now();
+        auto ret = m_pMicroPather->Solve(mapToState(from, m_width), mapToState(to, m_width), &m_cachedPath, &cost);
+        //auto timeAfter = std::chrono::steady_clock::now();
+        //OLog("time: " + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(timeAfter - timeBefore).count()));
+        if (ret == micropather::MicroPather::START_END_SAME)
+        {
+            path.push_back(from);
+            path.push_back(to);
+        }
 
         auto len = m_cachedPath.size();
         auto w = m_width;
         for (unsigned int i = 0; i < len; ++i)
         {
             path.push_back(stateToMap(m_cachedPath[i], w));
+        }
+    }
+
+    TiledMap::PathWithCost TiledMap::getPathWithCost(const Point& from, const Point& to, int type)
+    {
+        PathWithCost ret;
+        getPathWithCost(from, to, ret, type);
+        return std::move(ret);
+    }
+
+    void TiledMap::getPathWithCost(const Point& from, const Point& to, PathWithCost& path, int type)
+    {
+        path.path.clear();
+
+        if (!m_pMicroPather) return;
+
+        if (type != m_pathType) m_pMicroPather->Reset();
+        m_pathType = type;
+        path.cost = 0.0f;
+        m_cachedPath.clear();
+
+        auto ret = m_pMicroPather->Solve(mapToState(from, m_width), mapToState(to, m_width), &m_cachedPath, &path.cost);
+        if (ret == micropather::MicroPather::START_END_SAME)
+        {
+            path.path.push_back(from);
+            path.path.push_back(to);
+        }
+
+        auto len = m_cachedPath.size();
+        auto w = m_width;
+        for (unsigned int i = 0; i < len; ++i)
+        {
+            path.path.push_back(stateToMap(m_cachedPath[i], w));
         }
     }
 };

@@ -98,15 +98,23 @@ namespace onut
         Layer* getLayer(const std::string &name) const;
         int getLayerIndex(const std::string &name) const;
         float* generateCollisions(const std::string &collisionLayerName);
-        float* getCollisionTiles() const { return m_pCollisionTiles; }
+        float* getCollisionTiles() const { return m_pCollisionTileCost; }
         Layer* addLayer(const std::string &name);
         void resetPath();
 
         using Path = std::vector<Point>;
         static const int PATH_ALLOW_DIAGONAL = 0x1;
         static const int PATH_CROSS_CORNERS = 0x2;
+
+        struct PathWithCost
+        {
+            float cost;
+            Path path;
+        };
         Path getPath(const Point& from, const Point& to, int type = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS);
         void getPath(const Point& from, const Point& to, Path& path, int type = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS);
+        PathWithCost getPathWithCost(const Point& from, const Point& to, int type = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS);
+        void getPathWithCost(const Point& from, const Point& to, PathWithCost& path, int type = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS);
 
         const OTextureRef& getMinimap();
 
@@ -159,7 +167,7 @@ namespace onut
         onut::sample::Filtering m_filtering = OFilterNearest;
         OTextureRef m_pMinimap;
         micropather::MicroPather *m_pMicroPather = nullptr;
-        float* m_pCollisionTiles = nullptr;
+        float* m_pCollisionTileCost = nullptr;
         int m_pathType = PATH_ALLOW_DIAGONAL | PATH_CROSS_CORNERS;
         MP_VECTOR<void*> m_cachedPath;
     };
