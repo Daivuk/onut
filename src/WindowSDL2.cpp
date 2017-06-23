@@ -1,6 +1,7 @@
 // Onut
 #include <onut/GamePad.h>
 #include <onut/Log.h>
+#include <onut/Renderer.h>
 #include <onut/Settings.h>
 
 // Internal
@@ -32,6 +33,7 @@ namespace onut
         // Create SDL Window
         const auto& resolution = oSettings->getResolution();
         bool borderLessFullscreen = oSettings->getBorderlessFullscreen();
+        bool resizable = oSettings->getIsResizableWindow();
 
         Uint32 flags = SDL_WINDOW_OPENGL |
                        SDL_WINDOW_SHOWN;
@@ -40,6 +42,10 @@ namespace onut
             OLog("We go full screen");
             flags |= SDL_WINDOW_FULLSCREEN_DESKTOP |
                      SDL_WINDOW_BORDERLESS;
+        }
+        else if (resizable)
+        {
+            flags |= SDL_WINDOW_RESIZABLE;
         }
         m_pWindow = SDL_CreateWindow(oSettings->getGameName().c_str(),
                                      SDL_WINDOWPOS_CENTERED, 
@@ -86,6 +92,18 @@ namespace onut
 
             switch (event.type)
             {
+                case SDL_WINDOWEVENT:
+                {
+                    switch (event.window.event)
+                    {
+                        case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        {
+                            if (oRenderer) oRenderer->onResize({event.window.data1, event.window.data2});
+                            break;
+                        }
+                    }
+                    break;
+                }
                 case SDL_QUIT:
                     return false;
                 case SDL_TEXTINPUT:

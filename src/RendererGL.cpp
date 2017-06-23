@@ -122,6 +122,8 @@ namespace onut
 
     void RendererGL::onResize(const Point& newSize)
     {
+        m_resolution.x = newSize.x;
+        m_resolution.y = newSize.y;
     }
 
     void RendererGL::createRenderStates()
