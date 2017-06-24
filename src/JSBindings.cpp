@@ -942,7 +942,7 @@ namespace onut
             {
                 auto v1 = getVector2(ctx, 0);
                 auto v2 = getVector2(ctx, 1);
-                newVector2(ctx, Vector2::Max(v2, v2));
+                newVector2(ctx, Vector2::Max(v1, v2));
                 return 1;
             }, 2);
             duk_put_prop_string(ctx, -2, "max");
@@ -1310,7 +1310,7 @@ namespace onut
             {
                 auto v1 = getVector3(ctx, 0);
                 auto v2 = getVector3(ctx, 1);
-                newVector3(ctx, Vector3::Max(v2, v2));
+                newVector3(ctx, Vector3::Max(v1, v2));
                 return 1;
             }, 2);
             duk_put_prop_string(ctx, -2, "max");
@@ -1702,7 +1702,7 @@ namespace onut
             {
                 auto v1 = getVector4(ctx, 0);
                 auto v2 = getVector4(ctx, 1);
-                newVector4(ctx, Vector4::Max(v2, v2));
+                newVector4(ctx, Vector4::Max(v1, v2));
                 return 1;
             }, 2);
             duk_put_prop_string(ctx, -2, "max");
