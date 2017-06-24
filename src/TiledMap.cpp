@@ -81,21 +81,51 @@ namespace onut
         {
             auto &pTileSet = pRet->m_tileSets[pRet->m_tilesetCount];
 
-            pTileSet.name = pXMLTileset->Attribute("name");
             pTileSet.firstId = pXMLTileset->IntAttribute("firstgid");
-            assert(pTileSet.firstId);
-            pRet->m_tileSize = pTileSet.tileWidth = pXMLTileset->IntAttribute("tilewidth");
-            assert(pTileSet.tileWidth);
-            pTileSet.tileHeight = pXMLTileset->IntAttribute("tileheight");
-            assert(pTileSet.tileHeight);
+            auto szSource = pXMLTileset->Attribute("source");
 
-            auto pXMLImage = pXMLTileset->FirstChildElement("image");
-            assert(pXMLImage);
-            auto szImageFilename = pXMLImage->Attribute("source");
-            assert(szImageFilename);
-            pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+            if (szSource && onut::getExtension(szSource) == "TSX")
+            {
+                tinyxml2::XMLDocument docTXS;
+                auto fullpathTXS = pContentManager->findResourceFile(onut::getFilename(szSource));
+                docTXS.LoadFile(fullpathTXS.c_str());
+                assert(!docTXS.Error());
+                auto pTXSTileset = docTXS.FirstChildElement("tileset");
+                assert(pTXSTileset);
 
-            pRet->m_tilesetCount++;
+                pTileSet.name = pTXSTileset->Attribute("name");
+                assert(pTileSet.firstId);
+                pRet->m_tileSize = pTileSet.tileWidth = pTXSTileset->IntAttribute("tilewidth");
+                assert(pTileSet.tileWidth);
+                pTileSet.tileHeight = pTXSTileset->IntAttribute("tileheight");
+                assert(pTileSet.tileHeight);
+
+                auto pXMLImage = pTXSTileset->FirstChildElement("image");
+                assert(pXMLImage);
+                auto szImageFilename = pXMLImage->Attribute("source");
+                assert(szImageFilename);
+                pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+
+                pRet->m_tilesetCount++;
+            }
+            else
+            {
+                pTileSet.name = pXMLTileset->Attribute("name");
+                pTileSet.firstId = pXMLTileset->IntAttribute("firstgid");
+                assert(pTileSet.firstId);
+                pRet->m_tileSize = pTileSet.tileWidth = pXMLTileset->IntAttribute("tilewidth");
+                assert(pTileSet.tileWidth);
+                pTileSet.tileHeight = pXMLTileset->IntAttribute("tileheight");
+                assert(pTileSet.tileHeight);
+
+                auto pXMLImage = pXMLTileset->FirstChildElement("image");
+                assert(pXMLImage);
+                auto szImageFilename = pXMLImage->Attribute("source");
+                assert(szImageFilename);
+                pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+
+                pRet->m_tilesetCount++;
+            }
         }
 
         // Layers
