@@ -10,13 +10,10 @@
 void initSettings()
 {
     std::string path = ".";
-    if (!OArguments.empty()) path = OArguments[0];
+    if (!OArguments.empty()) path = OArguments.back();
 
-    if (path.back() != '\\' && path.back() != '/')
-    {
-        path += '/';
-    }
-    auto workingDirectory = onut::getPath(path);
+    path = onut::getPath(path);
+    auto workingDirectory = path;
 
     // Set content manager path
     oContentManager = OContentManager::create();

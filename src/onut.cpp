@@ -394,11 +394,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 #else
 int main(int argc, char** argv)
 {
-    for (int i = 1; i < argc; ++i)
+    for (int i = 0; i < argc; ++i)
     {
         OArguments.push_back(argv[i]);
     }
-    if (argc == 1 || argc == 0) OArguments.push_back(".");
+
     initSettings();
     onut::run(init, update, render, postRender);
     return 0;
