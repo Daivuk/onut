@@ -2,7 +2,7 @@
 #include <onut/ContentManager.h>
 #include <onut/Strings.h>
 
-// Internal
+// Interncal
 #include "MusicRPI.h"
 
 // Third party
@@ -37,9 +37,6 @@ namespace onut
 
     void MusicRPI::setVolume(float volume)
     {
-        float decibelDenominator = 4000.f;
-        if (volume < 0.1f)
-            decibelDenominator = 10000.f;
         m_volume = volume;
 
         // set volume ...

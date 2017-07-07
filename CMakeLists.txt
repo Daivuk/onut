@@ -60,7 +60,6 @@ if (RPI)
         src/VideoPlayerLinux.cpp
         src/IndexBufferGLES2.cpp 
         src/HttpCURL.cpp
-        src/MusicRPI.cpp
         src/RendererGLES2.cpp 
         src/ShaderGLES2.cpp 
         src/SocketTCP_Unix.cpp
@@ -79,7 +78,6 @@ if (APPLE)
         src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
-        src/MusicSDL2.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
         src/SocketTCP_Unix.cpp
@@ -97,7 +95,6 @@ if (LINUX)
         src/InputDeviceSDL2.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
-        src/MusicSDL2.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
         src/SocketTCP_Unix.cpp
@@ -115,8 +112,6 @@ if (WIN32)
         src/GamePadXInput.cpp
         src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
-        src/mp3/Mp3.cpp
-        src/MusicWIN32.cpp
         src/SocketTCP_Win32.cpp
         src/WindowWIN32.cpp 
     )
@@ -223,6 +218,7 @@ list(APPEND src_files
     src/micropather.cpp
     src/Multiplayer.cpp
     src/Music.cpp
+    src/MusicOGG.cpp
     src/onut.cpp 
     src/Particle.cpp
     src/ParticleEmitter.cpp

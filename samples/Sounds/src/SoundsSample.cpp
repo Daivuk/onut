@@ -34,7 +34,7 @@ void initSettings()
 
 void init()
 {
-    pMusic = OGetMusic("music.mp3");
+    pMusic = OGetMusic("music.ogg");
 
     pLoopingSound = OCreateSoundInstance("looping.wav");
     pLoopingSound->setLoop(true);
