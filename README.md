@@ -46,6 +46,7 @@ See `onut/samplesJS/` folders for more detailed samples.
 * Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
 * Ottawa Game Jam 2016 - [Spy Satellite Showdown ](https://www.youtube.com/watch?v=NHyGlVm2ICA)
 * Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
+* Ottawa Game Jam 2017 - [Sheep Dog Heroes ]()
 
 ### See subsection on how to compile and run on each platforms
 
@@ -216,9 +217,9 @@ Here is a table of features with support per platform and availability to the ja
 | Maths             | ✓          | ✓    | ✓     | ✓                   |
 | Mouse             | ✓          | ✓    | ✓     | ✓                   |
 | Multiplayer       |            |      |       |                     |
-| Music             | ✓          |      |       | ✓                   |
+| Music             | ✓          | ✓    | ✓     | ✓                   |
 | Native Cursor     | ✓          | ✓    | ✓     | ✓                   |
-| Path Finding      | ✓          | ✓    | ✓     |                     |
+| Path Finding      | ✓          | ✓    | ✓     | ✓                   |
 | Particles         | ✓          | ✓    | ✓     | ✓                   |
 | PrimitiveBatch    | ✓          | ✓    | ✓     | ✓                   |
 | Random            | ✓          | ✓    | ✓     | ✓                   |
