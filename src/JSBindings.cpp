@@ -3555,6 +3555,21 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "isPlaying");
 
+            // isPaused()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppMusic = (OMusicRef*)duk_to_pointer(ctx, -1);
+                if (ppMusic)
+                {
+                    duk_push_boolean(ctx, (*ppMusic)->isPaused());
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "isPaused");
+
             // Done with the object
             pMusicPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");

@@ -1,21 +1,31 @@
-#ifndef MUSICRPI_H_INCLUDED
-#define MUSICRPI_H_INCLUDED
+#ifndef MUSICOGG_H_INCLUDED
+#define MUSICOGG_H_INCLUDED
 
 // Onut
+#include <onut/AudioStream.h>
 #include <onut/Music.h>
 #include <onut/Resource.h>
 
+// Third party
+#include <stb/stb_vorbis.c>
+
+// STL
+#include <atomic>
+#include <mutex>
+#include <thread>
+#include <vector>
+
 // Forward
 #include <onut/ForwardDeclaration.h>
-OForwardDeclare(MusicRPI)
+OForwardDeclare(MusicOGG)
 
 namespace onut
 {
-    class MusicRPI final : public Music
+    class MusicOGG final : public Music, public AudioStream, public std::enable_shared_from_this<AudioStream>
     {
     public:
-        MusicRPI();
-        ~MusicRPI();
+        MusicOGG();
+        ~MusicOGG();
         
         void play(bool loop = false) override;
         void stop() override;
@@ -24,14 +34,39 @@ namespace onut
         void setVolume(float volume) override;
 
         bool isPlaying() const override { return m_isPlaying; }
+        bool isPaused() const override { return m_paused && m_isPlaying; }
         bool isDone() override;
+
+    protected:
+        bool progress(int frameCount, int sampleRate, int channelCount, float* pOut) override;
 
     private:
         friend class Music;
 
-        float m_volume = 1.f;
-        bool m_isPlaying = false;
-        bool m_loop = false;
+        struct Buffer
+        {
+            int offset = 0;
+            int count = 0;
+            std::vector<float> data;
+        };
+
+        void run();
+
+        std::mutex m_mutex;
+        std::thread m_thread;
+        std::atomic<float> m_volume;
+        std::atomic<bool> m_isPlaying;
+        std::atomic<bool> m_loop;
+        std::vector<Buffer*> m_buffers;
+        std::atomic<int> m_bufferCount;
+        std::atomic<bool> m_done;
+        bool m_paused = false;
+        unsigned int m_sampleCount = 0;
+        int m_bufferMax;
+        int m_engineChannelCount;
+        std::string m_filename;
+        stb_vorbis* m_pStream = nullptr;
+        stb_vorbis_info m_info;
     };
 }
 

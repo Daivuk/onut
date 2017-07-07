@@ -115,6 +115,11 @@ void update()
             pMusic->play();
         }
     }
+    if (OInputJustPressed(OKeySpaceBar))
+    {
+        if (!pMusic->isPaused()) pMusic->pause();
+        else pMusic->resume();
+    }
     if (OInputJustPressed(OKeyQ)) pNotes[0]->play(volume, balance);
     if (OInputJustPressed(OKeyW)) pNotes[1]->play(volume, balance);
     if (OInputJustPressed(OKeyE)) pNotes[2]->play(volume, balance);
@@ -150,7 +155,7 @@ void render()
     }
     pFont->draw("Press ^9907^999 to play cue file", {10, 130});
     pFont->draw("Press ^990qwertyui^999 to do music", {10, 150});
-    pFont->draw("Press ^9909^999 to play/stop music", {10, 170});
+    pFont->draw("Press ^9909^999 to play/stop music (^990SpaceBar^999 to pause/resume)", {10, 170});
 
     pFont->draw("Hold ^990Left Arrow^999 to on left channel", {10, OScreenHf - 50});
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", {10, OScreenHf - 30});

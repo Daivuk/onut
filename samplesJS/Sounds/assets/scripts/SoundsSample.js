@@ -1,5 +1,5 @@
 var font = getFont("font.fnt");
-var music = getMusic("music.mp3");
+var music = getMusic("music.ogg");
 var sound5 = getSound("sound5.wav");
 var loopingSound = createSoundInstance("looping.wav");
 loopingSound.setLoop(true);
@@ -85,6 +85,17 @@ function update() {
         else {
             print("Start Music");
             music.play();
+        }
+    }
+    if (Input.isJustDown(Key.SPACE_BAR))
+    {
+        if (music.isPaused())
+        {
+            music.resume();
+        }
+        else
+        {
+            music.pause();
         }
     }
     if (Input.isJustDown(Key.Q)) notes[0].play(volume, balance);

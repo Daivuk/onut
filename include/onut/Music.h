@@ -25,6 +25,7 @@ namespace onut
         virtual void setVolume(float volume) = 0;
 
         virtual bool isPlaying() const = 0;
+        virtual bool isPaused() const = 0;
         virtual bool isDone() = 0;
 
     protected:
