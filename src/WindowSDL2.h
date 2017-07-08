@@ -5,7 +5,7 @@
 #include <onut/Window.h>
 
 // Third party
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 // Forward Declaration
 #include <onut/ForwardDeclaration.h>

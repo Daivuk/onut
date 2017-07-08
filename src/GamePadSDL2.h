@@ -5,7 +5,7 @@
 #include <onut/GamePad.h>
 
 // Third party
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 // STL
 #include <vector>

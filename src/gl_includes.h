@@ -12,7 +12,7 @@
     #include <gl/GLU.h>
 #else
     #include <GL/glew.h>
-    #include <SDL.h>
+    #include <SDL2/SDL.h>
 #endif
 
 #endif

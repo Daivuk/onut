@@ -8,9 +8,9 @@
 #include "InputDevice.h"
 
 // Third parties
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
-// STL
+// STL
 #include <vector>
 #include <unordered_map>
 
