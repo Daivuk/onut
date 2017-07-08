@@ -48,6 +48,7 @@ if (RPI)
 endif()
 if (WIN32)
     add_definitions(-DNOMINMAX)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 # Add RaspberryPI specific source files

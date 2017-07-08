@@ -192,8 +192,11 @@ namespace onut
 
     void InputDeviceDI8::unsetMouseIcon()
     {
-        m_cursor = LoadCursor(nullptr, IDC_ARROW);
-        SetCursor(m_cursor);
+        if (m_cursor)
+        {
+            m_cursor = NULL;
+            SetCursor(LoadCursor(nullptr, IDC_ARROW));
+        }
     }
 
     HCURSOR InputDeviceDI8::getCursor() const

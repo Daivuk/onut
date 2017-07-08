@@ -30,6 +30,7 @@ static const double NOTE_FREQUENCIES[8] = {
 void initSettings()
 {
     oSettings->setGameName("Sounds Sample");
+    oSettings->setIsResizableWindow(true);
 }
 
 void init()

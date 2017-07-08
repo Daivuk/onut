@@ -7,6 +7,7 @@
 void initSettings()
 {
     oSettings->setGameName("Cursor Sample");
+    oSettings->setIsResizableWindow(true);
 }
 
 void init()

@@ -169,8 +169,9 @@ namespace onut
 
     void RendererD3D11::onResize(const Point& newSize)
     {
-        m_pDeviceContext->Flush();
-        m_pDeviceContext->ClearState();
+        // Hum somehow this breaks all the things
+        //m_pDeviceContext->Flush();
+        //m_pDeviceContext->ClearState();
 
         renderStates = RenderStates();
 
@@ -179,7 +180,7 @@ namespace onut
 
         if (m_pDepthStencilView) m_pDepthStencilView->Release();
         m_pDepthStencilView = nullptr;
-
+        
         auto ret = m_pSwapChain->ResizeBuffers(0,
                                                static_cast<UINT>(newSize.x),
                                                static_cast<UINT>(newSize.y),

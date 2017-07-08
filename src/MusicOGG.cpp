@@ -3,12 +3,13 @@
 #include <onut/ContentManager.h>
 #include <onut/Strings.h>
 
-// Internal
-#include "MusicOGG.h"
-
 // STL
+#include <algorithm>
 #include <cassert>
 #include <chrono>
+
+// Internal (Have to include that last)
+#include "MusicOGG.h"
 
 // 5 seconds pre-buffer
 #define MUSIC_BUFFER_COUNT 5

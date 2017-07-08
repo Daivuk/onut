@@ -6,9 +6,6 @@
 #include <onut/Music.h>
 #include <onut/Resource.h>
 
-// Third party
-#include <stb/stb_vorbis.c>
-
 // STL
 #include <atomic>
 #include <mutex>
@@ -18,6 +15,9 @@
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(MusicOGG)
+
+// Third party (Have to include this last)
+#include <stb/stb_vorbis.c>
 
 namespace onut
 {
