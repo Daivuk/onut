@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
-option(ONUT_SHOW_FPS "Show the FPS" ON)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
 
 # Easier defines
@@ -17,11 +16,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 # project name
 project(onut)
 
-# Setup some vars
-if (NOT ONUT_SHOW_FPS)
-    set(ONUT_SHOW_FPS 1)
-endif()
-
 # Some compiler flags
 set(CMAKE_CXX_STANDARD 11)
 if (MSVC) # Multi core in VS
@@ -31,9 +25,6 @@ endif()
 # Pre processors
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-D_DEBUG)
-endif()
-if (ONUT_SHOW_FPS)
-    add_definitions(-DONUT_SHOW_FPS)
 endif()
 if (ONUT_USE_OPENGL EQUAL 1)
     add_definitions(-DONUT_USE_OPENGL)

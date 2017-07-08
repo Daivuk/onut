@@ -71,6 +71,9 @@ namespace onut
         int getMatchMakingPort() const { return m_matchMakingPort; }
         void setMatchMakingPort(int matchMakingPort);
 
+        bool getShowFPS() const { return m_showFPS; }
+        void setShowFPS(bool showFPS);
+
     private:
         using UserSettings = std::unordered_map<SettingKey, SettingValue>;
 
@@ -88,6 +91,7 @@ namespace onut
         bool m_showOnScreenLog = false;
         std::string m_matchMakingAddress = "192.168.1.112";
         int m_matchMakingPort = 4444;
+        bool m_showFPS = true;
 
         std::atomic<bool> m_isDirty;
         std::atomic<bool> m_isRunning;

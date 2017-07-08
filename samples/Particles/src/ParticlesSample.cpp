@@ -15,6 +15,7 @@ OAnimVector3 position;
 void initSettings()
 {
     oSettings->setGameName("Particles Sample");
+    oSettings->setShowFPS(true);
 }
 
 void init()
@@ -61,8 +62,6 @@ void render()
     // It is possible to manually call render an emitter,
     // so we can specify in which order it is renderer manually
     emitter.render();
-
-    pFont->draw("FPS: " + std::to_string(oTiming->getFPS()), {10, 50});
 
     oSpriteBatch->end();
 }

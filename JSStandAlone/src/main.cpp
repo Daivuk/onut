@@ -79,6 +79,11 @@ void initSettings()
                 value = onut::toUpper(value);
                 oSettings->setBorderlessFullscreen(value == "TRUE" || value == "1" || value == "ON");
             }
+            else if (what == "SHOWFPS")
+            {
+                value = onut::toUpper(value);
+                oSettings->setShowFPS(value == "TRUE" || value == "1" || value == "ON");
+            }
             else if (what == "FIXEDSTEP")
             {
                 value = onut::toUpper(value);

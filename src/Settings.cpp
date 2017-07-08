@@ -147,6 +147,11 @@ namespace onut
         m_matchMakingPort = matchMakingPort;
     }
 
+    void Settings::setShowFPS(bool showFPS)
+    {
+        m_showFPS = showFPS;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);
