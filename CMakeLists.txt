@@ -13,6 +13,15 @@ endif()
 # Setup modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
+if(NOT MSVC)
+    # Hunter Cross-platform package manager
+    include("cmake/HunterGate.cmake")
+    HunterGate(
+        URL "https://github.com/ruslo/hunter/archive/v0.19.26.tar.gz"
+        SHA1 "362b3c2fd8f0f50fc03cec5105be8fd4376ea886"
+    )
+endif()
+
 # project name
 project(onut)
 
@@ -301,23 +310,25 @@ if (LINUX OR RPI) # Only required on linux if we use std::thread
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
 if (LINUX)
-    find_package(GLEW REQUIRED)
-    list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
-    list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
+    hunter_add_package(glew)
+    find_package(glew CONFIG REQUIRED)
+    list(APPEND libs PUBLIC glew::glew)
 endif()
 if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
 
-    find_package(SDL2 REQUIRED)
-    list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
-    list(APPEND libs PUBLIC ${SDL2_LIBRARY})
+    # https://github.com/ruslo/hunter/wiki/pkg.sdl2
+    hunter_add_package(SDL2)
+    find_package(SDL2 CONFIG REQUIRED)
+    list(APPEND libs PUBLIC SDL2::SDL2-static)
 endif()
 if (UNIX)
-    find_package(CURL REQUIRED)
-    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
-    list(APPEND libs PUBLIC ${CURL_LIBRARIES})
+    # https://github.com/ruslo/hunter/wiki/pkg.curl
+    hunter_add_package(CURL)
+    find_package(CURL CONFIG REQUIRED)
+    list(APPEND libs PUBLIC CURL::libcurl)
 endif()
 if (WIN32)
     if (ONUT_USE_OPENGL EQUAL 1)

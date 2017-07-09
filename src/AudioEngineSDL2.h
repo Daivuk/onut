@@ -8,8 +8,8 @@
 #include <atomic>
 #include <thread>
 
-// Third parties
-#include <SDL.h>
+// Third parties
+#include <SDL2/SDL.h>
 
 namespace onut
 {
