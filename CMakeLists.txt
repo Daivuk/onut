@@ -337,9 +337,10 @@ if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2
     list(APPEND libs PUBLIC SDL2::SDL2-static)
 endif()
 if (UNIX)
-    find_package(CURL REQUIRED)
-    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
-    list(APPEND libs PUBLIC ${CURL_LIBRARIES})
+    # https://github.com/ruslo/hunter/wiki/pkg.curl
+    hunter_add_package(CURL)
+    find_package(CURL CONFIG REQUIRED)
+    list(APPEND libs PUBLIC CURL::libcurl)
 endif()
 if (WIN32)
     if (ONUT_USE_OPENGL EQUAL 1)
