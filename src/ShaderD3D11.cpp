@@ -19,7 +19,114 @@
 
 namespace onut
 {
-    OShaderRef Shader::createFromSource(const std::string& source, Type in_type, const VertexElements& vertexElements)
+    static std::string getTypeName(Shader::VarType type)
+    {
+        switch (type)
+        {
+        case Shader::VarType::Float: return "float";
+        case Shader::VarType::Float2: return "float2";
+        case Shader::VarType::Float3: return "float3";
+        case Shader::VarType::Float4: return "float4";
+        case Shader::VarType::Matrix: return "matrix";
+        default: assert(false);
+        }
+        return "";
+    }
+
+    static void bakeTokens(std::string& source, const std::vector<Shader::Token>& tokens)
+    {
+        for (const auto& token : tokens)
+        {
+            if (token.intrinsic == Shader::Intrinsic::None)
+            {
+                if (token.type == Shader::VarType::Unknown)
+                {
+                    if (token.str == ";") source += ";\n";
+                    else source += " " + token.str;
+                }
+                else
+                {
+                    source += " " + getTypeName(token.type);
+                }
+            }
+            else
+            {
+#define INTRINSICT_IMPL_1(__enum__, __name__, __0__) \
+    case Shader::Intrinsic::__enum__: \
+        source += " " #__name__ "("; \
+        bakeTokens(source, token.intrinsicArguments[__0__]); \
+        source += ")"; \
+        break
+
+#define INTRINSICT_IMPL_2(__enum__, __name__, __0__, __1__) \
+    case Shader::Intrinsic::__enum__: \
+        source += " " #__name__ "("; \
+        bakeTokens(source, token.intrinsicArguments[__0__]); \
+        source += ","; \
+        bakeTokens(source, token.intrinsicArguments[__1__]); \
+        source += ")"; \
+        break
+
+#define INTRINSICT_IMPL_3(__enum__, __name__, __0__, __1__, __2__) \
+    case Shader::Intrinsic::__enum__: \
+        source += " " #__name__ "("; \
+        bakeTokens(source, token.intrinsicArguments[__0__]); \
+        source += ","; \
+        bakeTokens(source, token.intrinsicArguments[__1__]); \
+        source += ","; \
+        bakeTokens(source, token.intrinsicArguments[__2__]); \
+        source += ")"; \
+        break
+
+                switch (token.intrinsic)
+                {
+                    INTRINSICT_IMPL_1(Radians, radians, 0);
+                    INTRINSICT_IMPL_1(Degrees, degrees, 0);
+                    INTRINSICT_IMPL_1(Sin, sin, 0);
+                    INTRINSICT_IMPL_1(Cos, cos, 0);
+                    INTRINSICT_IMPL_1(Tan, tan, 0);
+                    INTRINSICT_IMPL_1(ASin, asin, 0);
+                    INTRINSICT_IMPL_1(ACos, acos, 0);
+                    INTRINSICT_IMPL_1(ATan, atan, 0);
+                    INTRINSICT_IMPL_2(ATan2, atan2, 0, 1);
+                    INTRINSICT_IMPL_2(Pow, pow, 0, 1);
+                    INTRINSICT_IMPL_1(Exp, exp, 0);
+                    INTRINSICT_IMPL_1(Log, log, 0);
+                    INTRINSICT_IMPL_1(Exp2, exp2, 0);
+                    INTRINSICT_IMPL_1(Log2, log2, 0);
+                    INTRINSICT_IMPL_1(Sqrt, sqrt, 0);
+                    INTRINSICT_IMPL_1(RSqrt, rsqrt, 0);
+                    INTRINSICT_IMPL_1(Abs, abs, 0);
+                    INTRINSICT_IMPL_1(Sign, sign, 0);
+                    INTRINSICT_IMPL_1(Floor, floor, 0);
+                    INTRINSICT_IMPL_1(Ceil, ceil, 0);
+                    INTRINSICT_IMPL_1(Frac, frac, 0);
+                    INTRINSICT_IMPL_2(Mod, fmod, 0, 1);
+                    INTRINSICT_IMPL_2(Min, min, 0, 1);
+                    INTRINSICT_IMPL_2(Max, max, 0, 1);
+                    INTRINSICT_IMPL_3(Clamp, clamp, 0, 1, 2);
+                    INTRINSICT_IMPL_1(Saturate, saturate, 0);
+                    INTRINSICT_IMPL_3(Lerp, lerp, 0, 1, 2);
+                    INTRINSICT_IMPL_2(Step, step, 0, 1);
+                    INTRINSICT_IMPL_3(SmoothStep, smoothstep, 0, 1, 2);
+                    INTRINSICT_IMPL_1(Length, length, 0);
+                    INTRINSICT_IMPL_2(Distance, distance, 0, 1);
+                    INTRINSICT_IMPL_2(Dot, dot, 0, 1);
+                    INTRINSICT_IMPL_2(Cross, cross, 0, 1);
+                    INTRINSICT_IMPL_1(Normalize, normalize, 0);
+                    INTRINSICT_IMPL_3(FaceForward, faceforward, 0, 1, 2);
+                    INTRINSICT_IMPL_2(Reflect, reflect, 0, 1);
+                    INTRINSICT_IMPL_3(Refract, refract, 0, 1, 2);
+                    INTRINSICT_IMPL_1(Any, any, 0);
+                    INTRINSICT_IMPL_1(All, all, 0);
+                    INTRINSICT_IMPL_2(Mul, mul, 0, 1);
+                    default: assert(false);
+                }
+            }
+        }
+    }
+
+    OShaderRef Shader::createFromSource(const std::string& in_source, Type in_type, const VertexElements& vertexElements)
     {
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDevice = pRendererD3D11->getDevice();
@@ -27,45 +134,14 @@ namespace onut
         // Set the shader type
         if (in_type == OVertexShader)
         {
-            auto parsed = parseVertexShader(source);
-            std::smatch match;
+            auto parsed = parseVertexShader(in_source);
+            std::string source;
+            source.reserve(5000);
 
             // Add engine default constant buffers
-            if (std::regex_search(parsed.source, std::regex("\\boViewProjection\\b")))
-            {
-                parsed.source.insert(0, "cbuffer OViewProjection : register(b0)\n{\n    matrix oViewProjection;\n}\n\n");
-            }
+            source += "cbuffer OViewProjection : register(b0)\n{\n    matrix oViewProjection;\n}\n\n";
 
-            // Replace main
-            if (std::regex_search(parsed.source, match, std::regex("void\\s+main\\s*\\(\\s*\\)\\s*\\{")))
-            {
-                parsed.source[match.position()] = '/';
-                parsed.source[match.position() + 1] = '*';
-                parsed.source[match.position() + match.length() - 2] = '*';
-                parsed.source[match.position() + match.length() - 1] = '/';
-                parsed.source.insert(match.position(), "oVSOutput main(oVSInput oInput)\n{\n    oVSOutput oOutput;\n");
-
-                size_t offset = match.position() + match.length();
-                if (std::regex_search(parsed.source.cbegin() + offset, parsed.source.cend(), match, std::regex("\\}")))
-                {
-                    parsed.source.insert(offset + match.position(), "    return oOutput;\n");
-                }
-                else assert(false); // No matching closing } to main function
-            }
-            else assert(false); // Shader should include "void main()"
-
-                                // Replace element variables with structs
-            for (auto& element : parsed.inputs)
-            {
-                onut::replace(parsed.source, "\\b" + element.name + "\\b", "oInput." + element.name);
-            }
-            for (auto& element : parsed.outputs)
-            {
-                onut::replace(parsed.source, "\\b" + element.name + "\\b", "oOutput." + element.name);
-            }
-            onut::replace(parsed.source, "\\boPosition\\b", "oOutput.position");
-
-            // Add vertex elements
+            // Put inputs
             VertexElements vertexElements;
             std::string elementStructsSource;
             elementStructsSource += "struct oVSInput\n{\n";
@@ -73,15 +149,8 @@ namespace onut
             for (auto& element : parsed.inputs)
             {
                 std::string semanticName = "INPUT_ELEMENT" + std::to_string(semanticIndex++);
-                vertexElements.push_back({ element.size, "INPUT_ELEMENT" });
-                switch (element.size)
-                {
-                case 1: elementStructsSource += "    float "; break;
-                case 2: elementStructsSource += "    float2 "; break;
-                case 3: elementStructsSource += "    float3 "; break;
-                case 4: elementStructsSource += "    float4 "; break;
-                default: assert(false);
-                }
+                vertexElements.push_back({ element.type, "INPUT_ELEMENT" });
+                elementStructsSource += "    " + getTypeName(element.type) + " ";
                 elementStructsSource += element.name + " : " + semanticName + ";\n";
             }
             elementStructsSource += "};\n\n";
@@ -93,18 +162,11 @@ namespace onut
             for (auto& element : parsed.outputs)
             {
                 std::string semanticName = "OUTPUT_ELEMENT" + std::to_string(semanticIndex++);
-                switch (element.size)
-                {
-                case 1: elementStructsSource += "    float "; break;
-                case 2: elementStructsSource += "    float2 "; break;
-                case 3: elementStructsSource += "    float3 "; break;
-                case 4: elementStructsSource += "    float4 "; break;
-                default: assert(false);
-                }
+                elementStructsSource += "    " + getTypeName(element.type) + " ";
                 elementStructsSource += element.name + " : " + semanticName + ";\n";
             }
             elementStructsSource += "};\n\n";
-            parsed.source.insert(0, elementStructsSource);
+            source += elementStructsSource;
 
             // Create uniforms
             ShaderD3D11::Uniforms uniforms;
@@ -116,20 +178,73 @@ namespace onut
                 uniform.name = parsedUniform.name;
 
                 UINT uniformSize = 4;
-                if (parsedUniform.type == "matrix") uniformSize = 16;
+                if (parsedUniform.type == VarType::Matrix) uniformSize = 16;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.pBuffer));
                 assert(ret == S_OK);
 
-                parsed.source.insert(0, "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.name + ";\n}\n\n");
+                source += "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + getTypeName(parsedUniform.type) + " " + uniform.name + ";\n}\n\n";
 
                 uniforms.push_back(uniform);
                 ++uniformId;
             }
 
+            // Bake structures
+            for (const auto& _struct : parsed.structs)
+            {
+                source += "struct " + _struct.name + "\n";
+                source += "{\n";
+                for (const auto& member : _struct.members)
+                {
+                    if (member.type == VarType::Unknown) source += "    " + member.typeName;
+                    else source += "    " + getTypeName(member.type);
+                    source += " " + member.name + ";\n";
+                }
+                source += "};\n\n";
+            }
+
+            // Bake constants
+            for (const auto& _const : parsed.consts)
+            {
+                source += "static";
+                bakeTokens(source, _const.line);
+            }
+            source += ";\n\n";
+
+            // Bake functions
+            for (const auto& _function : parsed.functions)
+            {
+                if (_function.type == VarType::Unknown) source += _function.typeName;
+                else source += getTypeName(_function.type);
+                source += " " + _function.name + "(";
+                bakeTokens(source, _function.arguments);
+                source += ")\n{\n";
+                bakeTokens(source, _function.body);
+                source += "}\n\n";
+            }
+
+            // Bake main function
+            source += "oVSOutput main(oVSInput oInput)\n{\n    oVSOutput oOutput;\n";
+            for (auto& element : parsed.outputs)
+            {
+                source += "    " + getTypeName(element.type) + " " + element.name + ";\n";
+            }
+            source += "    float4 oPosition;\n";
+            for (auto& element : parsed.inputs)
+            {
+                source += "    " + getTypeName(element.type) + " " + element.name + " = oInput." + element.name + ";\n";
+            }
+            bakeTokens(source, parsed.mainFunction.body);
+            source += "    oOutput.position = oPosition;\n";
+            for (auto& element : parsed.outputs)
+            {
+                source += "    oOutput." + element.name + " = " + element.name + ";\n";
+            }
+            source += "    return oOutput;\n}\n";
+
             // Now compile it
-            auto pRet = createFromNativeSource(parsed.source, Type::Vertex, vertexElements);
+            auto pRet = createFromNativeSource(source, Type::Vertex, vertexElements);
             auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
             if (pRetD3D11)
             {
@@ -140,76 +255,35 @@ namespace onut
         }
         else if (in_type == OPixelShader)
         {
-            auto parsed = parsePixelShader(source);
-            std::smatch match;
+            auto parsed = parsePixelShader(in_source);
+            std::string source;
+            source.reserve(5000);
 
-            // Add engine default constant buffers
-
-            // Replace main
-            if (std::regex_search(parsed.source, match, std::regex("void\\s+main\\s*\\(\\s*\\)\\s*\\{")))
+            // Create textures
+            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
             {
-                parsed.source[match.position()] = '/';
-                parsed.source[match.position() + 1] = '*';
-                parsed.source[match.position() + match.length() - 2] = '*';
-                parsed.source[match.position() + match.length() - 1] = '/';
-                parsed.source.insert(match.position(), "float4 main(oPSInput oInput) : SV_TARGET\n{\n    float4 oColor;\n");
-
-                size_t offset = match.position() + match.length();
-                int braceDeep = 0;
-                while (offset < parsed.source.size())
-                {
-                    auto c = parsed.source[offset];
-                    if (c == '{')
-                    {
-                        ++braceDeep;
-                    }
-                    else if (c == '}')
-                    {
-                        --braceDeep;
-                        if (braceDeep == 0)
-                        {
-                            break;
-                        }
-                    }
-                    ++offset;
-                }
-                parsed.source.insert(offset, "    return oColor;\n");
-                if (braceDeep != 0) assert(false); // No matching closing } to main function
-            }
-            else assert(false); // Shader should include "void main()"
-
-                                // Replace element variables with structs
-            for (auto& element : parsed.inputs)
-            {
-                onut::replace(parsed.source, "\\b" + element.name + "\\b", "oInput." + element.name);
+                const auto& texture = *rit;
+                source += "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
+                source += "Texture2D texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                source += "float4 " + texture.name + "(float2 uv)\n";
+                source += "{\n";
+                source += "    return texture_" + texture.name + ".Sample(sampler_" + texture.name + ", uv);\n";
+                source += "}\n\n";
             }
 
-            // Replace texture sampling
-            for (auto& texture : parsed.textures)
-            {
-                onut::replace(parsed.source, "(\\b" + texture.name + "\\b)\\s*\\(", "$1.Sample(sampler_" + texture.name + ", ");
-            }
-
-            // Inputs
+            // Put inputs
             std::string elementStructsSource;
             elementStructsSource += "struct oPSInput\n{\n";
-            elementStructsSource += "    float4 position : SV_POSITION;\n";
             int semanticIndex = 0;
+            elementStructsSource += "    float4 position : SV_POSITION;\n";
             for (auto& element : parsed.inputs)
             {
                 std::string semanticName = "OUTPUT_ELEMENT" + std::to_string(semanticIndex++);
-                switch (element.size)
-                {
-                case 1: elementStructsSource += "    float "; break;
-                case 2: elementStructsSource += "    float2 "; break;
-                case 3: elementStructsSource += "    float3 "; break;
-                case 4: elementStructsSource += "    float4 "; break;
-                default: assert(false);
-                }
+                elementStructsSource += "    " + getTypeName(element.type) + " ";
                 elementStructsSource += element.name + " : " + semanticName + ";\n";
             }
             elementStructsSource += "};\n\n";
-            parsed.source.insert(0, elementStructsSource);
+            source += elementStructsSource;
 
             // Create uniforms
             ShaderD3D11::Uniforms uniforms;
@@ -221,38 +295,63 @@ namespace onut
                 uniform.name = parsedUniform.name;
 
                 UINT uniformSize = 4;
-                if (parsedUniform.type == "matrix") uniformSize = 16;
+                if (parsedUniform.type == VarType::Matrix) uniformSize = 16;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.pBuffer));
                 assert(ret == S_OK);
 
-                parsed.source.insert(0, "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + parsedUniform.type + " " + uniform.name + ";\n}\n\n");
+                source += "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + getTypeName(parsedUniform.type) + " " + uniform.name + ";\n}\n\n";
 
                 uniforms.push_back(uniform);
                 ++uniformId;
             }
 
-            // Create textures samplers
-            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
+            // Bake structures
+            for (const auto& _struct : parsed.structs)
             {
-                const auto& texture = *rit;
-
-                std::string samplerStr = "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
-                parsed.source.insert(0, samplerStr);
+                source += "struct " + _struct.name + "\n";
+                source += "{\n";
+                for (const auto& member : _struct.members)
+                {
+                    if (member.type == VarType::Unknown) source += "    " + member.typeName;
+                    else source += "    " + getTypeName(member.type);
+                    source += " " + member.name + ";\n";
+                }
+                source += "};\n\n";
             }
 
-            // Create textures
-            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
+            // Bake constants
+            for (const auto& _const : parsed.consts)
             {
-                const auto& texture = *rit;
-
-                std::string textureStr = "Texture2D " + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
-                parsed.source.insert(0, textureStr);
+                source += "static";
+                bakeTokens(source, _const.line);
             }
+            source += ";\n\n";
+
+            // Bake functions
+            for (const auto& _function : parsed.functions)
+            {
+                if (_function.type == VarType::Unknown) source += _function.typeName;
+                else source += getTypeName(_function.type);
+                source += " " + _function.name + "(";
+                bakeTokens(source, _function.arguments);
+                source += ")\n{\n";
+                bakeTokens(source, _function.body);
+                source += "}\n\n";
+            }
+
+            // Bake main function
+            source += "float4 main(oPSInput oInput) : SV_TARGET\n{\n    float4 oColor;\n";
+            for (auto& element : parsed.inputs)
+            {
+                source += "    " + getTypeName(element.type) + " " + element.name + " = oInput." + element.name + ";\n";
+            }
+            bakeTokens(source, parsed.mainFunction.body);
+            source += "    return oColor;\n}\n";
 
             // Now compile it
-            auto pRet = createFromNativeSource(parsed.source, Type::Pixel);
+            auto pRet = createFromNativeSource(source, Type::Pixel);
             auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
             if (pRetD3D11)
             {
@@ -354,25 +453,25 @@ namespace onut
                 for (auto& element : vertexElements)
                 {
                     DXGI_FORMAT format;
-                    switch (element.size)
+                    switch (element.type)
                     {
-                        case 1:
+                        case VarType::Float:
                             format = DXGI_FORMAT_R32_FLOAT;
                             break;
-                        case 2:
+                        case VarType::Float2:
                             format = DXGI_FORMAT_R32G32_FLOAT;
                             break;
-                        case 3:
+                        case VarType::Float3:
                             format = DXGI_FORMAT_R32G32B32_FLOAT;
                             break;
-                        case 4:
+                        case VarType::Float4:
                             format = DXGI_FORMAT_R32G32B32A32_FLOAT;
                             break;
                         default:
                             assert(false);
                     }
 
-                    pRet->m_vertexSize += element.size * 4;
+                    pRet->m_vertexSize += (int)element.type * 4;
                     
                     D3D11_INPUT_ELEMENT_DESC inputElement = {
                         element.semanticName.c_str(), semanticIndexes[element.semanticName], 

@@ -15,7 +15,7 @@ const char* SHADER_SRC_2D_VS = ""
 "";
 
 const char* SHADER_SRC_2D_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "input float2 inTexCoord;\n"
     "input float4 inColor;\n"
@@ -41,7 +41,7 @@ const char* SHADER_SRC_EFFECTS_VS = ""
 "";
 
 const char* SHADER_SRC_SEPIA_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "extern float3 tone;\n"
     "extern float desaturate;\n"
@@ -70,7 +70,7 @@ const char* SHADER_SRC_SEPIA_PS = ""
 "";
 
 const char* SHADER_SRC_VIGNETTE_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "input float2 inTexCoord;\n"
     "\n"
@@ -95,7 +95,7 @@ const char* SHADER_SRC_VIGNETTE_PS = ""
 "";
 
 const char* SHADER_SRC_CARTOON_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "input float2 inTexCoord;\n"
     "\n"
@@ -110,14 +110,14 @@ const char* SHADER_SRC_CARTOON_PS = ""
 "";
 
 const char* SHADER_SRC_CRT_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "extern float2 screen_size;\n"
     "extern float2 pixel;\n"
     "\n"
     "input float2 inTexCoord;\n"
     "\n"
-    "static float3 filter[8] = {\n"
+    "const float3 filter[8] = {\n"
     "    float3(103.0 / 255.0, 103.0 / 255.0, 24.0 / 255.0), float3(12.0 / 255.0, 34.0 / 255.0, 101.0 / 255.0), float3(64.0 / 255.0, 63.0 / 255.0, 13.0 / 255.0), float3(20.0 / 255.0, 18.0 / 255.0, 63.0 / 255.0),\n"
     "    float3(64.0 / 255.0, 63.0 / 255.0, 13.0 / 255.0), float3(20.0 / 255.0, 18.0 / 255.0, 63.0 / 255.0), float3(103.0 / 255.0, 103.0 / 255.0, 24.0 / 255.0), float3(12.0 / 255.0, 34.0 / 255.0, 101.0 / 255.0)\n"
     "};\n"
@@ -134,7 +134,7 @@ const char* SHADER_SRC_CRT_PS = ""
 "";
 
 const char* SHADER_SRC_BLURH_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "extern float2 kernelSize;\n"
     "\n"
@@ -163,7 +163,7 @@ const char* SHADER_SRC_BLURH_PS = ""
 "";
 
 const char* SHADER_SRC_BLURV_PS = ""
-    "Texture0 texDiffuse {};\n"
+    "Texture0 texDiffuse;\n"
     "\n"
     "extern float2 kernelSize;\n"
     "\n"

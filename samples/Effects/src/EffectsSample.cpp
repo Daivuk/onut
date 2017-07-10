@@ -17,7 +17,7 @@ OTextureRef pVignette = nullptr;
 
 void initSettings()
 {
-    oSettings->setGameName("Sprites Sample");
+    oSettings->setGameName("Effects Sample");
 }
 
 void init()

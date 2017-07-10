@@ -24,12 +24,22 @@ namespace onut
             Pixel
         };
 
+        enum class VarType : int
+        {
+            Unknown = 0,
+            Float = 1,
+            Float2 = 2,
+            Float3 = 3,
+            Float4 = 4,
+            Matrix = 16
+        };
+
         struct VertexElement
         {
-            uint32_t size;
+            VarType type;
             std::string semanticName;
 
-            VertexElement(uint32_t in_size, const std::string& in_semanticName = "ELEMENT");
+            VertexElement(VarType in_type, const std::string& in_semanticName = "ELEMENT");
         };
         using VertexElements = std::vector<VertexElement>;
 
@@ -60,16 +70,17 @@ namespace onut
     protected:
         Shader();
 
+    public:
         struct ParsedElement
         {
-            uint32_t size;
+            VarType type;
             std::string name;
         };
         using ParsedElements = std::vector<ParsedElement>;
 
         struct ParsedUniform
         {
-            std::string type;
+            VarType type;
             std::string name;
         };
         using ParsedUniforms = std::vector<ParsedUniform>;
@@ -97,28 +108,111 @@ namespace onut
         };
         using ParsedTextures = std::vector<ParsedTexture>;
 
-        struct ParsedVS
+        enum class Intrinsic
+        {
+            None,
+            Radians,
+            Degrees,
+            Sin,
+            Cos,
+            Tan,
+            ASin,
+            ACos,
+            ATan,
+            ATan2,
+            Pow,
+            Exp,
+            Log,
+            Exp2,
+            Log2,
+            Sqrt,
+            RSqrt,
+            Abs,
+            Sign,
+            Floor,
+            Ceil,
+            Frac,
+            Mod,
+            Min,
+            Max,
+            Clamp,
+            Saturate,
+            Lerp,
+            Step,
+            SmoothStep,
+            Length,
+            Distance,
+            Dot,
+            Cross,
+            Normalize,
+            FaceForward,
+            Reflect,
+            Refract,
+            Any,
+            All,
+            Mul
+        };
+
+        struct Token
+        {
+            VarType type;
+            std::string str;
+            Intrinsic intrinsic;
+            std::vector<std::vector<Token>> intrinsicArguments;
+        };
+
+        struct Function
+        {
+            VarType type;
+            std::string typeName;
+            std::string name;
+            std::vector<Token> arguments;
+            std::vector<Token> body;
+        };
+
+        struct Const
+        {
+            std::vector<Token> line;
+        };
+
+        struct StructMember
+        {
+            VarType type;
+            std::string typeName;
+            std::string name;
+        };
+
+        struct Struct
+        {
+            std::string name;
+            std::vector<StructMember> members;
+        };
+
+        struct Parsed
         {
             ParsedElements inputs;
+            ParsedUniforms uniforms;
+            Function mainFunction;
+            std::vector<Function> functions;
+            std::vector<Struct> structs;
+            std::vector<Const> consts;
+        };
+
+        struct ParsedVS : public Parsed
+        {
             ParsedElements outputs;
-            ParsedUniforms uniforms;
-            std::string source;
         };
 
-        struct ParsedPS
+        struct ParsedPS : public Parsed
         {
-            ParsedElements inputs;
-            ParsedUniforms uniforms;
             ParsedTextures textures;
-            std::string source;
         };
 
-        static ParsedElements parseElements(std::string& content, const std::string& type);
-        static ParsedUniforms parseUniforms(std::string& content);
         static ParsedTextures parseTextures(std::string& content);
         static ParsedVS parseVertexShader(const std::string& content);
         static ParsedPS parsePixelShader(const std::string& content);
 
+    protected:
         Type m_type;
         uint32_t m_vertexSize = 0;
 
