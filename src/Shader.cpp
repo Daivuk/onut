@@ -1152,7 +1152,7 @@ namespace onut
 #if defined(WIN32)
             else if (_strnicmp(lexer.string, "texture", 7) == 0)
 #else
-            else if (strnicmp(lexer.string, "texture", 7) == 0)
+            else if (strncasecmp(lexer.string, "texture", 7) == 0)
 #endif
             {
                 std::string texI = lexer.string;

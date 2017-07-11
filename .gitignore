@@ -64,6 +64,7 @@ samples/Cursor/CursorSample
 samples/CustomMesh/CustomMeshSample
 samples/Dungeon/DungeonSample
 samples/Empty/EmptySample
+samples/Effects/EffectsSample
 samples/Entities/EntitiesSample
 samples/GamePads/GamePadsSample
 samples/Http/HttpSample
@@ -72,6 +73,7 @@ samples/Navigation/NavigationSample
 samples/Particles/ParticlesSample
 samples/Primitives/PrimitivesSample
 samples/Random/RandomSample
+samples/Shader/ShaderSample
 samples/Sounds/SoundsSample
 samples/SpriteFrames/SpriteFramesSample
 samples/Sprites/SpritesSample
@@ -79,3 +81,6 @@ samples/Text/TextSample
 samples/Textures/TexturesSample
 samples/TiledMap/TiledMapSample
 samples/UI/UISample
+
+# hunter
+_3rdParty/

@@ -309,7 +309,7 @@ if (LINUX OR RPI) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if (LINUX)
+if (LINUX OR APPLE)
     hunter_add_package(glew)
     find_package(glew CONFIG REQUIRED)
     list(APPEND libs PUBLIC glew::glew)
