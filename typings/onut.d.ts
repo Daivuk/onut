@@ -830,7 +830,8 @@ declare class Music {
     stop();
     pause();
     resume();
-    isPlayer(): boolean;
+    isPlaying(): boolean;
+    isPaused(): boolean;
 }
 /** Same as Music.createFromFile */
 declare function getMusic(filename: string): Music;
