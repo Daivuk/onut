@@ -131,10 +131,6 @@ namespace onut
         glCullFace(GL_BACK);
         glDepthFunc(GL_LESS);
         glEnable(GL_TEXTURE_2D);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
     }
 
     void RendererGL::createUniforms()
@@ -209,6 +205,9 @@ namespace onut
                 break;
         }
 
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        //renderStates.indexBuffer.forceDirty();
+
         glDrawArrays(mode, 0, vertexCount);
     }
 
@@ -255,15 +254,26 @@ namespace onut
         if (renderStates.renderTarget.isDirty())
         {
             auto& pRenderTarget = renderStates.renderTarget.get();
+            auto stackCount = renderStates.renderTarget.size();
             if (pRenderTarget)
             {
                 auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
                 auto frameBuffer = pRenderTargetGL->getFramebuffer();
                 glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+                ++stackCount;
             }
             else
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            }
+            renderStates.renderTarget.resetDirty();
+            if (stackCount > 1)
+            {
+                glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+            }
+            else
+            {
+                glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
             }
         }
         
@@ -354,27 +364,6 @@ namespace onut
             renderStates.scissor.resetDirty();
         }
         
-        // Projection
-        if (renderStates.projection.isDirty())
-        {
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glMultMatrixf(renderStates.projection.get().v);
-            renderStates.projection.resetDirty();
-        }
-        
-        // View * World
-        if (renderStates.view.isDirty() ||
-            renderStates.world.isDirty())
-        {
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            auto finalTransform = renderStates.world.get() * renderStates.view.get();
-            glMultMatrixf(finalTransform.v);
-            renderStates.view.resetDirty();
-            renderStates.world.resetDirty();
-        }
-        
         // Depth write
         if (renderStates.depthWrite.isDirty())
         {
@@ -404,18 +393,21 @@ namespace onut
         }
 
         // Shaders
+        bool programDirty = false;
         OShaderGL::Program* pProgram = nullptr;
         if (renderStates.vertexShader.get() &&
             renderStates.pixelShader.get())
         {
+            auto pShaderGL_vs = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
+            auto pShaderGL_ps = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
+            auto pVSRaw = pShaderGL_vs.get();
+            auto pPSRaw = pShaderGL_ps.get();
+            pProgram = pPSRaw->getProgram(pShaderGL_vs).get();
+
             if (renderStates.vertexShader.isDirty() ||
                 renderStates.pixelShader.isDirty())
             {
-                auto pShaderGL_vs = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
-                auto pShaderGL_ps = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
-                auto pVSRaw = pShaderGL_vs.get();
-                auto pPSRaw = pShaderGL_ps.get();
-                pProgram = pPSRaw->getProgram(pShaderGL_vs).get();
+                programDirty = true;
                 glUseProgram(pProgram->program);
 
                 // Update all uniforms
@@ -423,6 +415,7 @@ namespace onut
                 {
                     auto& uniform = pVSRaw->m_uniforms[i];
                     auto uniformId = pProgram->uniformsVS[i];
+                    if (uniformId == -1) continue;
                     switch (uniform.type)
                     {
                     case Shader::VarType::Float:
@@ -447,6 +440,7 @@ namespace onut
                 {
                     auto& uniform = pPSRaw->m_uniforms[i];
                     auto uniformId = pProgram->uniformsPS[i];
+                    if (uniformId == -1) continue;
                     switch (uniform.type)
                     {
                     case Shader::VarType::Float:
@@ -470,11 +464,6 @@ namespace onut
             }
             else
             {
-                auto pShaderGL_vs = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
-                auto pShaderGL_ps = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
-                auto pVSRaw = pShaderGL_vs.get();
-                auto pPSRaw = pShaderGL_ps.get();
-
                 // Only update uniforms that are dirty in that case
                 for (int i = 0; i < (int)pVSRaw->m_uniforms.size(); ++i)
                 {
@@ -482,6 +471,7 @@ namespace onut
                     if (!uniform.dirty) continue;
                     uniform.dirty = false;
                     auto uniformId = pProgram->uniformsVS[i];
+                    if (uniformId == -1) continue;
                     switch (uniform.type)
                     {
                     case Shader::VarType::Float:
@@ -507,6 +497,7 @@ namespace onut
                     if (!uniform.dirty) continue;
                     uniform.dirty = false;
                     auto uniformId = pProgram->uniformsPS[i];
+                    if (uniformId == -1) continue;
                     switch (uniform.type)
                     {
                     case Shader::VarType::Float:
@@ -532,7 +523,7 @@ namespace onut
             if (renderStates.projection.isDirty() ||
                 renderStates.view.isDirty() ||
                 renderStates.world.isDirty() ||
-                pProgram)
+                programDirty)
             {
                 auto world = renderStates.world.get();
                 auto finalTransform = world * renderStates.view.get() * renderStates.projection.get();
@@ -542,21 +533,23 @@ namespace onut
                 renderStates.view.resetDirty();
                 renderStates.world.resetDirty();
 
-                glUniformMatrix4fv(pProgram->oViewProjectionUniform, 1, GL_FALSE, &finalTransform._11);
+                if (pProgram && pProgram->oViewProjectionUniform != -1)
+                {
+                    glUniformMatrix4fv(pProgram->oViewProjectionUniform, 1, GL_FALSE, &finalTransform._11);
+                }
             }
-
-            renderStates.vertexShader.resetDirty();
-            renderStates.pixelShader.resetDirty();
         }
 
         // Textures
+        auto pShaderGL_ps_s = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
+        ShaderGL* pPSRaw_s = pShaderGL_ps_s.get();
         bool isSampleDirty =
             renderStates.sampleFiltering.isDirty() ||
-            renderStates.sampleAddressMode.isDirty() || pProgram;
+            renderStates.sampleAddressMode.isDirty();
         for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
             auto& pTextureState = renderStates.textures[i];
-            if (pTextureState.isDirty() || isSampleDirty)
+            if (pTextureState.isDirty() || (isSampleDirty && i == 0) || renderStates.pixelShader.isDirty())
             {
                 auto pTexture = pTextureState.get().get();
                 if (pTexture != nullptr)
@@ -565,32 +558,102 @@ namespace onut
                     glActiveTexture(GL_TEXTURE0 + i);
                     glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());
 
-                    if (renderStates.sampleFiltering.get() != pTextureEGLS2->filtering)
+                    if (i > 0 && pPSRaw_s && i < (int)pPSRaw_s->m_textures.size())
                     {
-                        pTextureEGLS2->filtering = renderStates.sampleFiltering.get();
-                        if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                        const auto& textureSamplers = pPSRaw_s->m_textures[i];
+                        if (textureSamplers.filter != pTextureEGLS2->filtering)
                         {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                            pTextureEGLS2->filtering = textureSamplers.filter;
+                            if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                            {
+                              //  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                            }
+                            else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                            {
+                            //    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            }
+                            else if (pTextureEGLS2->filtering == sample::Filtering::Bilinear)
+                            {
+                         //       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            }
+                            else if (pTextureEGLS2->filtering == sample::Filtering::Trilinear)
+                            {
+                       //         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            }
+                       /*     else if (pTextureEGLS2->filtering == sample::Filtering::Anisotropic)
+                            {
+                                float aniso = 0.0f;
+                                glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+                                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            }*/
                         }
-                        else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                        if (textureSamplers.repeatX != pTextureEGLS2->addressModeX)
                         {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            pTextureEGLS2->addressModeX = textureSamplers.repeatX;
+                            if (pTextureEGLS2->addressModeX == sample::AddressMode::Wrap)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                            }
+                            else if (pTextureEGLS2->addressModeX == sample::AddressMode::Clamp)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                            }
+                        }
+                        if (textureSamplers.repeatY != pTextureEGLS2->addressModeY)
+                        {
+                            pTextureEGLS2->addressModeY = textureSamplers.repeatY;
+                            if (pTextureEGLS2->addressModeY == sample::AddressMode::Wrap)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                            }
+                            else if (pTextureEGLS2->addressModeY == sample::AddressMode::Clamp)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                            }
                         }
                     }
-                    if (renderStates.sampleAddressMode.get() != pTextureEGLS2->addressMode)
+                    else
                     {
-                        pTextureEGLS2->addressMode = renderStates.sampleAddressMode.get();
-                        if (pTextureEGLS2->addressMode == sample::AddressMode::Wrap)
+                        if (renderStates.sampleFiltering.get() != pTextureEGLS2->filtering)
                         {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                            pTextureEGLS2->filtering = renderStates.sampleFiltering.get();
+                            if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                            }
+                            else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            }
                         }
-                        else if (pTextureEGLS2->addressMode == sample::AddressMode::Clamp)
+                        auto mode = renderStates.sampleAddressMode.get();
+                        if (mode != pTextureEGLS2->addressModeX ||
+                            mode != pTextureEGLS2->addressModeY)
                         {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                            pTextureEGLS2->addressModeX = mode;
+                            pTextureEGLS2->addressModeY = mode;
+                            if (mode == sample::AddressMode::Wrap)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                            }
+                            else if (mode == sample::AddressMode::Clamp)
+                            {
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                            }
                         }
                     }
                 }
@@ -603,8 +666,11 @@ namespace onut
             renderStates.sampleAddressMode.resetDirty();
         }
 
+        renderStates.vertexShader.resetDirty();
+        renderStates.pixelShader.resetDirty();
+
         // Vertex/Index buffers
-        if (renderStates.vertexBuffer.isDirty())
+        if (renderStates.vertexBuffer.isDirty() || programDirty)
         {
             if (renderStates.vertexBuffer.get())
             {
@@ -616,7 +682,6 @@ namespace onut
                 glBindBuffer(GL_ARRAY_BUFFER, handle);
 
                 auto attribCount = (int)pVSRaw->m_inputLayout.size();
-
                 for (int i = attribCount; i < m_lastVertexAttribCount; ++i)
                 {
                     glDisableVertexAttribArray(i);
@@ -625,6 +690,7 @@ namespace onut
                 {
                     glEnableVertexAttribArray(i);
                 }
+
                 int offset = 0;
                 int dataSize = 0;
                 for (int i = 0; i < attribCount; ++i)
@@ -667,14 +733,10 @@ namespace onut
                     offset += size * 4;
                 }
                 m_lastVertexAttribCount = attribCount;
-
-                //glVertexPointer(2, GL_FLOAT, 32, NULL);
-                //glTexCoordPointer(2, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 2));
-                //glColorPointer(4, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 4));
             }
             renderStates.vertexBuffer.resetDirty();
         }
-        if (renderStates.indexBuffer.isDirty())
+        if (renderStates.indexBuffer.isDirty() || programDirty)
         {
             if (renderStates.indexBuffer.get())
             {

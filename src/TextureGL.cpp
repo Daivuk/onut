@@ -47,6 +47,11 @@ namespace onut
         // Because opengl uses a global state and its dumb as fuck
         oRenderer->renderStates.renderTarget.forceDirty();
         oRenderer->renderStates.textures[0].forceDirty();
+
+        if (willUseFX)
+        {
+            pRet->createFrameBuffer(pRet->m_handleFx, pRet->m_frameBufferFx);
+        }
         
         return pRet;
     }
@@ -174,6 +179,14 @@ namespace onut
         {
             glDeleteFramebuffers(1, &m_frameBuffer);
         }
+        if (m_handleFx)
+        {
+            glDeleteTextures(1, &m_handleFx);
+        }
+        if (m_frameBufferFx)
+        {
+            glDeleteFramebuffers(1, &m_frameBufferFx);
+        }
     }
 
     void TextureGL::resizeTarget(const Point& size)
@@ -188,28 +201,190 @@ namespace onut
 
     void TextureGL::clearRenderTarget(const Color& color)
     {
+        oRenderer->clear(color);
+    }
+
+    void TextureGL::createFrameBuffer(GLuint& otherHandle, GLuint& otherFrameBuffer)
+    {
+        auto pRet = std::shared_ptr<TextureGL>(new TextureGL());
+
+        GLuint frameBuffer;
+        glGenFramebuffers(1, &frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+        GLuint handle;
+        glGenTextures(1, &handle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, handle, 0);
+
+        assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+        otherFrameBuffer = frameBuffer;
+        otherHandle = handle;
+
+        //// Because opengl uses a global state and its dumb as fuck
+        //oRenderer->renderStates.renderTarget.forceDirty();
+        //oRenderer->renderStates.textures[0].forceDirty();
     }
 
     void TextureGL::blur(float amount)
     {
-    }
+        if (!m_frameBuffer) return; // Not a render target
+        if (!m_frameBufferFx)
+        {
+            createFrameBuffer(m_handleFx, m_frameBufferFx);
+        }
 
+        oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.textures[0].push(shared_from_this());
+
+        int i = 0;
+        while (amount > 0.f)
+        {
+            oRenderer->setKernelSize({
+                1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
+                1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
+            });
+            amount -= 6.f;
+
+            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.textures[0].forceDirty();
+            std::swap(m_frameBuffer, m_frameBufferFx);
+            clearRenderTarget(Color::Transparent);
+            oRenderer->drawBlurH();
+            std::swap(m_frameBuffer, m_frameBufferFx);
+
+            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.textures[0].forceDirty();
+            std::swap(m_handle, m_handleFx);
+            clearRenderTarget(Color::Transparent);
+            oRenderer->drawBlurV();
+            std::swap(m_handle, m_handleFx);
+
+            i += 1;
+        }
+
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.textures[0].pop();
+    }
+    
     void TextureGL::sepia(const Vector3& tone, float saturation, float sepiaAmount)
     {
+        if (!m_frameBuffer) return; // Not a render target
+        if (!m_frameBufferFx)
+        {
+            createFrameBuffer(m_handleFx, m_frameBufferFx);
+        }
+
+        oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].push(shared_from_this());
+
+        std::swap(m_frameBuffer, m_frameBufferFx);
+        clearRenderTarget(Color::Transparent);
+
+        oRenderer->setSepia(tone, saturation, sepiaAmount);
+        oRenderer->drawSepia();
+        std::swap(m_handle, m_handleFx);
+
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void TextureGL::crt()
     {
+        if (!m_frameBuffer) return; // Not a render target
+        if (!m_frameBufferFx)
+        {
+            createFrameBuffer(m_handleFx, m_frameBufferFx);
+        }
+
+        oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].push(shared_from_this());
+
+        std::swap(m_frameBuffer, m_frameBufferFx);
+        clearRenderTarget(Color::Transparent);
+
+        oRenderer->setCRT(getSizef());
+        oRenderer->drawCRT();
+        std::swap(m_handle, m_handleFx);
+
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void TextureGL::cartoon(const Vector3& tone)
     {
+        if (!m_frameBuffer) return; // Not a render target
+        if (!m_frameBufferFx)
+        {
+            createFrameBuffer(m_handleFx, m_frameBufferFx);
+        }
+
+        oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].push(shared_from_this());
+
+        std::swap(m_frameBuffer, m_frameBufferFx);
+        clearRenderTarget(Color::Transparent);
+
+        oRenderer->setCartoon(tone);
+        oRenderer->drawCartoon();
+        std::swap(m_handle, m_handleFx);
+
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].pop();
     }
 
     void TextureGL::vignette(float amount)
     {
+        if (!m_frameBuffer) return; // Not a render target
+        if (!m_frameBufferFx)
+        {
+            createFrameBuffer(m_handleFx, m_frameBufferFx);
+        }
+
+        oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
+        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].push(shared_from_this());
+
+        std::swap(m_frameBuffer, m_frameBufferFx);
+        clearRenderTarget(Color::Transparent);
+
+        oRenderer->setVignette({
+            1.f / static_cast<float>(m_size.x),
+            1.f / static_cast<float>(m_size.y)
+        }, amount);
+        oRenderer->drawVignette();
+        std::swap(m_handle, m_handleFx);
+
+        oRenderer->renderStates.viewport.pop();
+        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.textures[0].pop();
     }
-    
+
     GLuint TextureGL::getHandle() const
     {
         if (m_isDirty)

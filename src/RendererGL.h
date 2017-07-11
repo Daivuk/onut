@@ -13,6 +13,7 @@
 
 // Forward
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(IndexBuffer);
 OForwardDeclare(RendererGL);
 
 namespace onut
@@ -56,14 +57,8 @@ namespace onut
 
         int m_lastVertexAttribCount = 0;
 
-        // Render target
         Point m_resolution;
-
-        // Render states
-
-        // Constant buffers
-
-     //   OTextureRef m_boundTextures[RenderStates::MAX_TEXTURES];
+        OIndexBufferRef m_masterIndices;
     };
 };
 

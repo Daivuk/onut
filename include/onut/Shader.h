@@ -2,6 +2,7 @@
 #define SHADER_H_INCLUDED
 
 // Onut
+#include <onut/SampleMode.h>
 #include <onut/Maths.h>
 #include <onut/Resource.h>
 
@@ -87,23 +88,10 @@ namespace onut
 
         struct ParsedTexture
         {
-            enum class Filter
-            {
-                Nearest,
-                Linear,
-                Bilinear,
-                Trilinear,
-                Anisotropic
-            };
-            enum class Repeat
-            {
-                Clamp,
-                Wrap
-            };
             int index;
-            Filter filter = Filter::Trilinear;
-            Repeat repeatX = Repeat::Wrap;
-            Repeat repeatY = Repeat::Wrap;
+            sample::Filtering filter = sample::Filtering::Trilinear;
+            sample::AddressMode repeatX = sample::AddressMode::Wrap;
+            sample::AddressMode repeatY = sample::AddressMode::Wrap;
             std::string name;
         };
         using ParsedTextures = std::vector<ParsedTexture>;

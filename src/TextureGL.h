@@ -40,16 +40,21 @@ namespace onut
         
         // Renderer need to keep track of the sample states per texture in OpenGL
         sample::Filtering filtering = sample::Filtering::Linear;
-        sample::AddressMode addressMode = sample::AddressMode::Wrap;
+        sample::AddressMode addressModeX = sample::AddressMode::Wrap;
+        sample::AddressMode addressModeY = sample::AddressMode::Wrap;
 
     protected:
         TextureGL() {}
 
     private:
         friend Texture;
+
+        void createFrameBuffer(GLuint& otherHandle, GLuint& otherFrameBuffer);
         
         mutable GLuint m_handle = 0;
         GLuint m_frameBuffer = 0;
+        mutable GLuint m_handleFx = 0;
+        GLuint m_frameBufferFx = 0;
         mutable bool m_isDirty = false;
         mutable std::vector<uint8_t> m_dirtyData;
     };

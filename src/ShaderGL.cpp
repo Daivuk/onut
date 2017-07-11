@@ -213,7 +213,7 @@ namespace onut
 
             // Create uniforms
             ShaderGL::Uniforms uniforms;
-            for (auto it = parsed.uniforms.rbegin(); it != parsed.uniforms.rend(); ++it)
+            for (auto it = parsed.uniforms.begin(); it != parsed.uniforms.end(); ++it)
             {
                 ShaderGL::Uniform uniform;
                 uniform.name = it->name;
@@ -286,6 +286,9 @@ namespace onut
             }
             ((ShaderGL*)(pRet.get()))->m_uniforms = uniforms;
 
+#if defined(_DEBUG)
+            ((ShaderGL*)(pRet.get()))->m_source = std::move(source);
+#endif
             return pRet;
         }
         else if (in_type == OPixelShader)
@@ -335,7 +338,7 @@ namespace onut
 
             // Create uniforms
             ShaderGL::Uniforms uniforms;
-            for (auto it = parsed.uniforms.rbegin(); it != parsed.uniforms.rend(); ++it)
+            for (auto it = parsed.uniforms.begin(); it != parsed.uniforms.end(); ++it)
             {
                 ShaderGL::Uniform uniform;
                 uniform.name = it->name;
@@ -399,6 +402,10 @@ namespace onut
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Pixel);
             ((ShaderGL*)(pRet.get()))->m_uniforms = uniforms;
+            ((ShaderGL*)(pRet.get()))->m_textures = parsed.textures;
+#if defined(_DEBUG)
+            ((ShaderGL*)(pRet.get()))->m_source = std::move(source);
+#endif
             return pRet;
         }
         else
@@ -593,11 +600,24 @@ namespace onut
             ++it;
         }
 
+        GLenum err;
+
         // It doesnt exist, create a program
         auto program = glCreateProgram();
+        err = glGetError();
+        if (err != GL_NO_ERROR) OLogE("glCreateProgram: " + std::to_string(err));
+
         glAttachShader(program, pVertexShader->m_shader);
+        err = glGetError();
+        if (err != GL_NO_ERROR) OLogE("glAttachShader VS: " + std::to_string(err));
+
         glAttachShader(program, m_shader);
+        err = glGetError();
+        if (err != GL_NO_ERROR) OLogE("glAttachShader PS: " + std::to_string(err));
+
         glLinkProgram(program);
+        err = glGetError();
+        if (err != GL_NO_ERROR) OLogE("glLinkProgram: " + std::to_string(err));
 
         auto pProgram = OMake<Program>();
         auto pProgramRaw = pProgram.get();

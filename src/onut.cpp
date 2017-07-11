@@ -147,14 +147,7 @@ namespace onut
         // Undo/Redo for editors
         if (!oActionManager) oActionManager = ActionManager::create();
 
-#if !defined(WIN32)
-        if (oSettings->getIsRetroMode())
-        {
-#endif // __unix__
-            g_pMainRenderTarget = OTexture::createScreenRenderTarget();
-#if !defined(WIN32)
-        }
-#endif // __unix__
+        g_pMainRenderTarget = OTexture::createScreenRenderTarget();
 
         // Initialize Javascript
         onut::js::init();
@@ -274,14 +267,7 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
-#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
-            if (oSettings->getIsRetroMode())
-            {
-#endif // __unix__
-                oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
-#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
-            }
-#endif // __unix__
+            oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
             oRenderer->beginFrame();
             onut::js::render();
             if (renderCallback)
@@ -294,35 +280,26 @@ namespace onut
             oUI->render(oUIContext);
             oSpriteBatch->end();
 
-#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
-            if (oSettings->getIsRetroMode())
+            // Draw final render target
+            oRenderer->renderStates.renderTarget = nullptr;
+            const auto& res = oRenderer->getResolution();
+            oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
+            oRenderer->renderStates.scissorEnabled = false;
+            oRenderer->renderStates.scissor = oRenderer->renderStates.viewport.get();
+            oSpriteBatch->begin();
+            oSpriteBatch->changeBlendMode(OBlendOpaque);
+            oSpriteBatch->changeFiltering(OFilterNearest);
+            oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
+
+            // Show the log
+            if (oSettings->getShowOnScreenLog())
             {
-#endif // __unix__
-                // Draw final render target
-                oRenderer->renderStates.renderTarget = nullptr;
-                const auto& res = oRenderer->getResolution();
-                oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
-                oRenderer->renderStates.scissorEnabled = false;
-                oRenderer->renderStates.scissor = oRenderer->renderStates.viewport.get();
-                oSpriteBatch->begin();
-                oSpriteBatch->changeBlendMode(OBlendOpaque);
-                oSpriteBatch->changeFiltering(OFilterNearest);
-#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
-                oSpriteBatch->drawRectWithUVs(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()), Vector4(0, 1, 1, 0));
-#else
-                oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
-#endif // __unix__
-                // Show the log
-                if (oSettings->getShowOnScreenLog())
-                {
-                    onut::drawLog();
-                }
-                oSpriteBatch->end();
-                oSpriteBatch->changeBlendMode(OBlendAlpha);
-                oSpriteBatch->changeFiltering(OFilterLinear);
-#if !defined(WIN32) || defined(ONUT_USE_OPENGL)
+                onut::drawLog();
             }
-#endif // __unix__
+            oSpriteBatch->end();
+            oSpriteBatch->changeBlendMode(OBlendAlpha);
+            oSpriteBatch->changeFiltering(OFilterLinear);
+
             if (postRenderCallback)
             {
                 postRenderCallback();

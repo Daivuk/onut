@@ -98,6 +98,11 @@ namespace onut
             }
         }
 
+        int size()
+        {
+            return (int)m_stack.size() + 1;
+        }
+
     private:
         std::vector<Ttype> m_stack;
         Ttype m_value;

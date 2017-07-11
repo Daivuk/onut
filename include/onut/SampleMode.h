@@ -10,6 +10,9 @@ namespace onut
         {
             Nearest,
             Linear,
+            Bilinear,
+            Trilinear,
+            Anisotropic,
 
             COUNT
         };

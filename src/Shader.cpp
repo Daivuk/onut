@@ -164,23 +164,23 @@ namespace onut
                     {
                         if (propValue == "nearest")
                         {
-                            texture.filter = ParsedTexture::Filter::Nearest;
+                            texture.filter = sample::Filtering::Nearest;
                         }
                         else if (propValue == "linear")
                         {
-                            texture.filter = ParsedTexture::Filter::Linear;
+                            texture.filter = sample::Filtering::Linear;
                         }
                         else if (propValue == "bilinear")
                         {
-                            texture.filter = ParsedTexture::Filter::Bilinear;
+                            texture.filter = sample::Filtering::Bilinear;
                         }
                         else if (propValue == "trilinear")
                         {
-                            texture.filter = ParsedTexture::Filter::Trilinear;
+                            texture.filter = sample::Filtering::Trilinear;
                         }
                         else if (propValue == "anisotropic")
                         {
-                            texture.filter = ParsedTexture::Filter::Anisotropic;
+                            texture.filter = sample::Filtering::Anisotropic;
                         }
                         else assert(false); // Invalid filter
                     }
@@ -188,11 +188,11 @@ namespace onut
                     {
                         if (propValue == "clamp")
                         {
-                            texture.repeatX = texture.repeatY = ParsedTexture::Repeat::Clamp;
+                            texture.repeatX = texture.repeatY = sample::AddressMode::Clamp;
                         }
                         else if (propValue == "wrap")
                         {
-                            texture.repeatX = texture.repeatY = ParsedTexture::Repeat::Wrap;
+                            texture.repeatX = texture.repeatY = sample::AddressMode::Wrap;
                         }
                         else assert(false); // Invalid repeat
                     }
@@ -200,11 +200,11 @@ namespace onut
                     {
                         if (propValue == "clamp")
                         {
-                            texture.repeatX = ParsedTexture::Repeat::Clamp;
+                            texture.repeatX = sample::AddressMode::Clamp;
                         }
                         else if (propValue == "wrap")
                         {
-                            texture.repeatX = ParsedTexture::Repeat::Wrap;
+                            texture.repeatX = sample::AddressMode::Wrap;
                         }
                         else assert(false); // Invalid repeat
                     }
@@ -212,11 +212,11 @@ namespace onut
                     {
                         if (propValue == "clamp")
                         {
-                            texture.repeatY = ParsedTexture::Repeat::Clamp;
+                            texture.repeatY = sample::AddressMode::Clamp;
                         }
                         else if (propValue == "wrap")
                         {
-                            texture.repeatY = ParsedTexture::Repeat::Wrap;
+                            texture.repeatY = sample::AddressMode::Wrap;
                         }
                         else assert(false); // Invalid repeat
                     }
@@ -435,23 +435,23 @@ namespace onut
             {
                 if (propValue == "nearest")
                 {
-                    texture.filter = Shader::ParsedTexture::Filter::Nearest;
+                    texture.filter = sample::Filtering::Nearest;
                 }
                 else if (propValue == "linear")
                 {
-                    texture.filter = Shader::ParsedTexture::Filter::Linear;
+                    texture.filter = sample::Filtering::Linear;
                 }
                 else if (propValue == "bilinear")
                 {
-                    texture.filter = Shader::ParsedTexture::Filter::Bilinear;
+                    texture.filter = sample::Filtering::Bilinear;
                 }
                 else if (propValue == "trilinear")
                 {
-                    texture.filter = Shader::ParsedTexture::Filter::Trilinear;
+                    texture.filter = sample::Filtering::Trilinear;
                 }
                 else if (propValue == "anisotropic")
                 {
-                    texture.filter = Shader::ParsedTexture::Filter::Anisotropic;
+                    texture.filter = sample::Filtering::Anisotropic;
                 }
                 else
                 {
@@ -463,11 +463,11 @@ namespace onut
             {
                 if (propValue == "clamp")
                 {
-                    texture.repeatX = texture.repeatY = Shader::ParsedTexture::Repeat::Clamp;
+                    texture.repeatX = texture.repeatY = sample::AddressMode::Clamp;
                 }
                 else if (propValue == "wrap")
                 {
-                    texture.repeatX = texture.repeatY = Shader::ParsedTexture::Repeat::Wrap;
+                    texture.repeatX = texture.repeatY = sample::AddressMode::Wrap;
                 }
                 else
                 {
@@ -479,11 +479,11 @@ namespace onut
             {
                 if (propValue == "clamp")
                 {
-                    texture.repeatX = Shader::ParsedTexture::Repeat::Clamp;
+                    texture.repeatX = sample::AddressMode::Clamp;
                 }
                 else if (propValue == "wrap")
                 {
-                    texture.repeatX = Shader::ParsedTexture::Repeat::Wrap;
+                    texture.repeatX = sample::AddressMode::Wrap;
                 }
                 else
                 {
@@ -495,11 +495,11 @@ namespace onut
             {
                 if (propValue == "clamp")
                 {
-                    texture.repeatY = Shader::ParsedTexture::Repeat::Clamp;
+                    texture.repeatY = sample::AddressMode::Clamp;
                 }
                 else if (propValue == "wrap")
                 {
-                    texture.repeatY = Shader::ParsedTexture::Repeat::Wrap;
+                    texture.repeatY = sample::AddressMode::Wrap;
                 }
                 else
                 {

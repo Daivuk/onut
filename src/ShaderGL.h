@@ -72,7 +72,11 @@ namespace onut
         GLenum m_shader = 0;
         Uniforms m_uniforms;
         Programs m_programs;
+        ParsedTextures m_textures;
         InputLayout m_inputLayout;
+#if defined(_DEBUG)
+        std::string m_source;
+#endif
     };
 };
 
