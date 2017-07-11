@@ -54,6 +54,8 @@ namespace onut
         SDL_GLContext m_glContext;
 #endif
 
+        int m_lastVertexAttribCount = 0;
+
         // Render target
         Point m_resolution;
 

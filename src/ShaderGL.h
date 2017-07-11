@@ -23,7 +23,8 @@ namespace onut
         struct Uniform
         {
             bool dirty = true;
-        //    ID3D11Buffer* pBuffer = nullptr;
+            VarType type;
+            Matrix value; // We just store everything in a matrix for easy copying
             std::string name;
         };
 
@@ -47,19 +48,31 @@ namespace onut
         friend class Shader;
         friend class RendererGL;
 
-        GLenum m_shader = 0;
-
-        Uniforms m_uniforms;
+        struct Attribute
+        {
+            VarType type;
+            std::string name;
+        };
+        using InputLayout = std::vector<Attribute>;
 
         struct Program
         {
-            OShaderWeak pVertexShader;
-            GLenum m_program = 0;
+            OShaderGLWeak pVertexShader;
+            GLenum program = 0;
+            std::vector<GLint> uniformsVS;
+            std::vector<GLint> uniformsPS;
+            GLint oViewProjectionUniform;
+            std::vector<GLint> attributes;
         };
+        using ProgramRef = std::shared_ptr<Program>;
+        using Programs = std::vector<ProgramRef>;
 
-        using Programs = std::vector<Program>;
+        const ProgramRef& getProgram(const OShaderGLRef& pVertexShader);
 
+        GLenum m_shader = 0;
+        Uniforms m_uniforms;
         Programs m_programs;
+        InputLayout m_inputLayout;
     };
 };
 

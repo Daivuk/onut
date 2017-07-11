@@ -219,6 +219,8 @@ namespace onut
         static ParsedPS parsePixelShader(const std::string& content);
 
     protected:
+        friend class RendererGL;
+
         Type m_type;
         uint32_t m_vertexSize = 0;
 

@@ -266,60 +266,6 @@ namespace onut
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
         }
-
-        // Textures
-        bool isSampleDirty = 
-            renderStates.sampleFiltering.isDirty() ||
-            renderStates.sampleAddressMode.isDirty();
-        for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
-        {
-            auto& pTextureState = renderStates.textures[i];
-            if (pTextureState.isDirty() || isSampleDirty)
-            {
-                auto pTexture = pTextureState.get().get();
-                if (pTexture != nullptr)
-                {
-                    auto pTextureEGLS2 = static_cast<TextureGL*>(pTexture);
-                    glActiveTexture(GL_TEXTURE0 + i);
-                    glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());
-                    
-                    if (renderStates.sampleFiltering.get() != pTextureEGLS2->filtering)
-                    {
-                        pTextureEGLS2->filtering = renderStates.sampleFiltering.get();
-                        if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
-                        {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                        }
-                        else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
-                        {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                        }
-                    }
-                    if (renderStates.sampleAddressMode.get() != pTextureEGLS2->addressMode)
-                    {
-                        pTextureEGLS2->addressMode = renderStates.sampleAddressMode.get();
-                        if (pTextureEGLS2->addressMode == sample::AddressMode::Wrap)
-                        {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                        }
-                        else if (pTextureEGLS2->addressMode == sample::AddressMode::Clamp)
-                        {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                        }
-                    }
-                }
-                pTextureState.resetDirty();
-            }
-        }
-        if (isSampleDirty)
-        {
-            renderStates.sampleFiltering.resetDirty();
-            renderStates.sampleAddressMode.resetDirty();
-        }
         
         // Blend
         if (renderStates.blendMode.isDirty())
@@ -458,83 +404,273 @@ namespace onut
         }
 
         // Shaders
-        if (renderStates.vertexShader.isDirty() ||
-            renderStates.pixelShader.isDirty())
+        OShaderGL::Program* pProgram = nullptr;
+        if (renderStates.vertexShader.get() &&
+            renderStates.pixelShader.get())
         {
-        }
-        /*
-        auto pShaderGL = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
-        if (pShaderGL)
-        {
-            if (renderStates.vertexShader.isDirty())
+            if (renderStates.vertexShader.isDirty() ||
+                renderStates.pixelShader.isDirty())
             {
-                m_pDeviceContext->VSSetShader(pShaderD3D11->getVertexShader(), nullptr, 0);
-                m_pDeviceContext->IASetInputLayout(pShaderD3D11->getInputLayout());
-                renderStates.vertexShader.resetDirty();
+                auto pShaderGL_vs = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
+                auto pShaderGL_ps = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
+                auto pVSRaw = pShaderGL_vs.get();
+                auto pPSRaw = pShaderGL_ps.get();
+                pProgram = pPSRaw->getProgram(pShaderGL_vs).get();
+                glUseProgram(pProgram->program);
 
-                auto& uniforms = pShaderD3D11->getUniforms();
-                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
+                // Update all uniforms
+                for (int i = 0; i < (int)pVSRaw->m_uniforms.size(); ++i)
                 {
-                    m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
-                    uniforms[i].dirty = false;
+                    auto& uniform = pVSRaw->m_uniforms[i];
+                    auto uniformId = pProgram->uniformsVS[i];
+                    switch (uniform.type)
+                    {
+                    case Shader::VarType::Float:
+                        glUniform1f(uniformId, uniform.value._11);
+                        break;
+                    case Shader::VarType::Float2:
+                        glUniform2fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float3:
+                        glUniform3fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float4:
+                        glUniform4fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Matrix:
+                        glUniformMatrix4fv(uniformId, 1, GL_FALSE, &uniform.value._11);
+                        break;
+                    }
+                    uniform.dirty = false;
+                }
+                for (int i = 0; i < (int)pPSRaw->m_uniforms.size(); ++i)
+                {
+                    auto& uniform = pPSRaw->m_uniforms[i];
+                    auto uniformId = pProgram->uniformsPS[i];
+                    switch (uniform.type)
+                    {
+                    case Shader::VarType::Float:
+                        glUniform1f(uniformId, uniform.value._11);
+                        break;
+                    case Shader::VarType::Float2:
+                        glUniform2fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float3:
+                        glUniform3fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float4:
+                        glUniform4fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Matrix:
+                        glUniformMatrix4fv(uniformId, 1, GL_FALSE, &uniform.value._11);
+                        break;
+                    }
+                    uniform.dirty = false;
                 }
             }
             else
             {
-                auto& uniforms = pShaderD3D11->getUniforms();
-                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)*
+                auto pShaderGL_vs = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
+                auto pShaderGL_ps = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
+                auto pVSRaw = pShaderGL_vs.get();
+                auto pPSRaw = pShaderGL_ps.get();
+
+                // Only update uniforms that are dirty in that case
+                for (int i = 0; i < (int)pVSRaw->m_uniforms.size(); ++i)
                 {
-                    auto& uniform = uniforms[i];
-                    if (uniform.dirty)
+                    auto& uniform = pVSRaw->m_uniforms[i];
+                    if (!uniform.dirty) continue;
+                    uniform.dirty = false;
+                    auto uniformId = pProgram->uniformsVS[i];
+                    switch (uniform.type)
                     {
-                        m_pDeviceContext->VSSetConstantBuffers(4 + i, 1, &(uniform.pBuffer));
-                        uniform.dirty = false;
+                    case Shader::VarType::Float:
+                        glUniform1f(uniformId, uniform.value._11);
+                        break;
+                    case Shader::VarType::Float2:
+                        glUniform2fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float3:
+                        glUniform3fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float4:
+                        glUniform4fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Matrix:
+                        glUniformMatrix4fv(uniformId, 1, GL_FALSE, &uniform.value._11);
+                        break;
+                    }
+                }
+                for (int i = 0; i < (int)pPSRaw->m_uniforms.size(); ++i)
+                {
+                    auto& uniform = pPSRaw->m_uniforms[i];
+                    if (!uniform.dirty) continue;
+                    uniform.dirty = false;
+                    auto uniformId = pProgram->uniformsPS[i];
+                    switch (uniform.type)
+                    {
+                    case Shader::VarType::Float:
+                        glUniform1f(uniformId, uniform.value._11);
+                        break;
+                    case Shader::VarType::Float2:
+                        glUniform2fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float3:
+                        glUniform3fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Float4:
+                        glUniform4fv(uniformId, 1, &uniform.value._11);
+                        break;
+                    case Shader::VarType::Matrix:
+                        glUniformMatrix4fv(uniformId, 1, GL_FALSE, &uniform.value._11);
+                        break;
                     }
                 }
             }
+
+            // Transform matrix
+            if (renderStates.projection.isDirty() ||
+                renderStates.view.isDirty() ||
+                renderStates.world.isDirty() ||
+                pProgram)
+            {
+                auto world = renderStates.world.get();
+                auto finalTransform = world * renderStates.view.get() * renderStates.projection.get();
+                finalTransform = finalTransform.Transpose();
+
+                renderStates.projection.resetDirty();
+                renderStates.view.resetDirty();
+                renderStates.world.resetDirty();
+
+                glUniformMatrix4fv(pProgram->oViewProjectionUniform, 1, GL_FALSE, &finalTransform._11);
+            }
+
+            renderStates.vertexShader.resetDirty();
+            renderStates.pixelShader.resetDirty();
         }
 
-        pShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
-        if (pShaderD3D11)
+        // Textures
+        bool isSampleDirty =
+            renderStates.sampleFiltering.isDirty() ||
+            renderStates.sampleAddressMode.isDirty() || pProgram;
+        for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
-            if (renderStates.pixelShader.isDirty())
+            auto& pTextureState = renderStates.textures[i];
+            if (pTextureState.isDirty() || isSampleDirty)
             {
-                m_pDeviceContext->PSSetShader(pShaderD3D11->getPixelShader(), nullptr, 0);
-                renderStates.pixelShader.resetDirty();
+                auto pTexture = pTextureState.get().get();
+                if (pTexture != nullptr)
+                {
+                    auto pTextureEGLS2 = static_cast<TextureGL*>(pTexture);
+                    glActiveTexture(GL_TEXTURE0 + i);
+                    glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());
 
-                auto& uniforms = pShaderD3D11->getUniforms();
-                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
-                {
-                    m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniforms[i].pBuffer));
-                    uniforms[i].dirty = false;
-                }
-            }
-            else
-            {
-                auto& uniforms = pShaderD3D11->getUniforms();
-                for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
-                {
-                    auto& uniform = uniforms[i];
-                    if (uniform.dirty)
+                    if (renderStates.sampleFiltering.get() != pTextureEGLS2->filtering)
                     {
-                        m_pDeviceContext->PSSetConstantBuffers(4 + i, 1, &(uniform.pBuffer));
-                        uniform.dirty = false;
+                        pTextureEGLS2->filtering = renderStates.sampleFiltering.get();
+                        if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        }
+                        else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                        }
+                    }
+                    if (renderStates.sampleAddressMode.get() != pTextureEGLS2->addressMode)
+                    {
+                        pTextureEGLS2->addressMode = renderStates.sampleAddressMode.get();
+                        if (pTextureEGLS2->addressMode == sample::AddressMode::Wrap)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                        }
+                        else if (pTextureEGLS2->addressMode == sample::AddressMode::Clamp)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                        }
                     }
                 }
+                pTextureState.resetDirty();
             }
         }
-        */
+        if (isSampleDirty)
+        {
+            renderStates.sampleFiltering.resetDirty();
+            renderStates.sampleAddressMode.resetDirty();
+        }
+
         // Vertex/Index buffers
         if (renderStates.vertexBuffer.isDirty())
         {
             if (renderStates.vertexBuffer.get())
             {
-                auto handle = static_cast<OVertexBufferGL*>(renderStates.vertexBuffer.get().get())->getHandle();
+                auto pVBRaw = static_cast<OVertexBufferGL*>(renderStates.vertexBuffer.get().get());
+                auto handle = pVBRaw->getHandle();
+                auto pShaderGL_vs = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
+                auto pVSRaw = pShaderGL_vs.get();
+
                 glBindBuffer(GL_ARRAY_BUFFER, handle);
-                
-                glVertexPointer(2, GL_FLOAT, 32, NULL);
-                glTexCoordPointer(2, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 2));
-                glColorPointer(4, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 4));
+
+                auto attribCount = (int)pVSRaw->m_inputLayout.size();
+
+                for (int i = attribCount; i < m_lastVertexAttribCount; ++i)
+                {
+                    glDisableVertexAttribArray(i);
+                }
+                for (int i = m_lastVertexAttribCount; i < attribCount; ++i)
+                {
+                    glEnableVertexAttribArray(i);
+                }
+                int offset = 0;
+                int dataSize = 0;
+                for (int i = 0; i < attribCount; ++i)
+                {
+                    switch (pVSRaw->m_inputLayout[i].type)
+                    {
+                    case Shader::VarType::Float:
+                        dataSize += 4;
+                        break;
+                    case Shader::VarType::Float2:
+                        dataSize += 4 * 2;
+                        break;
+                    case Shader::VarType::Float3:
+                        dataSize += 4 * 3;
+                        break;
+                    case Shader::VarType::Float4:
+                        dataSize += 4 * 4;
+                        break;
+                    }
+                }
+                for (int i = 0; i < attribCount; ++i)
+                {
+                    int size = 0;
+                    switch (pVSRaw->m_inputLayout[i].type)
+                    {
+                    case Shader::VarType::Float:
+                        size = 1;
+                        break;
+                    case Shader::VarType::Float2:
+                        size = 2;
+                        break;
+                    case Shader::VarType::Float3:
+                        size = 3;
+                        break;
+                    case Shader::VarType::Float4:
+                        size = 4;
+                        break;
+                    }
+                    glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, dataSize, (float*)offset);
+                    offset += size * 4;
+                }
+                m_lastVertexAttribCount = attribCount;
+
+                //glVertexPointer(2, GL_FLOAT, 32, NULL);
+                //glTexCoordPointer(2, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 2));
+                //glColorPointer(4, GL_FLOAT, 32, (float*)(sizeof(GL_FLOAT) * 4));
             }
             renderStates.vertexBuffer.resetDirty();
         }

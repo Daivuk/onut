@@ -166,7 +166,7 @@ namespace onut
             source.reserve(5000);
 
             // Add engine default constant buffers
-            source += "#version 400\n\n";
+            source += "#version 420\n\n";
             source += "uniform mat4 oViewProjection;\n\n";
 
             // Add vertex elements
@@ -190,17 +190,23 @@ namespace onut
             elementStructsSource += "\n";
 
             // Outputs
+            semanticIndex = 0;
             for (auto& element : parsed.outputs)
             {
                 switch (element.type)
                 {
-                case VarType::Float: elementStructsSource += "out float "; break;
-                case VarType::Float2: elementStructsSource += "out vec2 "; break;
-                case VarType::Float3: elementStructsSource += "out vec3 "; break;
-                case VarType::Float4: elementStructsSource += "out vec4 "; break;
+                case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out float "; break;
+                case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec2 "; break;
+                case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec3 "; break;
+                case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec4 "; break;
+                //case VarType::Float: elementStructsSource += "out float "; break;
+                //case VarType::Float2: elementStructsSource += "out vec2 "; break;
+                //case VarType::Float3: elementStructsSource += "out vec3 "; break;
+                //case VarType::Float4: elementStructsSource += "out vec4 "; break;
                 default: assert(false);
                 }
                 elementStructsSource += element.name + ";\n";
+                ++semanticIndex;
             }
             elementStructsSource += "\n";
             source += elementStructsSource;
@@ -211,6 +217,7 @@ namespace onut
             {
                 ShaderGL::Uniform uniform;
                 uniform.name = it->name;
+                uniform.type = it->type;
                 source += "uniform " + getTypeName(it->type) + " " + uniform.name + ";\n";
                 uniforms.push_back(uniform);
             }
@@ -268,6 +275,17 @@ namespace onut
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Vertex, vertexElements);
+
+            // Attributes
+            for (auto& element : parsed.inputs)
+            {
+                ShaderGL::Attribute attribute;
+                attribute.name = element.name;
+                attribute.type = element.type;
+                ((ShaderGL*)(pRet.get()))->m_inputLayout.push_back(attribute);
+            }
+            ((ShaderGL*)(pRet.get()))->m_uniforms = uniforms;
+
             return pRet;
         }
         else if (in_type == OPixelShader)
@@ -276,33 +294,41 @@ namespace onut
             std::string source;
             source.reserve(5000);
 
-            source += "#version 400\n\n";
+            source += "#version 420\n\n";
             source += "layout( location = 0 ) out vec4 oColor;";
 
             // Create textures
+            int semanticIndex = 0;
             for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
             {
                 const auto& texture = *rit;
-                source += "uniform sampler2D sampler_" + texture.name + ";\n";
+                source += "layout(binding = " + std::to_string(texture.index) + ") uniform sampler2D sampler_" + texture.name + ";\n";
                 source += "vec4 " + texture.name + "(vec2 uv)\n";
                 source += "{\n";
                 source += "    return texture2D(sampler_" + texture.name + ", uv);\n";
                 source += "}\n\n";
+                ++semanticIndex;
             }
 
             // Inputs
             std::string elementStructsSource;
+            semanticIndex = 0;
             for (auto& element : parsed.inputs)
             {
                 switch (element.type)
                 {
-                case VarType::Float: elementStructsSource += "in float "; break;
-                case VarType::Float2: elementStructsSource += "in vec2 "; break;
-                case VarType::Float3: elementStructsSource += "in vec3 "; break;
-                case VarType::Float4: elementStructsSource += "in vec4 "; break;
+                case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in float "; break;
+                case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
+                case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
+                case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
+                //case VarType::Float: elementStructsSource += "in float "; break;
+                //case VarType::Float2: elementStructsSource += "in vec2 "; break;
+                //case VarType::Float3: elementStructsSource += "in vec3 "; break;
+                //case VarType::Float4: elementStructsSource += "in vec4 "; break;
                 default: assert(false);
                 }
                 elementStructsSource += element.name + ";\n";
+                ++semanticIndex;
             }
             elementStructsSource += "\n";
             source += elementStructsSource;
@@ -313,7 +339,9 @@ namespace onut
             {
                 ShaderGL::Uniform uniform;
                 uniform.name = it->name;
-                source += "uniform " + getTypeName(it->type) + " " + uniform.name + ";\n";
+                uniform.type = it->type;
+                source += "uniform " + getTypeName(it->type) + " " + uniform.name + "_PS;\n";
+                source += getTypeName(it->type) + " " + uniform.name + " = " + uniform.name + "_PS;\n";
                 uniforms.push_back(uniform);
             }
 
@@ -370,6 +398,7 @@ namespace onut
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Pixel);
+            ((ShaderGL*)(pRet.get()))->m_uniforms = uniforms;
             return pRet;
         }
         else
@@ -470,80 +499,49 @@ namespace onut
                 return i;
             }
         }
+        assert(false);
         return -1;
     }
 
     void ShaderGL::setFloat(int varId, float value)
     {
-    /*    auto& uniform = m_uniforms[varId];
+        auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        float values[4] = {value, 0, 0, 0};
-        memcpy(map.pData, values, 16);
-        pDeviceContext->Unmap(pBuffer, 0);*/
+        uniform.value._11 = value;
     }
 
     void ShaderGL::setVector2(int varId, const Vector2& value)
     {
-  /*      auto& uniform = m_uniforms[varId];
+        auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        float values[4] = {value.x, value.y, 0, 0};
-        memcpy(map.pData, values, 16);
-        pDeviceContext->Unmap(pBuffer, 0);*/
+        uniform.value._11 = value.x;
+        uniform.value._12 = value.y;
     }
 
     void ShaderGL::setVector3(int varId, const Vector3& value)
     {
-    /*    auto& uniform = m_uniforms[varId];
+        auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        float values[4] = {value.x, value.y, value.z, 0};
-        memcpy(map.pData, values, 16);
-        pDeviceContext->Unmap(pBuffer, 0);*/
+        uniform.value._11 = value.x;
+        uniform.value._12 = value.y;
+        uniform.value._13 = value.z;
     }
 
     void ShaderGL::setVector4(int varId, const Vector4& value)
     {
-     /*   auto& uniform = m_uniforms[varId];
+        auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &value.x, 16);
-        pDeviceContext->Unmap(pBuffer, 0);*/
+        uniform.value._11 = value.x;
+        uniform.value._12 = value.y;
+        uniform.value._13 = value.z;
+        uniform.value._14 = value.w;
     }
 
     void ShaderGL::setMatrix(int varId, const Matrix& value)
     {
-    /*    auto& uniform = m_uniforms[varId];
+        auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &value._11, 64);
-        pDeviceContext->Unmap(pBuffer, 0);*/
+        uniform.value = value;
     }
 
     void ShaderGL::setFloat(const std::string& varName, float value)
@@ -574,5 +572,58 @@ namespace onut
     ShaderGL::Uniforms& ShaderGL::getUniforms()
     {
         return m_uniforms;
+    }
+
+    const ShaderGL::ProgramRef& ShaderGL::getProgram(const OShaderGLRef& pVertexShader)
+    {
+        for (auto it = m_programs.begin(); it != m_programs.end();)
+        {
+            const auto& pProgram = *it;
+            auto pVertexShaderRef = pProgram->pVertexShader.lock();
+            if (!pVertexShaderRef)
+            {
+                // Hum remove that program
+                it = m_programs.erase(it);
+                continue;
+            }
+            if (pVertexShaderRef == pVertexShader)
+            {
+                return pProgram;
+            }
+            ++it;
+        }
+
+        // It doesnt exist, create a program
+        auto program = glCreateProgram();
+        glAttachShader(program, pVertexShader->m_shader);
+        glAttachShader(program, m_shader);
+        glLinkProgram(program);
+
+        auto pProgram = OMake<Program>();
+        auto pProgramRaw = pProgram.get();
+        pProgramRaw->pVertexShader = pVertexShader;
+        pProgramRaw->program = program;
+
+        // Now find all uniforms
+        pProgram->oViewProjectionUniform = glGetUniformLocation(program, "oViewProjection");
+        auto pVertexShaderRaw = (ShaderGL*)pVertexShader.get();
+        for (const auto& uniform : pVertexShaderRaw->m_uniforms)
+        {
+            pProgramRaw->uniformsVS.push_back(glGetUniformLocation(program, uniform.name.c_str()));
+        }
+        for (const auto& uniform : m_uniforms)
+        {
+            pProgramRaw->uniformsPS.push_back(glGetUniformLocation(program, (uniform.name + "_PS").c_str()));
+        }
+
+        // Find attributes
+        for (const auto& attribute : pVertexShaderRaw->m_inputLayout)
+        {
+            pProgramRaw->attributes.push_back(glGetAttribLocation(program, attribute.name.c_str()));
+        }
+
+        m_programs.push_back(pProgram);
+
+        return m_programs.back();
     }
 };
