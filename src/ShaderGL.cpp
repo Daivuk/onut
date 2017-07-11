@@ -166,7 +166,7 @@ namespace onut
             source.reserve(5000);
 
             // Add engine default constant buffers
-            source += "#version 420\n\n";
+            source += "#version 410\n\n";
             source += "uniform mat4 oViewProjection;\n\n";
 
             // Add vertex elements
@@ -297,15 +297,16 @@ namespace onut
             std::string source;
             source.reserve(5000);
 
-            source += "#version 420\n\n";
-            source += "layout( location = 0 ) out vec4 oColor;";
+            source += "#version 410\n\n";
+            source += "layout( location = 0 ) out vec4 oColor;\n\n";
 
             // Create textures
             int semanticIndex = 0;
             for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
             {
                 const auto& texture = *rit;
-                source += "layout(binding = " + std::to_string(texture.index) + ") uniform sampler2D sampler_" + texture.name + ";\n";
+                //source += "layout(binding = " + std::to_string(texture.index) + ") uniform sampler2D sampler_" + texture.name + ";\n";
+                source += "uniform sampler2D sampler_" + texture.name + ";\n";
                 source += "vec4 " + texture.name + "(vec2 uv)\n";
                 source += "{\n";
                 source += "    return texture2D(sampler_" + texture.name + ", uv);\n";
@@ -604,20 +605,18 @@ namespace onut
 
         // It doesnt exist, create a program
         auto program = glCreateProgram();
-        err = glGetError();
-        if (err != GL_NO_ERROR) OLogE("glCreateProgram: " + std::to_string(err));
+        if (!program)
+        {
+            err = glGetError();
+            if (err != GL_NO_ERROR)
+            {
+                OLogE("glCreateProgram: " + std::to_string(err));
+            }
+        }
 
         glAttachShader(program, pVertexShader->m_shader);
-        err = glGetError();
-        if (err != GL_NO_ERROR) OLogE("glAttachShader VS: " + std::to_string(err));
-
         glAttachShader(program, m_shader);
-        err = glGetError();
-        if (err != GL_NO_ERROR) OLogE("glAttachShader PS: " + std::to_string(err));
-
         glLinkProgram(program);
-        err = glGetError();
-        if (err != GL_NO_ERROR) OLogE("glLinkProgram: " + std::to_string(err));
 
         auto pProgram = OMake<Program>();
         auto pProgramRaw = pProgram.get();
@@ -634,6 +633,13 @@ namespace onut
         for (const auto& uniform : m_uniforms)
         {
             pProgramRaw->uniformsPS.push_back(glGetUniformLocation(program, (uniform.name + "_PS").c_str()));
+        }
+
+        // Find texture locations
+        pProgramRaw->textures.resize(m_textures.size());
+        for (const auto& texture : m_textures)
+        {
+            pProgramRaw->textures[texture.index] = glGetUniformLocation(program, ("sampler_" + texture.name).c_str());
         }
 
         // Find attributes

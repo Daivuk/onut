@@ -1,5 +1,6 @@
 // Onut
 #include <onut/IndexBuffer.h>
+#include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/Texture.h>
@@ -101,12 +102,12 @@ namespace onut
 
         SDL_GetWindowSize(m_pSDLWindow, &m_resolution.x, &m_resolution.y);
 
-        m_glContext = SDL_GL_CreateContext(m_pSDLWindow);
-
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        m_glContext = SDL_GL_CreateContext(m_pSDLWindow);
 
         SDL_GL_SetSwapInterval(1);
 #endif
@@ -408,6 +409,12 @@ namespace onut
                 programDirty = true;
                 glUseProgram(pProgram->program);
 
+                int i = 0;
+                for (const auto& textureLoc : pProgram->textures)
+                {
+                    glUniform1i(textureLoc, i++);
+                }
+
                 // Update all uniforms
                 for (int i = 0; i < (int)pVSRaw->m_uniforms.size(); ++i)
                 {
@@ -553,6 +560,7 @@ namespace onut
                 if (pTexture != nullptr)
                 {
                     auto pTextureEGLS2 = static_cast<TextureGL*>(pTexture);
+
                     glActiveTexture(GL_TEXTURE0 + i);
                     glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());
 

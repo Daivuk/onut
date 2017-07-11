@@ -63,6 +63,7 @@ namespace onut
             std::vector<GLint> uniformsPS;
             GLint oViewProjectionUniform;
             std::vector<GLint> attributes;
+            std::vector<GLint> textures;
         };
         using ProgramRef = std::shared_ptr<Program>;
         using Programs = std::vector<ProgramRef>;

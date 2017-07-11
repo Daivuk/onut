@@ -136,7 +136,6 @@ namespace onut
     void Renderer::init(const OWindowRef& pWindow)
     {
         loadShaders();
-#if !defined(__unix__)
         const float vertices[] = {
             -1, -1,
             -1, 1,
@@ -146,7 +145,6 @@ namespace onut
             1, 1
         };
         m_pEffectsVertexBuffer = OVertexBuffer::createStatic(vertices, sizeof(vertices));
-#endif
     }
 
     void Renderer::setupFor2D()
@@ -208,7 +206,6 @@ namespace onut
 
     void Renderer::loadShaders()
     {
-#if !defined(__unix__)
         // Create 2D shaders
         {
             m_p2DVertexShader = OShader::createFromSource(SHADER_SRC_2D_VS, OVertexShader);
@@ -225,7 +222,6 @@ namespace onut
             m_pCartoonPixelShader = OShader::createFromSource(SHADER_SRC_CARTOON_PS, OPixelShader);
             m_pVignettePixelShader = OShader::createFromSource(SHADER_SRC_VIGNETTE_PS, OPixelShader);
         }
-#endif
     }
 
     void Renderer::setupEffectRenderStates()
