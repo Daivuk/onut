@@ -2,7 +2,6 @@
 #define GL_INCLUDES_H_INCLUDED
 
 #if defined(__APPLE__)
-    #include <GL/glew.h>
     #include <OpenGL/gl.h>
     #include <OpenGL/glext.h>
     #include <SDL2/SDL.h>

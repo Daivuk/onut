@@ -309,7 +309,7 @@ namespace onut
                 source += "uniform sampler2D sampler_" + texture.name + ";\n";
                 source += "vec4 " + texture.name + "(vec2 uv)\n";
                 source += "{\n";
-                source += "    return texture2D(sampler_" + texture.name + ", uv);\n";
+                source += "    return texture(sampler_" + texture.name + ", uv);\n";
                 source += "}\n\n";
                 ++semanticIndex;
             }
@@ -421,7 +421,6 @@ namespace onut
     {
         auto pRet = std::make_shared<ShaderGL>();
         pRet->m_type = in_type;
-
         if (in_type == OVertexShader)
         {
             pRet->m_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -435,6 +434,12 @@ namespace onut
             {
                 GLchar infoLog[1024];
                 glGetShaderInfoLog(pRet->m_shader, 1023, NULL, infoLog);
+                auto split = onut::splitString(source, '\n', false);
+                int i = 1;
+                for (const auto& line : split)
+                {
+                    OLog(std::to_string(i++) + ": " + line);
+                }
                 OLogE("VS compile failed: " + std::string(infoLog));
                 assert(false);
                 return nullptr;
@@ -462,6 +467,12 @@ namespace onut
             {
                 GLchar infoLog[1024];
                 glGetShaderInfoLog(pRet->m_shader, 1023, NULL, infoLog);
+                auto split = onut::splitString(source, '\n', false);
+                int i = 1;
+                for (const auto& line : split)
+                {
+                    OLog(std::to_string(i++) + ": " + line);
+                }
                 OLogE("PS compile failed: " + std::string(infoLog));
                 assert(false);
                 return nullptr;

@@ -112,7 +112,7 @@ namespace onut
         SDL_GL_SetSwapInterval(1);
 #endif
 
-        glewInit();
+        //glewInit();
     }
 
     void RendererGL::createRenderTarget()
@@ -268,11 +268,11 @@ namespace onut
             renderStates.renderTarget.resetDirty();
             if (stackCount > 1)
             {
-                glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+                //glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
             }
             else
             {
-                glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+                //glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
             }
         }
         
@@ -408,12 +408,6 @@ namespace onut
             {
                 programDirty = true;
                 glUseProgram(pProgram->program);
-
-                int i = 0;
-                for (const auto& textureLoc : pProgram->textures)
-                {
-                    glUniform1i(textureLoc, i++);
-                }
 
                 // Update all uniforms
                 for (int i = 0; i < (int)pVSRaw->m_uniforms.size(); ++i)
@@ -560,6 +554,11 @@ namespace onut
                 if (pTexture != nullptr)
                 {
                     auto pTextureEGLS2 = static_cast<TextureGL*>(pTexture);
+
+                    if (pProgram)
+                    {
+                        glUniform1i(pProgram->textures[i], i);
+                    }
 
                     glActiveTexture(GL_TEXTURE0 + i);
                     glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());

@@ -61,7 +61,7 @@ void render()
 
     // Clear
     oRenderer->clear(OColorHex(1d232d));
-
+/*
     // Begin a batch
     oSpriteBatch->begin(batchTransform);
 
@@ -134,7 +134,7 @@ void render()
     oSpriteBatch->drawSprite(pNutTexture, Vector2(725, 300), Color::White, 0.f, 1.5f);
 
     // End and flush the batch
-    oSpriteBatch->end();
+    oSpriteBatch->end();*/
 }
 
 void postRender()
