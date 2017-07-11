@@ -398,37 +398,37 @@ namespace onut
 
                         switch (texture.filter)
                         {
-                        case ParsedTexture::Filter::Nearest:
+                        case sample::Filtering::Nearest:
                             samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
                             break;
-                        case ParsedTexture::Filter::Linear:
+                        case sample::Filtering::Linear:
                             samplerState.Filter = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
                             break;
-                        case ParsedTexture::Filter::Bilinear:
+                        case sample::Filtering::Bilinear:
                             samplerState.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
                             break;
-                        case ParsedTexture::Filter::Trilinear:
+                        case sample::Filtering::Trilinear:
                             samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
                             break;
-                        case ParsedTexture::Filter::Anisotropic:
+                        case sample::Filtering::Anisotropic:
                             samplerState.Filter = D3D11_FILTER_ANISOTROPIC;
                             break;
                         }
                         switch (texture.repeatX)
                         {
-                        case ParsedTexture::Repeat::Clamp:
+                        case sample::AddressMode::Clamp:
                             samplerState.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
                             break;
-                        case ParsedTexture::Repeat::Wrap:
+                        case sample::AddressMode::Wrap:
                             samplerState.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
                             break;
                         }
                         switch (texture.repeatY)
                         {
-                        case ParsedTexture::Repeat::Clamp:
+                        case sample::AddressMode::Clamp:
                             samplerState.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
                             break;
-                        case ParsedTexture::Repeat::Wrap:
+                        case sample::AddressMode::Wrap:
                             samplerState.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
                             break;
                         }
