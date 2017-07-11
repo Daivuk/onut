@@ -664,7 +664,8 @@ namespace onut
         { "refract",{ Shader::Intrinsic::Refract, 3 } },
         { "any",{ Shader::Intrinsic::Any, 1 } },
         { "all",{ Shader::Intrinsic::All, 1 } },
-        { "mul",{ Shader::Intrinsic::Mul, 2 } }
+        { "mul",{ Shader::Intrinsic::Mul, 2 } },
+        { "round",{ Shader::Intrinsic::Round, 1 } }
     };
 
     static bool parseIntrinsic(Shader::Token& token, int argCount, stb_lexer& lexer);
@@ -792,6 +793,97 @@ namespace onut
 
     static bool parseConst(Shader::Const& _const, stb_lexer& lexer)
     {
+        // Const type
+        if (!stb_c_lexer_get_token(&lexer))
+        {
+            shaderError(lexer, "Expected type");
+            return false;
+        }
+        if (lexer.token != CLEX_id)
+        {
+            shaderError(lexer, "Expected type");
+            return false;
+        }
+        else if (strcmp(lexer.string, "float") == 0) _const.type = Shader::VarType::Float;
+        else if (strcmp(lexer.string, "float2") == 0) _const.type = Shader::VarType::Float2;
+        else if (strcmp(lexer.string, "float3") == 0) _const.type = Shader::VarType::Float3;
+        else if (strcmp(lexer.string, "float4") == 0) _const.type = Shader::VarType::Float4;
+        else if (strcmp(lexer.string, "matrix") == 0) _const.type = Shader::VarType::Matrix;
+        else
+        {
+            _const.type = Shader::VarType::Unknown;
+            _const.typeName = lexer.string;
+        }
+
+        // const name
+        if (!stb_c_lexer_get_token(&lexer))
+        {
+            shaderError(lexer, "Expected identifier");
+            return false;
+        }
+        if (lexer.token != CLEX_id)
+        {
+            shaderError(lexer, "Expected identifier");
+            return false;
+        }
+        _const.name = lexer.string;
+
+        // Check if it's an array
+        if (!stb_c_lexer_get_token(&lexer))
+        {
+            shaderError(lexer, "Expected identifier");
+            return false;
+        }
+        if ((char)lexer.token == '[')
+        {
+            _const.isArray = true;
+            while (true)
+            {
+                if (!stb_c_lexer_get_token(&lexer))
+                {
+                    shaderError(lexer, "Expected ]");
+                    return false;
+                }
+                if ((char)lexer.token == ']')
+                {
+                    if (_const.arrayArguments.empty())
+                    {
+                        shaderError(lexer, "Expected array size");
+                        return false;
+                    }
+                    if (!stb_c_lexer_get_token(&lexer))
+                    {
+                        shaderError(lexer, "Expected =");
+                        return false;
+                    }
+                    break;
+                }
+                Shader::Token token;
+                if (!parseToken(token, lexer)) return false;
+                _const.arrayArguments.push_back(token);
+            }
+        }
+
+        if ((char)lexer.token != '=')
+        {
+            shaderError(lexer, "Expected =");
+            return false;
+        }
+
+        if (_const.isArray)
+        {
+            if (!stb_c_lexer_get_token(&lexer))
+            {
+                shaderError(lexer, "Expected { array initializer");
+                return false;
+            }
+            if ((char)lexer.token != '{')
+            {
+                shaderError(lexer, "Expected { array initializer");
+                return false;
+            }
+        }
+
         while (true)
         {
             if (!stb_c_lexer_get_token(&lexer))
@@ -801,17 +893,39 @@ namespace onut
             }
             if ((char)lexer.token == ';')
             {
-                if (_const.line.empty())
+                if (_const.arguments.empty())
                 {
-                    shaderError(lexer, "Expected tokens after const");
+                    shaderError(lexer, "Expected value");
                     return false;
                 }
                 break;
             }
+            if ((char)lexer.token == '}' && _const.isArray)
+            {
+                if (!stb_c_lexer_get_token(&lexer))
+                {
+                    shaderError(lexer, "Expected ;");
+                    return false;
+                }
+                if ((char)lexer.token == ';')
+                {
+                    if (_const.arguments.empty())
+                    {
+                        shaderError(lexer, "Expected value");
+                        return false;
+                    }
+                    break;
+                }
+                else
+                {
+                    shaderError(lexer, "Expected ;");
+                    return false;
+                }
+            }
 
             Shader::Token token;
             if (!parseToken(token, lexer)) return false;
-            _const.line.push_back(token);
+            _const.arguments.push_back(token);
         }
 
         return true;

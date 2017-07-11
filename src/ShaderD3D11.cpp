@@ -120,7 +120,8 @@ namespace onut
                     INTRINSICT_IMPL_1(Any, any, 0);
                     INTRINSICT_IMPL_1(All, all, 0);
                     INTRINSICT_IMPL_2(Mul, mul, 0, 1);
-                    default: assert(false);
+                    INTRINSICT_IMPL_1(Round, round, 0);
+                default: assert(false);
                 }
             }
         }
@@ -207,10 +208,22 @@ namespace onut
             // Bake constants
             for (const auto& _const : parsed.consts)
             {
-                source += "static";
-                bakeTokens(source, _const.line);
+                source += "static " + getTypeName(_const.type) + " " + _const.name;
+                if (_const.isArray)
+                {
+                    source += "[int(";
+                    bakeTokens(source, _const.arrayArguments);
+                    source += ")] = {";
+                    bakeTokens(source, _const.arguments);
+                    source += "}";
+                }
+                else
+                {
+                    source += " = ";
+                    bakeTokens(source, _const.arguments);
+                }
+                source += ";\n\n";
             }
-            source += ";\n\n";
 
             // Bake functions
             for (const auto& _function : parsed.functions)
@@ -324,10 +337,22 @@ namespace onut
             // Bake constants
             for (const auto& _const : parsed.consts)
             {
-                source += "static";
-                bakeTokens(source, _const.line);
+                source += "static " + getTypeName(_const.type) + " " + _const.name;
+                if (_const.isArray)
+                {
+                    source += "[int(";
+                    bakeTokens(source, _const.arrayArguments);
+                    source += ")] = {";
+                    bakeTokens(source, _const.arguments);
+                    source += "}";
+                }
+                else
+                {
+                    source += " = ";
+                    bakeTokens(source, _const.arguments);
+                }
+                source += ";\n\n";
             }
-            source += ";\n\n";
 
             // Bake functions
             for (const auto& _function : parsed.functions)

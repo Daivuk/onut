@@ -150,7 +150,8 @@ namespace onut
             Refract,
             Any,
             All,
-            Mul
+            Mul,
+            Round
         };
 
         struct Token
@@ -172,7 +173,12 @@ namespace onut
 
         struct Const
         {
-            std::vector<Token> line;
+            VarType type;
+            std::string typeName;
+            std::string name;
+            bool isArray;
+            std::vector<Token> arguments;
+            std::vector<Token> arrayArguments;
         };
 
         struct StructMember

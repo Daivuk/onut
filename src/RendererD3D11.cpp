@@ -734,7 +734,6 @@ namespace onut
             if (renderStates.pixelShader.isDirty())
             {
                 m_pDeviceContext->PSSetShader(pShaderD3D11->getPixelShader(), nullptr, 0);
-                renderStates.pixelShader.resetDirty();
 
                 auto& uniforms = pShaderD3D11->getUniforms();
                 for (UINT i = 0; i < (UINT)uniforms.size(); ++i)
@@ -773,6 +772,11 @@ namespace onut
                     static_cast<int>(renderStates.sampleAddressMode.get())]);
             renderStates.sampleFiltering.resetDirty();
             renderStates.sampleAddressMode.resetDirty();
+        }
+
+        if (renderStates.pixelShader.isDirty())
+        {
+            renderStates.pixelShader.resetDirty();
         }
 
         // Vertex/Index buffers

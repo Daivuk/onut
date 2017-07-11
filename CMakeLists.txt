@@ -35,7 +35,7 @@ endif()
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-D_DEBUG)
 endif()
-if (ONUT_USE_OPENGL EQUAL 1)
+if (ONUT_USE_OPENGL)
     add_definitions(-DONUT_USE_OPENGL)
 endif()
 if (RPI)
@@ -116,7 +116,7 @@ if (WIN32)
         src/SocketTCP_Win32.cpp
         src/WindowWIN32.cpp 
     )
-    if (ONUT_USE_OPENGL EQUAL 1)
+    if (ONUT_USE_OPENGL)
         list(APPEND src_files
             src/IndexBufferGL.cpp 
             src/RendererGL.cpp 
@@ -331,7 +331,7 @@ if (UNIX)
     list(APPEND libs PUBLIC CURL::libcurl)
 endif()
 if (WIN32)
-    if (ONUT_USE_OPENGL EQUAL 1)
+    if (ONUT_USE_OPENGL)
         find_package(OpenGL REQUIRED)
         list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
         list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
