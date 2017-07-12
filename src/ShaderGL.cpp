@@ -13,6 +13,8 @@
 #include <cassert>
 #include <regex>
 
+#define SHADER_VERSION "330"
+
 namespace onut
 {
     static std::string getTypeName(Shader::VarType type)
@@ -166,7 +168,7 @@ namespace onut
             source.reserve(5000);
 
             // Add engine default constant buffers
-            source += "#version 410\n\n";
+            source += "#version " SHADER_VERSION "\n\n";
             source += "uniform mat4 oViewProjection;\n\n";
 
             // Add vertex elements
@@ -297,7 +299,7 @@ namespace onut
             std::string source;
             source.reserve(5000);
 
-            source += "#version 410\n\n";
+            source += "#version " SHADER_VERSION "\n\n";
             source += "layout( location = 0 ) out vec4 oColor;\n\n";
 
             // Create textures

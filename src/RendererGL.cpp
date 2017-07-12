@@ -744,7 +744,7 @@ namespace onut
                         size = 4;
                         break;
                     }
-                    glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, dataSize, (float*)offset);
+                    glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, dataSize, (float*)(uintptr_t)offset);
                     offset += size * 4;
                 }
                 m_lastVertexAttribCount = attribCount;
