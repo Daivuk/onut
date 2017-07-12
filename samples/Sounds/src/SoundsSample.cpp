@@ -14,6 +14,8 @@
 
 OSoundInstanceRef pLoopingSound;
 OMusicRef pMusic;
+OMusicRef pMusic48000;
+OMusicRef pMusic22050mono;
 OSoundRef pNotes[8];
 
 static const double NOTE_FREQUENCIES[8] = {
@@ -36,6 +38,8 @@ void initSettings()
 void init()
 {
     pMusic = OGetMusic("music.ogg");
+    pMusic48000 = OGetMusic("music_48000.ogg");
+    pMusic22050mono = OGetMusic("music_22050_mono.ogg");
 
     pLoopingSound = OCreateSoundInstance("looping.wav");
     pLoopingSound->setLoop(true);
@@ -110,16 +114,55 @@ void update()
     {
         OPlaySound("sound1.wav", volume, balance, pitch);
     }
+    if (OInputJustPressed(OKey2))
+    {
+        if (pMusic->isPlaying())
+        {
+            OLog("Stop Music");
+            pMusic->stop();
+        }
+        else
+        {
+            OLog("Start Music");
+            pMusic->play();
+        }
+    }
+    if (OInputJustPressed(OKey3))
+    {
+        if (pMusic48000->isPlaying())
+        {
+            OLog("Stop Music");
+            pMusic48000->stop();
+        }
+        else
+        {
+            OLog("Start Music");
+            pMusic48000->play();
+        }
+    }
     if (OInputJustPressed(OKey4))
+    {
+        if (pMusic22050mono->isPlaying())
+        {
+            OLog("Stop Music");
+            pMusic22050mono->stop();
+        }
+        else
+        {
+            OLog("Start Music");
+            pMusic22050mono->play();
+        }
+    }
+    if (OInputJustPressed(OKey5))
     {
         OPlayRandomSound({"sound1.wav", "sound2.wav", "sound3.wav", "sound4.wav", "sound5.wav"}, 
                          volume, balance, pitch);
     }
-    if (OInputJustPressed(OKey5))
+    if (OInputJustPressed(OKey6))
     {
         OPlaySound("sound5.wav", volume, balance, pitch);
     }
-    if (OInputJustPressed(OKey6))
+    if (OInputJustPressed(OKey7))
     {
         if (pLoopingSound->isPlaying())
         {
@@ -132,22 +175,9 @@ void update()
             pLoopingSound->play();
         }
     }
-    if (OInputJustPressed(OKey7))
+    if (OInputJustPressed(OKey8))
     {
         OPlaySoundCue("soundCue.cue", volume, balance, pitch);
-    }
-    if (OInputJustPressed(OKey9))
-    {
-        if (pMusic->isPlaying())
-        {
-            OLog("Stop Music");
-            pMusic->stop();
-        }
-        else
-        {
-            OLog("Start Music");
-            pMusic->play();
-        }
     }
     if (OInputJustPressed(OKeySpaceBar))
     {
@@ -184,20 +214,22 @@ void render()
     pFont->draw("Press ^990F8^999 to play 8000 hz, 32 bits", { 400, 150 });
     pFont->draw("Press ^990F9^999 to play 48000 hz, 32 bits, 2 channels", { 400, 170 });
 
-    pFont->draw("Press ^9901^999 to play sound1", {10, 10});
-    pFont->draw("Press ^9904^999 to play a random sound", {10, 70});
-    pFont->draw("Press ^9905^999 to play sound5", {10, 90});
+    pFont->draw("Press ^9901^999 to play sound1", { 10, 10 });
+    pFont->draw("Press ^9902^999 to play/stop music (^990SpaceBar^999 to pause/resume)", { 10, 30 });
+    pFont->draw("Press ^9903^999 to play/stop music at 48000hz", { 10, 50 });
+    pFont->draw("Press ^9904^999 to play/stop music at 22050hz mono", { 10, 70 });
+    pFont->draw("Press ^9905^999 to play a random sound", {10, 90});
+    pFont->draw("Press ^9906^999 to play sound5", {10, 110});
     if (pLoopingSound->isPlaying())
     {
-        pFont->draw("Press ^9906^999 to start/stop looping sound (^099Playing^999)", {10, 110});
+        pFont->draw("Press ^9907^999 to start/stop looping sound (^099Playing^999)", {10, 130});
     }
     else
     {
-        pFont->draw("Press ^9906^999 to start/stop looping sound", {10, 110});
+        pFont->draw("Press ^9907^999 to start/stop looping sound", {10, 130});
     }
-    pFont->draw("Press ^9907^999 to play cue file", {10, 130});
-    pFont->draw("Press ^990qwertyui^999 to do music", {10, 150});
-    pFont->draw("Press ^9909^999 to play/stop music (^990SpaceBar^999 to pause/resume)", {10, 170});
+    pFont->draw("Press ^9908^999 to play cue file", {10, 150});
+    pFont->draw("Press ^990qwertyui^999 to do music", {10, 170});
 
     pFont->draw("Hold ^990Left Arrow^999 to on left channel", { 10, OScreenHf - 50 });
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", { 10, OScreenHf - 30 });

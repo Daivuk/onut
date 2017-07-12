@@ -60,6 +60,10 @@ namespace onut
         std::vector<Buffer*> m_buffers;
         std::atomic<int> m_bufferCount;
         std::atomic<bool> m_done;
+        float* m_pSamplings = nullptr;
+        float m_samplingT = 0.0f;
+        int m_musicSampleRate = 0;
+        int m_musicChannelCount = 0;
         bool m_paused = false;
         unsigned int m_sampleCount = 0;
         int m_bufferMax;
