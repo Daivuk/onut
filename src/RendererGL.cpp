@@ -92,6 +92,7 @@ namespace onut
         m_hDC = GetDC(m_hWnd);
         PixelFormat = ChoosePixelFormat(m_hDC, &pfd);
         SetPixelFormat(m_hDC, PixelFormat, &pfd);
+        
         m_hRC = wglCreateContext(m_hDC);
         wglMakeCurrent(m_hDC, m_hRC);
 
@@ -112,7 +113,9 @@ namespace onut
         SDL_GL_SetSwapInterval(1);
 #endif
 
-        //glewInit();
+#if !defined(__APPLE__)
+        glewInit();
+#endif
     }
 
     void RendererGL::createRenderTarget()
@@ -266,14 +269,16 @@ namespace onut
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
             renderStates.renderTarget.resetDirty();
+#if !defined(__APPLE__)
             if (stackCount > 1)
             {
-                //glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+                glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
             }
             else
             {
-                //glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+                glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
             }
+#endif
         }
         
         // Blend
@@ -554,6 +559,11 @@ namespace onut
                 if (pTexture != nullptr)
                 {
                     auto pTextureEGLS2 = static_cast<TextureGL*>(pTexture);
+
+                    if (pPSRaw_s && i >= (int)pPSRaw_s->m_textures.size())
+                    {
+                        continue;
+                    }
 
                     if (pProgram)
                     {
