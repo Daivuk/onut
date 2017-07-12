@@ -81,6 +81,7 @@ namespace onut
                 *this = m_stack.front();
                 m_stack.clear();
             }
+            m_isDirty = true;
         }
 
         void push(const Ttype& value)

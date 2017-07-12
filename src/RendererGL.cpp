@@ -251,29 +251,10 @@ namespace onut
             glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
             renderStates.clearColor.resetDirty();
         }
-
-        // Because opengl sucks, we need to determine if we have to flip Y
-        bool invertY = false;
-        if (renderStates.projection.isDirty() ||
-            renderStates.view.isDirty() ||
-            renderStates.world.isDirty() ||
-            renderStates.renderTarget.isDirty())
-        {
-            invertY = renderStates.renderTarget.get() != nullptr;
-            renderStates.projection.forceDirty();
-
-            if (invertY)
-            {
-                glCullFace(GL_FRONT);
-            }
-            else
-            {
-                glCullFace(GL_BACK);
-            }
-        }
         
         // Render target
-        if (renderStates.renderTarget.isDirty())
+        bool renderTargetDirty = renderStates.renderTarget.isDirty();
+        if (renderTargetDirty)
         {
             auto& pRenderTarget = renderStates.renderTarget.get();
             if (pRenderTarget)
@@ -535,8 +516,20 @@ namespace onut
             if (renderStates.projection.isDirty() ||
                 renderStates.view.isDirty() ||
                 renderStates.world.isDirty() ||
-                programDirty)
+                programDirty ||
+                renderTargetDirty)
             {
+                // Because opengl sucks, we need to determine if we have to flip Y
+                bool invertY = renderStates.renderTarget.get() != nullptr;
+                if (invertY)
+                {
+                    glCullFace(GL_FRONT);
+                }
+                else
+                {
+                    glCullFace(GL_BACK);
+                }
+
                 Matrix finalTransform = renderStates.world.get() * renderStates.view.get() * renderStates.projection.get();
                 if (invertY)
                 {
