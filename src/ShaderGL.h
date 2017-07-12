@@ -51,6 +51,7 @@ namespace onut
         struct Attribute
         {
             VarType type;
+            int index;
             std::string name;
         };
         using InputLayout = std::vector<Attribute>;

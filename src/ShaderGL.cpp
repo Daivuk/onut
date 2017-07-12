@@ -180,10 +180,14 @@ namespace onut
                 vertexElements.push_back({ element.type, "INPUT_ELEMENT" });
                 switch (element.type)
                 {
-                case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in float "; break;
-                case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
-                case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
-                case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
+                //case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in float "; break;
+                //case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
+                //case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
+                //case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
+                case VarType::Float: elementStructsSource += "in float "; break;
+                case VarType::Float2: elementStructsSource += "in vec2 "; break;
+                case VarType::Float3: elementStructsSource += "in vec3 "; break;
+                case VarType::Float4: elementStructsSource += "in vec4 "; break;
                 default: assert(false);
                 }
                 elementStructsSource += element.name + ";\n";
@@ -197,17 +201,17 @@ namespace onut
             {
                 switch (element.type)
                 {
-                case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out float "; break;
-                case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec2 "; break;
-                case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec3 "; break;
-                case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec4 "; break;
-                //case VarType::Float: elementStructsSource += "out float "; break;
-                //case VarType::Float2: elementStructsSource += "out vec2 "; break;
-                //case VarType::Float3: elementStructsSource += "out vec3 "; break;
-                //case VarType::Float4: elementStructsSource += "out vec4 "; break;
+                //case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out float "; break;
+                //case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec2 "; break;
+                //case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec3 "; break;
+                //case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec4 "; break;
+                case VarType::Float: elementStructsSource += "out float "; break;
+                case VarType::Float2: elementStructsSource += "out vec2 "; break;
+                case VarType::Float3: elementStructsSource += "out vec3 "; break;
+                case VarType::Float4: elementStructsSource += "out vec4 "; break;
                 default: assert(false);
                 }
-                elementStructsSource += element.name + ";\n";
+                elementStructsSource += "VARYING_ELEMENT" + std::to_string(semanticIndex) + ";\n";
                 ++semanticIndex;
             }
             elementStructsSource += "\n";
@@ -272,18 +276,40 @@ namespace onut
 
             // Bake main function
             source += "void main()\n{    vec4 oPosition;\n";
+            semanticIndex = 0;
+            for (auto& element : parsed.outputs)
+            {
+                switch (element.type)
+                {
+                case VarType::Float: source += "float "; break;
+                case VarType::Float2: source += "vec2 "; break;
+                case VarType::Float3: source += "vec3 "; break;
+                case VarType::Float4: source += "vec4 "; break;
+                default: assert(false);
+                }
+                source += element.name + ";\n";
+                ++semanticIndex;
+            }
             bakeTokens(source, parsed.mainFunction.body);
+            semanticIndex = 0;
+            for (auto& element : parsed.outputs)
+            {
+                source += "VARYING_ELEMENT" + std::to_string(semanticIndex) + " = " + element.name + ";\n";
+                ++semanticIndex;
+            }
             source += "    gl_Position = oPosition;\n}\n";
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Vertex, vertexElements);
 
             // Attributes
+            int i = 0;
             for (auto& element : parsed.inputs)
             {
                 ShaderGL::Attribute attribute;
                 attribute.name = element.name;
                 attribute.type = element.type;
+                attribute.index = i++;
                 ((ShaderGL*)(pRet.get()))->m_inputLayout.push_back(attribute);
             }
             ((ShaderGL*)(pRet.get()))->m_uniforms = uniforms;
@@ -300,7 +326,8 @@ namespace onut
             source.reserve(5000);
 
             source += "#version " SHADER_VERSION "\n\n";
-            source += "layout( location = 0 ) out vec4 oColor;\n\n";
+            //source += "layout( location = 0 ) out vec4 oColor;\n\n";
+            source += "out vec4 oColor;\n\n";
 
             // Create textures
             int semanticIndex = 0;
@@ -323,17 +350,17 @@ namespace onut
             {
                 switch (element.type)
                 {
-                case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in float "; break;
-                case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
-                case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
-                case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
-                //case VarType::Float: elementStructsSource += "in float "; break;
-                //case VarType::Float2: elementStructsSource += "in vec2 "; break;
-                //case VarType::Float3: elementStructsSource += "in vec3 "; break;
-                //case VarType::Float4: elementStructsSource += "in vec4 "; break;
+                //case VarType::Float: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in float "; break;
+                //case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
+                //case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
+                //case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
+                case VarType::Float: elementStructsSource += "in float "; break;
+                case VarType::Float2: elementStructsSource += "in vec2 "; break;
+                case VarType::Float3: elementStructsSource += "in vec3 "; break;
+                case VarType::Float4: elementStructsSource += "in vec4 "; break;
                 default: assert(false);
                 }
-                elementStructsSource += element.name + ";\n";
+                elementStructsSource += "VARYING_ELEMENT" + std::to_string(semanticIndex) + ";\n";
                 ++semanticIndex;
             }
             elementStructsSource += "\n";
@@ -399,6 +426,20 @@ namespace onut
 
             // Bake main function
             source += "void main()\n{\n";
+            semanticIndex = 0;
+            for (auto& element : parsed.inputs)
+            {
+                switch (element.type)
+                {
+                case VarType::Float: source += "float "; break;
+                case VarType::Float2: source += "vec2 "; break;
+                case VarType::Float3: source += "vec3 "; break;
+                case VarType::Float4: source += "vec4 "; break;
+                default: assert(false);
+                }
+                source += element.name + " = VARYING_ELEMENT" + std::to_string(semanticIndex) + ";\n";
+                ++semanticIndex;
+            }
             bakeTokens(source, parsed.mainFunction.body);
             source += "}\n";
 
@@ -629,16 +670,25 @@ namespace onut
 
         glAttachShader(program, pVertexShader->m_shader);
         glAttachShader(program, m_shader);
-        glLinkProgram(program);
 
         auto pProgram = OMake<Program>();
         auto pProgramRaw = pProgram.get();
         pProgramRaw->pVertexShader = pVertexShader;
         pProgramRaw->program = program;
+        auto pVertexShaderRaw = (ShaderGL*)pVertexShader.get();
+
+        // Find attributes
+        pProgramRaw->attributes.resize(m_inputLayout.size());
+        for (const auto& attribute : pVertexShaderRaw->m_inputLayout)
+        {
+            //pProgramRaw->attributes[attribute.index] = glGetAttribLocation(program, attribute.name.c_str());
+            glBindAttribLocation(program, attribute.index, attribute.name.c_str());
+        }
+
+        glLinkProgram(program);
 
         // Now find all uniforms
         pProgram->oViewProjectionUniform = glGetUniformLocation(program, "oViewProjection");
-        auto pVertexShaderRaw = (ShaderGL*)pVertexShader.get();
         for (const auto& uniform : pVertexShaderRaw->m_uniforms)
         {
             pProgramRaw->uniformsVS.push_back(glGetUniformLocation(program, uniform.name.c_str()));
@@ -653,12 +703,6 @@ namespace onut
         for (const auto& texture : m_textures)
         {
             pProgramRaw->textures[texture.index] = glGetUniformLocation(program, ("sampler_" + texture.name).c_str());
-        }
-
-        // Find attributes
-        for (const auto& attribute : pVertexShaderRaw->m_inputLayout)
-        {
-            pProgramRaw->attributes.push_back(glGetAttribLocation(program, attribute.name.c_str()));
         }
 
         m_programs.push_back(pProgram);

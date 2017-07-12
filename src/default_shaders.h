@@ -23,7 +23,7 @@ const char* SHADER_SRC_2D_PS = ""
     "void main()\n"
     "{\n"
     "    float4 diffuse = texDiffuse(inTexCoord);\n"
-    "    oColor = float4(1, 0, 0, 1);//diffuse * inColor;\n"
+    "    oColor = diffuse * inColor;\n"
     "}\n"
 "";
 
