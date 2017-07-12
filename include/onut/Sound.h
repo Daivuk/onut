@@ -63,7 +63,7 @@ namespace onut
     {
     public:
         static OSoundRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
-        static OSoundRef createFromData(const float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager = nullptr);
+        static OSoundRef createFromData(const float* pSamples, int frameCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager = nullptr);
 
         ~Sound();
 
@@ -80,7 +80,8 @@ namespace onut
         using Instances = std::vector<OSoundInstanceRef>;
 
         float* m_pBuffer = nullptr;
-        int m_bufferSampleCount = 0;
+        int m_frameCount = 0;
+        int m_channelCount = 0;
         Instances m_instances;
         int m_maxInstance = -1;
     };

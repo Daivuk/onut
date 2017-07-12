@@ -66,7 +66,7 @@ namespace onut
         
         int32_t datasize;
 
-        int sampleCount;
+        int frameCount;
         float* pBuffer = nullptr;
 
         bool datachunk = false;
@@ -109,9 +109,9 @@ namespace onut
                     uint8_t* pData = new uint8_t[datasize];
                     fread(pData, bitdepth / 8, datasize / (bitdepth / 8), pFic);
 
-                    sampleCount = (int)datasize / ((int)bitdepth / 8) / channelcount;
+                    frameCount = (int)datasize / ((int)bitdepth / 8) / channelcount;
 
-                    int len = sampleCount * channelcount;
+                    int len = frameCount * channelcount;
                     pBuffer = new float[len];
 
                     switch (bitdepth)
@@ -138,10 +138,18 @@ namespace onut
                         {
                             for (int i = 0; i < len; ++i)
                             {
-                                int8_t b0 = pData[i * 3 + 0];
-                                int8_t b1 = pData[i * 3 + 1];
-                                int8_t b2 = pData[i * 3 + 2];
-                                int32_t sample24 = b0 | (b1 << 8) | (b2 << 16);
+                                uint8_t b0 = pData[i * 3 + 0];
+                                uint8_t b1 = pData[i * 3 + 1];
+                                uint8_t b2 = pData[i * 3 + 2];
+                                int32_t sample24;
+                                if (b2 & 0x80)
+                                {
+                                    sample24 = (0xff << 24) | ((int32_t)b2 << 16) | ((int32_t)b1 << 8) | ((int32_t)b0 << 0);
+                                }
+                                else
+                                {
+                                    sample24 = ((int32_t)b2 << 16) | ((int32_t)b1 << 8) | ((int32_t)b0 << 0);
+                                }
                                 pBuffer[i] = (float)sample24 / 8388608.0f;
                             }
                             break;
@@ -171,78 +179,104 @@ namespace onut
         fclose(pFic);
 
         if (!pBuffer) return nullptr;
-        auto pRet = createFromData(pBuffer, sampleCount, channelcount, samplerate, pContentManager);
+        auto pRet = createFromData(pBuffer, frameCount, channelcount, samplerate, pContentManager);
         delete[] pBuffer;
         return pRet;
     }
 
-    OSoundRef Sound::createFromData(const float* pSamples, int sampleCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager)
+    // Some magic found here: http://paulbourke.net/miscellaneous/interpolation/
+    //
+    // Tension: 1 is high, 0 normal, -1 is low
+    // Bias: 0 is even,
+    // positive is towards first segment,
+    // negative towards the other
+    static float resamplingHermite(
+        float y0, float y1,
+        float y2, float y3,
+        float mu,
+        float tension = 0.0f,
+        float bias = 0.0f)
+    {
+        float m0, m1, mu2, mu3;
+        float a0, a1, a2, a3;
+
+        mu2 = mu * mu;
+        mu3 = mu2 * mu;
+        m0 = (y1 - y0)*(1 + bias)*(1 - tension) / 2;
+        m0 += (y2 - y1)*(1 - bias)*(1 - tension) / 2;
+        m1 = (y2 - y1)*(1 + bias)*(1 - tension) / 2;
+        m1 += (y3 - y2)*(1 - bias)*(1 - tension) / 2;
+        a0 = 2 * mu3 - 3 * mu2 + 1;
+        a1 = mu3 - 2 * mu2 + mu;
+        a2 = mu3 - mu2;
+        a3 = -2 * mu3 + 3 * mu2;
+
+        return (a0*y1 + a1*m0 + a2*m1 + a3*y2);
+    }
+
+    OSoundRef Sound::createFromData(const float* pSamples, int frameCount, int channelCount, int samplerate, const OContentManagerRef& pContentManager)
     {
         auto engineFreq = oAudioEngine->getSampleRate();
         auto engineChannels = oAudioEngine->getChannels();
         auto pRet = std::make_shared<OSound>();
 
-        pRet->m_bufferSampleCount = sampleCount;
-        pRet->m_pBuffer = new float[sampleCount * engineChannels];
+        pRet->m_frameCount = frameCount;
+        pRet->m_channelCount = channelCount;
 
-        switch (engineChannels)
-        {
-            case 1:
-            {
-                switch (channelCount)
-                {
-                    case 1:
-                    {
-                        memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * sampleCount);
-                        break;
-                    }
-                    case 2:
-                    {
-                        for (auto i = 0; i < sampleCount; ++i)
-                        {
-                            pRet->m_pBuffer[i] = (pSamples[i * 2 + 0] + pSamples[i * 2 + 1]) * 0.5f;
-                        }
-                        break;
-                    }
-                    default:
-                        assert(false);
-                        break;
-                }
-                break;
-            }
-            case 2:
-            {
-                switch (channelCount)
-                {
-                    case 1:
-                    {
-                        for (auto i = 0; i < sampleCount; ++i)
-                        {
-                            pRet->m_pBuffer[i * 2 + 0] = pSamples[i];
-                            pRet->m_pBuffer[i * 2 + 1] = pSamples[i];
-                        }
-                        break;
-                    }
-                    case 2:
-                    {
-                        memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * sampleCount * 2);
-                        break;
-                    }
-                    default:
-                        assert(false);
-                        break;
-                }
-                break;
-            }
-            default:
-                assert(false);
-                break;
-        }
+        auto len = frameCount * channelCount;
 
         // Resample if the wave is not the same sample rate as the audio engine
         if (samplerate != oAudioEngine->getSampleRate())
         {
-            // TODO...
+            float t = 0.0f;
+            float progress = (float)samplerate / (float)engineFreq;
+            int index = 0;
+            int oldIndex = 0;
+            int newFrameCount = (int)std::ceilf((float)frameCount / progress);
+
+            pRet->m_pBuffer = new float[newFrameCount * pRet->m_channelCount];
+            auto pOut = pRet->m_pBuffer;
+
+            float* pSamplings = new float[4 * channelCount];
+            memset(pSamplings, 0, sizeof(float) * 4 * channelCount);
+
+            while (index < newFrameCount)
+            {
+                for (int i = 0; i < channelCount; ++i)
+                {
+                    pOut[index * channelCount + i] = resamplingHermite(
+                        pSamplings[0 * channelCount + i],
+                        pSamplings[1 * channelCount + i],
+                        pSamplings[2 * channelCount + i],
+                        pSamplings[3 * channelCount + i], t);
+                }
+
+                // Progress to the next sample
+                t += progress;
+                while (t >= 1.0f)
+                {
+                    for (int i = 0; i < channelCount; ++i)
+                    {
+                        pSamplings[0 * channelCount + i] = pSamplings[1 * channelCount + i];
+                        pSamplings[1 * channelCount + i] = pSamplings[2 * channelCount + i];
+                        pSamplings[2 * channelCount + i] = pSamplings[3 * channelCount + i];
+                        pSamplings[3 * channelCount + i] = pSamples[oldIndex * channelCount + i];
+                    }
+                    ++oldIndex;
+                    if (oldIndex >= frameCount) oldIndex = frameCount - 1;
+                    t -= 1.0f;
+                }
+                ++index;
+            }
+
+            delete[] pSamplings;
+
+            pRet->m_frameCount = newFrameCount;
+        }
+        else
+        {
+            pRet->m_pBuffer = new float[len];
+            memcpy(pRet->m_pBuffer, pSamples, sizeof(float) * len);
         }
 
         return pRet;
@@ -374,17 +408,21 @@ namespace onut
 
     bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut)
     {
-        auto pSoundPtr = m_pSound.get();
+/*        auto pSoundPtr = m_pSound.get();
+        auto pSoundBuffer = pSoundPtr->m_pBuffer;
+        int bufferFrameCount = pSoundPtr->m_frameCount;
+        int bufferChannelCount = pSoundPtr->m_channelCount;
+
         int offset = m_offset;
-        auto pSoundBuffer = pSoundPtr->m_pBuffer + offset * channelCount;
         float volume = m_volume;
-        int bufferSampleCount = pSoundPtr->m_bufferSampleCount;
         bool loop = m_loop;
         float balance = m_balance;
-        float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
-        float rightVolume = std::min(1.0f, balance + 1.0f) * volume;
         float pitch = m_pitch;
 
+        // Calculate panning
+        float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
+        float rightVolume = std::min(1.0f, balance + 1.0f) * volume;
+        
         int fi;
         int len = std::min(frameCount, (int)((float)(bufferSampleCount - offset) / pitch));
         switch (channelCount)
@@ -424,7 +462,93 @@ namespace onut
             {
                 return false;
             }
+        }*/
+
+        auto pSoundPtr = m_pSound.get();
+        auto pSoundBuffer = pSoundPtr->m_pBuffer;
+        int bufferFrameCount = pSoundPtr->m_frameCount;
+        int bufferChannelCount = pSoundPtr->m_channelCount;
+
+        int offset = m_offset;
+        float volume = m_volume;
+        bool loop = m_loop;
+        float balance = m_balance;
+        float pitch = m_pitch;
+
+        // Calculate panning
+        float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
+        float rightVolume = std::min(1.0f, balance + 1.0f) * volume;
+
+        if (channelCount == 1)
+        {
+            float avg;
+            float invChannelCount = 1.0f / (float)bufferChannelCount;
+            for (int i = 0; i < frameCount; ++i)
+            {
+                avg = 0.0f;
+                for (int channel = 0; channel < bufferChannelCount; ++channel)
+                {
+                    avg += pSoundBuffer[offset * bufferChannelCount + channel];
+                }
+                pOut[i] += avg * invChannelCount;
+                ++offset;
+                if (offset >= bufferFrameCount)
+                {
+                    if (loop) offset = 0;
+                    else
+                    {
+                        m_offset = offset;
+                        return false; // End of buffer, stop playing
+                    }
+                }
+            }
         }
+        else // 2 or more
+        {
+            if (bufferChannelCount == 1)
+            {
+                // Split equally in stereo channels
+                float sample;
+                for (int i = 0; i < frameCount; ++i)
+                {
+                    sample = pSoundBuffer[offset];
+                    pOut[i * channelCount + 0] += sample * leftVolume;
+                    pOut[i * channelCount + 1] += sample * rightVolume;
+                    ++offset;
+                    if (offset >= bufferFrameCount)
+                    {
+                        if (loop) offset = 0;
+                        else
+                        {
+                            m_offset = offset;
+                            return false; // End of buffer, stop playing
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < frameCount; ++i)
+                {
+                    pOut[i * channelCount + 0] += pSoundBuffer[offset * bufferChannelCount + 0] * leftVolume;
+                    pOut[i * channelCount + 1] += pSoundBuffer[offset * bufferChannelCount + 1] * rightVolume;
+                    ++offset;
+                    if (offset >= bufferFrameCount)
+                    {
+                        if (loop) offset = 0;
+                        else
+                        {
+                            m_offset = offset;
+                            return false; // End of buffer, stop playing
+                        }
+                    }
+                }
+            }
+        }
+
+        m_offset = offset;
+
+        // Keep playing
         return true;
     }
 

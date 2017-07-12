@@ -67,6 +67,42 @@ void update()
     if (OInputPressed(OKeyLeft)) balance -= 1.f;
     if (OInputPressed(OKeyRight)) balance += 1.f;
 
+    if (OInputJustPressed(OKeyF1))
+    {
+        OPlaySound("48000_8.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF2))
+    {
+        OPlaySound("48000_16.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF3))
+    {
+        OPlaySound("48000_24.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF4))
+    {
+        OPlaySound("48000_32.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF5))
+    {
+        OPlaySound("44100_32.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF6))
+    {
+        OPlaySound("22050_32.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF7))
+    {
+        OPlaySound("11025_32.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF8))
+    {
+        OPlaySound("8000_32.wav", volume, balance);
+    }
+    if (OInputJustPressed(OKeyF9))
+    {
+        OPlaySound("48000_32_2ch.wav", volume, balance);
+    }
     if (OInputJustPressed(OKey1))
     {
         OPlaySound("sound1.wav", volume, balance);
@@ -140,6 +176,16 @@ void render()
     auto pFont = OGetFont("font.fnt");
 
     oSpriteBatch->begin();
+
+    pFont->draw("Press ^990F1^999 to play 48000 hz, 8 bits", { 400, 10});
+    pFont->draw("Press ^990F2^999 to play 48000 hz, 16 bits", { 400, 30});
+    pFont->draw("Press ^990F3^999 to play 48000 hz, 24 bits", { 400, 50 });
+    pFont->draw("Press ^990F4^999 to play 48000 hz, 32 bits", { 400, 70 });
+    pFont->draw("Press ^990F5^999 to play 44100 hz, 32 bits", { 400, 90 });
+    pFont->draw("Press ^990F6^999 to play 22050 hz, 32 bits", { 400, 110 });
+    pFont->draw("Press ^990F7^999 to play 11025 hz, 32 bits", { 400, 130 });
+    pFont->draw("Press ^990F8^999 to play 8000 hz, 32 bits", { 400, 150 });
+    pFont->draw("Press ^990F9^999 to play 48000 hz, 32 bits, 2 channels", { 400, 170 });
 
     pFont->draw("Press ^9901^999 to play sound1 at 100% speed", {10, 10});
     pFont->draw("Press ^9902^999 to play sound1 at 50% speed", {10, 30});
