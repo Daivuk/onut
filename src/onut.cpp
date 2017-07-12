@@ -267,7 +267,7 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
-          //  oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+            oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
             oRenderer->beginFrame();
             onut::js::render();
             if (renderCallback)
@@ -281,7 +281,7 @@ namespace onut
             oSpriteBatch->end();
 
             // Draw final render target
-          /*  oRenderer->renderStates.renderTarget = nullptr;
+            oRenderer->renderStates.renderTarget = nullptr;
             const auto& res = oRenderer->getResolution();
             oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
             oRenderer->renderStates.scissorEnabled = false;
@@ -290,7 +290,7 @@ namespace onut
             oSpriteBatch->changeBlendMode(OBlendOpaque);
             oSpriteBatch->changeFiltering(OFilterNearest);
             oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
-*/
+
             // Show the log
             if (oSettings->getShowOnScreenLog())
             {
