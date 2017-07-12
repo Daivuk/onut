@@ -427,25 +427,44 @@ namespace onut
         {
             float avg;
             float invChannelCount = 1.0f / (float)bufferChannelCount;
+            float sample1;
+            float sample2;
+            float percent;
+            float offsetF = (float)offset;
             for (int i = 0; i < frameCount; ++i)
             {
                 avg = 0.0f;
                 for (int channel = 0; channel < bufferChannelCount; ++channel)
                 {
-                    avg += pSoundBuffer[offset * bufferChannelCount + channel];
-                }
-                pOut[i] += avg * invChannelCount;
-                ++offset;
-                if (offset >= bufferFrameCount)
-                {
-                    if (loop) offset = 0;
+                    sample1 = pSoundBuffer[(int)offsetF * bufferChannelCount + channel];
+                    if (loop)
+                    {
+                        sample2 = pSoundBuffer[(((int)offsetF + 1) % bufferFrameCount) * bufferChannelCount + channel];
+                    }
                     else
                     {
-                        m_offset = offset;
+                        if ((int)offsetF + 1 >= bufferFrameCount)
+                            sample2 = 0.0f;
+                        else
+                            sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + channel];
+                    }
+                    percent = offsetF - (float)(int)offsetF;
+                    avg += sample1 + (sample2 - sample1) * percent;
+                }
+                pOut[i] += avg * invChannelCount;
+                offsetF += pitch;
+                if ((int)offsetF >= bufferFrameCount)
+                {
+                    if (loop) offsetF -= (float)bufferFrameCount;
+                    else
+                    {
+                        m_offset = bufferFrameCount;
                         return false; // End of buffer, stop playing
                     }
                 }
             }
+            m_offset = (int)offsetF;
+            return true;
         }
         else // 2 or more
         {
@@ -453,47 +472,98 @@ namespace onut
             {
                 // Split equally in stereo channels
                 float sample;
+                float sample1;
+                float sample2;
+                float offsetF = (float)offset;
+                float percent;
                 for (int i = 0; i < frameCount; ++i)
                 {
-                    sample = pSoundBuffer[offset];
+                    sample1 = pSoundBuffer[(int)offsetF];
+                    if (loop)
+                    {
+                        sample2 = pSoundBuffer[((int)offsetF + 1) % bufferFrameCount];
+                    }
+                    else
+                    {
+                        if ((int)offsetF + 1 >= bufferFrameCount)
+                            sample2 = 0.0f;
+                        else
+                            sample2 = pSoundBuffer[(int)offsetF + 1];
+                    }
+                    percent = offsetF - (float)(int)offsetF;
+                    sample = sample1 + (sample2 - sample1) * percent;
                     pOut[i * channelCount + 0] += sample * leftVolume;
                     pOut[i * channelCount + 1] += sample * rightVolume;
-                    ++offset;
-                    if (offset >= bufferFrameCount)
+                    offsetF += pitch;
+                    if ((int)offsetF >= bufferFrameCount)
                     {
-                        if (loop) offset = 0;
+                        if (loop) offsetF -= (float)bufferFrameCount;
                         else
                         {
-                            m_offset = offset;
+                            m_offset = bufferFrameCount;
                             return false; // End of buffer, stop playing
                         }
                     }
                 }
+                m_offset = (int)offsetF;
+                return true;
             }
             else
             {
+                float sample1;
+                float sample2;
+                float offsetF = (float)offset;
+                float percent;
                 for (int i = 0; i < frameCount; ++i)
                 {
-                    pOut[i * channelCount + 0] += pSoundBuffer[offset * bufferChannelCount + 0] * leftVolume;
-                    pOut[i * channelCount + 1] += pSoundBuffer[offset * bufferChannelCount + 1] * rightVolume;
-                    ++offset;
-                    if (offset >= bufferFrameCount)
+                    sample1 = pSoundBuffer[(int)offsetF * bufferChannelCount + 0];
+                    if (loop)
                     {
-                        if (loop) offset = 0;
+                        sample2 = pSoundBuffer[(((int)offsetF + 1) % bufferFrameCount) * bufferChannelCount + 0];
+                    }
+                    else
+                    {
+                        if ((int)offsetF + 1 >= bufferFrameCount)
+                            sample2 = 0.0f;
+                        else
+                            sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + 0];
+                    }
+                    percent = offsetF - (float)(int)offsetF;
+                    pOut[i * channelCount + 0] += sample1 + (sample2 - sample1) * percent;
+
+                    sample1 = pSoundBuffer[(int)offsetF * bufferChannelCount + 1];
+                    if (loop)
+                    {
+                        sample2 = pSoundBuffer[(((int)offsetF + 1) % bufferFrameCount) * bufferChannelCount + 1];
+                    }
+                    else
+                    {
+                        if ((int)offsetF + 1 >= bufferFrameCount)
+                            sample2 = 0.0f;
+                        else
+                            sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + 1];
+                    }
+                    percent = offsetF - (float)(int)offsetF;
+                    pOut[i * channelCount + 1] += sample1 + (sample2 - sample1) * percent;
+
+                    offsetF += pitch;
+                    if ((int)offsetF >= bufferFrameCount)
+                    {
+                        if (loop) offsetF -= (float)bufferFrameCount;
                         else
                         {
-                            m_offset = offset;
+                            m_offset = bufferFrameCount;
                             return false; // End of buffer, stop playing
                         }
                     }
                 }
+                m_offset = (int)offsetF;
+                return true;
             }
         }
 
-        m_offset = offset;
-
-        // Keep playing
-        return true;
+        // Unreachable code path
+        return false;
     }
 
     OSoundCueRef SoundCue::createFromFile(const std::string& filename, const OContentManagerRef& in_pContentManager)
