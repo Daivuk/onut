@@ -40,6 +40,19 @@ const char* SHADER_SRC_EFFECTS_VS = ""
     "}\n"
 "";
 
+const char* SHADER_SRC_EFFECTS_FLIP_Y_VS = ""
+    "input float2 inPosition;\n"
+    "\n"
+    "output float2 outTexCoord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "    oPosition = float4(inPosition.xy, 0.0, 1.0);\n"
+    "    outTexCoord.x = (inPosition.x + 1.0) / 2.0;\n"
+    "    outTexCoord.y = (inPosition.y + 1.0) / 2.0;\n"
+    "}\n"
+"";
+
 const char* SHADER_SRC_SEPIA_PS = ""
     "Texture0 texDiffuse;\n"
     "\n"

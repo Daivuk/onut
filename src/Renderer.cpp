@@ -214,7 +214,11 @@ namespace onut
 
         // Effects
         {
+#if defined(__unix__) || defined(__APPLE__) || defined(ONUT_USE_OPENGL)
+            m_pEffectsVertexShader = OShader::createFromSource(SHADER_SRC_EFFECTS_FLIP_Y_VS, OVertexShader);
+#else
             m_pEffectsVertexShader = OShader::createFromSource(SHADER_SRC_EFFECTS_VS, OVertexShader);
+#endif
             m_pBlurHPixelShader = OShader::createFromSource(SHADER_SRC_BLURH_PS, OPixelShader);
             m_pBlurVPixelShader = OShader::createFromSource(SHADER_SRC_BLURV_PS, OPixelShader);
             m_pSepiaPixelShader = OShader::createFromSource(SHADER_SRC_SEPIA_PS, OPixelShader);

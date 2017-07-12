@@ -210,9 +210,6 @@ namespace onut
                 break;
         }
 
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        //renderStates.indexBuffer.forceDirty();
-
         glDrawArrays(mode, 0, vertexCount);
     }
 
@@ -254,34 +251,42 @@ namespace onut
             glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
             renderStates.clearColor.resetDirty();
         }
+
+        // Because opengl sucks, we need to determine if we have to flip Y
+        bool invertY = false;
+        if (renderStates.projection.isDirty() ||
+            renderStates.view.isDirty() ||
+            renderStates.world.isDirty() ||
+            renderStates.renderTarget.isDirty())
+        {
+            invertY = renderStates.renderTarget.get() != nullptr;
+            renderStates.projection.forceDirty();
+
+            if (invertY)
+            {
+                glCullFace(GL_FRONT);
+            }
+            else
+            {
+                glCullFace(GL_BACK);
+            }
+        }
         
         // Render target
         if (renderStates.renderTarget.isDirty())
         {
             auto& pRenderTarget = renderStates.renderTarget.get();
-            auto stackCount = renderStates.renderTarget.size();
             if (pRenderTarget)
             {
                 auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
                 auto frameBuffer = pRenderTargetGL->getFramebuffer();
                 glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-                ++stackCount;
             }
             else
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
             renderStates.renderTarget.resetDirty();
-#if !defined(__APPLE__)
-            if (stackCount > 1)
-            {
-                glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
-            }
-            else
-            {
-                glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
-            }
-#endif
         }
         
         // Blend
@@ -532,8 +537,11 @@ namespace onut
                 renderStates.world.isDirty() ||
                 programDirty)
             {
-                auto world = renderStates.world.get();
-                auto finalTransform = world * renderStates.view.get() * renderStates.projection.get();
+                Matrix finalTransform = renderStates.world.get() * renderStates.view.get() * renderStates.projection.get();
+                if (invertY)
+                {
+                    finalTransform *= Matrix::CreateScale(1, -1, 1);
+                }
                 finalTransform = finalTransform.Transpose();
 
                 renderStates.projection.resetDirty();

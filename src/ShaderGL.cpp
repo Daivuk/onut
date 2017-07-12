@@ -297,6 +297,7 @@ namespace onut
                 source += "VARYING_ELEMENT" + std::to_string(semanticIndex) + " = " + element.name + ";\n";
                 ++semanticIndex;
             }
+            //source += "    oPosition.y = -oPosition.y;\n";
             source += "    gl_Position = oPosition;\n}\n";
 
             // Now compile it
