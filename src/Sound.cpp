@@ -408,62 +408,6 @@ namespace onut
 
     bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut)
     {
-/*        auto pSoundPtr = m_pSound.get();
-        auto pSoundBuffer = pSoundPtr->m_pBuffer;
-        int bufferFrameCount = pSoundPtr->m_frameCount;
-        int bufferChannelCount = pSoundPtr->m_channelCount;
-
-        int offset = m_offset;
-        float volume = m_volume;
-        bool loop = m_loop;
-        float balance = m_balance;
-        float pitch = m_pitch;
-
-        // Calculate panning
-        float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
-        float rightVolume = std::min(1.0f, balance + 1.0f) * volume;
-        
-        int fi;
-        int len = std::min(frameCount, (int)((float)(bufferSampleCount - offset) / pitch));
-        switch (channelCount)
-        {
-            case 1:
-            {
-                for (int i = 0; i < len; ++i)
-                {
-                    fi = (int)((float)i * pitch);
-                    pOut[i] += pSoundBuffer[fi] * volume;
-                }
-                break;
-            }
-            case 2:
-            {
-                for (int i = 0; i < len * 2; i += 2)
-                {
-                    fi = (int)((float)i * pitch);
-                    pOut[i + 0] += pSoundBuffer[fi + 0] * leftVolume;
-                    pOut[i + 1] += pSoundBuffer[fi + 1] * rightVolume;
-                }
-                break;
-            }
-            default:
-                assert(false);
-        }
-
-        offset += (int)((float)len * pitch);
-        m_offset = offset;
-        if (offset >= bufferSampleCount)
-        {
-            if (loop)
-            {
-                m_offset = 0;
-            }
-            else
-            {
-                return false;
-            }
-        }*/
-
         auto pSoundPtr = m_pSound.get();
         auto pSoundBuffer = pSoundPtr->m_pBuffer;
         int bufferFrameCount = pSoundPtr->m_frameCount;
