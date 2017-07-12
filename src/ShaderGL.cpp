@@ -13,7 +13,7 @@
 #include <cassert>
 #include <regex>
 
-#define SHADER_VERSION "330"
+#define SHADER_VERSION "120"
 
 namespace onut
 {
@@ -184,10 +184,10 @@ namespace onut
                 //case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
                 //case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
                 //case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
-                case VarType::Float: elementStructsSource += "in float "; break;
-                case VarType::Float2: elementStructsSource += "in vec2 "; break;
-                case VarType::Float3: elementStructsSource += "in vec3 "; break;
-                case VarType::Float4: elementStructsSource += "in vec4 "; break;
+                case VarType::Float: elementStructsSource += "attribute float "; break;
+                case VarType::Float2: elementStructsSource += "attribute vec2 "; break;
+                case VarType::Float3: elementStructsSource += "attribute vec3 "; break;
+                case VarType::Float4: elementStructsSource += "attribute vec4 "; break;
                 default: assert(false);
                 }
                 elementStructsSource += element.name + ";\n";
@@ -205,10 +205,10 @@ namespace onut
                 //case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec2 "; break;
                 //case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec3 "; break;
                 //case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") out vec4 "; break;
-                case VarType::Float: elementStructsSource += "out float "; break;
-                case VarType::Float2: elementStructsSource += "out vec2 "; break;
-                case VarType::Float3: elementStructsSource += "out vec3 "; break;
-                case VarType::Float4: elementStructsSource += "out vec4 "; break;
+                case VarType::Float: elementStructsSource += "varying float "; break;
+                case VarType::Float2: elementStructsSource += "varying vec2 "; break;
+                case VarType::Float3: elementStructsSource += "varying vec3 "; break;
+                case VarType::Float4: elementStructsSource += "varying vec4 "; break;
                 default: assert(false);
                 }
                 elementStructsSource += "VARYING_ELEMENT" + std::to_string(semanticIndex) + ";\n";
@@ -327,7 +327,7 @@ namespace onut
 
             source += "#version " SHADER_VERSION "\n\n";
             //source += "layout( location = 0 ) out vec4 oColor;\n\n";
-            source += "out vec4 oColor;\n\n";
+            //source += "out vec4 oColor;\n\n";
 
             // Create textures
             int semanticIndex = 0;
@@ -338,7 +338,7 @@ namespace onut
                 source += "uniform sampler2D sampler_" + texture.name + ";\n";
                 source += "vec4 " + texture.name + "(vec2 uv)\n";
                 source += "{\n";
-                source += "    return texture(sampler_" + texture.name + ", uv);\n";
+                source += "    return texture2D(sampler_" + texture.name + ", uv);\n";
                 source += "}\n\n";
                 ++semanticIndex;
             }
@@ -354,10 +354,10 @@ namespace onut
                 //case VarType::Float2: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec2 "; break;
                 //case VarType::Float3: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec3 "; break;
                 //case VarType::Float4: elementStructsSource += "layout(location = " + std::to_string(semanticIndex) + ") in vec4 "; break;
-                case VarType::Float: elementStructsSource += "in float "; break;
-                case VarType::Float2: elementStructsSource += "in vec2 "; break;
-                case VarType::Float3: elementStructsSource += "in vec3 "; break;
-                case VarType::Float4: elementStructsSource += "in vec4 "; break;
+                case VarType::Float: elementStructsSource += "varying float "; break;
+                case VarType::Float2: elementStructsSource += "varying vec2 "; break;
+                case VarType::Float3: elementStructsSource += "varying vec3 "; break;
+                case VarType::Float4: elementStructsSource += "varying vec4 "; break;
                 default: assert(false);
                 }
                 elementStructsSource += "VARYING_ELEMENT" + std::to_string(semanticIndex) + ";\n";
@@ -425,7 +425,7 @@ namespace onut
             }
 
             // Bake main function
-            source += "void main()\n{\n";
+            source += "void main()\n{    vec4 oColor;\n";
             semanticIndex = 0;
             for (auto& element : parsed.inputs)
             {
@@ -441,7 +441,7 @@ namespace onut
                 ++semanticIndex;
             }
             bakeTokens(source, parsed.mainFunction.body);
-            source += "}\n";
+            source += "    gl_FragColor = oColor;}\n";
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Pixel);

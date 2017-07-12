@@ -31,6 +31,7 @@ namespace onut
 
         uint32_t m_size = 0;
         bool m_isDynamic = false;
+        GLuint m_vao = 0;
         GLuint m_handle = 0;
         uint8_t* m_pData = nullptr;
     };

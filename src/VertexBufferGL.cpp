@@ -18,7 +18,9 @@ namespace onut
     {
         auto pRet = OMake<VertexBufferGL>();
         
-        GLuint handle;
+        GLuint handle; 
+        glGenVertexArrays(1, &pRet->m_vao);
+        glBindVertexArray(pRet->m_vao);
         glGenBuffers(1, &handle);
         glBindBuffer(GL_ARRAY_BUFFER, handle);
         glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
@@ -42,6 +44,10 @@ namespace onut
         if (m_handle)
         {
             glDeleteBuffers(1, &m_handle);
+        }
+        if (m_vao)
+        {
+            glDeleteVertexArrays(1, &m_vao);
         }
         if (m_pData)
         {
