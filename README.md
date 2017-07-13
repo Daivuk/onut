@@ -58,8 +58,8 @@ See `onut/samplesJS/` folders for more detailed samples.
 
 * Onut 1.0 - **Bark** - Feb 6, 2016
 * Onut 2.0 - **Root** (The Cleanup release) - Apr 3, 2016
-* Onut 3.0 - **Leaf** (The JavaScript release) - _tbd_
-* Onut 4.0 - **Colony** (The Multiplayer release) - _tbd_
+* Onut 3.0 - **Leaf** (The JavaScript release) - _TBD_
+* Onut 4.0 - _TBD_ (The Multiplayer release) - _TBD_
 
 ## Windows
 Use cmake to compile the engine, JSStandAlone and samples.
