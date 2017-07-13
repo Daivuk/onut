@@ -173,7 +173,7 @@ namespace onut
         std::vector<uint8_t> data = {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
         return std::move(data);
     }
-
+    /*
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {
         std::string pattern = "{";
@@ -194,6 +194,14 @@ namespace onut
     {
         return "";
     }
+    */
+    std::string showOpenFolderDialog(const std::string& caption, const std::string& defaultPath)
+    {
+        auto pPath = tinyfd_selectFolderDialog(caption.c_str(), defaultPath.c_str());
+        if (!pPath) return "";
+        return pPath;
+    }
+    
 
     //char const * tinyfd_saveFileDialog(
     //    char const * const aTitle, /* "" */
@@ -226,7 +234,7 @@ namespace onut
         }
         return found;
     }
-    /*
+    
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {
         auto windowHandle = oWindow->getHandle();
@@ -335,6 +343,102 @@ namespace onut
         delete[] szFilters;
 
         return ofn.lpstrFile;
-    }*/
+    }
 #endif
+
+    bool createFolder(const std::string& fullPath)
+    {
+#if defined(WIN32)
+        std::string withBackwardSlashes = fullPath;
+        onut::replace(withBackwardSlashes, "/", "\\");
+        return system(("mkdir " + withBackwardSlashes).c_str()) == 0;
+#else
+        return system(("mkdir " + fullPath).c_str()) == 0;
+#endif
+    }
+
+    bool copyFile(const std::string& from, const std::string& to)
+    {
+#if defined(WIN32)
+        std::string withBackwardSlashes_from = from;
+        onut::replace(withBackwardSlashes_from, "/", "\\");
+        std::string withBackwardSlashes_to = to;
+        onut::replace(withBackwardSlashes_to, "/", "\\");
+        std::ifstream src(withBackwardSlashes_from, std::ios::binary);
+        std::ofstream dst(withBackwardSlashes_to, std::ios::binary);
+        if (!src.is_open() || !dst.is_open()) return false;
+        dst << src.rdbuf();
+        src.close();
+        dst.close();
+        return true;
+#else
+        std::ifstream src(from, std::ios::binary);
+        std::ofstream dst(to, std::ios::binary);
+        if (!src.is_open() || !dst.is_open()) return false;
+        dst << src.rdbuf();
+        src.close();
+        dst.close();
+        return true;
+#endif
+    }
+
+    bool createTextFile(const std::string& path, const std::string& content)
+    {
+#if defined(WIN32)
+        std::string withBackwardSlashes = path;
+        onut::replace(withBackwardSlashes, "/", "\\");
+        std::ofstream dst(withBackwardSlashes, std::ios::binary);
+        if (!dst.is_open()) return false;
+        dst << content;
+        dst.close();
+        return true;
+#else
+        std::ofstream dst(path, std::ios::binary);
+        if (!dst.is_open()) return false;
+        dst << content;
+        dst.close();
+        return true;
+#endif
+    }
+
+    void showInExplorer(const std::string& path)
+    {
+#if defined(WIN32)
+        system(("explorer " + path).c_str());
+#elif defined(__APPLE__)
+        system(("open " + path).c_str());
+#else
+        system(("xdg-open " + path).c_str());
+#endif
+    }
+
+    MessageBoxReturn showMessageBox(const std::string& title, const std::string& message, MessageBoxType type, MessageBoxLevel level)
+    {
+        const char* typeStr;
+        switch (type)
+        {
+            case MessageBoxType::Ok: typeStr = "ok"; break;
+            case MessageBoxType::OkCancel: typeStr = "okcancel"; break;
+            case MessageBoxType::YesNo: typeStr = "yesno"; break;
+            case MessageBoxType::YesNoCancel: typeStr = "yesnocancel"; break;
+        }
+        
+        const char* iconStr;
+        switch (level)
+        {
+            case MessageBoxLevel::Info: iconStr = "info"; break;
+            case MessageBoxLevel::Warning: iconStr = "warning"; break;
+            case MessageBoxLevel::Error: iconStr = "error"; break;
+            case MessageBoxLevel::Question: iconStr = "question"; break;
+        }
+
+        auto ret = tinyfd_messageBox(
+            title.c_str(),
+            message.c_str(),
+            typeStr,
+            iconStr,
+            1);
+
+        return (MessageBoxReturn)ret;
+    }
 }

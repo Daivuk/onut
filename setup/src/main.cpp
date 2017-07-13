@@ -1,6 +1,7 @@
 #include <onut/Anim.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
+#include <onut/onut.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
@@ -11,6 +12,8 @@
 #include <onut/UILabel.h>
 #include <onut/UITextBox.h>
 #include <onut/Window.h>
+
+#include <fstream>
 
 // Main
 OUIControlRef pCtlMain;
@@ -50,6 +53,35 @@ void startAnimations()
     buttonAnims[1].play(pBtnUpdateGame->rect.x + 1200, pBtnUpdateGame->rect.x, 1.0f, OTweenEaseOut);
 }
 
+std::string getGameFolderName(const std::string& gameName)
+{
+    std::string folderName;
+    for (const auto& c : gameName)
+    {
+        if ((c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            (c >= '0' && c <= '9'))
+        {
+            folderName += c;
+        }
+    }
+    return folderName;
+}
+
+void updateFullPath()
+{
+    auto gameName = pTxtName->textComponent.text;
+    std::string folderName = getGameFolderName(gameName);
+    if (pTxtPath->textComponent.text.find_first_of('\\') != std::string::npos)
+    {
+        pLblFullPath->textComponent.text = pTxtPath->textComponent.text + "\\" + folderName + "\\";
+    }
+    else
+    {
+        pLblFullPath->textComponent.text = pTxtPath->textComponent.text + "/" + folderName + "/";
+    }
+}
+
 void onCreateGame(const OUIControlRef&, const onut::UIMouseEvent&)
 {
     pCtlMain->isVisible = false;
@@ -62,6 +94,12 @@ void onUpdateGame(const OUIControlRef&, const onut::UIMouseEvent&)
 
 void onBrowse(const OUIControlRef&, const onut::UIMouseEvent&)
 {
+    auto path = onut::showOpenFolderDialog("Game Path", pTxtPath->textComponent.text);
+    if (path != "")
+    {
+        pTxtPath->textComponent.text = path;
+        updateFullPath();
+    }
 }
 
 void onCancel(const OUIControlRef&, const onut::UIMouseEvent&)
@@ -73,6 +111,256 @@ void onCancel(const OUIControlRef&, const onut::UIMouseEvent&)
 
 void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
 {
+    std::string path = pTxtPath->textComponent.text;
+    std::string fullPath = pLblFullPath->textComponent.text;
+    std::string gameName = pTxtName->textComponent.text;
+    std::string gameFolderName = getGameFolderName(gameName);
+
+    if (path.empty())
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Path is empty",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+
+    if (gameName.empty() || gameFolderName.empty())
+    {
+        onut::showMessageBox(
+            "Error Creating game",
+            "Game Name is empty or invalid",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+
+    // Create paths
+    if (!onut::createFolder(fullPath))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating path:\n" + fullPath,
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createFolder(fullPath + ".vscode"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating folder: .vscode",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createFolder(fullPath + "game"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating folder: game",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createFolder(fullPath + "game/assets"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating folder: assets",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createFolder(fullPath + "game/assets/fonts"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating folder: fonts",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createFolder(fullPath + "game/assets/scripts"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating folder: scripts",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createFolder(fullPath + "typings"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating folder: typings",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+
+    // Copy files
+    if (!onut::copyFile("template/jsconfig.json", fullPath + "jsconfig.json"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: jsconfig.json",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::copyFile("template/typings/onut.d.ts", fullPath + "typings/onut.d.ts"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: onut.d.ts",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::copyFile("template/game/assets/fonts/font.fnt", fullPath + "game/assets/fonts/font.fnt"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: font.fnt",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::copyFile("template/game/assets/fonts/font.png", fullPath + "game/assets/fonts/font.png"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: font.png",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::copyFile("template/game/assets/scripts/main.js", fullPath + "game/assets/scripts/main.js"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: main.js",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::copyFile("template/game/GameNameWin32.exe", fullPath + "game/" + gameFolderName + "Win32.exe"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: GameNameWin32.exe",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::copyFile("template/game/GameNameOSX", fullPath + "game/" + gameFolderName + "OSX"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: GameNameOSX",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    system(("chmod +x " + fullPath + "game/" + gameFolderName + "OSX").c_str());
+    if (!onut::copyFile("template/game/GameNameLinux", fullPath + "game/" + gameFolderName + "Linux"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error copying file: GameNameLinux",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+
+    // Create custom files
+    if (!onut::createTextFile(fullPath + ".vscode/tasks.json",
+"{\n\
+    \"version\": \"2.0.0\",\n\
+    \"tasks\": [\n\
+        {\n\
+            \"taskName\": \"" + gameFolderName + "\",\n\
+            \"type\": \"shell\",\n\
+            \"windows\": {\n\
+                \"command\": \".\\\\game\\\\" + gameFolderName + "Win32.exe .\\\\game\\\\\"\n\
+            },\n\
+            \"osx\": {\n\
+                \"command\": \"./game/" + gameFolderName + "OSX ./game/\"\n\
+            },\n\
+            \"linux\": {\n\
+                \"command\": \"./game/" + gameFolderName + "Linux ./game/\"\n\
+            },\n\
+            \"group\": \"test\",\n\
+            \"presentation\": {\n\
+                \"reveal\": \"always\",\n\
+                \"panel\": \"shared\"\n\
+            }\n\
+        }\n\
+    ]\n\
+}"))
+    {
+        onut::showMessageBox(
+            "Error Creating game", 
+            "Error creating file: tasks.json",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+    if (!onut::createTextFile(fullPath + "game/settings.txt",
+"# Windowed resolution\n\
+resolution = 1024 x 600\n\
+\n\
+# Retro resolution if retro mode is enabled\n\
+retroResolution = 256 x 240\n\
+\n\
+# Retro mode renders the game in a smaller resolution and fill the screen\n\
+retroMode = false\n\
+\n\
+# Name of the game to sbe displayed in the window's title bar\n\
+gameName = " + gameName + "\n\
+\n\
+# If the window is resizable and can be maximized\n\
+resizableWindow = true\n\
+\n\
+# Run the game in full screen.This is borderless fullscreen taking up your desktrop resolution\n\
+fullscreen = false\n\
+\n\
+# Display FPS in the upper left corner\n\
+showFPS = true\n\
+\n\
+# Fixed step update.Games where simulation or physic is important should use that\n\
+fixedStep = true\n\
+\n\
+# The number of frames per second to update if fixed step is enabled\n\
+updateFPS = 60\n\
+\n\
+# Braincloud app application ID\n\
+appID = null\n\
+\n\
+# Braincloud app secret\n\
+appSecret = null\n\
+"))
+    {
+        onut::showMessageBox(
+            "Error Creating game",
+            "Error creating file: settings.txt",
+            onut::MessageBoxType::Ok,
+            onut::MessageBoxLevel::Error);
+        return;
+    }
+
+    // Now open explorer in the folder
+    onut::showInExplorer(fullPath);
+
+    OQuit();
+}
+
+void onNameChanged(const OUITextBoxRef&, const onut::UITextBoxEvent&)
+{
+    updateFullPath();
 }
 
 void initSettings()
@@ -81,7 +369,7 @@ void initSettings()
     oSettings->setGameName("Oak Nut Setup");
     oSettings->setIsResizableWindow(false);
     oSettings->setIsEditorMode(true);
-    oSettings->setShowFPS(true);
+    oSettings->setShowFPS(false);
     oSettings->setIsFixedStep(false);
 }
 
@@ -113,6 +401,7 @@ void init()
     pBtnBrowse->onClick = onBrowse;
     pBtnCancel->onClick = onCancel;
     pBtnCreate->onClick = onCreate;
+    pTxtName->onTextChanged = onNameChanged;
 
     // Intro animations
     startAnimations();

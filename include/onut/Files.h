@@ -27,6 +27,36 @@ namespace onut
     bool fileExists(const std::string& filename);
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename = "");
     std::string showSaveAsDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename = "");
+    std::string showOpenFolderDialog(const std::string& caption, const std::string& defaultPath = "");
+    bool createFolder(const std::string& fullPath);
+    bool copyFile(const std::string& from, const std::string& to);
+    bool createTextFile(const std::string& path, const std::string& content);
+    void showInExplorer(const std::string& path);
+
+    enum class MessageBoxLevel
+    {
+        Info,
+        Warning,
+        Error,
+        Question
+    };
+
+    enum class MessageBoxType
+    {
+        Ok,
+        OkCancel,
+        YesNo,
+        YesNoCancel
+    };
+
+    enum class MessageBoxReturn : int
+    {
+        CancelNo = 0,
+        OkYes = 1,
+        No = 2
+    };
+
+    MessageBoxReturn showMessageBox(const std::string& title, const std::string& message, MessageBoxType type = MessageBoxType::Ok, MessageBoxLevel level = MessageBoxLevel::Info);
 }
 
 #endif

@@ -1,3 +1,5 @@
+// Version 3.0
+
 /**
  * Output log to the terminal.
  * Log can also be displayed on the screen if setup in your settings.

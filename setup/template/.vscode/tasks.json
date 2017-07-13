@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "GameName",
+            "type": "shell",
+            "windows": {
+                "command": ".\\game\\GameNameWin32.exe .\\game\\"
+            },
+            "osx": {
+                "command": "./game/GameNameOSX ./game/"
+            },
+            "linux": {
+                "command": "./game/GameNameLinux ./game/"
+            },
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

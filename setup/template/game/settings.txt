@@ -1,0 +1,32 @@
+# Windowed resolution
+resolution = 1024 x 600
+
+# Retro resolution if retro mode is enabled
+retroResolution = 256 x 240
+
+# Retro mode renders the game in a smaller resolution and fill the screen
+retroMode = false
+
+# Name of the game to sbe displayed in the window's title bar
+gameName = Game Name
+
+# If the window is resizable and can be maximized
+resizableWindow = true
+
+# Run the game in full screen. This is borderless fullscreen taking up your desktrop resolution
+fullscreen = false
+
+# Display FPS in the upper left corner
+showFPS = true
+
+# Fixed step update. Games where simulation or physic is important should use that
+fixedStep = true
+
+# The number of frames per second to update if fixed step is enabled
+updateFPS = 60
+
+# Braincloud app application ID
+appID = null
+
+# Braincloud app secret
+appSecret = null
