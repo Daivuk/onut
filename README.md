@@ -58,20 +58,16 @@ See `onut/samplesJS/` folders for more detailed samples.
 
 * Onut 1.0 - **Bark** - Feb 6, 2016
 * Onut 2.0 - **Root** (The Cleanup release) - Apr 3, 2016
-* Onut 3.0 - **Leaf** (The JavaScript release) - _tbh_
+* Onut 3.0 - **Leaf** (The JavaScript release) - _tbd_
+* Onut 4.0 - **Colony** (The Multiplayer release) - _tbd_
 
 ## Windows
 Use cmake to compile the engine, JSStandAlone and samples.
 ```bash
-cmake .
+cmake -DONUT_BUILD_SAMPLES=ON -DONUT_BUILD_STANDALONE=ON .
 ```
 
 Open onut.sln solution into visual studio. Build/Run projects.
-
-To compile in release mode, set `CMAKE_BUILD_TYPE` to `Release`:
-```bash
-cmake -DCMAKE_BUILD_TYPE=Release .
-```
 
 ### JavaScript Game
 #### Compile the executable
@@ -84,7 +80,7 @@ cmake -DCMAKE_BUILD_TYPE=Release .
 Recommended to use Visual Studio Code.
 1. Create a folder for your game somehere on your PC
 2. Copy `[onut path]/jsconfig.json`, `[onut path]/typings/onut.d.ts` to YourGame path.
-3. Create a `settings.txt` file. Refer to samples to see what can be put in there
+3. Create a `settings.txt` file. Refer to samples to see what can be put in there.
 4. Create assets and javascript files
 5. `main.js` will always be the last JavaScript file executed, use it to initialize stuff.
 
@@ -138,20 +134,23 @@ Look at samples to see what can be done here.
 ## OS X
 Use cmake to compile the engine, JSStandAlone and samples.
 ```bash
-cmake .
+cmake -DONUT_BUILD_SAMPLES=ON -DONUT_BUILD_STANDALONE=ON .
 make
 ```
 
 To compile only JSStandAlone:
 ```bash
-cmake .
 make JSStandAlone
 ```
 
 To compile any of the C++ samples only:
 ```bash
-cmake .
 make DungeonSample
+```
+
+To build in release, set the `CMAKE_BUILD_TYPE` flag to `Release` like so:
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release .
 ```
 
 Some third parties might need to be installed. SDL2 and CURL. Follow online instructions on how to install them using brew. You will also need to install brew if not installed. SDL2 might give you a little bit trouble creating symlink. Google around there are instructions how to get those working.
@@ -160,25 +159,28 @@ To run a javascript sample on OSX, simply type this in command line:
 ```bash
 ./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
 ```
-The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
+The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If you screw this up, onut will load **all** javascript files on your PC. Hilarity ensue.
 
 ## Linux
 Use cmake to compile the engine, JSStandAlone and samples.
 ```bash
-cmake .
+cmake -DONUT_BUILD_SAMPLES=ON -DONUT_BUILD_STANDALONE=ON .
 make
 ```
 
 To compile only JSStandAlone:
 ```bash
-cmake .
 make JSStandAlone
 ```
 
 To compile any of the C++ samples only:
 ```bash
-cmake .
 make DungeonSample
+```
+
+To build in release, set the `CMAKE_BUILD_TYPE` flag to `Release` like so:
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release .
 ```
 
 Some third parties might need to be installed. OpenGL, Glew, SDL2 and CURL. Follow online instructions on how to install them using apt-get.
@@ -187,7 +189,7 @@ To run a javascript sample on Linux, simply type this in command line:
 ```bash
 ./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
 ```
-The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If no argument are passed, current directory will be used.
+The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If you screw this up, onut will load **all** javascript files on your PC. Hilarity ensue.
 
 ### Supported features
 Here is a table of features with support per platform and availability to the javascript bindings. For a full list of features, check the samples/ and samplesJS/.
@@ -202,8 +204,7 @@ Here is a table of features with support per platform and availability to the ja
 | Cloud             | _disabled_ |      |       |                     |
 | CMake             | ✓          | ✓    | ✓     | n/a                 |
 | CSV               | ✓          | ✓    | ✓     |                     |
-| Curves            | ✓          | ✓    | ✓     |                     |
-| Effects           | ✓          |      |       | ✓                   |
+| Effects           | ✓          | ✓    | ✓     | ✓                   |
 | Entity/Components | ✓          | ✓    | ✓     |                     |
 | File Dialogs      | ✓          |      |       | _unplanned_         |
 | File IO           | ✓          | ✓    | ✓     | ✓                   |
@@ -226,7 +227,7 @@ Here is a table of features with support per platform and availability to the ja
 | Renderer          | ✓          | ✓    | ✓     | ✓                   |
 | Settings          | ✓          | ✓    | ✓     | partial             |
 | Sha1              | ✓          | ✓    | ✓     | ✓                   |
-| Shaders           | ✓          |      |       | ✓                   |
+| Shaders           | ✓          | ✓    | ✓     | ✓                   |
 | Sounds            | ✓          | ✓    | ✓     | ✓                   |
 | Sprite Anims      | ✓          | ✓    | ✓     | ✓                   |
 | SpriteBatch       | ✓          | ✓    | ✓     | ✓                   |
