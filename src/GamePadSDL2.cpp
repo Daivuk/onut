@@ -1,5 +1,6 @@
 // Internal
 #include "GamePadSDL2.h"
+#include <onut/Log.h>
 
 // STL
 #include <memory.h>
@@ -103,13 +104,21 @@ namespace onut
             }
         }
 
-        memcpy(m_previousState.data(), m_state.data(), sizeof(Uint8) * SDL_CONTROLLER_BUTTON_MAX);
+        if (bSwaped)
+        {
+            memcpy(m_previousState.data(), m_state.data(), sizeof(Uint8) * SDL_CONTROLLER_BUTTON_MAX);
+        }
         bSwaped = true;
     }
 
     void GamePadSDL2::updateSDL2()
     {
         if (!m_pSDLGamePad) return;
+
+        if (bSwaped)
+        {
+            memcpy(m_previousState.data(), m_state.data(), sizeof(Uint8) * SDL_CONTROLLER_BUTTON_MAX);
+        }
 
         for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; ++i)
         {
@@ -119,6 +128,8 @@ namespace onut
                 m_state[i] = sdlState;
             }
         }
+
+        bSwaped = false;
     }
 
     bool GamePadSDL2::isConnected() const

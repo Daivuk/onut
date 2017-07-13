@@ -2,6 +2,7 @@
 #include <onut/GamePad.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
+#include <onut/Sound.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 
@@ -16,6 +17,25 @@ void init()
 
 void update()
 {
+    if (OGamePadJustPressed(OGamePadLeftThumb) ||
+        OGamePadJustPressed(OGamePadRightThumb) ||
+        OGamePadJustPressed(OGamePadRightBumper) ||
+        OGamePadJustPressed(OGamePadLeftBumper) ||
+        OGamePadJustPressed(OGamePadBack) ||
+        OGamePadJustPressed(OGamePadStart) ||
+        OGamePadJustPressed(OGamePadA) ||
+        OGamePadJustPressed(OGamePadB) ||
+        OGamePadJustPressed(OGamePadX) ||
+        OGamePadJustPressed(OGamePadY) ||
+        OGamePadJustPressed(OGamePadDPadLeft) ||
+        OGamePadJustPressed(OGamePadDPadRight) ||
+        OGamePadJustPressed(OGamePadDPadUp) ||
+        OGamePadJustPressed(OGamePadDPadDown) ||
+        OGamePadJustPressed(OGamePadLeftTrigger) ||
+        OGamePadJustPressed(OGamePadRightTrigger))
+    {
+        OPlaySound("click.wav");
+    }
 }
 
 void drawController(int index, const Vector2& position)

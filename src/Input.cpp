@@ -108,14 +108,14 @@ namespace onut
     {
         m_pInputDevice->update();
 
-        memcpy(m_prevStates, m_curStates, sizeof(InputState) * STATE_COUNT);
-        memcpy(m_curStates, m_states, sizeof(InputState) * STATE_COUNT);
-        memcpy(m_states, m_statesRestore, sizeof(InputState) * STATE_COUNT);
-
         for (auto& gamePad : m_gamePads)
         {
             gamePad->update();
         }
+
+        memcpy(m_prevStates, m_curStates, sizeof(InputState) * STATE_COUNT);
+        memcpy(m_curStates, m_states, sizeof(InputState) * STATE_COUNT);
+        memcpy(m_states, m_statesRestore, sizeof(InputState) * STATE_COUNT);
 
         ++m_frameId;
     }

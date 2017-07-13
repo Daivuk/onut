@@ -204,6 +204,7 @@ namespace onut
         g_bIsRunning = true;
         while (true)
         {
+            OLog("Poll events");
             if (!oWindow->pollEvents()) break;
             if (!g_bIsRunning) break;
 
