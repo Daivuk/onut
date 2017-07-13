@@ -16,6 +16,7 @@
 #elif defined(__linux__) || defined(__APPLE__)
 #include <dirent.h>
 #endif
+#include "tinyfiledialogs/tinyfiledialogs.h"
 
 namespace onut
 {
@@ -173,6 +174,45 @@ namespace onut
         return std::move(data);
     }
 
+    std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
+    {
+        std::string pattern = "{";
+
+        pattern += "}";
+        auto pPath = tinyfd_openFileDialog(
+            "Browse Game",
+            defaultFilename.c_str(),
+            (int)extensions.size(),
+            NULL,
+            NULL,
+            0);
+        if (!pPath) return "";
+        return pPath;
+    }
+
+    std::string showSaveAsDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
+    {
+        return "";
+    }
+
+    //char const * tinyfd_saveFileDialog(
+    //    char const * const aTitle, /* "" */
+    //    char const * const aDefaultPathAndFile, /* "" */
+    //    int const aNumOfFilterPatterns, /* 0 */
+    //    char const * const * const aFilterPatterns, /* NULL | {"*.jpg","*.png"} */
+    //    char const * const aSingleFilterDescription); /* NULL | "text files" */
+    //                                                  /* returns NULL on cancel */
+
+    //char const * tinyfd_openFileDialog(
+    //    char const * const aTitle, /* "" */
+    //    char const * const aDefaultPathAndFile, /* "" */
+    //    int const aNumOfFilterPatterns, /* 0 */
+    //    char const * const * const aFilterPatterns, /* NULL {"*.jpg","*.png"} */
+    //    char const * const aSingleFilterDescription, /* NULL | "image files" */
+    //    int const aAllowMultipleSelects); /* 0 or 1 */
+    //                                      /* in case of multiple files, the separator is | */
+    //                                      /* returns NULL on cancel */
+
 #if defined(WIN32)
     bool fileExists(const std::string& filename)
     {
@@ -186,7 +226,7 @@ namespace onut
         }
         return found;
     }
-
+    /*
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {
         auto windowHandle = oWindow->getHandle();
@@ -295,6 +335,6 @@ namespace onut
         delete[] szFilters;
 
         return ofn.lpstrFile;
-    }
+    }*/
 #endif
 }

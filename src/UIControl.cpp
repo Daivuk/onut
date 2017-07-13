@@ -1,6 +1,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Crypto.h>
+#include <onut/Log.h>
 #include <onut/UIButton.h>
 #include <onut/UICheckBox.h>
 #include <onut/UIComponents.h>

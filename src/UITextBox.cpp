@@ -1,4 +1,5 @@
 // Onut
+#include <onut/Settings.h>
 #include <onut/UIContext.h>
 #include <onut/UITextBox.h>
 
@@ -163,6 +164,8 @@ namespace onut
         selectAll();
         m_cursorTime = std::chrono::steady_clock::now();
         m_isTextChanged = false;
+        m_editorState = oSettings->getIsEditorMode();
+        if (m_editorState) oSettings->setIsEditorMode(false);
     }
 
     void UITextBox::onLoseFocusInternal(const UIFocusEvent& evt)
@@ -170,6 +173,8 @@ namespace onut
         // Deselect all
         m_selectedTextRegion[0] = 0;
         m_selectedTextRegion[1] = 0;
+
+        if (m_editorState) oSettings->setIsEditorMode(true);
 
         // Accept
         if (m_isTextChanged)

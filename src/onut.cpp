@@ -204,7 +204,6 @@ namespace onut
         g_bIsRunning = true;
         while (true)
         {
-            OLog("Poll events");
             if (!oWindow->pollEvents()) break;
             if (!g_bIsRunning) break;
 
@@ -311,7 +310,22 @@ namespace onut
                 auto pFont = OGetFont("font.fnt");
                 if (pFont)
                 {
-                    pFont->draw("FPS: " + std::to_string(oTiming->getFPS()), { 0, 0 });
+                    if (oSettings->getIsEditorMode())
+                    {
+                        static int step = 0;
+                        step++;
+                        switch (step % 4)
+                        {
+                            case 0: pFont->draw("|", { 0, 0 }); break;
+                            case 1: pFont->draw("/", { 0, 0 }); break;
+                            case 2: pFont->draw("-", { 0, 0 }); break;
+                            case 3: pFont->draw("\\", { 0, 0 }); break;
+                        }
+                    }
+                    else
+                    {
+                        pFont->draw("FPS: " + std::to_string(oTiming->getFPS()), { 0, 0 });
+                    }
                 }
             }
 

@@ -81,6 +81,7 @@ namespace onut
         float m_mousePosOnDown;
         float m_valueOnDown;
         bool m_isSpinning = false;
+        bool m_editorState = false;
     };
 };
 

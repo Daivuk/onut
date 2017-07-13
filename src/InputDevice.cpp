@@ -29,6 +29,7 @@ namespace onut
             auto pFocusTextBox = ODynamicCast<OUITextBox>(pFocusControl);
             if (pFocusTextBox)
             {
+                readMouse();
                 return;
             }
         }

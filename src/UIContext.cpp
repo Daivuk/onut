@@ -1,6 +1,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Font.h>
+#include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>

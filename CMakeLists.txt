@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
+option(ONUT_BUILD_SETUP "Build the Setup app" OFF)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
 
 # Easier defines
@@ -251,6 +252,7 @@ list(APPEND src_files
     src/TiledMapComponent.cpp
     src/Timer.cpp
     src/Timing.cpp 
+    src/tinyfiledialogs/tinyfiledialogs.c
     src/tinyxml2/tinyxml2.cpp
     src/Tween.cpp
     src/UIButton.cpp
@@ -384,6 +386,10 @@ endif()
 
 if (ONUT_BUILD_UI_EDITOR)
     add_subdirectory(uieditor) # uieditor
+endif()
+
+if (ONUT_BUILD_SETUP)
+    add_subdirectory(setup) # setup
 endif()
 
 if (ONUT_BUILD_SAMPLES)
