@@ -10,6 +10,7 @@
 
 // STL
 #include <cassert>
+#include <cmath>
 
 namespace onut
 {
@@ -232,7 +233,7 @@ namespace onut
             float progress = (float)samplerate / (float)engineFreq;
             int index = 0;
             int oldIndex = 0;
-            int newFrameCount = (int)std::ceilf((float)frameCount / progress);
+            int newFrameCount = (int)ceilf((float)frameCount / progress);
 
             pRet->m_pBuffer = new float[newFrameCount * pRet->m_channelCount];
             auto pOut = pRet->m_pBuffer;
