@@ -372,13 +372,7 @@ namespace onut
         dst.close();
         return true;
 #else
-        std::ifstream src(from, std::ios::binary);
-        std::ofstream dst(to, std::ios::binary);
-        if (!src.is_open() || !dst.is_open()) return false;
-        dst << src.rdbuf();
-        src.close();
-        dst.close();
-        return true;
+        return system(("cp " + from + " " + to).c_str()) == 0;
 #endif
     }
 

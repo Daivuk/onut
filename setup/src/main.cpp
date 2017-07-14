@@ -1,4 +1,5 @@
 #include <onut/Anim.h>
+#include <onut/ContentManager.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/onut.h>
@@ -36,6 +37,7 @@ static const std::string VERSION = "3.0";
 Color BG_COLOR = OColorHex(0b0017);
 OAnimFloat alphaAnim;
 OAnimFloat buttonAnims[2];
+std::string workingDirectory;
 
 static const Color g_cursorColor = OColorHex(dadad9);
 static const Color g_cursorSelectionColor = OColorHex(cc6600);
@@ -202,7 +204,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
     }
 
     // Copy files
-    if (!onut::copyFile("template/jsconfig.json", fullPath + "jsconfig.json"))
+    if (!onut::copyFile(workingDirectory + "/template/jsconfig.json", fullPath + "jsconfig.json"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -211,7 +213,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
-    if (!onut::copyFile("template/typings/onut.d.ts", fullPath + "typings/onut.d.ts"))
+    if (!onut::copyFile(workingDirectory + "/template/typings/onut.d.ts", fullPath + "typings/onut.d.ts"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -220,7 +222,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
-    if (!onut::copyFile("template/game/assets/fonts/font.fnt", fullPath + "game/assets/fonts/font.fnt"))
+    if (!onut::copyFile(workingDirectory + "/template/game/assets/fonts/font.fnt", fullPath + "game/assets/fonts/font.fnt"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -229,7 +231,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
-    if (!onut::copyFile("template/game/assets/fonts/font.png", fullPath + "game/assets/fonts/font.png"))
+    if (!onut::copyFile(workingDirectory + "/template/game/assets/fonts/font.png", fullPath + "game/assets/fonts/font.png"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -238,7 +240,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
-    if (!onut::copyFile("template/game/assets/scripts/main.js", fullPath + "game/assets/scripts/main.js"))
+    if (!onut::copyFile(workingDirectory + "/template/game/assets/scripts/main.js", fullPath + "game/assets/scripts/main.js"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -247,7 +249,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
-    if (!onut::copyFile("template/game/GameNameWin32.exe", fullPath + "game/" + gameFolderName + "Win32.exe"))
+    if (!onut::copyFile(workingDirectory + "/template/game/GameNameWin32.exe", fullPath + "game/" + gameFolderName + "Win32.exe"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -256,7 +258,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
-    if (!onut::copyFile("template/game/GameNameOSX", fullPath + "game/" + gameFolderName + "OSX"))
+    if (!onut::copyFile(workingDirectory + "/template/game/GameNameOSX", fullPath + "game/" + gameFolderName + "OSX"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -266,7 +268,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
         return;
     }
     system(("chmod +x " + fullPath + "game/" + gameFolderName + "OSX").c_str());
-    if (!onut::copyFile("template/game/GameNameLinux", fullPath + "game/" + gameFolderName + "Linux"))
+    if (!onut::copyFile(workingDirectory + "/template/game/GameNameLinux", fullPath + "game/" + gameFolderName + "Linux"))
     {
         onut::showMessageBox(
             "Error Creating game", 
@@ -275,6 +277,7 @@ void onCreate(const OUIControlRef&, const onut::UIMouseEvent&)
             onut::MessageBoxLevel::Error);
         return;
     }
+    system(("chmod +x " + fullPath + "game/" + gameFolderName + "Linux").c_str());
 
     // Create custom files
     if (!onut::createTextFile(fullPath + ".vscode/tasks.json",
@@ -365,6 +368,16 @@ void onNameChanged(const OUITextBoxRef&, const onut::UITextBoxEvent&)
 
 void initSettings()
 {
+    std::string path = ".";
+    if (!OArguments.empty()) path = OArguments.back();
+    path = onut::getPath(path);
+    workingDirectory = path;
+
+    // Set content manager path
+    oContentManager = OContentManager::create();
+    oContentManager->clearSearchPaths();
+    oContentManager->addSearchPath(workingDirectory);
+
     oSettings->setResolution({ 600, 400 });
     oSettings->setGameName("Oak Nut Setup");
     oSettings->setIsResizableWindow(false);
