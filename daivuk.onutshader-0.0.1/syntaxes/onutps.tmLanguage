@@ -38,7 +38,7 @@
 			<key>comment</key>
 			<string>Basic control keywords</string>
 			<key>match</key>
-			<string>\b(break|continue|discard|do|for|if|return|switch|while)\b</string>
+			<string>\b(break|continue|discard|do|for|if|return|switch|while|else)\b</string>
 			<key>name</key>
 			<string>keyword.control.onutps</string>
 		</dict>
