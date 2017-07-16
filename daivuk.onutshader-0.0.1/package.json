@@ -1,0 +1,51 @@
+{
+    "name": "daivuk.onutshader-0.0.1",
+    "displayName": "Onut Shader Support",
+    "description": "Code highlighting for Oak Nut engine custom shaders",
+    "version": "0.0.1",
+    "publisher": "daivuk",
+    "categories": [
+        "Languages"
+    ],
+    "engines": {
+		"vscode": "^0.10.1"
+    },
+    "contributes": {
+        "languages": [
+            {
+                "id": "onutvs",
+                "aliases": [
+                    "Onut Vertex Shader", 
+                    "onutvs"
+                ],
+                "extensions": [
+                    ".vs"
+                ],
+                "configuration": "./onutvs.configuration.json"
+            },
+            {
+                "id": "onutps",
+                "aliases": [
+                    "Onut Pixel Shader", 
+                    "onutps"
+                ],
+                "extensions": [
+                    ".ps"
+                ],
+                "configuration": "./onutps.configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "onutvs",
+                "scopeName": "source.vs",
+                "path": "./syntaxes/onutvs.tmLanguage"
+            },
+            {
+                "language": "onutps",
+                "scopeName": "source.ps",
+                "path": "./syntaxes/onutps.tmLanguage"
+            }
+        ]
+    }
+}

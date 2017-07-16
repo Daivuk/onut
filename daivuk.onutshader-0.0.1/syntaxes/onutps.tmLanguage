@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>ps</string>
+	</array>
+	<key>name</key>
+	<string>Oak Nut Pixel Shader</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>begin</key>
+			<string>//</string>
+			<key>end</key>
+			<string>$</string>
+			<key>name</key>
+			<string>comment.line.double-slash.onutps</string>
+		</dict>
+		<dict>
+			<key>begin</key>
+			<string>/\*</string>
+			<key>end</key>
+			<string>\*/</string>
+			<key>name</key>
+			<string>comment.block.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Numeric constants</string>
+			<key>match</key>
+			<string>\b([0-9]+\.?[0-9]*)|(\.[0-9]+)\b</string>
+			<key>name</key>
+			<string>constant.numeric.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Basic control keywords</string>
+			<key>match</key>
+			<string>\b(break|continue|discard|do|for|if|return|switch|while)\b</string>
+			<key>name</key>
+			<string>keyword.control.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Basic types</string>
+			<key>match</key>
+			<string>\b(float|struct|void)\b</string>
+			<key>name</key>
+			<string>storage.type.scalar.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Vector forms of scalar types</string>
+			<key>match</key>
+			<string>\b(float2|float3|float4)\b</string>
+			<key>name</key>
+			<string>storage.type.vector.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Matrix forms of scalar types</string>
+			<key>match</key>
+			<string>\b(matrix)\b</string>
+			<key>name</key>
+			<string>storage.type.matrix.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Constants</string>
+			<key>match</key>
+			<string>\b(const)\b</string>
+			<key>name</key>
+			<string>storage.modifier.onutvs</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Preprocessors</string>
+			<key>match</key>
+			<string>\b(extern|input)\b</string>
+			<key>name</key>
+			<string>keyword.control.onutvs</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Preprocessors</string>
+			<key>match</key>
+			<string>(?i)\b(Texture[0-7])\b</string>
+			<key>name</key>
+			<string>keyword.control.texture.onutvs</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Texture state members</string>
+			<key>match</key>
+			<string>(?i)\b(Filter|Repeat|RepeatX|RepeatY)\b</string>
+			<key>name</key>
+			<string>variable.other.texture.state.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Texture state enums</string>
+			<key>match</key>
+			<string>(?i)\b(Wrap|Clamp|Nearest|Linear|Trilinear|Anisotropic)\b</string>
+			<key>name</key>
+			<string>support.function.texture.state.onutps</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Default externs</string>
+			<key>match</key>
+			<string>\b(oColor|main)\b</string>
+			<key>name</key>
+			<string>support.function.extern.onutvs</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Intrinsic functions</string>
+			<key>match</key>
+			<string>\b(radians|degrees|sin|tan|asin|acos|atan|atan2|pow|exp|log|exp2|log2|sqrt|rsqrt|abs|sign|floor|ceil|frac|mod|min|max|clamp|saturate|lerp|step|smoothstep|length|distance|dot|cross|normalize|faceforward|reflect|refract|any|all|mul|round)\b</string>
+			<key>name</key>
+			<string>support.function.intrinsic.onutvs</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.ps</string>
+	<!--key>uuid</key>
+	<string>471b1f6c-6a32-11e7-907b-a6006ad3dba0</string-->
+</dict>
+</plist>
