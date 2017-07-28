@@ -47,11 +47,14 @@ namespace onut
 
     RendererGL::~RendererGL()
     {
+        onutGLShutdown();
+
 #if defined(WIN32)
         wglMakeCurrent(NULL, NULL);
         wglDeleteContext(m_hRC);
         ReleaseDC(m_hWnd, m_hDC);
 #else
+
         if (m_pSDLWindow)
         {
             SDL_GL_DeleteContext(m_glContext);
@@ -111,9 +114,7 @@ namespace onut
         SDL_GL_SetSwapInterval(1);
 #endif
 
-#if !defined(__APPLE__)
-        glewInit();
-#endif
+        onutGLInit();
     }
 
     void RendererGL::createRenderTarget()

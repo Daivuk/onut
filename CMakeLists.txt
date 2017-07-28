@@ -219,7 +219,8 @@ list(APPEND src_files
     src/Multiplayer.cpp
     src/Music.cpp
     src/MusicOGG.cpp
-    src/onut.cpp 
+    src/onut.cpp
+    src/gl/OnutGL.c
     src/Particle.cpp
     src/ParticleEmitter.cpp
     src/ParticleSystem.cpp
@@ -308,11 +309,6 @@ if (LINUX OR RPI) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if (LINUX)
-    find_package(GLEW REQUIRED)
-    list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
-    list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
-endif()
 if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
@@ -334,7 +330,6 @@ if (WIN32)
         list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
 
         link_directories(./lib/win/Release/)
-        list(APPEND libs PUBLIC glew32s)
     endif()
     find_package(DirectX11 REQUIRED)
     list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
@@ -369,6 +364,10 @@ if (WIN32)
             comsuppwd
             Winhttp
     )
+endif()
+
+if (CMAKE_DL_LIBS)
+    list(APPEND libs PUBLIC ${CMAKE_DL_LIBS})
 endif()
 
 # Include libs and includes
