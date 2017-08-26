@@ -169,7 +169,7 @@ namespace onut
         virtual void beginFrame() = 0;
         virtual void endFrame() = 0;
         virtual void draw(uint32_t vertexCount) = 0;
-        virtual void drawIndexed(uint32_t indexCount) = 0;
+        virtual void drawIndexed(uint32_t indexCount, uint32_t startOffset = 0) = 0;
 
         Point getResolution() const;
         virtual Point getTrueResolution() const = 0;

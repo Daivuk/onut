@@ -84,3 +84,5 @@ samples/UI/UISample
 
 # hunter
 _3rdParty/
+
+imgui.ini

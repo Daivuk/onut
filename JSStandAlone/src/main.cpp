@@ -133,6 +133,10 @@ void render()
 {
 }
 
+void renderUI()
+{
+}
+
 void postRender()
 {
 }

@@ -508,10 +508,10 @@ namespace onut
         m_pDeviceContext->Draw(static_cast<UINT>(vertexCount), 0);
     }
 
-    void RendererD3D11::drawIndexed(uint32_t indexCount)
+    void RendererD3D11::drawIndexed(uint32_t indexCount, uint32_t startOffset)
     {
         applyRenderStates();
-        m_pDeviceContext->DrawIndexed(static_cast<UINT>(indexCount), 0, 0);
+        m_pDeviceContext->DrawIndexed(static_cast<UINT>(indexCount), static_cast<UINT>(startOffset), 0);
     }
 
     void RendererD3D11::applyRenderStates()

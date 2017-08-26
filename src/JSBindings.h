@@ -10,6 +10,7 @@ namespace onut
         void shutdown();
         void update(float dt);
         void render();
+        void renderUI();
     }
 }
 

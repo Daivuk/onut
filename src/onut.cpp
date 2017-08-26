@@ -8,6 +8,7 @@
 #include <onut/SceneManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
+#include <onut/IndexBuffer.h>
 #include <onut/Input.h>
 #include <onut/Http.h>
 #include <onut/Log.h>
@@ -27,10 +28,14 @@
 #include <onut/UIPanel.h>
 #include <onut/UITextBox.h>
 #include <onut/Updater.h>
+#include <onut/VertexBuffer.h>
 #include <onut/Window.h>
 
 // Private
 #include "JSBindings.h"
+
+// Third parties
+#include <imgui/imgui.h>
 
 // STL
 #include <cassert>
@@ -38,6 +43,16 @@
 #include <sstream>
 
 OTextureRef g_pMainRenderTarget;
+static OTextureRef g_pImguiFontTexture;
+static OIndexBufferRef g_pImguiIB;
+static OVertexBufferRef g_pImguiVB;
+
+struct ImguiVertex
+{
+    Vector2 pos;
+    Vector2 tex;
+    Color color;
+};
 
 std::atomic<bool> g_bIsRunning;
             
@@ -61,6 +76,7 @@ namespace onut
         oWindow->onWrite = [](char c)
         {
             oUIContext->write(c);
+            ImGui::GetIO().AddInputCharacter((unsigned short)c);
         };
         oWindow->onKey = [](uintptr_t key)
         {
@@ -151,12 +167,45 @@ namespace onut
 
         // Initialize Javascript
         onut::js::init();
+
+        // imgui
+        auto& io = ImGui::GetIO();
+        uint8_t *pPixelData;
+        int w, h;
+        io.Fonts->GetTexDataAsRGBA32(&pPixelData, &w, &h);
+        g_pImguiFontTexture = OTexture::createFromData(pPixelData, { w, h }, false);
+        io.Fonts->SetTexID(&g_pImguiFontTexture);
+        g_pImguiIB = OIndexBuffer::createDynamic(sizeof(uint16_t) * 300 * 6);
+        g_pImguiVB = OVertexBuffer::createDynamic(sizeof(ImguiVertex) * 300 * 4);
+        io.KeyMap[ImGuiKey_Tab] = (int)OKeyTab; // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will update during the application lifetime.
+        io.KeyMap[ImGuiKey_LeftArrow] = (int)OKeyLeft;
+        io.KeyMap[ImGuiKey_RightArrow] = (int)OKeyRight;
+        io.KeyMap[ImGuiKey_UpArrow] = (int)OKeyUp;
+        io.KeyMap[ImGuiKey_DownArrow] = (int)OKeyDown;
+        io.KeyMap[ImGuiKey_PageUp] = (int)OKeyPageUp;
+        io.KeyMap[ImGuiKey_PageDown] = (int)OKeyPageDown;
+        io.KeyMap[ImGuiKey_Home] = (int)OKeyHome;
+        io.KeyMap[ImGuiKey_End] = (int)OKeyEnd;
+        io.KeyMap[ImGuiKey_Delete] = (int)OKeyDelete;
+        io.KeyMap[ImGuiKey_Backspace] = (int)OKeyBackspace;
+        io.KeyMap[ImGuiKey_Enter] = (int)OKeyEnter;
+        io.KeyMap[ImGuiKey_Escape] = (int)OKeyEscape;
+        io.KeyMap[ImGuiKey_A] = (int)OKeyA;
+        io.KeyMap[ImGuiKey_C] = (int)OKeyC;
+        io.KeyMap[ImGuiKey_V] = (int)OKeyV;
+        io.KeyMap[ImGuiKey_X] = (int)OKeyX;
+        io.KeyMap[ImGuiKey_Y] = (int)OKeyY;
+        io.KeyMap[ImGuiKey_Z] = (int)OKeyZ;
     }
 
     void cleanup()
     {
+        ImGui::Shutdown();
         onut::js::shutdown();
 
+        g_pImguiVB = nullptr;
+        g_pImguiIB = nullptr;
+        g_pImguiFontTexture = nullptr;
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
         oSceneManager = nullptr;
@@ -181,10 +230,88 @@ namespace onut
         oTiming = nullptr;
     }
 
+    void drawImgui()
+    {
+        oRenderer->setupFor2D();
+        oRenderer->renderStates.blendMode.push(OBlendAlpha);
+        oRenderer->renderStates.scissorEnabled.push(true);
+
+        auto pDrawData = ImGui::GetDrawData();
+        auto cmdListCount = pDrawData->CmdListsCount;
+        for (int i = 0; i < cmdListCount; ++i)
+        {
+            auto pCmdList = pDrawData->CmdLists[i];
+
+            auto vertCount = pCmdList->VtxBuffer.size();
+            auto indexCount = pCmdList->IdxBuffer.size();
+            int drawOffset = 0;
+
+            // Update ib
+            if (g_pImguiIB->size() < indexCount * sizeof(uint16_t))
+            {
+                g_pImguiIB = OIndexBuffer::createDynamic(indexCount * sizeof(uint16_t));
+            }
+            auto pIndexData = g_pImguiIB->map();
+            memcpy(pIndexData, pCmdList->IdxBuffer.Data, indexCount * sizeof(uint16_t));
+            g_pImguiIB->unmap(indexCount * sizeof(uint16_t));
+
+            // Update vb
+            if (g_pImguiVB->size() < vertCount * sizeof(ImguiVertex))
+            {
+                g_pImguiVB = OVertexBuffer::createDynamic(vertCount * sizeof(ImguiVertex));
+            }
+            auto pVertexData = (ImguiVertex*)g_pImguiVB->map();
+            auto pImguiVertexData = pCmdList->VtxBuffer.Data;
+            for (int v = 0; v < vertCount; ++v)
+            {
+                pVertexData->pos.x = pImguiVertexData->pos.x;
+                pVertexData->pos.y = pImguiVertexData->pos.y;
+                pVertexData->tex.x = pImguiVertexData->uv.x;
+                pVertexData->tex.y = pImguiVertexData->uv.y;
+                pVertexData->color.r = (float)((pImguiVertexData->col) & 0xff) / 255.0f;
+                pVertexData->color.g = (float)((pImguiVertexData->col >> 8) & 0xff) / 255.0f;
+                pVertexData->color.b = (float)((pImguiVertexData->col >> 16) & 0xff) / 255.0f;
+                pVertexData->color.a = (float)((pImguiVertexData->col >> 24) & 0xff) / 255.0f;
+
+                ++pVertexData;
+                ++pImguiVertexData;
+            }
+            g_pImguiVB->unmap(vertCount * sizeof(ImguiVertex));
+
+            oRenderer->renderStates.indexBuffer = g_pImguiIB;
+            oRenderer->renderStates.vertexBuffer = g_pImguiVB;
+
+            // Loop sub meshes
+            auto cmdBufferCount = pCmdList->CmdBuffer.size();
+            for (int j = 0; j < cmdBufferCount; ++j)
+            {
+                auto pCmd = pCmdList->CmdBuffer.Data + j;
+
+                if (pCmd->UserCallback)
+                {
+                    pCmd->UserCallback(pCmdList, pCmd);
+                }
+                else
+                {
+                    oRenderer->renderStates.scissor.push({ (int)pCmd->ClipRect.x, (int)pCmd->ClipRect.y, (int)pCmd->ClipRect.z, (int)pCmd->ClipRect.w });
+                    oRenderer->renderStates.textures[0] = *(OTextureRef *)pCmd->TextureId;
+                    oRenderer->drawIndexed(pCmd->ElemCount, drawOffset);
+                    oRenderer->renderStates.scissor.pop();
+                }
+
+                drawOffset += pCmd->ElemCount;
+            }
+        }
+
+        oRenderer->renderStates.scissorEnabled.pop();
+        oRenderer->renderStates.blendMode.pop();
+    }
+
     // Start the engine
     void run(std::function<void()> initCallback,
              std::function<void()> updateCallback, 
              std::function<void()> renderCallback,
+             std::function<void()> renderUICallback,
              std::function<void()> postRenderCallback)
     {
         // Make sure we run just once
@@ -213,6 +340,8 @@ namespace onut
             // Update
             oAudioEngine->update();
             auto framesToUpdate = oTiming->update(oSettings->getIsFixedStep());
+            auto& io = ImGui::GetIO();
+            auto imgui_updated = false;
             while (framesToUpdate--)
             {
                 oInput->update();
@@ -232,6 +361,43 @@ namespace onut
                 oInput->mousePosf.x = static_cast<float>(cur.x);
                 oInput->mousePosf.y = static_cast<float>(cur.y);
 #endif // WIN32
+                // Imgui input updates
+                if (!imgui_updated)
+                {
+                    imgui_updated = true;
+                    io.MouseDown[0] = OInputPressed(OMouse1);
+                    io.MouseDown[1] = OInputPressed(OMouse2);
+                    io.MouseDown[2] = OInputPressed(OMouse3);
+                    io.MouseDown[3] = OInputPressed(OMouse4);
+                    io.MouseDown[4] = false;
+                    io.MouseWheel += oInput->getStateValue(OMouseZ) > 0 ? 1.f : oInput->getStateValue(OMouseZ) < 0 ? -1.f : 0.0f;
+                    io.MouseDrawCursor = false;
+                    io.KeyCtrl = OInputPressed(OKeyLeftControl);
+                    io.KeyShift = OInputPressed(OKeyLeftShift);
+                    io.KeyAlt = OInputPressed(OKeyLeftAlt);
+                    io.KeySuper = OInputPressed(OKeyLeftWindows);
+                    io.KeysDown[(int)OKeyTab] = OInputPressed(OKeyTab);
+                    io.KeysDown[(int)OKeyLeft] = OInputPressed(OKeyLeft);
+                    io.KeysDown[(int)OKeyRight] = OInputPressed(OKeyRight);
+                    io.KeysDown[(int)OKeyUp] = OInputPressed(OKeyUp);
+                    io.KeysDown[(int)OKeyDown] = OInputPressed(OKeyDown);
+                    io.KeysDown[(int)OKeyPageUp] = OInputPressed(OKeyPageUp);
+                    io.KeysDown[(int)OKeyPageDown] = OInputPressed(OKeyPageDown);
+                    io.KeysDown[(int)OKeyHome] = OInputPressed(OKeyHome);
+                    io.KeysDown[(int)OKeyEnd] = OInputPressed(OKeyEnd);
+                    io.KeysDown[(int)OKeyDelete] = OInputPressed(OKeyDelete);
+                    io.KeysDown[(int)OKeyBackspace] = OInputPressed(OKeyBackspace);
+                    io.KeysDown[(int)OKeyEnter] = OInputPressed(OKeyEnter);
+                    io.KeysDown[(int)OKeyEscape] = OInputPressed(OKeyEscape);
+                    io.KeysDown[(int)OKeyA] = OInputPressed(OKeyA);
+                    io.KeysDown[(int)OKeyC] = OInputPressed(OKeyC);
+                    io.KeysDown[(int)OKeyV] = OInputPressed(OKeyV);
+                    io.KeysDown[(int)OKeyX] = OInputPressed(OKeyX);
+                    io.KeysDown[(int)OKeyY] = OInputPressed(OKeyY);
+                    io.KeysDown[(int)OKeyZ] = OInputPressed(OKeyZ);
+                }
+                io.MousePos = { oInput->mousePosf.x, oInput->mousePosf.y };
+
                 oUpdater->update();
                 auto mousePosf = OGetMousePos();
                 if (oUIContext->useNavigation)
@@ -261,8 +427,9 @@ namespace onut
                 }
             }
 
-            // Render
             oTiming->render();
+
+            // Render
             if (oSettings->getShowOnScreenLog() && oSettings->getIsRetroMode())
             {
                 oRenderer->clear(Color::Black);
@@ -279,6 +446,18 @@ namespace onut
             oSpriteBatch->begin();
             oUI->render(oUIContext);
             oSpriteBatch->end();
+
+            // Imgui
+            io.DeltaTime = oTiming->getRenderDeltaTime();
+            io.DisplaySize = { OScreenWf, OScreenHf };
+            ImGui::NewFrame();
+            onut::js::renderUI();
+            if (renderUICallback)
+            {
+                renderUICallback();
+            }
+            ImGui::Render();
+            drawImgui();
 
             // Draw final render target
             oRenderer->renderStates.renderTarget = nullptr;
@@ -350,6 +529,7 @@ void initSettings();
 void init();
 void update();
 void render();
+void renderUI();
 void postRender();
 
 std::vector<std::string> OArguments;
@@ -371,7 +551,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
     }
     initSettings();
     onut::initLog();
-    onut::run(init, update, render, postRender);
+    onut::run(init, update, render, renderUI, postRender);
     return 0;
 }
 #else
@@ -383,7 +563,7 @@ int main(int argc, char** argv)
     }
 
     initSettings();
-    onut::run(init, update, render, postRender);
+    onut::run(init, update, render, renderUI, postRender);
     return 0;
 }
 #endif

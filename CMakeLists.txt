@@ -207,10 +207,14 @@ list(APPEND src_files
     src/GamePad.cpp
     src/Http.cpp
     src/Images.cpp
+    src/imgui/imgui.cpp
+    src/imgui/imgui_demo.cpp
+    src/imgui/imgui_draw.cpp
     src/IndexBuffer.cpp 
     src/Input.cpp
     src/InputDevice.cpp
     src/JSBindings.cpp
+    src/JSBindings_Imgui.cpp
     src/json/json_reader.cpp
     src/json/json_value.cpp
     src/json/json_writer.cpp
@@ -404,6 +408,7 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Entities) # EntitiesSample
     add_subdirectory(samples/GamePads) # GamePadsSample
     add_subdirectory(samples/Http) # HttpSample
+    add_subdirectory(samples/Imgui) # ImguiSample
     add_subdirectory(samples/Multiplayer) # MultiplayerSample
     add_subdirectory(samples/Navigation) # NavigationSample
     add_subdirectory(samples/Particles) # ParticlesSample
