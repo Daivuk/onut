@@ -36,6 +36,21 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("end", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto pos = JS_VECTOR2(0);
+                    ImGui::SetNextWindowPos({ pos.x, pos.y }, ImGuiCond_FirstUseEver);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setNextWindowPos", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto size = JS_VECTOR2(0);
+                    ImGui::SetNextWindowSize({ size.x, size.y }, ImGuiCond_FirstUseEver);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setNextWindowSize", 1);
+//     
           /*      JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto name = JS_STRING(0);

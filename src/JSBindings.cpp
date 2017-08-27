@@ -2034,7 +2034,7 @@ namespace onut
             duk_put_prop_string(ctx, -2, "adjustContrast");
 
             // Done with the object
-            pVector4Prototype = duk_get_heapptr(ctx, -1);
+            pColorPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
 
             // modulate(c1, c2)

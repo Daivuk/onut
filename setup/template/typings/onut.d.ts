@@ -1274,6 +1274,71 @@ declare namespace Random {
     function randPalette(palette: Array, variation: number): Color;
 }
 
+// GUI
+declare namespace GUI {
+    // Window
+    function begin(title: string): boolean;
+    function end();
+    function setNextWindowPos(pos: Vector2);
+    function setNextWindowSize(size: Vector2);
+
+    // Cursor / Layout
+    function separator();
+    function sameLine(pos_x: number, spacing_w: number = -1.0);
+    function newLine();
+    function spacing();
+    function dummy(size: Vector2);
+    function indent(indent_w: number = 0);
+    function unindent(indent_w: number = 0);
+
+    // Text
+    function text(text: string);
+    function textColored(col: Color, text: string);
+    function textDisabled(text: string);
+    function textWrapped(text: string);
+    function labelText(label: string, text: string);
+    function bulletText(text: string);
+    function bullet();
+
+    // Main
+    function button(text: string, size: Vector2): boolean;
+    function smallButton(text: string): boolean;
+    function invisibleButton(text: string, size: Vector2): boolean;
+    function image(texture: Texture, size: Vector2, uv0: Vector2, uv1: vector2, tint_col: Color, border_col: Color);
+    function imagineButton(texture: Texture, size: Vector2, uv0: Vector2, uv1: Vector2, frame_padding: number, bg_col: Color, tint_col: Color): boolean;
+    function checkbox(text: string, checked: boolean): boolean;
+    function radioButton(text: string, v: number, items: string[]): number;
+    function combo(text: string, v: number, items: string[]): number;
+    function progressBar(fraction: number, size: Vector2, overlay: string);
+
+    // Drags
+    function dragNumber(label: string, v: number, v_speed: number, v_min: number, v_max: number): number;
+    function dragVector2(label: string, v: Vector2, v_speed: number, v_min: number, v_max: number): Vector2;
+    function dragVector3(label: string, v: Vector3, v_speed: number, v_min: number, v_max: number): Vector3;
+    function dragVector4(label: string, v: Vector4, v_speed: number, v_min: number, v_max: number): Vector4;
+    function dragInt(label: string, v: number, v_speed: number, v_min: number, v_max: number): number;
+
+    // Input with Keyboard
+    function inputText(label: string, text: string, len: number = 144): string;
+
+    // Sliders
+    function sliderNumber(label: string, v: number, v_min: number, v_max: number): number;
+
+    // Color Picker
+    function colorPickerRGB(label: string, col: Color): Color;
+    function colorPickerRGBA(label: string, col: Color): Color;
+
+    // Tooltips
+    function setTooltip(text: string);
+    function beginTooltip();
+    function endTooltip();
+
+    // Utilities
+    function isItemHovered(): boolean;
+    function isItemClicked(): boolean;
+    function collapsingHeader(label: string): boolean;
+}
+
 // Blend mode
 declare enum BlendMode {
     OPAQUE,
