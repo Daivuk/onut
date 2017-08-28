@@ -213,7 +213,7 @@ namespace onut
         glDrawArrays(mode, 0, vertexCount);
     }
 
-    void RendererGL::drawIndexed(uint32_t indexCount)
+    void RendererGL::drawIndexed(uint32_t indexCount, uint32_t startOffset)
     {
         applyRenderStates();
         
@@ -239,7 +239,7 @@ namespace onut
                 break;
         }
 
-        glDrawElements(mode, indexCount, GL_UNSIGNED_SHORT, NULL);
+        glDrawElements(mode, indexCount, GL_UNSIGNED_SHORT, (const void*)(uintptr_t)(startOffset * sizeof(uint16_t)));
     }
 
     void RendererGL::applyRenderStates()
@@ -269,6 +269,9 @@ namespace onut
             }
             renderStates.renderTarget.resetDirty();
         }
+
+        // Because opengl sucks, we need to determine if we have to flip Y
+        bool invertY = renderStates.renderTarget.get() != nullptr;
         
         // Blend
         if (renderStates.blendMode.isDirty())
@@ -349,11 +352,22 @@ namespace onut
             renderStates.scissor.isDirty())
         {
             auto& rect = renderStates.scissor.get();
-            glScissor(
-                static_cast<GLint>(rect.left), 
-                static_cast<GLint>(getResolution().y) - static_cast<GLint>(rect.top) - static_cast<GLint>(rect.bottom - rect.top), 
-                static_cast<GLsizei>(rect.right - rect.left),
-                static_cast<GLsizei>(rect.bottom - rect.top));
+            if (!invertY)
+            {
+                glScissor(
+                    static_cast<GLint>(rect.left), 
+                    static_cast<GLint>(getResolution().y) - static_cast<GLint>(rect.top) - static_cast<GLint>(rect.bottom - rect.top), 
+                    static_cast<GLsizei>(rect.right - rect.left),
+                    static_cast<GLsizei>(rect.bottom - rect.top));
+            }
+            else
+            {
+                glScissor(
+                    static_cast<GLint>(rect.left), 
+                    static_cast<GLint>(rect.top), 
+                    static_cast<GLsizei>(rect.right - rect.left),
+                    static_cast<GLsizei>(rect.bottom - rect.top));
+            }
             renderStates.scissor.resetDirty();
         }
         
@@ -519,8 +533,6 @@ namespace onut
                 programDirty ||
                 renderTargetDirty)
             {
-                // Because opengl sucks, we need to determine if we have to flip Y
-                bool invertY = renderStates.renderTarget.get() != nullptr;
                 if (invertY)
                 {
                     glCullFace(GL_FRONT);

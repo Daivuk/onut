@@ -120,3 +120,7 @@ void render()
 void postRender()
 {
 }
+
+void renderUI()
+{
+}

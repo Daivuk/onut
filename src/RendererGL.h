@@ -31,7 +31,7 @@ namespace onut
         void endFrame() override;
 
         void draw(uint32_t vertexCount) override;
-        void drawIndexed(uint32_t indexCount) override;
+        void drawIndexed(uint32_t indexCount, uint32_t startOffset = 0) override;
 
         Point getTrueResolution() const override;
         void onResize(const Point& newSize) override;

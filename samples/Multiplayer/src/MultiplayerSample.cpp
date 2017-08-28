@@ -106,3 +106,7 @@ void lobbyCallback(bool success, const OMultiplayer::Lobby& lobby)
         pPlayerUI->getChild<OUILabel>("lblPlayerName")->textComponent.text = player.getUsername();
     }
 }
+
+void renderUI()
+{
+}

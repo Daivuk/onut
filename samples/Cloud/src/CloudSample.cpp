@@ -564,3 +564,7 @@ void render()
         oSpriteBatch->end();
     }
 }
+
+void renderUI()
+{
+}

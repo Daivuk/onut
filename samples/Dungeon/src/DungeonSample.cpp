@@ -176,3 +176,7 @@ void postRender()
     // Draw some useful debug info from the scene manager
     oSceneManager->DrawDebugInfo();
 }
+
+void renderUI()
+{
+}
