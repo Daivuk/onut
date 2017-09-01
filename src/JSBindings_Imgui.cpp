@@ -18,10 +18,62 @@ namespace onut
 
         void createImguiBindings()
         {
+            static bool valueChanged = false;
+            static ImGuiID activeId = 0;
             auto ctx = pContext;
 
             JS_INTERFACE_BEGIN();
             {
+                // Menu
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, ImGui::BeginMainMenuBar() ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("beginMainMenuBar", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    ImGui::EndMainMenuBar();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("endMainMenuBar", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, ImGui::BeginMenuBar() ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("beginMenuBar", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    ImGui::EndMenuBar();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("endMenuBar", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto label = JS_STRING(0);
+                    auto enabled = JS_BOOL(1, true);
+                    duk_push_boolean(ctx, ImGui::BeginMenu(label, enabled) ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("beginMenu", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    ImGui::EndMenu();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("endMenu", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto label = JS_STRING(0);
+                    auto shortcut = JS_STRING(1, nullptr);
+                    auto selected = JS_BOOL(2, false);
+                    auto enabled = JS_BOOL(3, true);
+                    duk_push_boolean(ctx, ImGui::MenuItem(label, shortcut, selected, enabled) ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("menuItem", 4);
+
                 // Window
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -249,7 +301,7 @@ namespace onut
                 {
                     auto text = JS_STRING(0);
                     auto checked = JS_BOOL(1);
-                    ImGui::Checkbox(text, &checked);
+                    valueChanged = ImGui::Checkbox(text, &checked);
                     duk_push_boolean(ctx, checked ? 1 : 0);
                     return 1;
                 }
@@ -259,7 +311,7 @@ namespace onut
                     auto text = JS_STRING(0);
                     auto v = JS_INT(1);
                     auto v_button = JS_INT(2);
-                    ImGui::RadioButton(text, &v, v_button);
+                    valueChanged = ImGui::RadioButton(text, &v, v_button);
                     duk_push_int(ctx, v);
                     return 1;
                 }
@@ -278,7 +330,7 @@ namespace onut
                             items.push_back(duk_to_string(ctx, -1));
                             duk_pop(ctx);
                         }
-                        ImGui::Combo(text, &v, items_getter, &items, items.size());
+                        valueChanged = ImGui::Combo(text, &v, items_getter, &items, items.size());
                         duk_push_int(ctx, v);
                         return 1;
                     }
@@ -303,7 +355,7 @@ namespace onut
                     auto v_speed = JS_FLOAT(2, 1.0f);
                     auto v_min = JS_FLOAT(3);
                     auto v_max = JS_FLOAT(4);
-                    ImGui::DragFloat(label, &v, v_speed, v_min, v_max);
+                    valueChanged = ImGui::DragFloat(label, &v, v_speed, v_min, v_max);
                     duk_push_number(ctx, (duk_double_t)v);
                     return 1;
                 }
@@ -315,7 +367,7 @@ namespace onut
                     auto v_speed = JS_FLOAT(2, 1.0f);
                     auto v_min = JS_FLOAT(3);
                     auto v_max = JS_FLOAT(4);
-                    ImGui::DragFloat2(label, &v.x, v_speed, v_min, v_max);
+                    valueChanged = ImGui::DragFloat2(label, &v.x, v_speed, v_min, v_max);
                     newVector2(ctx, v);
                     return 1;
                 }
@@ -327,7 +379,7 @@ namespace onut
                     auto v_speed = JS_FLOAT(2, 1.0f);
                     auto v_min = JS_FLOAT(3);
                     auto v_max = JS_FLOAT(4);
-                    ImGui::DragFloat3(label, &v.x, v_speed, v_min, v_max);
+                    valueChanged = ImGui::DragFloat3(label, &v.x, v_speed, v_min, v_max);
                     newVector3(ctx, v);
                     return 1;
                 }
@@ -339,7 +391,7 @@ namespace onut
                     auto v_speed = JS_FLOAT(2, 1.0f);
                     auto v_min = JS_FLOAT(3);
                     auto v_max = JS_FLOAT(4);
-                    ImGui::DragFloat4(label, &v.x, v_speed, v_min, v_max);
+                    valueChanged = ImGui::DragFloat4(label, &v.x, v_speed, v_min, v_max);
                     newVector4(ctx, v);
                     return 1;
                 }
@@ -351,7 +403,7 @@ namespace onut
                     auto v_speed = JS_FLOAT(2, 1.0f);
                     auto v_min = JS_INT(3);
                     auto v_max = JS_INT(4);
-                    ImGui::DragInt(label, &v, v_speed, v_min, v_max);
+                    valueChanged = ImGui::DragInt(label, &v, v_speed, v_min, v_max);
                     duk_push_int(ctx, v);
                     return 1;
                 }
@@ -366,7 +418,7 @@ namespace onut
                     static std::vector<char> textBuf;
                     textBuf.resize(std::max(buf_size + 1, (int)textBuf.capacity()));
                     memcpy(textBuf.data(), buf, strlen(buf) + 1);
-                    ImGui::InputText(label, textBuf.data(), buf_size);
+                    valueChanged = ImGui::InputText(label, textBuf.data(), buf_size);
                     duk_push_string(ctx, textBuf.data());
                     return 1;
                 }
@@ -379,7 +431,7 @@ namespace onut
                     auto v = JS_FLOAT(1);
                     auto v_min = JS_FLOAT(2);
                     auto v_max = JS_FLOAT(3);
-                    ImGui::SliderFloat(label, &v, v_min, v_max);
+                    valueChanged = ImGui::SliderFloat(label, &v, v_min, v_max);
                     duk_push_number(ctx, (duk_double_t)v);
                     return 1;
                 }
@@ -390,7 +442,7 @@ namespace onut
                 {
                     auto label = JS_STRING(0);
                     auto col = JS_COLOR(1);
-                    ImGui::ColorEdit3(label, &col.r);
+                    valueChanged = ImGui::ColorEdit3(label, &col.r);
                     newColor(ctx, col);
                     return 1;
                 }
@@ -399,7 +451,7 @@ namespace onut
                 {
                     auto label = JS_STRING(0);
                     auto col = JS_COLOR(1);
-                    ImGui::ColorEdit4(label, &col.r, ImGuiColorEditFlags_AlphaPreviewHalf);
+                    valueChanged = ImGui::ColorEdit4(label, &col.r, ImGuiColorEditFlags_AlphaPreviewHalf);
                     newColor(ctx, col);
                     return 1;
                 }
@@ -425,6 +477,31 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("endTooltip", 0);
+                
+                // Columns
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto count = JS_INT(0, 1);
+                    auto id = JS_STRING(1, nullptr);
+                    auto border = JS_BOOL(2, true);
+                    ImGui::Columns(count, id, border);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("columns", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    ImGui::NextColumn();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("nextColumn", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto column_index = JS_INT(0);
+                    auto width = JS_FLOAT(1);
+                    ImGui::SetColumnWidth(column_index, width);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setColumnWidth", 3);
 
                 // Utilities
                 JS_INTERFACE_FUNCTION_BEGIN
@@ -446,7 +523,36 @@ namespace onut
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("collapsingHeader", 1);
-
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, valueChanged ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("valueChanged", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, ImGui::ValueFinished() ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("valueFinished", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, ImGui::GetIO().WantCaptureMouse ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("wantCaptureMouse", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, ImGui::GetIO().WantCaptureKeyboard ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("wantCaptureKeyboard", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, ImGui::GetIO().WantTextInput ? 1 : 0);
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("wantTextInput", 0);
             }
             JS_INTERFACE_END("GUI");
         }

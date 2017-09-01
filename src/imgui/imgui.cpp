@@ -6858,7 +6858,7 @@ bool ImGui::SliderInt4(const char* label, int v[4], int v_min, int v_max, const 
     return SliderIntN(label, v, 4, v_min, v_max, display_format);
 }
 
-bool ImGui::DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_speed, float v_min, float v_max, int decimal_precision, float power)
+bool ImGui::DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_speed, float v_min, float v_max, int decimal_precision, float power, bool& valueFinished)
 {
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
@@ -6868,6 +6868,7 @@ bool ImGui::DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_s
     RenderFrame(frame_bb.Min, frame_bb.Max, frame_col, true, style.FrameRounding);
 
     bool value_changed = false;
+    valueFinished = false;
 
     // Process clicking on the drag
     if (g.ActiveId == id)
@@ -6879,6 +6880,7 @@ bool ImGui::DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_s
                 // Lock current value on click
                 g.DragCurrentValue = *v;
                 g.DragLastMouseDelta = ImVec2(0.f, 0.f);
+                g.DragChanged = false;
             }
 
             if (v_speed == 0.0f && (v_max - v_min) != 0.0f && (v_max - v_min) < FLT_MAX)
@@ -6922,10 +6924,12 @@ bool ImGui::DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_s
             {
                 *v = v_cur;
                 value_changed = true;
+                g.DragChanged = true;
             }
         }
         else
         {
+            valueFinished = g.DragChanged;
             ClearActiveID();
         }
     }
@@ -6983,7 +6987,7 @@ bool ImGui::DragFloat(const char* label, float* v, float v_speed, float v_min, f
 
     // Actual drag behavior
     ItemSize(total_bb, style.FramePadding.y);
-    const bool value_changed = DragBehavior(frame_bb, id, v, v_speed, v_min, v_max, decimal_precision, power);
+    const bool value_changed = DragBehavior(frame_bb, id, v, v_speed, v_min, v_max, decimal_precision, power, g.ValueFinished);
 
     // Display value using user-provided display format so user can add prefix/suffix/decorations to the value.
     char value_buf[64];
@@ -6994,6 +6998,11 @@ bool ImGui::DragFloat(const char* label, float* v, float v_speed, float v_min, f
         RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, inner_bb.Min.y), label);
 
     return value_changed;
+}
+
+bool ImGui::ValueFinished()
+{
+    return GImGui->ValueFinished;
 }
 
 bool ImGui::DragFloatN(const char* label, float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power)
@@ -7007,14 +7016,17 @@ bool ImGui::DragFloatN(const char* label, float* v, int components, float v_spee
     BeginGroup();
     PushID(label);
     PushMultiItemsWidths(components);
+    bool valueFinished = false;
     for (int i = 0; i < components; i++)
     {
         PushID(i);
         value_changed |= DragFloat("##v", &v[i], v_speed, v_min, v_max, display_format, power);
+        valueFinished |= g.ValueFinished;
         SameLine(0, g.Style.ItemInnerSpacing.x);
         PopID();
         PopItemWidth();
     }
+    g.ValueFinished = valueFinished;
     PopID();
 
     TextUnformatted(label, FindRenderedTextEnd(label));
@@ -7050,9 +7062,11 @@ bool ImGui::DragFloatRange2(const char* label, float* v_current_min, float* v_cu
     PushMultiItemsWidths(2);
 
     bool value_changed = DragFloat("##min", v_current_min, v_speed, (v_min >= v_max) ? -FLT_MAX : v_min, (v_min >= v_max) ? *v_current_max : ImMin(v_max, *v_current_max), display_format, power);
+    bool valueFinished = g.ValueFinished;
     PopItemWidth();
     SameLine(0, g.Style.ItemInnerSpacing.x);
     value_changed |= DragFloat("##max", v_current_max, v_speed, (v_min >= v_max) ? *v_current_min : ImMax(v_min, *v_current_min), (v_min >= v_max) ? FLT_MAX : v_max, display_format_max ? display_format_max : display_format, power);
+    g.ValueFinished |= valueFinished;
     PopItemWidth();
     SameLine(0, g.Style.ItemInnerSpacing.x);
 
@@ -7085,14 +7099,17 @@ bool ImGui::DragIntN(const char* label, int* v, int components, float v_speed, i
     BeginGroup();
     PushID(label);
     PushMultiItemsWidths(components);
+    bool valueFinished = false;
     for (int i = 0; i < components; i++)
     {
         PushID(i);
         value_changed |= DragInt("##v", &v[i], v_speed, v_min, v_max, display_format);
+        valueFinished |= g.ValueFinished;
         SameLine(0, g.Style.ItemInnerSpacing.x);
         PopID();
         PopItemWidth();
     }
+    g.ValueFinished = valueFinished;
     PopID();
 
     TextUnformatted(label, FindRenderedTextEnd(label));
@@ -7128,9 +7145,11 @@ bool ImGui::DragIntRange2(const char* label, int* v_current_min, int* v_current_
     PushMultiItemsWidths(2);
 
     bool value_changed = DragInt("##min", v_current_min, v_speed, (v_min >= v_max) ? INT_MIN : v_min, (v_min >= v_max) ? *v_current_max : ImMin(v_max, *v_current_max), display_format);
+    bool valueFinished = g.ValueFinished;
     PopItemWidth();
     SameLine(0, g.Style.ItemInnerSpacing.x);
     value_changed |= DragInt("##max", v_current_max, v_speed, (v_min >= v_max) ? *v_current_min : ImMax(v_min, *v_current_min), (v_min >= v_max) ? INT_MAX : v_max, display_format_max ? display_format_max : display_format);
+    g.ValueFinished |= valueFinished;
     PopItemWidth();
     SameLine(0, g.Style.ItemInnerSpacing.x);
 
@@ -7719,6 +7738,7 @@ bool ImGui::InputTextEx(const char* label, char* buf, int buf_size, const ImVec2
     ImGuiContext& g = *GImGui;
     const ImGuiIO& io = g.IO;
     const ImGuiStyle& style = g.Style;
+    g.ValueFinished = false;
 
     const bool is_multiline = (flags & ImGuiInputTextFlags_Multiline) != 0;
     const bool is_editable = (flags & ImGuiInputTextFlags_ReadOnly) == 0;
@@ -7789,6 +7809,7 @@ bool ImGui::InputTextEx(const char* label, char* buf, int buf_size, const ImVec2
     {
         if (g.ActiveId != id)
         {
+            g.DragChanged = false;
             // Start edition
             // Take a copy of the initial buffer value (both in original UTF-8 format and converted to wchar)
             // From the moment we focused we are ignoring the content of 'buf' (unless we are in read-only mode)
@@ -7830,7 +7851,10 @@ bool ImGui::InputTextEx(const char* label, char* buf, int buf_size, const ImVec2
     {
         // Release focus when we click outside
         if (g.ActiveId == id)
+        {
             ClearActiveID();
+            g.ValueFinished = g.DragChanged;
+        }
     }
 
     bool value_changed = false;
@@ -7933,6 +7957,7 @@ bool ImGui::InputTextEx(const char* label, char* buf, int buf_size, const ImVec2
             if (!is_multiline || (ctrl_enter_for_new_line && !io.KeyCtrl) || (!ctrl_enter_for_new_line && io.KeyCtrl))
             {
                 ClearActiveID();
+                g.ValueFinished = g.DragChanged;
                 enter_pressed = true;
             }
             else if (is_editable)
@@ -8009,7 +8034,7 @@ bool ImGui::InputTextEx(const char* label, char* buf, int buf_size, const ImVec2
             if (is_editable)
             {
                 ImStrncpy(buf, edit_state.InitialText.Data, buf_size);
-                value_changed = true;
+                g.DragChanged = value_changed = true;
             }
         }
         else
@@ -8095,7 +8120,7 @@ bool ImGui::InputTextEx(const char* label, char* buf, int buf_size, const ImVec2
             if (is_editable && strcmp(edit_state.TempTextBuffer.Data, buf) != 0)
             {
                 ImStrncpy(buf, edit_state.TempTextBuffer.Data, buf_size);
-                value_changed = true;
+                g.DragChanged = value_changed = true;
             }
         }
     }
@@ -9262,6 +9287,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
 
     bool value_changed = false;
     bool value_changed_as_float = false;
+    bool value_finished = false;
 
     if ((flags & (ImGuiColorEditFlags_RGB | ImGuiColorEditFlags_HSV)) != 0 && (flags & ImGuiColorEditFlags_NoInputs) == 0)
     {
@@ -9293,9 +9319,14 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
             if (n + 1 == components)
                 PushItemWidth(w_item_last);
             if (flags & ImGuiColorEditFlags_Float)
-                value_changed |= value_changed_as_float |= DragFloat(ids[n], &f[n], 1.0f/255.0f, 0.0f, hdr ? 0.0f : 1.0f, fmt_table_float[fmt_idx][n]);
+            {
+                value_changed |= value_changed_as_float |= DragFloat(ids[n], &f[n], 1.0f / 255.0f, 0.0f, hdr ? 0.0f : 1.0f, fmt_table_float[fmt_idx][n]);
+            }
             else
+            {
                 value_changed |= DragInt(ids[n], &i[n], 1.0f, 0, hdr ? 0 : 255, fmt_table_int[fmt_idx][n]);
+            }
+            value_finished |= g.ValueFinished;
             if (!(flags & ImGuiColorEditFlags_NoOptions) && IsItemHovered() && IsMouseClicked(1))
                 OpenPopup("context");
         }
@@ -9323,6 +9354,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
             else
                 sscanf(p, "%02X%02X%02X", (unsigned int*)&i[0], (unsigned int*)&i[1], (unsigned int*)&i[2]);
         }
+        value_finished |= g.ValueFinished;
         if (!(flags & ImGuiColorEditFlags_NoOptions) && IsItemHovered() && IsMouseClicked(1))
             OpenPopup("context");
         PopItemWidth();
@@ -9342,6 +9374,8 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
                 // Store current color and open a picker
                 g.ColorPickerRef = col_v4;
                 OpenPopup("picker");
+                g.PickerChanged = false;
+                g.PickerId = window->GetID(label);
                 SetNextWindowPos(window->DC.LastItemRect.GetBL() + ImVec2(-1,style.ItemSpacing.y));
             }
         }
@@ -9360,9 +9394,19 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
             ImGuiColorEditFlags picker_flags_to_forward = ImGuiColorEditFlags__DataTypeMask | ImGuiColorEditFlags__PickerMask | ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_AlphaBar;
             ImGuiColorEditFlags picker_flags = (flags_untouched & picker_flags_to_forward) | ImGuiColorEditFlags__InputsMask | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_AlphaPreviewHalf;
             PushItemWidth(square_sz * 12.0f); // Use 256 + bar sizes?
-            value_changed |= ColorPicker4("##picker", col, picker_flags, &g.ColorPickerRef.x);
+            auto local_changed = ColorPicker4("##picker", col, picker_flags, &g.ColorPickerRef.x);
+            value_changed |= local_changed;
+            g.PickerChanged |= local_changed;
             PopItemWidth();
             EndPopup();
+        }
+        else
+        {
+            if (g.PickerChanged && g.PickerId == window->GetID(label))
+            {
+                g.PickerChanged = false;
+                value_finished = true;
+            }
         }
     }
 
@@ -9389,6 +9433,8 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
                 col[3] = f[3];
         }
     }
+
+    g.ValueFinished = value_finished;
 
     PopID();
     EndGroup();

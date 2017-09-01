@@ -488,6 +488,10 @@ struct ImGuiContext
     int                     CaptureMouseNextFrame;              // explicit capture via CaptureInputs() sets those flags
     int                     CaptureKeyboardNextFrame;
     char                    TempBuffer[1024*3+1];               // temporary text buffer
+    bool DragChanged;
+    bool ValueFinished;
+    bool PickerChanged;
+    ImGuiID PickerId;
 
     ImGuiContext()
     {
@@ -559,6 +563,10 @@ struct ImGuiContext
         FramerateSecPerFrameAccum = 0.0f;
         CaptureMouseNextFrame = CaptureKeyboardNextFrame = -1;
         memset(TempBuffer, 0, sizeof(TempBuffer));
+
+        DragChanged = false;
+        ValueFinished = false;
+        PickerChanged = false;
     }
 };
 
@@ -788,7 +796,7 @@ namespace ImGui
     IMGUI_API bool          SliderFloatN(const char* label, float* v, int components, float v_min, float v_max, const char* display_format, float power);
     IMGUI_API bool          SliderIntN(const char* label, int* v, int components, int v_min, int v_max, const char* display_format);
 
-    IMGUI_API bool          DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_speed, float v_min, float v_max, int decimal_precision, float power);
+    IMGUI_API bool          DragBehavior(const ImRect& frame_bb, ImGuiID id, float* v, float v_speed, float v_min, float v_max, int decimal_precision, float power, bool& valueFinished);
     IMGUI_API bool          DragFloatN(const char* label, float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power);
     IMGUI_API bool          DragIntN(const char* label, int* v, int components, float v_speed, int v_min, int v_max, const char* display_format);
 
