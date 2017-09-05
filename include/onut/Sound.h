@@ -56,7 +56,8 @@ namespace onut
         std::atomic<float> m_balance;
         std::atomic<float> m_pitch;
         std::atomic<int> m_offset;
-        OSoundRef m_pSound;
+        OSound* m_pSound = nullptr;
+        std::atomic<bool> m_isFree;
     };
 
     class Sound final : public Resource, public std::enable_shared_from_this<Sound>

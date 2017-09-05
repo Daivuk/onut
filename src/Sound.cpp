@@ -1,6 +1,7 @@
 // Onut
 #include <onut/AudioEngine.h>
 #include <onut/ContentManager.h>
+#include <onut/Log.h>
 #include <onut/Sound.h>
 #include <onut/Strings.h>
 #include <onut/Random.h>
@@ -292,11 +293,26 @@ namespace onut
     {
         if (m_pBuffer)
         {
-            auto pInstance = createInstance();
+            OSoundInstanceRef pInstance;
+            for (auto& pInst : m_instances)
+            {
+                if (pInst->m_isFree)
+                {
+                    pInstance = pInst;
+                    break;
+                }
+            }
+            if (!pInstance)
+            {
+                pInstance = createInstance();
+                m_instances.push_back(pInstance);
+            }
+            pInstance->m_isPaused = true;
+            pInstance->m_offset = 0;
+            pInstance->m_isFree = false;
             pInstance->setVolume(volume);
             pInstance->setBalance(balance);
             pInstance->setPitch(pitch);
-            m_instances.push_back(pInstance);
             pInstance->play();
         }
     }
@@ -313,7 +329,7 @@ namespace onut
     OSoundInstanceRef Sound::createInstance()
     {
         auto pInstance = std::make_shared<SoundInstance>();
-        pInstance->m_pSound = OThis;
+        pInstance->m_pSound = this;
         return pInstance;
     }
     
@@ -409,7 +425,7 @@ namespace onut
 
     bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut)
     {
-        auto pSoundPtr = m_pSound.get();
+        auto pSoundPtr = m_pSound;
         auto pSoundBuffer = pSoundPtr->m_pBuffer;
         int bufferFrameCount = pSoundPtr->m_frameCount;
         int bufferChannelCount = pSoundPtr->m_channelCount;
@@ -460,6 +476,7 @@ namespace onut
                     else
                     {
                         m_offset = bufferFrameCount;
+                        m_isFree = true;
                         return false; // End of buffer, stop playing
                     }
                 }
@@ -502,6 +519,7 @@ namespace onut
                         else
                         {
                             m_offset = bufferFrameCount;
+                            m_isFree = true;
                             return false; // End of buffer, stop playing
                         }
                     }
@@ -554,6 +572,7 @@ namespace onut
                         else
                         {
                             m_offset = bufferFrameCount;
+                            m_isFree = true;
                             return false; // End of buffer, stop playing
                         }
                     }
