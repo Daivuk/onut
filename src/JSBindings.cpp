@@ -6837,6 +6837,7 @@ namespace onut
                     do
                     {
                         auto readret = fread(&c, sizeof(c), 1, pFile);
+                        if (feof(pFile)) break;
                         (void)readret;
                         if (c) val += c;
                     } while (c);
