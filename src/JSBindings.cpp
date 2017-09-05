@@ -8696,6 +8696,7 @@ namespace onut
                 {
                     auto pUIControl = ppUIControl->get();
                     duk_push_uint(ctx, (duk_uint_t)pUIControl->getChildren().size());
+                    return 1;
                 }
                 return 0;
             }, 0);
