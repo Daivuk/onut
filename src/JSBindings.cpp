@@ -94,7 +94,7 @@ namespace onut
         std::unordered_map<std::string, OUIControlRef> UImap;
 
         static void createBindings();
-        static void evalScripts();
+        static bool evalScripts();
 
         duk_context* pContext = nullptr;
 
@@ -544,7 +544,10 @@ namespace onut
             pContext = duk_create_heap_default();
 
             createBindings();
-            evalScripts();
+            if (!evalScripts())
+            {
+                return;
+            }
 
             // Grab global Update and Render pointers if present
             if (duk_get_global_string(pContext, "update"))
@@ -10756,7 +10759,33 @@ namespace onut
             createImguiBindings();
         }
 
-        static void evalScripts()
+        static void logJSStack(duk_context* ctx, std::string log)
+        {
+            // .stack, .fileName, and .lineNumber
+            if (duk_is_error(ctx, -1))
+            {
+                /* Accessing .stack might cause an error to be thrown, so wrap this
+                * access in a duk_safe_call() if it matters.
+                */
+                duk_get_prop_string(ctx, -1, "stack");
+                std::string msg = duk_safe_to_string(ctx, -1);
+                auto lines = onut::splitString(msg, '\n');
+                for (size_t i = 0; i < lines.size() && i < 8; ++i)
+                {
+                    log += lines[i] + "\n";
+                }
+                duk_pop(ctx);
+            }
+            else
+            {
+                /* Non-Error value, coerce safely to string. */
+                log += duk_safe_to_string(ctx, -1);
+            }
+
+            OLog(log);
+        }
+
+        static bool evalScripts()
         {
             // Search for all scripts
             auto& searchPaths = oContentManager->getSearchPaths();
@@ -10779,96 +10808,27 @@ namespace onut
             // Execute them
             for (auto& filename : scriptFilenames)
             {
-                // Check to see if it's a component
-           /*     auto fileData = onut::getFileData(filename);
-                const char* componentPragma = "\"component\"";
-                auto componentPragmaLen = strlen(componentPragma);
-                bool isComponent = false;
-                if (fileData.size() >= componentPragmaLen + 1)
+                if (duk_peval_file(pContext, filename.c_str()) != 0)
                 {
-#if defined(WIN32)
-                    if (!_strnicmp((const char*)fileData.data(), componentPragma, componentPragmaLen))
-#else
-                    if (!strnicmp((const char*)fileData.data(), componentPragma, componentPragmaLen))
-#endif
-                    {
-                        // It's a component!
-                        isComponent = true;
-                        fileData.push_back((uint8_t)'\n');
-                        fileData.push_back((uint8_t)'}');
-                        fileData.push_back((uint8_t)'\0');
-
-                        // Get component name from the filename
-                        auto componentName = onut::getFilenameWithoutExtension(filename);
-
-                        // Erase "component" pragma with spaces
-                        for (decltype(componentPragmaLen) i = 0; i < componentPragmaLen + 1; ++i) fileData[i] = ' ';
-
-                        // Wrap a "function" around the whole thing
-                        std::string header = "var " + componentName + " = function() {\n";
-                        fileData.insert(fileData.begin(), header.size(), ' ');
-                        memcpy(fileData.data(), header.data(), header.size());
-
-                        // Eval
-                        std::string fileString = (const char*)fileData.data();
-                        if (duk_peval_string(pContext, fileString.c_str()) != 0)
-                        {
-                            duk_pop(pContext);
-                            OLog(std::string("eval failed: ") + duk_safe_to_string(pContext, -1));
-                        }
-                        else
-                        {
-                            duk_pop(pContext);
-
-                            // Find callbacks
-                            auto pJSComponentDefinition = OMake<JSComponentDefinition>();
-
-                            //if (duk_get_global_string(pContext, componentName.c_str()))
-                            //{
-                            //    duk_get_prop_string(pContext, -1, "onUpdate");
-                            //    duk_pop(pContext);
-                            //}
-
-                            //if (duk_peval_string(pContext, ("typeof " + componentName + ".onUpdate !== \"undefined\"").c_str()) == 0)
-                            //{
-                            //    auto ret = duk_to_boolean(pContext, 0);
-                            //    ret = true;
-                            //}
-                            if (duk_get_global_string(pContext, componentName.c_str()))
-                            {
-                                duk_push_object(pContext);
-                                if (duk_get_prop_string(pContext, -1, "onUpdate"))
-                                {
-                                    pJSComponentDefinition->has_onUpdate = true;
-                                    duk_pop(pContext);
-                                }
-                                duk_pop(pContext);
-                                duk_pop(pContext);
-                            }
-
-                            jsComponentDefinitions[componentName] = pJSComponentDefinition;
-                        }
-                    }
-                }
-
-                if (!isComponent)
-                {*/
-                    if (duk_peval_file(pContext, filename.c_str()) != 0)
-                    {
-                        OLog(onut::getFilename(filename) + std::string(", eval failed: ") + duk_safe_to_string(pContext, -1));
-                    }
+                    logJSStack(pContext, onut::getFilename(filename) + std::string(", eval failed: "));
                     duk_pop(pContext);
-          //      }
+                    return false;
+                }
+                duk_pop(pContext);
             }
 
             if (!mainJS.empty())
             {
                 if (duk_peval_file(pContext, mainJS.c_str()) != 0)
                 {
-                    OLog(onut::getFilename(mainJS) + std::string(", eval failed: ") + duk_safe_to_string(pContext, -1));
+                    logJSStack(pContext, onut::getFilename(mainJS) + std::string(", eval failed: "));
+                    duk_pop(pContext);
+                    return false;
                 }
                 duk_pop(pContext);
             }
+
+            return true;
         }
 
         void update(float dt)
@@ -10879,26 +10839,7 @@ namespace onut
                 duk_push_number(pContext, (duk_double_t)dt);
                 if (duk_pcall(pContext, 1) != 0)
                 {
-                    auto ctx = pContext;
-                    std::string log = "update, call failed: ";
-
-                    // .stack, .fileName, and .lineNumber
-                    if (duk_is_error(ctx, -1)) 
-                    {
-                        /* Accessing .stack might cause an error to be thrown, so wrap this
-                        * access in a duk_safe_call() if it matters.
-                        */
-                        duk_get_prop_string(ctx, -1, "stack");
-                        log += duk_safe_to_string(ctx, -1);
-                        duk_pop(ctx);
-                    }
-                    else 
-                    {
-                        /* Non-Error value, coerce safely to string. */
-                        log += duk_safe_to_string(ctx, -1);
-                    }
-
-                    OLog(log);
+                    logJSStack(pContext, "update, call failed: ");
                     pUpdatePtr = nullptr;
                 }
                 duk_pop(pContext);
@@ -10915,26 +10856,7 @@ namespace onut
                 duk_push_heapptr(pContext, pRenderPtr);
                 if (duk_pcall(pContext, 0) != 0)
                 {
-                    auto ctx = pContext;
-                    std::string log = "render, call failed: ";
-
-                    // .stack, .fileName, and .lineNumber
-                    if (duk_is_error(ctx, -1))
-                    {
-                        /* Accessing .stack might cause an error to be thrown, so wrap this
-                        * access in a duk_safe_call() if it matters.
-                        */
-                        duk_get_prop_string(ctx, -1, "stack");
-                        log += duk_safe_to_string(ctx, -1);
-                        duk_pop(ctx);
-                    }
-                    else
-                    {
-                        /* Non-Error value, coerce safely to string. */
-                        log += duk_safe_to_string(ctx, -1);
-                    }
-
-                    OLog(log);
+                    logJSStack(pContext, "render, call failed: ");
                     pRenderPtr = nullptr;
                 }
                 duk_pop(pContext);
@@ -10949,26 +10871,7 @@ namespace onut
                 duk_push_heapptr(pContext, pRenderUIPtr);
                 if (duk_pcall(pContext, 0) != 0)
                 {
-                    auto ctx = pContext;
-                    std::string log = "renderUI, call failed: ";
-
-                    // .stack, .fileName, and .lineNumber
-                    if (duk_is_error(ctx, -1))
-                    {
-                        /* Accessing .stack might cause an error to be thrown, so wrap this
-                        * access in a duk_safe_call() if it matters.
-                        */
-                        duk_get_prop_string(ctx, -1, "stack");
-                        log += duk_safe_to_string(ctx, -1);
-                        duk_pop(ctx);
-                    }
-                    else
-                    {
-                        /* Non-Error value, coerce safely to string. */
-                        log += duk_safe_to_string(ctx, -1);
-                    }
-
-                    OLog(log);
+                    logJSStack(pContext, "renderUI, call failed: ");
                     pRenderUIPtr = nullptr;
                 }
                 duk_pop(pContext);
