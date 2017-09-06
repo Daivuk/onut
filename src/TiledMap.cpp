@@ -385,6 +385,20 @@ namespace onut
         return nullptr;
     }
 
+    void TiledMap::dirtyChunks(Layer* pLayer)
+    {
+        auto pTilesLayer = dynamic_cast<TileLayerInternal*>(pLayer);
+        if (!pTilesLayer) return;
+
+        // Resolve the tiles to tilesets
+        auto len = pTilesLayer->chunkPitch * pTilesLayer->chunkRows;
+        auto pChunk = pTilesLayer->chunks;
+        for (int i = 0; i < len; ++i, ++pChunk)
+        {
+            pChunk->isDirty = true;
+        }
+    }
+
     TiledMap::Layer* TiledMap::addLayer(const std::string &name)
     {
         Layer** ppNewLayers = new Layer*[m_layerCount + 1];

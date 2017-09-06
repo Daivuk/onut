@@ -3965,7 +3965,12 @@ namespace onut
                         auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layerName));
                         if (pLayer)
                         {
-                            pLayer->opacity = JS_FLOAT(1, 1);
+                            auto newOpacity = JS_FLOAT(1, 1);
+                            if (newOpacity != pLayer->opacity)
+                            {
+                                pLayer->opacity = newOpacity;
+                                (*ppTiledMap)->dirtyChunks(pLayer);
+                            }
                         }
                     }
                     else if (duk_is_number(ctx, 0))
@@ -3974,7 +3979,12 @@ namespace onut
                         auto pLayer = dynamic_cast<OTiledMap::TileLayer*>((*ppTiledMap)->getLayer(layer));
                         if (pLayer)
                         {
-                            pLayer->opacity = JS_FLOAT(1, 1);
+                            auto newOpacity = JS_FLOAT(1, 1);
+                            if (newOpacity != pLayer->opacity)
+                            {
+                                pLayer->opacity = newOpacity;
+                                (*ppTiledMap)->dirtyChunks(pLayer);
+                            }
                         }
                     }
                 }

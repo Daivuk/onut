@@ -102,6 +102,7 @@ namespace onut
         float* getCollisionTiles() const { return m_pCollisionTileCost; }
         Layer* addLayer(const std::string &name);
         void resetPath();
+        void dirtyChunks(Layer* pLayer);
 
         using Path = std::vector<Point>;
         static const int PATH_ALLOW_DIAGONAL = 0x1;
