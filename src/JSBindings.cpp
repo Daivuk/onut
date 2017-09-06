@@ -2957,8 +2957,8 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 auto tone = getVector3(ctx, 0, Vector3(1.40f, 1.10f, 0.90f));
-                auto saturation = getFloat(ctx, 0, 0);
-                auto sepiaAmount = getFloat(ctx, 0, .75f);
+                auto saturation = getFloat(ctx, 1, 0);
+                auto sepiaAmount = getFloat(ctx, 2, .75f);
                 duk_push_this(ctx);
                 duk_get_prop_string(ctx, -1, "\xff""\xff""data");
                 auto ppTexture = (OTextureRef*)duk_to_pointer(ctx, -1);
