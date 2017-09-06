@@ -10350,6 +10350,12 @@ namespace onut
                 return 0;
             }
             JS_GLOBAL_FUNCTION_END("setUINavigation", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newUI(ctx, oUI);
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getRootUI", 0);
 
             // Some enums
 #define JS_ENUM(__name__, __val__) duk_push_uint(ctx, (duk_uint_t)__val__); duk_put_prop_string(ctx, -2, __name__)
