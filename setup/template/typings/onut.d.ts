@@ -1063,6 +1063,7 @@ declare class UI {
     setOnMiddleMouseDown(callback: Function);
     setOnMiddleMouseUp(callback: Function);
 }
+declare function getRootUI(): UI;
 declare function loadUI(filename: string): UI;
 declare function unloadUI(filename: string);
 declare function findUI(name: string): UI;
@@ -1276,6 +1277,15 @@ declare namespace Random {
 
 // GUI
 declare namespace GUI {
+    // Menu
+    function beginMainMenuBar(): boolean;
+    function endMainMenuBar();
+    function beginMenuBar(): boolean;
+    function endMenuBar();
+    function beginMenu(label: string, enabled: boolean): boolean;
+    function endMenu();
+    function menuItem(label: string, shortcut: string, selected: boolean, enabled: boolean): boolean;
+
     // Window
     function begin(title: string): boolean;
     function end();
@@ -1307,7 +1317,7 @@ declare namespace GUI {
     function image(texture: Texture, size: Vector2, uv0: Vector2, uv1: vector2, tint_col: Color, border_col: Color);
     function imagineButton(texture: Texture, size: Vector2, uv0: Vector2, uv1: Vector2, frame_padding: number, bg_col: Color, tint_col: Color): boolean;
     function checkbox(text: string, checked: boolean): boolean;
-    function radioButton(text: string, v: number, items: string[]): number;
+    function radioButton(text: string, v: number, v_item: number): number;
     function combo(text: string, v: number, items: string[]): number;
     function progressBar(fraction: number, size: Vector2, overlay: string);
 
@@ -1333,10 +1343,20 @@ declare namespace GUI {
     function beginTooltip();
     function endTooltip();
 
+    // Columns
+    function columns(count: number, id: string, border: boolean);
+    function nextColumn();
+    function setColumnWidth(column_index: number, width: number);
+
     // Utilities
     function isItemHovered(): boolean;
     function isItemClicked(): boolean;
     function collapsingHeader(label: string): boolean;
+    function valueChanged(): boolean;
+    function valueFinished(): boolean;
+    function wantCaptureMouse(): boolean;
+    function wantCaptureKeyboard(): boolean;
+    function wantTextInput(): boolean;
 }
 
 // Blend mode
