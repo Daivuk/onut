@@ -2,7 +2,7 @@
 # Oak Nut engine.
 Commonly called "onut". Game engine focused on rapid development. Aimed at Game Jams.
 
-## Quick javascript samples
+## Quick javascript sample
 
 ### Load image and draw a sprite
 ```javascript
@@ -20,7 +20,7 @@ function render() {
 }
 ```
 
-### Animate
+### Update loop
 ```javascript
 function update(dt) {
     spriteAngle += dt * 45; // Will rotate 45 degree per second
@@ -46,7 +46,7 @@ See `onut/samplesJS/` folders for more detailed samples.
 * Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
 * Ottawa Game Jam 2016 - [Spy Satellite Showdown ](https://www.youtube.com/watch?v=NHyGlVm2ICA)
 * Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
-* Ottawa Game Jam 2017 - [Sheep Dog Heroes ]()
+* Ottawa Game Jam 2017 - [Sheep Dog Heroes ](https://twitter.com/Daivuk/status/879082739407966209)
 
 ### See subsection on how to compile and run on each platforms
 
@@ -56,10 +56,11 @@ See `onut/samplesJS/` folders for more detailed samples.
 
 ### Release history
 
-* Onut 1.0 - **Bark** - Feb 6, 2016
-* Onut 2.0 - **Root** (The Cleanup release) - Apr 3, 2016
-* Onut 3.0 - **Leaf** (The JavaScript release) - _TBD_
-* Onut 4.0 - _TBD_ (The Multiplayer release) - _TBD_
+* Onut 1.0 - Feb 6, 2016
+* Onut 2.0 - The Cleanup release - Apr 3, 2016
+* Onut 3.0 - The JavaScript release - Jul 14, 2017
+* Onut 4.0 - The Multiplayer release - _TBD_
+* Onut 5.0 - The 3D release - _TBD_
 
 ## Windows
 Use cmake to compile the engine, JSStandAlone and samples.
