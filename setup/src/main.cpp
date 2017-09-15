@@ -514,3 +514,8 @@ void postRender()
     oSpriteBatch->drawRect(nullptr, ORectFullScreen, BG_COLOR * alphaAnim.get());
     oSpriteBatch->end();
 }
+
+void renderUI()
+{
+
+}
