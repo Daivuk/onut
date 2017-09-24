@@ -1,5 +1,5 @@
 var tiledMap = getTiledMap("sample.tmx");
-var transform = Matrix.createTranslation(new Vector3(0, -150, 0));
+var transform = Matrix.create2DTranslationZoom(new Vector3(512, 384, 0));
 var tileSize = tiledMap.getTileSize();
 var halfTileSize = tileSize * .5;
 

@@ -2671,6 +2671,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "createFromYawPitchRoll");
 
+            // create2DTranslationZoom(cameraPos, zoom)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto camera = getVector2(ctx, 0);
+                auto zoon = JS_FLOAT(1, 1.0f);
+                newMatrix(ctx, Matrix::Create2DTranslationZoom(OScreenf, camera, zoon));
+                return 1;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "create2DTranslationZoom");
+
             // Constants
             newMatrix(ctx, Matrix::Identity);
             duk_put_prop_string(ctx, -2, "IDENTITY");

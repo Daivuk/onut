@@ -524,6 +524,7 @@ declare class Matrix {
     static createLookAt(position: Vector3, target: Vector3, up: Vector3): Matrix;
     static createWorld(position: Vector3, forward: Vector3, up: Vector3): Matrix;
     static createFromYawPitchRoll(yaw: number, pitch: number, roll: number): Matrix;
+    static create2DTranslationZoom(cameraPos: Vector2, zoom: number): Matrix;
 
     static IDENTITY: Matrix;
 

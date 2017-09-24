@@ -703,10 +703,11 @@ namespace onut
         auto pBuffer = uniform.pBuffer;
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
         auto pDeviceContext = pRendererD3D11->getDeviceContext();
+        auto finalValue = value.Transpose();
 
         D3D11_MAPPED_SUBRESOURCE map;
         pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-        memcpy(map.pData, &value._11, 64);
+        memcpy(map.pData, &finalValue._11, 64);
         pDeviceContext->Unmap(pBuffer, 0);
     }
 

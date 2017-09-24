@@ -753,7 +753,7 @@ namespace onut
         pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
         pTile->UVs.w = static_cast<float>((onTextureId / fitW + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
         pTile->rect.x = static_cast<float>((i % pLayer->width) * pTileSet->tileWidth);
-        pTile->rect.y = static_cast<float>((i / pLayer->height) * pTileSet->tileHeight);
+        pTile->rect.y = static_cast<float>((i / pLayer->width) * pTileSet->tileHeight);
         pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
         pTile->rect.w = static_cast<float>(pTileSet->tileHeight);
     }

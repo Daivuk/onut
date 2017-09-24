@@ -7,6 +7,7 @@
 #include <utility>
 
 // Forward Declaration
+struct Vector2;
 struct Vector3;
 struct Vector4;
 
@@ -501,6 +502,7 @@ struct Matrix
             0, 0, scale, 0,
             0, 0, 0, 1);
     }
+    static Matrix Create2DTranslationZoom(const Vector2& resolution, const Vector2& camera, float zoom = 1.0f);
 
     static Matrix CreateRotationX(float radians)
     {

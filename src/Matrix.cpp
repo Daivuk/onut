@@ -1,4 +1,5 @@
 #include <onut/Matrix.h>
+#include <onut/Vector2.h>
 #include <onut/Vector3.h>
 #include <onut/Vector4.h>
 
@@ -167,6 +168,15 @@ Matrix Matrix::CreateScale(const Vector3& scales)
         0, scales.y, 0, 0,
         0, 0, scales.z, 0,
         0, 0, 0, 1);
+}
+
+Matrix Matrix::Create2DTranslationZoom(const Vector2& resolution, const Vector2& camera, float zoom)
+{
+    return Matrix(
+        zoom, 0, 0, 0,
+        0, zoom, 0, 0,
+        0, 0, zoom, 0,
+        -camera.x * zoom + resolution.x * 0.5f, -camera.y * zoom + resolution.y * 0.5f, 0, 1);
 }
 
 Matrix Matrix::CreateFromAxisAngle(const Vector3& axis, float angle)

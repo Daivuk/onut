@@ -1,5 +1,6 @@
 // Oak Nut include
 #include <onut/PrimitiveBatch.h>
+#include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/TiledMap.h>
 
@@ -44,7 +45,7 @@ void drawPath(const OTiledMap::Path& path, const Matrix& transform, const Color&
 
 void render()
 {
-    auto transform = Matrix::CreateTranslation(0, -150, 0);
+    auto transform = Matrix::Create2DTranslationZoom(OScreenf, { 512, 384 });
 
     pTiledMap->setTransform(transform);
     pTiledMap->render();
