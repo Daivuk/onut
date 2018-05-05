@@ -11,5 +11,5 @@ add_executable(ComponentsSample WIN32
 )
 
 target_link_libraries(ComponentsSample 
-    onut
+    libonut
 )

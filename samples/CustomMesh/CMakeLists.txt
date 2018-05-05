@@ -11,5 +11,5 @@ add_executable(CustomMeshSample WIN32
 )
 
 target_link_libraries(CustomMeshSample 
-    onut
+    libonut
 )

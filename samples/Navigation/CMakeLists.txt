@@ -11,5 +11,5 @@ add_executable(NavigationSample WIN32
 )
 
 target_link_libraries(NavigationSample 
-    onut
+    libonut
 )

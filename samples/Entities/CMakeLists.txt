@@ -11,5 +11,5 @@ add_executable(EntitiesSample WIN32
 )
 
 target_link_libraries(EntitiesSample 
-    onut
+    libonut
 )

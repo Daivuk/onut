@@ -11,5 +11,5 @@ add_executable(AnimationsSample WIN32
 )
 
 target_link_libraries(AnimationsSample 
-    onut
+    libonut
 )

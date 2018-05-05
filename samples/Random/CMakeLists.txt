@@ -11,5 +11,5 @@ add_executable(RandomSample WIN32
 )
 
 target_link_libraries(RandomSample 
-    onut
+    libonut
 )

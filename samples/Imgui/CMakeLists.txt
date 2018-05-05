@@ -11,5 +11,5 @@ add_executable(ImguiSample WIN32
 )
 
 target_link_libraries(ImguiSample 
-    onut
+    libonut
 )

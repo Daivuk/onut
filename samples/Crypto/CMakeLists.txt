@@ -11,5 +11,5 @@ add_executable(CryptoSample WIN32
 )
 
 target_link_libraries(CryptoSample 
-    onut
+    libonut
 )

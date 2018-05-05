@@ -11,5 +11,5 @@ add_executable(TexturesSample WIN32
 )
 
 target_link_libraries(TexturesSample 
-    onut
+    libonut
 )

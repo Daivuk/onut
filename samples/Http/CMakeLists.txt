@@ -11,5 +11,5 @@ add_executable(HttpSample WIN32
 )
 
 target_link_libraries(HttpSample 
-    onut
+    libonut
 )

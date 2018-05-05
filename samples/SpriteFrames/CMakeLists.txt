@@ -11,5 +11,5 @@ add_executable(SpriteFramesSample WIN32
 )
 
 target_link_libraries(SpriteFramesSample 
-    onut
+    libonut
 )

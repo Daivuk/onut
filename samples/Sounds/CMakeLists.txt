@@ -11,5 +11,5 @@ add_executable(SoundsSample WIN32
 )
 
 target_link_libraries(SoundsSample 
-    onut
+    libonut
 )

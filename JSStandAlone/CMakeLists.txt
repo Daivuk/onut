@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-project(JSStandAlone)
+project(onut)
     
-add_executable(JSStandAlone WIN32
+add_executable(onut WIN32
     src/main.cpp
 )
 
-target_link_libraries(JSStandAlone 
-    onut
+target_link_libraries(onut 
+    libonut
 )

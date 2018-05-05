@@ -11,5 +11,5 @@ add_executable(UISample WIN32
 )
 
 target_link_libraries(UISample 
-    onut
+    libonut
 )

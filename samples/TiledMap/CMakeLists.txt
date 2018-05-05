@@ -11,5 +11,5 @@ add_executable(TiledMapSample WIN32
 )
 
 target_link_libraries(TiledMapSample 
-    onut
+    libonut
 )

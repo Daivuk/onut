@@ -11,5 +11,5 @@ add_executable(EmptySample WIN32
 )
 
 target_link_libraries(EmptySample 
-    onut
+    libonut
 )

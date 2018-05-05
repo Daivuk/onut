@@ -29,5 +29,5 @@ add_executable(DungeonSample WIN32
 )
 
 target_link_libraries(DungeonSample 
-    onut
+    libonut
 )

@@ -11,5 +11,5 @@ add_executable(EffectsSample WIN32
 )
 
 target_link_libraries(EffectsSample 
-    onut
+    libonut
 )

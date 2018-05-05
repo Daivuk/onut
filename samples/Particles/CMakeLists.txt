@@ -11,5 +11,5 @@ add_executable(ParticlesSample WIN32
 )
 
 target_link_libraries(ParticlesSample 
-    onut
+    libonut
 )

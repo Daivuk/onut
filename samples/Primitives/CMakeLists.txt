@@ -11,5 +11,5 @@ add_executable(PrimitivesSample WIN32
 )
 
 target_link_libraries(PrimitivesSample 
-    onut
+    libonut
 )

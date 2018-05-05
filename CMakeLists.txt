@@ -25,7 +25,7 @@ if(NOT MSVC AND ONUT_USE_HUNTER)
 endif()
 
 # project name
-project(onut)
+project(libonut)
 
 # Some compiler flags
 set(CMAKE_CXX_STANDARD 11)
@@ -295,7 +295,7 @@ list(APPEND src_files
     src/zlib/zutil.c
 )
 
-add_library(onut STATIC ${src_files})
+add_library(libonut STATIC ${src_files})
 
 # Libraries
 if (RPI)
@@ -400,8 +400,8 @@ if (WIN32)
 endif()
 
 # Include libs and includes
-target_include_directories(onut ${includes})
-target_link_libraries(onut ${libs})
+target_include_directories(libonut ${includes})
+target_link_libraries(libonut ${libs})
 
 if (ONUT_BUILD_STANDALONE)
     add_subdirectory(JSStandAlone) # JSStandAlone

@@ -11,5 +11,5 @@ add_executable(SpritesSample WIN32
 )
 
 target_link_libraries(SpritesSample 
-    onut
+    libonut
 )

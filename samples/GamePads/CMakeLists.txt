@@ -11,5 +11,5 @@ add_executable(GamePadsSample WIN32
 )
 
 target_link_libraries(GamePadsSample 
-    onut
+    libonut
 )

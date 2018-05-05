@@ -11,5 +11,5 @@ add_executable(CursorSample WIN32
 )
 
 target_link_libraries(CursorSample 
-    onut
+    libonut
 )

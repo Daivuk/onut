@@ -11,5 +11,5 @@ add_executable(MultiplayerSample WIN32
 )
 
 target_link_libraries(MultiplayerSample 
-    onut
+    libonut
 )

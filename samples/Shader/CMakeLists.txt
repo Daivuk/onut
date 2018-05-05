@@ -11,5 +11,5 @@ add_executable(ShaderSample WIN32
 )
 
 target_link_libraries(ShaderSample 
-    onut
+    libonut
 )
