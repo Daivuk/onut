@@ -40,35 +40,32 @@ See `onut/samplesJS/` folders for more detailed samples.
 
 ## Overview
 
-### List of jam projects using it:
+### List of projects using it:
 
-* Ottawa Game Jam 2015 - [Cannon Fodder Commander ](https://www.youtube.com/watch?v=Jac9r32uIv0)
-* Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
-* Ottawa Game Jam 2016 - [Spy Satellite Showdown ](https://www.youtube.com/watch?v=NHyGlVm2ICA)
-* Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
+* Global Game Jam 2018 - [Messenger Hacker ](https://www.youtube.com/watch?v=cYTdtrwJydo)
+[![Messenger Hacker ](https://img.youtube.com/vi/cYTdtrwJydo/0.jpg)](https://www.youtube.com/watch?v=cYTdtrwJydo)
+
 * Ottawa Game Jam 2017 - [Sheep Dog Heroes ](https://twitter.com/Daivuk/status/879082739407966209)
 
-### See subsection on how to compile and run on each platforms
+* Linux Game Jam 2017 - [Retro Game War ](https://daivuk.itch.io/retro-island-war)
+[![Retro Game War ](https://img.itch.zone/aW1hZ2UvMTI4NDg0LzU5MTE2Ni5qcGc=/794x1000/C4EpSO.jpg)](https://daivuk.itch.io/retro-island-war)
 
-* [Windows](#windows)
-* [OS X](#os-x)
-* [Linux](#linux)
+* Ottawa Game Jam 2016 - [Spy Satellite Showdown ](https://www.youtube.com/watch?v=NHyGlVm2ICA)
+[![Spy Satellite Showdown ](https://img.youtube.com/vi/NHyGlVm2ICA/0.jpg)](https://www.youtube.com/watch?v=NHyGlVm2ICA)
+
+* Global Game Jam 2016 - [Fire Whisperers ](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
+[![Fire Whisperers ](https://img.youtube.com/vi/SWgFVMk5f2Q/0.jpg)](https://www.youtube.com/watch?v=SWgFVMk5f2Q)
+
+* Ottawa Game Jam 2015 - [Cannon Fodder Commander ](https://www.youtube.com/watch?v=Jac9r32uIv0)
+[![Cannon Fodder Commander ](https://img.youtube.com/vi/Jac9r32uIv0/0.jpg)](https://www.youtube.com/watch?v=Jac9r32uIv0)
 
 ### Release history
 
-* Onut 1.0 - Feb 6, 2016
-* Onut 2.0 - The Cleanup release - Apr 3, 2016
-* Onut 3.0 - The JavaScript release - Jul 14, 2017
-* Onut 4.0 - The Multiplayer release - _TBD_
 * Onut 5.0 - The 3D release - _TBD_
-
-## Windows
-Use cmake to compile the engine, JSStandAlone and samples.
-```bash
-cmake -DONUT_BUILD_SAMPLES=ON -DONUT_BUILD_STANDALONE=ON .
-```
-
-Open onut.sln solution into visual studio. Build/Run projects.
+* Onut 4.0 - The Multiplayer release - _TBD_
+* Onut 3.0 - The JavaScript release - Jul 14, 2017
+* Onut 2.0 - The Cleanup release - Apr 3, 2016
+* Onut 1.0 - Feb 6, 2016
 
 ### JavaScript Game
 #### Compile the executable
@@ -108,7 +105,7 @@ The default asset search paths are configured for this structure. _But it easy t
   * .. projects files or your CMakeLists.txt
 
 #### main.cpp
-Make sure to define those 5 functions. Otherwise you will get unresolved errors.
+Make sure to define those 6 functions. Otherwise you will get unresolved errors.
 ```cpp
 void initSettings()
 {
@@ -129,68 +126,12 @@ void render()
 void postRender()
 {
 }
+
+void renderUI()
+{
+}
 ```
 Look at samples to see what can be done here.
-
-## OS X
-Use cmake to compile the engine, JSStandAlone and samples.
-```bash
-cmake -DONUT_BUILD_SAMPLES=ON -DONUT_BUILD_STANDALONE=ON .
-make
-```
-
-To compile only JSStandAlone:
-```bash
-make JSStandAlone
-```
-
-To compile any of the C++ samples only:
-```bash
-make DungeonSample
-```
-
-To build in release, set the `CMAKE_BUILD_TYPE` flag to `Release` like so:
-```bash
-cmake -DCMAKE_BUILD_TYPE=Release .
-```
-
-Some third parties might need to be installed. SDL2 and CURL. Follow online instructions on how to install them using brew. You will also need to install brew if not installed. SDL2 might give you a little bit trouble creating symlink. Google around there are instructions how to get those working.
-
-To run a javascript sample on OSX, simply type this in command line:
-```bash
-./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
-```
-The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If you screw this up, onut will load **all** javascript files on your PC. Hilarity ensue.
-
-## Linux
-Use cmake to compile the engine, JSStandAlone and samples.
-```bash
-cmake -DONUT_BUILD_SAMPLES=ON -DONUT_BUILD_STANDALONE=ON .
-make
-```
-
-To compile only JSStandAlone:
-```bash
-make JSStandAlone
-```
-
-To compile any of the C++ samples only:
-```bash
-make DungeonSample
-```
-
-To build in release, set the `CMAKE_BUILD_TYPE` flag to `Release` like so:
-```bash
-cmake -DCMAKE_BUILD_TYPE=Release .
-```
-
-Some third parties might need to be installed. OpenGL, Glew, SDL2 and CURL. Follow online instructions on how to install them using apt-get.
-
-To run a javascript sample on Linux, simply type this in command line:
-```bash
-./JSStandAlone/JSStandAlone ./samplesJS/Dungeon/
-```
-The JSStandAlone app takes 1 argument, the path to where your assets/scripts are. If you screw this up, onut will load **all** javascript files on your PC. Hilarity ensue.
 
 ### Supported features
 Here is a table of features with support per platform and availability to the javascript bindings. For a full list of features, check the samples/ and samplesJS/.
