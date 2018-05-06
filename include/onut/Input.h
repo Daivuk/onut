@@ -518,6 +518,7 @@ namespace onut
         void setMouseVisible(bool isCursorVisible);
         void setMouseIcon(const std::string& name, const Point& hotSpot);
         void unsetMouseIcon();
+        void setMousePos(const Point& mousePos);
 
         Point mousePos;
         Vector2 mousePosf;

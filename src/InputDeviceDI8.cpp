@@ -190,6 +190,19 @@ namespace onut
         }
     }
 
+    void InputDeviceDI8::setMousePos(const Point& mousePos)
+    {
+        POINT cur;
+        cur.x = mousePos.x;
+        cur.y = mousePos.y;
+        ClientToScreen(oWindow->getHandle(), &cur);
+        SetCursorPos(cur.x, cur.y);
+        oInput->mousePos.x = mousePos.x;
+        oInput->mousePos.y = mousePos.y;
+        oInput->mousePosf.x = static_cast<float>(mousePos.x);
+        oInput->mousePosf.y = static_cast<float>(mousePos.y);
+    }
+
     void InputDeviceDI8::unsetMouseIcon()
     {
         if (m_cursor)

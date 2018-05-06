@@ -144,6 +144,11 @@ namespace onut
     {
         m_pInputDevice->unsetMouseIcon();
     }
+
+    void Input::setMousePos(const Point& mousePos)
+    {
+        m_pInputDevice->setMousePos(mousePos);
+    }
 }
 
 const Vector2& OGetMousePos()
