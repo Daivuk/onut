@@ -37,6 +37,7 @@
 *.sln
 *.db
 *.opendb
+.vs/
 usersettings.cfg
 
 # folders

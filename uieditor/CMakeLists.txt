@@ -21,5 +21,5 @@ if (MSVC)
 endif()
 
 target_link_libraries(uieditor 
-    onut
+    libonut
 )
