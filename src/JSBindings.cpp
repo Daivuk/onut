@@ -10070,6 +10070,23 @@ namespace onut
             }
             JS_INTERFACE_END("Http");
 
+            // FileSystem
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto filename = JS_STRING(0);
+                    auto foundFilename = oContentManager->findResourceFile(filename);
+                    if (foundFilename.empty()) return DUK_RET_URI_ERROR;
+
+                    remove(foundFilename.c_str());
+
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("delete", 1);
+            }
+            JS_INTERFACE_END("FileSystem");
+
             // Crypto
             JS_INTERFACE_BEGIN();
             {

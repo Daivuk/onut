@@ -55,7 +55,7 @@ namespace onut
             auto split = onut::splitString(message, '\n');
             s_onScreenLogMutex.lock();
             for (const auto& line : split) s_logHistory.push_back(line);
-            while (s_logHistory.size() > 10) s_logHistory.erase(s_logHistory.begin());
+            while (s_logHistory.size() > 30) s_logHistory.erase(s_logHistory.begin());
             s_onScreenLogMutex.unlock();
         }
     }
