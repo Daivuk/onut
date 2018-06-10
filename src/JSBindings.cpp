@@ -10852,23 +10852,43 @@ namespace onut
             // Execute them
             for (auto& filename : scriptFilenames)
             {
-                if (duk_peval_file(pContext, filename.c_str()) != 0)
+                FILE* pFile = fopen(filename.c_str(), "rb");
+                fseek(pFile, 0, SEEK_END);
+                auto len = ftell(pFile);
+                fseek(pFile, 0, SEEK_SET);
+                char* str = new char[len + 1];
+                fread(str, 1, len, pFile);
+                str[len] = '\0';
+                fclose(pFile);
+                if (duk_peval_string(pContext, str) != 0)
                 {
                     logJSStack(pContext, onut::getFilename(filename) + std::string(", eval failed: "));
                     duk_pop(pContext);
+                    delete[] str;
                     return false;
                 }
+                delete[] str;
                 duk_pop(pContext);
             }
 
             if (!mainJS.empty())
             {
-                if (duk_peval_file(pContext, mainJS.c_str()) != 0)
+                FILE* pFile = fopen(mainJS.c_str(), "rb");
+                fseek(pFile, 0, SEEK_END);
+                auto len = ftell(pFile);
+                fseek(pFile, 0, SEEK_SET);
+                char* str = new char[len + 1];
+                fread(str, 1, len, pFile);
+                str[len] = '\0';
+                fclose(pFile);
+                if (duk_peval_string(pContext, str) != 0)
                 {
                     logJSStack(pContext, onut::getFilename(mainJS) + std::string(", eval failed: "));
                     duk_pop(pContext);
+                    delete[] str;
                     return false;
                 }
+                delete[] str;
                 duk_pop(pContext);
             }
 
