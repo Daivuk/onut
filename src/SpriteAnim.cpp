@@ -144,7 +144,22 @@ namespace onut
 
     void SpriteAnimInstance::setUpdater(const OUpdaterRef& pUpdater)
     {
-        m_pUpdater = pUpdater;
+        if (isPlaying())
+        {
+            if (pUpdater)
+            {
+                pUpdater->registerTarget(this);
+            }
+            else if (m_pUpdater)
+            {
+                m_pUpdater->unregisterTarget(this);
+                m_pUpdater = nullptr;
+            }
+        }
+        else
+        {
+            m_pUpdater = pUpdater;
+        }
     }
 
     void SpriteAnimInstance::setFps(float framePerSecond)

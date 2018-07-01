@@ -202,6 +202,7 @@ namespace onut
 #define JS_PARTICLE_EMITTER(__index__) getParticleEmitter(ctx, __index__)
 #define JS_VERTEX_BUFFER(__index__) getRefType<OVertexBuffer>(ctx, __index__)
 #define JS_INDEX_BUFFER(__index__) getRefType<OIndexBuffer>(ctx, __index__)
+#define JS_UPDATER(__index__) getRefType<OUpdater>(ctx, __index__)
 
 #define JS_ENTITY(__index__) getRefType<OEntity>(ctx, __index__)
 #define JS_COMPONENT(__index__) getRefType<OComponent>(ctx, __index__)

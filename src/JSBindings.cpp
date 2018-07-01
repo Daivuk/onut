@@ -142,6 +142,8 @@ namespace onut
 
         void* pUIPrototype = nullptr;
 
+        void* pUpdaterPrototype = nullptr;
+
         std::unordered_map<std::string, JSComponentDefinitionRef> jsComponentDefinitions;
 
         void updateViewport()
@@ -2698,6 +2700,16 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
+        static void newUpdater(duk_context* ctx, const OUpdaterRef& pUpdater)
+        {
+            duk_push_object(ctx);
+            auto ppUpdater = new OUpdaterRef(pUpdater);
+            duk_push_pointer(ctx, ppUpdater);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pUpdaterPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+        
         static void newTexture(duk_context* ctx, const OTextureRef& pTexture)
         {
             duk_push_object(ctx);
@@ -2863,6 +2875,62 @@ namespace onut
         using JSComponentTypeRef = std::shared_ptr<JSComponentType>;
         static std::unordered_map<std::string, JSComponentTypeRef> jsComponentTypesByName;
         static std::unordered_map<void*, JSComponentTypeRef> jsComponentTypesByPointer;
+
+        static void createUpdaterBindings()
+        {
+            auto ctx = pContext;
+
+            // Updater() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
+
+                auto ppUpdater = new OUpdaterRef(OUpdater::create());
+
+                duk_push_this(ctx);
+                duk_push_pointer(ctx, ppUpdater);
+                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+
+                return 0;
+            }, 0);
+            duk_push_object(ctx);
+
+            // ~Updater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppUpdater = (OTextureRef*)duk_to_pointer(ctx, -1);
+                if (ppUpdater)
+                {
+                    delete ppUpdater;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // update()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUpdater = (OUpdaterRef*)duk_to_pointer(ctx, -1);
+                if (ppUpdater)
+                {
+                    (*ppUpdater)->update();
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "update");
+
+            // Done with the object
+            pUpdaterPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            duk_put_global_string(ctx, "Updater");
+        }
 
         static void createTextureBindings()
         {
@@ -4812,6 +4880,20 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "setFPS");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto pUpdater = JS_UPDATER(0);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSpriteAnimInstance)
+                {
+                    (*ppSpriteAnimInstance)->setUpdater(pUpdater);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pSpriteAnimInstancePrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -5045,6 +5127,9 @@ namespace onut
                 auto pAnim = new OAnimBool();
                 *pAnim = JS_BOOL(0);
 
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
+
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
@@ -5234,6 +5319,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_BOOL_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pBoolAnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -5270,6 +5365,9 @@ namespace onut
                 {
                     return DUK_RET_SYNTAX_ERROR;
                 }
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -5460,6 +5558,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_NUMBER_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pNumberAnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -5485,6 +5593,9 @@ namespace onut
 
                 auto pAnim = new OAnimVector2();
                 *pAnim = JS_VECTOR2(0);
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -5675,6 +5786,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_VECTOR2_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pVector2AnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -5700,6 +5821,9 @@ namespace onut
 
                 auto pAnim = new OAnimVector3();
                 *pAnim = JS_VECTOR3(0);
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -5890,6 +6014,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_VECTOR3_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pVector3AnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -5915,6 +6049,9 @@ namespace onut
 
                 auto pAnim = new OAnimVector4();
                 *pAnim = JS_VECTOR4(0);
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -6105,6 +6242,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_VECTOR4_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pVector4AnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -6130,6 +6277,9 @@ namespace onut
 
                 auto pAnim = new OAnimRect();
                 *pAnim = JS_RECT(0);
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -6320,6 +6470,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_RECT_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pRectAnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -6345,6 +6505,9 @@ namespace onut
 
                 auto pAnim = new OAnimColor();
                 *pAnim = JS_COLOR(0);
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -6535,6 +6698,16 @@ namespace onut
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
 
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_COLOR_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
+
             // Done with the object
             pColorAnimPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -6560,6 +6733,9 @@ namespace onut
 
                 auto pAnim = new OAnimMatrix();
                 *pAnim = JS_MATRIX(0);
+
+                auto pUpdater = JS_UPDATER(1);
+                if (pUpdater) pAnim->setUpdater(pUpdater);
 
                 duk_push_this(ctx);
                 duk_push_pointer(ctx, pAnim);
@@ -6749,6 +6925,16 @@ namespace onut
                 return 0;
             }, 3);
             duk_put_prop_string(ctx, -2, "playKeyFrames");
+
+            // setUpdater()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                JS_THIS_MATRIX_ANIM;
+                auto pUpdater = JS_UPDATER(0);
+                pAnim->setUpdater(pUpdater);
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setUpdater");
 
             // Done with the object
             pMatrixAnimPrototype = duk_get_heapptr(ctx, -1);
@@ -10311,13 +10497,15 @@ namespace onut
                 if (spriteAnim)
                 {
                     auto pRet = OMake<OSpriteAnimInstance>(spriteAnim);
+                    auto pUpdater = JS_UPDATER(3);
+                    if (pUpdater) pRet->setUpdater(pUpdater);
                     pRet->play(JS_STRING(1), 0.0f, JS_INT(2));
                     newSpriteAnimInstance(ctx, pRet);
                     return 1;
                 }
                 return 0;
             }
-            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 3);
+            JS_GLOBAL_FUNCTION_END("playSpriteAnim", 4);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 newParticleSystem(ctx, OGetParticleSystem(JS_STRING(0)));
@@ -10793,6 +10981,7 @@ namespace onut
             }
             JS_GLOBAL_FUNCTION_END("registerComponent", 1);
             */
+            createUpdaterBindings();
             createMathsBinding();
             createResourceBindings();
             createAnimBindings();
