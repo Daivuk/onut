@@ -32,6 +32,7 @@ namespace onut
         void setMouseVisible(bool isCursorVisible) override;
         void setMouseIcon(const std::string& name, const Point& hotSpot) override;
         void unsetMouseIcon() override;
+        void setMousePos(const Point& mousePos) override;
 
     private:
         void readKeyboard() override;

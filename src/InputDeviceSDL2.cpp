@@ -185,4 +185,9 @@ namespace onut
     {
         SDL_SetCursor(m_pArrowCursor);
     }
+
+    void InputDeviceSDL2::setMousePos(const Point& mousePos)
+    {
+        // ...
+    }
 }
