@@ -130,8 +130,8 @@ namespace onut
         bool mouseM =  (mouseBtnStates & SDL_BUTTON(SDL_BUTTON_MIDDLE)) ? true : false;
         bool mouseR =  (mouseBtnStates & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? true : false;
         if (mouseL || bSwaped) m_mouseState[0] = mouseL ? 1 : 0;
-        if (mouseM || bSwaped) m_mouseState[1] = mouseM ? 1 : 0;
-        if (mouseR || bSwaped) m_mouseState[2] = mouseR ? 1 : 0;
+        if (mouseR || bSwaped) m_mouseState[1] = mouseR ? 1 : 0;
+        if (mouseM || bSwaped) m_mouseState[2] = mouseM ? 1 : 0;
 
         bSwaped = false;
     }

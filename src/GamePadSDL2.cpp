@@ -89,6 +89,8 @@ namespace onut
         {
             static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD) / 32768.0);
 
+            m_prevlTrigger = m_lTrigger;
+            m_prevrTrigger = m_rTrigger;
             m_lTrigger = (float)((double)lt / 32768.0);
             m_rTrigger = (float)((double)rt / 32768.0);
 
@@ -206,11 +208,21 @@ namespace onut
             case DPadRight:
                 return (state[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]) ? true : false;
             case LeftTrigger:
-                return (m_lTrigger > 0);
+            {
+                if (&state == &m_previousState)
+                    return (m_prevlTrigger > 0);
+                else
+                    return (m_lTrigger > 0);
+            }
             case LeftBumper:
                 return (state[SDL_CONTROLLER_BUTTON_LEFTSHOULDER]) ? true : false;
             case RightTrigger:
-                return (m_rTrigger > 0);
+            {
+                if (&state == &m_previousState)
+                    return (m_prevrTrigger > 0);
+                else
+                    return (m_rTrigger > 0);
+            }
             case RightBumper:
                 return (state[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER]) ? true : false;
             case LeftThumbStick:

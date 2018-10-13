@@ -43,6 +43,8 @@ namespace onut
         SDL_GameController* m_pSDLGamePad = nullptr;
         float m_lTrigger = 0;
         float m_rTrigger = 0;
+        float m_prevlTrigger = 0;
+        float m_prevrTrigger = 0;
 
         bool bSwaped = true;
     };
