@@ -28,6 +28,7 @@ namespace onut
             OTextureRef pTexture;
             Vector4 UVs = {0, 0, 1, 1};
             Vector2 origin = {.5f, .5f};
+            float duration = 0.0f;
         };
         using Frames = std::vector<Frame>;
 
@@ -66,7 +67,7 @@ namespace onut
         SpriteAnimInstance(const OSpriteAnimRef& pSpriteAnim);
         SpriteAnimInstance(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
 
-        void play(const std::string& animName, float framePerSecond = 0.f, int offset = 0);
+        void play(const std::string& animName, float framePerSecond = 0.f, float offset = 0);
         void playBackward(const std::string& animName, float framePerSecond = 0.f);
         void queueAnim(const std::string& animName);
         void stop(bool reset = false);
@@ -82,15 +83,17 @@ namespace onut
 
         void update() override;
         void setUpdater(const OUpdaterRef& pUpdater);
-        void setFps(float framePerSecond);
+        void setSpeed(float framePerSecond);
 
     private:
         using AnimQueue = std::vector<std::string>;
 
         void playNextQueuedAnim();
+        const SpriteAnim::Frame& getFrame() const;
 
         OSpriteAnimRef m_pSpriteAnim;
         SpriteAnim::Anim* m_pCurrentAnim = nullptr;
+        int m_frameId = 0;
         float m_frame = 0.f;
         float m_speed = 1.f;
         bool m_bIsPlaying = false;
@@ -100,6 +103,6 @@ namespace onut
 };
 
 OSpriteAnimRef OGetSpriteAnim(const std::string& name);
-OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName, int offset = 0);
+OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName, float offset = 0.0f);
 
 #endif

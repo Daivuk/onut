@@ -1,14 +1,17 @@
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Files.h>
 #include <onut/SpriteAnim.h>
 #include <onut/Texture.h>
 #include <onut/Timing.h>
 
 // Third party
+#include <json/json.h>
 #include <tinyxml2/tinyxml2.h>
 
 // STL
 #include <cassert>
+#include <fstream>
 
 namespace onut
 {
@@ -25,75 +28,168 @@ namespace onut
             pRet->m_filename = filename;
         }
 
-        tinyxml2::XMLDocument doc;
-        doc.LoadFile(pRet->m_filename.c_str());
-        auto pXMLSheet = doc.FirstChildElement("sheet");
-        assert(pXMLSheet);
-        std::string textureName = pXMLSheet->Attribute("texture");
-        auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
-        assert(pTexture);
-        int spriteW = pTexture->getSize().x;
-        int spriteH = pTexture->getSize().y;
-        int originX = 0;
-        int originY = 0;
-        pXMLSheet->QueryAttribute("spriteWidth", &spriteW);
-        pXMLSheet->QueryAttribute("spriteHeight", &spriteH);
-        pXMLSheet->QueryAttribute("originX", &originX);
-        pXMLSheet->QueryAttribute("originY", &originY);
-        Vector2 origin((float)originX / (float)spriteW, (float)originY / (float)spriteH);
-        for (auto pXMLAnim = pXMLSheet->FirstChildElement("anim"); pXMLAnim; pXMLAnim = pXMLAnim->NextSiblingElement("anim"))
+        if (onut::getExtension(pRet->m_filename) == "JSON")
         {
-            std::string name = pXMLAnim->Attribute("name");
-            auto& anim = pRet->m_anims[name];
-            anim.name = name;
-            if (pXMLAnim->Attribute("next"))
+            std::ifstream fic(pRet->m_filename);
+            Json::Value json;
+            fic >> json;
+            fic.close();
+            std::string textureName = onut::getFilename(json["meta"]["image"].asString());
+            auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
+            assert(pTexture);
+            int spriteW = json["meta"]["size"]["w"].asInt();
+            int spriteH = json["meta"]["size"]["h"].asInt();
+            int originX = 0;
+            int originY = 0;
+            const auto& tags = json["meta"]["frameTags"];
+            const auto& layers = json["meta"]["layers"];
+            const auto& frames = json["frames"];
+            std::map<int, std::vector<std::string>> frameDatas;
+            for (const auto& layer : layers)
             {
-                anim.next = pXMLAnim->Attribute("next");
-            }
-            int fps = 30;
-            pXMLAnim->QueryAttribute("fps", &fps);
-            pXMLAnim->QueryAttribute("loop", &anim.loop);
-            Frame frame;
-            frame.pTexture = pTexture;
-            frame.origin = origin;
-            for (auto pXMLFrame = pXMLAnim->FirstChildElement("frame"); pXMLFrame; pXMLFrame = pXMLFrame->NextSiblingElement("frame"))
-            {
-                int repeat = 1;
-                int id = 0;
-                bool isFlipH = false;
-                bool isFlipV = false;
-                int offsetX = 0;
-                int offsetY = 0;
-                pXMLFrame->QueryAttribute("id", &id);
-                pXMLFrame->QueryAttribute("repeat", &repeat);
-                pXMLFrame->QueryAttribute("flipH", &isFlipH);
-                pXMLFrame->QueryAttribute("flipV", &isFlipV);
-                pXMLFrame->QueryAttribute("offsetX", &offsetX);
-                pXMLFrame->QueryAttribute("offsetY", &offsetY);
-                int col = id % (pTexture->getSize().x / spriteW);
-                int row = id / (pTexture->getSize().x / spriteW);
-                col *= spriteW;
-                row *= spriteH;
-                frame.UVs = Vector4(
-                    (float)col / (float)pTexture->getSize().x,
-                    (float)row / (float)pTexture->getSize().y,
-                    (float)(col + spriteW) / (float)pTexture->getSize().x,
-                    (float)(row + spriteH) / (float)pTexture->getSize().y);
-                frame.origin.x -= (float)offsetX / (float)spriteW;
-                frame.origin.y -= (float)offsetY / (float)spriteH;
-                if (isFlipH) std::swap(frame.UVs.x, frame.UVs.z);
-                if (isFlipV) std::swap(frame.UVs.y, frame.UVs.w);
-                for (auto i = 0; i < repeat; ++i)
+                const auto& cels = layer["cels"];
+                for (const auto& cel : cels)
                 {
+                    frameDatas[cel["frame"].asInt()].push_back(cel["data"].asString());
+                }
+            }
+            for (const auto& tag : tags)
+            {
+                std::string name = tag["name"].asString();
+                auto& anim = pRet->m_anims[name];
+                anim.name = name;
+                anim.duration = 0.0f;
+                int from = tag["from"].asInt();
+                int to = tag["to"].asInt();
+                Frame frame;
+                frame.pTexture = pTexture;
+                for (int i = from; i <= to; ++i)
+                {
+                    const auto& jsonFrame = frames[i];
+                    int offsetX = 0;
+                    int offsetY = 0;
+                    spriteW = jsonFrame["sourceSize"]["w"].asInt();
+                    spriteH = jsonFrame["sourceSize"]["h"].asInt();
+                    const auto& frameData = frameDatas[i];
+                    for (const auto& data : frameData)
+                    {
+                        if (data.find("loop") == 0)
+                        {
+                            anim.loop = true;
+                        }
+                        else if (data.find("next") == 0 && data.size() > 5)
+                        {
+                            anim.next = data.substr(5);
+                        }
+                        else if (data.find("origin") == 0 && data.size() > 9)
+                        {
+                            auto pos = data.find(",");
+                            if (pos != std::string::npos && pos + 1 < data.size())
+                            {
+                                try
+                                {
+                                    originX = std::stoi(data.substr(7, pos - 7));
+                                }
+                                catch (...) {}
+                                try
+                                {
+                                    originY = std::stoi(data.substr(pos + 1));
+                                }
+                                catch (...) {}
+                            }
+                        }
+                    }
+                    frame.origin = Vector2((float)originX / (float)spriteW, (float)originY / (float)spriteH);
+                    const auto& jsonRect = jsonFrame["frame"];
+                    int jsonX = jsonRect["x"].asInt();
+                    int jsonY = jsonRect["y"].asInt();
+                    int jsonW = jsonRect["w"].asInt();
+                    int jsonH = jsonRect["h"].asInt();
+                    frame.UVs = Vector4(
+                        (float)jsonX / (float)pTexture->getSize().x,
+                        (float)jsonY / (float)pTexture->getSize().y,
+                        (float)(jsonX + jsonW) / (float)pTexture->getSize().x,
+                        (float)(jsonY + jsonH) / (float)pTexture->getSize().y);
+                    frame.origin.x -= (float)offsetX / (float)spriteW;
+                    frame.origin.y -= (float)offsetY / (float)spriteH;
+                    frame.duration = (float)jsonFrame["duration"].asInt() / 1000.0f;
+                    anim.duration += frame.duration;
                     anim.frames.push_back(frame);
                 }
             }
-            anim.frames.push_back(frame); // Repeat last frame
-            anim.duration = (float)anim.frames.size() / (float)fps;
         }
+        else
+        {
+            tinyxml2::XMLDocument doc;
+            doc.LoadFile(pRet->m_filename.c_str());
+            auto pXMLSheet = doc.FirstChildElement("sheet");
+            assert(pXMLSheet);
+            std::string textureName = pXMLSheet->Attribute("texture");
+            auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
+            assert(pTexture);
+            int spriteW = pTexture->getSize().x;
+            int spriteH = pTexture->getSize().y;
+            int originX = 0;
+            int originY = 0;
+            pXMLSheet->QueryAttribute("spriteWidth", &spriteW);
+            pXMLSheet->QueryAttribute("spriteHeight", &spriteH);
+            pXMLSheet->QueryAttribute("originX", &originX);
+            pXMLSheet->QueryAttribute("originY", &originY);
+            Vector2 origin((float)originX / (float)spriteW, (float)originY / (float)spriteH);
+            for (auto pXMLAnim = pXMLSheet->FirstChildElement("anim"); pXMLAnim; pXMLAnim = pXMLAnim->NextSiblingElement("anim"))
+            {
+                std::string name = pXMLAnim->Attribute("name");
+                auto& anim = pRet->m_anims[name];
+                anim.name = name;
+                anim.duration = 0.0f;
+                if (pXMLAnim->Attribute("next"))
+                {
+                    anim.next = pXMLAnim->Attribute("next");
+                }
+                int fps = 30;
+                pXMLAnim->QueryAttribute("fps", &fps);
+                pXMLAnim->QueryAttribute("loop", &anim.loop);
+                Frame frame;
+                frame.pTexture = pTexture;
+                frame.origin = origin;
+                for (auto pXMLFrame = pXMLAnim->FirstChildElement("frame"); pXMLFrame; pXMLFrame = pXMLFrame->NextSiblingElement("frame"))
+                {
+                    int repeat = 1;
+                    int id = 0;
+                    bool isFlipH = false;
+                    bool isFlipV = false;
+                    int offsetX = 0;
+                    int offsetY = 0;
+                    pXMLFrame->QueryAttribute("id", &id);
+                    pXMLFrame->QueryAttribute("repeat", &repeat);
+                    pXMLFrame->QueryAttribute("flipH", &isFlipH);
+                    pXMLFrame->QueryAttribute("flipV", &isFlipV);
+                    pXMLFrame->QueryAttribute("offsetX", &offsetX);
+                    pXMLFrame->QueryAttribute("offsetY", &offsetY);
+                    int col = id % (pTexture->getSize().x / spriteW);
+                    int row = id / (pTexture->getSize().x / spriteW);
+                    col *= spriteW;
+                    row *= spriteH;
+                    frame.UVs = Vector4(
+                        (float)col / (float)pTexture->getSize().x,
+                        (float)row / (float)pTexture->getSize().y,
+                        (float)(col + spriteW) / (float)pTexture->getSize().x,
+                        (float)(row + spriteH) / (float)pTexture->getSize().y);
+                    frame.origin.x -= (float)offsetX / (float)spriteW;
+                    frame.origin.y -= (float)offsetY / (float)spriteH;
+                    if (isFlipH) std::swap(frame.UVs.x, frame.UVs.z);
+                    if (isFlipV) std::swap(frame.UVs.y, frame.UVs.w);
+                    frame.duration = (1.0f / (float)fps) * (float)repeat;
+                    anim.duration += frame.duration;
+                    anim.frames.push_back(frame);
+                }
+                //anim.frames.push_back(frame); // Repeat last frame
+                //anim.duration = (float)anim.frames.size() / (float)fps;
+            }
 
-        pRet->m_size.x = spriteW;
-        pRet->m_size.y = spriteH;
+            pRet->m_size.x = spriteW;
+            pRet->m_size.y = spriteH;
+        }
 
         return pRet;
     }
@@ -162,12 +258,12 @@ namespace onut
         }
     }
 
-    void SpriteAnimInstance::setFps(float framePerSecond)
+    void SpriteAnimInstance::setSpeed(float framePerSecond)
     {
         m_speed = framePerSecond;
     }
 
-    void SpriteAnimInstance::play(const std::string& animName, float framePerSecond, int offset)
+    void SpriteAnimInstance::play(const std::string& animName, float framePerSecond, float offset)
     {
         stop();
         if (m_pSpriteAnim)
@@ -179,10 +275,16 @@ namespace onut
                 {
                     m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
                 }
-                m_frame = (float)(offset % m_pCurrentAnim->frames.size());
+                m_frame = offset;
+                m_frameId = 0;
+                while (m_frame > getFrame().duration)
+                {
+                    m_frame -= getFrame().duration;
+                    m_frameId = std::min<int>(m_frameId + 1, (int)m_pCurrentAnim->frames.size() - 1);
+                }
                 if (framePerSecond == 0)
                 {
-                    m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
+                    m_speed = 1.0f;
                 }
                 else
                 {
@@ -202,10 +304,11 @@ namespace onut
             m_pCurrentAnim = m_pSpriteAnim->getAnim(animName);
             if (m_pCurrentAnim)
             {
-                m_frame = static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
+                m_frameId = (int)m_pCurrentAnim->frames.size() - 1;
+                m_frame = getFrame().duration;
                 if (framePerSecond == 0)
                 {
-                    m_speed = -m_frame / m_pCurrentAnim->duration;
+                    m_speed = -1.0f;
                 }
                 else
                 {
@@ -238,7 +341,8 @@ namespace onut
                         m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
                     }
                     m_frame = 0.f;
-                    m_speed = (static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f) / m_pCurrentAnim->duration;
+                    m_frameId = 0;
+                    m_speed = 1.0f;
 
                     m_pUpdater->registerTarget(this);
                 }
@@ -250,7 +354,11 @@ namespace onut
     {
         m_animQueue.clear();
         m_pUpdater->unregisterTarget(this);
-        if (reset) m_frame = 0.f;
+        if (reset)
+        {
+            m_frame = 0.f;
+            m_frameId = 0;
+        }
         m_pCurrentAnim = nullptr;
     }
 
@@ -263,7 +371,7 @@ namespace onut
     {
         if (m_pCurrentAnim)
         {
-            return (int)m_frame;
+            return m_frameId;
         }
         return 0;
     }
@@ -300,36 +408,63 @@ namespace onut
         return ret;
     }
 
+    const SpriteAnim::Frame& SpriteAnimInstance::getFrame() const
+    {
+        auto frameId = getFrameId();
+        if (frameId >= (int)m_pCurrentAnim->frames.size()) return m_pCurrentAnim->frames.back();
+        else if (frameId < 0) return m_pCurrentAnim->frames.front();
+        else return m_pCurrentAnim->frames[getFrameId()];
+    }
+
     void SpriteAnimInstance::update()
     {
+        if (!m_pCurrentAnim) return;
         m_frame += ODT * m_speed;
         if (m_speed > 0.f)
         {
-            if (m_frame >= static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f)
+            const auto& frame = getFrame();
+            if (m_frame >= frame.duration)
+            {
+                m_frame -= frame.duration;
+                ++m_frameId;
+                if (m_frameId == (int)m_pCurrentAnim->frames.size())
+                {
+                    if (m_pCurrentAnim->loop)
+                    {
+                        m_frameId = 0;
+                    }
+                    else
+                    {
+                        m_frame = frame.duration;
+                        m_frameId = (int)m_pCurrentAnim->frames.size() - 1;
+                        m_pUpdater->unregisterTarget(this);
+                        playNextQueuedAnim();
+                    }
+                }
+            }
+        }
+        else if (m_frame < 0.f)
+        {
+            --m_frameId;
+            if (m_frameId < 0)
             {
                 if (m_pCurrentAnim->loop)
                 {
-                    m_frame -= static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
+                    m_frameId = (int)m_pCurrentAnim->frames.size() - 1;
+                    const auto& frame = getFrame();
+                    m_frame += frame.duration;
                 }
                 else
                 {
-                    m_frame = static_cast<float>(m_pCurrentAnim->frames.size()) - 1.f;
+                    m_frame = 0.f;
+                    m_frameId = 0;
                     m_pUpdater->unregisterTarget(this);
                     playNextQueuedAnim();
                 }
             }
-        }
-        else if (m_frame <= 0.f)
-        {
-            if (m_pCurrentAnim->loop)
-            {
-                m_frame += static_cast<float>(m_pCurrentAnim->frames.size());
-            }
             else
             {
-                m_frame = 0.f;
-                m_pUpdater->unregisterTarget(this);
-                playNextQueuedAnim();
+                m_frame += getFrame().duration;
             }
         }
     }
@@ -340,7 +475,7 @@ OSpriteAnimRef OGetSpriteAnim(const std::string& name)
     return oContentManager->getResourceAs<OSpriteAnim>(name);
 }
 
-OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName, int offset)
+OSpriteAnimInstanceRef OPlaySpriteAnim(const std::string& filename, const std::string& animName, float offset)
 {
     auto pSpriteAnim = OGetSpriteAnim(filename);
 

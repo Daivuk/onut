@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="92">
- <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16">
+<map version="1.0" tiledversion="1.1.6" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" infinite="0" nextobjectid="92">
+ <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16" tilecount="361" columns="19">
   <image source="../textures/sheet.png" width="304" height="304"/>
  </tileset>
- <tileset firstgid="362" name="info" tilewidth="16" tileheight="16">
+ <tileset firstgid="362" name="info" tilewidth="16" tileheight="16" tilecount="16" columns="4">
   <image source="../textures/info.png" width="64" height="64"/>
  </tileset>
  <layer name="tiles" width="64" height="64">

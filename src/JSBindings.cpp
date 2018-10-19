@@ -4865,7 +4865,7 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "getSize");
 
-            // setFPS
+            // setSpeed
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 auto fps = JS_FLOAT(0, 0.f);
@@ -4874,11 +4874,11 @@ namespace onut
                 auto ppSpriteAnimInstance = (OSpriteAnimInstanceRef*)duk_to_pointer(ctx, -1);
                 if (ppSpriteAnimInstance)
                 {
-                    (*ppSpriteAnimInstance)->setFps(fps);
+                    (*ppSpriteAnimInstance)->setSpeed(fps);
                 }
                 return 0;
             }, 1);
-            duk_put_prop_string(ctx, -2, "setFPS");
+            duk_put_prop_string(ctx, -2, "setSpeed");
 
             // setUpdater()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -10487,7 +10487,7 @@ namespace onut
                     auto pRet = OMake<OSpriteAnimInstance>(spriteAnim);
                     auto pUpdater = JS_UPDATER(3);
                     if (pUpdater) pRet->setUpdater(pUpdater);
-                    pRet->play(JS_STRING(1), 0.0f, JS_INT(2));
+                    pRet->play(JS_STRING(1), 0.0f, JS_FLOAT(2));
                     newSpriteAnimInstance(ctx, pRet);
                     return 1;
                 }

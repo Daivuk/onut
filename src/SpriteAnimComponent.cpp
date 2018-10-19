@@ -104,7 +104,7 @@ namespace onut
     {
         if (m_pSpriteAnimInstance)
         {
-            m_pSpriteAnimInstance->setFps(fps);
+            m_pSpriteAnimInstance->setSpeed(fps);
         }
     }
 

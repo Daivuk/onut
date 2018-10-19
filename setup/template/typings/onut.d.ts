@@ -939,11 +939,11 @@ declare function getSpriteAnim(filename: string): SpriteAnim;
 // SpriteAnimInstance
 declare class SpriteAnimInstance {
     play(animName: string);
-    play(animName: string, fps: number);
+    play(animName: string, speed: number);
     forcePlay(animName: string);
-    forcePlay(animName: string, fps: number);
+    forcePlay(animName: string, speed: number);
     playBackward(animName: String, force: boolean);
-    playBackward(animName: String, fps: number, force: boolean);
+    playBackward(animName: String, speed: number, force: boolean);
     queue(animName: String);
     stop();
     stopAndReset();
@@ -951,7 +951,7 @@ declare class SpriteAnimInstance {
     getFrameId(): number;
     getSpriteAnim(): SpriteAnim;
     getCurrentAnim(): string;
-    setFPS(fps: number);
+    setSpeed(speed: number);
     getTexture(): Texture;
     getUVs(): Vector4;
     getOrigin(): Vector2;

@@ -31,7 +31,7 @@ void update()
     }
     if (OInputJustPressed(OKey3))
     {
-        spriteAnim.play("run", 20);
+        spriteAnim.play("run", 2);
     }
     if (OInputJustPressed(OKey4))
     {

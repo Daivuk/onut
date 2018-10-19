@@ -16,7 +16,7 @@ function bomb_init(entity)
     // Last second flashes faster, then explodes
     setTimeout(function()
     {
-        entity.spriteAnim.setFPS(8);
+        entity.spriteAnim.setSpeed(2);
     }, 2000);
 
     setTimeout(function()
