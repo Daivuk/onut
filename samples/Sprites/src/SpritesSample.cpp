@@ -106,17 +106,17 @@ void render()
     oSpriteBatch->drawBeam(pChainTexture, Vector2(448, 520), Vector2(648, 480), 32.0f, Color::White, g_spriteAngle * .1f);
 
     // Blend modes
-    oSpriteBatch->changeBlendMode(OBlendAdd);
+    oRenderer->renderStates.blendMode = OBlendAdd;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(400, 50), Color::White, 0, .25f);
-    oSpriteBatch->changeBlendMode(OBlendAlpha);
+    oRenderer->renderStates.blendMode = OBlendAlpha;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(450, 50), Color::White, 0, .25f);
-    oSpriteBatch->changeBlendMode(OBlendForceWrite);
+    oRenderer->renderStates.blendMode = OBlendForceWrite;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(500, 50), Color::White, 0, .25f);
-    oSpriteBatch->changeBlendMode(OBlendMultiply);
+    oRenderer->renderStates.blendMode = OBlendMultiply;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(550, 50), Color::White, 0, .25f);
-    oSpriteBatch->changeBlendMode(OBlendOpaque);
+    oRenderer->renderStates.blendMode = OBlendOpaque;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(600, 50), Color::White, 0, .25f);
-    oSpriteBatch->changeBlendMode(OBlendPreMultiplied);
+    oRenderer->renderStates.blendMode = OBlendPreMultiplied;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(650, 50), Color::White, 0, .25f);
 
     // Origin
@@ -128,9 +128,9 @@ void render()
     oSpriteBatch->drawCross(Vector2(600, 200), 10.f, Color(1, 1, 0, 1));
 
     // Filtering
-    oSpriteBatch->changeFiltering(OFilterNearest);
+    oRenderer->renderStates.sampleFiltering = OFilterNearest;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(725, 100), Color::White, 0.f, 1.5f);
-    oSpriteBatch->changeFiltering(OFilterLinear);
+    oRenderer->renderStates.sampleFiltering = OFilterLinear;
     oSpriteBatch->drawSprite(pNutTexture, Vector2(725, 300), Color::White, 0.f, 1.5f);
 
     // End and flush the batch

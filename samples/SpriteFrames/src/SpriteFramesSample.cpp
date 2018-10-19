@@ -46,9 +46,10 @@ void render()
 
     // Clear
     oRenderer->clear(OColorHex(1d232d));
+    oRenderer->renderStates.sampleFiltering = OFilterNearest;
+    oRenderer->renderStates.blendMode = OBlendPreMultiplied;
 
     // Draw sprites
-    oSpriteBatch->changeFiltering(OFilterNearest);
     oSpriteBatch->begin(Matrix::CreateScale(2.f));
     oSpriteBatch->drawSprite(pBaltPng, Vector2(4, 8), Color::White, Vector2::Zero);
 

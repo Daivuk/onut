@@ -18,6 +18,8 @@ OForwardDeclare(VertexBuffer);
 
 namespace onut
 {
+    class RenderStates;
+
     class SpriteBatch
     {
     public:
@@ -33,8 +35,8 @@ namespace onut
         SpriteBatch();
         virtual ~SpriteBatch();
 
-        void begin(const Matrix& transform = Matrix::Identity, BlendMode blendMode = BlendMode::PreMultiplied);
-        void begin(BlendMode blendMode);
+        void begin();
+        void begin(const Matrix& transform);
         void drawAbsoluteRect(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
         void drawRect(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
         void drawInclinedRect(const OTextureRef& pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);
@@ -55,9 +57,6 @@ namespace onut
         void drawCross(const Vector2& position, float size, const Color& color = Color::White, float thickness = 2.f);
         void drawOutterOutlineRect(const Rect& rect, float thickness, const Color& color = Color::White);
         void end();
-
-        void changeBlendMode(BlendMode blendMode);
-        void changeFiltering(sample::Filtering filtering);
 
         const Matrix& getTransform() const { return m_currentTransform; }
 
@@ -81,9 +80,8 @@ namespace onut
 
         OTextureRef m_pTexture = nullptr;
         unsigned int m_spriteCount = 0;
-        BlendMode m_curBlendMode = BlendMode::PreMultiplied;
-        sample::Filtering m_curFiltering = sample::Filtering::Linear;
         Matrix m_currentTransform;
+        RenderStates *m_pRenderStates = nullptr;
     };
 }
 

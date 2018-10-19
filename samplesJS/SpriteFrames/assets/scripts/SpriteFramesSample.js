@@ -29,7 +29,7 @@ function render()
 
     // Draw sprites
     SpriteBatch.begin(Matrix.createScale(2));
-    SpriteBatch.setFilter(FilterMode.NEAREST);
+    Renderer.setFilterMode(FilterMode.NEAREST);
     SpriteBatch.drawSprite(baltPng, new Vector2(4, 8), Color.WHITE, 0, 1, Vector2.TOP_LEFT);
 
     // Sprite the animation

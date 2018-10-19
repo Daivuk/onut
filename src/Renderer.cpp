@@ -159,6 +159,7 @@ namespace onut
         renderStates.vertexShader = m_p2DVertexShader;
         renderStates.pixelShader = m_p2DPixelShader;
         renderStates.depthEnabled = false;
+        renderStates.blendMode = OBlendPreMultiplied;
     }
 
     Renderer::CameraMatrices Renderer::build2DCamera(const Vector2& position, float zoom)

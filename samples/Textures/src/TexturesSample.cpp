@@ -100,7 +100,7 @@ void render()
     // Draw out resulted textures
     auto pFont = OGetFont("font.fnt");
     oSpriteBatch->begin(Matrix::CreateTranslation(80, 212, 0));
-    oSpriteBatch->changeFiltering(OFilterNearest);
+    oRenderer->renderStates.sampleFiltering = OFilterNearest;
 
     oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
     oSpriteBatch->drawRect(pTextureFromFileData, {128, 0, 128, 128});

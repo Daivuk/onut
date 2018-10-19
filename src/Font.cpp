@@ -13,6 +13,38 @@
 
 namespace onut
 {
+    uint32_t getNextUTF8(const char* str, unsigned int& i, unsigned int len)
+    {
+        if (i >= len) return 0;
+        uint32_t charId = (uint32_t)(unsigned char)str[i];
+        if (charId & 0x80)
+        {
+            if ((charId & 0xE0) == 0xC0)
+            {
+                if (i + 1 >= len) return 0;
+                ++i;
+                charId = ((charId & 0x1F) << 6) | ((uint32_t)(unsigned char)str[i] & 0x3F);
+            }
+            else if ((charId & 0xF0) == 0xE0)
+            {
+                if (i + 2 >= len) return 0;
+                charId = ((charId & 0xF) << 12) | (((uint32_t)(unsigned char)str[i + 1] & 0x3F) << 6) |
+                    ((uint32_t)(unsigned char)str[i + 2] & 0x3F);
+                i += 2;
+            }
+            else
+            {
+                if (i + 3 >= len) return 0;
+                charId = ((charId & 0x7) << 18) | (((uint32_t)(unsigned char)str[i + 1] & 0x3F) << 12) |
+                    (((uint32_t)(unsigned char)str[i + 2] & 0x3F) << 6) |
+                    ((uint32_t)(unsigned char)str[i + 3] & 0x3F);
+                i += 3;
+            }
+        }
+        ++i;
+        return charId;
+    }
+
     int Font::parseInt(const std::string& arg, const std::vector<std::string>& lineSplit)
     {
         std::stringstream ss;
@@ -94,7 +126,7 @@ namespace onut
                 pNewChar->page = parseInt("page", split);
                 pNewChar->chnl = parseInt("chnl", split);
 
-                pFont->m_chars[pNewChar->id] = pNewChar;
+                pFont->m_chars[(uint32_t)pNewChar->id] = pNewChar;
             }
 
             getline(in, line);
@@ -126,10 +158,10 @@ namespace onut
         result.y += (float)m_common.lineHeight;
         float curX = 0;
         unsigned int len = in_text.length();
-        char charId;
-        for (unsigned int i = 0; i < len; ++i)
+        uint32_t charId;
+        for (unsigned int i = 0; i < len;)
         {
-            charId = in_text[i];
+            charId = getNextUTF8(in_text.c_str(), i, len);
             if (charId == '\n')
             {
                 result.y += (float)m_common.lineHeight;
@@ -137,18 +169,20 @@ namespace onut
                 curX = 0;
                 continue;
             }
-            if (charId == '^' && i + 3 < len)
+            if (charId == '^')
             {
-                i += 3;
+                getNextUTF8(in_text.c_str(), i, len);
+                getNextUTF8(in_text.c_str(), i, len);
+                getNextUTF8(in_text.c_str(), i, len);
                 continue;
             }
-            auto iCharId = static_cast<int>(static_cast<unsigned char>(charId));
-            if (!m_chars.count(iCharId))
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
             {
                 continue;
             }
-            auto pDatChar = m_chars[iCharId];
-            if (i == len - 1)
+            auto pDatChar = it->second;
+            if (i == len)
             {
                 curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
             }
@@ -172,17 +206,19 @@ namespace onut
 
         float curX = 0;
         unsigned int len = in_text.length();
-        int charId;
-        for (; pos < len; ++pos)
+        uint32_t charId;
+        for (; pos < len;)
         {
-            charId = in_text[pos];
+            charId = getNextUTF8(in_text.c_str(), pos, len);
             if (charId == '\n')
             {
                 return pos;
             }
-            if (charId == '^' && pos + 3 < len)
+            if (charId == '^')
             {
-                pos += 3;
+                charId = getNextUTF8(in_text.c_str(), pos, len);
+                charId = getNextUTF8(in_text.c_str(), pos, len);
+                charId = getNextUTF8(in_text.c_str(), pos, len);
                 continue;
             }
             const auto& it = m_chars.find(charId);
@@ -259,40 +295,39 @@ namespace onut
         Vector2 curPos = pos;
         ret.x = curPos.x;
         ret.y = curPos.y;
-        unsigned int len = text.length();
+        unsigned int len = text.size();
         int page = -1;
         float r, g, b;
         Color curColor = color;
         bool bHandleBatch = !pSpriteBatch->isInBatch();
         if (bHandleBatch) pSpriteBatch->begin();
-        for (unsigned int i = 0; i < text.size(); )
+        for (unsigned int i = 0; i < len; )
         {
-            char charId = text[i];
+            // Transform from char to utf8
+            uint32_t charId = getNextUTF8(text.c_str(), i, len);
+
             if (charId == '\n')
             {
                 curPos.x = pos.x;
                 curPos.y += static_cast<float>(m_common.lineHeight);
-                i += 1;
                 continue;
             }
             if (charId == '^' && i + 3 < len)
             {
                 // Colored text!
-                r = (static_cast<float>(text[i + 1]) - static_cast<float>('0')) / 9.0f;
-                g = (static_cast<float>(text[i + 2]) - static_cast<float>('0')) / 9.0f;
-                b = (static_cast<float>(text[i + 3]) - static_cast<float>('0')) / 9.0f;
+                r = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                g = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                b = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
                 curColor = {r, g, b, color.a};
                 curColor.Premultiply();
-                i += 4;
                 continue;
             }
-            auto iCharId = static_cast<int>(static_cast<unsigned char>(charId));
-            if (!m_chars.count(iCharId))
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
             {
-                ++i;
                 continue;
             }
-            auto pDatChar = m_chars[iCharId];
+            auto pDatChar = it->second;
             auto& pTexture = m_pages[pDatChar->page]->pTexture;
 
             // Draw it here
@@ -308,7 +343,6 @@ namespace onut
                 }, curColor);
 
             curPos.x += static_cast<float>(pDatChar->xadvance);
-            ++i;
         }
         if (bHandleBatch) pSpriteBatch->end();
 

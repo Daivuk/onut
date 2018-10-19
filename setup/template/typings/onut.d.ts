@@ -1180,9 +1180,6 @@ declare namespace SpriteBatch {
     function drawText(font: Font, text: string, position: Vector2, align: Vector2, color: Color);
     function drawOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
     function drawPrettyOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
-
-    function setBlend(blendMode: Number);
-    function setFilter(filterMode: Number);
 }
 
 // PrimitiveBatch

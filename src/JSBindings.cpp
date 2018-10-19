@@ -9674,18 +9674,6 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("drawCross", 3);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    oSpriteBatch->changeBlendMode((onut::BlendMode)JS_UINT(0));
-                    return 0;
-                }
-                JS_INTERFACE_FUNCTION_END("setBlend", 1);
-                JS_INTERFACE_FUNCTION_BEGIN
-                {
-                    oSpriteBatch->changeFiltering((onut::sample::Filtering)JS_UINT(0));
-                    return 0;
-                }
-                JS_INTERFACE_FUNCTION_END("setFilter", 1);
-                JS_INTERFACE_FUNCTION_BEGIN
-                {
                     auto pFont = JS_FONT(0);
                     if (pFont) pFont->draw(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4));
                     return 0;

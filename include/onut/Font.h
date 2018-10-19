@@ -87,7 +87,7 @@ namespace onut
         fntCommon m_common;
         fntPage** m_pages = nullptr;
         int m_charsCount = 0;
-        std::unordered_map<int, fntChar*> m_chars;
+        std::unordered_map<uint32_t, fntChar*> m_chars;
     };
 }
 

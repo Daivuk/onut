@@ -466,8 +466,8 @@ namespace onut
             oRenderer->renderStates.scissorEnabled = false;
             oRenderer->renderStates.scissor = oRenderer->renderStates.viewport.get();
             oSpriteBatch->begin();
-            oSpriteBatch->changeBlendMode(OBlendOpaque);
-            oSpriteBatch->changeFiltering(OFilterNearest);
+            oRenderer->renderStates.blendMode.push(OBlendOpaque);
+            oRenderer->renderStates.sampleFiltering.push(OFilterNearest);
             oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
 
             // Show the log
@@ -476,8 +476,8 @@ namespace onut
                 onut::drawLog();
             }
             oSpriteBatch->end();
-            oSpriteBatch->changeBlendMode(OBlendAlpha);
-            oSpriteBatch->changeFiltering(OFilterLinear);
+            oRenderer->renderStates.blendMode.pop();
+            oRenderer->renderStates.sampleFiltering.pop();
 
             if (postRenderCallback)
             {

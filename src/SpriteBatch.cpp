@@ -49,12 +49,12 @@ namespace onut
     {
     }
 
-    void SpriteBatch::begin(BlendMode blendMode)
+    void SpriteBatch::begin()
     {
-        begin(Matrix::Identity, blendMode);
+        begin(Matrix::Identity);
     }
 
-    void SpriteBatch::begin(const Matrix& in_transform, BlendMode blendMode)
+    void SpriteBatch::begin(const Matrix& in_transform)
     {
         if (m_isDrawing) return;
 
@@ -66,30 +66,13 @@ namespace onut
         }
 
         oRenderer->setupFor2D(transform);
+        m_pRenderStates = &oRenderer->renderStates;
 
         m_currentTransform = transform;
-        m_curBlendMode = blendMode;
         m_pTexture = nullptr;
         m_isDrawing = true;
 
         m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());
-    }
-
-    void SpriteBatch::changeBlendMode(BlendMode blendMode)
-    {
-        if (!isInBatch()) return;
-        if (m_curBlendMode == blendMode) return;
-        end();
-        begin(m_currentTransform, blendMode);
-    }
-
-    void SpriteBatch::changeFiltering(sample::Filtering filtering)
-    {
-        if (m_curFiltering == filtering) return;
-        auto bManageBatch = isInBatch();
-        if (bManageBatch) end();
-        m_curFiltering = filtering;
-        if (bManageBatch) begin(m_currentTransform, m_curBlendMode);
     }
 
     void SpriteBatch::drawRectWithColors(const OTextureRef& pTexture, const Rect& rect, const std::vector<Color>& colors)
@@ -97,6 +80,8 @@ namespace onut
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
@@ -126,12 +111,16 @@ namespace onut
 
     void SpriteBatch::drawAbsoluteRect(const OTextureRef& pTexture, const Rect& rect, const Color& color)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         drawRect(pTexture, {rect.x, rect.y, rect.z - rect.x, rect.w - rect.y}, color);
     }
 
     void SpriteBatch::drawOutterOutlineRect(const Rect& rect, float thickness, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
 
         drawRect(m_pTexWhite, {rect.x - thickness, rect.y - thickness, rect.z + thickness * 2, thickness}, color);
         drawRect(m_pTexWhite, {rect.x - thickness, rect.y + rect.w, rect.z + thickness * 2, thickness}, color);
@@ -143,6 +132,8 @@ namespace onut
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
@@ -174,6 +165,8 @@ namespace onut
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
@@ -216,6 +209,8 @@ namespace onut
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
@@ -294,6 +289,8 @@ namespace onut
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
@@ -325,6 +322,8 @@ namespace onut
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
@@ -357,6 +356,8 @@ namespace onut
         assert(m_isDrawing); // Should call begin() before calling draw()
         assert(colors.size() == 4); // Needs 4 colors
 
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
@@ -398,6 +399,8 @@ namespace onut
 
     void SpriteBatch::draw4Corner(const OTextureRef& pTexture, const Rect& rect, const Color& color)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
@@ -412,6 +415,8 @@ namespace onut
 
     void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         auto& textureSize = m_pTexture->getSize();
@@ -422,7 +427,10 @@ namespace onut
 
     void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Color& color, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
+
         auto sizef = m_pTexture->getSizef();
 
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
@@ -453,7 +461,10 @@ namespace onut
     }
     void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Matrix& transform, const Vector2& scale, const Color& color, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
+
         auto sizef = m_pTexture->getSizef() * scale;
 
         auto invOrigin = Vector2(1.f - origin.x, 1.f - origin.y);
@@ -485,7 +496,10 @@ namespace onut
 
     void SpriteBatch::drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector4& uvs, const Color& color, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
+
         auto sizef = m_pTexture->getSizef();
         sizef.x *= std::abs(uvs.z - uvs.x);
         sizef.y *= std::abs(uvs.w - uvs.y);
@@ -519,7 +533,10 @@ namespace onut
 
     void SpriteBatch::drawSpriteWithUVs(const OTextureRef& pTexture, const Matrix& transform, const Vector2& scale, const Vector4& uvs, const Color& color, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
+
         auto sizef = m_pTexture->getSizef();
         sizef.x *= std::abs(uvs.z - uvs.x);
         sizef.y *= std::abs(uvs.w - uvs.y);
@@ -555,7 +572,10 @@ namespace onut
 
     void SpriteBatch::drawSpriteWithUVs(const OTextureRef& pTexture, const Vector2& position, const Vector4& uvs, const Color& color, float rotation, float scale, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
+
         auto textureSize = m_pTexture->getSize();
         auto sizexf = static_cast<float>(textureSize.x);
         auto sizeyf = static_cast<float>(textureSize.y);
@@ -605,6 +625,8 @@ namespace onut
 
     void SpriteBatch::drawBeam(const OTextureRef& pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset, float uScale)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         auto texSize = m_pTexture->getSizef();
@@ -642,12 +664,17 @@ namespace onut
 
     void SpriteBatch::drawCross(const Vector2& position, float size, const Color& color, float thickness)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
+
         drawRect(nullptr, {position.x - thickness * .5f, position.y - size, thickness, size * 2.f}, color);
         drawRect(nullptr, {position.x - size, position.y - thickness * .5f, size * 2.f, thickness}, color);
     }
 
     void SpriteBatch::drawSprite(const OTextureRef& pTexture, const Vector2& position, const Color& color, float rotation, float scale, const Vector2& origin)
     {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(pTexture);
 
         auto textureSize = m_pTexture->getSize();
@@ -731,12 +758,10 @@ namespace onut
 
         m_pVertexBuffer->unmap(sizeof(SVertexP2T2C4) * m_spriteCount * 4);
 
-        oRenderer->renderStates.textures[0] = m_pTexture;
-        oRenderer->renderStates.blendMode = m_curBlendMode;
-        oRenderer->renderStates.sampleFiltering = m_curFiltering;
-        oRenderer->renderStates.primitiveMode = OPrimitiveTriangleList;
-        oRenderer->renderStates.indexBuffer = m_pIndexBuffer;
-        oRenderer->renderStates.vertexBuffer = m_pVertexBuffer;
+        m_pRenderStates->textures[0] = m_pTexture;
+        m_pRenderStates->primitiveMode = OPrimitiveTriangleList;
+        m_pRenderStates->indexBuffer = m_pIndexBuffer;
+        m_pRenderStates->vertexBuffer = m_pVertexBuffer;
         oRenderer->drawIndexed(6 * m_spriteCount);
 
         m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());

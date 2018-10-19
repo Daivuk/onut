@@ -81,6 +81,7 @@ void render()
 
     // Clear
     oRenderer->clear(OColorHex(1d232d));
+    oRenderer->renderStates.blendMode = OBlendPreMultiplied;
 
     // Draw sprites
     oSpriteBatch->begin();

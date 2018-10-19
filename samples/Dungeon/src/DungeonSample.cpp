@@ -140,7 +140,7 @@ void postRender()
     if (pPlayer)
     {
         oSpriteBatch->begin(Matrix::CreateScale(4.0f));
-        oSpriteBatch->changeFiltering(OFilterNearest);
+        oRenderer->renderStates.sampleFiltering = OFilterNearest;
 
         auto pPlayerLife = pPlayer->getComponent<Life>();
         if (pPlayerLife)

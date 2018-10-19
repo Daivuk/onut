@@ -764,8 +764,8 @@ namespace onut
             renderStates.sampleFiltering.forceDirty();
             renderStates.sampleAddressMode.forceDirty();
         }
-        else if (renderStates.sampleFiltering.isDirty() ||
-            renderStates.sampleAddressMode.isDirty())
+        if (renderStates.sampleFiltering.isDirty() ||
+                 renderStates.sampleAddressMode.isDirty())
         {
             m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerStates[
                 static_cast<int>(renderStates.sampleFiltering.get()) * static_cast<int>(sample::AddressMode::COUNT) +
