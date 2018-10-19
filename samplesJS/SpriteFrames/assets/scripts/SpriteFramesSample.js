@@ -26,7 +26,7 @@ function update(dt)
     if (Input.isJustDown(Key._4))
     {
         spriteAnim.play("attack");
-        spriteAnimASE.play("attack");
+        spriteAnimASE.play("attack_fliph");
     }
 }
 

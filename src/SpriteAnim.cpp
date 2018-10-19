@@ -59,6 +59,8 @@ namespace onut
                 auto& anim = pRet->m_anims[name];
                 anim.name = name;
                 anim.duration = 0.0f;
+                bool isFlipH = false;
+                bool isFlipV = false;
                 int from = tag["from"].asInt();
                 int to = tag["to"].asInt();
                 Frame frame;
@@ -76,6 +78,14 @@ namespace onut
                         if (data.find("loop") == 0)
                         {
                             anim.loop = true;
+                        }
+                        else if (data.find("genfliph") == 0)
+                        {
+                            isFlipH = true;
+                        }
+                        else if (data.find("genflipv") == 0)
+                        {
+                            isFlipV = true;
                         }
                         else if (data.find("next") == 0 && data.size() > 5)
                         {
@@ -115,6 +125,29 @@ namespace onut
                     frame.duration = (float)jsonFrame["duration"].asInt() / 1000.0f;
                     anim.duration += frame.duration;
                     anim.frames.push_back(frame);
+                }
+
+                if (isFlipH)
+                {
+                    name = anim.name + "_fliph";
+                    auto& flippedAnim = pRet->m_anims[name];
+                    flippedAnim = anim;
+                    flippedAnim.name = name;
+                    for (auto& frame : flippedAnim.frames)
+                    {
+                        std::swap(frame.UVs.x, frame.UVs.z);
+                    }
+                }
+                if (isFlipV)
+                {
+                    name = anim.name + "_flipv";
+                    auto& flippedAnim = pRet->m_anims[name];
+                    flippedAnim = anim;
+                    flippedAnim.name = name;
+                    for (auto& frame : flippedAnim.frames)
+                    {
+                        std::swap(frame.UVs.x, frame.UVs.z);
+                    }
                 }
             }
         }
