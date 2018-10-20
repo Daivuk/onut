@@ -669,10 +669,14 @@ namespace onut
         rect.bottom /= CHUNK_SIZE;
 
         bool isInBatch = oSpriteBatch->isInBatch();
+        OShaderRef pPreviousPS;
         if (isInBatch)
         {
             oSpriteBatch->end();
+            // Preserve previously set pixel shader
+            pPreviousPS = oRenderer->renderStates.pixelShader;
             oRenderer->setupFor2D(oSpriteBatch->getTransform() * getTransform());
+            oRenderer->renderStates.pixelShader = pPreviousPS;
         }
         else
         {
@@ -695,6 +699,7 @@ namespace onut
         if (isInBatch)
         {
             oSpriteBatch->begin(oSpriteBatch->getTransform());
+            if (pPreviousPS) oRenderer->renderStates.pixelShader = pPreviousPS;
         }
     }
 
