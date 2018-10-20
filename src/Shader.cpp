@@ -862,6 +862,10 @@ namespace onut
                 _const.arrayArguments.push_back(token);
             }
         }
+        else
+        {
+            _const.isArray = false;
+        }
 
         if ((char)lexer.token != '=')
         {
