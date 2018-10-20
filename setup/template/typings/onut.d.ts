@@ -1082,78 +1082,97 @@ declare namespace Renderer {
     function setRenderTarget(renderTarget: Texture);
     function pushRenderTarget(renderTarget: Texture);
     function popRenderTarget();
+    function getRenderTarget(): Texture;
 
     function setTexture(texture: Texture, index: number);
     function pushTexture(texture: Texture, index: number);
     function popTexture(index: number);
+    function getTexture(index: number): Texture;
 
     function setVertexShader(shader: Shader);
     function pushVertexShader(shader: Shader);
     function popVertexShader();
+    function getVertexShader(): Shader;
 
     function setPixelShader(shader: Shader);
     function pushPixelShader(shader: Shader);
     function popPixelShader();
+    function getPixelShader(): Shader;
 
     function setVertexBuffer(vertexBuffer: VertexBuffer);
     function pushVertexBuffer(vertexBuffer: VertexBuffer);
     function popVertexBuffer();
+    function getVertexBuffer(): VertexBuffer;
 
     function setIndexBuffer(indexBuffer: IndexBuffer);
     function pushIndexBuffer(indexBuffer: IndexBuffer);
     function popIndexBuffer();
+    function getIndexBuffer(): IndexBuffer;
 
     function setBlendMode(blendMode: BlendMode);
     function pushBlendMode(blendMode: BlendMode);
     function popBlendMode();
+    function getBlendMode(): BlendMode;
 
     function setFilterMode(filterMode: FilterMode);
     function pushFilterMode(filterMode: FilterMode);
     function popFilterMode();
+    function getFilterMode(): FilterMode;
 
     function setWrapMode(wrapMode: WrapMode);
     function pushWrapMode(wrapMode: WrapMode);
     function popWrapMode();
+    function getWrapMode(): WrapMode;
 
     function setViewport(viewport: Rect);
     function pushViewport(viewport: Rect);
     function popViewport();
+    function getViewport(): Rect;
 
     function setScissorEnabled(enabled: boolean);
     function pushScissorEnabled(enabled: boolean);
     function popScissorEnabled();
+    function getScissorEnabled(): boolean;
 
     function setScissor(scissor: Rect);
     function pushScissor(scissor: Rect);
     function popScissor();
+    function getScissor(): Rect;
 
     function setPrimitiveMode(primitiveMode: PrimitiveMode);
     function pushPrimitiveMode(primitiveMode: PrimitiveMode);
     function popPrimitiveMode();
+    function getPrimitiveMode(): PrimitiveMode;
 
     function setWorld(world: Matrix);
     function pushWorld(world: Matrix);
     function popWorld();
+    function getWorld(): Matrix;
 
     function setProjection(projection: Matrix);
     function pushProjection(projection: Matrix);
     function popProjection();
+    function getProjection(): Matrix;
 
     function setView(view: Matrix);
     function pushView(view: Matrix);
     function popView();
+    function getView(): Matrix;
 
     function setDepthEnabled(depthEnabled: boolean);
     function pushDepthEnabled(depthEnabled: boolean);
     function popDepthEnabled();
+    function getDepthEnabled(): boolean;
 
     function setDepthWrite(depthWrite: boolean);
     function pushDepthWrite(depthWrite: boolean);
     function popDepthWrite();
+    function getDepthWrite(): boolean;
 
     function setBackFaceCull(backFaceCull: boolean);
     function pushBackFaceCull(backFaceCull: boolean);
     function popBackFaceCull();
+    function getBackFaceCull(): boolean;
 }
 
 // Spritebatch

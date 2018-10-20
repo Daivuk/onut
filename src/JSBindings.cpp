@@ -9203,6 +9203,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popRenderTarget", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newTexture(ctx, oRenderer->renderStates.renderTarget.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getRenderTarget", 0);
                 // Textures
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9230,6 +9236,17 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popTexture", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto index = JS_UINT(0);
+                    if (index < 8)
+                    {
+                        newTexture(ctx, oRenderer->renderStates.textures[index].get());
+                        return 1;
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("getTexture", 1);
                 // Vertex shader
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9251,6 +9268,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popVertexShader", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newShader(ctx, oRenderer->renderStates.vertexShader.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getVertexShader", 0);
                 // Pixel shader
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9272,6 +9295,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popPixelShader", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newShader(ctx, oRenderer->renderStates.pixelShader.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getpPixelShader", 0);
                 // Vertex buffer
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9293,6 +9322,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popVertexBuffer", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newVertexBuffer(ctx, oRenderer->renderStates.vertexBuffer.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getVertexBuffer", 0);
                 // Index buffer
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9314,6 +9349,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popIndexBuffer", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newIndexBuffer(ctx, oRenderer->renderStates.indexBuffer.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getIndexBuffer", 0);
                 // Blend mode
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9333,6 +9374,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popBlendMode", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oRenderer->renderStates.blendMode.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getBlendMode", 0);
                 // Filter mode
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9352,6 +9399,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popFilterMode", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oRenderer->renderStates.sampleFiltering.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getFilterMode", 0);
                 // Filter mode
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9371,6 +9424,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popWrapMode", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oRenderer->renderStates.sampleAddressMode.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getWrapMode", 0);
                 // Viewport
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9392,6 +9451,13 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popViewport", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto r = oRenderer->renderStates.viewport.get();
+                    newRect(ctx, Rect((float)r.left, (float)r.top, (float)(r.right - r.left), (float)(r.bottom - r.top)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getViewport", 0);
                 // Scissor
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9413,6 +9479,13 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popScissor", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto r = oRenderer->renderStates.scissor.get();
+                    newRect(ctx, Rect((float)r.left, (float)r.top, (float)(r.right - r.left), (float)(r.bottom - r.top)));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getScissor", 0);
                 // Scissor Enabled
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9432,6 +9505,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popScissorEnabled", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, (duk_bool_t)(oRenderer->renderStates.scissorEnabled.get() ? 1 : 0));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getScissorEnabled", 0);
                 // Primitive Mode
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9451,6 +9530,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popPrimitiveMode", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_number(ctx, (duk_double_t)oRenderer->renderStates.primitiveMode.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getPrimitiveMode", 0);
                 // World
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9470,6 +9555,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popWorld", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newMatrix(ctx, oRenderer->renderStates.world.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getWorld", 0);
                 // View Projection Matrix
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -9491,6 +9582,12 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("popProjection", 0);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    newMatrix(ctx, oRenderer->renderStates.projection.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getProjection", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     oRenderer->renderStates.view = JS_MATRIX(0);
                     return 0;
                 }
@@ -9507,6 +9604,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popView", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newMatrix(ctx, oRenderer->renderStates.view.get());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getView", 0);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     oRenderer->renderStates.depthEnabled = JS_BOOL(0, false);
@@ -9527,6 +9630,12 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("popDepthEnabled", 0);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    duk_push_boolean(ctx, (duk_bool_t)(oRenderer->renderStates.depthEnabled.get() ? 1 : 0));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getDepthEnabled", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     oRenderer->renderStates.depthWrite = JS_BOOL(0, true);
                     return 0;
                 }
@@ -9545,6 +9654,12 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("popDepthWrite", 0);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    duk_push_boolean(ctx, (duk_bool_t)(oRenderer->renderStates.depthWrite.get() ? 1 : 0));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getDepthWrite", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     oRenderer->renderStates.backFaceCull = JS_BOOL(0, false);
                     return 0;
                 }
@@ -9561,6 +9676,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("popBackFaceFull", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_boolean(ctx, (duk_bool_t)(oRenderer->renderStates.backFaceCull.get() ? 1 : 0));
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getBackFaceFull", 0);
             }
             JS_INTERFACE_END("Renderer");
 

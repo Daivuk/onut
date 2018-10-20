@@ -11,11 +11,9 @@ function drawLandscapeToRenderTarget(renderTarget)
 {
     var size = renderTarget.getSize();
     Renderer.pushRenderTarget(renderTarget);
-    Renderer.pushViewport(new Rect(0, 0, size.x, size.y));
     SpriteBatch.begin();
-    SpriteBatch.drawRect(landscape, new Rect(0, 0, 256, 256));
+    SpriteBatch.drawRect(landscape, new Rect(0, 0, size));
     SpriteBatch.end();
-    Renderer.popViewport();
     Renderer.popRenderTarget();
 }
 
