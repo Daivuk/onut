@@ -115,7 +115,7 @@ namespace onut
                     case Shader::Intrinsic::Saturate:
                         source += " clamp(";
                         bakeTokens(source, token.intrinsicArguments[0]);
-                        source += "0.0, 1.0)";
+                        source += ", 0.0, 1.0)";
                         break;
                     INTRINSICT_IMPL_3(Lerp, mix, 0, 1, 2);
                     INTRINSICT_IMPL_2(Step, step, 0, 1);
