@@ -1179,6 +1179,7 @@ declare namespace Renderer {
 declare namespace SpriteBatch {
     function begin();
     function begin(transform: Matrix);
+    function begin(transform: Matrix, pixelShader: Shader);
     function end();
 
     function drawRect(texture: Texture, rect: Rect, color: Color);

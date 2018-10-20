@@ -2,6 +2,7 @@ var spriteAngle = 0.0;
 var nutTexture = getTexture("onutLogo.png");
 var frameTexture = getTexture("frameSmall.png");
 var chainTexture = getTexture("chain.png");
+var shader = getShader("sample.ps");
 
 function update(dt) {
     spriteAngle += dt * 45;
@@ -73,12 +74,21 @@ function render() {
     SpriteBatch.drawSprite(nutTexture, new Vector2(600, 200), Color.WHITE, 0, .25, Vector2.BOTTOM_RIGHT);
     SpriteBatch.drawCross(new Vector2(600, 200), 10, new Color(1, 1, 0, 1));
 
+    SpriteBatch.end();
+
     // Filtering
     Renderer.setFilterMode(FilterMode.NEAREST);
+    SpriteBatch.begin();
     SpriteBatch.drawSprite(nutTexture, new Vector2(725, 100), Color.WHITE, 0, 1.5);
-    Renderer.setFilterMode(FilterMode.LINEAR);
-    SpriteBatch.drawSprite(nutTexture, new Vector2(725, 300), Color.WHITE, 0, 1.5);
+    SpriteBatch.end();
 
-    // End and flush the batch
+    Renderer.setFilterMode(FilterMode.LINEAR);
+    SpriteBatch.begin();
+    SpriteBatch.drawSprite(nutTexture, new Vector2(725, 300), Color.WHITE, 0, 1.5);
+    SpriteBatch.end();
+
+    // Custom shader
+    SpriteBatch.begin(Matrix.IDENTITY, shader);
+    SpriteBatch.drawSprite(nutTexture, new Vector2(725, 500), Color.WHITE, 0, 1.5);
     SpriteBatch.end();
 }

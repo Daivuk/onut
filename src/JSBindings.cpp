@@ -9691,10 +9691,15 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto matrix = JS_MATRIX(0);
+                    auto shader = JS_SHADER(1);
                     oSpriteBatch->begin(matrix);
+                    if (shader)
+                    {
+                        oRenderer->renderStates.pixelShader = shader;
+                    }
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("begin", 1);
+                JS_INTERFACE_FUNCTION_END("begin", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     oSpriteBatch->end();
