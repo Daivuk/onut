@@ -263,17 +263,17 @@ namespace onut
         }
 
         // Slightly adjust UVs to avoid bleeding
-        for (auto& kv : pRet->m_anims)
-        {
-            for (auto& frame : kv.second.frames)
-            {
-                auto tSize = frame.pTexture->getSizef();
-                frame.UVs.x += 0.25f / tSize.x;
-                frame.UVs.y += 0.25f / tSize.y;
-                frame.UVs.x -= 0.25f / tSize.x;
-                frame.UVs.w -= 0.25f / tSize.y;
-            }
-        }
+        //for (auto& kv : pRet->m_anims)
+        //{
+        //    for (auto& frame : kv.second.frames)
+        //    {
+        //        auto tSize = frame.pTexture->getSizef();
+        //        frame.UVs.x += 0.2f / tSize.x;
+        //        frame.UVs.y += 0.2f / tSize.y;
+        //        frame.UVs.z -= 0.2f / tSize.x;
+        //        frame.UVs.w -= 0.2f / tSize.y;
+        //    }
+        //}
 
         return pRet;
     }

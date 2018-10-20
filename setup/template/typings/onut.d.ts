@@ -917,8 +917,8 @@ declare class TiledMap {
     renderLayer(layerName: string, rect: Rect);
 
     collision(from: Vector2, to: Vector2, size: Vector2): Vector2;
-    setCollision(x: number, y: number, passable: boolean);
-    getCollision(x: number, y: number): boolean;
+    setPassable(x: number, y: number, passable: boolean);
+    getPassable(x: number, y: number): boolean;
     setTileCost(x: number, y: number, tileCost: number); // 0 = impassable, 1 = normal, >1 = expensive
     getTileCost(x: number, y: number): number;
     getPath(fromX: number, fromY: number, toX: number, toY: number, type: PathType): Array;

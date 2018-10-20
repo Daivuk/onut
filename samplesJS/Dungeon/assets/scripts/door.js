@@ -28,7 +28,7 @@ function door_openTiles(door, x, y, sx, sy)
     {
         for (var i = x; i < x + sx; ++i) 
         {
-            tiledMap.setCollision(i, j, true);
+            tiledMap.setPassable(i, j, true);
             var tileId = tiledMap.getTileAt("tiles", i, j);
             tiledMap.setTileAt("tiles", i, j, tileId + 2);
         }

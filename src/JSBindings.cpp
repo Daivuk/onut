@@ -4305,7 +4305,7 @@ namespace onut
                 }
                 return 0;
             }, 3);
-            duk_put_prop_string(ctx, -2, "setCollision");
+            duk_put_prop_string(ctx, -2, "setPassable");
 
             // Get a tile to be passable or not
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -4334,7 +4334,7 @@ namespace onut
                 }
                 return 0;
             }, 2);
-            duk_put_prop_string(ctx, -2, "getCollision");
+            duk_put_prop_string(ctx, -2, "getPassable");
 
             // Set a tile to be passable or not
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
