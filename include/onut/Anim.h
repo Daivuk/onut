@@ -224,6 +224,7 @@ namespace onut
                     }
                 }
             }
+            m_keyFrames.clear();
         }
 
         void pause()
