@@ -14,6 +14,8 @@
 // Forward
 #include <onut/ForwardDeclaration.h>
 OForwardDeclare(ContentManager);
+OForwardDeclare(Sound);
+OForwardDeclare(SoundCue);
 OForwardDeclare(SpriteAnim);
 OForwardDeclare(SpriteAnimInstance);
 OForwardDeclare(Texture);
@@ -29,6 +31,11 @@ namespace onut
             Vector4 UVs = {0, 0, 1, 1};
             Vector2 origin = {.5f, .5f};
             float duration = 0.0f;
+            OSoundRef pSound;
+            float vol = 1.0f;
+            float pan = 0.0f;
+            float pitch = 1.0f;
+            OSoundCueRef pSoundCue;
         };
         using Frames = std::vector<Frame>;
 
@@ -94,7 +101,7 @@ namespace onut
         OSpriteAnimRef m_pSpriteAnim;
         SpriteAnim::Anim* m_pCurrentAnim = nullptr;
         int m_frameId = 0;
-        float m_frame = 0.f;
+        float m_frameTime = 0.f;
         float m_speed = 1.f;
         bool m_bIsPlaying = false;
         AnimQueue m_animQueue;

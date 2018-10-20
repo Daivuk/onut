@@ -1,7 +1,9 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Files.h>
+#include <onut/Sound.h>
 #include <onut/SpriteAnim.h>
+#include <onut/Strings.h>
 #include <onut/Texture.h>
 #include <onut/Timing.h>
 
@@ -63,47 +65,83 @@ namespace onut
                 bool isFlipV = false;
                 int from = tag["from"].asInt();
                 int to = tag["to"].asInt();
-                Frame frame;
-                frame.pTexture = pTexture;
                 for (int i = from; i <= to; ++i)
                 {
+                    Frame frame;
+                    frame.pTexture = pTexture;
                     const auto& jsonFrame = frames[i];
                     int offsetX = 0;
                     int offsetY = 0;
                     spriteW = jsonFrame["sourceSize"]["w"].asInt();
                     spriteH = jsonFrame["sourceSize"]["h"].asInt();
                     const auto& frameData = frameDatas[i];
-                    for (const auto& data : frameData)
+                    for (const auto& fdata : frameData)
                     {
-                        if (data.find("loop") == 0)
+                        auto splits = onut::splitString(fdata, ":");
+                        for (const auto& data : splits)
                         {
-                            anim.loop = true;
-                        }
-                        else if (data.find("genfliph") == 0)
-                        {
-                            isFlipH = true;
-                        }
-                        else if (data.find("genflipv") == 0)
-                        {
-                            isFlipV = true;
-                        }
-                        else if (data.find("next") == 0 && data.size() > 5)
-                        {
-                            anim.next = data.substr(5);
-                        }
-                        else if (data.find("origin") == 0 && data.size() > 9)
-                        {
-                            auto pos = data.find(",");
-                            if (pos != std::string::npos && pos + 1 < data.size())
+                            if (data.find("loop") == 0)
+                            {
+                                anim.loop = true;
+                            }
+                            else if (data.find("genfliph") == 0)
+                            {
+                                isFlipH = true;
+                            }
+                            else if (data.find("genflipv") == 0)
+                            {
+                                isFlipV = true;
+                            }
+                            else if (data.find("next=") == 0 && data.size() > 5)
+                            {
+                                anim.next = data.substr(5);
+                            }
+                            else if (data.find("origin=") == 0 && data.size() > 9)
+                            {
+                                auto pos = data.find(",");
+                                if (pos != std::string::npos && pos + 1 < data.size())
+                                {
+                                    try
+                                    {
+                                        originX = std::stoi(data.substr(7, pos - 7));
+                                    }
+                                    catch (...) {}
+                                    try
+                                    {
+                                        originY = std::stoi(data.substr(pos + 1));
+                                    }
+                                    catch (...) {}
+                                }
+                            }
+                            else if (data.find("sound=") == 0 && data.size() > 6)
+                            {
+                                frame.pSound = OGetSound(data.substr(6));
+                            }
+                            else if (data.find("soundcue=") == 0 && data.size() > 9)
+                            {
+                                frame.pSoundCue = OGetSoundCue(data.substr(9));
+                            }
+                            else if (data.find("vol=") == 0 && data.size() > 4)
                             {
                                 try
                                 {
-                                    originX = std::stoi(data.substr(7, pos - 7));
+                                    frame.vol = std::stof(data.substr(4));
                                 }
                                 catch (...) {}
+                            }
+                            else if (data.find("pan=") == 0 && data.size() > 4)
+                            {
                                 try
                                 {
-                                    originY = std::stoi(data.substr(pos + 1));
+                                    frame.pan = std::stof(data.substr(4));
+                                }
+                                catch (...) {}
+                            }
+                            else if (data.find("pitch=") == 0 && data.size() > 6)
+                            {
+                                try
+                                {
+                                    frame.pitch = std::stof(data.substr(6));
                                 }
                                 catch (...) {}
                             }
@@ -308,13 +346,18 @@ namespace onut
                 {
                     m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
                 }
-                m_frame = offset;
+                m_frameTime = offset;
                 m_frameId = 0;
-                while (m_frame > getFrame().duration)
+                while (m_frameTime > getFrame().duration)
                 {
-                    m_frame -= getFrame().duration;
+                    m_frameTime -= getFrame().duration;
                     m_frameId = std::min<int>(m_frameId + 1, (int)m_pCurrentAnim->frames.size() - 1);
                 }
+
+                const auto& frame = getFrame();
+                if (frame.pSound) frame.pSound->play(frame.vol, frame.pan, frame.pitch);
+                if (frame.pSoundCue) frame.pSoundCue->play(frame.vol, frame.pan, frame.pitch);
+
                 if (framePerSecond == 0)
                 {
                     m_speed = 1.0f;
@@ -338,7 +381,7 @@ namespace onut
             if (m_pCurrentAnim)
             {
                 m_frameId = (int)m_pCurrentAnim->frames.size() - 1;
-                m_frame = getFrame().duration;
+                m_frameTime = getFrame().duration;
                 if (framePerSecond == 0)
                 {
                     m_speed = -1.0f;
@@ -373,7 +416,7 @@ namespace onut
                     {
                         m_animQueue.insert(m_animQueue.begin(), m_pCurrentAnim->next);
                     }
-                    m_frame = 0.f;
+                    m_frameTime = 0.f;
                     m_frameId = 0;
                     m_speed = 1.0f;
 
@@ -389,7 +432,7 @@ namespace onut
         m_pUpdater->unregisterTarget(this);
         if (reset)
         {
-            m_frame = 0.f;
+            m_frameTime = 0.f;
             m_frameId = 0;
         }
         m_pCurrentAnim = nullptr;
@@ -452,13 +495,14 @@ namespace onut
     void SpriteAnimInstance::update()
     {
         if (!m_pCurrentAnim) return;
-        m_frame += ODT * m_speed;
+        auto prevFrameId = m_frameId;
+        m_frameTime += ODT * m_speed;
         if (m_speed > 0.f)
         {
             const auto& frame = getFrame();
-            if (m_frame >= frame.duration)
+            if (m_frameTime >= frame.duration)
             {
-                m_frame -= frame.duration;
+                m_frameTime -= frame.duration;
                 ++m_frameId;
                 if (m_frameId == (int)m_pCurrentAnim->frames.size())
                 {
@@ -468,7 +512,7 @@ namespace onut
                     }
                     else
                     {
-                        m_frame = frame.duration;
+                        m_frameTime = frame.duration;
                         m_frameId = (int)m_pCurrentAnim->frames.size() - 1;
                         m_pUpdater->unregisterTarget(this);
                         playNextQueuedAnim();
@@ -476,7 +520,7 @@ namespace onut
                 }
             }
         }
-        else if (m_frame < 0.f)
+        else if (m_frameTime < 0.f)
         {
             --m_frameId;
             if (m_frameId < 0)
@@ -485,11 +529,11 @@ namespace onut
                 {
                     m_frameId = (int)m_pCurrentAnim->frames.size() - 1;
                     const auto& frame = getFrame();
-                    m_frame += frame.duration;
+                    m_frameTime += frame.duration;
                 }
                 else
                 {
-                    m_frame = 0.f;
+                    m_frameTime = 0.f;
                     m_frameId = 0;
                     m_pUpdater->unregisterTarget(this);
                     playNextQueuedAnim();
@@ -497,8 +541,15 @@ namespace onut
             }
             else
             {
-                m_frame += getFrame().duration;
+                m_frameTime += getFrame().duration;
             }
+        }
+
+        if (prevFrameId != m_frameId)
+        {
+            const auto& frame = getFrame();
+            if (frame.pSound) frame.pSound->play(frame.vol, frame.pan, frame.pitch);
+            if (frame.pSoundCue) frame.pSoundCue->play(frame.vol, frame.pan, frame.pitch);
         }
     }
 }

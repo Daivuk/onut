@@ -93,7 +93,7 @@
  "meta": {
   "app": "http://www.aseprite.org/",
   "version": "1.2.7.3-x64",
-  "image": "G:\\GitHub\\onut\\samplesJS\\SpriteFrames\\assets\\hero.png",
+  "image": "G:\\GitHub\\onut\\samplesJS\\SpriteFrames\\assets\\anims\\hero.png",
   "format": "RGBA8888",
   "size": { "w": 64, "h": 128 },
   "scale": "1",
@@ -103,7 +103,7 @@
    { "name": "attack", "from": 8, "to": 9, "direction": "forward" }
   ],
   "layers": [
-   { "name": "Layer 1", "opacity": 255, "blendMode": "normal", "cels": [{ "frame": 0, "data": "origin=8,22" }, { "frame": 3, "data": "loop" }, { "frame": 7, "data": "loop" }, { "frame": 8, "data": "genfliph" }, { "frame": 9, "data": "next=idle" }] }
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal", "cels": [{ "frame": 0, "data": "origin=8,22" }, { "frame": 3, "data": "loop" }, { "frame": 4, "data": "sound=step.wav" }, { "frame": 6, "data": "sound=step.wav" }, { "frame": 7, "data": "loop" }, { "frame": 8, "data": "genfliph:soundcue=swoosh.cue" }, { "frame": 9, "data": "next=idle" }] }
   ],
   "slices": [
   ]
