@@ -666,9 +666,8 @@ namespace onut
         { "mul",{ Shader::Intrinsic::Mul, 2 } },
         { "round",{ Shader::Intrinsic::Round, 1 } }
     };
-
     static bool parseIntrinsic(Shader::Token& token, int argCount, stb_lexer& lexer);
-    static bool parseToken(Shader::Token& token, stb_lexer& lexer)
+    static bool parseToken(Shader::Token& token, stb_lexer& lexer, std::vector<onut::Shader::Token>& tokens)
     {
         token.intrinsic = Shader::Intrinsic::None;
         token.type = Shader::VarType::Unknown;
@@ -690,7 +689,15 @@ namespace onut
         }
         else if (lexer.token == CLEX_intlit)
         {
-            token.str = std::to_string(lexer.int_number) + ".0";
+            if (!tokens.empty() && tokens.back().str == ".")
+            {
+                tokens.back().str = "0." + std::to_string(lexer.int_number);;
+                token.str = "";
+            }
+            else
+            {
+                token.str = std::to_string(lexer.int_number) + ".0";
+            }
         }
         else if (lexer.token == CLEX_floatlit)
         {
@@ -774,7 +781,7 @@ namespace onut
                 }
 
                 Shader::Token subToken;
-                if (!parseToken(subToken, lexer)) return false;
+                if (!parseToken(subToken, lexer, argument)) return false;
                 argument.push_back(subToken);
             }
 
@@ -858,7 +865,7 @@ namespace onut
                     break;
                 }
                 Shader::Token token;
-                if (!parseToken(token, lexer)) return false;
+                if (!parseToken(token, lexer, _const.arrayArguments)) return false;
                 _const.arrayArguments.push_back(token);
             }
         }
@@ -927,7 +934,7 @@ namespace onut
             }
 
             Shader::Token token;
-            if (!parseToken(token, lexer)) return false;
+            if (!parseToken(token, lexer, _const.arguments)) return false;
             _const.arguments.push_back(token);
         }
 
@@ -1004,7 +1011,7 @@ namespace onut
                     break; // All good so far
                 }
                 Shader::Token token;
-                if (!parseToken(token, lexer)) return false;
+                if (!parseToken(token, lexer, _function.arguments)) return false;
                 _function.arguments.push_back(token);
             }
         }
@@ -1039,7 +1046,7 @@ namespace onut
             }
 
             Shader::Token token;
-            if (!parseToken(token, lexer)) return false;
+            if (!parseToken(token, lexer, _function.body)) return false;
             _function.body.push_back(token);
         }
         return true;
