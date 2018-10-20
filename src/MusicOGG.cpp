@@ -233,7 +233,7 @@ namespace onut
             {
                 if (channelCount == 1 && m_musicChannelCount == 1)
                 {
-                    pOutData[index] = resamplingHermite(
+                    pOutData[index] += resamplingHermite(
                         pSamplings[0],
                         pSamplings[1],
                         pSamplings[2],
@@ -248,14 +248,14 @@ namespace onut
                         pSamplings[3], t) * volume;
                     for (int i = 0; i < 2; ++i)
                     {
-                        pOutData[index * channelCount + i] = sample;
+                        pOutData[index * channelCount + i] += sample;
                     }
                 }
                 else
                 {
                     for (int i = 0; i < 2; ++i)
                     {
-                        pOutData[index * channelCount + i] = resamplingHermite(
+                        pOutData[index * channelCount + i] += resamplingHermite(
                             pSamplings[0 * m_musicChannelCount + i],
                             pSamplings[1 * m_musicChannelCount + i],
                             pSamplings[2 * m_musicChannelCount + i],
