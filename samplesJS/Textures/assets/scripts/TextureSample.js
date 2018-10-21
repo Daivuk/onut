@@ -54,8 +54,8 @@ function render()
     dynamic.setData(dynamicData);
 
     // Draw out resulted textures
+    Renderer.setFilterMode(FilterMode.NEAREST);
     SpriteBatch.begin(Matrix.createTranslation(new Vector3(80 + 64, 212, 0)));
-    SpriteBatch.setFilter(FilterMode.NEAREST);
 
     SpriteBatch.drawRect(textureFromFile, new Rect(0, 0, 128, 128));
     SpriteBatch.drawRect(textureFromData, new Rect(128, 0, 128, 128));

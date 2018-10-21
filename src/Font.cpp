@@ -202,12 +202,12 @@ namespace onut
 
     decltype(std::string().size()) Font::caretPos(const std::string& in_text, float at)
     {
-        decltype(std::string().size()) pos = 0;
+        unsigned int pos = 0;
 
         float curX = 0;
         unsigned int len = in_text.length();
         uint32_t charId;
-        for (; pos < len;)
+        for (; pos < (unsigned int )len;)
         {
             charId = getNextUTF8(in_text.c_str(), pos, len);
             if (charId == '\n')
