@@ -210,6 +210,7 @@ namespace onut
             MouseX,
             MouseY,
             MouseZ,
+            MouseW,
 
             // ??? Those won't work with SDL because I don't know how to match their codes
             KeyOEM102,
@@ -490,6 +491,7 @@ namespace onut
             MouseX = 260,
             MouseY = 261,
             MouseZ = 262,
+            MouseW = 263,
 #endif // __APPLE__
 
             STATE_COUNT
@@ -734,6 +736,7 @@ namespace onut
 #define OMouseX onut::Input::State::MouseX
 #define OMouseY onut::Input::State::MouseY
 #define OMouseZ onut::Input::State::MouseZ
+#define OMouseW onut::Input::State::MouseW
 
 extern OInputRef oInput;
 
