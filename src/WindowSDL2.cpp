@@ -1,5 +1,6 @@
 // Onut
 #include <onut/GamePad.h>
+#include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
@@ -83,6 +84,9 @@ namespace onut
     {
         if (!m_pWindow) return false;
 
+        oInput->setStateValue(OMouseZ, 0);
+        oInput->setStateValue(OMouseW, 0);
+
         SDL_Event event;
         auto pInputDeviceSDL2 = ODynamicCast<InputDeviceSDL2>(oInputDevice);
         bool hadEvents = false;
@@ -161,6 +165,12 @@ namespace onut
                     {
                         pGamePad->onAdded();
                     }
+                    break;
+                }
+                case SDL_MOUSEWHEEL:
+                {
+                    oInput->setStateValue(OMouseZ, oInput->getStateValue(OMouseZ) + event.wheel.y);
+                    oInput->setStateValue(OMouseW, oInput->getStateValue(OMouseW) + event.wheel.x);
                     break;
                 }
                 case SDL_CONTROLLERDEVICEREMOVED:

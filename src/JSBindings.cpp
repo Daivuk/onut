@@ -10874,6 +10874,7 @@ namespace onut
                 JS_ENUM("MOUSE_X", onut::Input::State::MouseX);
                 JS_ENUM("MOUSE_Y", onut::Input::State::MouseY);
                 JS_ENUM("MOUSE_Z", onut::Input::State::MouseZ);
+                JS_ENUM("MOUSE_W", onut::Input::State::MouseW);
                 JS_ENUM("XARCADE_LEFT_PADDLE", onut::Input::State::XArcadeLeftPaddle);
                 JS_ENUM("XARCADE_RIGHT_PADDLE", onut::Input::State::XArcadeRightPaddle);
                 JS_ENUM("XARCADE_1_PLAYER", onut::Input::State::XArcade1Player);
