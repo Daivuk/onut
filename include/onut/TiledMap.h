@@ -58,6 +58,7 @@ namespace onut
             int firstId;
             int tileWidth;
             int tileHeight;
+            int padding;
             OTextureRef pTexture;
             std::string name;
         };
@@ -92,7 +93,7 @@ namespace onut
 
         TileSet* getTileSet(int index) const;
         TileSet* getTileSet(const std::string& name) const;
-        TileSet* addTileSet(const OTextureRef& pTexture, const std::string& name);
+        TileSet* addTileSet(const OTextureRef& pTexture, const std::string& name, int padding = 0);
 
         int getLayerCount() const { return m_layerCount; }
         Layer* getLayer(int index) const { return m_layers[index]; }

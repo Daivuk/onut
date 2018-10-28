@@ -81,6 +81,7 @@ namespace onut
         {
             auto &pTileSet = pRet->m_tileSets[pRet->m_tilesetCount];
 
+            pTileSet.padding = 0;
             pTileSet.firstId = pXMLTileset->IntAttribute("firstgid");
             auto szSource = pXMLTileset->Attribute("source");
 
@@ -482,7 +483,7 @@ namespace onut
         return nullptr;
     }
 
-    TiledMap::TileSet* TiledMap::addTileSet(const OTextureRef& pTexture, const std::string& name)
+    TiledMap::TileSet* TiledMap::addTileSet(const OTextureRef& pTexture, const std::string& name, int padding)
     {
         TileSet* pNewTileSets = new TileSet[m_tilesetCount + 1];
         int idStart = 1;
@@ -493,6 +494,7 @@ namespace onut
         }
         delete[] m_tileSets;
         m_tileSets = pNewTileSets;
+        m_tileSets[m_tilesetCount].padding = padding;
         m_tileSets[m_tilesetCount].firstId = idStart;
         m_tileSets[m_tilesetCount].tileWidth = m_tileSize;
         m_tileSets[m_tilesetCount].tileHeight = m_tileSize;
@@ -750,13 +752,13 @@ namespace onut
         }
         pTile->pTileset = pTileSet;
         auto texSize = pTileSet->pTexture->getSize();
-        auto fitW = texSize.x / pTile->pTileset->tileWidth;
-        auto fitH = texSize.y / pTile->pTileset->tileHeight;
+        auto fitW = texSize.x / (pTileSet->tileWidth + pTileSet->padding * 2);
+        auto fitH = texSize.y / (pTileSet->tileHeight + pTileSet->padding * 2);
         auto onTextureId = tileId - pTileSet->firstId;
-        pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-        pTile->UVs.y = static_cast<float>((onTextureId / fitW) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
-        pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-        pTile->UVs.w = static_cast<float>((onTextureId / fitW + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+        pTile->UVs.x = static_cast<float>((onTextureId % fitW) * (pTileSet->tileWidth + pTileSet->padding * 2) + pTileSet->padding) / static_cast<float>(texSize.x);
+        pTile->UVs.y = static_cast<float>((onTextureId / fitW) * (pTileSet->tileHeight + pTileSet->padding * 2) + pTileSet->padding) / static_cast<float>(texSize.y);
+        pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * (pTileSet->tileWidth + pTileSet->padding * 2) - pTileSet->padding) / static_cast<float>(texSize.x);
+        pTile->UVs.w = static_cast<float>((onTextureId / fitW + 1) * (pTileSet->tileHeight + pTileSet->padding * 2) - pTileSet->padding) / static_cast<float>(texSize.y);
         pTile->rect.x = static_cast<float>((i % pLayer->width) * pTileSet->tileWidth);
         pTile->rect.y = static_cast<float>((i / pLayer->width) * pTileSet->tileHeight);
         pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
