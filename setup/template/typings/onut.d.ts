@@ -852,6 +852,7 @@ declare class Sound {
 }
 /** Same as Music.createFromFile */
 declare function getSound(filename: string): Sound;
+declare function getFreshSound(filename: string): Sound;
 declare function playSound(filename: string, volume: number, balance: number, pitch: number);
 declare function playSoundCue(filename: string, volume: number, balance: number, pitch: number);
 

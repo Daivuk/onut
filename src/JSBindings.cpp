@@ -10528,6 +10528,29 @@ namespace onut
             JS_GLOBAL_FUNCTION_END("getSound", 1);
             JS_GLOBAL_FUNCTION_BEGIN
             {
+                auto resName = JS_STRING(0);
+                if (onut::getExtension(resName) == "CUE")
+                {
+                    if (oContentManager->isResourceLoaded(resName))
+                    {
+                        oContentManager->removeResource(OGetSoundCue(resName));
+                    }
+                    OGetSoundCue(resName);
+                    return 0;
+                }
+                else
+                {
+                    if (oContentManager->isResourceLoaded(resName))
+                    {
+                        oContentManager->removeResource(OGetSound(resName));
+                    }
+                    newSound(ctx, OGetSound(resName));
+                    return 1;
+                }
+            }
+            JS_GLOBAL_FUNCTION_END("getFreshSound", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
                 OPlaySound(JS_STRING(0), JS_FLOAT(1, 1), JS_FLOAT(2), JS_FLOAT(3, 1));
                 return 0;
             }
