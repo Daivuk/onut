@@ -29,6 +29,7 @@ namespace onut
         void addResource(const std::string& name, const OResourceRef& pResource);
         void removeResource(const OResourceRef& pResource);
         bool isResourceLoaded(const std::string& name);
+        void reload(const std::string& name);
         size_t size();
         void clear();
         OResourceRef getResource(const std::string& name);

@@ -390,6 +390,12 @@ namespace onut
             rapidjson::FileStream is(pFile);
             rapidjson::Document doc;
             doc.ParseStream<0>(is);
+            if (!doc.IsObject())
+            {
+                OLogE("Failed to parse " + filename + ". " + doc.GetParseError());
+                fclose(pFile);
+                return pRet;
+            }
 
             const auto& jonsEmitters = doc["emitters"];
             for (decltype(jonsEmitters.Size()) i = 0; i < jonsEmitters.Size(); ++i)

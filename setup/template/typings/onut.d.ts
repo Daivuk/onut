@@ -970,6 +970,7 @@ declare class ParticleSystem {
 }
 /** Same as ParticleSystem.createFromFile */
 declare function getParticleSystem(filename: string): ParticleSystem;
+declare function getFreshParticleSystem(filename: string): ParticleSystem;
 
 // ParticleEmitter
 declare class ParticleEmitter {

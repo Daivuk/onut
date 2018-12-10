@@ -82,6 +82,16 @@ namespace onut
         return false;
     }
 
+    void ContentManager::reload(const std::string& name)
+    {
+        std::unique_lock<std::mutex> locker(m_mutex);
+        auto it = m_resources.find(name);
+        if (it != m_resources.end())
+        {
+
+        }
+    }
+
     void ContentManager::removeResource(const OResourceRef& pResource)
     {
         auto& resourceName = pResource->getName();

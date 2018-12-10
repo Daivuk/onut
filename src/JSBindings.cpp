@@ -10628,6 +10628,17 @@ namespace onut
             JS_GLOBAL_FUNCTION_END("getParticleSystem", 1);
             JS_GLOBAL_FUNCTION_BEGIN
             {
+                auto resName = JS_STRING(0);
+                if (oContentManager->isResourceLoaded(resName))
+                {
+                    oContentManager->removeResource(OGetParticleSystem(resName));
+                }
+                newParticleSystem(ctx, OGetParticleSystem(resName));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getFreshParticleSystem", 1);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
                 auto pPfx = JS_PARTICLE_SYSTEM(0);
                 auto pos = JS_VECTOR3(1);
                 auto dir = JS_VECTOR3(2, Vector3::UnitZ);
