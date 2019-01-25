@@ -19,8 +19,8 @@ if(NOT MSVC AND ONUT_USE_HUNTER)
     # Hunter Cross-platform package manager
     include("cmake/HunterGate.cmake")
     HunterGate(
-        URL "https://github.com/ruslo/hunter/archive/v0.19.26.tar.gz"
-        SHA1 "362b3c2fd8f0f50fc03cec5105be8fd4376ea886"
+        URL "https://github.com/path/to/hunter/archive.tar.gz"
+        SHA1 "798501e983f14b28b10cda16afa4de69eee1da1d"
     )
 endif()
 
