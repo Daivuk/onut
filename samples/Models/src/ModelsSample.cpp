@@ -3,13 +3,11 @@
 #include <onut/Model.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
-#include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/Timing.h>
 
 OAnimFloat angleAnim;
-OModelRef pTeapot;
-OTextureRef rt;
+OModelRef pModels[3];
 
 void initSettings()
 {
@@ -19,8 +17,11 @@ void initSettings()
 
 void init()
 {
-    rt = OTexture::createScreenRenderTarget();
-    pTeapot = OGetModel("barn.model");
+    pModels[0] = OGetModel("teapot.model");
+    pModels[1] = OGetModel("barn.model");
+    pModels[2] = OGetModel("box.model");
+    pModels[2]->getMesh(0)->pTexture = OGetTexture("diffuse.png"); // Swaping texture example
+
     angleAnim.play(0.0f, -360.0f, 8.0f, OTweenLinear, OLoop);
 }
 
@@ -30,17 +31,21 @@ void update()
 
 void render()
 {
-    oRenderer->renderStates.renderTarget.push(rt);
-    // Clear to black
-    oRenderer->setupFor3D({-8, -15, 10}, {0, 0, 0}, Vector3::Up, 90);
+    oRenderer->setupFor3D({8, 8, 15}, {0, 0, 5}, Vector3::Up, 90);
     oRenderer->clear({0.5, 0.5, 0.5, 1});
     oRenderer->clearDepth();
-    pTeapot->render(Matrix::Identity);
-    pTeapot->render(Matrix::CreateRotationZ(OConvertToRadians(angleAnim.get())));
-    oRenderer->renderStates.renderTarget.pop();
-    oSpriteBatch->begin();
-    oSpriteBatch->drawRect(rt, OScreenRectf);
-    oSpriteBatch->end();
+    pModels[0]->render(
+        Matrix::CreateRotationZ(OConvertToRadians(angleAnim.get()))
+    );
+    pModels[1]->render(
+        Matrix::CreateRotationZ(OConvertToRadians(angleAnim.get())) *
+        Matrix::CreateTranslation({-5, -30, 0})
+    );
+    pModels[2]->render(
+        Matrix::CreateTranslation({7.527910, 19.933542, 7.614748}) * // Box model is off center
+        Matrix::CreateRotationZ(OConvertToRadians(angleAnim.get())) *
+        Matrix::CreateTranslation({-30, -5, 0})
+    );
 }
 
 void postRender()

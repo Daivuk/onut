@@ -435,6 +435,16 @@ namespace onut
             assert(ret == S_OK);
         }
 
+        // model view
+        {
+            Matrix model = Matrix::Identity;
+            model = model.Transpose();
+            D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Matrix), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+            D3D11_SUBRESOURCE_DATA initData{&model, 0, 0};
+            auto ret = m_pDevice->CreateBuffer(&cbDesc, &initData, &m_pModelBuffer);
+            assert(ret == S_OK);
+        }
+
         // For effects
         {
             D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(sizeof(Vector4), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
@@ -629,8 +639,8 @@ namespace onut
             renderStates.view.isDirty() ||
             renderStates.world.isDirty())
         {
-            auto world = renderStates.world.get();
-            auto finalTransform = world * renderStates.view.get() * renderStates.projection.get();
+            auto finalModel = renderStates.world.get();
+            auto finalTransform = finalModel * renderStates.view.get() * renderStates.projection.get();
             finalTransform = finalTransform.Transpose();
 
             D3D11_MAPPED_SUBRESOURCE map;
@@ -638,6 +648,11 @@ namespace onut
             memcpy(map.pData, &finalTransform._11, sizeof(finalTransform));
             m_pDeviceContext->Unmap(m_pViewProj2dBuffer, 0);
             m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pViewProj2dBuffer);
+
+            m_pDeviceContext->Map(m_pModelBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+            memcpy(map.pData, &finalModel._11, sizeof(finalModel));
+            m_pDeviceContext->Unmap(m_pModelBuffer, 0);
+            m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pModelBuffer);
 
             renderStates.projection.resetDirty();
             renderStates.view.resetDirty();

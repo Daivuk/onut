@@ -144,9 +144,9 @@ namespace onut
                 mins[0] = std::min(mins[0], pVertex->position[0]);
                 mins[1] = std::min(mins[1], pVertex->position[1]);
                 mins[2] = std::min(mins[2], pVertex->position[2]);
-                maxs[0] = std::max(mins[0], pVertex->position[0]);
-                maxs[1] = std::max(mins[1], pVertex->position[1]);
-                maxs[2] = std::max(mins[2], pVertex->position[2]);
+                maxs[0] = std::max(maxs[0], pVertex->position[0]);
+                maxs[1] = std::max(maxs[1], pVertex->position[1]);
+                maxs[2] = std::max(maxs[2], pVertex->position[2]);
 #endif
             }
             for (int i = 0; i < (int)pAssMesh->mNumVertices; ++i)
@@ -210,7 +210,10 @@ namespace onut
         OLog(filename + " v cnt: " + std::to_string(vertCount) + ", dims: " 
             + std::to_string(maxs[0] - mins[0]) + " x "
             + std::to_string(maxs[1] - mins[1]) + " x "
-            + std::to_string(maxs[2] - mins[2]));
+            + std::to_string(maxs[2] - mins[2]) + ", center: "
+            + std::to_string((maxs[0] + mins[0]) / 2) + ", "
+            + std::to_string((maxs[1] + mins[1]) / 2) + ", "
+            + std::to_string((maxs[2] + mins[2]) / 2));
 #endif
 
         aiReleaseImport(pScene);
@@ -228,7 +231,7 @@ namespace onut
         return (int)m_meshes.size();
     }
 
-    const Model::Mesh* Model::getMesh(int index) const
+    Model::Mesh* Model::getMesh(int index)
     {
         return m_meshes.data() + index;
     }

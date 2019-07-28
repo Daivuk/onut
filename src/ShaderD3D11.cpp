@@ -141,6 +141,7 @@ namespace onut
 
             // Add engine default constant buffers
             source += "cbuffer OViewProjection : register(b0)\n{\n    matrix oViewProjection;\n}\n\n";
+            source += "cbuffer OModel : register(b1)\n{\n    matrix oModel;\n}\n\n";
 
             // Put inputs
             VertexElements vertexElements;

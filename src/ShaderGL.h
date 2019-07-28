@@ -63,6 +63,7 @@ namespace onut
             std::vector<GLint> uniformsVS;
             std::vector<GLint> uniformsPS;
             GLint oViewProjectionUniform;
+            GLint oModelUniform;
             std::vector<GLint> attributes;
             std::vector<GLint> textures;
         };

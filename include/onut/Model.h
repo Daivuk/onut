@@ -34,7 +34,7 @@ namespace onut
 
         ~Model();
         int getMeshCount() const;
-        const Mesh* getMesh(int index) const;
+        Mesh* getMesh(int index);
 
         void render(const Matrix& transform);
 

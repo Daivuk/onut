@@ -170,6 +170,7 @@ namespace onut
             // Add engine default constant buffers
             source += "#version " SHADER_VERSION "\n\n";
             source += "uniform mat4 oViewProjection;\n\n";
+            source += "uniform mat4 oModel;\n\n";
 
             // Add vertex elements
             VertexElements vertexElements;
@@ -694,6 +695,7 @@ namespace onut
 
         // Now find all uniforms
         pProgram->oViewProjectionUniform = glGetUniformLocation(program, "oViewProjection");
+        pProgram->oModelUniform = glGetUniformLocation(program, "oModel");
         for (const auto& uniform : pVertexShaderRaw->m_uniforms)
         {
             pProgramRaw->uniformsVS.push_back(glGetUniformLocation(program, uniform.name.c_str()));

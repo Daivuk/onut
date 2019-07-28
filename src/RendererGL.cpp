@@ -543,7 +543,8 @@ namespace onut
                     glCullFace(GL_BACK);
                 }
 
-                Matrix finalTransform = renderStates.world.get() * renderStates.view.get() * renderStates.projection.get();
+                Matrix finalModel = renderStates.world.get();
+                Matrix finalTransform = finalModel * renderStates.view.get() * renderStates.projection.get();
                 if (invertY)
                 {
                     finalTransform *= Matrix::CreateScale(1, -1, 1);
@@ -557,6 +558,10 @@ namespace onut
                 if (pProgram && pProgram->oViewProjectionUniform != -1)
                 {
                     glUniformMatrix4fv(pProgram->oViewProjectionUniform, 1, GL_FALSE, &finalTransform._11);
+                }
+                if (pProgram && pProgram->oModelUniform != -1)
+                {
+                    glUniformMatrix4fv(pProgram->oModelUniform, 1, GL_FALSE, &finalModel._11);
                 }
             }
         }
