@@ -115,6 +115,7 @@ namespace onut
         void* pMatrixPrototype = nullptr;
 
         void* pTexturePrototype = nullptr;
+        void* pModelPrototype = nullptr;
         void* pFontPrototype = nullptr;
         void* pShaderPrototype = nullptr;
         void* pMusicPrototype = nullptr;
@@ -2723,6 +2724,16 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
+        static void newModel(duk_context* ctx, const OModelRef& pModel)
+        {
+            duk_push_object(ctx);
+            auto ppModel = new OModelRef(pModel);
+            duk_push_pointer(ctx, ppModel);
+            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
+            duk_push_heapptr(ctx, pModelPrototype);
+            duk_set_prototype(ctx, -2);
+        }
+        
         static void newFont(duk_context* ctx, const OFontRef& pFont)
         {
             duk_push_object(ctx);
@@ -2902,7 +2913,7 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 duk_get_prop_string(ctx, 0, "\xff""\xff""data");
-                auto ppUpdater = (OTextureRef*)duk_to_pointer(ctx, -1);
+                auto ppUpdater = (OUpdaterRef*)duk_to_pointer(ctx, -1);
                 if (ppUpdater)
                 {
                     delete ppUpdater;
@@ -3176,6 +3187,153 @@ namespace onut
             duk_put_prop_string(ctx, -2, "createScreenRenderTarget");
 
             duk_put_global_string(ctx, "Texture");
+        }
+
+        static void createModelBindings()
+        {
+            auto ctx = pContext;
+
+            // Model() 
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                return DUK_RET_TYPE_ERROR; // No constructor allowed
+            }, 1);
+            duk_push_object(ctx);
+
+            // ~Model()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    delete ppModel;
+                    duk_pop(ctx);
+                    duk_push_pointer(ctx, nullptr);
+                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
+                }
+                return 0;
+            }, 1);
+            duk_set_finalizer(ctx, -2);
+
+            // getMeshCount()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    duk_push_int(ctx, (*ppModel)->getMeshCount());
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getMeshCount");
+
+            // getTexture()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto index = JS_INT(0, 0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    newTexture(ctx, (*ppModel)->getMesh(index)->pTexture);
+                }
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getTexture");
+
+            // getElementCount()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto index = JS_INT(0, 0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    duk_push_int(ctx, (*ppModel)->getMesh(index)->elementCount);
+                }
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getElementCount");
+
+            // getVertexBuffer()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto index = JS_INT(0, 0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    newVertexBuffer(ctx, (*ppModel)->getMesh(index)->pVertexBuffer);
+                }
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getVertexBuffer");
+
+            // getIndexBuffer()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto index = JS_INT(0, 0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    newIndexBuffer(ctx, (*ppModel)->getMesh(index)->pIndexBuffer);
+                }
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "getIndexBuffer");
+
+            // setTexture()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto index = JS_INT(0, 0);
+                auto pInTexture = JS_TEXTURE(1);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    (*ppModel)->getMesh(index)->pTexture = pInTexture;
+                }
+                return 0;
+            }, 2);
+            duk_put_prop_string(ctx, -2, "setTexture");
+
+            // render()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto transform = JS_MATRIX(0, Matrix::Identity);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    (*ppModel)->render(transform);
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "render");
+
+            // Done with the object
+            pModelPrototype = duk_get_heapptr(ctx, -1);
+            duk_put_prop_string(ctx, -2, "prototype");
+
+            // createFromFile(filename)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newModel(ctx, OGetModel(duk_get_string(ctx, 0)));
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromFile");
+
+            duk_put_global_string(ctx, "Model");
         }
 
         static void createFontBindings()
@@ -8222,6 +8380,7 @@ namespace onut
         static void createResourceBindings()
         {
             createTextureBindings();
+            createModelBindings();
             createFontBindings();
             createShaderBindings();
             createMusicBindings();
@@ -9167,6 +9326,18 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setupFor2D", 1);
+
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->setupFor3D(
+                        JS_VECTOR3(0, { 0, -10, 0 }),
+                        JS_VECTOR3(1, Vector3::Zero),
+                        JS_VECTOR3(2, Vector3::Up),
+                        JS_FLOAT(3, 90.0f)
+                    );
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setupFor3D", 4);
 
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
@@ -10493,6 +10664,12 @@ namespace onut
                 }
             }
             JS_GLOBAL_FUNCTION_END("getTexture", 2);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                newModel(ctx, OGetModel(JS_STRING(0)));
+                return 1;
+            }
+            JS_GLOBAL_FUNCTION_END("getModel", 1);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 newFont(ctx, OGetFont(JS_STRING(0)));

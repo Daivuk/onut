@@ -42,7 +42,7 @@ void render()
         Matrix::CreateTranslation({-5, -30, 0})
     );
     pModels[2]->render(
-        Matrix::CreateTranslation({7.527910, 19.933542, 7.614748}) * // Box model is off center
+        Matrix::CreateTranslation({7.527910f, 19.933542f, 7.614748f}) * // Box model is off center
         Matrix::CreateRotationZ(OConvertToRadians(angleAnim.get())) *
         Matrix::CreateTranslation({-30, -5, 0})
     );

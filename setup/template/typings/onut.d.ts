@@ -994,6 +994,7 @@ declare class Model {
     getIndexBuffer(mesh: number): IndexBuffer;
     getVertexBuffer(mesh: number): VertexBuffer;
     getTexture(mesh: number): Texture;
+    setTexture(mesh: number, texture: Texture);
     getElementCount(mesh: number): number;
     render(transform: Matrix);
 }
@@ -1089,6 +1090,7 @@ declare function setUINavigation(useNav: boolean);
 // Renderer
 declare namespace Renderer {
     function clear(color: Color);
+    function clearDepth();
     function getResolution(): Vector2;
     function draw(vertexCount: number);
     function drawIndexed(indexCount: number);

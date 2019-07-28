@@ -407,7 +407,7 @@ list(APPEND libs assimp)
 
 # Include libs and includes
 target_include_directories(libonut ${includes})
-target_link_libraries(libonut ${libs})
+target_link_libraries(libonut PUBLIC ${libs})
 
 if (ONUT_BUILD_STANDALONE)
     add_subdirectory(JSStandAlone) # JSStandAlone

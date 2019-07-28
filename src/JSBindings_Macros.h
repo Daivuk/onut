@@ -16,6 +16,7 @@
 #include <onut/IndexBuffer.h>
 #include <onut/Input.h>
 #include <onut/Log.h>
+#include <onut/Model.h>
 #include <onut/Music.h>
 #include <onut/onut.h>
 #include <onut/ParticleSystem.h>
@@ -196,6 +197,7 @@ namespace onut
 #define JS_FONT(__index__) getResource<OFont>(ctx, __index__)
 #define JS_SHADER(__index__) getResource<OShader>(ctx, __index__)
 #define JS_SOUND(__index__) getResource<OSound>(ctx, __index__)
+#define JS_MODEL(__index__) getResource<OModel>(ctx, __index__)
 #define JS_SPRITE_ANIM(__index__) getResource<OSpriteAnim>(ctx, __index__)
 #define JS_SPRITE_ANIM_INSTANCE(__index__) getSpriteAnimInstance(ctx, __index__)
 #define JS_PARTICLE_SYSTEM(__index__) getResource<OParticleSystem>(ctx, __index__)
