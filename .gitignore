@@ -86,4 +86,7 @@ samples/UI/UISample
 # hunter
 _3rdParty/
 
+build/
+.vscode/
+
 imgui.ini

@@ -1,3 +1,6 @@
+// Public includes
+#include <onut/Axis.h>
+
 // Private includes
 #include "JSBindings.h"
 #include "JSBindings_Macros.h"
@@ -11003,6 +11006,13 @@ namespace onut
                 JS_ENUM("CROSS_CORNERS", OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS);
             }
             JS_INTERFACE_END("PathType");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("X", Axis::X);
+                JS_ENUM("Y", Axis::Y);
+                JS_ENUM("Z", Axis::Z);
+            }
+            JS_INTERFACE_END("Axis");
 
             // System
             JS_INTERFACE_BEGIN();

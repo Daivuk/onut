@@ -162,6 +162,20 @@ namespace onut
         renderStates.blendMode = OBlendPreMultiplied;
     }
 
+    void Renderer::setupFor3D(const Vector3& eye, const Vector3& target, const Vector3& up, float fov)
+    {
+        const auto& viewport = renderStates.viewport.get();
+        renderStates.view = Matrix::CreateLookAt(eye, target, up);
+        renderStates.projection = Matrix::CreatePerspectiveFieldOfView(OConvertToRadians(fov), static_cast<float>(viewport.right - viewport.left) / static_cast<float>(viewport.bottom - viewport.top), 0.1f, 10000.f);
+        renderStates.vertexShader = m_p3DVertexShader;
+        renderStates.pixelShader = m_p3DPixelShader;
+        renderStates.depthEnabled = true;
+        renderStates.depthWrite = true;
+        renderStates.backFaceCull = true;
+        renderStates.primitiveMode = OPrimitiveTriangleList;
+        renderStates.blendMode = OBlendOpaque;
+    }
+
     Renderer::CameraMatrices Renderer::build2DCamera(const Vector2& position, float zoom)
     {
         CameraMatrices ret;
@@ -211,6 +225,12 @@ namespace onut
         {
             m_p2DVertexShader = OShader::createFromSource(SHADER_SRC_2D_VS, OVertexShader);
             m_p2DPixelShader = OShader::createFromSource(SHADER_SRC_2D_PS, OPixelShader);
+        }
+
+        // Create 3D shaders
+        {
+            m_p3DVertexShader = OShader::createFromSource(SHADER_SRC_3D_VS, OVertexShader);
+            m_p3DPixelShader = OShader::createFromSource(SHADER_SRC_3D_PS, OPixelShader);
         }
 
         // Effects

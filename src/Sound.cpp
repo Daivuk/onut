@@ -6,7 +6,7 @@
 #include <onut/Strings.h>
 #include <onut/Random.h>
 
-// Third partyes
+// Third parties
 #include <tinyxml2/tinyxml2.h>
 
 // STL

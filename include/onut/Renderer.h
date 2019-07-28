@@ -158,6 +158,7 @@ namespace onut
 
         void setupFor2D();
         void setupFor2D(const Matrix& transform);
+        void setupFor3D(const Vector3& eye, const Vector3& target, const Vector3& up, float fov);
         void set2DCamera(const CameraMatrices& camera, const Matrix& transform = Matrix::Identity);
         CameraMatrices set2DCamera(const Vector2& position, float zoom = 1.f);
         CameraMatrices set2DCameraOffCenter(const Vector2& position, float zoom = 1.f);
@@ -205,6 +206,8 @@ namespace onut
 
         OShaderRef m_p2DVertexShader;
         OShaderRef m_p2DPixelShader;
+        OShaderRef m_p3DVertexShader;
+        OShaderRef m_p3DPixelShader;
         OShaderRef m_pEffectsVertexShader;
         OShaderRef m_pBlurHPixelShader;
         OShaderRef m_pBlurVPixelShader;

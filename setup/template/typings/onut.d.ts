@@ -986,6 +986,20 @@ declare class ParticleEmitter {
 /** Same as particleSystem.emit */
 declare function emitParticle(particleSystem: ParticleSystem, pos: Vector3, dir: Vector3): ParticleEmitter;
 
+// Model
+declare class Model {
+    static createFromFile(filename: string): Model;
+
+    getMeshCount(): number;
+    getIndexBuffer(mesh: number): IndexBuffer;
+    getVertexBuffer(mesh: number): VertexBuffer;
+    getTexture(mesh: number): Texture;
+    getElementCount(mesh: number): number;
+    render(transform: Matrix);
+}
+/** Same as Model.createFromFile */
+declare function getModel(filename: string): ParticleSystem;
+
 // VertexBuffer
 declare class VertexBuffer {
     static createStatic(data: Float32Array): VertexBuffer;
@@ -1076,9 +1090,14 @@ declare function setUINavigation(useNav: boolean);
 declare namespace Renderer {
     function clear(color: Color);
     function getResolution(): Vector2;
-    function setupFor2D(transform: Matrix);
     function draw(vertexCount: number);
     function drawIndexed(indexCount: number);
+
+    // 2D stuff
+    function setupFor2D(transform: Matrix);
+
+    // 3D stuff
+    function setupFor3D(eye: Vector3, target: Vector3, up: Vector3, fov: number);
 
     // States
     function setRenderTarget(renderTarget: Texture);
@@ -1520,6 +1539,12 @@ declare enum PathType {
     STRAIGHT,
     ALLOW_DIAGONAL,
     CROSS_CORNERS
+}
+
+declare enum Axis {
+    X,
+    Y,
+    Z
 }
 
 declare namespace System {

@@ -19,8 +19,8 @@ if(NOT MSVC AND ONUT_USE_HUNTER)
     # Hunter Cross-platform package manager
     include("cmake/HunterGate.cmake")
     HunterGate(
-        URL "https://github.com/ruslo/hunter/archive/v0.19.26.tar.gz"
-        SHA1 "362b3c2fd8f0f50fc03cec5105be8fd4376ea886"
+        URL "https://github.com/ruslo/hunter/archive/v0.23.53.tar.gz"
+        SHA1 "5d9feddb1ebeca27e32634954fe4de37cf36f97d"
     )
 endif()
 
@@ -223,6 +223,7 @@ list(APPEND src_files
     src/Log.cpp 
     src/Matrix.cpp 
     src/micropather.cpp
+    src/Model.cpp 
     src/Multiplayer.cpp
     src/Music.cpp
     src/MusicOGG.cpp
@@ -336,7 +337,7 @@ if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2
         # https://github.com/ruslo/hunter/wiki/pkg.sdl2
         hunter_add_package(SDL2)
         find_package(SDL2 CONFIG REQUIRED)
-        list(APPEND libs PUBLIC SDL2::SDL2-static)
+        list(APPEND libs PUBLIC SDL2::SDL2)
     else()
         find_package(SDL2 REQUIRED)
         list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
@@ -399,6 +400,11 @@ if (WIN32)
     )
 endif()
 
+# assimp
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(./thirdparty/assimp/)
+list(APPEND libs assimp)
+
 # Include libs and includes
 target_include_directories(libonut ${includes})
 target_link_libraries(libonut ${libs})
@@ -428,6 +434,7 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/GamePads) # GamePadsSample
     add_subdirectory(samples/Http) # HttpSample
     add_subdirectory(samples/Imgui) # ImguiSample
+    add_subdirectory(samples/Models) # ModelsSample
     add_subdirectory(samples/Multiplayer) # MultiplayerSample
     add_subdirectory(samples/Navigation) # NavigationSample
     add_subdirectory(samples/Particles) # ParticlesSample
