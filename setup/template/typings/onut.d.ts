@@ -1356,7 +1356,7 @@ declare namespace GUI {
     function smallButton(text: string): boolean;
     function invisibleButton(text: string, size: Vector2): boolean;
     function image(texture: Texture, size: Vector2, uv0: Vector2, uv1: vector2, tint_col: Color, border_col: Color);
-    function imagineButton(texture: Texture, size: Vector2, uv0: Vector2, uv1: Vector2, frame_padding: number, bg_col: Color, tint_col: Color): boolean;
+    function imageButton(texture: Texture, size: Vector2, uv0: Vector2, uv1: Vector2, frame_padding: number, bg_col: Color, tint_col: Color): boolean;
     function checkbox(text: string, checked: boolean): boolean;
     function radioButton(text: string, v: number, v_item: number): number;
     function combo(text: string, v: number, items: string[]): number;
