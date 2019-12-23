@@ -247,7 +247,7 @@ namespace onut
     void MFPlayer::setSource(const std::string& url)
     {
         auto ws = utf8ToUtf16(url);
-        BSTR bs = SysAllocStringLen(ws.data(), ws.size());
+        BSTR bs = SysAllocStringLen(ws.data(), (UINT)ws.size());
         auto ret = m_pMediaEngine->SetSource(bs);
         assert(ret == S_OK);
     }

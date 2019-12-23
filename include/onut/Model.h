@@ -5,6 +5,7 @@
 #include <onut/Axis.h>
 #include <onut/Matrix.h>
 #include <onut/Resource.h>
+#include <onut/Vector3.h>
 
 // STL
 #include <vector>
@@ -35,11 +36,13 @@ namespace onut
         ~Model();
         int getMeshCount() const;
         Mesh* getMesh(int index);
+        const Vector3* getBoundingBox() const;
 
         void render(const Matrix& transform);
 
     private:
         std::vector<Mesh> m_meshes;
+        Vector3 m_boundingBox[2];
     };
 }
 

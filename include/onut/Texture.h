@@ -48,7 +48,9 @@ namespace onut
         virtual void resizeTarget(const Point& size) = 0;
 
     protected:
-        Texture() {}
+        Texture() :
+            m_type{}
+        {}
 
         enum class Type
         {

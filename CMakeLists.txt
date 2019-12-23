@@ -30,7 +30,7 @@ project(libonut)
 # Some compiler flags
 set(CMAKE_CXX_STANDARD 11)
 if (MSVC) # Multi core in VS
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP")
+    SET(PUBLIC CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP /FS")
 endif()
 
 # Pre processors
@@ -401,6 +401,8 @@ if (WIN32)
 endif()
 
 # assimp
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+set(ASSIMP_BUILD_TESTS OFF)
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(./thirdparty/assimp/)
 list(APPEND libs assimp)

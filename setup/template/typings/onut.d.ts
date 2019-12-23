@@ -991,6 +991,8 @@ declare class Model {
     static createFromFile(filename: string): Model;
 
     getMeshCount(): number;
+    getMin(): Vector3;
+    getMax(): Vector3;
     getIndexBuffer(mesh: number): IndexBuffer;
     getVertexBuffer(mesh: number): VertexBuffer;
     getTexture(mesh: number): Texture;

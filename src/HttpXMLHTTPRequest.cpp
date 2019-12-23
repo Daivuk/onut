@@ -35,7 +35,14 @@ namespace onut
         HRESULT hr;
         CComPtr<IXMLHTTPRequest> request;
 
-        CoInitializeEx(NULL, COINIT_MULTITHREADED);
+        if (CoInitializeEx(NULL, COINIT_MULTITHREADED) != S_OK)
+        {
+            if (onError)
+            {
+                onError(0, "error");
+            }
+            return "";
+        }
         hr = request.CoCreateInstance(CLSID_XMLHTTP60);
         hr = request->open(_bstr_t("POST"),
                             _bstr_t(url.c_str()),
@@ -56,7 +63,7 @@ namespace onut
             var.vt = VT_ARRAY | VT_UI1;
 
             SAFEARRAYBOUND rgsabound[1];
-            rgsabound[0].cElements = body.size();
+            rgsabound[0].cElements = (ULONG)body.size();
             rgsabound[0].lLbound = 0;
 
             var.parray = SafeArrayCreate(VT_UI1, 1, rgsabound);
@@ -123,7 +130,14 @@ namespace onut
         HRESULT hr;
         CComPtr<IXMLHTTPRequest> request;
 
-        CoInitializeEx(NULL, COINIT_MULTITHREADED);
+        if (CoInitializeEx(NULL, COINIT_MULTITHREADED) != S_OK)
+        {
+            if (onError)
+            {
+                onError(0, "error");
+            }
+            return{};
+        }
         hr = request.CoCreateInstance(CLSID_XMLHTTP60);
         hr = request->open(_bstr_t("GET"),
                             _bstr_t(fullUrl.c_str()),

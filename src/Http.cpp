@@ -169,7 +169,7 @@ OTextureRef OHTTPGetTexture(const std::string& url, const onut::Http::Arguments&
     auto body = oHttp->get(url, arguments, onError);
     if (!body.empty())
     {
-        return OTexture::createFromFileData(body.data(), body.size());
+        return OTexture::createFromFileData(body.data(), (uint32_t)body.size());
     }
     return nullptr;
 }

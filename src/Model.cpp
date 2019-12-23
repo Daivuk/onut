@@ -115,9 +115,9 @@ namespace onut
         }
 
         // Meshes
+        float mins[3] = {100000.f, 100000.f, 100000.f};
+        float maxs[3] = {-100000.f, -100000.f, -100000.f};
 #if defined(_DEBUG)
-        float mins[3] = {10000.f, 10000.f, 10000.f};
-        float maxs[3] = {-10000.f, -10000.f, -10000.f};
         int vertCount = 0;
 #endif
         pRet->m_meshes.resize((int)pScene->mNumMeshes);
@@ -127,6 +127,22 @@ namespace onut
             auto pAssMesh = pScene->mMeshes[i];
 
             pMesh->pTexture = materials[pAssMesh->mMaterialIndex];
+            aiColor4D diffuseColor;
+            if (pMesh->pTexture != WhiteTexture ||
+                aiGetMaterialColor(pScene->mMaterials[pAssMesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) != AI_SUCCESS)
+            {
+                diffuseColor.r = 1.0f;
+                diffuseColor.g = 1.0f;
+                diffuseColor.b = 1.0f;
+                diffuseColor.a = 1.0f;
+            }
+            aiColor4D emissiveColor;
+            if (aiGetMaterialColor(pScene->mMaterials[pAssMesh->mMaterialIndex], AI_MATKEY_COLOR_EMISSIVE, &emissiveColor) == AI_SUCCESS)
+            {
+                diffuseColor.r += emissiveColor.r;
+                diffuseColor.g += emissiveColor.g;
+                diffuseColor.b += emissiveColor.b;
+            }
 
             assert(pAssMesh->mNumVertices);
 
@@ -137,24 +153,40 @@ namespace onut
             for (int i = 0; i < (int)pAssMesh->mNumVertices; ++i)
             {
                 auto pVertex = vertices + i;
-                pVertex->position[0] = pAssMesh->mVertices[i].x * scale;
-                pVertex->position[1] = -pAssMesh->mVertices[i].z * scale;
-                pVertex->position[2] = pAssMesh->mVertices[i].y * scale;
-#if defined(_DEBUG)
+                if (upAxis == Axis::Z)
+                {
+                    pVertex->position[0] = pAssMesh->mVertices[i].x * scale;
+                    pVertex->position[1] = -pAssMesh->mVertices[i].z * scale;
+                    pVertex->position[2] = pAssMesh->mVertices[i].y * scale;
+                }
+                else
+                {
+                    pVertex->position[0] = pAssMesh->mVertices[i].x * scale;
+                    pVertex->position[1] = pAssMesh->mVertices[i].y * scale;
+                    pVertex->position[2] = pAssMesh->mVertices[i].z * scale;
+                }
                 mins[0] = std::min(mins[0], pVertex->position[0]);
                 mins[1] = std::min(mins[1], pVertex->position[1]);
                 mins[2] = std::min(mins[2], pVertex->position[2]);
                 maxs[0] = std::max(maxs[0], pVertex->position[0]);
                 maxs[1] = std::max(maxs[1], pVertex->position[1]);
                 maxs[2] = std::max(maxs[2], pVertex->position[2]);
-#endif
             }
             for (int i = 0; i < (int)pAssMesh->mNumVertices; ++i)
             {
                 auto pVertex = vertices + i;
-                pVertex->normal[0] = pAssMesh->mNormals[i].x;
-                pVertex->normal[1] = -pAssMesh->mNormals[i].z;
-                pVertex->normal[2] = pAssMesh->mNormals[i].y;
+                if (upAxis == Axis::Z)
+                {
+                    pVertex->normal[0] = pAssMesh->mNormals[i].x;
+                    pVertex->normal[1] = -pAssMesh->mNormals[i].z;
+                    pVertex->normal[2] = pAssMesh->mNormals[i].y;
+                }
+                else
+                {
+                    pVertex->normal[0] = pAssMesh->mNormals[i].x;
+                    pVertex->normal[1] = pAssMesh->mNormals[i].y;
+                    pVertex->normal[2] = pAssMesh->mNormals[i].z;
+                }
             }
             if (pAssMesh->HasVertexColors(0))
             {
@@ -163,6 +195,10 @@ namespace onut
                 {
                     auto pVertex = vertices + i;
                     memcpy(pVertex->color, pAssMesh->mColors[0] + i * colorCnt, sizeof(float) * 4);
+                    pVertex->color[0] *= diffuseColor.r;
+                    pVertex->color[1] *= diffuseColor.g;
+                    pVertex->color[2] *= diffuseColor.b;
+                    pVertex->color[3] *= diffuseColor.a;
                 }
             }
             else
@@ -170,7 +206,10 @@ namespace onut
                 for (int i = 0; i < (int)pAssMesh->mNumVertices; ++i)
                 {
                     auto pVertex = vertices + i;
-                    pVertex->color[0] = 1; pVertex->color[1] = 1; pVertex->color[2] = 1; pVertex->color[3] = 1;
+                    pVertex->color[0] = diffuseColor.r;
+                    pVertex->color[1] = diffuseColor.g;
+                    pVertex->color[2] = diffuseColor.b;
+                    pVertex->color[3] = diffuseColor.a;
                 }
             }
             if (pAssMesh->HasTextureCoords(0))
@@ -216,6 +255,9 @@ namespace onut
             + std::to_string((maxs[2] + mins[2]) / 2));
 #endif
 
+        pRet->m_boundingBox[0] = { mins[0], mins[1], mins[2] };
+        pRet->m_boundingBox[1] = { maxs[0], maxs[1], maxs[2] };
+
         aiReleaseImport(pScene);
 
         return pRet;
@@ -234,6 +276,11 @@ namespace onut
     Model::Mesh* Model::getMesh(int index)
     {
         return m_meshes.data() + index;
+    }
+
+    const Vector3* Model::getBoundingBox() const
+    {
+        return m_boundingBox;
     }
 
     void Model::render(const Matrix& transform)

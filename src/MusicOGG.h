@@ -66,11 +66,11 @@ namespace onut
         int m_musicChannelCount = 0;
         bool m_paused = false;
         unsigned int m_sampleCount = 0;
-        int m_bufferMax;
-        int m_engineChannelCount;
+        int m_bufferMax = 0;
+        int m_engineChannelCount = 44100;
         std::string m_filename;
         stb_vorbis* m_pStream = nullptr;
-        stb_vorbis_info m_info;
+        stb_vorbis_info m_info = {};
     };
 }
 

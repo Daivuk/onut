@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <functional>
 
 // Internal (Have to include that last)
 #include "MusicOGG.h"

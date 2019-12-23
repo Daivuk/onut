@@ -24,8 +24,8 @@ static bool isValidEmailAddress(const char * EmailAddress)
         return 0;
     int AtOffset = -1;
     int DotOffset = -1;
-    unsigned int Length = strlen(EmailAddress); // Length = StringLength (strlen) of EmailAddress
-    for (unsigned int i = 0; i < Length; i++)
+    size_t Length = strlen(EmailAddress); // Length = StringLength (strlen) of EmailAddress
+    for (size_t i = 0; i < Length; i++)
     {
         if (EmailAddress[i] == '@') // If one of the characters is @, store it's position in AtOffset
             AtOffset = (int)i;
@@ -361,7 +361,7 @@ namespace onut
 
         std::vector<uint8_t> base64_decode(const std::string& encoded_string)
         {
-            int in_len = encoded_string.size();
+            int in_len = (int)encoded_string.size();
             int i = 0;
             int j = 0;
             int in_ = 0;
@@ -423,7 +423,7 @@ namespace onut
             unsigned char resultHash[20] = {0};
             char hexstring[41];
 
-            sha1::calc(str.c_str(), str.size(), resultHash);
+            sha1::calc(str.c_str(), (int)str.size(), resultHash);
             sha1::toHexString(resultHash, hexstring);
 
             return hexstring;

@@ -44,7 +44,9 @@ namespace onut
         };
         using KeyFrames = std::vector<KeyFrame>;
 
-        Anim() {}
+        Anim() :
+            m_value{}
+        {}
         Anim(const Ttype& rvalue) :
             m_value(rvalue)
         {}

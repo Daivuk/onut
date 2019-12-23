@@ -54,7 +54,7 @@ namespace onut
         void init(const OTextureRef& pRenderTarget);
 
         IMFMediaEngine* m_pMediaEngine = nullptr;
-        MFPlayerNotify* m_pPlayerNodify;
+        MFPlayerNotify* m_pPlayerNodify = nullptr;
         OTextureRef m_pRenderTarget = nullptr;
         bool m_isPlaying = false;
         IMFDXGIDeviceManager* m_pDXGIManager = nullptr;

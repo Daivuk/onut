@@ -157,7 +157,7 @@ namespace onut
 
         result.y += (float)m_common.lineHeight;
         float curX = 0;
-        unsigned int len = in_text.length();
+        unsigned int len = (unsigned int)in_text.length();
         uint32_t charId;
         for (unsigned int i = 0; i < len;)
         {
@@ -205,7 +205,7 @@ namespace onut
         unsigned int pos = 0;
 
         float curX = 0;
-        unsigned int len = in_text.length();
+        unsigned int len = (unsigned int)in_text.length();
         uint32_t charId;
         for (; pos < (unsigned int )len;)
         {
@@ -295,7 +295,7 @@ namespace onut
         Vector2 curPos = pos;
         ret.x = curPos.x;
         ret.y = curPos.y;
-        unsigned int len = text.size();
+        unsigned int len = (unsigned int)text.size();
         int page = -1;
         float r, g, b;
         Color curColor = color;

@@ -3230,6 +3230,34 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "getMeshCount");
 
+            // getMin()
+            duk_push_c_function(ctx, [](duk_context* ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    newVector3(ctx, (*ppModel)->getBoundingBox()[0]);
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getMin");
+
+            // getMax()
+            duk_push_c_function(ctx, [](duk_context* ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppModel = (OModelRef*)duk_to_pointer(ctx, -1);
+                if (ppModel)
+                {
+                    newVector3(ctx, (*ppModel)->getBoundingBox()[1]);
+                }
+                return 1;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getMax");
+
             // getTexture()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {

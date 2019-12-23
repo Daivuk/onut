@@ -2,6 +2,7 @@
 #define DISPATCHER_H_INCLUDED
 
 // STL
+#include <functional>
 #include <mutex>
 #include <queue>
 #include <thread>

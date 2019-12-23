@@ -54,9 +54,6 @@ struct Vector2
             case onut::Align::Left:
                 x = 0; y = .5f;
                 break;
-            case onut::Align::Center:
-                x = .5f; y = .5f;
-                break;
             case onut::Align::Right:
                 x = 1; y = .5f;
                 break;
@@ -68,6 +65,10 @@ struct Vector2
                 break;
             case onut::Align::BottomRight:
                 x = 1; y = 1;
+                break;
+            case onut::Align::Center:
+            default:
+                x = .5f; y = .5f;
                 break;
         }
     }
