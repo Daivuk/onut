@@ -22,10 +22,11 @@ namespace onut
 
         ID3D11Buffer* getBuffer() const;
 
-        void setData(const void* pIndexData, uint32_t size) override;
+        void setData(const void* pIndexData, uint32_t size, int typeSize = 16) override;
         void* map() override;
         void unmap(uint32_t size) override;
         uint32_t size() override;
+        int GetTypeSize() const;
 
     private:
         friend class IndexBuffer;
@@ -34,6 +35,7 @@ namespace onut
         uint32_t m_size = 0;
         bool m_isDynamic = false;
         D3D11_MAPPED_SUBRESOURCE m_mappedIndexBuffer;
+        int m_typeSize = 16;
     };
 };
 

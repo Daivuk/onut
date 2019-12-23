@@ -229,7 +229,15 @@ namespace onut
             pMesh->elementCount = (uint32_t)pAssMesh->mNumFaces * 3;
             if (pAssMesh->mNumFaces * 3 > std::numeric_limits<uint16_t>::max())
             {
-                assert(false); // We only support 16 bits index arrays
+                uint32_t* indices = new uint32_t[pMesh->elementCount];
+                for (int i = 0; i < (int)pAssMesh->mNumFaces; ++i)
+                {
+                    indices[i * 3 + 0] = (uint32_t)pAssMesh->mFaces[i].mIndices[0];
+                    indices[i * 3 + 1] = (uint32_t)pAssMesh->mFaces[i].mIndices[1];
+                    indices[i * 3 + 2] = (uint32_t)pAssMesh->mFaces[i].mIndices[2];
+                }
+                pMesh->pIndexBuffer = OIndexBuffer::createStatic(indices, pMesh->elementCount * sizeof(uint32_t), 32);
+                delete[] indices;
             }
             else
             {
@@ -240,7 +248,7 @@ namespace onut
                     indices[i * 3 + 1] = (uint16_t)pAssMesh->mFaces[i].mIndices[1];
                     indices[i * 3 + 2] = (uint16_t)pAssMesh->mFaces[i].mIndices[2];
                 }
-                pMesh->pIndexBuffer = OIndexBuffer::createStatic(indices, pMesh->elementCount * sizeof(uint16_t));
+                pMesh->pIndexBuffer = OIndexBuffer::createStatic(indices, pMesh->elementCount * sizeof(uint16_t), 16);
                 delete[] indices;
             }
         }

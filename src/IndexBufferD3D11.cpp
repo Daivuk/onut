@@ -7,10 +7,10 @@
 
 namespace onut
 {
-    OIndexBufferRef IndexBuffer::createStatic(const void* pVertexData, uint32_t size)
+    OIndexBufferRef IndexBuffer::createStatic(const void* pVertexData, uint32_t size, int typeSize)
     {
         auto pRet = OMake<IndexBufferD3D11>();
-        pRet->setData(pVertexData, size);
+        pRet->setData(pVertexData, size, typeSize);
         return pRet;
     }
 
@@ -56,8 +56,9 @@ namespace onut
         return m_pBuffer;
     }
 
-    void IndexBufferD3D11::setData(const void* pVertexData, uint32_t size)
+    void IndexBufferD3D11::setData(const void* pVertexData, uint32_t size, int typeSize)
     {
+        m_typeSize = typeSize;
         if (!m_isDynamic)
         {
             if (m_pBuffer)
@@ -121,5 +122,10 @@ namespace onut
     uint32_t IndexBufferD3D11::size()
     {
         return m_size;
+    }
+
+    int IndexBufferD3D11::GetTypeSize() const
+    {
+        return m_typeSize;
     }
 }

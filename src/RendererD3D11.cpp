@@ -813,7 +813,9 @@ namespace onut
             {
                 auto pIndexBufferD3D11 = ODynamicCast<OIndexBufferD3D11>(renderStates.indexBuffer.get());
                 auto pD3DBuffer = pIndexBufferD3D11->getBuffer();
-                m_pDeviceContext->IASetIndexBuffer(pD3DBuffer, DXGI_FORMAT_R16_UINT, 0);
+                m_pDeviceContext->IASetIndexBuffer(pD3DBuffer,
+                    pIndexBufferD3D11->GetTypeSize() == 16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 
+                    0);
             }
             renderStates.indexBuffer.resetDirty();
         }
