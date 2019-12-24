@@ -105,7 +105,9 @@ if (LINUX)
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
         src/VideoPlayerLinux.cpp
+        thirdparty/gl3w/src/gl3w.c
     )
+    list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
 endif()
 
 # Add Win32 specific source files
@@ -126,7 +128,9 @@ if (WIN32)
             src/TextureGL.cpp 
             src/VertexBufferGL.cpp 
             src/VideoPlayerEmpty.cpp
+            thirdparty/gl3w/src/gl3w.c
         )
+        list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
     else()
         list(APPEND src_files
             src/IndexBufferD3D11.cpp 
@@ -361,9 +365,6 @@ if (WIN32)
         find_package(OpenGL REQUIRED)
         list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
         list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
-
-        link_directories(./lib/win/Release/)
-        list(APPEND libs PUBLIC glew32s)
     endif()
     find_package(DirectX11 REQUIRED)
     list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})

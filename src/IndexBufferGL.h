@@ -19,12 +19,13 @@ namespace onut
         IndexBufferGL();
         ~IndexBufferGL();
 
-        void setData(const void* pIndexData, uint32_t size) override;
+        void setData(const void* pIndexData, uint32_t size, int typeSize = 16) override;
         void* map() override;
         void unmap(uint32_t size) override;
         uint32_t size() override;
         
         GLuint getHandle() const;
+        int getTypeSize() const;
 
     private:
         friend class IndexBuffer;
@@ -33,6 +34,7 @@ namespace onut
         bool m_isDynamic = false;
         GLuint m_handle = 0;
         uint8_t* m_pData = nullptr;
+        int m_typeSize = 16;
     };
 };
 

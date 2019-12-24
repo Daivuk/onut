@@ -7,10 +7,10 @@
 
 namespace onut
 {
-    OIndexBufferRef IndexBuffer::createStatic(const void* pVertexData, uint32_t size)
+    OIndexBufferRef IndexBuffer::createStatic(const void* pVertexData, uint32_t size, int typeSize)
     {
         auto pRet = OMake<IndexBufferGL>();
-        pRet->setData(pVertexData, size);
+        pRet->setData(pVertexData, size, typeSize);
         return pRet;
     }
 
@@ -49,8 +49,9 @@ namespace onut
         }
     }
 
-    void IndexBufferGL::setData(const void* pIndexData, uint32_t size)
+    void IndexBufferGL::setData(const void* pIndexData, uint32_t size, int typeSize)
     {
+        m_typeSize = typeSize;
         if (!m_isDynamic)
         {
             if (m_handle)
@@ -101,5 +102,10 @@ namespace onut
     GLuint IndexBufferGL::getHandle() const
     {
         return m_handle;
+    }
+
+    int IndexBufferGL::getTypeSize() const
+    {
+        return m_typeSize;
     }
 }

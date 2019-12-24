@@ -6,13 +6,9 @@
     #include <OpenGL/glext.h>
     #include <SDL2/SDL.h>
 #elif defined(WIN32)
-    #define GLEW_STATIC
-    #include <onut_gl/glew.h>
-    #include <gl/GL.h>
-    #include <gl/GLU.h>
-    #include <onut_gl/glext.h>
+    #include <GL/gl3w.h>
 #else
-    #include <GL/glew.h>
+    #include <GL/gl3w.h>
     #include <SDL2/SDL.h>
 #endif
 

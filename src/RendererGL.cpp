@@ -117,7 +117,7 @@ namespace onut
 #endif
 
 #if !defined(__APPLE__)
-        glewInit();
+        gl3wInit();
 #endif
     }
 
@@ -240,7 +240,14 @@ namespace onut
                 break;
         }
 
-        glDrawElements(mode, indexCount, GL_UNSIGNED_SHORT, (const void*)(uintptr_t)(startOffset * sizeof(uint16_t)));
+        if (std::dynamic_pointer_cast<IndexBufferGL>(renderStates.indexBuffer.get())->getTypeSize() == 16)
+        {
+            glDrawElements(mode, indexCount, GL_UNSIGNED_SHORT, (const void*)(uintptr_t)(startOffset * sizeof(uint16_t)));
+        }
+        else
+        {
+            glDrawElements(mode, indexCount, GL_UNSIGNED_INT, (const void*)(uintptr_t)(startOffset * sizeof(uint32_t)));
+        }
     }
 
     void RendererGL::applyRenderStates()
