@@ -1198,6 +1198,11 @@ declare namespace Renderer {
     function pushBackFaceCull(backFaceCull: boolean);
     function popBackFaceCull();
     function getBackFaceCull(): boolean;
+
+    // 3D shader properties
+    function setAlphaTestBias(bias: number);
+    function setSun(direction: Vector3, color: Color);
+    function setLight(index: number, position: Vector3, radius: number, color: Color);
 }
 
 // Spritebatch

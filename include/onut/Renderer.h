@@ -194,6 +194,11 @@ namespace onut
         virtual void applyRenderStates() = 0;
         virtual void init(const OWindowRef& pWindow);
 
+        // 3D shader settings
+        void setAlphaTestBias(float bias = 0.3f);
+        void setSun(const Vector3& direction, const Color& color);
+        void setLight(int index, const Vector3& position, float radius, const Color& color);
+
         RenderStates renderStates;
 
     protected:

@@ -231,6 +231,15 @@ namespace onut
         {
             m_p3DVertexShader = OShader::createFromSource(SHADER_SRC_3D_VS, OVertexShader);
             m_p3DPixelShader = OShader::createFromSource(SHADER_SRC_3D_PS, OPixelShader);
+
+            // Setup default uniform values
+            Vector3 sunDir(1, 1.5f, 2.0f);
+            sunDir.Normalize();
+            setSun(sunDir, Color(1.25f, 1.2f, 1.15f));
+            setAlphaTestBias(0.3f);
+            setLight(0, Vector3::Zero, 0.0f, Color::Black);
+            setLight(1, Vector3::Zero, 0.0f, Color::Black);
+            setLight(2, Vector3::Zero, 0.0f, Color::Black);
         }
 
         // Effects
@@ -247,6 +256,24 @@ namespace onut
             m_pCartoonPixelShader = OShader::createFromSource(SHADER_SRC_CARTOON_PS, OPixelShader);
             m_pVignettePixelShader = OShader::createFromSource(SHADER_SRC_VIGNETTE_PS, OPixelShader);
         }
+    }
+
+    void Renderer::setAlphaTestBias(float bias)
+    {
+        m_p3DPixelShader->setFloat(0, bias);
+    }
+
+    void Renderer::setSun(const Vector3& direction, const Color& color)
+    {
+        m_p3DVertexShader->setVector3(0, direction);
+        m_p3DVertexShader->setVector3(1, color.ToVector3());
+    }
+
+    void Renderer::setLight(int index, const Vector3& position, float radius, const Color& color)
+    {
+        if (index < 0 || index > 2) return;
+        m_p3DVertexShader->setVector4(2 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShader->setVector3(2 + index * 2 + 1, color.ToVector3());
     }
 
     void Renderer::setupEffectRenderStates()

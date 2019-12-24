@@ -9884,6 +9884,24 @@ namespace onut
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getBackFaceFull", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->setAlphaTestBias(JS_FLOAT(0, 0.3f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setAlphaTestBias", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->setSun(JS_VECTOR3(1, Vector3(0, 0, 1)), JS_COLOR(1, Color::Black));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setSun", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->setLight(JS_INT(0, 0), JS_VECTOR3(1, Vector3::Zero), JS_FLOAT(2, 0.0f), JS_COLOR(3, Color::Black));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setLight", 4);
             }
             JS_INTERFACE_END("Renderer");
 

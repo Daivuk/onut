@@ -1,7 +1,8 @@
 var models = [
     getModel("teapot.model"),
     getModel("barn.model"),
-    getModel("box.model")
+    getModel("box.model"),
+    getModel("captainchair.model")
 ]
 models[2].setTexture(0, getTexture("diffuse.png")); // Swaping texture example
 
@@ -19,18 +20,30 @@ function render()
 
     Renderer.clear(new Color(.5, .5, .5, 1))
     Renderer.clearDepth();
+    Renderer.setBlendMode(BlendMode.OPAQUE);
+
+    Renderer.setLight(0, new Vector3(-15, -15, 0.5), 30, new Color(0.5, 1.0, 1.5));
 
     models[0].render(
-        Matrix.createRotationZ(angleAnim.get())
-    );
-    models[1].render(
         Matrix.createRotationZ(angleAnim.get()).mul(
             Matrix.createTranslation(new Vector3(-5, -30, 0))
         )
     );
+    models[1].render(
+        Matrix.createRotationZ(angleAnim.get()).mul(
+            Matrix.createTranslation(new Vector3(-30, -30, 0))
+        )
+    );
+    models[2].render(
+        Matrix.createTranslation(new Vector3(7.527910, 19.933542, 7.614748)).mul( // Box model is off center
+            Matrix.createRotationZ(angleAnim.get()).mul(
+                Matrix.createTranslation(new Vector3(-30, -5, 0))
+            )
+        )
+    );
 
-    var transform =           Matrix.createTranslation(new Vector3(7.527910, 19.933542, 7.614748))
-    transform = transform.mul(Matrix.createRotationZ(angleAnim.get()))
-    transform = transform.mul(Matrix.createTranslation(new Vector3(-30, -5, 0)))
-    models[2].render(transform);
+    // Use alpha blend to draw the captain's chair because of the fake shadow decal on it    
+    Renderer.setBlendMode(BlendMode.ALPHA);
+    Renderer.setAlphaTestBias(0);
+    models[3].render(Matrix.createRotationZ(angleAnim.get()));
 }
