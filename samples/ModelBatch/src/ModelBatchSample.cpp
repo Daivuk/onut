@@ -7,9 +7,7 @@
 #include <onut/Texture.h>
 #include <onut/Timing.h>
 
-OAnimFloat angleAnim;
-
-std::vector<OModel::Batch> models;
+OModelRef pScene;
 
 void initSettings()
 {
@@ -19,7 +17,13 @@ void initSettings()
 
 void init()
 {
-    models = {
+    oRenderer->setSun(Vector3::UnitZ, Color::Black);
+    oRenderer->setAmbient(Color(0.05f, 0.075f, 0.1f));
+    oRenderer->setLight(0, Vector3(1, 5.0f, 1.5f), 3.0f, Color(0.5f, 1.0f, 1.5f)); // Stairs
+    oRenderer->setLight(1, Vector3(1, 0, 1.1f), 1.3f, Color(0.5f, 1.0f, 1.5f)); // Light well
+    oRenderer->setLight(2, Vector3(1, 2, 0.5f), 1.5f, Color(1.5f, 1.0f, 0.5f)); // Torch
+
+    pScene = OModel::createFromBatch({
         { OGetModel("floor.model"), Matrix::CreateTranslation({0, 0, 0}) },
         { OGetModel("floor.model"), Matrix::CreateTranslation({1, 0, 0}) },
         { OGetModel("floor.model"), Matrix::CreateTranslation({2, 0, 0}) },
@@ -48,14 +52,8 @@ void init()
         { OGetModel("column.model"), Matrix::CreateTranslation({1.5f, 1.5f, 0}) },
         { OGetModel("column.model"), Matrix::CreateTranslation({2.5f, 1.5f, 0}) },
         { OGetModel("column.model"), Matrix::CreateTranslation({2.5f, 0.5f, 0}) },
-        { OGetModel("column.model"), Matrix::CreateTranslation({2.5f, -.5f, 0}) },
-    };
-
-    oRenderer->setSun(Vector3::UnitZ, Color::Black);
-    oRenderer->setAmbient(Color(0.05f, 0.075f, 0.1f));
-    oRenderer->setLight(0, Vector3(1, 5.0f, 1.5f), 3.0f, Color(0.5f, 1.0f, 1.5f)); // Stairs
-    oRenderer->setLight(1, Vector3(1, 0, 1.1f), 1.3f, Color(0.5f, 1.0f, 1.5f)); // Light well
-    oRenderer->setLight(2, Vector3(1, 2, 0.5f), 1.5f, Color(1.5f, 1.0f, 0.5f)); // Torch
+        { OGetModel("column.model"), Matrix::CreateTranslation({2.5f, -.5f, 0}) }
+    });
 }
 
 void update()
@@ -68,10 +66,7 @@ void render()
     oRenderer->clear({0, 0, 0, 1});
     oRenderer->clearDepth();
 
-    for (auto& batch : models)
-    {
-        batch.pModel->render(batch.transform);
-    }
+    pScene->render(Matrix::Identity);
 }
 
 void postRender()

@@ -539,11 +539,11 @@ declare class Matrix {
         _41: number, _42: number, _43: number, _44: number);
 
     isEqual(other: Matrix): boolean;
-    add(other: Color): Matrix;
-    sub(other: Color): Matrix;
-    mul(other: Color): Matrix;
+    add(other: Matrix): Matrix;
+    sub(other: Matrix): Matrix;
+    mul(other: Matrix): Matrix;
     mul(s: number): Matrix;
-    div(other: Color): Matrix;
+    div(other: Matrix): Matrix;
     div(s: number): Matrix;
     translation(): Vector3;
     right(): Vector3;
@@ -987,8 +987,13 @@ declare class ParticleEmitter {
 declare function emitParticle(particleSystem: ParticleSystem, pos: Vector3, dir: Vector3): ParticleEmitter;
 
 // Model
+declare class Batch {
+    model: Model;
+    transform: Matrix;
+}
 declare class Model {
     static createFromFile(filename: string): Model;
+    static createFromBatch(batch: Batch[]): Model;
 
     getMeshCount(): number;
     getMin(): Vector3;

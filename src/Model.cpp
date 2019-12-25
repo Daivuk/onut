@@ -20,14 +20,6 @@
 #include <cassert>
 #include <fstream>
 
-struct MeshVertex
-{
-    float position[3];
-    float normal[3];
-    float color[4];
-    float uv[2];
-};
-
 namespace onut
 {
     OModelRef Model::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
@@ -172,7 +164,8 @@ namespace onut
 
             assert(pAssMesh->mNumVertices);
 
-            MeshVertex* vertices = new MeshVertex[pAssMesh->mNumVertices];
+            pMesh->vertices.resize(pAssMesh->mNumVertices);
+            MeshVertex* vertices = pMesh->vertices.data();
 #if defined(_DEBUG)
             vertCount += (int)pAssMesh->mNumVertices;
 #endif
@@ -249,13 +242,13 @@ namespace onut
             }
 
             pMesh->pVertexBuffer = OVertexBuffer::createStatic(vertices, pAssMesh->mNumVertices * sizeof(MeshVertex));
-            delete[] vertices;
 
             // Load faces
             pMesh->elementCount = (uint32_t)pAssMesh->mNumFaces * 3;
             if (pAssMesh->mNumFaces * 3 > std::numeric_limits<uint16_t>::max())
             {
-                uint32_t* indices = new uint32_t[pMesh->elementCount];
+                pMesh->indices32.resize(pMesh->elementCount);
+                uint32_t* indices = pMesh->indices32.data();
                 for (int i = 0; i < (int)pAssMesh->mNumFaces; ++i)
                 {
                     indices[i * 3 + 0] = (uint32_t)pAssMesh->mFaces[i].mIndices[0];
@@ -263,11 +256,11 @@ namespace onut
                     indices[i * 3 + 2] = (uint32_t)pAssMesh->mFaces[i].mIndices[2];
                 }
                 pMesh->pIndexBuffer = OIndexBuffer::createStatic(indices, pMesh->elementCount * sizeof(uint32_t), 32);
-                delete[] indices;
             }
             else
             {
-                uint16_t* indices = new uint16_t[pMesh->elementCount];
+                pMesh->indices16.resize(pMesh->elementCount);
+                uint16_t* indices = pMesh->indices16.data();
                 for (int i = 0; i < (int)pAssMesh->mNumFaces; ++i)
                 {
                     indices[i * 3 + 0] = (uint16_t)pAssMesh->mFaces[i].mIndices[0];
@@ -275,7 +268,6 @@ namespace onut
                     indices[i * 3 + 2] = (uint16_t)pAssMesh->mFaces[i].mIndices[2];
                 }
                 pMesh->pIndexBuffer = OIndexBuffer::createStatic(indices, pMesh->elementCount * sizeof(uint16_t), 16);
-                delete[] indices;
             }
         }
 
@@ -293,6 +285,94 @@ namespace onut
         pRet->m_boundingBox[1] = { maxs[0], maxs[1], maxs[2] };
 
         aiReleaseImport(pScene);
+
+        return pRet;
+    }
+
+    OModelRef Model::createFromBatch(const std::vector<Batch>& batch)
+    {
+        auto pRet = std::make_shared<Model>();
+
+        for (const auto& batch : batch)
+        {
+            for (auto& srcMesh : batch.pModel->m_meshes)
+            {
+                bool foundMesh = false;
+                auto vertsCopy = srcMesh.vertices;
+                for (auto& vert : vertsCopy)
+                {
+                    Vector4 pos(vert.position[0], vert.position[1], vert.position[2], 1.0f);
+                    pos = Vector4::Transform(pos, batch.transform);
+                    vert.position[0] = pos.x;
+                    vert.position[1] = pos.y;
+                    vert.position[2] = pos.z;
+
+                    Vector4 norm(vert.normal[0], vert.normal[1], vert.normal[2], 0.0f);
+                    norm = Vector4::Transform(norm, batch.transform);
+                    vert.normal[0] = norm.x;
+                    vert.normal[1] = norm.y;
+                    vert.normal[2] = norm.z;
+                }
+                for (auto& mesh : pRet->m_meshes)
+                {
+                    if (mesh.pTexture == srcMesh.pTexture) // Batch by material
+                    {
+                        foundMesh = true;
+                        auto start = mesh.vertices.size();
+                        mesh.vertices.insert(mesh.vertices.end(), vertsCopy.begin(), vertsCopy.end());
+                        if ((!mesh.indices16.empty() && mesh.vertices.size() > std::numeric_limits<uint16_t>::max()) || !srcMesh.indices32.empty())
+                        {
+                            for (auto i : mesh.indices16)
+                            {
+                                mesh.indices32.push_back((uint32_t)i);
+                            }
+                            mesh.indices16.clear();
+                        }
+                        if (!mesh.indices16.empty())
+                        {
+                            mesh.elementCount += (uint32_t)srcMesh.indices16.size();
+                            for (auto i : srcMesh.indices16)
+                            {
+                                mesh.indices16.push_back(i + (uint16_t)start);
+                            }
+                        }
+                        else if (!mesh.indices32.empty())
+                        {
+                            if (!srcMesh.indices16.empty())
+                            {
+                                mesh.elementCount += (uint32_t)srcMesh.indices16.size();
+                                for (auto i : srcMesh.indices16)
+                                {
+                                    mesh.indices32.push_back((uint32_t)i + (uint32_t)start);
+                                }
+                            }
+                            else if (!srcMesh.indices32.empty())
+                            {
+                                mesh.elementCount += (uint32_t)srcMesh.indices32.size();
+                                for (auto i : srcMesh.indices32)
+                                {
+                                    mesh.indices32.push_back(i + (uint32_t)start);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!foundMesh)
+                {
+                    pRet->m_meshes.push_back({ nullptr, nullptr, srcMesh.pTexture, srcMesh.elementCount, vertsCopy, srcMesh.indices16, srcMesh.indices32 });
+                }
+            }
+        }
+
+        // Generate draw buffers
+        for (auto& mesh : pRet->m_meshes)
+        {
+            mesh.pVertexBuffer = OVertexBuffer::createStatic(mesh.vertices.data(), mesh.vertices.size() * sizeof(MeshVertex));
+            if (!mesh.indices16.empty())
+                mesh.pIndexBuffer = OIndexBuffer::createStatic(mesh.indices16.data(), mesh.indices16.size() * sizeof(uint16_t), 16);
+            if (!mesh.indices32.empty())
+                mesh.pIndexBuffer = OIndexBuffer::createStatic(mesh.indices32.data(), mesh.indices32.size() * sizeof(uint32_t), 32);
+        }
 
         return pRet;
     }

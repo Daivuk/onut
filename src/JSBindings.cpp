@@ -3361,6 +3361,38 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "createFromFile");
 
+            // createFromBatch(batch)
+            duk_push_c_function(ctx, [](duk_context* ctx)->duk_ret_t
+            {
+                std::vector<Model::Batch> batches;
+                if (duk_is_array(ctx, 0))
+                {
+                    auto len = duk_get_length(ctx, 0);
+                    for (decltype(len) i = 0; i < len; ++i)
+                    {
+                        duk_get_prop_index(ctx, 0, i);
+                        if (duk_is_object(ctx, -1))
+                        {
+                            duk_get_prop_string(ctx, -1, "model");
+                            auto pModel = JS_MODEL(-1);
+                            duk_pop(ctx);
+                            duk_get_prop_string(ctx, -1, "transform");
+                            auto transform = JS_MATRIX(-1, Matrix::Identity);
+                            duk_pop(ctx);
+                            if (pModel)
+                            {
+                                batches.push_back({ pModel, transform });
+                            }
+                        }
+                        duk_pop(ctx);
+                    }
+                }
+                newModel(ctx, OModel::createFromBatch(batches));
+
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createFromBatch");
+
             duk_put_global_string(ctx, "Model");
         }
 
@@ -9902,6 +9934,12 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setLight", 4);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oRenderer->setAmbient(JS_COLOR(0, Color::Black));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setAmbient", 1);
             }
             JS_INTERFACE_END("Renderer");
 
