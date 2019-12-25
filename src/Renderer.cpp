@@ -237,6 +237,7 @@ namespace onut
             sunDir.Normalize();
             setSun(sunDir, Color(1.25f, 1.2f, 1.15f));
             setAlphaTestBias(0.3f);
+            setAmbient(Color::Black);
             setLight(0, Vector3::Zero, 0.0f, Color::Black);
             setLight(1, Vector3::Zero, 0.0f, Color::Black);
             setLight(2, Vector3::Zero, 0.0f, Color::Black);
@@ -272,8 +273,13 @@ namespace onut
     void Renderer::setLight(int index, const Vector3& position, float radius, const Color& color)
     {
         if (index < 0 || index > 2) return;
-        m_p3DVertexShader->setVector4(2 + index * 2 + 0, Vector4(position, radius));
-        m_p3DVertexShader->setVector3(2 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShader->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShader->setVector3(3 + index * 2 + 1, color.ToVector3());
+    }
+
+    void Renderer::setAmbient(const Color& color)
+    {
+        m_p3DVertexShader->setVector3(2, color.ToVector3());
     }
 
     void Renderer::setupEffectRenderStates()

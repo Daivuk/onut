@@ -14,6 +14,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <json/json.h>
+#include <stb/stb_image.h>
 
 // STL
 #include <cassert>
@@ -105,8 +106,33 @@ namespace onut
             auto ret = pAssMat->GetTexture(aiTextureType::aiTextureType_DIFFUSE, 0, &texturePath);
             if (ret == aiReturn_SUCCESS)
             {
-                auto texName = onut::getFilename(texturePath.C_Str());
-                materials[i] = OGetTexture(texName);
+                if (auto texture = pScene->GetEmbeddedTexture(texturePath.C_Str()))
+                {
+                    // Embedded
+                    if (texture->mHeight == 0)
+                    {
+                        materials[i] = OTexture::createFromFileData((uint8_t*)texture->pcData, (int)texture->mWidth);
+                    }
+                    else
+                    {
+                        uint8_t* image = new uint8_t[texture->mWidth * texture->mHeight];
+                        for (int i = 0, len = (int)texture->mWidth * texture->mHeight; i < len; ++i)
+                        {
+                            image[i * 4 + 0] = texture->pcData[i].r;
+                            image[i * 4 + 1] = texture->pcData[i].g;
+                            image[i * 4 + 2] = texture->pcData[i].b;
+                            image[i * 4 + 3] = texture->pcData[i].a;
+                        }
+                        materials[i] = OTexture::createFromData(image, { (int)texture->mWidth, (int)texture->mHeight });
+                        delete[] image;
+                    }
+                }
+                else
+                {
+                    // File
+                    auto texName = onut::getFilename(texturePath.C_Str());
+                    materials[i] = OGetTexture(texName);
+                }
             }
             else
             {

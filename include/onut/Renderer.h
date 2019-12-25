@@ -198,6 +198,7 @@ namespace onut
         void setAlphaTestBias(float bias = 0.3f);
         void setSun(const Vector3& direction, const Color& color);
         void setLight(int index, const Vector3& position, float radius, const Color& color);
+        void setAmbient(const Color& color);
 
         RenderStates renderStates;
 

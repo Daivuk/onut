@@ -93,7 +93,7 @@ namespace onut
     {
         int w, h, n;
         auto image = stbi_load(filename.c_str(), &w, &h, &n, 4);
-        assert(image);
+        if (!image) return nullptr;
         Point size{w, h};
 
         // Pre multiplied
@@ -117,7 +117,7 @@ namespace onut
     {
         int w, h, n;
         auto image = stbi_load_from_memory(pData, (int)dataSize, &w, &h, &n, 4);
-        assert(image);
+        if (!image) return nullptr;
         Point size{static_cast<int>(w), static_cast<int>(h)};
 
         // Pre multiplied

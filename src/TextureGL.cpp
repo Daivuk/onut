@@ -8,7 +8,8 @@
 #include "TextureGL.h"
 
 // Third party
-#include <lodepng/LodePNG.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 // STL
 #include <cassert>
@@ -104,11 +105,10 @@ namespace onut
 
     OTextureRef Texture::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager, bool generateMipmaps)
     {
-        std::vector<uint8_t> image; //the raw pixels (holy crap that must be slow)
-        unsigned int w, h;
-        auto ret = lodepng::decode(image, w, h, filename);
-        assert(!ret);
-        Point size{static_cast<int>(w), static_cast<int>(h)};
+        int w, h, n;
+        auto image = stbi_load(filename.c_str(), &w, &h, &n, 4);
+        if (!image) return nullptr;
+        Point size{ w, h };
 
         // Pre multiplied
         uint8_t* pImageData = &(image[0]);
@@ -120,7 +120,8 @@ namespace onut
             pImageData[2] = pImageData[2] * pImageData[3] / 255;
         }
 
-        auto pRet = createFromData(image.data(), size, generateMipmaps);
+        auto pRet = createFromData(image, size, generateMipmaps);
+        stbi_image_free(image);
         pRet->setName(onut::getFilename(filename));
         pRet->m_type = Type::Static;
         return pRet;
@@ -128,15 +129,13 @@ namespace onut
 
     OTextureRef Texture::createFromFileData(const uint8_t* pData, uint32_t dataSize, bool generateMipmaps)
     {
-        std::vector<uint8_t> image; //the raw pixels (holy crap that must be slow)
-        unsigned int w, h;
-        lodepng::State state;
-        auto ret = lodepng::decode(image, w, h, state, pData, dataSize);
-        assert(!ret);
-        Point size{static_cast<int>(w), static_cast<int>(h)};
+        int w, h, n;
+        auto image = stbi_load_from_memory(pData, (int)dataSize, &w, &h, &n, 4);
+        if (!image) return nullptr;
+        Point size{ static_cast<int>(w), static_cast<int>(h) };
 
         // Pre multiplied
-        uint8_t* pImageData = image.data();
+        uint8_t* pImageData = image;
         auto len = size.x * size.y;
         for (int i = 0; i < len; ++i, pImageData += 4)
         {
@@ -145,7 +144,9 @@ namespace onut
             pImageData[2] = pImageData[2] * pImageData[3] / 255;
         }
 
-        return createFromData(image.data(), size, generateMipmaps);
+        auto pRet = createFromData(image, size, generateMipmaps);
+        stbi_image_free(image);
+        return pRet;
     }
 
     OTextureRef Texture::createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps)

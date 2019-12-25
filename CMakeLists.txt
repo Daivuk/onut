@@ -437,6 +437,7 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/GamePads) # GamePadsSample
     add_subdirectory(samples/Http) # HttpSample
     add_subdirectory(samples/Imgui) # ImguiSample
+    add_subdirectory(samples/ModelBatch) # ModelBatchSample
     add_subdirectory(samples/Models) # ModelsSample
     add_subdirectory(samples/Multiplayer) # MultiplayerSample
     add_subdirectory(samples/Navigation) # NavigationSample

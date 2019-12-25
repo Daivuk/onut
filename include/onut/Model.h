@@ -31,6 +31,12 @@ namespace onut
             uint32_t elementCount;
         };
 
+        struct Batch
+        {
+            OModelRef pModel;
+            Matrix transform;
+        };
+
         static OModelRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
 
         ~Model();
