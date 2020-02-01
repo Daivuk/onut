@@ -547,6 +547,8 @@ namespace onut
             m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
             renderStates.renderTarget.resetDirty();
             renderStates.viewport.forceDirty();
+            renderStates.depthEnabled.forceDirty();
+            renderStates.depthWrite.forceDirty();
         }
 
         // Textures
