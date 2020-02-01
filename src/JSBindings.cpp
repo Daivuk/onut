@@ -10763,7 +10763,9 @@ namespace onut
             JS_GLOBAL_FUNCTION_END("getTexture", 2);
             JS_GLOBAL_FUNCTION_BEGIN
             {
-                newModel(ctx, OGetModel(JS_STRING(0)));
+                auto model = OGetModel(JS_STRING(0));
+                if (!model) return 0;
+                newModel(ctx, model);
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getModel", 1);
