@@ -1,6 +1,7 @@
 // Onut
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/Renderer.h>
 
 // Private
 #include "InputDevice.h"
@@ -117,6 +118,13 @@ namespace onut
         memcpy(m_curStates, m_states, sizeof(InputState) * STATE_COUNT);
         memcpy(m_states, m_statesRestore, sizeof(InputState) * STATE_COUNT);
 
+        if (m_fpsMouse)
+        {
+            mouseDelta = mousePos - (OScreen / 2);
+            setMousePos(OScreen / 2);
+        }
+        else mouseDelta = {0, 0};
+
         ++m_frameId;
     }
 
@@ -132,6 +140,21 @@ namespace onut
         {
             m_pInputDevice->setMouseVisible(isCursorVisible);
             m_isCursorVisible = isCursorVisible;
+        }
+    }
+
+    void Input::setFpsMouse(bool fpsMouse)
+    {
+        if (m_fpsMouse != fpsMouse)
+        {
+            if (fpsMouse)
+            {
+                setMouseVisible(false);
+                setMousePos(OScreen / 2);
+                mouseDelta = {0, 0};
+            }
+            else setMouseVisible(true);
+            m_fpsMouse = fpsMouse;
         }
     }
 

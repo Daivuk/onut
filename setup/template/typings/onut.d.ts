@@ -1006,7 +1006,7 @@ declare class Model {
     render(transform: Matrix);
 }
 /** Same as Model.createFromFile */
-declare function getModel(filename: string): ParticleSystem;
+declare function getModel(filename: string): Model;
 
 // VertexBuffer
 declare class VertexBuffer {
@@ -1256,6 +1256,8 @@ declare namespace Input {
     function getValue(key: Key): number;
     function setMouseIcon(iconFilename: string, xHotspot: number, yHotspot: number);
     function setMouseVisible(visible: boolean);
+    function getMouseDelta(): Vector2;
+    function setFpsMouse(fpsMouse: boolean);
 }
 
 // GamePad

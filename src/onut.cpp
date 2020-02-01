@@ -345,14 +345,6 @@ namespace onut
             auto imgui_updated = false;
             while (framesToUpdate--)
             {
-                oInput->update();
-#if defined(__rpi__)
-                if (OInputPressed(OKeyLeftAlt) && OInputPressed(OKeyF4))
-                {
-                    g_bIsRunning = false;
-                    break;
-                }
-#endif
 #if defined(WIN32)
                 POINT cur;
                 GetCursorPos(&cur);
@@ -362,6 +354,14 @@ namespace onut
                 oInput->mousePosf.x = static_cast<float>(cur.x);
                 oInput->mousePosf.y = static_cast<float>(cur.y);
 #endif // WIN32
+                oInput->update();
+#if defined(__rpi__)
+                if (OInputPressed(OKeyLeftAlt) && OInputPressed(OKeyF4))
+                {
+                    g_bIsRunning = false;
+                    break;
+                }
+#endif
                 // Imgui input updates
                 if (!imgui_updated)
                 {
