@@ -134,7 +134,7 @@ namespace onut
     void RendererGL::createRenderStates()
     {
         glCullFace(GL_BACK);
-        glDepthFunc(GL_LESS);
+        glDepthFunc(GL_LEQUAL);
         glEnable(GL_TEXTURE_2D);
     }
 
