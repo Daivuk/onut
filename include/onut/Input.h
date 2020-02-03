@@ -521,9 +521,11 @@ namespace onut
         void setMouseIcon(const std::string& name, const Point& hotSpot);
         void unsetMouseIcon();
         void setMousePos(const Point& mousePos);
+        void setFpsMouse(bool fpsMouse);
 
         Point mousePos;
         Vector2 mousePosf;
+        Point mouseDelta = {0, 0};
 
     protected:
         struct InputState
@@ -541,6 +543,7 @@ namespace onut
         InputState*	m_statesRestore;
         OGamePadRef m_gamePads[GAME_PAD_COUNT];
         bool m_isCursorVisible = true;
+        bool m_fpsMouse = false;
     };
 }
 

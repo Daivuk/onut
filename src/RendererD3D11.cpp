@@ -375,7 +375,7 @@ namespace onut
             depthStencilState = D3D11_DEPTH_STENCIL_DESC{
                 false,
                 D3D11_DEPTH_WRITE_MASK_ZERO,
-                D3D11_COMPARISON_LESS,
+                D3D11_COMPARISON_LESS_EQUAL,
                 false,
                 0xFF,
                 0xFF,
@@ -387,7 +387,7 @@ namespace onut
             depthStencilState = D3D11_DEPTH_STENCIL_DESC{
                 true,
                 D3D11_DEPTH_WRITE_MASK_ALL,
-                D3D11_COMPARISON_LESS,
+                D3D11_COMPARISON_LESS_EQUAL,
                 false,
                 0xFF,
                 0xFF,
@@ -399,7 +399,7 @@ namespace onut
             depthStencilState = D3D11_DEPTH_STENCIL_DESC{
                 true,
                 D3D11_DEPTH_WRITE_MASK_ZERO,
-                D3D11_COMPARISON_LESS,
+                D3D11_COMPARISON_LESS_EQUAL,
                 false,
                 0xFF,
                 0xFF,
@@ -547,6 +547,8 @@ namespace onut
             m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
             renderStates.renderTarget.resetDirty();
             renderStates.viewport.forceDirty();
+            renderStates.depthEnabled.forceDirty();
+            renderStates.depthWrite.forceDirty();
         }
 
         // Textures

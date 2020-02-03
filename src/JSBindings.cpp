@@ -10277,6 +10277,12 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("getMousePos", 0);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
+                    newVector2(ctx, {(float)oInput->mouseDelta.x, (float)oInput->mouseDelta.y});
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getMouseDelta", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
                     duk_push_boolean(ctx, oInput->isStateDown((onut::Input::State)JS_UINT(0)));
                     return 1;
                 }
@@ -10328,6 +10334,13 @@ namespace onut
                     return 0;
                 }
                 JS_INTERFACE_FUNCTION_END("setMouseIcon", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto fpsMouse = JS_BOOL(0);
+                    oInput->setFpsMouse(fpsMouse);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setFpsMouse", 1);
             }
             JS_INTERFACE_END("Input");
 
@@ -10750,7 +10763,9 @@ namespace onut
             JS_GLOBAL_FUNCTION_END("getTexture", 2);
             JS_GLOBAL_FUNCTION_BEGIN
             {
-                newModel(ctx, OGetModel(JS_STRING(0)));
+                auto model = OGetModel(JS_STRING(0));
+                if (!model) return 0;
+                newModel(ctx, model);
                 return 1;
             }
             JS_GLOBAL_FUNCTION_END("getModel", 1);

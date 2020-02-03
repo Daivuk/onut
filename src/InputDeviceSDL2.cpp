@@ -7,6 +7,7 @@
 
 // Private
 #include "InputDeviceSDL2.h"
+#include "WindowSDL2.h"
 
 // STL
 #include <cassert>
@@ -188,6 +189,6 @@ namespace onut
 
     void InputDeviceSDL2::setMousePos(const Point& mousePos)
     {
-        // ...
+        SDL_WarpMouseInWindow(((WindowSDL2*)oWindow.get())->getSDLWindow(), mousePos.x, mousePos.y);
     }
 }
