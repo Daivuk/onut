@@ -147,57 +147,7 @@ endif()
 list(APPEND src_files
     src/ActionManager.cpp
     src/AudioEngine.cpp
-    src/Box2D/Collision/Shapes/b2ChainShape.cpp
-    src/Box2D/Collision/Shapes/b2CircleShape.cpp
-    src/Box2D/Collision/Shapes/b2EdgeShape.cpp
-    src/Box2D/Collision/Shapes/b2PolygonShape.cpp
-    src/Box2D/Collision/b2BroadPhase.cpp
-    src/Box2D/Collision/b2CollideCircle.cpp
-    src/Box2D/Collision/b2CollideEdge.cpp
-    src/Box2D/Collision/b2CollidePolygon.cpp
-    src/Box2D/Collision/b2Collision.cpp
-    src/Box2D/Collision/b2Distance.cpp
-    src/Box2D/Collision/b2DynamicTree.cpp
-    src/Box2D/Collision/b2TimeOfImpact.cpp
-    src/Box2D/Common/b2BlockAllocator.cpp
-    src/Box2D/Common/b2Draw.cpp
-    src/Box2D/Common/b2Math.cpp
-    src/Box2D/Common/b2Settings.cpp
-    src/Box2D/Common/b2StackAllocator.cpp
-    src/Box2D/Common/b2Timer.cpp
-    src/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp
-    src/Box2D/Dynamics/Contacts/b2CircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2Contact.cpp
-    src/Box2D/Dynamics/Contacts/b2ContactSolver.cpp
-    src/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp
-    src/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2PolygonContact.cpp
-    src/Box2D/Dynamics/Joints/b2DistanceJoint.cpp
-    src/Box2D/Dynamics/Joints/b2FrictionJoint.cpp
-    src/Box2D/Dynamics/Joints/b2GearJoint.cpp
-    src/Box2D/Dynamics/Joints/b2Joint.cpp
-    src/Box2D/Dynamics/Joints/b2MotorJoint.cpp
-    src/Box2D/Dynamics/Joints/b2MouseJoint.cpp
-    src/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp
-    src/Box2D/Dynamics/Joints/b2PulleyJoint.cpp
-    src/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp
-    src/Box2D/Dynamics/Joints/b2RopeJoint.cpp
-    src/Box2D/Dynamics/Joints/b2WeldJoint.cpp
-    src/Box2D/Dynamics/Joints/b2WheelJoint.cpp
-    src/Box2D/Dynamics/b2Body.cpp
-    src/Box2D/Dynamics/b2ContactManager.cpp
-    src/Box2D/Dynamics/b2Fixture.cpp
-    src/Box2D/Dynamics/b2Island.cpp
-    src/Box2D/Dynamics/b2World.cpp
-    src/Box2D/Dynamics/b2WorldCallbacks.cpp
-    src/Box2D/Rope/b2Rope.cpp
-    src/Camera2DComponent.cpp
-    src/Collider2DComponent.cpp
     src/Color.cpp 
-    src/Component.cpp
-    src/ComponentFactory.cpp
     src/ContentManager.cpp
     src/Crypto.cpp
     src/CSV.cpp
@@ -205,8 +155,6 @@ list(APPEND src_files
     src/Dialogs.cpp
     src/Dispatcher.cpp 
     src/duktape/duktape.c
-    src/Entity.cpp
-    src/EntityFactory.cpp
     src/Files.cpp 
     src/Font.cpp
     src/GamePad.cpp
@@ -244,22 +192,16 @@ list(APPEND src_files
     src/Ray.cpp
     src/Renderer.cpp 
     src/Resource.cpp 
-    src/SceneManager.cpp
     src/Settings.cpp 
     src/Shader.cpp 
     src/SocketTCP.cpp
     src/Sound.cpp
-    src/SoundComponent.cpp
     src/SpriteAnim.cpp
-    src/SpriteAnimComponent.cpp
     src/SpriteBatch.cpp 
-    src/SpriteComponent.cpp
     src/Strings.cpp 
-    src/TextComponent.cpp
     src/Texture.cpp 
     src/ThreadPool.cpp 
     src/TiledMap.cpp
-    src/TiledMapComponent.cpp
     src/Timer.cpp
     src/Timing.cpp 
     src/tinyfiledialogs/tinyfiledialogs.c
@@ -426,14 +368,12 @@ endif()
 
 if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Animations) # AnimationsSample
-    add_subdirectory(samples/Components) # ComponentsSample
     add_subdirectory(samples/Crypto) # CryptoSample
     add_subdirectory(samples/Cursor) # CursorSample
     add_subdirectory(samples/CustomMesh) # CustomMeshSample
-    add_subdirectory(samples/Dungeon) # DungeonSample
+    # add_subdirectory(samples/Dungeon) # DungeonSample // EnTT example
     add_subdirectory(samples/Effects) # EffectsSample
     add_subdirectory(samples/Empty) # EmptySample
-    add_subdirectory(samples/Entities) # EntitiesSample
     add_subdirectory(samples/GamePads) # GamePadsSample
     add_subdirectory(samples/Http) # HttpSample
     add_subdirectory(samples/Imgui) # ImguiSample

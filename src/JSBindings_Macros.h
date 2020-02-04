@@ -1,13 +1,9 @@
 // Onut
 #include <onut/Anim.h>
-#include <onut/Component.h>
-#include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
 #include <onut/Crypto.h>
 #include <onut/Curve.h>
 #include <onut/Dispatcher.h>
-#include <onut/Entity.h>
-#include <onut/EntityFactory.h>
 #include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
@@ -32,7 +28,6 @@
 #include <onut/SpriteBatch.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
-#include <onut/TiledMapComponent.h>
 #include <onut/Timing.h>
 #include <onut/UICheckBox.h>
 #include <onut/UIButton.h>
@@ -205,9 +200,6 @@ namespace onut
 #define JS_VERTEX_BUFFER(__index__) getRefType<OVertexBuffer>(ctx, __index__)
 #define JS_INDEX_BUFFER(__index__) getRefType<OIndexBuffer>(ctx, __index__)
 #define JS_UPDATER(__index__) getRefType<OUpdater>(ctx, __index__)
-
-#define JS_ENTITY(__index__) getRefType<OEntity>(ctx, __index__)
-#define JS_COMPONENT(__index__) getRefType<OComponent>(ctx, __index__)
 
 #define JS_UI(...) getUI(ctx, __VA_ARGS__)
     }

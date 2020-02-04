@@ -1,5 +1,6 @@
 // Public includes
 #include <onut/Axis.h>
+#include <onut/Strings.h>
 
 // Private includes
 #include "JSBindings.h"
