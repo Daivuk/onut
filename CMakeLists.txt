@@ -7,7 +7,7 @@ option(ONUT_BUILD_SETUP "Build the Setup app" OFF)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
 
 # Easier defines
-if (UNIX AND NOT RPI AND NOT APPLE)
+if (UNIX AND NOT APPLE)
     set(LINUX 1)
 endif()
 
@@ -30,36 +30,9 @@ endif()
 if (ONUT_USE_OPENGL)
     add_definitions(-DONUT_USE_OPENGL)
 endif()
-if (RPI)
-    add_definitions(-D__rpi__)
-    add_definitions(-DHAVE_LIBOPENMAX=2)
-    add_definitions(-DOMX)
-    add_definitions(-DOMX_SKIP64BIT)
-    add_definitions(-DUSE_EXTERNAL_OMX)
-    add_definitions(-DUSE_VCHIQ_ARM)
-endif()
 if (WIN32)
     add_definitions(-DNOMINMAX)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
-
-# Add RaspberryPI specific source files
-if (RPI)
-    list(APPEND src_files
-        src/AudioEngineRPI.cpp
-        src/audioplay/audioplay.c
-        src/GamePadRPI.cpp
-        src/InputDeviceRPI.cpp
-        src/VideoPlayerLinux.cpp
-        src/IndexBufferGLES2.cpp 
-        src/HttpCURL.cpp
-        src/RendererGLES2.cpp 
-        src/ShaderGLES2.cpp 
-        src/SocketTCP_Unix.cpp
-        src/TextureGLES2.cpp 
-        src/VertexBufferGLES2.cpp 
-        src/WindowRPI.cpp 
-    )
 endif()
 
 # Add OSX specific source files
@@ -235,13 +208,6 @@ list(APPEND src_files
 add_library(libonut STATIC ${src_files})
 
 # Libraries
-if (RPI)
-    list(APPEND includes
-        PUBLIC
-            /opt/vc/include
-            /opt/vc/include/interface/vmcs_host/linux
-    )
-endif()
 list(APPEND includes
     PUBLIC
         ./include 
@@ -249,7 +215,7 @@ list(APPEND includes
         ./src
 )
 
-if (LINUX OR RPI) # Only required on linux if we use std::thread
+if (LINUX) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
@@ -278,25 +244,6 @@ if (WIN32)
 endif()
 find_package(Socket)
 list(APPEND libs PUBLIC ${Socket_LIBRARIES})
-
-if (RPI)  
-    list(APPEND libs
-        PUBLIC
-            -L/opt/vc/lib/
-            -L${CMAKE_SOURCE_DIR}/lib/linux/
-            -lbcm_host 
-            -lvcos 
-            -lvchiq_arm
-            -lEGL
-            -lGLESv2 
-            -lEGL 
-            -lGLESv2 
-            -lrt 
-            -ldl
-            -lilclient
-            -lopenmaxil
-    )
-endif()
 
 if (WIN32)
     list(APPEND libs
