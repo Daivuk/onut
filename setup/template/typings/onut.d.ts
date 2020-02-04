@@ -855,6 +855,7 @@ declare function getSound(filename: string): Sound;
 declare function getFreshSound(filename: string): Sound;
 declare function playSound(filename: string, volume: number, balance: number, pitch: number);
 declare function playSoundCue(filename: string, volume: number, balance: number, pitch: number);
+declare function play3DSound(filename: stringr, position: Vector3, radius: number, volume: number, balance: number, pitch: number);
 
 // SoundInstance
 declare class SoundInstance {
@@ -871,6 +872,7 @@ declare class SoundInstance {
     setBalance(balance: number);
     getPitch(): number;
     setPitch(pitch: number);
+    set3D(enabled: boolean, position: Vector3, radius: number);
 }
 /** Same as sound.createInstance */
 declare function createSoundInstance(filename: string): SoundInstance;
@@ -1300,6 +1302,12 @@ declare namespace Timing {
     function getTotalElapsed(): number;
     function getFPS(): number;
 }
+
+// AudioEngine
+declare namespace Audio {
+    function set3DListener(position: Vector3, front: Vector3, up: Vector3);
+}
+
 
 // Random
 declare namespace Random {

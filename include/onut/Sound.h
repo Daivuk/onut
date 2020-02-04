@@ -48,7 +48,7 @@ namespace onut
 
     private:
         friend class Sound;
-        bool progress(int frameCount, int sampleRate, int channelCount, float* pOut) override;
+        bool progress(int frameCount, int sampleRate, int channelCount, float* pOut, float volume = 1.0f, float balance = 0.0f, float pitch = 1.0f) override;
 
         bool m_isPaused = true;
         std::atomic<bool> m_loop;
@@ -70,6 +70,7 @@ namespace onut
 
         void setMaxInstance(int maxInstance = -1) { m_maxInstance = maxInstance; }
         void play(float volume = 1.f, float balance = 0.f, float pitch = 1.f);
+        void play3D(const Vector3& position, float radius = 1.0f, float volume = 1.0f, float balance = 0.f, float pitch = 1.f);
         void stop();
 
         OSoundInstanceRef createInstance();
@@ -122,6 +123,7 @@ namespace onut
 
 OSoundRef OGetSound(const std::string& name);
 void OPlaySound(const std::string& name, float volume = 1.f, float balance = 0.f, float pitch = 1.f);
+void OPlay3DSound(const std::string& name, const Vector3& position, float radius = 1.0f, float volume = 1.f, float balance = 0.f, float pitch = 1.f);
 void OPlayRandomSound(const std::vector<std::string>& sounds, float volume = 1.0f, float balance = 0.f, float pitch = 1.f);
 OSoundInstanceRef OCreateSoundInstance(const std::string& name);
 OSoundCueRef OGetSoundCue(const std::string& name);

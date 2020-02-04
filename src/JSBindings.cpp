@@ -1,4 +1,5 @@
 // Public includes
+#include <onut/AudioEngine.h>
 #include <onut/Axis.h>
 #include <onut/Strings.h>
 
@@ -3938,6 +3939,23 @@ namespace onut
                 return 0;
             }, 1);
             duk_put_prop_string(ctx, -2, "setBalance");
+
+            // void set3D(bool enabled = false, const Vector3& position = {0, 0, 0}, float radius = 1.0f)
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppSoundInstance = (OSoundInstanceRef*)duk_to_pointer(ctx, -1);
+                if (ppSoundInstance)
+                {
+                    auto enabled = JS_BOOL(0, false);
+                    auto position = JS_VECTOR3(1, Vector3(0, 0, 0));
+                    auto radius = JS_FLOAT(2, 1.0f);
+                    (*ppSoundInstance)->set3D(enabled, position, radius);
+                }
+                return 0;
+            }, 3);
+            duk_put_prop_string(ctx, -2, "set3D");
 
             // Done with the object
             pSoundInstancePrototype = duk_get_heapptr(ctx, -1);
@@ -9969,6 +9987,18 @@ namespace onut
             }
             JS_INTERFACE_END("Timing");
 
+            // Audio
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oAudioEngine->set3DListener(JS_VECTOR3(0, {0, 0, 0}), JS_VECTOR3(1, {0, 1, 0}), JS_VECTOR3(2, {0, 0, 1}));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("set3DListener", 3);
+            }
+            JS_INTERFACE_END("Audio");
+
             // Resources
             JS_GLOBAL_FUNCTION_BEGIN
             {
@@ -10060,6 +10090,12 @@ namespace onut
                 return 0;
             }
             JS_GLOBAL_FUNCTION_END("playSound", 4);
+            JS_GLOBAL_FUNCTION_BEGIN
+            {
+                OPlay3DSound(JS_STRING(0), JS_VECTOR3(1, Vector3::Zero), JS_FLOAT(2, 1.0f), JS_FLOAT(3, 1), JS_FLOAT(4), JS_FLOAT(5, 1));
+                return 0;
+            }
+            JS_GLOBAL_FUNCTION_END("play3DSound", 6);
             JS_GLOBAL_FUNCTION_BEGIN
             {
                 if (duk_is_array(ctx, 0))

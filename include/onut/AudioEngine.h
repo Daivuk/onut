@@ -1,6 +1,9 @@
 #ifndef AUDIOENGINE_H_INCLUDED
 #define AUDIOENGINE_H_INCLUDED
 
+// Onut
+#include <onut/Vector3.h>
+
 // STL
 #include <condition_variable>
 #include <mutex>
@@ -26,6 +29,7 @@ namespace onut
 
         void addInstance(const OAudioStreamRef& pInstance);
         void removeInstance(const OAudioStreamRef& pInstance);
+        void set3DListener(const Vector3& position, const Vector3& front, const Vector3& up);
 
     protected:
         AudioEngine();
@@ -36,6 +40,10 @@ namespace onut
 
         std::mutex m_instancesMutex;
         Instances m_instances;
+        Vector3 m_3dPos = {0, 0, 0};
+        Vector3 m_3dRight = {1, 0, 0};
+        Vector3 m_3dFront = {0, 1, 0};
+        Vector3 m_3dUp = {0, 0, 1};
     };
 };
 

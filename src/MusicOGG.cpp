@@ -203,11 +203,11 @@ namespace onut
         return (a0*y1 + a1*m0 + a2*m1 + a3*y2);
     }
 
-    bool MusicOGG::progress(int frameCount, int sampleRate, int channelCount, float* pOut)
+    bool MusicOGG::progress(int frameCount, int sampleRate, int channelCount, float* pOut, float in_volume, float in_balance, float in_pitch)
     {
         if (!m_isPlaying) return true;
 
-        float volume = m_volume;
+        float volume = m_volume * in_volume;
         int bufferCount = m_bufferCount;
         int sampleFed = 0;
         int requestSamples = frameCount * channelCount;
