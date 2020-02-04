@@ -38,7 +38,6 @@
 #include <onut/UILabel.h>
 #include <onut/UITextBox.h>
 #include <onut/VertexBuffer.h>
-#include <onut/VideoPlayer.h>
 #include <onut/Window.h>
 
 // Third party

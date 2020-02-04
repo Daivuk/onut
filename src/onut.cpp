@@ -10,7 +10,6 @@
 #include <onut/Input.h>
 #include <onut/Http.h>
 #include <onut/Log.h>
-#include <onut/Multiplayer.h>
 #include <onut/onut.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
@@ -143,9 +142,6 @@ namespace onut
         // Http
         if (!oHttp) oHttp = Http::create();
 
-        // Multiplayer
-        if (!oMultiplayer) oMultiplayer = Multiplayer::create();
-
         // UI Context
         createUI();
 
@@ -201,7 +197,6 @@ namespace onut
         oUpdater = nullptr;
         oUI = nullptr;
         oUIContext = nullptr;
-        oMultiplayer = nullptr;
         oHttp = nullptr;
         oParticleSystemManager = nullptr;
         oAudioEngine = nullptr;

@@ -41,12 +41,10 @@ if (APPLE)
         src/AudioEngineSDL2.cpp
         src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
-        src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
-        src/SocketTCP_Unix.cpp
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
@@ -63,11 +61,9 @@ if (LINUX)
         src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
-        src/SocketTCP_Unix.cpp
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
-        src/VideoPlayerLinux.cpp
         thirdparty/gl3w/src/gl3w.c
     )
     list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
@@ -80,7 +76,6 @@ if (WIN32)
         src/GamePadXInput.cpp
         src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
-        src/SocketTCP_Win32.cpp
         src/WindowWIN32.cpp 
     )
     if (ONUT_USE_OPENGL)
@@ -90,7 +85,6 @@ if (WIN32)
             src/ShaderGL.cpp 
             src/TextureGL.cpp 
             src/VertexBufferGL.cpp 
-            src/VideoPlayerEmpty.cpp
             thirdparty/gl3w/src/gl3w.c
         )
         list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
@@ -100,8 +94,7 @@ if (WIN32)
             src/RendererD3D11.cpp 
             src/ShaderD3D11.cpp 
             src/TextureD3D11.cpp 
-            src/VertexBufferD3D11.cpp 
-            src/MFPlayer.cpp
+            src/VertexBufferD3D11.cpp
         )
     endif()
 endif()
@@ -139,7 +132,6 @@ list(APPEND src_files
     src/Matrix.cpp 
     src/micropather.cpp
     src/Model.cpp 
-    src/Multiplayer.cpp
     src/Music.cpp
     src/MusicOGG.cpp
     src/onut.cpp 
@@ -157,7 +149,6 @@ list(APPEND src_files
     src/Resource.cpp 
     src/Settings.cpp 
     src/Shader.cpp 
-    src/SocketTCP.cpp
     src/Sound.cpp
     src/SpriteAnim.cpp
     src/SpriteBatch.cpp 
@@ -186,7 +177,6 @@ list(APPEND src_files
     src/Vector3.cpp 
     src/Vector4.cpp 
     src/VertexBuffer.cpp 
-    src/VideoPlayer.cpp
     src/Window.cpp 
     src/zlib/adler32.c
     src/zlib/compress.c
@@ -219,7 +209,7 @@ if (LINUX) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
+if (LINUX OR APPLE)
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
@@ -242,8 +232,6 @@ if (WIN32)
     find_package(DirectX11 REQUIRED)
     list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
 endif()
-find_package(Socket)
-list(APPEND libs PUBLIC ${Socket_LIBRARIES})
 
 if (WIN32)
     list(APPEND libs
@@ -291,7 +279,6 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Imgui) # ImguiSample
     add_subdirectory(samples/ModelBatch) # ModelBatchSample
     add_subdirectory(samples/Models) # ModelsSample
-    add_subdirectory(samples/Multiplayer) # MultiplayerSample
     add_subdirectory(samples/Navigation) # NavigationSample
     add_subdirectory(samples/Particles) # ParticlesSample
     add_subdirectory(samples/Primitives) # PrimitivesSample

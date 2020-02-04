@@ -62,8 +62,6 @@ namespace onut
         void* pMatrixAnimPrototype = nullptr;
         void* pColorAnimPrototype = nullptr;
 
-        void* pVideoPlayerPrototype = nullptr;
-
         void* pBinaryFileWriterPrototype = nullptr;
         void* pBinaryFileReaderPrototype = nullptr;
 
@@ -7493,194 +7491,6 @@ namespace onut
             duk_put_global_string(ctx, "BinaryFileWriter");
         }
 
-        static void createVideoPlayerBindings()
-        {
-            auto ctx = pContext;
-
-            // constructor
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
-
-                auto renderTarget = OTexture::createRenderTarget({1, 1});
-                auto ppPlayer = new OVideoPlayerRef(OVideoPlayer::createWithRenderTarget(renderTarget));
-
-                duk_push_this(ctx);
-                duk_push_pointer(ctx, ppPlayer);
-                duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-                return 0;
-            }, 0);
-            duk_push_object(ctx);
-
-            // ~destructor()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    delete ppPlayer;
-                    duk_pop(ctx);
-                    duk_push_pointer(ctx, nullptr);
-                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
-                }
-                return 0;
-            }, 1);
-            duk_set_finalizer(ctx, -2);
-
-            // isPlaying()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    duk_push_boolean(ctx, (*ppPlayer)->isPlaying());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "isPlaying");
-
-            // pause()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->pause();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "pause");
-
-            // play()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->play();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "play");
-
-            // setLoop()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto loop = JS_BOOL(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->setLoop(loop);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setLoop");
-
-            // setPlayRate()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto playRate = JS_FLOAT(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->setPlayRate((double)playRate);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "playRate");
-
-            // setSource()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto url = JS_STRING(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->setSource(url);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setSource");
-
-            // setVolume()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto volume = JS_FLOAT(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->setVolume(volume);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setVolume");
-
-            // togglePlayPause()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->togglePlayPause();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "togglePlayPause");
-
-            // update()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    (*ppPlayer)->update();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "update");
-
-            // getRenderTarget()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppPlayer = (OVideoPlayerRef*)duk_to_pointer(ctx, -1);
-                if (ppPlayer)
-                {
-                    newTexture(ctx, (*ppPlayer)->getRenderTarget());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getRenderTarget");
-
-            // Done with the object
-            pVideoPlayerPrototype = duk_get_heapptr(ctx, -1);
-            duk_put_prop_string(ctx, -2, "prototype");
-
-            duk_put_global_string(ctx, "VideoPlayer");
-        }
-
         static void createVertexBufferBindings()
         {
             auto ctx = pContext;
@@ -7887,11 +7697,6 @@ namespace onut
             createRectAnimBindings();
             createColorAnimBindings();
             createMatrixAnimBindings();
-        }
-
-        static void createObjectBindings()
-        {
-            createVideoPlayerBindings();
         }
 
         static void createFileBindings()
@@ -10757,7 +10562,6 @@ namespace onut
             createMathsBinding();
             createResourceBindings();
             createAnimBindings();
-            createObjectBindings();
             createUIBindings();
             createFileBindings();
 
