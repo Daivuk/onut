@@ -11,83 +11,6 @@
 // STL
 #include <set>
 
-// Forward declare
-#include <onut/ForwardDeclaration.h>
-ForwardDeclare(JSComponentDefinition);
-
-class JSComponentDefinition
-{
-public:
-    std::string name;
-
-    bool has_onCreate = false;
-    bool has_onUpdate = false;
-    bool has_onRender = false;
-    bool has_onRender2d = false;
-    bool has_onMessage = false;
-    bool has_onAddChild = false;
-    bool has_onRemoveChild = false;
-    bool has_onTriggerEnter = false;
-    bool has_onTriggerLeave = false;
-    bool has_onEnable = false;
-    bool has_onDisable = false;
-    bool has_onDestroy = false;
-};
-
-class JSComponent : public OComponent
-{
-public:
-    void onCreate()
-    {
-    }
-
-    void onUpdate()
-    {
-    }
-
-    void onRender()
-    {
-    }
-
-    void onRender2d()
-    {
-    }
-
-    void onMessage(int messageId, void* pData)
-    {
-    }
-
-    void onAddChild(const OEntityRef& pChild)
-    {
-    }
-
-    void onRemoveChild(const OEntityRef& pChild)
-    {
-    }
-
-    void onTriggerEnter(const OCollider2DComponentRef& pCollider)
-    {
-    }
-
-    void onTriggerLeave(const OCollider2DComponentRef& pCollider)
-    {
-    }
-
-    void onEnable()
-    {
-    }
-
-    void onDisable()
-    {
-    }
-
-    void onDestroy()
-    {
-    }
-
-    JSComponentDefinitionRef pDefinition;
-};
-
 namespace onut
 {
     namespace js
@@ -139,7 +62,6 @@ namespace onut
         void* pColorAnimPrototype = nullptr;
 
         void* pVideoPlayerPrototype = nullptr;
-        void* pEntityPrototype = nullptr;
 
         void* pBinaryFileWriterPrototype = nullptr;
         void* pBinaryFileReaderPrototype = nullptr;
@@ -147,8 +69,6 @@ namespace onut
         void* pUIPrototype = nullptr;
 
         void* pUpdaterPrototype = nullptr;
-
-        std::unordered_map<std::string, JSComponentDefinitionRef> jsComponentDefinitions;
 
         void updateViewport()
         {
@@ -2855,41 +2775,6 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newEntity(duk_context* ctx, const OEntityRef& pEntity)
-        {
-            duk_push_object(ctx);
-            auto pppEntity = new OEntityRef(pEntity);
-            duk_push_pointer(ctx, pppEntity);
-            duk_put_prop_string(ctx, -2, "\xff""\xff""data");
-            duk_push_heapptr(ctx, pEntityPrototype);
-            duk_set_prototype(ctx, -2);
-        }
-
-        class JSComponentType
-        {
-        public:
-            void* pConstructor = nullptr;
-            void* pPrototype = nullptr;
-            int flags = 0;
-            void* p_onCreate = nullptr;
-            void* p_onUpdate = nullptr;
-            void* p_onRender = nullptr;
-            void* p_onRender2d = nullptr;
-            void* p_onMessage = nullptr;
-            void* p_onMessageBroadcast = nullptr;
-            void* p_onAddChild = nullptr;
-            void* p_onRemoveChild = nullptr;
-            void* p_onTriggerEnter = nullptr;
-            void* p_onTriggerLeave = nullptr;
-            void* p_onEnable = nullptr;
-            void* p_onDisable = nullptr;
-            void* p_onDestroy = nullptr;
-        };
-
-        using JSComponentTypeRef = std::shared_ptr<JSComponentType>;
-        static std::unordered_map<std::string, JSComponentTypeRef> jsComponentTypesByName;
-        static std::unordered_map<void*, JSComponentTypeRef> jsComponentTypesByPointer;
-
         static void createUpdaterBindings()
         {
             auto ctx = pContext;
@@ -3173,17 +3058,19 @@ namespace onut
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
                 auto size = getPoint(ctx, 0, Point(1, 1));
-                newTexture(ctx, OTexture::createRenderTarget(size));
+                auto format = (RenderTargetFormat)JS_INT(1, (int)OFormatRGBA8);
+                newTexture(ctx, OTexture::createRenderTarget(size, false, format));
                 return 1;
-            }, 1);
+            }, 2);
             duk_put_prop_string(ctx, -2, "createRenderTarget");
 
             // createScreenRenderTarget()
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
-                newTexture(ctx, OTexture::createScreenRenderTarget());
+                auto format = (RenderTargetFormat)JS_INT(0, (int)OFormatRGBA8);
+                newTexture(ctx, OTexture::createScreenRenderTarget(false, format));
                 return 1;
-            }, 0);
+            }, 1);
             duk_put_prop_string(ctx, -2, "createScreenRenderTarget");
 
             duk_put_global_string(ctx, "Texture");
@@ -7961,472 +7848,6 @@ namespace onut
             duk_put_global_string(ctx, "IndexBuffer");
         }
 
-        static void createEntityBindings()
-        {
-            auto ctx = pContext;
-
-            // Entity() 
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                return DUK_RET_TYPE_ERROR; // No constructor allowed
-            }, 1);
-            duk_push_object(ctx);
-
-            // ~IndexBuffer()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_get_prop_string(ctx, 0, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    delete ppEntity;
-                    duk_pop(ctx);
-                    duk_push_pointer(ctx, nullptr);
-                    duk_put_prop_string(ctx, 0, "\xff""\xff""data");
-                }
-                return 0;
-            }, 1);
-            duk_set_finalizer(ctx, -2);
-
-            // destroy()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->destroy();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "destroy");
-
-            // getTransform()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    newMatrix(ctx, (*ppEntity)->getLocalTransform());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getTransform");
-
-            // setTransform()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto transform = JS_MATRIX(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->setLocalTransform(transform);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setTransform");
-
-            // getWorldTransform()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    newMatrix(ctx, (*ppEntity)->getWorldTransform());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getWorldTransform");
-
-            // setWorldTransform()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto transform = JS_MATRIX(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->setWorldTransform(transform);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setWorldTransform");
-
-            // add()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto child = JS_ENTITY(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->add(child);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "add");
-
-            // remove()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto child = JS_ENTITY(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->remove(child);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "remove");
-
-            // removeFromParent()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->remove();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "removeFromParent");
-
-            // getParent()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    newEntity(ctx, (*ppEntity)->getParent());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getParent");
-
-            // isEnabled()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    duk_push_boolean(ctx, (*ppEntity)->isEnabled() ? 1 : 0);
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "isEnabled");
-
-            // setEnabled()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto enabled = JS_BOOL(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->setEnabled(enabled);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setEnabled");
-
-            // isVisible()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    duk_push_boolean(ctx, (*ppEntity)->isVisible() ? 1 : 0);
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "isVisible");
-
-            // setVisible()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto visible = JS_BOOL(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->setVisible(visible);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setVisible");
-
-            // isStatic()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    duk_push_boolean(ctx, (*ppEntity)->isStatic() ? 1 : 0);
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "isStatic");
-
-            // setStatic()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto _static = JS_BOOL(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->setStatic(_static);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setStatic");
-
-            // getName()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    duk_push_string(ctx, (*ppEntity)->getName().c_str());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getName");
-
-            // setName()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto name = JS_STRING(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    (*ppEntity)->setName(name);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setName");
-
-            // getComponent()
-       /*     duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto componentName = JS_STRING(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    auto pComponent = (*ppEntity)->getComponent();
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getComponent");*/
-
-            // getParentComponent()
-
-            // addComponent()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppEntity = (OEntityRef*)duk_to_pointer(ctx, -1);
-                if (ppEntity)
-                {
-                    duk_pop(ctx);
-                    if (duk_get_prop_string(ctx, 0, "\xff""\xff""data"))
-                    {
-                        // We passed a component directly
-                        (*ppEntity)->addComponent(JS_COMPONENT(0));
-                    }
-                    else
-                    {
-                        // We passed a constructor to a component. use it!
-                        duk_dup(ctx, 0);
-                        duk_new(ctx, 0);
-                    //    (*ppEntity)->addComponent(JS_COMPONENT(-1));
-                        return 1;
-                    }
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "addComponent");
-
-            // Done with the object
-            pEntityPrototype = duk_get_heapptr(ctx, -1);
-            duk_put_prop_string(ctx, -2, "prototype");
-
-            // create()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                newEntity(ctx, OEntity::create());
-                return 1;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "create");
-
-            duk_put_global_string(ctx, "Entity");
-        }
-
-        static void addJSComponentBindings(duk_context *ctx)
-        {
-            // getTransform()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    newMatrix(ctx, (*ppComponent)->getLocalTransform());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getTransform");
-
-            // setTransform(matrix)
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto matrix = JS_MATRIX(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    (*ppComponent)->setLocalTransform(matrix);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setTransform");
-
-            // getWorldTransform()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    newMatrix(ctx, (*ppComponent)->getWorldTransform());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getWorldTransform");
-
-            // setWorldTransform(matrix)
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto matrix = JS_MATRIX(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    (*ppComponent)->setWorldTransform(matrix);
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setWorldTransform");
-
-            // getEntity()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    newEntity(ctx, (*ppComponent)->getEntity());
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "getEntity");
-
-            // isEnabled()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    duk_push_boolean(ctx, (*ppComponent)->isEnabled() ? 1 : 0);
-                    return 1;
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "isEnabled");
-
-            // setEnabled()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                auto enable = JS_BOOL(0);
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    (*ppComponent)->setEnabled(enable);
-                    return 1;
-                }
-                return 0;
-            }, 1);
-            duk_put_prop_string(ctx, -2, "setEnabled");
-
-            // getComponent()
-            // getParentComponent()
-
-            // destroy()
-            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
-            {
-                duk_push_this(ctx);
-                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
-                auto ppComponent = (OComponentRef*)duk_to_pointer(ctx, -1);
-                if (ppComponent)
-                {
-                    (*ppComponent)->destroy();
-                }
-                return 0;
-            }, 0);
-            duk_put_prop_string(ctx, -2, "destroy");
-        }
-
         static void createMathsBinding()
         {
             createVector2Bindings();
@@ -8470,7 +7891,6 @@ namespace onut
         static void createObjectBindings()
         {
             createVideoPlayerBindings();
-            createEntityBindings();
         }
 
         static void createFileBindings()
@@ -11289,6 +10709,20 @@ namespace onut
                 JS_ENUM("Z", Axis::Z);
             }
             JS_INTERFACE_END("Axis");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("R8", RenderTargetFormat::R8);
+                JS_ENUM("RG8", RenderTargetFormat::RG8);
+                JS_ENUM("RGBA8", RenderTargetFormat::RGBA8);
+                JS_ENUM("R16", RenderTargetFormat::R16);
+                JS_ENUM("RG16", RenderTargetFormat::RG16);
+                JS_ENUM("RGBA16", RenderTargetFormat::RGBA16);
+                JS_ENUM("R32", RenderTargetFormat::R32);
+                JS_ENUM("RG32", RenderTargetFormat::RG32);
+                JS_ENUM("RGBA32", RenderTargetFormat::RGBA32);
+                JS_ENUM("RGB10A2", RenderTargetFormat::RGB10A2);
+            }
+            JS_INTERFACE_END("RenderTargetFormat");
 
             // System
             JS_INTERFACE_BEGIN();
@@ -11318,104 +10752,6 @@ namespace onut
             }
             JS_INTERFACE_END("System");
 
-
-            // Component bullshit
-       /*     JS_GLOBAL_FUNCTION_BEGIN
-            {
-                auto componentName = JS_STRING(0);
-                if (duk_get_global_string(ctx, componentName))
-                {
-                    auto pJSComponentType = OMake<JSComponentType>();
-
-                    // Grab constructor heap pointer
-                    pJSComponentType->pConstructor = duk_get_heapptr(ctx, -1);
-
-                    // Grab it's prototype heap pointer
-                    duk_get_prototype(ctx, -1);
-                    pJSComponentType->pPrototype = duk_get_heapptr(ctx, -3);
-
-                    // Add component prototype to it
-                    addJSComponentBindings(ctx);
-
-                    // Check it's callbacks
-                    if (duk_get_prop_string(ctx, -3, "onCreate"))
-                    {
-                        pJSComponentType->p_onCreate = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onUpdate"))
-                    {
-                        pJSComponentType->flags |= OComponent::FLAG_UPDATABLE;
-                        pJSComponentType->p_onUpdate = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onRender"))
-                    {
-                        pJSComponentType->flags |= OComponent::FLAG_RENDERABLE;
-                        pJSComponentType->p_onRender = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -1, "onRender2d"))
-                    {
-                        pJSComponentType->flags |= OComponent::FLAG_RENDERABLE_2D;
-                        pJSComponentType->p_onRender2d = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onMessage"))
-                    {
-                        pJSComponentType->p_onMessage = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onMessageBroadcast"))
-                    {
-                        pJSComponentType->flags |= OComponent::FLAG_BROADCAST_LISTENER;
-                        pJSComponentType->p_onMessageBroadcast = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onAddChild"))
-                    {
-                        pJSComponentType->p_onAddChild = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onRemoveChild"))
-                    {
-                        pJSComponentType->p_onRemoveChild = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onTriggerEnter"))
-                    {
-                        pJSComponentType->p_onTriggerEnter = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onTriggerLeave"))
-                    {
-                        pJSComponentType->p_onTriggerLeave = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onEnable"))
-                    {
-                        pJSComponentType->p_onEnable = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onDisable"))
-                    {
-                        pJSComponentType->p_onDisable = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-                    if (duk_get_prop_string(ctx, -3, "onDestroy"))
-                    {
-                        pJSComponentType->p_onDestroy = duk_get_heapptr(ctx, -3);
-                        duk_pop(ctx);
-                    }
-
-                    // Register it
-                    jsComponentTypesByName[componentName] = pJSComponentType;
-                    jsComponentTypesByPointer[pJSComponentType->pConstructor] = pJSComponentType;
-                }
-                return 0;
-            }
-            JS_GLOBAL_FUNCTION_END("registerComponent", 1);
-            */
             createUpdaterBindings();
             createMathsBinding();
             createResourceBindings();

@@ -727,8 +727,8 @@ declare class Texture {
     static createFromFile(filename: string): Texture;
     static createDynamic(size: Vector2): Texture;
     static createFromData(data: ArrayBuffer, size: Vector2): Texture;
-    static createRenderTarget(size: Vector2): Texture;
-    static createScreenRenderTarget(): Texture;
+    static createRenderTarget(size: Vector2, format: RenderTargetFormat): Texture;
+    static createScreenRenderTarget(format: RenderTargetFormat): Texture;
 
     getSize(): Vector2;
     isRenderTarget(): boolean;
@@ -1563,52 +1563,20 @@ declare enum Axis {
     Z
 }
 
+// Render target format
+declare enum RenderTargetFormat {
+    R8,     // normalized in range [0, 1]
+    RG8,    // normalized in range [0, 1]
+    RGBA8,  // normalized in range [0, 1]
+    R16,    // normalized in range [0, 1]
+    RG16,   // normalized in range [0, 1]
+    RGBA16, // normalized in range [0, 1]
+    R32,    // float
+    RG32,   // float
+    RGBA32, // float
+    RGB10A2 // normalized in range [0, 1]
+}
+
 declare namespace System {
     function getPlatform(): Platform;
-}
-
-declare class Entity {
-    static create(): Entity;
-
-    destroy();
-    getTransform(): Matrix;
-    setTransform(transform: Matrix);
-    getWorldTransform(): Matrix;
-    setWorldTransform(transform: Matrix);
-    add(child: Entity);
-    remove(child: Entity);
-    removeFromParent();
-    getParent(): Entity;
-    isEnabled(): boolean;
-    setEnabled(enabled: boolean);
-    isVisible(): boolean;
-    setVisible(visible: boolean);
-    isStatic(): boolean;
-    setStatic(_static: boolean);
-    getName(): string;
-    setName(name: string);
-    getComponent(type: Object): Component;
-    getParentComponent(type: Object): Component;
-    addComponent(type: Object): Component;
-    addComponent(component: Component);
-    sendMessage(id: string, data: Object);
-    getDrawIndex(): number;
-    setDrawIndex(drawIndex: number);
-    getChildrenCount(): number;
-    getChildren(index: number): Entity;
-}
-
-declare class Component {
-    getTransform(): Matrix;
-    setTransform(transform: Matrix);
-    getWorldTransform(): Matrix;
-    setWorldTransform(transform: Matrix);
-    getEntity(): Entity;
-    isEnabled(): boolean;
-    setEnabled(enabled: boolean);
-    getComponent(type: Object): Component;
-    getParentComponent(type: Object): Component;
-    sendMessage(id: string, data: Object);
-    broadcastMessage(id: string, data: Object);
-    destroy();
 }
