@@ -10,6 +10,8 @@
 float vertexAnim = 0.0f;
 float pixelAnim = 0.0f;
 
+OTextureRef pMTR[4];
+
 void initSettings()
 {
     oSettings->setGameName("Shader Sample");
@@ -17,6 +19,10 @@ void initSettings()
 
 void init()
 {
+    pMTR[0] = OTexture::createRenderTarget({ 128, 128 }, false, OFormatRGBA8);
+    pMTR[1] = OTexture::createRenderTarget({ 128, 128 }, false, OFormatRGBA8);
+    pMTR[2] = OTexture::createRenderTarget({ 128, 128 }, false, OFormatRGBA8);
+    pMTR[3] = OTexture::createRenderTarget({ 128, 128 }, false, OFormatRGBA8);
 }
 
 void update()
@@ -32,6 +38,8 @@ void render()
 
     auto pVertexShader = OGetShader("sample.vs");
     auto pPixelShader = OGetShader("sample.ps");
+
+    auto pMrtPS = OGetShader("mrt.ps");
 
     // Clear
     oRenderer->clear(OColorHex(1d232d));
@@ -49,7 +57,24 @@ void render()
     pPixelShader->setFloat("anim", pixelAnim);
 
     // Draw sprite
-    oSpriteBatch->drawSprite(pTexture0, OScreenCenterf);
+    oSpriteBatch->drawSprite(pTexture0, {OScreenWf / 2 - 150, OScreenHf / 2});
+
+    oSpriteBatch->end();
+
+    // MRT sample
+    for (int i = 0; i < 4; ++i) oRenderer->renderStates.renderTargets[i].push(pMTR[i]);
+    oSpriteBatch->begin();
+    oRenderer->renderStates.pixelShader = pMrtPS;
+    oSpriteBatch->drawRect(pTexture0, { 0, 0, 128, 128 });
+    oSpriteBatch->end();
+    for (int i = 0; i < 4; ++i) oRenderer->renderStates.renderTargets[i].pop();
+
+    // Show are MRT result
+    oSpriteBatch->begin();
+    oSpriteBatch->drawSprite(pMTR[0], { OScreenWf / 2 + 150, OScreenHf / 2-64 });
+    oSpriteBatch->drawSprite(pMTR[1], { OScreenWf / 2 + 150+128, OScreenHf / 2-64 });
+    oSpriteBatch->drawSprite(pMTR[2], { OScreenWf / 2 + 150, OScreenHf / 2+64 });
+    oSpriteBatch->drawSprite(pMTR[3], { OScreenWf / 2 + 150+128, OScreenHf / 2+64 });
     oSpriteBatch->end();
 }
 

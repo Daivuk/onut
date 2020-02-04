@@ -84,9 +84,9 @@ namespace onut
         oUIContext->addStyle<onut::UIPanel>("blur", [](const OUIPanelRef& pPanel, const Rect& rect)
         {
             oSpriteBatch->end();
-            if (oRenderer->renderStates.renderTarget.get())
+            if (oRenderer->renderStates.renderTargets[0].get())
             {
-                oRenderer->renderStates.renderTarget.get()->blur();
+                oRenderer->renderStates.renderTargets[0].get()->blur();
             }
             oSpriteBatch->begin();
             oSpriteBatch->drawRect(nullptr, (rect), pPanel->color);
@@ -416,7 +416,7 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
-            oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+            oRenderer->renderStates.renderTargets[0] = g_pMainRenderTarget;
             oRenderer->beginFrame();
             onut::js::render();
             if (renderCallback)
@@ -441,7 +441,8 @@ namespace onut
             drawImgui();
 
             // Draw final render target
-            oRenderer->renderStates.renderTarget = nullptr;
+            for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+                oRenderer->renderStates.renderTargets[i] = nullptr;
             const auto& res = oRenderer->getResolution();
             oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
             oRenderer->renderStates.scissorEnabled = false;

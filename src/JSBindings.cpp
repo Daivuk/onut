@@ -72,7 +72,7 @@ namespace onut
 
         void updateViewport()
         {
-            auto& pRenderTarget = oRenderer->renderStates.renderTarget.get();
+            auto& pRenderTarget = oRenderer->renderStates.renderTargets[0].get();
             Point resolution;
             if (pRenderTarget) resolution = pRenderTarget->getSize();
             else resolution = oRenderer->getTrueResolution();
@@ -8661,32 +8661,36 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pTexture = JS_TEXTURE(0);
-                    oRenderer->renderStates.renderTarget = pTexture;
+                    auto index = JS_INT(1, 0);
+                    oRenderer->renderStates.renderTargets[index] = pTexture;
                     updateViewport();
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("setRenderTarget", 1);
+                JS_INTERFACE_FUNCTION_END("setRenderTarget", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto pTexture = JS_TEXTURE(0);
-                    oRenderer->renderStates.renderTarget.push(pTexture);
+                    auto index = JS_INT(1, 0);
+                    oRenderer->renderStates.renderTargets[index].push(pTexture);
                     updateViewport();
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("pushRenderTarget", 1);
+                JS_INTERFACE_FUNCTION_END("pushRenderTarget", 2);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    oRenderer->renderStates.renderTarget.pop();
+                    auto index = JS_INT(0, 0);
+                    oRenderer->renderStates.renderTargets[index].pop();
                     updateViewport();
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("popRenderTarget", 0);
+                JS_INTERFACE_FUNCTION_END("popRenderTarget", 1);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    newTexture(ctx, oRenderer->renderStates.renderTarget.get());
+                    auto index = JS_INT(0, 0);
+                    newTexture(ctx, oRenderer->renderStates.renderTargets[index].get());
                     return 1;
                 }
-                JS_INTERFACE_FUNCTION_END("getRenderTarget", 0);
+                JS_INTERFACE_FUNCTION_END("getRenderTarget", 1);
                 // Textures
                 JS_INTERFACE_FUNCTION_BEGIN
                 {

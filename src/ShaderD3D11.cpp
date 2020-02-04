@@ -16,6 +16,7 @@
 // STL
 #include <cassert>
 #include <regex>
+#include <set>
 
 namespace onut
 {
@@ -367,17 +368,44 @@ namespace onut
                 source += "}\n\n";
             }
 
+            // Parse the source to see how many render targets we output
+            std::set<int> mrt;
+            bool useOColor = false;
+            for (auto& token : parsed.mainFunction.body)
+            {
+                if (token.str == "oColor") useOColor = true;
+                else if (token.str == "oColor1") mrt.insert(1);
+                else if (token.str == "oColor2") mrt.insert(2);
+                else if (token.str == "oColor3") mrt.insert(3);
+                else if (token.str == "oColor4") mrt.insert(4);
+                else if (token.str == "oColor5") mrt.insert(5);
+                else if (token.str == "oColor6") mrt.insert(6);
+                else if (token.str == "oColor7") mrt.insert(7);
+            }
+
+            // Define output struct
+            source += "struct PS_OUT\n{\n";
+            source += "    float4 target0 : SV_TARGET;\n";
+            for (auto i : mrt) source += "    float4 target" + std::to_string(i) + " : SV_TARGET" + std::to_string(i) + ";\n";
+            source += "};\n";
+
             // Bake main function
-            source += "float4 main(oPSInput oInput) : SV_TARGET\n{\n    float4 oColor;\n";
+            source += "PS_OUT main(oPSInput oInput)\n{\n";
+            source += "    PS_OUT oPS_OUT;\n";
+            source += "    float4 " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+            for (auto i : mrt) source += "    float4 oColor" + std::to_string(i) + ";\n";
             for (auto& element : parsed.inputs)
             {
                 source += "    " + getTypeName(element.type) + " " + element.name + " = oInput." + element.name + ";\n";
             }
             bakeTokens(source, parsed.mainFunction.body);
-            source += "    return oColor;\n}\n";
+            source += "    oPS_OUT.target0 = " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+            for(auto i : mrt) source += "    oPS_OUT.target" + std::to_string(i) + " = oColor" + std::to_string(i) + ";\n";
+            source += "    return oPS_OUT;\n}\n";
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Pixel);
+            assert(pRet);
             auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
             if (pRetD3D11)
             {

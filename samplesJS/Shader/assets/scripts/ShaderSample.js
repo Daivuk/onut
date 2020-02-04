@@ -6,6 +6,14 @@ var texture1 = getTexture("texture1.png");
 
 var vertexShader = getShader("sample.vs");
 var pixelShader = getShader("sample.ps");
+var mrtPS = getShader("mrt.ps");
+
+var mrt = [
+    Texture.createRenderTarget(new Vector2(128, 128)),
+    Texture.createRenderTarget(new Vector2(128, 128)),
+    Texture.createRenderTarget(new Vector2(128, 128)),
+    Texture.createRenderTarget(new Vector2(128, 128))
+]
 
 function update(dt) {
     vertexAnim += dt;
@@ -13,13 +21,15 @@ function update(dt) {
 }
 
 function render() {
+    var hres = Renderer.getResolution().div(2);
+
     // Clear
     Renderer.clear(Color.fromHexRGB(0x1d232d));
 
     SpriteBatch.begin();
 
     // Set custom shaders
-    Renderer.setVertexShader(vertexShader);
+    Renderer.pushVertexShader(vertexShader);
     Renderer.setPixelShader(pixelShader);
 
     // Bind both textures directly to the renderer
@@ -31,7 +41,22 @@ function render() {
     pixelShader.setNumber("anim", pixelAnim);
 
     // Draw sprite
-    SpriteBatch.drawSprite(texture0, Renderer.getResolution().div(2));
+    SpriteBatch.drawSprite(texture0, new Vector2(hres.x - 150, hres.y));
 
+    SpriteBatch.end();
+
+    // MRT
+    for (var i = 0; i < 4; ++i) Renderer.pushRenderTarget(mrt[i], i);
+    SpriteBatch.begin();
+    Renderer.setPixelShader(mrtPS);
+    SpriteBatch.drawRect(texture0, new Rect(0, 0, 128, 128));
+    SpriteBatch.end();
+    for (var i = 0; i < 4; ++i) Renderer.popRenderTarget(i);
+
+    SpriteBatch.begin();
+    SpriteBatch.drawSprite(mrt[0], new Vector2(hres.x + 150, hres.y - 64));
+    SpriteBatch.drawSprite(mrt[1], new Vector2(hres.x + 150+128, hres.y - 64));
+    SpriteBatch.drawSprite(mrt[2], new Vector2(hres.x + 150, hres.y + 64));
+    SpriteBatch.drawSprite(mrt[3], new Vector2(hres.x + 150+128, hres.y + 64));
     SpriteBatch.end();
 }

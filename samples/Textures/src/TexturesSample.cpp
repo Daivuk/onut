@@ -75,7 +75,7 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
 
     // Draw stuff to our render target
-    oRenderer->renderStates.renderTarget.push(pRenderTarget);
+    oRenderer->renderStates.renderTargets[0].push(pRenderTarget);
     oRenderer->renderStates.viewport.push({0, 0, pRenderTarget->getSize().x, pRenderTarget->getSize().y});
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
@@ -84,7 +84,7 @@ void render()
     oSpriteBatch->drawRect(pTextureFromFile, {128, 128, 128, 128});
     oSpriteBatch->end();
     oRenderer->renderStates.viewport.pop();
-    oRenderer->renderStates.renderTarget.pop();
+    oRenderer->renderStates.renderTargets[0].pop();
 
     // Update our dynamic texture
     auto animValue = dynamicAnim.get();
@@ -102,13 +102,13 @@ void render()
     pDynamic->setData(dynamicData);
 
     // Draw stuff to our render target RG16
-    oRenderer->renderStates.renderTarget.push(pRenderTargetRG16);
+    oRenderer->renderStates.renderTargets[0].push(pRenderTargetRG16);
     oRenderer->renderStates.viewport.push({ 0, 0, pRenderTargetRG16->getSize().x, pRenderTargetRG16->getSize().y });
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pDynamic, { 0, 0, 256, 256 });
     oSpriteBatch->end();
     oRenderer->renderStates.viewport.pop();
-    oRenderer->renderStates.renderTarget.pop();
+    oRenderer->renderStates.renderTargets[0].pop();
 
     // Draw out resulted textures
     auto pFont = OGetFont("font.fnt");

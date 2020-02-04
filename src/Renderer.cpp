@@ -40,7 +40,10 @@ namespace onut
         pixelShader = nullptr;
         vertexBuffer = nullptr;
         indexBuffer = nullptr;
-        renderTarget = nullptr;
+        for (auto& renderTarget : renderTargets)
+        {
+            renderTarget = nullptr;
+        }
         clearColor = Color::fromHexRGB(0x1d232d);
     }
 
@@ -121,7 +124,10 @@ namespace onut
         pixelShader.reset();
         vertexBuffer.reset();
         indexBuffer.reset();
-        renderTarget.reset();
+        for (auto& pRenderTarget : renderTargets)
+        {
+            pRenderTarget.reset();
+        }
         clearColor.reset();
     }
 
@@ -367,7 +373,7 @@ namespace onut
 
     Point Renderer::getResolution() const
     {
-        auto& pRenderTarget = renderStates.renderTarget.get();
+        auto& pRenderTarget = renderStates.renderTargets[0].get();
         if (pRenderTarget)
         {
             return pRenderTarget->getSize();

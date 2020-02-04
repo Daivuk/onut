@@ -1111,10 +1111,10 @@ declare namespace Renderer {
     function setupFor3D(eye: Vector3, target: Vector3, up: Vector3, fov: number);
 
     // States
-    function setRenderTarget(renderTarget: Texture);
-    function pushRenderTarget(renderTarget: Texture);
-    function popRenderTarget();
-    function getRenderTarget(): Texture;
+    function setRenderTarget(renderTarget: Texture, index: number);
+    function pushRenderTarget(renderTarget: Texture, index: number);
+    function popRenderTarget(index: number);
+    function getRenderTarget(index: number): Texture;
 
     function setTexture(texture: Texture, index: number);
     function pushTexture(texture: Texture, index: number);
