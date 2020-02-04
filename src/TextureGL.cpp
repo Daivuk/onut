@@ -64,7 +64,7 @@ namespace onut
         glGenRenderbuffers(1, &rboDepthStencil);
         glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, size.x, size.y);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
+        ((RendererGL*)oRenderer.get())->attachDepthBuffer(size);
 
         pRet->m_frameBuffer = frameBuffer;
         pRet->m_handle = handle;
@@ -252,7 +252,7 @@ namespace onut
         glGenRenderbuffers(1, &rboDepthStencil);
         glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_size.x, m_size.y);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
+        ((RendererGL*)oRenderer.get())->attachDepthBuffer(m_size);
 
         assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 

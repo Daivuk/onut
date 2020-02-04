@@ -119,6 +119,11 @@ namespace onut
 #if !defined(__APPLE__)
         gl3wInit();
 #endif
+
+        m_mrtDepthSize = m_resolution;
+        glGenRenderbuffers(1, &m_mrtDepthStencil);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_mrtDepthStencil);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_mrtDepthSize.x, m_mrtDepthSize.y);
     }
 
     void RendererGL::createRenderTarget()
@@ -250,6 +255,20 @@ namespace onut
         }
     }
 
+    void RendererGL::attachDepthBuffer(const Point& size)
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, m_mrtDepthStencil);
+
+        if (size.x >= m_mrtDepthSize.x || size.y >= m_mrtDepthSize.y)
+        {
+            m_mrtDepthSize.x = std::max(size.x, m_mrtDepthSize.x);
+            m_mrtDepthSize.y = std::max(size.y, m_mrtDepthSize.y);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_mrtDepthSize.x, m_mrtDepthSize.y);
+        }
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_mrtDepthStencil);
+    }
+
     void RendererGL::applyRenderStates()
     {
         // Clear color
@@ -290,6 +309,13 @@ namespace onut
                 if (!m_mrtFrameBuffer)
                 {
                     glGenFramebuffers(1, &m_mrtFrameBuffer);
+                    glBindFramebuffer(GL_FRAMEBUFFER, m_mrtFrameBuffer);
+                    auto& pRenderTarget = renderStates.renderTargets[0].get();
+                    if (pRenderTarget)
+                    {
+                        glBindRenderbuffer(GL_RENDERBUFFER, m_mrtDepthStencil);
+                        attachDepthBuffer(pRenderTarget->getSize());
+                    }
                 }
                 glBindFramebuffer(GL_FRAMEBUFFER, m_mrtFrameBuffer);
                 GLenum buffers[8];
