@@ -548,7 +548,7 @@ namespace onut
                             sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + 0];
                     }
                     percent = offsetF - (float)(int)offsetF;
-                    pOut[i * channelCount + 0] += sample1 + (sample2 - sample1) * percent;
+                    pOut[i * channelCount + 0] += (sample1 + (sample2 - sample1) * percent) * leftVolume;
 
                     sample1 = pSoundBuffer[(int)offsetF * bufferChannelCount + 1];
                     if (loop)
@@ -563,7 +563,7 @@ namespace onut
                             sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + 1];
                     }
                     percent = offsetF - (float)(int)offsetF;
-                    pOut[i * channelCount + 1] += sample1 + (sample2 - sample1) * percent;
+                    pOut[i * channelCount + 1] += (sample1 + (sample2 - sample1) * percent) * rightVolume;
 
                     offsetF += pitch;
                     if ((int)offsetF >= bufferFrameCount)

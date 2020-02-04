@@ -4,6 +4,7 @@
 #include <onut/Input.h>
 #include <onut/Log.h>
 #include <onut/Music.h>
+#include <onut/Random.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
@@ -69,6 +70,8 @@ void update()
     float balance = 0.f;
     float pitch = 1.0f;
 
+    if (OInputPressed(OKeyHome)) volume *= 2.f;
+    if (OInputPressed(OKeyEnd)) volume /= 2.f;
     if (OInputPressed(OKeyLeft)) balance -= 1.f;
     if (OInputPressed(OKeyRight)) balance += 1.f;
     if (OInputPressed(OKeyUp)) pitch = 2.f;
@@ -179,6 +182,10 @@ void update()
     {
         OPlaySoundCue("soundCue.cue", volume, balance, pitch);
     }
+    if (OInputJustPressed(OKey9))
+    {
+        OPlaySound("stereo.wav", volume, balance, pitch);
+    }
     if (OInputJustPressed(OKeySpaceBar))
     {
         if (!pMusic->isPaused()) pMusic->pause();
@@ -229,7 +236,11 @@ void render()
         pFont->draw("Press ^9907^999 to start/stop looping sound", {10, 130});
     }
     pFont->draw("Press ^9908^999 to play cue file", {10, 150});
-    pFont->draw("Press ^990qwertyui^999 to do music", {10, 170});
+    pFont->draw("Press ^9909^999 to play a stereo sound", { 10, 170 });
+    pFont->draw("Press ^990qwertyui^999 to do music", {10, 190});
+
+    pFont->draw("Hold ^990Home^999 to play at 200% volume", { 10, OScreenHf - 150 });
+    pFont->draw("Hold ^990End^999 to play at 50% volume", { 10, OScreenHf - 130 });
 
     pFont->draw("Hold ^990Left Arrow^999 to on left channel", { 10, OScreenHf - 50 });
     pFont->draw("Hold ^990Right Arrow^999 to on right channel", { 10, OScreenHf - 30 });
