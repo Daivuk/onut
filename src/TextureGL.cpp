@@ -70,7 +70,7 @@ namespace onut
         pRet->m_handle = handle;
         
         // Because opengl uses a global state and its dumb as fuck
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].forceDirty();
 
         if (willUseFX)
@@ -269,7 +269,7 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         int i = 0;
@@ -281,14 +281,14 @@ namespace onut
             });
             amount -= 6.f;
 
-            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_frameBuffer, m_frameBufferFx);
             clearRenderTarget(Color::Transparent);
             oRenderer->drawBlurH();
             std::swap(m_frameBuffer, m_frameBufferFx);
 
-            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_handle, m_handleFx);
             clearRenderTarget(Color::Transparent);
@@ -299,7 +299,7 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTargets[0].pop();
         oRenderer->renderStates.textures[0].pop();
     }
     
@@ -312,8 +312,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -324,8 +324,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -338,8 +338,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -350,8 +350,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -364,8 +364,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -376,8 +376,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -390,8 +390,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -405,8 +405,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 

@@ -59,6 +59,7 @@ namespace onut
 
         Point m_resolution;
         OIndexBufferRef m_masterIndices;
+        GLuint m_mrtFrameBuffer = 0;
     };
 };
 

@@ -259,27 +259,63 @@ namespace onut
             glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
             renderStates.clearColor.resetDirty();
         }
-        
+
         // Render target
-        bool renderTargetDirty = renderStates.renderTarget.isDirty();
+        bool renderTargetDirty = false;
+        int mrtCount = 0;
+        for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+        {
+            if (renderStates.renderTargets[i].isDirty())
+            {
+                renderTargetDirty = true;
+            }
+            if (renderStates.renderTargets[i].get()) ++mrtCount;
+        }
+
         if (renderTargetDirty)
         {
-            auto& pRenderTarget = renderStates.renderTarget.get();
-            if (pRenderTarget)
+            if (mrtCount == 1)
             {
-                auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
-                auto frameBuffer = pRenderTargetGL->getFramebuffer();
-                glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+                auto& pRenderTarget = renderStates.renderTargets[0].get();
+                if (pRenderTarget)
+                {
+                    auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
+                    auto frameBuffer = pRenderTargetGL->getFramebuffer();
+                    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+                }
+                renderStates.renderTargets[0].resetDirty();
+            }
+            else if (mrtCount > 1)
+            {
+                if (!m_mrtFrameBuffer)
+                {
+                    glGenFramebuffers(1, &m_mrtFrameBuffer);
+                }
+                glBindFramebuffer(GL_FRAMEBUFFER, m_mrtFrameBuffer);
+                GLenum buffers[8];
+                int cnt = 0;
+                for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+                {
+                    GLuint handle = 0;
+                    auto& pRenderTarget = renderStates.renderTargets[i].get();
+                    if (pRenderTarget)
+                    {
+                        auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
+                        handle = pRenderTargetGL->getHandle();
+                    }
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, handle, 0);
+                    if (handle) buffers[cnt++] = GL_COLOR_ATTACHMENT0 + i;
+                }
+                glDrawBuffers(mrtCount, buffers);
             }
             else
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
-            renderStates.renderTarget.resetDirty();
         }
 
         // Because opengl sucks, we need to determine if we have to flip Y
-        bool invertY = renderStates.renderTarget.get() != nullptr;
+        bool invertY = renderStates.renderTargets[0].get() != nullptr;
         
         // Blend
         if (renderStates.blendMode.isDirty())
