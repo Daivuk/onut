@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-option(ONUT_USE_HUNTER "Use pre-built static libraries from Hunter" OFF)
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
@@ -14,15 +13,6 @@ endif()
 
 # Setup modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
-
-if(NOT MSVC AND ONUT_USE_HUNTER)
-    # Hunter Cross-platform package manager
-    include("cmake/HunterGate.cmake")
-    HunterGate(
-        URL "https://github.com/path/to/hunter/archive.tar.gz"
-        SHA1 "798501e983f14b28b10cda16afa4de69eee1da1d"
-    )
-endif()
 
 # project name
 project(libonut)
@@ -264,43 +254,23 @@ if (LINUX OR RPI) # Only required on linux if we use std::thread
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
 if (LINUX OR APPLE)
-    if (ONUT_USE_HUNTER)
-        hunter_add_package(glew)
-        find_package(glew CONFIG REQUIRED)
-        list(APPEND libs PUBLIC glew::glew)
-    else()
-        find_package(GLEW REQUIRED)
-        list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
-        list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
-    endif()
+    find_package(GLEW REQUIRED)
+    list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
 endif()
 if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
 
-    if (ONUT_USE_HUNTER)
-        # https://github.com/ruslo/hunter/wiki/pkg.sdl2
-        hunter_add_package(SDL2)
-        find_package(SDL2 CONFIG REQUIRED)
-        list(APPEND libs PUBLIC SDL2::SDL2)
-    else()
-        find_package(SDL2 REQUIRED)
-        list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
-        list(APPEND libs PUBLIC ${SDL2_LIBRARY})
-    endif()
+    find_package(SDL2 REQUIRED)
+    list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
+    list(APPEND libs PUBLIC ${SDL2_LIBRARY})
 endif()
 if (UNIX)
-    if (ONUT_USE_HUNTER)
-        # https://github.com/ruslo/hunter/wiki/pkg.curl
-        hunter_add_package(CURL)
-        find_package(CURL CONFIG REQUIRED)
-        list(APPEND libs PUBLIC CURL::libcurl)
-    else()
-        find_package(CURL REQUIRED)
-        list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
-        list(APPEND libs PUBLIC ${CURL_LIBRARIES})
-    endif()
+    find_package(CURL REQUIRED)
+    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${CURL_LIBRARIES})
 endif()
 if (WIN32)
     if (ONUT_USE_OPENGL)
