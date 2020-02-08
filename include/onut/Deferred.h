@@ -79,6 +79,8 @@ namespace onut
         const OTextureRef& getDepth() const;
         const OTextureRef& getMaterial() const;
 
+        const OTextureRef& getAmbientOcclusion() const;
+
     private:
         using Solid = Mesh;
         using AlphaTest = Mesh;

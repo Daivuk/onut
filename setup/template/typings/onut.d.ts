@@ -1239,6 +1239,8 @@ declare namespace Deferred {
     function getNormal(): Texture;
     function getDepth(): Texture;
     function getMaterial(): Texture;
+
+    function getAmbientOcclusion(): Texture;
 }
 
 // Spritebatch

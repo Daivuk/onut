@@ -5,6 +5,7 @@
     "    float dis = length(dir);\n" \
     "    dir /= dis;\n" \
     "    float attenuation = saturate(1 - dis / lradius);\n" \
+    "    attenuation = pow(attenuation, 1.2);\n" \
     "    float dotNormal = saturate(dot(normal, dir));\n" \
     "    return lcolor * attenuation * dotNormal;\n" \
 "}\n"

@@ -9357,6 +9357,12 @@ namespace onut
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("getMaterial", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newTexture(ctx, oDeferred->getAmbientOcclusion());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getAmbientOcclusion", 0);
             }
             JS_INTERFACE_END("Deferred");
 

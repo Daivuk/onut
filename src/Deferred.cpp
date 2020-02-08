@@ -111,6 +111,11 @@ namespace onut
         return m_pMaterial;
     }
 
+    const OTextureRef& Deferred::getAmbientOcclusion() const
+    {
+        return m_pAO;
+    }
+
     void Deferred::begin()
     {
         auto pRenderer = oRenderer.get();
