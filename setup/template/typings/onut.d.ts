@@ -1212,6 +1212,35 @@ declare namespace Renderer {
     function setLight(index: number, position: Vector3, radius: number, color: Color);
 }
 
+// Deferred
+declare namespace Deferred {
+    function begin();
+    
+    function addSolid(model: Model, transform: Matrix);
+    function addCustomSolid(albedo: Texture, normal: Texture, depth: Texture, vertexBuffer: VertexBuffer, indexBuffer: IndexBuffer, elementCount: number, transform: Matrix);
+    function addSolidCallback(callback: Function);
+    
+    function addAlphaTest(model: Model, transform: Matrix);
+    function addCustomAlphaTest(albedo: Texture, normal: Texture, depth: Texture, vertexBuffer: VertexBuffer, indexBuffer: IndexBuffer, elementCount: number, transform: Matrix);
+    function addAlphaTestCallback(callback: Function);
+    
+    function addTransparent(model: Model, transform: Matrix, blendMode: BlendMode);
+    function addCustomTransparent(albedo: Texture, normal: Texture, depth: Texture, vertexBuffer: VertexBuffer, indexBuffer: IndexBuffer, elementCount: number, transform: Matrix, blendMode: BlendMode);
+    function addTransparentCallback(callback: Function);
+
+    function addSun(dir: Vector3, color: Color, intensity: number);
+    function addOmni(pos: Vector3, radius: number, color: Color, intensity: number);
+    function addLightCallback(callback: Function);
+
+    function end(ambient: Color,
+                 ssaoEnabled: boolean, ssaoRadius: number, ssaoStrength: number, ssaoQuality: SSAOQuality);
+
+    function getAlbedo(): Texture;
+    function getNormal(): Texture;
+    function getDepth(): Texture;
+    function getMaterial(): Texture;
+}
+
 // Spritebatch
 declare namespace SpriteBatch {
     function begin();
@@ -1583,6 +1612,10 @@ declare enum RenderTargetFormat {
     RG32,   // float
     RGBA32, // float
     RGB10A2 // normalized in range [0, 1]
+}
+
+declare enum SSAOQuality {
+    LOW, MEDIUM, HIGH
 }
 
 declare namespace System {

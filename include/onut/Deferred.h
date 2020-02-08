@@ -49,7 +49,7 @@ namespace onut
 
 
         // Deferred stuff
-        void begin(const Color& ambient = Color::Black);
+        void begin();
 
         void addSolid(const OModelRef& pModel, const Matrix& transform = Matrix::Identity);
         void addSolid(const OModel::Mesh* pMesh, const Matrix& transform = Matrix::Identity);
@@ -59,18 +59,19 @@ namespace onut
         void addAlphaTest(const OModelRef& pModel, const Matrix& transform = Matrix::Identity);
         void addAlphaTest(const OModel::Mesh* pMesh, const Matrix& transform = Matrix::Identity);
         void addAlphaTest(const Mesh& mesh);
-        void addAlphaTest(const RenderCallback& drawCallback, const Vector3& positionHint = Vector3::Zero);
+        void addAlphaTest(const RenderCallback& drawCallback);
 
         void addTransparent(const OModelRef& pModel, const Matrix& transform = Matrix::Identity, onut::BlendMode blendMode = OBlendAlpha);
         void addTransparent(const OModel::Mesh* pMesh, const Matrix& transform = Matrix::Identity, onut::BlendMode blendMode = OBlendAlpha);
         void addTransparent(const Mesh& mesh, onut::BlendMode blendMode = OBlendAlpha);
-        void addTransparent(const RenderCallback& drawCallback, const Vector3& positionHint = Vector3::Zero);
+        void addTransparent(const RenderCallback& drawCallback);
 
         void addSun(const Vector3& dir, const Color& color = Color::White, float intensity = 1.0f);
         void addOmni(const Vector3& pos, float radius = 1.0f, const Color& color = Color::White, float intensity = 1.0f);
         void addLight(const RenderCallback& drawCallback);
 
-        void end(bool ssaoEnabled = true, float ssaoRadius = 0.25f, float ssaoStrength = 1.8f, SSAOQuality ssaoQuality = SSAOQuality::MEDIUM);
+        void end(const Color& ambient = Color::Black,
+                 bool ssaoEnabled = true, float ssaoRadius = 0.25f, float ssaoStrength = 1.8f, SSAOQuality ssaoQuality = SSAOQuality::MEDIUM);
 
 
         const OTextureRef& getAlbedo() const;
@@ -121,7 +122,6 @@ namespace onut
         OShaderRef m_pOmniPS;
         OShaderRef m_pSSAO[3];
 
-        Color m_ambient;
         Vector3 m_viewPos;
         Matrix m_view;
         Matrix m_proj;

@@ -1,6 +1,7 @@
 // Public includes
 #include <onut/AudioEngine.h>
 #include <onut/Axis.h>
+#include <onut/Deferred.h>
 #include <onut/Strings.h>
 
 // Private includes
@@ -9191,6 +9192,175 @@ namespace onut
             }
             JS_INTERFACE_END("Renderer");
 
+            // oDeferred
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->begin();
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("begin", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->addSolid(JS_MODEL(0), JS_MATRIX(1, Matrix::Identity));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addSolid", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    Deferred::Mesh mesh;
+                    mesh.pAlbedo = JS_TEXTURE(0);
+                    mesh.pNormal = JS_TEXTURE(1);
+                    mesh.pMaterial = JS_TEXTURE(2);
+                    mesh.pVertexBuffer = JS_VERTEX_BUFFER(3);
+                    mesh.pIndexBuffer = JS_INDEX_BUFFER(4);
+                    mesh.elementCount = JS_INT(5);
+                    mesh.transform = JS_MATRIX(6);
+                    oDeferred->addSolid(mesh);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addCustomSolid", 7);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto callback = getFunction(ctx, 0);
+                    if (callback)
+                    {
+                        oDeferred->addSolid([ctx, callback]
+                        {
+                            if (callback->push(ctx)) callback->call(ctx, 0);
+                        });
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addSolidCallback", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->addAlphaTest(JS_MODEL(0), JS_MATRIX(1, Matrix::Identity));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addAlphaTest", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    Deferred::Mesh mesh;
+                    mesh.pAlbedo = JS_TEXTURE(0);
+                    mesh.pNormal = JS_TEXTURE(1);
+                    mesh.pMaterial = JS_TEXTURE(2);
+                    mesh.pVertexBuffer = JS_VERTEX_BUFFER(3);
+                    mesh.pIndexBuffer = JS_INDEX_BUFFER(4);
+                    mesh.elementCount = JS_INT(5);
+                    mesh.transform = JS_MATRIX(6);
+                    oDeferred->addAlphaTest(mesh);
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addCustomAlphaTest", 7);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto callback = getFunction(ctx, 0);
+                    if (callback)
+                    {
+                        oDeferred->addAlphaTest([ctx, callback]
+                        {
+                            if (callback->push(ctx)) callback->call(ctx, 0);
+                        });
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addAlphaTestCallback", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->addTransparent(JS_MODEL(0), JS_MATRIX(1, Matrix::Identity), (onut::BlendMode)JS_UINT(2, (uint32_t)OBlendAlpha));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addTransparent", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    Deferred::Mesh mesh;
+                    mesh.pAlbedo = JS_TEXTURE(0);
+                    mesh.pNormal = JS_TEXTURE(1);
+                    mesh.pMaterial = JS_TEXTURE(2);
+                    mesh.pVertexBuffer = JS_VERTEX_BUFFER(3);
+                    mesh.pIndexBuffer = JS_INDEX_BUFFER(4);
+                    mesh.elementCount = JS_INT(5);
+                    mesh.transform = JS_MATRIX(6);
+                    oDeferred->addTransparent(mesh, (onut::BlendMode)JS_UINT(7, (uint32_t)OBlendAlpha));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addCustomTransparent", 8);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto callback = getFunction(ctx, 0);
+                    if (callback)
+                    {
+                        oDeferred->addTransparent([ctx, callback]
+                        {
+                            if (callback->push(ctx)) callback->call(ctx, 0);
+                        });
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addTransparentCallback", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->addSun(JS_VECTOR3(0, Vector3(0, 0, 1)), JS_COLOR(1), JS_FLOAT(2, 1.0f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addSun", 3);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->addOmni(JS_VECTOR3(0), JS_FLOAT(1, 1.0f), JS_COLOR(2), JS_FLOAT(3, 1.0f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addOmni", 4);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    auto callback = getFunction(ctx, 0);
+                    if (callback)
+                    {
+                        oDeferred->addLight([ctx, callback]
+                        {
+                            if (callback->push(ctx)) callback->call(ctx, 0);
+                        });
+                    }
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("addLightCallback", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oDeferred->end(JS_COLOR(0, Color(.1f, .1f, .1f)),
+                                   JS_BOOL(1, true), JS_FLOAT(2, 0.25f), JS_FLOAT(3, 1.8f), (Deferred::SSAOQuality)JS_UINT(4, 1)
+                                   );
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("end", 5);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newTexture(ctx, oDeferred->getAlbedo());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getAlbedo", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newTexture(ctx, oDeferred->getNormal());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getNormal", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newTexture(ctx, oDeferred->getDepth());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getDepth", 0);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    newTexture(ctx, oDeferred->getMaterial());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getMaterial", 0);
+            }
+            JS_INTERFACE_END("Deferred");
+
+
             // oSpriteBatch
             JS_INTERFACE_BEGIN();
             {
@@ -10569,6 +10739,13 @@ namespace onut
                 JS_ENUM("RGB10A2", RenderTargetFormat::RGB10A2);
             }
             JS_INTERFACE_END("RenderTargetFormat");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("LOW", Deferred::SSAOQuality::LOW);
+                JS_ENUM("MEDIUM", Deferred::SSAOQuality::MEDIUM);
+                JS_ENUM("HIGH", Deferred::SSAOQuality::HIGH);
+            }
+            JS_INTERFACE_END("SSAOQuality");
 
             // System
             JS_INTERFACE_BEGIN();

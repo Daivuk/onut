@@ -111,11 +111,9 @@ namespace onut
         return m_pMaterial;
     }
 
-    void Deferred::begin(const Color& ambient)
+    void Deferred::begin()
     {
         auto pRenderer = oRenderer.get();
-
-        m_ambient = ambient;
 
         m_view = pRenderer->renderStates.view.get();
         m_proj = pRenderer->renderStates.projection.get();
@@ -239,7 +237,7 @@ namespace onut
         m_alphaTests.insert(m_alphaTests.begin() + index, mesh);
     }
 
-    void Deferred::addAlphaTest(const RenderCallback& drawCallback, const Vector3& positionHint)
+    void Deferred::addAlphaTest(const RenderCallback& drawCallback)
     {
         m_alphaTestCallbacks.push_back(drawCallback);
     }
@@ -299,7 +297,7 @@ namespace onut
         });
     }
 
-    void Deferred::addTransparent(const RenderCallback& drawCallback, const Vector3& positionHint)
+    void Deferred::addTransparent(const RenderCallback& drawCallback)
     {
         m_transparentCallbacks.push_back(drawCallback);
     }
@@ -323,7 +321,8 @@ namespace onut
 
     }
 
-    void Deferred::end(bool ssaoEnabled, float ssaoRadius, float ssaoStrength, SSAOQuality ssaoQuality)
+    void Deferred::end(const Color& ambient, 
+                       bool ssaoEnabled, float ssaoRadius, float ssaoStrength, SSAOQuality ssaoQuality)
     {
         auto pRenderer = oRenderer.get();
         auto pSpriteBatch = oSpriteBatch.get();
@@ -389,7 +388,7 @@ namespace onut
         rs.textures[2] = nullptr;
         rs.textures[3] = nullptr;
         pSpriteBatch->begin();
-        pSpriteBatch->drawRect(m_pAlbedo, screenRect, m_ambient);
+        pSpriteBatch->drawRect(m_pAlbedo, screenRect, ambient);
         pSpriteBatch->end();
 
         // Render omnis
@@ -421,7 +420,7 @@ namespace onut
             rs.pixelShader = pSSAO_PS;
             pSSAO_PS->setMatrix(0, m_invViewProj);
             pSSAO_PS->setVector4(1, Vector4((0.01f / 0.08f) * ssaoRadius, ssaoRadius, (1.0f / 0.08f) * ssaoRadius, ssaoStrength));
-            pSpriteBatch->drawRect(m_pAlbedo, screenRect, m_ambient);
+            pSpriteBatch->drawRect(m_pAlbedo, screenRect);
             pSpriteBatch->end();
             rs.renderTargets[0].pop();
 
