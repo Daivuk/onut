@@ -310,6 +310,7 @@ namespace onut
 
     void Deferred::addOmni(const Vector3& pos, float radius, const Color& color, float intensity)
     {
+        if (intensity <= 0.0f) return;
         m_omnis.push_back({
             Vector4(pos.x, pos.y, pos.z, radius),
             Vector3(color.r * intensity, color.g * intensity, color.b * intensity)

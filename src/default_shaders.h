@@ -1,16 +1,12 @@
 #define LIGHT_PASS \
 "float3 LightPass(float3 pos, float3 normal, float3 lpos, float lradius, float3 lcolor)\n" \
 "{\n" \
-"    float3 dir = lpos - pos;\n" \
-"    float dis = length(dir);\n" \
-"    float disSqr = dis * dis;\n" \
-"    disSqr /= lradius * lradius;\n" \
-"    float dotNormal = dot(normal, dir) / dis;\n" \
-"    dotNormal = 1 - (1 - dotNormal) * (1 - dotNormal);\n" \
-"    float intensity = clamp(1 - disSqr, 0, 1);\n" \
-"    dotNormal = clamp(dotNormal, 0, 1);\n" \
-"    intensity *= dotNormal;\n" \
-"    return lcolor * intensity;\n" \
+    "    float3 dir = lpos - pos;\n" \
+    "    float dis = length(dir);\n" \
+    "    dir /= dis;\n" \
+    "    float attenuation = saturate(1 - dis / lradius);\n" \
+    "    float dotNormal = saturate(dot(normal, dir));\n" \
+    "    return lcolor * attenuation * dotNormal;\n" \
 "}\n"
 
 static const char* SHADER_SRC_2D_VS = ""

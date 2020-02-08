@@ -88,9 +88,9 @@ void render()
     oDeferred->addTransparent(OGetModel("blend.model"), Matrix::CreateRotationZ(angleAnim.get()) *
         Matrix::CreateTranslation({ 1.0f, 0.5f, 0.5f }));
 
-    oDeferred->addOmni(Vector3(1, 5.0f, 1.5f), 3.0f, Color(0.5f, 1.0f, 1.5f));
-    oDeferred->addOmni(Vector3(1, 0, 1.1f), 1.3f, Color(0.5f, 1.0f, 1.5f));
-    oDeferred->addOmni(Vector3(1, 2, 0.5f), 1.5f, Color(1.5f, 1.0f, 0.5f));
+    oDeferred->addOmni(Vector3(1, 5.0f, 1.5f), 3.0f, Color(0.5f, 1.0f, 1.5f), 2.0f);
+    oDeferred->addOmni(Vector3(1, 0, 1.1f), 1.3f, Color(0.5f, 1.0f, 1.5f), 2.0f);
+    oDeferred->addOmni(Vector3(1, 2, 0.5f), 1.5f, Color(1.5f, 1.0f, 0.5f), 2.0f);
     oDeferred->end(Color(0.05f, 0.075f, 0.1f),
                    aoEnabled, 0.15f, 2.0f);
 
