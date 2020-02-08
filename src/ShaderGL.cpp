@@ -636,7 +636,7 @@ namespace onut
     {
         auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        uniform.value = value;
+        uniform.value = value.Transpose();
     }
 
     void ShaderGL::setFloat(const std::string& varName, float value)

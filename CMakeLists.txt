@@ -108,6 +108,7 @@ list(APPEND src_files
     src/Crypto.cpp
     src/CSV.cpp
     src/Curve.cpp 
+    src/Deferred.cpp
     src/Dialogs.cpp
     src/Dispatcher.cpp 
     src/duktape/duktape.c
@@ -271,6 +272,7 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Crypto) # CryptoSample
     add_subdirectory(samples/Cursor) # CursorSample
     add_subdirectory(samples/CustomMesh) # CustomMeshSample
+    add_subdirectory(samples/Deferred) # DeferredSample
     # add_subdirectory(samples/Dungeon) # DungeonSample // EnTT example
     add_subdirectory(samples/Effects) # EffectsSample
     add_subdirectory(samples/Empty) # EmptySample
