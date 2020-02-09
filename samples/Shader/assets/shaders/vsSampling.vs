@@ -12,7 +12,8 @@ Texture0 texture0
 
 void main()
 {
-    outColor = texture0(inUV);
-    float yOffset = outColor.r;
+    float2 uv = inUV;
+    outColor = texture0(uv);
+    float yOffset = 0;//outColor.g;
     oPosition = mul(float4(inPosition.x, inPosition.y + yOffset * 64.0, 0, 1), oViewProjection);
 }
