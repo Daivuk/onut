@@ -195,6 +195,7 @@ namespace onut
         struct ParsedVS : public Parsed
         {
             ParsedElements outputs;
+            ParsedTextures textures;
         };
 
         struct ParsedPS : public Parsed

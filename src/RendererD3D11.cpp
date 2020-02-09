@@ -585,6 +585,8 @@ namespace onut
         }
 
         // Textures
+        auto pPixelShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
+        auto pVertexShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());
         for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
             auto& pTextureState = renderStates.textures[i];
@@ -598,6 +600,7 @@ namespace onut
                     pResourceView = pRenderTargetD3D11->getD3DResourceView();
                 }
                 m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
+                m_pDeviceContext->VSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
                 pTextureState.resetDirty();
             }
         }
@@ -766,7 +769,6 @@ namespace onut
             }
         }
 
-        auto pPixelShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
         pShaderD3D11 = pPixelShaderD3D11;
         if (pShaderD3D11)
         {
@@ -802,6 +804,10 @@ namespace onut
             m_pDeviceContext->PSSetSamplers(0, (UINT)pPixelShaderD3D11->getSamplerStatesCount(), pPixelShaderD3D11->getSamplerStates());
             renderStates.sampleFiltering.forceDirty();
             renderStates.sampleAddressMode.forceDirty();
+        }
+        if (pVertexShaderD3D11 && pVertexShaderD3D11->getVSSamplerStatesCount() && renderStates.vertexShader.isDirty())
+        {
+            m_pDeviceContext->VSSetSamplers(0, (UINT)pPixelShaderD3D11->getVSSamplerStatesCount(), pPixelShaderD3D11->getVSSamplerStates());
         }
         if (renderStates.sampleFiltering.isDirty() ||
                  renderStates.sampleAddressMode.isDirty())

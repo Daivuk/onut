@@ -1093,6 +1093,25 @@ namespace onut
                 if (!parseStruct(_struct, lexer)) break;
                 ret.structs.push_back(_struct);
             }
+#if defined(WIN32)
+            else if (_strnicmp(lexer.string, "texture", 7) == 0)
+#else
+            else if (strncasecmp(lexer.string, "texture", 7) == 0)
+#endif
+            {
+                std::string texI = lexer.string;
+                if (texI.size() == 8 && texI[7] >= '0' && texI[7] <= '9')
+                {
+                    ParsedTexture texture;
+                    if (!parseTexture(texture, lexer)) break;
+                    ret.textures.push_back(texture);
+                }
+                else
+                {
+                    shaderError(lexer, "Expected texture index [0, 8]");
+                    break;
+                }
+            }
             else if (strcmp(lexer.string, "void") == 0)
             {
                 // This has to be the main function
