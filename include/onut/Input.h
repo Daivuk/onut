@@ -735,6 +735,9 @@ namespace onut
 #define OMouse1 onut::Input::State::Mouse1
 #define OMouse2 onut::Input::State::Mouse2
 #define OMouse3 onut::Input::State::Mouse3
+#define OLeftMouse onut::Input::State::Mouse1
+#define ORightMouse onut::Input::State::Mouse2
+#define OMiddleMouse onut::Input::State::Mouse3
 #define OMouse4 onut::Input::State::Mouse4
 #define OMouseX onut::Input::State::MouseX
 #define OMouseY onut::Input::State::MouseY

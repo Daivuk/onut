@@ -10625,6 +10625,9 @@ namespace onut
                 JS_ENUM("MOUSE_1", onut::Input::State::Mouse1);
                 JS_ENUM("MOUSE_2", onut::Input::State::Mouse2);
                 JS_ENUM("MOUSE_3", onut::Input::State::Mouse3);
+                JS_ENUM("LEFT_MOUSE", onut::Input::State::Mouse1);
+                JS_ENUM("RIGHT_MOUSE", onut::Input::State::Mouse2);
+                JS_ENUM("MIDDLE_MOUSE", onut::Input::State::Mouse3);
                 JS_ENUM("MOUSE_4", onut::Input::State::Mouse4);
                 JS_ENUM("MOUSE_X", onut::Input::State::MouseX);
                 JS_ENUM("MOUSE_Y", onut::Input::State::MouseY);
