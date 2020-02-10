@@ -74,6 +74,7 @@ void render()
         oRenderer->renderStates.vertexShader = pVSSamplingVS;
         oRenderer->renderStates.pixelShader = pVSSamplingPS;
         oRenderer->renderStates.sampleFiltering = OFilterNearest;
+        oRenderer->renderStates.sampleAddressMode = OTextureClamp;
         for (int i = 0; i < 64; ++i)
         {
             oSpriteBatch->drawRectWithUVs(pTexture2,
