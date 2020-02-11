@@ -12,6 +12,7 @@ OTextureRef pTextureFromFile;
 OTextureRef pTextureFromFileData;
 OTextureRef pTextureFromData;
 OTextureRef pRenderTarget;
+OTextureRef pRenderTargetRG16;
 OTextureRef pDynamic;
 
 uint8_t dynamicData[128 * 128 * 4];
@@ -45,6 +46,9 @@ void init()
     // Create a render target
     pRenderTarget = OTexture::createRenderTarget({256, 256});
 
+    // Create a render target of a different type
+    pRenderTargetRG16 = OTexture::createRenderTarget({ 256, 256 }, false, OFormatRG16);
+
     // Dynamic
     pDynamic = OTexture::createDynamic({128, 128});
     for (auto j = 0; j < 128; ++j)
@@ -71,7 +75,7 @@ void render()
     oRenderer->clear(OColorHex(1d232d));
 
     // Draw stuff to our render target
-    oRenderer->renderStates.renderTarget.push(pRenderTarget);
+    oRenderer->renderStates.renderTargets[0].push(pRenderTarget);
     oRenderer->renderStates.viewport.push({0, 0, pRenderTarget->getSize().x, pRenderTarget->getSize().y});
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pTextureFromFile, {0, 0, 128, 128});
@@ -80,7 +84,7 @@ void render()
     oSpriteBatch->drawRect(pTextureFromFile, {128, 128, 128, 128});
     oSpriteBatch->end();
     oRenderer->renderStates.viewport.pop();
-    oRenderer->renderStates.renderTarget.pop();
+    oRenderer->renderStates.renderTargets[0].pop();
 
     // Update our dynamic texture
     auto animValue = dynamicAnim.get();
@@ -97,6 +101,15 @@ void render()
     }
     pDynamic->setData(dynamicData);
 
+    // Draw stuff to our render target RG16
+    oRenderer->renderStates.renderTargets[0].push(pRenderTargetRG16);
+    oRenderer->renderStates.viewport.push({ 0, 0, pRenderTargetRG16->getSize().x, pRenderTargetRG16->getSize().y });
+    oSpriteBatch->begin();
+    oSpriteBatch->drawRect(pDynamic, { 0, 0, 256, 256 });
+    oSpriteBatch->end();
+    oRenderer->renderStates.viewport.pop();
+    oRenderer->renderStates.renderTargets[0].pop();
+
     // Draw out resulted textures
     auto pFont = OGetFont("font.fnt");
     oSpriteBatch->begin(Matrix::CreateTranslation(80, 212, 0));
@@ -107,6 +120,7 @@ void render()
     oSpriteBatch->drawRect(pTextureFromData, {256, 0, 128, 128});
     oSpriteBatch->drawRect(pRenderTarget, {384, 0, 128, 128});
     oSpriteBatch->drawRect(pDynamic, {512, 0, 128, 128});
+    oSpriteBatch->drawRect(pRenderTargetRG16, { 512, 128, 128, 128 });
     
     pFont->draw("From File", {64, 140}, OCenter);
     pFont->draw("From File Data", {64 + 128, 140}, OCenter);

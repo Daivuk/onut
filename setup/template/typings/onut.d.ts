@@ -727,8 +727,8 @@ declare class Texture {
     static createFromFile(filename: string): Texture;
     static createDynamic(size: Vector2): Texture;
     static createFromData(data: ArrayBuffer, size: Vector2): Texture;
-    static createRenderTarget(size: Vector2): Texture;
-    static createScreenRenderTarget(): Texture;
+    static createRenderTarget(size: Vector2, format: RenderTargetFormat): Texture;
+    static createScreenRenderTarget(format: RenderTargetFormat): Texture;
 
     getSize(): Vector2;
     isRenderTarget(): boolean;
@@ -855,6 +855,7 @@ declare function getSound(filename: string): Sound;
 declare function getFreshSound(filename: string): Sound;
 declare function playSound(filename: string, volume: number, balance: number, pitch: number);
 declare function playSoundCue(filename: string, volume: number, balance: number, pitch: number);
+declare function play3DSound(filename: stringr, position: Vector3, radius: number, volume: number, balance: number, pitch: number);
 
 // SoundInstance
 declare class SoundInstance {
@@ -871,6 +872,7 @@ declare class SoundInstance {
     setBalance(balance: number);
     getPitch(): number;
     setPitch(pitch: number);
+    set3D(enabled: boolean, position: Vector3, radius: number);
 }
 /** Same as sound.createInstance */
 declare function createSoundInstance(filename: string): SoundInstance;
@@ -1109,10 +1111,10 @@ declare namespace Renderer {
     function setupFor3D(eye: Vector3, target: Vector3, up: Vector3, fov: number);
 
     // States
-    function setRenderTarget(renderTarget: Texture);
-    function pushRenderTarget(renderTarget: Texture);
-    function popRenderTarget();
-    function getRenderTarget(): Texture;
+    function setRenderTarget(renderTarget: Texture, index: number);
+    function pushRenderTarget(renderTarget: Texture, index: number);
+    function popRenderTarget(index: number);
+    function getRenderTarget(index: number): Texture;
 
     function setTexture(texture: Texture, index: number);
     function pushTexture(texture: Texture, index: number);
@@ -1210,6 +1212,37 @@ declare namespace Renderer {
     function setLight(index: number, position: Vector3, radius: number, color: Color);
 }
 
+// Deferred
+declare namespace Deferred {
+    function begin();
+    
+    function addSolid(model: Model, transform: Matrix);
+    function addCustomSolid(albedo: Texture, normal: Texture, depth: Texture, vertexBuffer: VertexBuffer, indexBuffer: IndexBuffer, elementCount: number, transform: Matrix);
+    function addSolidCallback(callback: Function);
+    
+    function addAlphaTest(model: Model, transform: Matrix);
+    function addCustomAlphaTest(albedo: Texture, normal: Texture, depth: Texture, vertexBuffer: VertexBuffer, indexBuffer: IndexBuffer, elementCount: number, transform: Matrix);
+    function addAlphaTestCallback(callback: Function);
+    
+    function addTransparent(model: Model, transform: Matrix, blendMode: BlendMode);
+    function addCustomTransparent(albedo: Texture, normal: Texture, depth: Texture, vertexBuffer: VertexBuffer, indexBuffer: IndexBuffer, elementCount: number, transform: Matrix, blendMode: BlendMode);
+    function addTransparentCallback(callback: Function);
+
+    function addSun(dir: Vector3, color: Color, intensity: number);
+    function addOmni(pos: Vector3, radius: number, color: Color, intensity: number);
+    function addLightCallback(callback: Function);
+
+    function end(ambient: Color,
+                 ssaoEnabled: boolean, ssaoRadius: number, ssaoStrength: number, ssaoQuality: SSAOQuality);
+
+    function getAlbedo(): Texture;
+    function getNormal(): Texture;
+    function getDepth(): Texture;
+    function getMaterial(): Texture;
+
+    function getAmbientOcclusion(): Texture;
+}
+
 // Spritebatch
 declare namespace SpriteBatch {
     function begin();
@@ -1300,6 +1333,12 @@ declare namespace Timing {
     function getTotalElapsed(): number;
     function getFPS(): number;
 }
+
+// AudioEngine
+declare namespace Audio {
+    function set3DListener(position: Vector3, front: Vector3, up: Vector3);
+}
+
 
 // Random
 declare namespace Random {
@@ -1563,52 +1602,24 @@ declare enum Axis {
     Z
 }
 
+// Render target format
+declare enum RenderTargetFormat {
+    R8,     // normalized in range [0, 1]
+    RG8,    // normalized in range [0, 1]
+    RGBA8,  // normalized in range [0, 1]
+    R16,    // normalized in range [0, 1]
+    RG16,   // normalized in range [0, 1]
+    RGBA16, // normalized in range [0, 1]
+    R32,    // float
+    RG32,   // float
+    RGBA32, // float
+    RGB10A2 // normalized in range [0, 1]
+}
+
+declare enum SSAOQuality {
+    LOW, MEDIUM, HIGH
+}
+
 declare namespace System {
     function getPlatform(): Platform;
-}
-
-declare class Entity {
-    static create(): Entity;
-
-    destroy();
-    getTransform(): Matrix;
-    setTransform(transform: Matrix);
-    getWorldTransform(): Matrix;
-    setWorldTransform(transform: Matrix);
-    add(child: Entity);
-    remove(child: Entity);
-    removeFromParent();
-    getParent(): Entity;
-    isEnabled(): boolean;
-    setEnabled(enabled: boolean);
-    isVisible(): boolean;
-    setVisible(visible: boolean);
-    isStatic(): boolean;
-    setStatic(_static: boolean);
-    getName(): string;
-    setName(name: string);
-    getComponent(type: Object): Component;
-    getParentComponent(type: Object): Component;
-    addComponent(type: Object): Component;
-    addComponent(component: Component);
-    sendMessage(id: string, data: Object);
-    getDrawIndex(): number;
-    setDrawIndex(drawIndex: number);
-    getChildrenCount(): number;
-    getChildren(index: number): Entity;
-}
-
-declare class Component {
-    getTransform(): Matrix;
-    setTransform(transform: Matrix);
-    getWorldTransform(): Matrix;
-    setWorldTransform(transform: Matrix);
-    getEntity(): Entity;
-    isEnabled(): boolean;
-    setEnabled(enabled: boolean);
-    getComponent(type: Object): Component;
-    getParentComponent(type: Object): Component;
-    sendMessage(id: string, data: Object);
-    broadcastMessage(id: string, data: Object);
-    destroy();
 }

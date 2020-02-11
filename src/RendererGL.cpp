@@ -119,6 +119,11 @@ namespace onut
 #if !defined(__APPLE__)
         gl3wInit();
 #endif
+
+        m_mrtDepthSize = m_resolution;
+        glGenRenderbuffers(1, &m_mrtDepthStencil);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_mrtDepthStencil);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_mrtDepthSize.x, m_mrtDepthSize.y);
     }
 
     void RendererGL::createRenderTarget()
@@ -250,6 +255,20 @@ namespace onut
         }
     }
 
+    void RendererGL::attachDepthBuffer(const Point& size)
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, m_mrtDepthStencil);
+
+        if (size.x >= m_mrtDepthSize.x || size.y >= m_mrtDepthSize.y)
+        {
+            m_mrtDepthSize.x = std::max(size.x, m_mrtDepthSize.x);
+            m_mrtDepthSize.y = std::max(size.y, m_mrtDepthSize.y);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_mrtDepthSize.x, m_mrtDepthSize.y);
+        }
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_mrtDepthStencil);
+    }
+
     void RendererGL::applyRenderStates()
     {
         // Clear color
@@ -259,27 +278,70 @@ namespace onut
             glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
             renderStates.clearColor.resetDirty();
         }
-        
+
         // Render target
-        bool renderTargetDirty = renderStates.renderTarget.isDirty();
+        bool renderTargetDirty = false;
+        int mrtCount = 0;
+        for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+        {
+            if (renderStates.renderTargets[i].isDirty())
+            {
+                renderTargetDirty = true;
+            }
+            if (renderStates.renderTargets[i].get()) ++mrtCount;
+        }
+
         if (renderTargetDirty)
         {
-            auto& pRenderTarget = renderStates.renderTarget.get();
-            if (pRenderTarget)
+            if (mrtCount == 1)
             {
-                auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
-                auto frameBuffer = pRenderTargetGL->getFramebuffer();
-                glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+                auto& pRenderTarget = renderStates.renderTargets[0].get();
+                if (pRenderTarget)
+                {
+                    auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
+                    auto frameBuffer = pRenderTargetGL->getFramebuffer();
+                    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+                }
+                renderStates.renderTargets[0].resetDirty();
+            }
+            else if (mrtCount > 1)
+            {
+                if (!m_mrtFrameBuffer)
+                {
+                    glGenFramebuffers(1, &m_mrtFrameBuffer);
+                    glBindFramebuffer(GL_FRAMEBUFFER, m_mrtFrameBuffer);
+                    auto& pRenderTarget = renderStates.renderTargets[0].get();
+                    if (pRenderTarget)
+                    {
+                        glBindRenderbuffer(GL_RENDERBUFFER, m_mrtDepthStencil);
+                        attachDepthBuffer(pRenderTarget->getSize());
+                    }
+                }
+                glBindFramebuffer(GL_FRAMEBUFFER, m_mrtFrameBuffer);
+                GLenum buffers[8];
+                int cnt = 0;
+                for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+                {
+                    GLuint handle = 0;
+                    auto& pRenderTarget = renderStates.renderTargets[i].get();
+                    if (pRenderTarget)
+                    {
+                        auto pRenderTargetGL = ODynamicCast<OTextureGL>(pRenderTarget);
+                        handle = pRenderTargetGL->getHandle();
+                    }
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, handle, 0);
+                    if (handle) buffers[cnt++] = GL_COLOR_ATTACHMENT0 + i;
+                }
+                glDrawBuffers(mrtCount, buffers);
             }
             else
             {
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
-            renderStates.renderTarget.resetDirty();
         }
 
         // Because opengl sucks, we need to determine if we have to flip Y
-        bool invertY = renderStates.renderTarget.get() != nullptr;
+        bool invertY = renderStates.renderTargets[0].get() != nullptr;
         
         // Blend
         if (renderStates.blendMode.isDirty())
@@ -576,63 +638,77 @@ namespace onut
         // Textures
         auto pShaderGL_ps_s = ODynamicCast<OShaderGL>(renderStates.pixelShader.get());
         ShaderGL* pPSRaw_s = pShaderGL_ps_s.get();
+        auto pShaderGL_vs_s = ODynamicCast<OShaderGL>(renderStates.vertexShader.get());
+        ShaderGL* pVSRaw_s = pShaderGL_vs_s.get();
         bool isSampleDirty =
             renderStates.sampleFiltering.isDirty() ||
             renderStates.sampleAddressMode.isDirty();
         for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
             auto& pTextureState = renderStates.textures[i];
-            if (pTextureState.isDirty() || (isSampleDirty && i == 0) || renderStates.pixelShader.isDirty())
+            if (pTextureState.isDirty() || (isSampleDirty && i == 0) || 
+                renderStates.pixelShader.isDirty() || 
+                renderStates.vertexShader.isDirty())
             {
                 auto pTexture = pTextureState.get().get();
                 if (pTexture != nullptr)
                 {
-                    auto pTextureEGLS2 = static_cast<TextureGL*>(pTexture);
+                    auto pTextureGL = static_cast<TextureGL*>(pTexture);
 
-                    if (pPSRaw_s && i >= (int)pPSRaw_s->m_textures.size())
+                    if (i >= (int)pPSRaw_s->m_textures.size() && i >= (int)pVSRaw_s->m_vsTextures.size())
                     {
                         continue;
                     }
 
+                    glActiveTexture(GL_TEXTURE0 + i);
+                    glBindTexture(GL_TEXTURE_2D, pTextureGL->getHandle());
+
                     if (pProgram)
                     {
-                        glUniform1i(pProgram->textures[i], i);
+                        if (i < (int)pProgram->textures.size())
+                        {
+                            glUniform1i(pProgram->textures[i], i);
+                        }
+                        if (i < (int)pProgram->vsTextures.size())
+                        {
+                            glUniform1i(pProgram->vsTextures[i], i);
+                        }
                     }
 
-                    glActiveTexture(GL_TEXTURE0 + i);
-                    glBindTexture(GL_TEXTURE_2D, pTextureEGLS2->getHandle());
-
-                    if (i > 0 && pPSRaw_s && i < (int)pPSRaw_s->m_textures.size())
+                    if (i > 0 && (
+                        (pPSRaw_s && i < (int)pPSRaw_s->m_textures.size()) ||
+                        (pVSRaw_s && i < (int)pVSRaw_s->m_vsTextures.size())))
                     {
-                        const auto& textureSamplers = pPSRaw_s->m_textures[i];
-                        if (textureSamplers.filter != pTextureEGLS2->filtering)
+                        const auto& textureSamplers = 
+                            (pPSRaw_s && i < (int)pPSRaw_s->m_textures.size()) ? pPSRaw_s->m_textures[i] : pVSRaw_s->m_vsTextures[i];
+                        if (textureSamplers.filter != pTextureGL->filtering)
                         {
-                            pTextureEGLS2->filtering = textureSamplers.filter;
-                            if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                            pTextureGL->filtering = textureSamplers.filter;
+                            if (pTextureGL->filtering == sample::Filtering::Nearest)
                             {
                               //  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                             }
-                            else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                            else if (pTextureGL->filtering == sample::Filtering::Linear)
                             {
                             //    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                             }
-                            else if (pTextureEGLS2->filtering == sample::Filtering::Bilinear)
+                            else if (pTextureGL->filtering == sample::Filtering::Bilinear)
                             {
                          //       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                             }
-                            else if (pTextureEGLS2->filtering == sample::Filtering::Trilinear)
+                            else if (pTextureGL->filtering == sample::Filtering::Trilinear)
                             {
                        //         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                             }
-                       /*     else if (pTextureEGLS2->filtering == sample::Filtering::Anisotropic)
+                       /*     else if (pTextureGL->filtering == sample::Filtering::Anisotropic)
                             {
                                 float aniso = 0.0f;
                                 glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
@@ -641,26 +717,26 @@ namespace onut
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                             }*/
                         }
-                        if (textureSamplers.repeatX != pTextureEGLS2->addressModeX)
+                        if (textureSamplers.repeatX != pTextureGL->addressModeX)
                         {
-                            pTextureEGLS2->addressModeX = textureSamplers.repeatX;
-                            if (pTextureEGLS2->addressModeX == sample::AddressMode::Wrap)
+                            pTextureGL->addressModeX = textureSamplers.repeatX;
+                            if (pTextureGL->addressModeX == sample::AddressMode::Wrap)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                             }
-                            else if (pTextureEGLS2->addressModeX == sample::AddressMode::Clamp)
+                            else if (pTextureGL->addressModeX == sample::AddressMode::Clamp)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                             }
                         }
-                        if (textureSamplers.repeatY != pTextureEGLS2->addressModeY)
+                        if (textureSamplers.repeatY != pTextureGL->addressModeY)
                         {
-                            pTextureEGLS2->addressModeY = textureSamplers.repeatY;
-                            if (pTextureEGLS2->addressModeY == sample::AddressMode::Wrap)
+                            pTextureGL->addressModeY = textureSamplers.repeatY;
+                            if (pTextureGL->addressModeY == sample::AddressMode::Wrap)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                             }
-                            else if (pTextureEGLS2->addressModeY == sample::AddressMode::Clamp)
+                            else if (pTextureGL->addressModeY == sample::AddressMode::Clamp)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                             }
@@ -668,26 +744,26 @@ namespace onut
                     }
                     else
                     {
-                        if (renderStates.sampleFiltering.get() != pTextureEGLS2->filtering)
+                        if (renderStates.sampleFiltering.get() != pTextureGL->filtering)
                         {
-                            pTextureEGLS2->filtering = renderStates.sampleFiltering.get();
-                            if (pTextureEGLS2->filtering == sample::Filtering::Nearest)
+                            pTextureGL->filtering = renderStates.sampleFiltering.get();
+                            if (pTextureGL->filtering == sample::Filtering::Nearest)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                             }
-                            else if (pTextureEGLS2->filtering == sample::Filtering::Linear)
+                            else if (pTextureGL->filtering == sample::Filtering::Linear)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                             }
                         }
                         auto mode = renderStates.sampleAddressMode.get();
-                        if (mode != pTextureEGLS2->addressModeX ||
-                            mode != pTextureEGLS2->addressModeY)
+                        if (mode != pTextureGL->addressModeX ||
+                            mode != pTextureGL->addressModeY)
                         {
-                            pTextureEGLS2->addressModeX = mode;
-                            pTextureEGLS2->addressModeY = mode;
+                            pTextureGL->addressModeX = mode;
+                            pTextureGL->addressModeY = mode;
                             if (mode == sample::AddressMode::Wrap)
                             {
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

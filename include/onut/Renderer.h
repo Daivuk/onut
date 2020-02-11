@@ -114,6 +114,7 @@ namespace onut
     {
     public:
         static const int MAX_TEXTURES = 8;
+        static const int MAX_RENDER_TARGETS = 8;
 
         RenderStates();
         RenderStates(const RenderStates& other);
@@ -139,7 +140,7 @@ namespace onut
         RenderState<OShaderRef> pixelShader;
         RenderState<OVertexBufferRef> vertexBuffer;
         RenderState<OIndexBufferRef> indexBuffer;
-        RenderState<OTextureRef> renderTarget;
+        RenderState<OTextureRef> renderTargets[MAX_RENDER_TARGETS];
         RenderState<Color> clearColor;
     };
 

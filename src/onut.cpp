@@ -2,17 +2,15 @@
 #include <onut/ActionManager.h>
 #include <onut/AudioEngine.h>
 //#include <onut/Cloud.h>
-#include <onut/ComponentFactory.h>
 #include <onut/ContentManager.h>
+#include <onut/Deferred.h>
 #include <onut/Dispatcher.h>
-#include <onut/SceneManager.h>
 #include <onut/Font.h>
 #include <onut/GamePad.h>
 #include <onut/IndexBuffer.h>
 #include <onut/Input.h>
 #include <onut/Http.h>
 #include <onut/Log.h>
-#include <onut/Multiplayer.h>
 #include <onut/onut.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
@@ -20,6 +18,7 @@
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/SpriteBatch.h>
+#include <onut/Strings.h>
 #include <onut/Texture.h>
 #include <onut/ThreadPool.h>
 #include <onut/Timing.h>
@@ -86,9 +85,9 @@ namespace onut
         oUIContext->addStyle<onut::UIPanel>("blur", [](const OUIPanelRef& pPanel, const Rect& rect)
         {
             oSpriteBatch->end();
-            if (oRenderer->renderStates.renderTarget.get())
+            if (oRenderer->renderStates.renderTargets[0].get())
             {
-                oRenderer->renderStates.renderTarget.get()->blur();
+                oRenderer->renderStates.renderTargets[0].get()->blur();
             }
             oSpriteBatch->begin();
             oSpriteBatch->drawRect(nullptr, (rect), pPanel->color);
@@ -122,6 +121,9 @@ namespace onut
             oRenderer->init(oWindow);
         }
 
+        // Deferred
+        if (!oDeferred) oDeferred = ODeferred::create();
+
         // SpriteBatch
         if (!oSpriteBatch) oSpriteBatch = SpriteBatch::create();
         if (!oPrimitiveBatch) oPrimitiveBatch = PrimitiveBatch::create();
@@ -144,21 +146,8 @@ namespace onut
         // Http
         if (!oHttp) oHttp = Http::create();
 
-        // Multiplayer
-        if (!oMultiplayer) oMultiplayer = Multiplayer::create();
-
         // UI Context
         createUI();
-
-        // Component factory
-        if (!oComponentFactory)
-        {
-            oComponentFactory = ComponentFactory::create();
-            oComponentFactory->registerDefaultComponents();
-        }
-
-        // Entity Manager
-        if (!oSceneManager) oSceneManager = SceneManager::create();
 
         // Undo/Redo for editors
         if (!oActionManager) oActionManager = ActionManager::create();
@@ -208,13 +197,10 @@ namespace onut
         g_pImguiFontTexture = nullptr;
         g_pMainRenderTarget = nullptr;
         oActionManager = nullptr;
-        oSceneManager = nullptr;
-        oComponentFactory = nullptr;
         oDispatcher = nullptr;
         oUpdater = nullptr;
         oUI = nullptr;
         oUIContext = nullptr;
-        oMultiplayer = nullptr;
         oHttp = nullptr;
         oParticleSystemManager = nullptr;
         oAudioEngine = nullptr;
@@ -223,6 +209,7 @@ namespace onut
         oContentManager = nullptr;
         oPrimitiveBatch = nullptr;
         oSpriteBatch = nullptr;
+        oDeferred = nullptr;
         oRenderer = nullptr;
         oWindow = nullptr;
         oSettings = nullptr;
@@ -420,7 +407,6 @@ namespace onut
                                 OInputPressed(OKeyLeftControl), oInput->getStateValue(OMouseZ));
                 }
                 oParticleSystemManager->update();
-                oSceneManager->update();
                 onut::js::update(oTiming->getDeltaTime());
                 if (updateCallback)
                 {
@@ -435,14 +421,13 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
-            oRenderer->renderStates.renderTarget = g_pMainRenderTarget;
+            oRenderer->renderStates.renderTargets[0] = g_pMainRenderTarget;
             oRenderer->beginFrame();
             onut::js::render();
             if (renderCallback)
             {
                 renderCallback();
             }
-            oSceneManager->render();
             oParticleSystemManager->render();
             oSpriteBatch->begin();
             oUI->render(oUIContext);
@@ -461,7 +446,8 @@ namespace onut
             drawImgui();
 
             // Draw final render target
-            oRenderer->renderStates.renderTarget = nullptr;
+            for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+                oRenderer->renderStates.renderTargets[i] = nullptr;
             const auto& res = oRenderer->getResolution();
             oRenderer->renderStates.viewport = iRect{0, 0, res.x, res.y};
             oRenderer->renderStates.scissorEnabled = false;

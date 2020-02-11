@@ -145,6 +145,11 @@ namespace onut
             auto pAssMesh = pScene->mMeshes[i];
 
             pMesh->pTexture = materials[pAssMesh->mMaterialIndex];
+            aiColor4D transparentColor;
+            if (aiGetMaterialColor(pScene->mMaterials[pAssMesh->mMaterialIndex], AI_MATKEY_COLOR_TRANSPARENT, &transparentColor) != AI_SUCCESS)
+            {
+                transparentColor.r = 0.0f;
+            }
             aiColor4D diffuseColor;
             if (pMesh->pTexture != WhiteTexture ||
                 aiGetMaterialColor(pScene->mMaterials[pAssMesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuseColor) != AI_SUCCESS)
@@ -154,6 +159,7 @@ namespace onut
                 diffuseColor.b = 1.0f;
                 diffuseColor.a = 1.0f;
             }
+            diffuseColor.a *= 1.0f - transparentColor.r;
             aiColor4D emissiveColor;
             if (aiGetMaterialColor(pScene->mMaterials[pAssMesh->mMaterialIndex], AI_MATKEY_COLOR_EMISSIVE, &emissiveColor) == AI_SUCCESS)
             {

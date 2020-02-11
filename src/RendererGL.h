@@ -39,6 +39,8 @@ namespace onut
         void applyRenderStates() override;
         void init(const OWindowRef& pWindow) override;
 
+        void attachDepthBuffer(const Point& size);
+
     private:
         void createDevice(const OWindowRef& pWindow);
         void createRenderTarget();
@@ -59,6 +61,9 @@ namespace onut
 
         Point m_resolution;
         OIndexBufferRef m_masterIndices;
+        GLuint m_mrtFrameBuffer = 0;
+        GLuint m_mrtDepthStencil = 0;
+        Point m_mrtDepthSize;
     };
 };
 

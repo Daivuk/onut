@@ -37,13 +37,13 @@ void drawLandscapeToRenderTarget(const OTextureRef& pRenderTarget)
 {
     auto pLandscape = OGetTexture("landscape.png");
 
-    oRenderer->renderStates.renderTarget.push(pRenderTarget);
+    oRenderer->renderStates.renderTargets[0].push(pRenderTarget);
     oRenderer->renderStates.viewport.push({0, 0, pRenderTarget->getSize().x, pRenderTarget->getSize().y});
     oSpriteBatch->begin();
     oSpriteBatch->drawRect(pLandscape, {0, 0, pRenderTarget->getSizef().x, pRenderTarget->getSizef().y});
     oSpriteBatch->end();
     oRenderer->renderStates.viewport.pop();
-    oRenderer->renderStates.renderTarget.pop();
+    oRenderer->renderStates.renderTargets[0].pop();
 }
 
 void render()

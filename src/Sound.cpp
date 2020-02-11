@@ -317,6 +317,35 @@ namespace onut
         }
     }
 
+    void Sound::play3D(const Vector3& position, float radius, float volume, float balance, float pitch)
+    {
+        if (m_pBuffer)
+        {
+            OSoundInstanceRef pInstance;
+            for (auto& pInst : m_instances)
+            {
+                if (pInst->m_isFree)
+                {
+                    pInstance = pInst;
+                    break;
+                }
+            }
+            if (!pInstance)
+            {
+                pInstance = createInstance();
+                m_instances.push_back(pInstance);
+            }
+            pInstance->m_isPaused = true;
+            pInstance->m_offset = 0;
+            pInstance->m_isFree = false;
+            pInstance->set3D(true, position, radius);
+            pInstance->setVolume(volume);
+            pInstance->setBalance(balance);
+            pInstance->setPitch(pitch);
+            pInstance->play();
+        }
+    }
+
     void Sound::stop()
     {
         for (auto& pInst : m_instances)
@@ -423,7 +452,7 @@ namespace onut
         return m_pitch;
     }
 
-    bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut)
+    bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut, float in_volume, float in_balance, float in_pitch)
     {
         auto pSoundPtr = m_pSound;
         auto pSoundBuffer = pSoundPtr->m_pBuffer;
@@ -431,10 +460,10 @@ namespace onut
         int bufferChannelCount = pSoundPtr->m_channelCount;
 
         int offset = m_offset;
-        float volume = m_volume;
+        float volume = m_volume * in_volume;
         bool loop = m_loop;
-        float balance = m_balance;
-        float pitch = m_pitch;
+        float balance = std::max<float>(-1.0f, std::min<float>(1.0f, m_balance + in_balance));
+        float pitch = m_pitch * in_pitch;
 
         // Calculate panning
         float leftVolume = std::min(1.0f, -balance + 1.0f) * volume;
@@ -548,7 +577,7 @@ namespace onut
                             sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + 0];
                     }
                     percent = offsetF - (float)(int)offsetF;
-                    pOut[i * channelCount + 0] += sample1 + (sample2 - sample1) * percent;
+                    pOut[i * channelCount + 0] += (sample1 + (sample2 - sample1) * percent) * leftVolume;
 
                     sample1 = pSoundBuffer[(int)offsetF * bufferChannelCount + 1];
                     if (loop)
@@ -563,7 +592,7 @@ namespace onut
                             sample2 = pSoundBuffer[((int)offsetF + 1) * bufferChannelCount + 1];
                     }
                     percent = offsetF - (float)(int)offsetF;
-                    pOut[i * channelCount + 1] += sample1 + (sample2 - sample1) * percent;
+                    pOut[i * channelCount + 1] += (sample1 + (sample2 - sample1) * percent) * rightVolume;
 
                     offsetF += pitch;
                     if ((int)offsetF >= bufferFrameCount)
@@ -667,6 +696,15 @@ void OPlaySound(const std::string& name, float volume, float balance, float pitc
     if (pSound)
     {
         pSound->play(volume, balance, pitch);
+    }
+}
+
+void OPlay3DSound(const std::string& name, const Vector3& position, float radius, float volume, float balance, float pitch)
+{
+    auto pSound = OGetSound(name);
+    if (pSound)
+    {
+        pSound->play3D(position, radius, volume, balance, pitch);
     }
 }
 

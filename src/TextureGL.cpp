@@ -15,13 +15,32 @@
 #include <cassert>
 #include <vector>
 
+static GLint convertFormat(onut::RenderTargetFormat format)
+{
+    switch (format)
+    {
+        case onut::RenderTargetFormat::R8: return GL_R8;
+        case onut::RenderTargetFormat::RG8: return GL_RG8;
+        case onut::RenderTargetFormat::RGBA8: return GL_RGBA8;
+        case onut::RenderTargetFormat::R16: return GL_R16;
+        case onut::RenderTargetFormat::RG16: return GL_RG16;
+        case onut::RenderTargetFormat::RGBA16: return GL_RGBA16;
+        case onut::RenderTargetFormat::R32: return GL_R32F;
+        case onut::RenderTargetFormat::RG32: return GL_RG32F;
+        case onut::RenderTargetFormat::RGBA32: return GL_RGBA32F;
+        case onut::RenderTargetFormat::RGB10A2: return GL_RGB10_A2;
+        default: return GL_RGBA8;
+    };
+}
+
 namespace onut
 {
-    OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX)
+    OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX, RenderTargetFormat format)
     {
         auto pRet = std::shared_ptr<TextureGL>(new TextureGL());
         pRet->m_size = size;
         pRet->m_type = Type::RenderTarget;
+        pRet->m_format = format;
         
         GLuint frameBuffer;
         glGenFramebuffers(1, &frameBuffer);
@@ -31,7 +50,7 @@ namespace onut
         glGenTextures(1, &handle);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, handle);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, convertFormat(pRet->m_format), size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -45,13 +64,13 @@ namespace onut
         glGenRenderbuffers(1, &rboDepthStencil);
         glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, size.x, size.y);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
+        ((RendererGL*)oRenderer.get())->attachDepthBuffer(size);
 
         pRet->m_frameBuffer = frameBuffer;
         pRet->m_handle = handle;
         
         // Because opengl uses a global state and its dumb as fuck
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].forceDirty();
 
         if (willUseFX)
@@ -62,7 +81,7 @@ namespace onut
         return pRet;
     }
 
-    OTextureRef Texture::createScreenRenderTarget(bool willBeUsedInEffects)
+    OTextureRef Texture::createScreenRenderTarget(bool willBeUsedInEffects, RenderTargetFormat format)
     {
         Point res = oRenderer->getTrueResolution();
         if (oSettings->getIsRetroMode())
@@ -70,7 +89,7 @@ namespace onut
             res = oSettings->getRetroResolution();
         }
 
-        auto pRet = createRenderTarget(res, willBeUsedInEffects);
+        auto pRet = createRenderTarget(res, willBeUsedInEffects, format);
         if (pRet)
         {
             pRet->m_isScreenRenderTarget = true;
@@ -212,8 +231,6 @@ namespace onut
 
     void TextureGL::createFrameBuffer(GLuint& otherHandle, GLuint& otherFrameBuffer)
     {
-        auto pRet = std::shared_ptr<TextureGL>(new TextureGL());
-
         GLuint frameBuffer;
         glGenFramebuffers(1, &frameBuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -222,7 +239,7 @@ namespace onut
         glGenTextures(1, &handle);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, handle);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, convertFormat(m_format), m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -235,16 +252,12 @@ namespace onut
         glGenRenderbuffers(1, &rboDepthStencil);
         glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_size.x, m_size.y);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
+        ((RendererGL*)oRenderer.get())->attachDepthBuffer(m_size);
 
         assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
         otherFrameBuffer = frameBuffer;
         otherHandle = handle;
-
-        //// Because opengl uses a global state and its dumb as fuck
-        //oRenderer->renderStates.renderTarget.forceDirty();
-        //oRenderer->renderStates.textures[0].forceDirty();
     }
 
     void TextureGL::blur(float amount)
@@ -256,7 +269,7 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         int i = 0;
@@ -268,14 +281,14 @@ namespace onut
             });
             amount -= 6.f;
 
-            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_frameBuffer, m_frameBufferFx);
             clearRenderTarget(Color::Transparent);
             oRenderer->drawBlurH();
             std::swap(m_frameBuffer, m_frameBufferFx);
 
-            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_handle, m_handleFx);
             clearRenderTarget(Color::Transparent);
@@ -286,7 +299,7 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTargets[0].pop();
         oRenderer->renderStates.textures[0].pop();
     }
     
@@ -299,8 +312,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -311,8 +324,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -325,8 +338,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -337,8 +350,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -351,8 +364,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -363,8 +376,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -377,8 +390,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({ 0, 0, m_size.x, m_size.y });
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_frameBuffer, m_frameBufferFx);
@@ -392,8 +405,8 @@ namespace onut
         std::swap(m_handle, m_handleFx);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 

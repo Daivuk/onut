@@ -16,6 +16,7 @@
 // STL
 #include <cassert>
 #include <regex>
+#include <set>
 
 namespace onut
 {
@@ -138,6 +139,18 @@ namespace onut
             auto parsed = parseVertexShader(in_source);
             std::string source;
             source.reserve(5000);
+
+            // Create textures
+            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
+            {
+                const auto& texture = *rit;
+                source += "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
+                source += "Texture2D texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                source += "float4 " + texture.name + "(float2 uv)\n";
+                source += "{\n";
+                source += "    return texture_" + texture.name + ".SampleLevel(sampler_" + texture.name + ", uv, 0);\n";
+                source += "}\n\n";
+            }
 
             // Add engine default constant buffers
             source += "cbuffer OViewProjection : register(b0)\n{\n    matrix oViewProjection;\n}\n\n";
@@ -263,6 +276,62 @@ namespace onut
             if (pRetD3D11)
             {
                 pRetD3D11->m_uniforms = uniforms;
+
+                // Create textures samplers
+                if (!parsed.textures.empty())
+                {
+                    pRetD3D11->m_vsSamplerStatesCount = (int)parsed.textures.size();
+                    pRetD3D11->m_ppVSSampleStates = new ID3D11SamplerState * [pRetD3D11->m_vsSamplerStatesCount];
+                    int i = 0;
+                    for (auto& texture : parsed.textures)
+                    {
+                        D3D11_SAMPLER_DESC samplerState;
+                        memset(&samplerState, 0, sizeof(samplerState));
+                        samplerState.MaxAnisotropy = 1;
+                        samplerState.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+                        samplerState.MaxLOD = D3D11_FLOAT32_MAX;
+
+                        switch (texture.filter)
+                        {
+                        case sample::Filtering::Nearest:
+                            samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+                            break;
+                        case sample::Filtering::Linear:
+                            samplerState.Filter = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+                            break;
+                        case sample::Filtering::Bilinear:
+                            samplerState.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+                            break;
+                        case sample::Filtering::Trilinear:
+                            samplerState.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+                            break;
+                        case sample::Filtering::Anisotropic:
+                            samplerState.Filter = D3D11_FILTER_ANISOTROPIC;
+                            break;
+                        }
+                        switch (texture.repeatX)
+                        {
+                        case sample::AddressMode::Clamp:
+                            samplerState.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+                            break;
+                        case sample::AddressMode::Wrap:
+                            samplerState.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+                            break;
+                        }
+                        switch (texture.repeatY)
+                        {
+                        case sample::AddressMode::Clamp:
+                            samplerState.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+                            break;
+                        case sample::AddressMode::Wrap:
+                            samplerState.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+                            break;
+                        }
+                        samplerState.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+                        pDevice->CreateSamplerState(&samplerState, &pRetD3D11->m_ppVSSampleStates[i]);
+                        ++i;
+                    }
+                }
             }
 
             return pRet;
@@ -367,17 +436,44 @@ namespace onut
                 source += "}\n\n";
             }
 
+            // Parse the source to see how many render targets we output
+            std::set<int> mrt;
+            bool useOColor = false;
+            for (auto& token : parsed.mainFunction.body)
+            {
+                if (token.str == "oColor") useOColor = true;
+                else if (token.str == "oColor1") mrt.insert(1);
+                else if (token.str == "oColor2") mrt.insert(2);
+                else if (token.str == "oColor3") mrt.insert(3);
+                else if (token.str == "oColor4") mrt.insert(4);
+                else if (token.str == "oColor5") mrt.insert(5);
+                else if (token.str == "oColor6") mrt.insert(6);
+                else if (token.str == "oColor7") mrt.insert(7);
+            }
+
+            // Define output struct
+            source += "struct PS_OUT\n{\n";
+            source += "    float4 target0 : SV_TARGET;\n";
+            for (auto i : mrt) source += "    float4 target" + std::to_string(i) + " : SV_TARGET" + std::to_string(i) + ";\n";
+            source += "};\n";
+
             // Bake main function
-            source += "float4 main(oPSInput oInput) : SV_TARGET\n{\n    float4 oColor;\n";
+            source += "PS_OUT main(oPSInput oInput)\n{\n";
+            source += "    PS_OUT oPS_OUT;\n";
+            source += "    float4 " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+            for (auto i : mrt) source += "    float4 oColor" + std::to_string(i) + ";\n";
             for (auto& element : parsed.inputs)
             {
                 source += "    " + getTypeName(element.type) + " " + element.name + " = oInput." + element.name + ";\n";
             }
             bakeTokens(source, parsed.mainFunction.body);
-            source += "    return oColor;\n}\n";
+            source += "    oPS_OUT.target0 = " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+            for(auto i : mrt) source += "    oPS_OUT.target" + std::to_string(i) + " = oColor" + std::to_string(i) + ";\n";
+            source += "    return oPS_OUT;\n}\n";
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Pixel);
+            assert(pRet);
             auto pRetD3D11 = ODynamicCast<ShaderD3D11>(pRet);
             if (pRetD3D11)
             {
@@ -542,6 +638,7 @@ namespace onut
         {
             char* pError = (char*)errorBlob->GetBufferPointer();
             OLog(pError);
+            assert(false);
             return nullptr;
         }
 #else
@@ -579,6 +676,11 @@ namespace onut
             m_ppSampleStates[i]->Release();
         }
         if (m_ppSampleStates) delete[] m_ppSampleStates;
+        for (int i = 0; i < m_vsSamplerStatesCount; ++i)
+        {
+            m_ppVSSampleStates[i]->Release();
+        }
+        if (m_ppVSSampleStates) delete[] m_ppVSSampleStates;
         for (auto& pUniform : m_uniforms)
         {
             pUniform.pBuffer->Release();
@@ -621,9 +723,19 @@ namespace onut
         return m_ppSampleStates;
     }
 
+    ID3D11SamplerState** ShaderD3D11::getVSSamplerStates() const
+    {
+        return m_ppVSSampleStates;
+    }
+
     int ShaderD3D11::getSamplerStatesCount() const
     {
         return m_samplerStatesCount;
+    }
+
+    int ShaderD3D11::getVSSamplerStatesCount() const
+    {
+        return m_vsSamplerStatesCount;
     }
 
     int ShaderD3D11::getUniformId(const std::string& varName) const

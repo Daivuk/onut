@@ -34,7 +34,9 @@ namespace onut
         ID3D11PixelShader* getPixelShader() const;
         ID3D11InputLayout* getInputLayout() const;
         ID3D11SamplerState** getSamplerStates() const;
+        ID3D11SamplerState** getVSSamplerStates() const;
         int getSamplerStatesCount() const;
+        int getVSSamplerStatesCount() const;
         Uniforms& getUniforms();
 
         int getUniformId(const std::string& varName) const override;
@@ -57,7 +59,9 @@ namespace onut
         ID3D11PixelShader* m_pPixelShader = nullptr;
         ID3D11InputLayout* m_pInputLayout = nullptr;
         ID3D11SamplerState** m_ppSampleStates = nullptr;
+        ID3D11SamplerState** m_ppVSSampleStates = nullptr;
         int m_samplerStatesCount = 0;
+        int m_vsSamplerStatesCount = 0;
 
         Uniforms m_uniforms;
     };

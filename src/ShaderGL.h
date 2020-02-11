@@ -66,6 +66,7 @@ namespace onut
             GLint oModelUniform;
             std::vector<GLint> attributes;
             std::vector<GLint> textures;
+            std::vector<GLint> vsTextures;
         };
         using ProgramRef = std::shared_ptr<Program>;
         using Programs = std::vector<ProgramRef>;
@@ -76,6 +77,7 @@ namespace onut
         Uniforms m_uniforms;
         Programs m_programs;
         ParsedTextures m_textures;
+        ParsedTextures m_vsTextures;
         InputLayout m_inputLayout;
 #if defined(_DEBUG)
         std::string m_source;

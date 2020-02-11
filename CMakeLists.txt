@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-option(ONUT_USE_HUNTER "Use pre-built static libraries from Hunter" OFF)
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
@@ -8,21 +7,12 @@ option(ONUT_BUILD_SETUP "Build the Setup app" OFF)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
 
 # Easier defines
-if (UNIX AND NOT RPI AND NOT APPLE)
+if (UNIX AND NOT APPLE)
     set(LINUX 1)
 endif()
 
 # Setup modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
-
-if(NOT MSVC AND ONUT_USE_HUNTER)
-    # Hunter Cross-platform package manager
-    include("cmake/HunterGate.cmake")
-    HunterGate(
-        URL "https://github.com/path/to/hunter/archive.tar.gz"
-        SHA1 "798501e983f14b28b10cda16afa4de69eee1da1d"
-    )
-endif()
 
 # project name
 project(libonut)
@@ -40,36 +30,9 @@ endif()
 if (ONUT_USE_OPENGL)
     add_definitions(-DONUT_USE_OPENGL)
 endif()
-if (RPI)
-    add_definitions(-D__rpi__)
-    add_definitions(-DHAVE_LIBOPENMAX=2)
-    add_definitions(-DOMX)
-    add_definitions(-DOMX_SKIP64BIT)
-    add_definitions(-DUSE_EXTERNAL_OMX)
-    add_definitions(-DUSE_VCHIQ_ARM)
-endif()
 if (WIN32)
     add_definitions(-DNOMINMAX)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
-
-# Add RaspberryPI specific source files
-if (RPI)
-    list(APPEND src_files
-        src/AudioEngineRPI.cpp
-        src/audioplay/audioplay.c
-        src/GamePadRPI.cpp
-        src/InputDeviceRPI.cpp
-        src/VideoPlayerLinux.cpp
-        src/IndexBufferGLES2.cpp 
-        src/HttpCURL.cpp
-        src/RendererGLES2.cpp 
-        src/ShaderGLES2.cpp 
-        src/SocketTCP_Unix.cpp
-        src/TextureGLES2.cpp 
-        src/VertexBufferGLES2.cpp 
-        src/WindowRPI.cpp 
-    )
 endif()
 
 # Add OSX specific source files
@@ -78,12 +41,10 @@ if (APPLE)
         src/AudioEngineSDL2.cpp
         src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
-        src/VideoPlayerOSX.cpp
         src/IndexBufferGL.cpp 
         src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
-        src/SocketTCP_Unix.cpp
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
@@ -100,11 +61,9 @@ if (LINUX)
         src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
-        src/SocketTCP_Unix.cpp
         src/TextureGL.cpp 
         src/VertexBufferGL.cpp 
         src/WindowSDL2.cpp 
-        src/VideoPlayerLinux.cpp
         thirdparty/gl3w/src/gl3w.c
     )
     list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
@@ -117,7 +76,6 @@ if (WIN32)
         src/GamePadXInput.cpp
         src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
-        src/SocketTCP_Win32.cpp
         src/WindowWIN32.cpp 
     )
     if (ONUT_USE_OPENGL)
@@ -127,7 +85,6 @@ if (WIN32)
             src/ShaderGL.cpp 
             src/TextureGL.cpp 
             src/VertexBufferGL.cpp 
-            src/VideoPlayerEmpty.cpp
             thirdparty/gl3w/src/gl3w.c
         )
         list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
@@ -137,8 +94,7 @@ if (WIN32)
             src/RendererD3D11.cpp 
             src/ShaderD3D11.cpp 
             src/TextureD3D11.cpp 
-            src/VertexBufferD3D11.cpp 
-            src/MFPlayer.cpp
+            src/VertexBufferD3D11.cpp
         )
     endif()
 endif()
@@ -147,66 +103,15 @@ endif()
 list(APPEND src_files
     src/ActionManager.cpp
     src/AudioEngine.cpp
-    src/Box2D/Collision/Shapes/b2ChainShape.cpp
-    src/Box2D/Collision/Shapes/b2CircleShape.cpp
-    src/Box2D/Collision/Shapes/b2EdgeShape.cpp
-    src/Box2D/Collision/Shapes/b2PolygonShape.cpp
-    src/Box2D/Collision/b2BroadPhase.cpp
-    src/Box2D/Collision/b2CollideCircle.cpp
-    src/Box2D/Collision/b2CollideEdge.cpp
-    src/Box2D/Collision/b2CollidePolygon.cpp
-    src/Box2D/Collision/b2Collision.cpp
-    src/Box2D/Collision/b2Distance.cpp
-    src/Box2D/Collision/b2DynamicTree.cpp
-    src/Box2D/Collision/b2TimeOfImpact.cpp
-    src/Box2D/Common/b2BlockAllocator.cpp
-    src/Box2D/Common/b2Draw.cpp
-    src/Box2D/Common/b2Math.cpp
-    src/Box2D/Common/b2Settings.cpp
-    src/Box2D/Common/b2StackAllocator.cpp
-    src/Box2D/Common/b2Timer.cpp
-    src/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp
-    src/Box2D/Dynamics/Contacts/b2CircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2Contact.cpp
-    src/Box2D/Dynamics/Contacts/b2ContactSolver.cpp
-    src/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp
-    src/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp
-    src/Box2D/Dynamics/Contacts/b2PolygonContact.cpp
-    src/Box2D/Dynamics/Joints/b2DistanceJoint.cpp
-    src/Box2D/Dynamics/Joints/b2FrictionJoint.cpp
-    src/Box2D/Dynamics/Joints/b2GearJoint.cpp
-    src/Box2D/Dynamics/Joints/b2Joint.cpp
-    src/Box2D/Dynamics/Joints/b2MotorJoint.cpp
-    src/Box2D/Dynamics/Joints/b2MouseJoint.cpp
-    src/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp
-    src/Box2D/Dynamics/Joints/b2PulleyJoint.cpp
-    src/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp
-    src/Box2D/Dynamics/Joints/b2RopeJoint.cpp
-    src/Box2D/Dynamics/Joints/b2WeldJoint.cpp
-    src/Box2D/Dynamics/Joints/b2WheelJoint.cpp
-    src/Box2D/Dynamics/b2Body.cpp
-    src/Box2D/Dynamics/b2ContactManager.cpp
-    src/Box2D/Dynamics/b2Fixture.cpp
-    src/Box2D/Dynamics/b2Island.cpp
-    src/Box2D/Dynamics/b2World.cpp
-    src/Box2D/Dynamics/b2WorldCallbacks.cpp
-    src/Box2D/Rope/b2Rope.cpp
-    src/Camera2DComponent.cpp
-    src/Collider2DComponent.cpp
     src/Color.cpp 
-    src/Component.cpp
-    src/ComponentFactory.cpp
     src/ContentManager.cpp
     src/Crypto.cpp
     src/CSV.cpp
     src/Curve.cpp 
+    src/Deferred.cpp
     src/Dialogs.cpp
     src/Dispatcher.cpp 
     src/duktape/duktape.c
-    src/Entity.cpp
-    src/EntityFactory.cpp
     src/Files.cpp 
     src/Font.cpp
     src/GamePad.cpp
@@ -228,7 +133,6 @@ list(APPEND src_files
     src/Matrix.cpp 
     src/micropather.cpp
     src/Model.cpp 
-    src/Multiplayer.cpp
     src/Music.cpp
     src/MusicOGG.cpp
     src/onut.cpp 
@@ -244,22 +148,15 @@ list(APPEND src_files
     src/Ray.cpp
     src/Renderer.cpp 
     src/Resource.cpp 
-    src/SceneManager.cpp
     src/Settings.cpp 
     src/Shader.cpp 
-    src/SocketTCP.cpp
     src/Sound.cpp
-    src/SoundComponent.cpp
     src/SpriteAnim.cpp
-    src/SpriteAnimComponent.cpp
     src/SpriteBatch.cpp 
-    src/SpriteComponent.cpp
     src/Strings.cpp 
-    src/TextComponent.cpp
     src/Texture.cpp 
     src/ThreadPool.cpp 
     src/TiledMap.cpp
-    src/TiledMapComponent.cpp
     src/Timer.cpp
     src/Timing.cpp 
     src/tinyfiledialogs/tinyfiledialogs.c
@@ -281,7 +178,6 @@ list(APPEND src_files
     src/Vector3.cpp 
     src/Vector4.cpp 
     src/VertexBuffer.cpp 
-    src/VideoPlayer.cpp
     src/Window.cpp 
     src/zlib/adler32.c
     src/zlib/compress.c
@@ -303,13 +199,6 @@ list(APPEND src_files
 add_library(libonut STATIC ${src_files})
 
 # Libraries
-if (RPI)
-    list(APPEND includes
-        PUBLIC
-            /opt/vc/include
-            /opt/vc/include/interface/vmcs_host/linux
-    )
-endif()
 list(APPEND includes
     PUBLIC
         ./include 
@@ -317,48 +206,23 @@ list(APPEND includes
         ./src
 )
 
-if (LINUX OR RPI) # Only required on linux if we use std::thread
+if (LINUX) # Only required on linux if we use std::thread
     find_package(Threads)
     list(APPEND libs PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if (LINUX OR APPLE)
-    if (ONUT_USE_HUNTER)
-        hunter_add_package(glew)
-        find_package(glew CONFIG REQUIRED)
-        list(APPEND libs PUBLIC glew::glew)
-    else()
-        find_package(GLEW REQUIRED)
-        list(APPEND includes PUBLIC ${GLEW_INCLUDE_DIRS})
-        list(APPEND libs PUBLIC ${GLEW_LIBRARIES})
-    endif()
-endif()
-if (LINUX OR APPLE) # On Raspberry Pi we use video core directly and opengl es 2, no need for normal GL and SDL.
+if (UNIX)
     find_package(OpenGL REQUIRED)
     list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
     list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
 
-    if (ONUT_USE_HUNTER)
-        # https://github.com/ruslo/hunter/wiki/pkg.sdl2
-        hunter_add_package(SDL2)
-        find_package(SDL2 CONFIG REQUIRED)
-        list(APPEND libs PUBLIC SDL2::SDL2)
-    else()
-        find_package(SDL2 REQUIRED)
-        list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
-        list(APPEND libs PUBLIC ${SDL2_LIBRARY})
-    endif()
-endif()
-if (UNIX)
-    if (ONUT_USE_HUNTER)
-        # https://github.com/ruslo/hunter/wiki/pkg.curl
-        hunter_add_package(CURL)
-        find_package(CURL CONFIG REQUIRED)
-        list(APPEND libs PUBLIC CURL::libcurl)
-    else()
-        find_package(CURL REQUIRED)
-        list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
-        list(APPEND libs PUBLIC ${CURL_LIBRARIES})
-    endif()
+    find_package(SDL2 REQUIRED)
+    list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR})
+    list(APPEND includes PUBLIC ${SDL2_INCLUDE_DIR}/..)
+    list(APPEND libs PUBLIC ${SDL2_LIBRARY})
+
+    find_package(CURL REQUIRED)
+    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
+    list(APPEND libs PUBLIC ${CURL_LIBRARIES})
 endif()
 if (WIN32)
     if (ONUT_USE_OPENGL)
@@ -368,27 +232,6 @@ if (WIN32)
     endif()
     find_package(DirectX11 REQUIRED)
     list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
-endif()
-find_package(Socket)
-list(APPEND libs PUBLIC ${Socket_LIBRARIES})
-
-if (RPI)  
-    list(APPEND libs
-        PUBLIC
-            -L/opt/vc/lib/
-            -L${CMAKE_SOURCE_DIR}/lib/linux/
-            -lbcm_host 
-            -lvcos 
-            -lvchiq_arm
-            -lEGL
-            -lGLESv2 
-            -lEGL 
-            -lGLESv2 
-            -lrt 
-            -ldl
-            -lilclient
-            -lopenmaxil
-    )
 endif()
 
 if (WIN32)
@@ -426,20 +269,18 @@ endif()
 
 if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Animations) # AnimationsSample
-    add_subdirectory(samples/Components) # ComponentsSample
     add_subdirectory(samples/Crypto) # CryptoSample
     add_subdirectory(samples/Cursor) # CursorSample
     add_subdirectory(samples/CustomMesh) # CustomMeshSample
-    add_subdirectory(samples/Dungeon) # DungeonSample
+    add_subdirectory(samples/Deferred) # DeferredSample
+    # add_subdirectory(samples/Dungeon) # DungeonSample // EnTT example
     add_subdirectory(samples/Effects) # EffectsSample
     add_subdirectory(samples/Empty) # EmptySample
-    add_subdirectory(samples/Entities) # EntitiesSample
     add_subdirectory(samples/GamePads) # GamePadsSample
     add_subdirectory(samples/Http) # HttpSample
     add_subdirectory(samples/Imgui) # ImguiSample
     add_subdirectory(samples/ModelBatch) # ModelBatchSample
     add_subdirectory(samples/Models) # ModelsSample
-    add_subdirectory(samples/Multiplayer) # MultiplayerSample
     add_subdirectory(samples/Navigation) # NavigationSample
     add_subdirectory(samples/Particles) # ParticlesSample
     add_subdirectory(samples/Primitives) # PrimitivesSample

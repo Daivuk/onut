@@ -18,10 +18,11 @@
 
 namespace onut
 {
-    OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX)
+    OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX, RenderTargetFormat format)
     {
         auto pRet = std::shared_ptr<TextureD3D11>(new TextureD3D11());
         pRet->m_size = size;
+        pRet->m_format = format;
 #if defined(WIN32)
         pRet->createRenderTargetViews(pRet->m_pTexture, pRet->m_pTextureView, pRet->m_pRenderTargetView);
         if (willUseFX)
@@ -35,7 +36,7 @@ namespace onut
         return pRet;
     }
 
-    OTextureRef Texture::createScreenRenderTarget(bool willBeUsedInEffects)
+    OTextureRef Texture::createScreenRenderTarget(bool willBeUsedInEffects, RenderTargetFormat format)
     {
         Point res = oRenderer->getTrueResolution();
         if (oSettings->getIsRetroMode())
@@ -43,7 +44,7 @@ namespace onut
             res = oSettings->getRetroResolution();
         }
 
-        auto pRet = createRenderTarget(res, willBeUsedInEffects);
+        auto pRet = createRenderTarget(res, willBeUsedInEffects, format);
         if (pRet)
         {
             pRet->m_isScreenRenderTarget = true;
@@ -375,7 +376,7 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         int i = 0;
@@ -387,14 +388,14 @@ namespace onut
             });
             amount -= 6.f;
 
-            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
             clearRenderTarget(Color::Transparent);
             oRenderer->drawBlurH();
             std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
 
-            oRenderer->renderStates.renderTarget.forceDirty();
+            oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_pTextureView, m_pTextureViewFX);
             clearRenderTarget(Color::Transparent);
@@ -405,7 +406,7 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
+        oRenderer->renderStates.renderTargets[0].pop();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -418,8 +419,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -432,8 +433,8 @@ namespace onut
         std::swap(m_pTextureView, m_pTextureViewFX);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -446,8 +447,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -460,8 +461,8 @@ namespace onut
         std::swap(m_pTextureView, m_pTextureViewFX);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -474,8 +475,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -488,8 +489,8 @@ namespace onut
         std::swap(m_pTextureView, m_pTextureViewFX);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -502,8 +503,8 @@ namespace onut
         }
 
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
-        oRenderer->renderStates.renderTarget.push(shared_from_this());
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].push(shared_from_this());
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
@@ -519,8 +520,8 @@ namespace onut
         std::swap(m_pTextureView, m_pTextureViewFX);
 
         oRenderer->renderStates.viewport.pop();
-        oRenderer->renderStates.renderTarget.pop();
-        oRenderer->renderStates.renderTarget.forceDirty();
+        oRenderer->renderStates.renderTargets[0].pop();
+        oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].pop();
     }
 
@@ -541,7 +542,20 @@ namespace onut
         textureDesc.Height = m_size.y;
         textureDesc.MipLevels = 1;
         textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        switch (m_format)
+        {
+            case RenderTargetFormat::R8: textureDesc.Format = DXGI_FORMAT_R8_UNORM; break;
+            case RenderTargetFormat::RG8: textureDesc.Format = DXGI_FORMAT_R8G8_UNORM; break;
+            case RenderTargetFormat::RGBA8: textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
+            case RenderTargetFormat::R16: textureDesc.Format = DXGI_FORMAT_R16_UNORM; break;
+            case RenderTargetFormat::RG16: textureDesc.Format = DXGI_FORMAT_R16G16_UNORM; break;
+            case RenderTargetFormat::RGBA16: textureDesc.Format = DXGI_FORMAT_R16G16B16A16_UNORM; break;
+            case RenderTargetFormat::R32: textureDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
+            case RenderTargetFormat::RG32: textureDesc.Format = DXGI_FORMAT_R32G32_FLOAT; break;
+            case RenderTargetFormat::RGBA32: textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
+            case RenderTargetFormat::RGB10A2: textureDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; break;
+            default: textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
+        };
         textureDesc.SampleDesc.Count = 1;
         textureDesc.Usage = D3D11_USAGE_DEFAULT;
         textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;

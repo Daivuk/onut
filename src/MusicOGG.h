@@ -38,7 +38,7 @@ namespace onut
         bool isDone() override;
 
     protected:
-        bool progress(int frameCount, int sampleRate, int channelCount, float* pOut) override;
+        bool progress(int frameCount, int sampleRate, int channelCount, float* pOut, float volume = 1.0f, float balance = 0.0f, float pitch = 1.0f) override;
 
     private:
         friend class Music;

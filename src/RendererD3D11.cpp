@@ -499,9 +499,9 @@ namespace onut
     void RendererD3D11::clear(const Color& color)
     {
         ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
-        if (renderStates.renderTarget.get())
+        if (renderStates.renderTargets[0].get())
         {
-            auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(renderStates.renderTarget.get());
+            auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(renderStates.renderTargets[0].get());
             pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
         }
         m_pDeviceContext->ClearRenderTargetView(pRenderTargetView, &color.r);
@@ -527,31 +527,66 @@ namespace onut
     void RendererD3D11::applyRenderStates()
     {
         // Render target
-        if (renderStates.renderTarget.isDirty())
+        bool isFirstRTDirty = false;
+        bool hasDirtyRT = false;
+        for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
         {
-            auto& pRenderTarget = renderStates.renderTarget.get();
-            ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
-            if (pRenderTarget)
+            if (renderStates.renderTargets[i].isDirty())
             {
-                auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
-                pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
-                for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
+                hasDirtyRT = true;
+                auto& pRenderTarget = renderStates.renderTargets[i].get();
+                ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
+                if (pRenderTarget)
                 {
-                    if (m_boundTextures[i] == pRenderTarget)
+                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
+                    pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
+                    for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
                     {
-                        ID3D11ShaderResourceView* pResourceView = nullptr;
-                        m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
+                        if (m_boundTextures[i] == pRenderTarget)
+                        {
+                            ID3D11ShaderResourceView* pResourceView = nullptr;
+                            m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
+                        }
                     }
                 }
+                renderStates.renderTargets[i].resetDirty();
+                if (i == 0) isFirstRTDirty = true;
             }
-            m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
-            renderStates.renderTarget.resetDirty();
-            renderStates.viewport.forceDirty();
-            renderStates.depthEnabled.forceDirty();
-            renderStates.depthWrite.forceDirty();
+        }
+
+        if (hasDirtyRT || renderStates.depthEnabled.isDirty() || renderStates.depthWrite.isDirty())
+        {
+            UINT numView = 0;
+            ID3D11RenderTargetView *views[RenderStates::MAX_RENDER_TARGETS] = {
+                m_pRenderTargetView, 
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr
+            };
+            for (int i = 0; i < RenderStates::MAX_RENDER_TARGETS; ++i)
+            {
+                auto& pRenderTarget = renderStates.renderTargets[i].get();
+                if (pRenderTarget)
+                {
+                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
+                    views[numView++] = pRenderTargetD3D11->getD3DRenderTargetView();
+                }
+            }
+            m_pDeviceContext->OMSetRenderTargets(numView ? numView : 1, views,
+                (renderStates.depthEnabled.get() || renderStates.depthWrite.get()) ? m_pDepthStencilView : nullptr);
+            if (isFirstRTDirty)
+            {
+                renderStates.viewport.forceDirty();
+            }
         }
 
         // Textures
+        auto pPixelShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
+        auto pVertexShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.vertexShader.get());
         for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
         {
             auto& pTextureState = renderStates.textures[i];
@@ -565,6 +600,7 @@ namespace onut
                     pResourceView = pRenderTargetD3D11->getD3DResourceView();
                 }
                 m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
+                m_pDeviceContext->VSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
                 pTextureState.resetDirty();
             }
         }
@@ -665,17 +701,6 @@ namespace onut
         if (renderStates.depthEnabled.isDirty() ||
             renderStates.depthWrite.isDirty())
         {
-            if (renderStates.depthEnabled.get() || renderStates.depthWrite.get())
-            {
-                auto& pRenderTarget = renderStates.renderTarget.get();
-                ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
-                if (pRenderTarget)
-                {
-                    auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
-                    pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
-                }
-                m_pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, m_pDepthStencilView);
-            }
             if (!renderStates.depthEnabled.get() && !renderStates.depthWrite.get())
                 m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilStates[0], 1);
             if (renderStates.depthEnabled.get() && renderStates.depthWrite.get())
@@ -744,7 +769,6 @@ namespace onut
             }
         }
 
-        auto pPixelShaderD3D11 = std::dynamic_pointer_cast<OShaderD3D11>(renderStates.pixelShader.get());
         pShaderD3D11 = pPixelShaderD3D11;
         if (pShaderD3D11)
         {
@@ -780,6 +804,10 @@ namespace onut
             m_pDeviceContext->PSSetSamplers(0, (UINT)pPixelShaderD3D11->getSamplerStatesCount(), pPixelShaderD3D11->getSamplerStates());
             renderStates.sampleFiltering.forceDirty();
             renderStates.sampleAddressMode.forceDirty();
+        }
+        if (pVertexShaderD3D11 && pVertexShaderD3D11->getVSSamplerStatesCount() && renderStates.vertexShader.isDirty())
+        {
+            m_pDeviceContext->VSSetSamplers(0, (UINT)pPixelShaderD3D11->getVSSamplerStatesCount(), pPixelShaderD3D11->getVSSamplerStates());
         }
         if (renderStates.sampleFiltering.isDirty() ||
                  renderStates.sampleAddressMode.isDirty())

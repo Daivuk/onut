@@ -12,6 +12,7 @@
 // STL
 #include <cassert>
 #include <regex>
+#include <set>
 
 #define SHADER_VERSION "120"
 
@@ -172,6 +173,18 @@ namespace onut
             source += "uniform mat4 oViewProjection;\n\n";
             source += "uniform mat4 oModel;\n\n";
 
+            // Create textures
+            for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
+            {
+                const auto& texture = *rit;
+                //source += "layout(binding = " + std::to_string(texture.index) + ") uniform sampler2D sampler_" + texture.name + ";\n";
+                source += "uniform sampler2D vssampler_" + texture.name + ";\n";
+                source += "vec4 " + texture.name + "(vec2 uv)\n";
+                source += "{\n";
+                source += "    return texture2DLod(vssampler_" + texture.name + ", uv, 0.0);\n";
+                source += "}\n\n";
+            }
+
             // Add vertex elements
             VertexElements vertexElements;
             std::string elementStructsSource;
@@ -315,6 +328,7 @@ namespace onut
                 ((ShaderGL*)(pRet.get()))->m_inputLayout.push_back(attribute);
             }
             ((ShaderGL*)(pRet.get()))->m_uniforms = uniforms;
+            ((ShaderGL*)(pRet.get()))->m_vsTextures = parsed.textures;
 
 #if defined(_DEBUG)
             ((ShaderGL*)(pRet.get()))->m_source = std::move(source);
@@ -332,7 +346,6 @@ namespace onut
             //source += "out vec4 oColor;\n\n";
 
             // Create textures
-            int semanticIndex = 0;
             for (auto rit = parsed.textures.rbegin(); rit != parsed.textures.rend(); ++rit)
             {
                 const auto& texture = *rit;
@@ -342,12 +355,11 @@ namespace onut
                 source += "{\n";
                 source += "    return texture2D(sampler_" + texture.name + ", uv);\n";
                 source += "}\n\n";
-                ++semanticIndex;
             }
 
             // Inputs
             std::string elementStructsSource;
-            semanticIndex = 0;
+            int semanticIndex = 0;
             for (auto& element : parsed.inputs)
             {
                 switch (element.type)
@@ -426,8 +438,25 @@ namespace onut
                 source += "}\n\n";
             }
 
+            // Parse the source to see how many render targets we output
+            std::set<int> mrt;
+            bool useOColor = false;
+            for (auto& token : parsed.mainFunction.body)
+            {
+                if (token.str == "oColor") useOColor = true;
+                else if (token.str == "oColor1") mrt.insert(1);
+                else if (token.str == "oColor2") mrt.insert(2);
+                else if (token.str == "oColor3") mrt.insert(3);
+                else if (token.str == "oColor4") mrt.insert(4);
+                else if (token.str == "oColor5") mrt.insert(5);
+                else if (token.str == "oColor6") mrt.insert(6);
+                else if (token.str == "oColor7") mrt.insert(7);
+            }
+
             // Bake main function
-            source += "void main()\n{    vec4 oColor;\n";
+            source += "void main()\n{\n";
+            source += "    vec4 " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+            for (auto i : mrt) source += "    vec4 oColor" + std::to_string(i) + ";\n";
             semanticIndex = 0;
             for (auto& element : parsed.inputs)
             {
@@ -443,7 +472,16 @@ namespace onut
                 ++semanticIndex;
             }
             bakeTokens(source, parsed.mainFunction.body);
-            source += "    gl_FragColor = oColor;}\n";
+            if (mrt.empty())
+            {
+                source += "    gl_FragColor = " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+            }
+            else
+            {
+                source += "    gl_FragData[0] = " + (useOColor ? std::string("oColor") : std::string("oColor0")) + ";\n";
+                for (auto i : mrt) source += "    gl_FragData[" + std::to_string(i) + "] = oColor" + std::to_string(i) + ";\n";
+            }
+            source += "}\n";
 
             // Now compile it
             auto pRet = createFromNativeSource(source, Type::Pixel);
@@ -609,7 +647,7 @@ namespace onut
     {
         auto& uniform = m_uniforms[varId];
         uniform.dirty = true;
-        uniform.value = value;
+        uniform.value = value.Transpose();
     }
 
     void ShaderGL::setFloat(const std::string& varName, float value)
@@ -710,6 +748,11 @@ namespace onut
         for (const auto& texture : m_textures)
         {
             pProgramRaw->textures[texture.index] = glGetUniformLocation(program, ("sampler_" + texture.name).c_str());
+        }
+        pProgramRaw->vsTextures.resize(pVertexShaderRaw->m_vsTextures.size());
+        for (const auto& texture : pVertexShaderRaw->m_vsTextures)
+        {
+            pProgramRaw->vsTextures[texture.index] = glGetUniformLocation(program, ("vssampler_" + texture.name).c_str());
         }
 
         m_programs.push_back(pProgram);
