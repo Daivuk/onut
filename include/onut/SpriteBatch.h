@@ -101,20 +101,6 @@ namespace onut
     };
 }
 
-                // JS_INTERFACE_FUNCTION_BEGIN
-                // {
-                //     auto pFont = JS_FONT(0);
-                //     if (pFont) pFont->draw(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4));
-                //     return 0;
-                // }
-                // JS_INTERFACE_FUNCTION_END("drawText", 5);
-                // JS_INTERFACE_FUNCTION_BEGIN
-                // {
-                //     auto pFont = JS_FONT(0);
-                //     if (pFont) pFont->drawOutlined(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4), JS_COLOR(5, Color(0, 0, 0, .75f)), JS_FLOAT(6, 2.0f));
-                //     return 0;
-                // }
-                // JS_INTERFACE_FUNCTION_END("drawOutlinedText", 7);
 extern OSpriteBatchRef oSpriteBatch;
 
 #endif
