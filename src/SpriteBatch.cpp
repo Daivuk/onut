@@ -1,4 +1,5 @@
 // Onut
+#include <onut/Font.h>
 #include <onut/IndexBuffer.h>
 #include <onut/PrimitiveMode.h>
 #include <onut/Renderer.h>
@@ -720,6 +721,33 @@ namespace onut
         {
             flush();
         }
+    }
+
+    Rect SpriteBatch::drawText(const OFontRef& pFont,
+                               const std::string& text, 
+                               const Vector2& pos, 
+                               const Vector2& align, 
+                               const Color& color, 
+                               bool snapPixels)
+    {
+        auto pUsableFont = pFont;
+        if (!pUsableFont) return Rect{0, 0, 0, 0};
+        return pUsableFont->draw(text, pos, align, color, snapPixels, OThis);
+    }
+
+    Rect SpriteBatch::drawOutlinedText(const OFontRef& pFont,
+                                       const std::string& text,
+                                       const Vector2& pos,
+                                       const Vector2& align,
+                                       const Color& color,
+                                       const Color& outlineColor,
+                                       float outlineSize,
+                                       bool cheap,
+                                       bool snapPixels)
+    {
+        auto pUsableFont = pFont;
+        if (!pUsableFont) return Rect{0, 0, 0, 0};
+        return pUsableFont->drawOutlined(text, pos, align, color, outlineColor, outlineSize, cheap, snapPixels, OThis);
     }
 
     void SpriteBatch::end()

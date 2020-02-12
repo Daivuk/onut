@@ -2,6 +2,7 @@
 #include <onut/Font.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
+#include <onut/SpriteBatch.h>
 
 void initSettings()
 {
@@ -34,10 +35,12 @@ void render()
     // ^RGB, where RGB ranged from 0-9
     pFont->draw("^933Sed ^993do ^393eiusmod ^399tempor ^339incididunt ^939ut ^111labore ^222et ^444dolore ^666magna ^888aliqua", {10, 200});
 
-    // Alignment
-    pFont->draw("Left aligned", {10, 300}, OLeft);
+    // Alignment + demonstrating we can draw from the spritebatch
+    oSpriteBatch->drawText(pFont, "Left aligned", {10, 300}, OLeft);
+    oSpriteBatch->begin();
     pFont->draw("Center aligned", {OScreenWf / 2, 300}, OCenter);
-    pFont->draw("Right aligned", {OScreenWf - 10, 300}, ORight);
+    oSpriteBatch->drawText(pFont, "Right aligned", {OScreenWf - 10, 300}, ORight);
+    oSpriteBatch->end();
 
     // Cheap outline
     pFont->drawOutlined("Duis aute irure dolor in reprehenderit - Cheap oulines", {10, 400});

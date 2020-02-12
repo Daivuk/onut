@@ -11,6 +11,7 @@
 
 // Forward
 #include <onut/ForwardDeclaration.h>
+OForwardDeclare(Font);
 OForwardDeclare(IndexBuffer);
 OForwardDeclare(SpriteBatch);
 OForwardDeclare(Texture);
@@ -20,7 +21,7 @@ namespace onut
 {
     class RenderStates;
 
-    class SpriteBatch
+    class SpriteBatch : public std::enable_shared_from_this<SpriteBatch>
     {
     public:
         struct SVertexP2T2C4
@@ -56,6 +57,21 @@ namespace onut
         void drawBeam(const OTextureRef& pTexture, const Vector2& from, const Vector2& to, float size, const Color& color, float uOffset = 0.f, float uScale = 1.f);
         void drawCross(const Vector2& position, float size, const Color& color = Color::White, float thickness = 2.f);
         void drawOutterOutlineRect(const Rect& rect, float thickness, const Color& color = Color::White);
+        Rect drawText(const OFontRef& pFont,
+                      const std::string& text, 
+                      const Vector2& pos, 
+                      const Vector2& align = Vector2(0.f, 0.f), 
+                      const Color& color = Color::White, 
+                      bool snapPixels = true);
+        Rect drawOutlinedText(const OFontRef& pFont,
+                              const std::string& text,
+                              const Vector2& pos,
+                              const Vector2& align = Vector2(0.f, 0.f),
+                              const Color& color = Color::White,
+                              const Color& outlineColor = Color(0, 0, 0, .75f),
+                              float outlineSize = 2.f,
+                              bool cheap = true,
+                              bool snapPixels = true);
         void end();
 
         const Matrix& getTransform() const { return m_currentTransform; }
@@ -85,6 +101,20 @@ namespace onut
     };
 }
 
+                // JS_INTERFACE_FUNCTION_BEGIN
+                // {
+                //     auto pFont = JS_FONT(0);
+                //     if (pFont) pFont->draw(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4));
+                //     return 0;
+                // }
+                // JS_INTERFACE_FUNCTION_END("drawText", 5);
+                // JS_INTERFACE_FUNCTION_BEGIN
+                // {
+                //     auto pFont = JS_FONT(0);
+                //     if (pFont) pFont->drawOutlined(JS_STRING(1), JS_VECTOR2(2), JS_VECTOR2(3, OTopLeft), JS_COLOR(4), JS_COLOR(5, Color(0, 0, 0, .75f)), JS_FLOAT(6, 2.0f));
+                //     return 0;
+                // }
+                // JS_INTERFACE_FUNCTION_END("drawOutlinedText", 7);
 extern OSpriteBatchRef oSpriteBatch;
 
 #endif
