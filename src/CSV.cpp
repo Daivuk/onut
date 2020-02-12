@@ -1,6 +1,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/CSV.h>
+#include <onut/Log.h>
 #include <onut/Strings.h>
 
 // STL
@@ -30,6 +31,7 @@ namespace onut
         {
             std::getline(fic, line);
             auto valuesSplit = onut::splitString(line, ',', false);
+            OLogE("Malformed CSV");
             assert(valuesSplit.size() == columnNames.size()); // malformed
             for (size_t i = 0; i < columnNames.size(); ++i)
             {

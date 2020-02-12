@@ -32,6 +32,7 @@ namespace onut
         vertexBufferDesc.StructureByteStride = 0;
 
         auto ret = pDevice->CreateBuffer(&vertexBufferDesc, nullptr, &pRet->m_pBuffer);
+        if (ret != S_OK) OLogE("Failed to create vertex buffer");
         assert(ret == S_OK);
 
         pRet->m_size = size;
@@ -84,6 +85,7 @@ namespace onut
             vertexData.SysMemSlicePitch = 0;
 
             auto ret = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pBuffer);
+            if (ret != S_OK) OLogE("Failed to create vertex buffer");
             assert(ret == S_OK);
 
             m_size = size;
@@ -98,6 +100,7 @@ namespace onut
 
     void* VertexBufferD3D11::map()
     {
+        if (!m_isDynamic) OLogE("Cannot map static vertex buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {
@@ -110,6 +113,7 @@ namespace onut
 
     void VertexBufferD3D11::unmap(uint32_t size)
     {
+        if (!m_isDynamic) OLogE("Cannot map static vertex buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {

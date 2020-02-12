@@ -50,6 +50,7 @@ namespace onut
 #else
         pFic = fopen(filename.c_str(), "rb");
 #endif
+        if (!pFic) OLogE("Failed to load " + filename);
         assert(pFic);
 
         int32_t chunkid = 0;

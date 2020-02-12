@@ -73,6 +73,7 @@ namespace onut
 #else
         pFic = fopen(filename.c_str(), "rb");
 #endif
+        if (!pFic) OLogE("Failed to load " + filename);
         assert(pFic);
         fseek(pFic, 0, SEEK_END);
         auto filesize = static_cast<size_t>(ftell(pFic));
@@ -90,11 +91,11 @@ namespace onut
     {
         // Set the shader type
         auto ext = onut::getExtension(filename);
-        if (ext == "VS")
+        if (ext == "VS" || ext == "ONUTVS")
         {
             return createFromSourceFile(filename, OVertexShader);
         }
-        else if (ext == "PS")
+        else if (ext == "PS" || ext == "ONUTPS")
         {
             return createFromSourceFile(filename, OPixelShader);
         }

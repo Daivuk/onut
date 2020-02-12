@@ -26,7 +26,7 @@ namespace onut
         auto ret = SDL_Init(SDL_INIT_VIDEO);
         if (ret < 0)
         {
-            OLog("SDL_Init failed");
+            OLogE("SDL_Init failed");
             assert(false);
             return;
         }
@@ -56,7 +56,7 @@ namespace onut
                                      flags);
         if (!m_pWindow)
         {
-            OLog("SDL_CreateWindow failed");
+            OLogE("SDL_CreateWindow failed");
             assert(false);
             return;
         }

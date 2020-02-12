@@ -1,3 +1,6 @@
+// Onut
+#include <onut/Log.h>
+
 // Private
 #include "VertexBufferGL.h"
 #include "RendererGL.h"
@@ -74,12 +77,14 @@ namespace onut
 
     void* VertexBufferGL::map()
     {
+        if (!m_isDynamic) OLogE("Cannot map static vertex buffer");
         assert(m_isDynamic);
         return m_pData;
     }
 
     void VertexBufferGL::unmap(uint32_t size)
     {
+        if (!m_isDynamic) OLogE("Cannot map static vertex buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {

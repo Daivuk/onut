@@ -85,6 +85,11 @@ namespace onut
         if (!rh) options |= aiProcess_MakeLeftHanded;
 
         const aiScene* pScene = aiImportFile(assetFilename.c_str(), options);
+        if (!pScene)
+        {
+            OLogE("Cannt load " + assetFilename);
+            return nullptr;
+        }
         assert(pScene);
 
         // Materials
@@ -168,6 +173,11 @@ namespace onut
                 diffuseColor.b += emissiveColor.b;
             }
 
+            if (!pAssMesh->mNumVertices)
+            {
+                OLogE("No vertices in " + assetFilename);
+                return nullptr;
+            }
             assert(pAssMesh->mNumVertices);
 
             pMesh->vertices.resize(pAssMesh->mNumVertices);

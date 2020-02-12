@@ -154,6 +154,7 @@ namespace onut
     {
         tinyxml2::XMLDocument doc;
         doc.LoadFile(filename.c_str());
+        if (doc.Error()) OLogE("Failed to load " + filename);
         assert(!doc.Error());
         auto pXmlParticleEmitterConfig = doc.FirstChildElement("particleEmitterConfig");
         assert(pXmlParticleEmitterConfig);
@@ -387,6 +388,7 @@ namespace onut
             pFile = fopen(filename.c_str(), "r");
             assert(pFile);
 #endif
+            if (!pFile) OLogE("Failed to load " + filename);
             rapidjson::FileStream is(pFile);
             rapidjson::Document doc;
             doc.ParseStream<0>(is);

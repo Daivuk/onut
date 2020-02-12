@@ -1,3 +1,6 @@
+// Onut
+#include <onut/Log.h>
+
 // Private
 #include "IndexBufferD3D11.h"
 #include "RendererD3D11.h"
@@ -32,6 +35,8 @@ namespace onut
         vertexBufferDesc.StructureByteStride = 0;
 
         auto ret = pDevice->CreateBuffer(&vertexBufferDesc, nullptr, &pRet->m_pBuffer);
+        if (ret != S_OK)
+            OLogE("Failed to create index buffer");
         assert(ret == S_OK);
 
         pRet->m_size = size;
@@ -85,6 +90,8 @@ namespace onut
             indexData.SysMemSlicePitch = 0;
 
             auto ret = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pBuffer);
+            if (ret != S_OK)
+                OLogE("Failed to create index buffer");
             assert(ret == S_OK);
 
             m_size = size;
@@ -99,6 +106,8 @@ namespace onut
 
     void* IndexBufferD3D11::map()
     {
+        if (!m_isDynamic)
+            OLogE("Cannot map static index buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {
@@ -111,6 +120,8 @@ namespace onut
 
     void IndexBufferD3D11::unmap(uint32_t size)
     {
+        if (!m_isDynamic)
+            OLogE("Cannot unmap static index buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {

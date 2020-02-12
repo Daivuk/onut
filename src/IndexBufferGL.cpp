@@ -1,3 +1,6 @@
+// Onut
+#include <onut/Log.h>
+
 // Private
 #include "IndexBufferGL.h"
 #include "RendererGL.h"
@@ -75,6 +78,8 @@ namespace onut
 
     void* IndexBufferGL::map()
     {
+        if (!m_isDynamic)
+            OLogE("Cannot unmap static index buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {
@@ -85,6 +90,8 @@ namespace onut
 
     void IndexBufferGL::unmap(uint32_t size)
     {
+        if (!m_isDynamic)
+            OLogE("Cannot unmap static index buffer");
         assert(m_isDynamic);
         if (m_isDynamic)
         {

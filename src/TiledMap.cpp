@@ -65,8 +65,10 @@ namespace onut
 
         tinyxml2::XMLDocument doc;
         doc.LoadFile(filename.c_str());
+        if (doc.Error()) OLogE("Failed to open " + filename);
         assert(!doc.Error());
         auto pXMLMap = doc.FirstChildElement("map");
+        if (!pXMLMap) OLogE("Failed to parse " + filename);
         assert(pXMLMap);
 
         // Tilesets
@@ -74,6 +76,7 @@ namespace onut
         {
             pRet->m_tilesetCount++;
         }
+        if (!pRet->m_tilesetCount) OLogE("Failed to parse " + filename);
         assert(pRet->m_tilesetCount);
         pRet->m_tileSets = new TileSet[pRet->m_tilesetCount];
         pRet->m_tilesetCount = 0;
@@ -90,8 +93,10 @@ namespace onut
                 tinyxml2::XMLDocument docTXS;
                 auto fullpathTXS = pContentManager->findResourceFile(onut::getFilename(szSource));
                 docTXS.LoadFile(fullpathTXS.c_str());
+                if (docTXS.Error()) OLogE("Failed to load " + fullpathTXS);
                 assert(!docTXS.Error());
                 auto pTXSTileset = docTXS.FirstChildElement("tileset");
+                if (!pTXSTileset) OLogE("Failed to parse " + fullpathTXS);
                 assert(pTXSTileset);
 
                 pTileSet.name = pTXSTileset->Attribute("name");

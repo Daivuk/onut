@@ -72,6 +72,8 @@ namespace onut
     OFontRef Font::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
         std::ifstream in(filename);
+        if (in.fail()) 
+            OLogE("Failed to open " + filename);
         assert(!in.fail());
 
         auto pFont = std::make_shared<OFont>();

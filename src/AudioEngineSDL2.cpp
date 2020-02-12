@@ -25,7 +25,7 @@ namespace onut
         auto ret = SDL_Init(SDL_INIT_AUDIO);
         if (ret < 0)
         {
-            OLog("Failed to SDL_Init(SDL_INIT_AUDIO)");
+            OLogE("Failed to SDL_Init(SDL_INIT_AUDIO)");
             assert(false);
             return;
         }
@@ -40,7 +40,7 @@ namespace onut
 
         if (SDL_OpenAudio(&m_audioSpec, NULL) < 0)
         {
-            OLog("Failed to SDL_OpenAudio");
+            OLogE("Failed to SDL_OpenAudio");
             assert(false);
             return;
         }

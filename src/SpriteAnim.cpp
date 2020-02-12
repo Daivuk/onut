@@ -1,6 +1,7 @@
 // Onut
 #include <onut/ContentManager.h>
 #include <onut/Files.h>
+#include <onut/Log.h>
 #include <onut/Sound.h>
 #include <onut/SpriteAnim.h>
 #include <onut/Strings.h>
@@ -38,6 +39,7 @@ namespace onut
             fic.close();
             std::string textureName = onut::getFilename(json["meta"]["image"].asString());
             auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
+            if (!pTexture) OLogE("Failed to load " + textureName);
             assert(pTexture);
             int spriteW = json["meta"]["size"]["w"].asInt();
             int spriteH = json["meta"]["size"]["h"].asInt();
