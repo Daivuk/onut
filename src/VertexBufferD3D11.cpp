@@ -2,6 +2,9 @@
 #include "VertexBufferD3D11.h"
 #include "RendererD3D11.h"
 
+// Onut
+#include <onut/Log.h>
+
 // STL
 #include <cassert>
 

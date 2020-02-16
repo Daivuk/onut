@@ -28,6 +28,8 @@ add_executable(DungeonSample WIN32
     src/Vase.cpp
 )
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
+
 target_link_libraries(DungeonSample 
     libonut
 )

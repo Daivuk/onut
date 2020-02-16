@@ -293,4 +293,6 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Textures) # TexturesSample
     add_subdirectory(samples/TiledMap) # TiledMapSample
     add_subdirectory(samples/UI) # UISample
+    add_subdirectory(samples/UIFromCode) # UIFromCodeSample
+    add_subdirectory(samples/UndoRedo) # UndoRedoSample
 endif()

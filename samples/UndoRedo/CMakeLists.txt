@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-project(SpritesSample)
+project(UndoRedo)
 
 include_directories(
     ./src
 )
     
-add_executable(SpritesSample WIN32
-    src/SpritesSample.cpp
+add_executable(UndoRedo WIN32
+    src/UndoRedo.cpp
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-target_link_libraries(SpritesSample 
+target_link_libraries(UndoRedo 
     libonut
 )

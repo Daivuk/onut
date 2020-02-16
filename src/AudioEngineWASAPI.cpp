@@ -3,6 +3,9 @@
 // Private
 #include "AudioEngineWASAPI.h"
 
+// Onut
+#include <onut/Log.h>
+
 // STL
 #include <cassert>
 #include <chrono>
@@ -25,52 +28,52 @@ namespace onut
         HRESULT hr;
 
         hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
-        OLogE("Failed to IMMDeviceEnumerator");
+        if (hr != S_OK) OLogE("Failed to IMMDeviceEnumerator");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &m_pDevice);
-        OLogE("Failed to GetDefaultAudioEndpoint");
+        if (hr != S_OK) OLogE("Failed to GetDefaultAudioEndpoint");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pDevice->Activate(IID_IAudioClient, CLSCTX_ALL, NULL, (void**)&m_pAudioClient);
-        OLogE("Failed to Activate audio device");
+        if (hr != S_OK) OLogE("Failed to Activate audio device");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pAudioClient->GetMixFormat(&m_pWaveFormat);
-        OLogE("Failed to get mix format");
+        if (hr != S_OK) OLogE("Failed to get mix format");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 50000, 0, m_pWaveFormat, NULL);
-        OLogE("Failed to init audio client");
+        if (hr != S_OK) OLogE("Failed to init audio client");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         m_pEventHandler = CreateEvent(nullptr, false, false, nullptr);
-        OLogE("Failed to create audio event handler");
+        if (!m_pEventHandler) OLogE("Failed to create audio event handler");
         assert(m_pEventHandler);
         if (m_pEventHandler == nullptr) return;
 
         hr = m_pAudioClient->SetEventHandle(m_pEventHandler);
-        OLogE("Failed to set audio event handle");
+        if (hr != S_OK) OLogE("Failed to set audio event handle");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pAudioClient->GetBufferSize(&bufferFrameCount);
-        OLogE("Failed to get audio client buffer size");
+        if (hr != S_OK) OLogE("Failed to get audio client buffer size");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pAudioClient->GetService(IID_IAudioRenderClient, (void**)&m_pRenderClient);
-        OLogE("Failed to get audio render client");
+        if (hr != S_OK) OLogE("Failed to get audio render client");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
         hr = m_pAudioClient->Start();  // Start playing.
-        OLogE("Failed to start audio");
+        if (hr != S_OK) OLogE("Failed to start audio");
         assert(hr == S_OK);
         if (hr != S_OK) return;
 
