@@ -1029,6 +1029,14 @@ declare class IndexBuffer {
 }
 
 // UI
+declare class UIMouseEvent {
+    mousePos: Vector2;
+    localMousePos: Vector2;
+    isMouseDown: boolean;
+    button: number;
+    isCtrlDown: boolean;
+    scroll: number;
+}
 declare class UI {
     static create(): UI;
     static createLabel(): UI;
@@ -1072,23 +1080,34 @@ declare class UI {
 
     copy(): UI;
     
-    setOnClick(callback: Function);
-    setOnDoubleClick(callback: Function);
-    setOnMouseMove(callback: Function);
-    setOnMouseDown(callback: Function);
-    setOnMouseUp(callback: Function);
-    setOnMouseEnter(callback: Function);
-    setOnMouseLeave(callback: Function);
+    onGainFocus(callback: Function);
+    onLoseFocus(callback: Function);
 
-    setOnRightClick(callback: Function);
-    setOnRightDoubleClick(callback: Function);
-    setOnRightMouseDown(callback: Function);
-    setOnRightMouseUp(callback: Function);
+    setOnClick(callback: (event: UIMouseEvent) => void);
+    setOnDoubleClick(callback: (event: UIMouseEvent) => void);
+    setOnMouseMove(callback: (event: UIMouseEvent) => void);
+    setOnMouseDown(callback: (event: UIMouseEvent) => void);
+    setOnMouseUp(callback: (event: UIMouseEvent) => void);
+    setOnMouseEnter(callback: (event: UIMouseEvent) => void);
+    setOnMouseLeave(callback: (event: UIMouseEvent) => void);
 
-    setOnMiddleClick(callback: Function);
-    setOnMiddleDoubleClick(callback: Function);
-    setOnMiddleMouseDown(callback: Function);
-    setOnMiddleMouseUp(callback: Function);
+    setOnRightClick(callback: (event: UIMouseEvent) => void);
+    setOnRightDoubleClick(callback: (event: UIMouseEvent) => void);
+    setOnRightMouseDown(callback: (event: UIMouseEvent) => void);
+    setOnRightMouseUp(callback: (event: UIMouseEvent) => void);
+
+    setOnMiddleClick(callback: (event: UIMouseEvent) => void);
+    setOnMiddleDoubleClick(callback: (event: UIMouseEvent) => void);
+    setOnMiddleMouseDown(callback: (event: UIMouseEvent) => void);
+    setOnMiddleMouseUp(callback: (event: UIMouseEvent) => void);
+
+    setOnTextChanged(callback: Function);
+    setOnNumberSpinStart(callback: Function);
+    setOnNumberSpinEnd(callback: Function);
+
+    setOnCheckChanged(callback: (isChecked: boolean) => void);
+
+    setOnKeyDown(callback: (key: number) => void);
 }
 declare function getRootUI(): UI;
 declare function loadUI(filename: string): UI;

@@ -8460,12 +8460,146 @@ namespace onut
                     { \
                         pUIControl->__oname__ = [ctx, callback](const OUIControlRef& pControl, const UIMouseEvent& evt) \
                         { \
-                            if (callback->push(ctx)) callback->call(ctx, 0); \
+                            if (callback->push(ctx)) \
+                            { \
+                                duk_push_object(ctx); \
+                                newVector2(ctx, evt.mousePos); \
+                                duk_put_prop_string(ctx, -2, "mousePos"); \
+                                newVector2(ctx, evt.localMousePos); \
+                                duk_put_prop_string(ctx, -2, "localMousePos"); \
+                                duk_push_boolean(ctx, (duk_bool_t)(evt.isMouseDown ? 1 : 0)); \
+                                duk_put_prop_string(ctx, -2, "isMouseDown"); \
+                                duk_push_int(ctx, evt.button); \
+                                duk_put_prop_string(ctx, -2, "button"); \
+                                duk_push_boolean(ctx, (duk_bool_t)(evt.isCtrlDown ? 1 : 0)); \
+                                duk_put_prop_string(ctx, -2, "isCtrlDown"); \
+                                duk_push_number(ctx, (duk_double_t)evt.scroll); \
+                                duk_put_prop_string(ctx, -2, "scroll"); \
+                                callback->call(ctx, 1); \
+                            } \
                         }; \
                     } \
                     else \
                     { \
-                        pUIControl->onClick = nullptr; \
+                        pUIControl->__oname__ = nullptr; \
+                    } \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__jsname__);
+
+#define UI_TEXT_EVENT(__jsname__, __oname__) \
+            duk_push_c_function(ctx, [](duk_context* ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1); \
+                if (ppUIControl) \
+                { \
+                    auto pUIControl = dynamic_cast<OUITextBox*>(ppUIControl->get()); \
+                    if (pUIControl) \
+                    { \
+                        auto callback = getFunction(ctx, 0); \
+                        if (callback) \
+                        { \
+                            pUIControl->__oname__ = [ctx, callback](const OUITextBoxRef& pControl, const UITextBoxEvent& evt) \
+                            { \
+                                if (callback->push(ctx)) callback->call(ctx, 0); \
+                            }; \
+                        } \
+                        else \
+                        { \
+                            pUIControl->__oname__ = nullptr; \
+                        } \
+                    } \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__jsname__);
+
+#define UI_FOCUS_EVENT(__jsname__, __oname__) \
+            duk_push_c_function(ctx, [](duk_context* ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1); \
+                if (ppUIControl) \
+                { \
+                    auto pUIControl = ppUIControl->get(); \
+                    if (pUIControl) \
+                    { \
+                        auto callback = getFunction(ctx, 0); \
+                        if (callback) \
+                        { \
+                            pUIControl->__oname__ = [ctx, callback](const OUIControlRef& pControl) \
+                            { \
+                                if (callback->push(ctx)) callback->call(ctx, 0); \
+                            }; \
+                        } \
+                        else \
+                        { \
+                            pUIControl->__oname__ = nullptr; \
+                        } \
+                    } \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__jsname__);
+
+#define UI_KEY_EVENT(__jsname__, __oname__) \
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1); \
+                if (ppUIControl) \
+                { \
+                    auto pUIControl = ppUIControl->get(); \
+                    auto callback = getFunction(ctx, 0); \
+                    if (callback) \
+                    { \
+                        pUIControl->__oname__ = [ctx, callback](const OUIControlRef& pControl, const UIKeyEvent& evt) \
+                        { \
+                            if (callback->push(ctx)) \
+                            { \
+                                duk_push_int(ctx, (duk_int_t)evt.key); \
+                                callback->call(ctx, 1); \
+                            } \
+                        }; \
+                    } \
+                    else \
+                    { \
+                        pUIControl->__oname__ = nullptr; \
+                    } \
+                } \
+                return 0; \
+            }, 1); \
+            duk_put_prop_string(ctx, -2, #__jsname__);
+
+#define UI_CHECK_EVENT(__jsname__, __oname__) \
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
+            { \
+                duk_push_this(ctx); \
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
+                auto ppUIControl = (OUICheckBoxRef*)duk_to_pointer(ctx, -1); \
+                if (ppUIControl) \
+                { \
+                    auto pUIControl = ppUIControl->get(); \
+                    auto callback = getFunction(ctx, 0); \
+                    if (callback) \
+                    { \
+                        pUIControl->__oname__ = [ctx, callback](const OUIControlRef& pControl, const UICheckEvent& evt) \
+                        { \
+                            if (callback->push(ctx)) \
+                            { \
+                                duk_push_boolean(ctx, (duk_bool_t)(evt.isChecked ? 1 : 0)); \
+                                callback->call(ctx, 1); \
+                            } \
+                        }; \
+                    } \
+                    else \
+                    { \
+                        pUIControl->__oname__ = nullptr; \
                     } \
                 } \
                 return 0; \
@@ -8489,6 +8623,17 @@ namespace onut
             UI_MOUSE_EVENT(setOnMiddleDoubleClick, onMiddleDoubleClick);
             UI_MOUSE_EVENT(setOnMiddleMouseDown, onMiddleMouseDown);
             UI_MOUSE_EVENT(setOnMiddleMouseUp, onMiddleMouseUp);
+
+            UI_TEXT_EVENT(setOnTextChanged, onTextChanged);
+            UI_TEXT_EVENT(setOnNumberSpinStart, onNumberSpinStart);
+            UI_TEXT_EVENT(setOnNumberSpinEnd, onNumberSpinEnd);
+
+            UI_FOCUS_EVENT(setOnGainFocus, onGainFocus);
+            UI_FOCUS_EVENT(setOnLoseFocus, onLoseFocus);
+
+            UI_KEY_EVENT(setOnKeyDown, onKeyDown);
+
+            UI_CHECK_EVENT(setOnCheckChanged, onCheckChanged);
 
             // Done with the object
             pUIPrototype = duk_get_heapptr(ctx, -1);

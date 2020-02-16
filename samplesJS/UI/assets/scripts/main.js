@@ -5,13 +5,14 @@ var quitButton = findUI("QuitButton");
 var showDialogButton = findUI("ShowDialogButton");
 var closeDialogButton = findUI("CloseDialogButton");
 var dialog = findUI("Dialog");
+var textBox = findUI("TextBox");
 
 quitButton.setOnClick(function()
 {
     quit();
 });
 
-showDialogButton.setOnClick(function()
+showDialogButton.setOnClick(function(evt)
 {
     dialog.setVisible(true);
 });
@@ -19,6 +20,11 @@ showDialogButton.setOnClick(function()
 closeDialogButton.setOnClick(function()
 {
     dialog.setVisible(false);
+});
+
+textBox.setOnTextChanged(function()
+{
+    playSound("click.wav");
 });
 
 function render()
