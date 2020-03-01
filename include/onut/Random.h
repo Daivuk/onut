@@ -60,7 +60,7 @@ namespace onut
     template<typename T>
     void shuffle(std::vector<T>& vec)
     {
-        std::random_shuffle(vec.begin(), vec.end());
+        std::shuffle(std::begin(vec), std::end(vec));
     }
 
     Vector2 randCircle(const Vector2& center, float radius);
