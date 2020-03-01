@@ -42,6 +42,8 @@ namespace onut
         void registerTarget(OUpdateTarget* pTarget);
         void unregisterTarget(OUpdateTarget* pTarget);
 
+        int size() const;
+
     private:
         Updater() {}
 

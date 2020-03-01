@@ -48,7 +48,7 @@ namespace onut
     template<typename T>
     const T& randv(const std::vector<T>& vec)
     {
-        auto rnd = randi(vec.size() - 1);
+        auto rnd = randi((int)vec.size() - 1);
         return vec[rnd];
     }
 

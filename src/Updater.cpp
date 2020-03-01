@@ -102,4 +102,9 @@ namespace onut
             }
         }
     }
+
+    int Updater::size() const
+    {
+        return (int)m_targets.size();
+    }
 }
