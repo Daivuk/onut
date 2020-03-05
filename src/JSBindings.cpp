@@ -9925,6 +9925,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto index = JS_INT(0);
+                    if (index < 0 || index > 3) return 0;
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, OGamePadPressed(button, index));
                     return 1;
@@ -9933,6 +9934,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto index = JS_INT(0);
+                    if (index < 0 || index > 3) return 0;
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, !OGamePadPressed(button, index));
                     return 1;
@@ -9941,6 +9943,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto index = JS_INT(0);
+                    if (index < 0 || index > 3) return 0;
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, OGamePadJustPressed(button, index));
                     return 1;
@@ -9949,6 +9952,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto index = JS_INT(0);
+                    if (index < 0 || index > 3) return 0;
                     auto button = (onut::GamePad::Button)JS_UINT(1);
                     duk_push_boolean(ctx, OGamePadJustReleased(button, index));
                     return 1;
