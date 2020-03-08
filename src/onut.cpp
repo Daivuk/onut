@@ -154,9 +154,6 @@ namespace onut
 
         g_pMainRenderTarget = OTexture::createScreenRenderTarget();
 
-        // Initialize Javascript
-        onut::js::init();
-
         // imgui
         auto& io = ImGui::GetIO();
         uint8_t *pPixelData;
@@ -314,6 +311,9 @@ namespace onut
         {
             initCallback();
         }
+
+        // Initialize Javascript
+        onut::js::init();
 
         // Main loop
         g_bIsRunning = true;
