@@ -22,6 +22,7 @@ namespace onut
     std::string getFilename(const std::string& path);
     std::string getFilenameWithoutExtension(const std::string& path);
     std::string getExtension(const std::string& filename);
+    std::string getSavePath();
     std::string makeRelativePath(const std::string& path, const std::string& relativeTo);
     std::vector<uint8_t> getFileData(const std::string& filename);
     bool fileExists(const std::string& filename);

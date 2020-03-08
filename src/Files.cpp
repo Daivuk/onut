@@ -1,5 +1,6 @@
 // Onut
 #include <onut/Files.h>
+#include <onut/Settings.h>
 #include <onut/Strings.h>
 #include <onut/Window.h>
 
@@ -13,6 +14,8 @@
 #if defined(WIN32)
 #include <dirent/dirent.h>
 #include <windows.h>
+#include <shlobj.h>
+#include <objbase.h>
 #elif defined(__linux__) || defined(__APPLE__)
 #include <dirent.h>
 #endif
@@ -132,6 +135,30 @@ namespace onut
         auto pos = filename.find_last_of('.');
         if (pos == std::string::npos) return "";
         return toUpper(filename.substr(pos + 1));
+    }
+
+    std::string getSavePath()
+    {
+#if defined(WIN32)
+        PWSTR path = NULL;
+        HRESULT r;
+        auto gameName = oSettings->getGameName();
+        if (gameName.empty()) gameName = "onut";
+
+        r = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_CREATE, NULL, &path);
+        if (path != NULL)
+        {
+            auto ret = onut::utf16ToUtf8(path) + "/" + gameName + "/";
+            CreateDirectoryA(ret.c_str(), NULL);
+            CoTaskMemFree(path);
+            std::replace(ret.begin(), ret.end(), '\\', '/');
+            return ret;
+        }
+
+        return "./";
+#else
+        return "./";
+#endif
     }
 
     std::string makeRelativePath(const std::string& in_path, const std::string& in_relativeTo)

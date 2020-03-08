@@ -7079,8 +7079,13 @@ namespace onut
                 if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
 
                 auto filename = JS_STRING(0);
-                auto foundFilename = oContentManager->findResourceFile(filename);
-                if (foundFilename.empty()) return DUK_RET_URI_ERROR;
+                auto isResource = JS_BOOL(1, true);
+                std::string foundFilename = filename;
+                if (isResource)
+                {
+                    foundFilename = oContentManager->findResourceFile(filename);
+                    if (foundFilename.empty()) return DUK_RET_URI_ERROR;
+                }
                 FILE* pFile = nullptr;
 #if defined(WIN32)
                 fopen_s(&pFile, foundFilename.c_str(), "rb");
@@ -7094,7 +7099,7 @@ namespace onut
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
 
                 return 0;
-            }, 1);
+            }, 2);
             duk_push_object(ctx);
 
             // ~BinaryFileReader()
@@ -7295,11 +7300,16 @@ namespace onut
                 if (!duk_is_constructor_call(ctx)) return DUK_RET_TYPE_ERROR;
 
                 auto filename = JS_STRING(0);
-                auto foundFilename = oContentManager->findResourceFile(filename);
-                if (foundFilename.empty())
+                auto isResource = JS_BOOL(1, true);
+                std::string foundFilename = filename;
+                if (isResource)
                 {
-                    if (oContentManager->getSearchPaths().empty()) foundFilename = filename;
-                    else foundFilename = oContentManager->getSearchPaths().front() + "/" + filename;
+                    foundFilename = oContentManager->findResourceFile(filename);
+                    if (foundFilename.empty())
+                    {
+                        if (oContentManager->getSearchPaths().empty()) foundFilename = filename;
+                        else foundFilename = oContentManager->getSearchPaths().front() + "/" + filename;
+                    }
                 }
                 FILE* pFile = nullptr;
 #if defined(WIN32)
@@ -7314,7 +7324,7 @@ namespace onut
                 duk_put_prop_string(ctx, -2, "\xff""\xff""data");
 
                 return 0;
-            }, 1);
+            }, 2);
             duk_push_object(ctx);
 
             // ~BinaryFileWriter()
@@ -10220,14 +10230,25 @@ namespace onut
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
                     auto filename = JS_STRING(0);
-                    auto foundFilename = oContentManager->findResourceFile(filename);
-                    if (foundFilename.empty()) return DUK_RET_URI_ERROR;
+                    auto isResource = JS_BOOL(1, true);
+                    std::string foundFilename = filename;
+                    if (isResource)
+                    {
+                        auto foundFilename = oContentManager->findResourceFile(filename);
+                        if (foundFilename.empty()) return DUK_RET_URI_ERROR;
+                    }
 
                     remove(foundFilename.c_str());
 
                     return 0;
                 }
-                JS_INTERFACE_FUNCTION_END("delete", 1);
+                JS_INTERFACE_FUNCTION_END("deleteFile", 2);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    duk_push_string(ctx, onut::getSavePath().c_str());
+                    return 1;
+                }
+                JS_INTERFACE_FUNCTION_END("getSavePath", 0);
             }
             JS_INTERFACE_END("FileSystem");
 

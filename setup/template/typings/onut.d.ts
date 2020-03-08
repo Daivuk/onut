@@ -763,7 +763,7 @@ declare class VideoPlayer {
 
 // Binary File IO
 declare class BinaryFileReader {
-    constructor(filename: string);
+    constructor(filename: string, isResource: boolean);
 
     readBool(): boolean;
     readInt8(): number;
@@ -783,7 +783,7 @@ declare class BinaryFileReader {
 }
 
 declare class BinaryFileWriter {
-    constructor(filename: string);
+    constructor(filename: string, isResource: boolean);
 
     writeBool(b: boolean);
     writeInt8(n: number);
@@ -1641,4 +1641,10 @@ declare enum SSAOQuality {
 
 declare namespace System {
     function getPlatform(): Platform;
+    function setFullscreen(fullscreen: boolean);
+}
+
+declare namespace FileSystem {
+    function deleteFile(filename: string, isResource: boolean);
+    function getSavePath(): string;
 }
