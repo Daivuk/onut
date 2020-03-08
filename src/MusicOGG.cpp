@@ -205,9 +205,11 @@ namespace onut
 
     bool MusicOGG::progress(int frameCount, int sampleRate, int channelCount, float* pOut, float in_volume, float in_balance, float in_pitch)
     {
+        if (!oAudioEngine) return false;
         if (!m_isPlaying) return true;
 
-        float volume = m_volume * in_volume;
+        float musicVolume = oAudioEngine->getMusicVolume();
+        float volume = m_volume * in_volume * musicVolume;
         int bufferCount = m_bufferCount;
         int sampleFed = 0;
         int requestSamples = frameCount * channelCount;

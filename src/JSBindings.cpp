@@ -10954,6 +10954,30 @@ namespace onut
             }
             JS_INTERFACE_END("System");
 
+            // Audio
+            JS_INTERFACE_BEGIN();
+            {
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oAudioEngine->setMasterVolume(JS_FLOAT(0, 1.0f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setMasterVolume", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oAudioEngine->setSfxVolume(JS_FLOAT(0, 1.0f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setSfxVolume", 1);
+                JS_INTERFACE_FUNCTION_BEGIN
+                {
+                    oAudioEngine->setMusicVolume(JS_FLOAT(0, 1.0f));
+                    return 0;
+                }
+                JS_INTERFACE_FUNCTION_END("setMusicVolume", 1);
+            }
+            JS_INTERFACE_END("AudioEngine");
+
             createUpdaterBindings();
             createMathsBinding();
             createResourceBindings();

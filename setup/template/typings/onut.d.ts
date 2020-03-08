@@ -1648,3 +1648,9 @@ declare namespace FileSystem {
     function deleteFile(filename: string, isResource: boolean);
     function getSavePath(): string;
 }
+
+declare namespace AudioEngine {
+    function setMasterVolume(volume: number);
+    function setSfxVolume(volume: number);
+    function setMusicVolume(volume: number);
+}

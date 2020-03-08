@@ -461,7 +461,8 @@ namespace onut
         int bufferChannelCount = pSoundPtr->m_channelCount;
 
         int offset = m_offset;
-        float volume = m_volume * in_volume;
+        float sfxVolume = oAudioEngine->getSfxVolume();
+        float volume = m_volume * in_volume * sfxVolume;
         bool loop = m_loop;
         float balance = std::max<float>(-1.0f, std::min<float>(1.0f, m_balance + in_balance));
         float pitch = m_pitch * in_pitch;

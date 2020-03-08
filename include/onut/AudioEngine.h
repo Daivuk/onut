@@ -5,6 +5,7 @@
 #include <onut/Vector3.h>
 
 // STL
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <vector>
@@ -26,6 +27,12 @@ namespace onut
         virtual void update() = 0;
         virtual int getSampleRate() const = 0;
         virtual int getChannels() const = 0;
+        float getMasterVolume() const;
+        float getSfxVolume() const;
+        float getMusicVolume() const;
+        void setMasterVolume(float volume);
+        void setSfxVolume(float volume);
+        void setMusicVolume(float volume);
 
         void addInstance(const OAudioStreamRef& pInstance);
         void removeInstance(const OAudioStreamRef& pInstance);
@@ -44,6 +51,9 @@ namespace onut
         Vector3 m_3dRight = {1, 0, 0};
         Vector3 m_3dFront = {0, 1, 0};
         Vector3 m_3dUp = {0, 0, 1};
+        std::atomic<float> m_masterVolume;
+        std::atomic<float> m_sfxVolume;
+        std::atomic<float> m_musicVolume;
     };
 };
 
