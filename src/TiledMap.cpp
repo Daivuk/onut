@@ -14,9 +14,12 @@
 // Third party
 #include <tinyxml2/tinyxml2.h>
 #include <zlib/zlib.h>
+#include <json/json.h>
+#include <stb/stb_image.h>
 
 // STL
 #include <cassert>
+#include <fstream>
 
 #include <onut/Sound.h>
 
@@ -56,6 +59,61 @@ namespace onut
         return pRet;
     }
 
+    static OTextureRef loadPaddedTexture(std::string filename, int tileSize, int padding)
+    {
+        filename = onut::getFilename(filename);
+        if (padding == 0) return OGetTexture(filename);
+
+        Point size;
+        int bpp;
+        auto data = stbi_load(oContentManager->findResourceFile(filename).c_str(), &size.x, &size.y, &bpp, 4);
+        assert(data);
+
+        // Pre multiplied
+        auto* pImageData = data;
+        auto len = size.x * size.y;
+        for (decltype(len) i = 0; i < len; ++i, pImageData += 4)
+        {
+            pImageData[0] = pImageData[0] * pImageData[3] / 255;
+            pImageData[1] = pImageData[1] * pImageData[3] / 255;
+            pImageData[2] = pImageData[2] * pImageData[3] / 255;
+        }
+
+        int tileCountX = size.x / tileSize;
+        int tileCountY = size.y / tileSize;
+        std::vector<uint8_t> newData;
+        Point newSize(tileCountX * (tileSize + padding * 2), tileCountY * (tileSize + padding * 2));
+        newData.resize(newSize.x * newSize.y * 4);
+        for (int ty = 0; ty < tileCountY; ++ty)
+        {
+            for (int tx = 0; tx < tileCountX; ++tx)
+            {
+                for (int y = -padding; y < tileSize + padding; ++y)
+                {
+                    for (int x = -padding; x < tileSize + padding; ++x)
+                    {
+                        int srcX = std::max(0, std::min(tileSize - 1, x)) + tx * tileSize;
+                        int srcY = std::max(0, std::min(tileSize - 1, y)) + ty * tileSize;
+                        int srcK = srcY * size.x * 4 + srcX * 4;
+                        int dstX = x + padding + tx * (tileSize + padding * 2);
+                        int dstY = y + padding + ty * (tileSize + padding * 2);
+                        int dstK = dstY * newSize.x * 4 + dstX * 4;
+                        newData[dstK + 0] = data[srcK + 0];
+                        newData[dstK + 1] = data[srcK + 1];
+                        newData[dstK + 2] = data[srcK + 2];
+                        newData[dstK + 3] = data[srcK + 3];
+                    }
+                }
+            }
+        }
+
+        auto pTileset = OTexture::createFromData(newData.data(), newSize, false);
+        oContentManager->addResource(filename, pTileset);
+        stbi_image_free(data);
+
+        return pTileset;
+    }
+
     OTiledMapRef TiledMap::createFromFile(const std::string &filename, const OContentManagerRef& in_pContentManager)
     {
         OContentManagerRef pContentManager = in_pContentManager;
@@ -63,12 +121,25 @@ namespace onut
 
         auto pRet = std::make_shared<OTiledMap>();
 
+        auto mapFilename = filename;
+        int padding = 0;
+
+        if (onut::getExtension(filename) == "JSON")
+        {
+            std::ifstream fic(filename);
+            Json::Value json;
+            fic >> json;
+            fic.close();
+            mapFilename = pContentManager->findResourceFile(json["name"].asString());
+            if (json["padding"].isInt()) padding = json["padding"].asInt();
+        }
+
         tinyxml2::XMLDocument doc;
-        doc.LoadFile(filename.c_str());
-        if (doc.Error()) OLogE("Failed to open " + filename);
+        doc.LoadFile(mapFilename.c_str());
+        if (doc.Error()) OLogE("Failed to open " + mapFilename);
         assert(!doc.Error());
         auto pXMLMap = doc.FirstChildElement("map");
-        if (!pXMLMap) OLogE("Failed to parse " + filename);
+        if (!pXMLMap) OLogE("Failed to parse " + mapFilename);
         assert(pXMLMap);
 
         // Tilesets
@@ -76,7 +147,7 @@ namespace onut
         {
             pRet->m_tilesetCount++;
         }
-        if (!pRet->m_tilesetCount) OLogE("Failed to parse " + filename);
+        if (!pRet->m_tilesetCount) OLogE("Failed to parse " + mapFilename);
         assert(pRet->m_tilesetCount);
         pRet->m_tileSets = new TileSet[pRet->m_tilesetCount];
         pRet->m_tilesetCount = 0;
@@ -84,7 +155,7 @@ namespace onut
         {
             auto &pTileSet = pRet->m_tileSets[pRet->m_tilesetCount];
 
-            pTileSet.padding = 0;
+            pTileSet.padding = padding;
             pTileSet.firstId = pXMLTileset->IntAttribute("firstgid");
             auto szSource = pXMLTileset->Attribute("source");
 
@@ -110,7 +181,7 @@ namespace onut
                 assert(pXMLImage);
                 auto szImageFilename = pXMLImage->Attribute("source");
                 assert(szImageFilename);
-                pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+                pTileSet.pTexture = loadPaddedTexture(szImageFilename, pTileSet.tileWidth, padding);// pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
 
                 pRet->m_tilesetCount++;
             }
@@ -128,7 +199,7 @@ namespace onut
                 assert(pXMLImage);
                 auto szImageFilename = pXMLImage->Attribute("source");
                 assert(szImageFilename);
-                pTileSet.pTexture = pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+                pTileSet.pTexture = loadPaddedTexture(szImageFilename, pTileSet.tileWidth, padding); //pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
 
                 pRet->m_tilesetCount++;
             }
@@ -283,13 +354,14 @@ namespace onut
                     }
                     pTile->pTileset = pTileSet;
                     auto texSize = pTileSet->pTexture->getSize();
-                    auto fitW = texSize.x / pTile->pTileset->tileWidth;
-                    auto fitH = texSize.y / pTile->pTileset->tileHeight;
+
+                    auto fitW = texSize.x / (pTileSet->tileWidth + pTileSet->padding * 2);
+                    auto fitH = texSize.y / (pTileSet->tileHeight + pTileSet->padding * 2);
                     auto onTextureId = tileId - pTileSet->firstId;
-                    pTile->UVs.x = static_cast<float>((onTextureId % fitW) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-                    pTile->UVs.y = static_cast<float>((onTextureId / fitW) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
-                    pTile->UVs.z = static_cast<float>((onTextureId % fitW + 1) * pTileSet->tileWidth) / static_cast<float>(texSize.x);
-                    pTile->UVs.w = static_cast<float>((onTextureId / fitW + 1) * pTileSet->tileHeight) / static_cast<float>(texSize.y);
+                    pTile->UVs.x = static_cast<float>((onTextureId% fitW)* (pTileSet->tileWidth + pTileSet->padding * 2) + pTileSet->padding) / static_cast<float>(texSize.x);
+                    pTile->UVs.y = static_cast<float>((onTextureId / fitW)* (pTileSet->tileHeight + pTileSet->padding * 2) + pTileSet->padding) / static_cast<float>(texSize.y);
+                    pTile->UVs.z = static_cast<float>((onTextureId% fitW + 1)* (pTileSet->tileWidth + pTileSet->padding * 2) - pTileSet->padding) / static_cast<float>(texSize.x);
+                    pTile->UVs.w = static_cast<float>((onTextureId / fitW + 1)* (pTileSet->tileHeight + pTileSet->padding * 2) - pTileSet->padding) / static_cast<float>(texSize.y);
                     pTile->rect.x = static_cast<float>((i % pLayer.width) * pTileSet->tileWidth);
                     pTile->rect.y = static_cast<float>((i / pLayer.width) * pTileSet->tileHeight);
                     pTile->rect.z = static_cast<float>(pTileSet->tileWidth);
