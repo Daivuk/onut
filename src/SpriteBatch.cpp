@@ -117,6 +117,18 @@ namespace onut
         drawRect(pTexture, {rect.x, rect.y, rect.z - rect.x, rect.w - rect.y}, color);
     }
 
+    void SpriteBatch::drawInnerOutlineRect(const Rect& rect, float thickness, const Color& color)
+    {
+        assert(m_isDrawing); // Should call begin() before calling draw()
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
+
+        drawRect(m_pTexWhite, {rect.x, rect.y, rect.z, thickness}, color);
+        drawRect(m_pTexWhite, {rect.x, rect.y + rect.w - thickness, rect.z, thickness}, color);
+        drawRect(m_pTexWhite, {rect.x, rect.y + thickness, thickness, rect.w - thickness * 2}, color);
+        drawRect(m_pTexWhite, {rect.x + rect.z - thickness, rect.y + thickness, thickness, rect.w - thickness * 2}, color);
+    }
+
     void SpriteBatch::drawOutterOutlineRect(const Rect& rect, float thickness, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()
