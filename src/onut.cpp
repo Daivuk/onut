@@ -41,6 +41,15 @@
 #include <mutex>
 #include <sstream>
 
+// Main
+void initSettings();
+void init();
+void shutdown();
+void update();
+void render();
+void renderUI();
+void postRender();
+
 OTextureRef g_pMainRenderTarget;
 static OTextureRef g_pImguiFontTexture;
 static OIndexBufferRef g_pImguiIB;
@@ -186,6 +195,8 @@ namespace onut
 
     void cleanup()
     {
+        shutdown();
+
         ImGui::Shutdown();
         onut::js::shutdown();
 
@@ -510,14 +521,6 @@ namespace onut
 #endif
     }
 }
-
-// Main
-void initSettings();
-void init();
-void update();
-void render();
-void renderUI();
-void postRender();
 
 std::vector<std::string> OArguments;
 
