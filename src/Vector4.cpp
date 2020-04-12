@@ -170,6 +170,11 @@ Vector4 Vector4::Transform(const Vector4& v, const Matrix& m)
     return std::move(result);
 }
 
+Vector4 Vector4::Grow(const Vector2& by) const
+{
+    return std::move(Vector4{ x - by.x, y - by.y, z + by.x * 2, w + by.y * 2 });
+}
+
 bool Vector4::Contains(const Vector2& point) const
 {
     return

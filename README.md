@@ -1,4 +1,4 @@
-![Logo](logo_small.png)
+![Logo](readmeImages/logo_small.png)
 # Oak Nut engine.
 Commonly called "onut". Game engine focused on rapid development. Aimed at Game Jams.
 
@@ -167,6 +167,8 @@ Sprite anims can be edited in Aseprite and exported as json. Certain flags can b
 
 i.e.: "`loop:genfliph:next=idle`"
 
+![Logo](readmeImages/SpriteAnim.png)
+
 Frame properties and their meaning:
 
 |name|usage|scope|meaning|
@@ -181,6 +183,8 @@ Frame properties and their meaning:
 |vol|`vol=0.5`|frame|set volume for sound [0, 1].|
 |pan|`pan=0.0`|frame|set panning for sound [-1, 1].|
 |pitch|`pitch=2.0`|frame|set pitch for sound.|
+
+When exporting the sprite sheet in json format, make sure to change "Hash" to "Array".
 
 ## Mentions
 _Logo design by Pixilabs Software Inc._

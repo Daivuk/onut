@@ -254,7 +254,17 @@ struct Vector4
         return std::move(Vector4{x - by, y - by, z + by * 2, w + by * 2});
     }
 
+    Vector4 Grow(const Vector2& by) const;
+
     bool Contains(const Vector2& point) const;
+    bool Overlaps(const Vector4& rect) const
+    {
+        return
+            x + z >= rect.x &&
+            x <= rect.x + rect.z &&
+            y + w >= rect.y &&
+            y <= rect.y + rect.w;
+    }
 
 
     // Static functions

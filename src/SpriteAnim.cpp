@@ -41,8 +41,6 @@ namespace onut
             auto pTexture = pContentManager->getResourceAs<OTexture>(textureName);
             if (!pTexture) OLogE("Failed to load " + textureName);
             assert(pTexture);
-            int spriteW = json["meta"]["size"]["w"].asInt();
-            int spriteH = json["meta"]["size"]["h"].asInt();
             int originX = 0;
             int originY = 0;
             const auto& tags = json["meta"]["frameTags"];
@@ -71,11 +69,6 @@ namespace onut
                 {
                     Frame frame;
                     frame.pTexture = pTexture;
-                    const auto& jsonFrame = frames[i];
-                    int offsetX = 0;
-                    int offsetY = 0;
-                    spriteW = jsonFrame["sourceSize"]["w"].asInt();
-                    spriteH = jsonFrame["sourceSize"]["h"].asInt();
                     const auto& frameData = frameDatas[i];
                     for (const auto& fdata : frameData)
                     {
@@ -149,19 +142,23 @@ namespace onut
                             }
                         }
                     }
-                    frame.origin = Vector2((float)originX / (float)spriteW, (float)originY / (float)spriteH);
+                    const auto& jsonFrame = frames[i]; // If you crash on this line, make sure to change "hash" to "array" when exporting from Aseprite
+                    int offsetX = jsonFrame["spriteSourceSize"]["x"].asInt();
+                    int offsetY = jsonFrame["spriteSourceSize"]["y"].asInt();
+                    int spriteW = jsonFrame["spriteSourceSize"]["w"].asInt();
+                    int spriteH = jsonFrame["spriteSourceSize"]["h"].asInt();
                     const auto& jsonRect = jsonFrame["frame"];
                     int jsonX = jsonRect["x"].asInt();
                     int jsonY = jsonRect["y"].asInt();
                     int jsonW = jsonRect["w"].asInt();
                     int jsonH = jsonRect["h"].asInt();
+                    auto texSizef = pTexture->getSizef();
+                    frame.origin = Vector2((float)(originX - offsetX) / (float)spriteW, (float)(originY - offsetY) / (float)spriteH);
                     frame.UVs = Vector4(
-                        (float)jsonX / (float)pTexture->getSize().x,
-                        (float)jsonY / (float)pTexture->getSize().y,
-                        (float)(jsonX + jsonW) / (float)pTexture->getSize().x,
-                        (float)(jsonY + jsonH) / (float)pTexture->getSize().y);
-                    frame.origin.x -= (float)offsetX / (float)spriteW;
-                    frame.origin.y -= (float)offsetY / (float)spriteH;
+                        (float)jsonX / texSizef.x,
+                        (float)jsonY / texSizef.y,
+                        (float)(jsonX + jsonW) / texSizef.x,
+                        (float)(jsonY + jsonH) / texSizef.y);
                     frame.duration = (float)jsonFrame["duration"].asInt() / 1000.0f;
                     anim.duration += frame.duration;
                     anim.frames.push_back(frame);
@@ -176,6 +173,7 @@ namespace onut
                     for (auto& frame : flippedAnim.frames)
                     {
                         std::swap(frame.UVs.x, frame.UVs.z);
+                        frame.origin.x = 1.0f - frame.origin.x;
                     }
                 }
                 if (isFlipV)
@@ -187,6 +185,7 @@ namespace onut
                     for (auto& frame : flippedAnim.frames)
                     {
                         std::swap(frame.UVs.x, frame.UVs.z);
+                        frame.origin.y = 1.0f - frame.origin.y;
                     }
                 }
             }
