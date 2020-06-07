@@ -23,4 +23,9 @@ class __class__; \
 using __class__ ## Ref = std::shared_ptr<__class__>; \
 using __class__ ## Weak = std::weak_ptr<__class__>;
 
+#define ForwardDeclareStruct(__class__) \
+struct __class__; \
+using __class__ ## Ref = std::shared_ptr<__class__>; \
+using __class__ ## Weak = std::weak_ptr<__class__>;
+
 #endif

@@ -231,6 +231,7 @@ namespace onut
         oRenderer->renderStates.blendMode.push(OBlendAlpha);
         oRenderer->renderStates.scissorEnabled.push(true);
         oRenderer->renderStates.primitiveMode = OPrimitiveTriangleList;
+        oRenderer->renderStates.backFaceCull = false;
 
         auto pDrawData = ImGui::GetDrawData();
         auto cmdListCount = pDrawData->CmdListsCount;
