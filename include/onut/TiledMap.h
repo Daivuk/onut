@@ -93,6 +93,7 @@ namespace onut
 
         TileSet* getTileSet(int index) const;
         TileSet* getTileSet(const std::string& name) const;
+        TileSet* addTileSet(const std::string& filename, const std::string& name, int padding = 0);
         TileSet* addTileSet(const OTextureRef& pTexture, const std::string& name, int padding = 0);
 
         int getLayerCount() const { return m_layerCount; }

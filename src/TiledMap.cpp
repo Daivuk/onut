@@ -108,7 +108,7 @@ namespace onut
         }
 
         auto pTileset = OTexture::createFromData(newData.data(), newSize, false);
-        oContentManager->addResource(filename, pTileset);
+        oContentManager->addResource(filename + "_pad_" + std::to_string(padding), pTileset);
         stbi_image_free(data);
 
         return pTileset;
@@ -558,6 +558,11 @@ namespace onut
             if (m_tileSets[i].name == name) return m_tileSets + i;
         }
         return nullptr;
+    }
+
+    TiledMap::TileSet* TiledMap::addTileSet(const std::string& filename, const std::string& name, int padding)
+    {
+        return addTileSet(loadPaddedTexture(filename, m_tileSize, padding), name, padding);
     }
 
     TiledMap::TileSet* TiledMap::addTileSet(const OTextureRef& pTexture, const std::string& name, int padding)

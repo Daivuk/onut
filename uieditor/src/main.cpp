@@ -69,6 +69,8 @@ void init()
     };
 }
 
+void shutdown() {}
+
 void update()
 {
     // Adjust size
