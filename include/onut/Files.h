@@ -6,6 +6,15 @@
 #include <string>
 #include <vector>
 
+struct Vector2;
+struct Vector3;
+struct Vector4;
+struct Rect;
+struct iRect;
+struct Color;
+struct Matrix;
+struct Point;
+
 namespace onut
 {
     struct FileType
@@ -58,6 +67,46 @@ namespace onut
     };
 
     MessageBoxReturn showMessageBox(const std::string& title, const std::string& message, MessageBoxType type = MessageBoxType::Ok, MessageBoxLevel level = MessageBoxLevel::Info);
+
+    void writeInt8(int8_t val, FILE* pFile);
+    void writeUInt8(uint8_t val, FILE* pFile);
+    void writeInt16(int16_t val, FILE* pFile);
+    void writeUInt16(uint16_t val, FILE* pFile);
+    void writeInt32(int32_t val, FILE* pFile);
+    void writeUInt32(uint32_t val, FILE* pFile);
+    void writeInt64(int64_t val, FILE* pFile);
+    void writeUInt64(uint64_t val, FILE* pFile);
+    void writeFloat(float val, FILE* pFile);
+    void writeDouble(double val, FILE* pFile);
+    void writeBool(bool val, FILE* pFile);
+    void writeString(const std::string& val, FILE* pFile);
+    void writeVector2(const Vector2& val, FILE* pFile);
+    void writeVector3(const Vector3& val, FILE* pFile);
+    void writeVector4(const Vector4& val, FILE* pFile);
+    void writeRect(const Rect& val, FILE* pFile);
+    void writeiRect(const iRect& val, FILE* pFile);
+    void writePoint(const Point& val, FILE* pFile);
+    void writeColor(const Color& val, FILE* pFile);
+    void writeMatrix(const Matrix& val, FILE* pFile);
+
+    int8_t readInt8(FILE* pFile);
+    uint8_t readUInt8(FILE* pFile);
+    int16_t readInt16(FILE* pFile);
+    uint16_t readUInt16(FILE* pFile);
+    int32_t readInt32(FILE* pFile);
+    uint32_t readUInt32(FILE* pFile);
+    float readFloat(FILE* pFile);
+    double readDouble(FILE* pFile);
+    bool readBool(FILE* pFile);
+    std::string readString(FILE* pFile);
+    Vector2 readVector2(FILE* pFile);
+    Vector3 readVector3(FILE* pFile);
+    Vector4 readVector4(FILE* pFile);
+    Rect readRect(FILE* pFile);
+    iRect readiRect(FILE* pFile);
+    Point readPoint(FILE* pFile);
+    Color readColor(FILE* pFile);
+    Matrix readMatrix(FILE* pFile);
 }
 
 #endif

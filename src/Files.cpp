@@ -3,6 +3,7 @@
 #include <onut/Settings.h>
 #include <onut/Strings.h>
 #include <onut/Window.h>
+#include <onut/Maths.h>
 
 // STL
 #include <algorithm>
@@ -25,8 +26,8 @@ namespace onut
 {
     std::string findFile(const std::string& name, const std::string& lookIn, bool deepSearch)
     {
-        DIR *dir;
-        struct dirent *ent;
+        DIR* dir;
+        struct dirent* ent;
         if ((dir = opendir(lookIn.c_str())) != NULL)
         {
             while ((ent = readdir(dir)) != NULL)
@@ -69,8 +70,8 @@ namespace onut
 
         bool all = extension == "*";
         auto upExt = toUpper(extension);
-        DIR *dir;
-        struct dirent *ent;
+        DIR* dir;
+        struct dirent* ent;
         if ((dir = opendir(lookIn.c_str())) != NULL)
         {
             while ((ent = readdir(dir)) != NULL)
@@ -197,7 +198,7 @@ namespace onut
     std::vector<uint8_t> getFileData(const std::string& filename)
     {
         std::ifstream file(filename, std::ios::binary);
-        std::vector<uint8_t> data = {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+        std::vector<uint8_t> data = { std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
         return std::move(data);
     }
     /*
@@ -228,7 +229,7 @@ namespace onut
         if (!pPath) return "";
         return pPath;
     }
-    
+
 
     //char const * tinyfd_saveFileDialog(
     //    char const * const aTitle, /* "" */
@@ -261,14 +262,14 @@ namespace onut
         }
         return found;
     }
-    
+
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {
         auto windowHandle = oWindow->getHandle();
-        char szFileName[MAX_PATH] = {0};
+        char szFileName[MAX_PATH] = { 0 };
         memcpy(szFileName, defaultFilename.c_str(), std::min(defaultFilename.size(), static_cast<size_t>(MAX_PATH - 1)));
 
-        OPENFILENAMEA ofn = {0};
+        OPENFILENAMEA ofn = { 0 };
         ofn.lStructSize = sizeof(OPENFILENAMEA);
         ofn.hwndOwner = windowHandle;
         ofn.lStructSize = sizeof(ofn);
@@ -320,10 +321,10 @@ namespace onut
     std::string showSaveAsDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {
         auto windowHandle = oWindow->getHandle();
-        char szFileName[MAX_PATH] = {0};
+        char szFileName[MAX_PATH] = { 0 };
         memcpy(szFileName, defaultFilename.c_str(), std::min(defaultFilename.size(), static_cast<size_t>(MAX_PATH - 1)));
 
-        OPENFILENAMEA ofn = {0};
+        OPENFILENAMEA ofn = { 0 };
         ofn.lStructSize = sizeof(OPENFILENAMEA);
         ofn.hwndOwner = windowHandle;
         ofn.lStructSize = sizeof(ofn);
@@ -443,7 +444,7 @@ namespace onut
             case MessageBoxType::YesNo: typeStr = "yesno"; break;
             case MessageBoxType::YesNoCancel: typeStr = "yesnocancel"; break;
         }
-        
+
         const char* iconStr;
         switch (level)
         {
@@ -461,5 +462,247 @@ namespace onut
             1);
 
         return (MessageBoxReturn)ret;
+    }
+
+    void writeInt8(int8_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(int8_t), 1, pFile);
+    }
+
+    void writeUInt8(uint8_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(uint8_t), 1, pFile);
+    }
+
+    void writeInt16(int16_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(int16_t), 1, pFile);
+    }
+
+    void writeUInt16(uint16_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(uint16_t), 1, pFile);
+    }
+
+    void writeInt32(int32_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(int32_t), 1, pFile);
+    }
+
+    void writeUInt32(uint32_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(uint32_t), 1, pFile);
+    }
+
+    void writeInt64(int64_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(int64_t), 1, pFile);
+    }
+
+    void writeUInt64(uint64_t val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(uint64_t), 1, pFile);
+    }
+
+    void writeFloat(float val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 1, pFile);
+    }
+
+    void writeDouble(double val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(double), 1, pFile);
+    }
+
+    void writeBool(bool val, FILE* pFile)
+    {
+        uint8_t vali = val ? 1 : 0;
+        fwrite(&vali, sizeof(uint8_t), 1, pFile);
+    }
+
+    void writeString(const std::string& val, FILE* pFile)
+    {
+        fwrite(val.c_str(), 1, val.size() + 1, pFile);
+    }
+
+    void writeVector2(const Vector2& val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 2, pFile);
+    }
+
+    void writeVector3(const Vector3& val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 3, pFile);
+    }
+
+    void writeVector4(const Vector4& val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 4, pFile);
+    }
+
+    void writeRect(const Rect& val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 4, pFile);
+    }
+
+    void writeiRect(const iRect& val, FILE* pFile)
+    {
+        writeInt32((int)val.left, pFile);
+        writeInt32((int)val.top, pFile);
+        writeInt32((int)val.right, pFile);
+        writeInt32((int)val.bottom, pFile);
+    }
+
+    void writePoint(const Point& val, FILE* pFile)
+    {
+        writeInt32((int)val.x, pFile);
+        writeInt32((int)val.y, pFile);
+    }
+
+    void writeColor(const Color& val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 4, pFile);
+    }
+
+    void writeMatrix(const Matrix& val, FILE* pFile)
+    {
+        fwrite(&val, sizeof(float), 16, pFile);
+    }
+
+    int8_t readInt8(FILE* pFile)
+    {
+        int8_t val;
+        fread(&val, sizeof(int8_t), 1, pFile);
+        return val;
+    }
+
+    uint8_t readUInt8(FILE* pFile)
+    {
+        uint8_t val;
+        fread(&val, sizeof(uint8_t), 1, pFile);
+        return val;
+    }
+
+    int16_t readInt16(FILE* pFile)
+    {
+        int16_t val;
+        fread(&val, sizeof(int16_t), 1, pFile);
+        return val;
+    }
+
+    uint16_t readUInt16(FILE* pFile)
+    {
+        uint16_t val;
+        fread(&val, sizeof(uint16_t), 1, pFile);
+        return val;
+    }
+
+    int32_t readInt32(FILE* pFile)
+    {
+        int32_t val;
+        fread(&val, sizeof(int32_t), 1, pFile);
+        return val;
+    }
+
+    uint32_t readUInt32(FILE* pFile)
+    {
+        uint32_t val;
+        fread(&val, sizeof(uint32_t), 1, pFile);
+        return val;
+    }
+
+    float readFloat(FILE* pFile)
+    {
+        float val;
+        fread(&val, sizeof(float), 1, pFile);
+        return val;
+    }
+
+    double readDouble(FILE* pFile)
+    {
+        double val;
+        fread(&val, sizeof(double), 1, pFile);
+        return val;
+    }
+
+    bool readBool(FILE* pFile)
+    {
+        uint8_t vali;
+        fread(&vali, sizeof(uint8_t), 1, pFile);
+        return vali ? true : false;
+    }
+
+    std::string readString(FILE* pFile)
+    {
+        std::string val;
+        char c;
+        do
+        {
+            auto readret = fread(&c, sizeof(c), 1, pFile);
+            if (feof(pFile)) break;
+            (void)readret;
+            if (c) val += c;
+        } while (c);
+        return val;
+    }
+
+    Vector2 readVector2(FILE* pFile)
+    {
+        Vector2 val;
+        fread(&val, sizeof(float), 2, pFile);
+        return val;
+    }
+
+    Vector3 readVector3(FILE* pFile)
+    {
+        Vector3 val;
+        fread(&val, sizeof(float), 3, pFile);
+        return val;
+    }
+
+    Vector4 readVector4(FILE* pFile)
+    {
+        Vector4 val;
+        fread(&val, sizeof(float), 4, pFile);
+        return val;
+    }
+
+    Rect readRect(FILE* pFile)
+    {
+        Rect val;
+        fread(&val, sizeof(float), 4, pFile);
+        return val;
+    }
+
+    iRect readiRect(FILE* pFile)
+    {
+        iRect val;
+        val.left = (int)readInt32(pFile);
+        val.top = (int)readInt32(pFile);
+        val.right = (int)readInt32(pFile);
+        val.bottom = (int)readInt32(pFile);
+        return val;
+    }
+
+    Point readPoint(FILE* pFile)
+    {
+        Point val;
+        val.x = (int)readInt32(pFile);
+        val.y = (int)readInt32(pFile);
+        return val;
+    }
+
+    Color readColor(FILE* pFile)
+    {
+        Color val;
+        fread(&val, sizeof(float), 4, pFile);
+        return val;
+    }
+
+    Matrix readMatrix(FILE* pFile)
+    {
+        Matrix val;
+        fread(&val, sizeof(float), 16, pFile);
+        return val;
     }
 }
