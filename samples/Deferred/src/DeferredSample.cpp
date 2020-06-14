@@ -28,6 +28,10 @@ void init()
     angleAnim.playFromCurrent(O2PI, 5.0f, OTweenLinear, OLoop);
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     if (oInput->isStateJustDown(OKeyG)) showGBuffer = !showGBuffer;

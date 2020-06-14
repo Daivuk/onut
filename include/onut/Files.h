@@ -9,7 +9,7 @@
 struct Vector2;
 struct Vector3;
 struct Vector4;
-struct Rect;
+using Rect = Vector4;
 struct iRect;
 struct Color;
 struct Matrix;
