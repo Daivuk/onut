@@ -255,6 +255,12 @@ namespace onut
     protected:
         void update() override
         {
+            if (m_keyFrames.empty())
+            {
+                stop(true);
+                return;
+            }
+
             // Move progress
             auto lastProgress = m_progress;
             float progress;
