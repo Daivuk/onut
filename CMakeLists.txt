@@ -5,6 +5,7 @@ option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
 option(ONUT_BUILD_SETUP "Build the Setup app" OFF)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
+option(ONUT_BUILD_JSONCPP "If using another API that requires json disable this" ON)
 
 # Easier defines
 if (UNIX AND NOT APPLE)
@@ -99,6 +100,14 @@ if (WIN32)
     endif()
 endif()
 
+if (ONUT_BUILD_JSONCPP)
+    list(APPEND src_files
+        src/json/json_reader.cpp
+        src/json/json_value.cpp
+        src/json/json_writer.cpp
+    )
+endif()
+
 # Add common source files
 list(APPEND src_files
     src/ActionManager.cpp
@@ -125,9 +134,6 @@ list(APPEND src_files
     src/InputDevice.cpp
     src/JSBindings.cpp
     src/JSBindings_Imgui.cpp
-    src/json/json_reader.cpp
-    src/json/json_value.cpp
-    src/json/json_writer.cpp
     src/lodepng/LodePNG.cpp 
     src/Log.cpp 
     src/Matrix.cpp 
