@@ -62,11 +62,13 @@ namespace onut
         virtual void setVector3(int varId, const Vector3& value) = 0;
         virtual void setVector4(int varId, const Vector4& value) = 0;
         virtual void setMatrix(int varId, const Matrix& value) = 0;
+        virtual void setMatrixArray(int varId, const Matrix* values, int count) = 0;
         virtual void setFloat(const std::string& varName, float value) = 0;
         virtual void setVector2(const std::string& varName, const Vector2& value) = 0;
         virtual void setVector3(const std::string& varName, const Vector3& value) = 0;
         virtual void setVector4(const std::string& varName, const Vector4& value) = 0;
         virtual void setMatrix(const std::string& varName, const Matrix& value) = 0;
+        virtual void setMatrixArray(const std::string& varName, const Matrix* values, int count) = 0;
 
     protected:
         Shader();
@@ -83,6 +85,7 @@ namespace onut
         {
             VarType type;
             std::string name;
+            int count = 1;
         };
         using ParsedUniforms = std::vector<ParsedUniform>;
 

@@ -203,6 +203,9 @@ namespace onut
 
         RenderStates renderStates;
 
+        OShaderRef get3DVSForInput(bool hasColor, bool hasTexture, bool hasWeights);
+        OShaderRef get3DPSForInput(bool hasTexture);
+
     protected:
         Renderer();
 
@@ -213,8 +216,16 @@ namespace onut
 
         OShaderRef m_p2DVertexShader;
         OShaderRef m_p2DPixelShader;
-        OShaderRef m_p3DVertexShader;
-        OShaderRef m_p3DPixelShader;
+        OShaderRef m_p3DVertexShaderPNCT;
+        OShaderRef m_p3DVertexShaderPNT;
+        OShaderRef m_p3DVertexShaderPNC;
+        OShaderRef m_p3DVertexShaderPN;
+        OShaderRef m_p3DVertexShaderPNCTW;
+        OShaderRef m_p3DVertexShaderPNTW;
+        OShaderRef m_p3DVertexShaderPNCW;
+        OShaderRef m_p3DVertexShaderPNW;
+        OShaderRef m_p3DPixelShaderCT;
+        OShaderRef m_p3DPixelShaderC;
         OShaderRef m_pEffectsVertexShader;
         OShaderRef m_pBlurHPixelShader;
         OShaderRef m_pBlurVPixelShader;

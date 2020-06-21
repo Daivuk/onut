@@ -48,16 +48,16 @@ Vector3 Vector3::Transform(const Vector3& v, const Matrix& m)
 
 void Vector3::TransformNormal(const Vector3& v, const Matrix& m, Vector3& result)
 {
-    result.x = (m._11 * v.x) + (m._21 * v.y) + (m._31 * v.z) + m._41;
-    result.y = (m._12 * v.x) + (m._22 * v.y) + (m._32 * v.z) + m._42;
-    result.z = (m._13 * v.x) + (m._23 * v.y) + (m._33 * v.z) + m._43;
+    result.x = (m._11 * v.x) + (m._21 * v.y) + (m._31 * v.z);
+    result.y = (m._12 * v.x) + (m._22 * v.y) + (m._32 * v.z);
+    result.z = (m._13 * v.x) + (m._23 * v.y) + (m._33 * v.z);
 }
 
 Vector3 Vector3::TransformNormal(const Vector3& v, const Matrix& m)
 {
     Vector3 result;
-    result.x = (m._11 * v.x) + (m._21 * v.y) + (m._31 * v.z) + m._41;
-    result.y = (m._12 * v.x) + (m._22 * v.y) + (m._32 * v.z) + m._42;
-    result.z = (m._13 * v.x) + (m._23 * v.y) + (m._33 * v.z) + m._43;
+    result.x = (m._11 * v.x) + (m._21 * v.y) + (m._31 * v.z);
+    result.y = (m._12 * v.x) + (m._22 * v.y) + (m._32 * v.z);
+    result.z = (m._13 * v.x) + (m._23 * v.y) + (m._33 * v.z);
     return std::move(result);
 }

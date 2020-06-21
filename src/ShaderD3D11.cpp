@@ -194,12 +194,13 @@ namespace onut
 
                 UINT uniformSize = 4;
                 if (parsedUniform.type == VarType::Matrix) uniformSize = 16;
+                uniformSize *= parsedUniform.count;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.pBuffer));
                 assert(ret == S_OK);
 
-                source += "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + getTypeName(parsedUniform.type) + " " + uniform.name + ";\n}\n\n";
+                source += "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + getTypeName(parsedUniform.type) + " " + uniform.name + (parsedUniform.count > 1 ? ("[" + std::to_string(parsedUniform.count) + "]") : "") + ";\n}\n\n";
 
                 uniforms.push_back(uniform);
                 ++uniformId;
@@ -824,6 +825,27 @@ namespace onut
         pDeviceContext->Unmap(pBuffer, 0);
     }
 
+    void ShaderD3D11::setMatrixArray(int varId, const Matrix* values, int count)
+    {
+        auto& uniform = m_uniforms[varId];
+        uniform.dirty = true;
+        auto pBuffer = uniform.pBuffer;
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+
+        static std::vector<Matrix> transposed;
+        if ((int)transposed.size() < count) transposed.resize(count);
+        for (int i = 0; i < count; ++i)
+        {
+            transposed[i] = values[i].Transpose();
+        }
+
+        D3D11_MAPPED_SUBRESOURCE map;
+        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        memcpy(map.pData, transposed.data(), 64 * count);
+        pDeviceContext->Unmap(pBuffer, 0);
+    }
+
     void ShaderD3D11::setFloat(const std::string& varName, float value)
     {
         setFloat(getUniformId(varName), value);
@@ -847,6 +869,11 @@ namespace onut
     void ShaderD3D11::setMatrix(const std::string& varName, const Matrix& value)
     {
         setMatrix(getUniformId(varName), value);
+    }
+
+    void ShaderD3D11::setMatrixArray(const std::string& varName, const Matrix* values, int count)
+    {
+        setMatrixArray(getUniformId(varName), values, count);
     }
 
     ShaderD3D11::Uniforms& ShaderD3D11::getUniforms()

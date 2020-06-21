@@ -173,8 +173,8 @@ namespace onut
         const auto& viewport = renderStates.viewport.get();
         renderStates.view = Matrix::CreateLookAt(eye, target, up);
         renderStates.projection = Matrix::CreatePerspectiveFieldOfView(OConvertToRadians(fov), static_cast<float>(viewport.right - viewport.left) / static_cast<float>(viewport.bottom - viewport.top), 0.1f, 10000.f);
-        renderStates.vertexShader = m_p3DVertexShader;
-        renderStates.pixelShader = m_p3DPixelShader;
+        renderStates.vertexShader = m_p3DVertexShaderPNCT;
+        renderStates.pixelShader = m_p3DPixelShaderCT;
         renderStates.depthEnabled = true;
         renderStates.depthWrite = true;
         renderStates.backFaceCull = true;
@@ -225,6 +225,56 @@ namespace onut
         renderStates.world = transform;
     }
 
+    OShaderRef Renderer::get3DVSForInput(bool hasColor, bool hasTexture, bool hasWeights)
+    {
+        if (hasColor && hasTexture && !hasWeights)
+        {
+            return m_p3DVertexShaderPNCT;
+        }
+        else if (hasColor && !hasTexture && !hasWeights)
+        {
+            return m_p3DVertexShaderPNC;
+        }
+        else if (!hasColor && hasTexture && !hasWeights)
+        {
+            return m_p3DVertexShaderPNT;
+        }
+        else if (!hasColor && !hasTexture && !hasWeights)
+        {
+            return m_p3DVertexShaderPN;
+        }
+        if (hasColor && hasTexture && hasWeights)
+        {
+            return m_p3DVertexShaderPNCTW;
+        }
+        else if (hasColor && !hasTexture && hasWeights)
+        {
+            return m_p3DVertexShaderPNCW;
+        }
+        else if (!hasColor && hasTexture && hasWeights)
+        {
+            return m_p3DVertexShaderPNTW;
+        }
+        else if (!hasColor && !hasTexture && hasWeights)
+        {
+            return m_p3DVertexShaderPNW;
+        }
+        return nullptr; // Unreachable
+    }
+
+    OShaderRef Renderer::get3DPSForInput(bool hasTexture)
+    {
+        if (hasTexture)
+        {
+            return m_p3DPixelShaderCT;
+        }
+        else if (!hasTexture)
+        {
+            return m_p3DPixelShaderC;
+        }
+        return nullptr; // Unreachable
+    }
+
     void Renderer::loadShaders()
     {
         // Create 2D shaders
@@ -235,8 +285,16 @@ namespace onut
 
         // Create 3D shaders
         {
-            m_p3DVertexShader = OShader::createFromSource(SHADER_SRC_3D_VS, OVertexShader);
-            m_p3DPixelShader = OShader::createFromSource(SHADER_SRC_3D_PS, OPixelShader);
+            m_p3DVertexShaderPNCT = OShader::createFromSource(SHADER_SRC_3D_PNCT_VS, OVertexShader);
+            m_p3DVertexShaderPNC = OShader::createFromSource(SHADER_SRC_3D_PNC_VS, OVertexShader);
+            m_p3DVertexShaderPNT = OShader::createFromSource(SHADER_SRC_3D_PNT_VS, OVertexShader);
+            m_p3DVertexShaderPN = OShader::createFromSource(SHADER_SRC_3D_PN_VS, OVertexShader);
+            m_p3DVertexShaderPNCTW = OShader::createFromSource(SHADER_SRC_3D_PNCTW_VS, OVertexShader);
+            m_p3DVertexShaderPNCW = OShader::createFromSource(SHADER_SRC_3D_PNCW_VS, OVertexShader);
+            m_p3DVertexShaderPNTW = OShader::createFromSource(SHADER_SRC_3D_PNTW_VS, OVertexShader);
+            m_p3DVertexShaderPNW = OShader::createFromSource(SHADER_SRC_3D_PNW_VS, OVertexShader);
+            m_p3DPixelShaderCT = OShader::createFromSource(SHADER_SRC_3D_CT_PS, OPixelShader);
+            m_p3DPixelShaderC = OShader::createFromSource(SHADER_SRC_3D_C_PS, OPixelShader);
 
             // Setup default uniform values
             Vector3 sunDir(1, 1.5f, 2.0f);
@@ -267,25 +325,60 @@ namespace onut
 
     void Renderer::setAlphaTestBias(float bias)
     {
-        m_p3DPixelShader->setFloat(0, bias);
+        m_p3DPixelShaderCT->setFloat(0, bias);
     }
 
     void Renderer::setSun(const Vector3& direction, const Color& color)
     {
-        m_p3DVertexShader->setVector3(0, direction);
-        m_p3DVertexShader->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNCT->setVector3(0, direction);
+        m_p3DVertexShaderPNCT->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNC->setVector3(0, direction);
+        m_p3DVertexShaderPNC->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNT->setVector3(0, direction);
+        m_p3DVertexShaderPNT->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPN->setVector3(0, direction);
+        m_p3DVertexShaderPN->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNCTW->setVector3(0, direction);
+        m_p3DVertexShaderPNCTW->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNCW->setVector3(0, direction);
+        m_p3DVertexShaderPNCW->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNTW->setVector3(0, direction);
+        m_p3DVertexShaderPNTW->setVector3(1, color.ToVector3());
+        m_p3DVertexShaderPNW->setVector3(0, direction);
+        m_p3DVertexShaderPNW->setVector3(1, color.ToVector3());
     }
 
     void Renderer::setLight(int index, const Vector3& position, float radius, const Color& color)
     {
         if (index < 0 || index > 2) return;
-        m_p3DVertexShader->setVector4(3 + index * 2 + 0, Vector4(position, radius));
-        m_p3DVertexShader->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNCT->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNCT->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNC->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNC->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNT->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNT->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPN->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPN->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNCTW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNCTW->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNCW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNCW->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNTW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNTW->setVector3(3 + index * 2 + 1, color.ToVector3());
+        m_p3DVertexShaderPNW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
+        m_p3DVertexShaderPNW->setVector3(3 + index * 2 + 1, color.ToVector3());
     }
 
     void Renderer::setAmbient(const Color& color)
     {
-        m_p3DVertexShader->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNCT->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNC->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNT->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPN->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNCTW->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNCW->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNTW->setVector3(2, color.ToVector3());
+        m_p3DVertexShaderPNW->setVector3(2, color.ToVector3());
     }
 
     void Renderer::setupEffectRenderStates()

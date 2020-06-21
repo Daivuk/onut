@@ -15,14 +15,14 @@ namespace onut
     {
         std::vector<uint8_t> ret;
         lodepng::encode(ret, data, size.x, size.y);
-        return ret;
+        return std::move(ret);
     }
 
     std::vector<uint8_t> convertToPNG(const uint8_t* pData, const Point& size)
     {
         std::vector<uint8_t> ret;
         lodepng::encode(ret, pData, size.x, size.y);
-        return ret;
+        return std::move(ret);
     }
 
     std::vector<uint8_t> loadPNG(const std::string& filename, Point& size)
@@ -32,7 +32,7 @@ namespace onut
         lodepng::decode(ret, w, h, filename);
         size.x = static_cast<int>(w);
         size.y = static_cast<int>(h);
-        return ret;
+        return std::move(ret);
     }
 
     std::vector<uint8_t> loadPNG(const std::vector<uint8_t>& data, Point& size)
@@ -42,7 +42,7 @@ namespace onut
         lodepng::decode(ret, w, h, data);
         size.x = static_cast<int>(w);
         size.y = static_cast<int>(h);
-        return ret;
+        return std::move(ret);
     }
 
 #if defined(WIN32)

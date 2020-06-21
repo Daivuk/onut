@@ -331,6 +331,35 @@ namespace onut
             shaderError(lexer, "Expected ;");
             return false;
         }
+        if ((char)lexer.token == '[')
+        {
+            if (!stb_c_lexer_get_token(&lexer))
+            {
+                shaderError(lexer, "Expected array size");
+                return false;
+            }
+            uniform.count = lexer.int_number;
+            if (uniform.count < 0)
+            {
+                shaderError(lexer, "Expected array size > 0");
+                return false;
+            }
+            if (!stb_c_lexer_get_token(&lexer))
+            {
+                shaderError(lexer, "Expected ]");
+                return false;
+            }
+            if ((char)lexer.token != ']')
+            {
+                shaderError(lexer, "Expected ]");
+                return false;
+            }
+            if (!stb_c_lexer_get_token(&lexer))
+            {
+                shaderError(lexer, "Expected ;");
+                return false;
+            }
+        }
         if ((char)lexer.token != ';')
         {
             shaderError(lexer, "Expected ;");
