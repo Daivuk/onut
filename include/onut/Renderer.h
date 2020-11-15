@@ -159,7 +159,7 @@ namespace onut
 
         void setupFor2D();
         void setupFor2D(const Matrix& transform);
-        void setupFor3D(const Vector3& eye, const Vector3& target, const Vector3& up, float fov);
+        void setupFor3D(const Vector3& eye, const Vector3& target, const Vector3& up, float fov, float near_clip = 0.1f, float far_clip = 10000.0f);
         void set2DCamera(const CameraMatrices& camera, const Matrix& transform = Matrix::Identity);
         CameraMatrices set2DCamera(const Vector2& position, float zoom = 1.f);
         CameraMatrices set2DCameraOffCenter(const Vector2& position, float zoom = 1.f);

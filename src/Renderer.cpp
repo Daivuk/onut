@@ -168,11 +168,11 @@ namespace onut
         renderStates.blendMode = OBlendPreMultiplied;
     }
 
-    void Renderer::setupFor3D(const Vector3& eye, const Vector3& target, const Vector3& up, float fov)
+    void Renderer::setupFor3D(const Vector3& eye, const Vector3& target, const Vector3& up, float fov, float near_clip, float far_clip)
     {
         const auto& viewport = renderStates.viewport.get();
         renderStates.view = Matrix::CreateLookAt(eye, target, up);
-        renderStates.projection = Matrix::CreatePerspectiveFieldOfView(OConvertToRadians(fov), static_cast<float>(viewport.right - viewport.left) / static_cast<float>(viewport.bottom - viewport.top), 0.1f, 10000.f);
+        renderStates.projection = Matrix::CreatePerspectiveFieldOfView(OConvertToRadians(fov), static_cast<float>(viewport.right - viewport.left) / static_cast<float>(viewport.bottom - viewport.top), near_clip, far_clip);
         renderStates.vertexShader = m_p3DVertexShaderPNCT;
         renderStates.pixelShader = m_p3DPixelShaderCT;
         renderStates.depthEnabled = true;
