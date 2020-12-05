@@ -10,7 +10,11 @@
 OForwardDeclare(GamePad);
 OForwardDeclare(Input);
 OForwardDeclare(InputDevice);
+OForwardDeclare(Joystick);
 OForwardDeclare(Window);
+
+// STL
+#include <vector>
 
 namespace onut
 {
@@ -516,6 +520,11 @@ namespace onut
         float getStateValue(State state) const;
 
         OGamePadRef getGamePad(int index) const;
+        OJoystickRef getJoystick(int index) const;
+        int getJoystickCount() const;
+
+        void activateJoystick(int index);
+        void deactivateJoystick(int index);
 
         void setMouseVisible(bool isCursorVisible);
         void setMouseIcon(const std::string& name, const Point& hotSpot);
@@ -542,6 +551,7 @@ namespace onut
         InputState*	m_states;
         InputState*	m_statesRestore;
         OGamePadRef m_gamePads[GAME_PAD_COUNT];
+        std::vector<OJoystickRef> m_joysticks;
         bool m_isCursorVisible = true;
         bool m_fpsMouse = false;
     };

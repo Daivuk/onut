@@ -5,7 +5,7 @@
 #include <onut/Window.h>
 
 // Third party
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 // Forward Declaration
 #include <onut/ForwardDeclaration.h>
@@ -23,7 +23,10 @@ namespace onut
         bool pollEvents() override;
 
         SDL_Window* getSDLWindow() const;
-
+        
+#if defined(WIN32)
+        HWND getHandle() override;
+#endif
     private:
         SDL_Window* m_pWindow = nullptr;
     };

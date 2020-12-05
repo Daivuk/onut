@@ -12,7 +12,7 @@
 // STL
 #include <cassert>
 #include <fcntl.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 namespace onut
 {
@@ -31,7 +31,7 @@ namespace onut
         m_previousMouseState[1] = 1;
         m_previousMouseState[2] = 2;
 
-        SDL_Init(SDL_INIT_GAMECONTROLLER);
+        SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK);
 
         m_pArrowCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     }

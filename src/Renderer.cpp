@@ -289,10 +289,12 @@ namespace onut
             m_p3DVertexShaderPNC = OShader::createFromSource(SHADER_SRC_3D_PNC_VS, OVertexShader);
             m_p3DVertexShaderPNT = OShader::createFromSource(SHADER_SRC_3D_PNT_VS, OVertexShader);
             m_p3DVertexShaderPN = OShader::createFromSource(SHADER_SRC_3D_PN_VS, OVertexShader);
+#if !defined(ONUT_USE_OPENGL)
             m_p3DVertexShaderPNCTW = OShader::createFromSource(SHADER_SRC_3D_PNCTW_VS, OVertexShader);
             m_p3DVertexShaderPNCW = OShader::createFromSource(SHADER_SRC_3D_PNCW_VS, OVertexShader);
             m_p3DVertexShaderPNTW = OShader::createFromSource(SHADER_SRC_3D_PNTW_VS, OVertexShader);
             m_p3DVertexShaderPNW = OShader::createFromSource(SHADER_SRC_3D_PNW_VS, OVertexShader);
+#endif
             m_p3DPixelShaderCT = OShader::createFromSource(SHADER_SRC_3D_CT_PS, OPixelShader);
             m_p3DPixelShaderC = OShader::createFromSource(SHADER_SRC_3D_C_PS, OPixelShader);
 
@@ -338,6 +340,7 @@ namespace onut
         m_p3DVertexShaderPNT->setVector3(1, color.ToVector3());
         m_p3DVertexShaderPN->setVector3(0, direction);
         m_p3DVertexShaderPN->setVector3(1, color.ToVector3());
+#if !defined(ONUT_USE_OPENGL)
         m_p3DVertexShaderPNCTW->setVector3(0, direction);
         m_p3DVertexShaderPNCTW->setVector3(1, color.ToVector3());
         m_p3DVertexShaderPNCW->setVector3(0, direction);
@@ -346,6 +349,7 @@ namespace onut
         m_p3DVertexShaderPNTW->setVector3(1, color.ToVector3());
         m_p3DVertexShaderPNW->setVector3(0, direction);
         m_p3DVertexShaderPNW->setVector3(1, color.ToVector3());
+#endif
     }
 
     void Renderer::setLight(int index, const Vector3& position, float radius, const Color& color)
@@ -359,6 +363,7 @@ namespace onut
         m_p3DVertexShaderPNT->setVector3(3 + index * 2 + 1, color.ToVector3());
         m_p3DVertexShaderPN->setVector4(3 + index * 2 + 0, Vector4(position, radius));
         m_p3DVertexShaderPN->setVector3(3 + index * 2 + 1, color.ToVector3());
+#if !defined(ONUT_USE_OPENGL)
         m_p3DVertexShaderPNCTW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
         m_p3DVertexShaderPNCTW->setVector3(3 + index * 2 + 1, color.ToVector3());
         m_p3DVertexShaderPNCW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
@@ -367,6 +372,7 @@ namespace onut
         m_p3DVertexShaderPNTW->setVector3(3 + index * 2 + 1, color.ToVector3());
         m_p3DVertexShaderPNW->setVector4(3 + index * 2 + 0, Vector4(position, radius));
         m_p3DVertexShaderPNW->setVector3(3 + index * 2 + 1, color.ToVector3());
+#endif
     }
 
     void Renderer::setAmbient(const Color& color)
@@ -375,10 +381,12 @@ namespace onut
         m_p3DVertexShaderPNC->setVector3(2, color.ToVector3());
         m_p3DVertexShaderPNT->setVector3(2, color.ToVector3());
         m_p3DVertexShaderPN->setVector3(2, color.ToVector3());
+#if !defined(ONUT_USE_OPENGL)
         m_p3DVertexShaderPNCTW->setVector3(2, color.ToVector3());
         m_p3DVertexShaderPNCW->setVector3(2, color.ToVector3());
         m_p3DVertexShaderPNTW->setVector3(2, color.ToVector3());
         m_p3DVertexShaderPNW->setVector3(2, color.ToVector3());
+#endif
     }
 
     void Renderer::setupEffectRenderStates()

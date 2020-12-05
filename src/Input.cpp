@@ -1,6 +1,7 @@
 // Onut
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/Joystick.h>
 #include <onut/Renderer.h>
 
 // Private
@@ -114,6 +115,11 @@ namespace onut
             gamePad->update();
         }
 
+        for (auto& joystick : m_joysticks)
+        {
+            joystick->update();
+        }
+
         memcpy(m_prevStates, m_curStates, sizeof(InputState) * STATE_COUNT);
         memcpy(m_curStates, m_states, sizeof(InputState) * STATE_COUNT);
         memcpy(m_states, m_statesRestore, sizeof(InputState) * STATE_COUNT);
@@ -132,6 +138,39 @@ namespace onut
     {
         if (index < 0 || index >= 4) return nullptr;
         return m_gamePads[index];
+    }
+
+    OJoystickRef Input::getJoystick(int index) const
+    {
+        if (index < 0 || index >= (int)m_joysticks.size()) return nullptr;
+        return m_joysticks[index];
+    }
+
+    int Input::getJoystickCount() const
+    {
+        return (int)m_joysticks.size();
+    }
+
+    void Input::activateJoystick(int index)
+    {
+        m_joysticks.push_back(OJoystick::create(index));
+        std::sort(m_joysticks.begin(), m_joysticks.end(), [](const OJoystickRef& a, const OJoystickRef& b)
+        {
+            return (int)a->getType() < (int)b->getType();
+        });
+    }
+
+    void Input::deactivateJoystick(int index)
+    {
+        for (auto it = m_joysticks.begin(); it != m_joysticks.end(); ++it)
+        {
+            auto pJoystick = *it;
+            if (pJoystick->getIndex() == index)
+            {
+                m_joysticks.erase(it);
+                return;
+            }
+        }
     }
 
     void Input::setMouseVisible(bool isCursorVisible)

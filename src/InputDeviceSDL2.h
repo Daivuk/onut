@@ -8,7 +8,7 @@
 #include "InputDevice.h"
 
 // Third parties
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 // STL
 #include <vector>

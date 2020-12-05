@@ -4,8 +4,13 @@ option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
 option(ONUT_BUILD_SETUP "Build the Setup app" OFF)
-option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
+option(ONUT_USE_SDL "Use SDL+OpenGL on Windows instead of Win32/D3D11/DI8" ON)
+option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" ON)
 option(ONUT_BUILD_JSONCPP "If using another API that requires json disable this" ON)
+
+if (ONUT_USE_SDL)
+    set(ONUT_USE_OPENGL ON)
+endif()
 
 # Easier defines
 if (UNIX AND NOT APPLE)
@@ -42,7 +47,8 @@ if (APPLE)
         src/AudioEngineSDL2.cpp
         src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
-        src/IndexBufferGL.cpp 
+        src/IndexBufferGL.cpp
+        src/JoystickSDL2.cpp
         src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
@@ -58,7 +64,8 @@ if (LINUX)
         src/AudioEngineSDL2.cpp
         src/GamePadSDL2.cpp
         src/InputDeviceSDL2.cpp
-        src/IndexBufferGL.cpp 
+        src/IndexBufferGL.cpp
+        src/JoystickSDL2.cpp
         src/HttpCURL.cpp
         src/RendererGL.cpp 
         src/ShaderGL.cpp 
@@ -72,12 +79,26 @@ endif()
 
 # Add Win32 specific source files
 if (WIN32)
+    if (ONUT_USE_SDL)
+        list(APPEND src_files
+            src/AudioEngineSDL2.cpp
+            src/GamePadSDL2.cpp
+            src/InputDeviceSDL2.cpp
+            src/JoystickSDL2.cpp
+            src/WindowSDL2.cpp 
+            thirdparty/gl3w/src/gl3w.c
+        )
+    else()
+        list(APPEND src_files
+            src/AudioEngineWASAPI.cpp
+            src/GamePadXInput.cpp
+            src/InputDeviceDI8.cpp
+            src/HttpXMLHTTPRequest.cpp
+            src/WindowWIN32.cpp 
+        )
+    endif()
     list(APPEND src_files
-        src/AudioEngineWASAPI.cpp
-        src/GamePadXInput.cpp
-        src/InputDeviceDI8.cpp
         src/HttpXMLHTTPRequest.cpp
-        src/WindowWIN32.cpp 
     )
     if (ONUT_USE_OPENGL)
         list(APPEND src_files
@@ -132,6 +153,7 @@ list(APPEND src_files
     src/IndexBuffer.cpp 
     src/Input.cpp
     src/InputDevice.cpp
+    src/Joystick.cpp
     src/JSBindings.cpp
     src/JSBindings_Imgui.cpp
     src/lodepng/LodePNG.cpp 
@@ -236,8 +258,18 @@ if (WIN32)
         list(APPEND includes PUBLIC ${OPENGL_INCLUDE_DIR})
         list(APPEND libs PUBLIC ${OPENGL_LIBRARIES})
     endif()
-    find_package(DirectX11 REQUIRED)
-    list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
+    if (NOT ONUT_USE_SDL)
+        find_package(DirectX11 REQUIRED)
+        list(APPEND libs PUBLIC ${DirectX11_LIBRARIES})
+    endif()
+endif()
+
+if (ONUT_USE_SDL)
+    set(HAVE_LIBC ON)
+    set(SDL_MAIN_HANDLED ON)
+    add_subdirectory(./thirdparty/SDL ./thirdparties/SDL)
+    list(APPEND libs SDL2-static)
+    list(APPEND includes PUBLIC ./thirdparty/SDL/include/)
 endif()
 
 if (WIN32)
@@ -283,6 +315,7 @@ if (ONUT_BUILD_SAMPLES)
     add_subdirectory(samples/Effects) # EffectsSample
     add_subdirectory(samples/Empty) # EmptySample
     add_subdirectory(samples/GamePads) # GamePadsSample
+    add_subdirectory(samples/HOTAS) # HOTASSample
     add_subdirectory(samples/Http) # HttpSample
     add_subdirectory(samples/Imgui) # ImguiSample
     add_subdirectory(samples/ModelBatch) # ModelBatchSample

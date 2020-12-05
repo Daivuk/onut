@@ -21,6 +21,10 @@ void init()
     batchTransform = Matrix::Identity;
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     g_spriteAngle += ODT * 45.f;

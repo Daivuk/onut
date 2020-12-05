@@ -1,17 +1,22 @@
 // Onut
 #include <onut/GamePad.h>
 #include <onut/Input.h>
+#include <onut/Joystick.h>
 #include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 
 // Internal
-#include "WindowSDL2.h"
-#include "InputDeviceSDL2.h"
 #include "GamePadSDL2.h"
+#include "InputDeviceSDL2.h"
+#include "JoystickSDL2.h"
+#include "WindowSDL2.h"
 
 // STL
 #include <cassert>
+#if defined(WIN32)
+#include <SDL_syswm.h>
+#endif
 
 namespace onut
 {
@@ -79,6 +84,17 @@ namespace onut
     {
         return m_pWindow;
     }
+
+#if defined(WIN32)
+    HWND WindowSDL2::getHandle()
+    {
+        SDL_SysWMinfo wmInfo;
+        SDL_VERSION(&wmInfo.version);
+        SDL_GetWindowWMInfo(m_pWindow, &wmInfo);
+        HWND hwnd = wmInfo.info.win.window;
+        return hwnd;
+    }
+#endif
 
     bool WindowSDL2::pollEvents()
     {
@@ -157,6 +173,12 @@ namespace onut
                     }
                     break;
                 }
+                case SDL_MOUSEWHEEL:
+                {
+                    oInput->setStateValue(OMouseZ, oInput->getStateValue(OMouseZ) + event.wheel.y);
+                    oInput->setStateValue(OMouseW, oInput->getStateValue(OMouseW) + event.wheel.x);
+                    break;
+                }
                 case SDL_CONTROLLERDEVICEADDED:
                 {
                     OLog("Controller added: " + std::to_string(event.cdevice.which));
@@ -165,12 +187,6 @@ namespace onut
                     {
                         pGamePad->onAdded();
                     }
-                    break;
-                }
-                case SDL_MOUSEWHEEL:
-                {
-                    oInput->setStateValue(OMouseZ, oInput->getStateValue(OMouseZ) + event.wheel.y);
-                    oInput->setStateValue(OMouseW, oInput->getStateValue(OMouseW) + event.wheel.x);
                     break;
                 }
                 case SDL_CONTROLLERDEVICEREMOVED:
@@ -204,6 +220,18 @@ namespace onut
 #endif
                     break;
                 }
+                case SDL_JOYDEVICEADDED:
+                {
+                    OLog("Joystick added: " + std::to_string(event.jdevice.which));
+                    oInput->activateJoystick(event.jdevice.which);
+                    break;
+                }
+                case SDL_JOYDEVICEREMOVED:
+                {
+                    OLog("Joystick removed: " + std::to_string(event.jdevice.which));
+                    oInput->deactivateJoystick(event.jdevice.which);
+                    break;
+                }
             }
 
             // Everytime we poll, we need to update inputs
@@ -214,6 +242,14 @@ namespace onut
                 if (pGamePad)
                 {
                     pGamePad->updateSDL2();
+                }
+            }
+            for (int i = 0, len = oInput->getJoystickCount(); i < len; ++i)
+            {
+                auto pJoystick = ODynamicCast<JoystickSDL2>(OGetJoystick(i));
+                if (pJoystick)
+                {
+                    pJoystick->updateSDL2();
                 }
             }
         }
@@ -227,6 +263,14 @@ namespace onut
                 if (pGamePad)
                 {
                     pGamePad->updateSDL2();
+                }
+            }
+            for (int i = 0, len = oInput->getJoystickCount(); i < len; ++i)
+            {
+                auto pJoystick = ODynamicCast<JoystickSDL2>(OGetJoystick(i));
+                if (pJoystick)
+                {
+                    pJoystick->updateSDL2();
                 }
             }
         }

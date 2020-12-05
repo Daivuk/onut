@@ -15,6 +15,10 @@ void init()
 {
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     if (OGamePadJustPressed(OGamePadLeftThumb) ||
