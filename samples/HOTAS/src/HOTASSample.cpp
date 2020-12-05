@@ -75,7 +75,9 @@ void render()
 
             float y = 60 + (float)j * 40;
 
-            pSB->drawText(pFont, "^990" + OGetJoystickAxisName(j, i), {frameX + 10, y});
+            pSB->drawText(pFont, 
+                          "^990" + OGetJoystickPrettyAxisName(j, i), 
+                          {frameX + 10, y});
             pSB->drawRect(nullptr, Rect(frameX + 10, y + 15, frameSize - 40, 1), Color(0.25f));
             for (int k = 0; k <= 16; ++k)
             {
@@ -84,24 +86,33 @@ void render()
             pSB->drawCross(Vector2(frameX + 10 + (frameSize - 40) * (value * 0.5f + 0.5f), y + 20), 5, Color(1, 1, 0));
         }
 
+#define BTN_PAD 4.0f
+#define BTN_W 96.0f
+#define BTN_H 32.0f
+
         // Buttons
         Vector2 pos(10, 60 + (float)axisCount * 40);
         auto buttonCount = pJoystick->getButtonCount();
         for (int j = 0; j < buttonCount; ++j)
         {
-            pSB->drawOutterOutlineRect(Rect(frameX + pos.x + 4, pos.y + 4, 96.0f - 8, 32.0f - 8), 1, Color(0.25f));
+            pSB->drawOutterOutlineRect(Rect(frameX + pos.x + BTN_PAD, pos.y + BTN_PAD, BTN_W - BTN_PAD * 2, BTN_H - BTN_PAD * 2), 
+                                       1, Color(0.25f));
             auto pressed = pJoystick->isPressed(j);
             if (pressed)
             {
-                pSB->drawRect(nullptr, Rect(frameX + pos.x + 6, pos.y + 6, 96.0f - 12, 32.0f - 12), Color(0.5f));
+                pSB->drawRect(nullptr,
+                              Rect(frameX + pos.x + BTN_PAD + 2, pos.y + BTN_PAD + 2, BTN_W - BTN_PAD * 2 - 4, BTN_H - BTN_PAD * 2 - 4), 
+                              Color(0.5f));
             }
-            pSB->drawText(pFont, "^990" + OGetJoystickButtonName(j, i), {frameX + pos.x + 48, pos.y + 16}, 
+            pSB->drawText(pFont, 
+                          OGetJoystickPrettyButtonName(j, i), 
+                          {frameX + pos.x + (BTN_W / 2), pos.y + (BTN_H / 2)}, 
                           OCenter, pressed ? Color(1, 1, 0) : Color(0.5f));
 
-            pos.x += 96.0f;
-            if (pos.x >= frameSize - 20 - 96.0f)
+            pos.x += BTN_W;
+            if (pos.x >= frameSize - 20 - BTN_W)
             {
-                pos.y += 32.0f;
+                pos.y += BTN_H;
                 pos.x = 10;
             }
         }

@@ -33,7 +33,6 @@ namespace onut
         int getButtonCount() const override;
         int getHatButtonBase() const override;
         int getAxisButtonBase() const override;
-        std::string getButtonName(int button) const override;
 
     private:
         bool isPressed(int button, const Uint8* state) const;

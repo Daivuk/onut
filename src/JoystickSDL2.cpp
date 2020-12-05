@@ -205,30 +205,4 @@ namespace onut
         if (button < 0 || button >= getButtonCount()) return false;
         return state[button] ? true : false;
     }
-
-    std::string JoystickSDL2::getButtonName(int button) const
-    {
-        if (button < m_buttonCount)
-        {
-            return "btn" + std::to_string(button);
-        }
-        else if (button < m_buttonCount + m_hatCount * 4)
-        {
-            auto hatId = (button - m_buttonCount) / 4;
-            auto hatDir = (button - m_buttonCount) % 4;
-            switch (hatDir)
-            {
-                case 0: return "hat" + std::to_string(hatId) + " up";
-                case 1: return "hat" + std::to_string(hatId) + " right";
-                case 2: return "hat" + std::to_string(hatId) + " down";
-                case 3: return "hat" + std::to_string(hatId) + " left";
-            }
-            return "wat";
-        }
-        else
-        {
-            auto base = button - m_buttonCount - m_hatCount * 4;
-            return (base % 2 == 0 ? "-axis" : "+axis") + std::to_string(base / 2);
-        }
-    }
 }
