@@ -26,6 +26,10 @@ void init()
     path4 = pTiledMap->getPath(Point(13, 27), Point(1, 30), OTiledMap::PATH_ALLOW_DIAGONAL | OTiledMap::PATH_CROSS_CORNERS); // Impossible, will get closest
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

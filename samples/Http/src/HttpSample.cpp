@@ -21,6 +21,10 @@ void init()
 {
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     if (OInputJustPressed(OKey1))

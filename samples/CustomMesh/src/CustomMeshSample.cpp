@@ -36,6 +36,10 @@ void init()
     pIndexBuffer = OIndexBuffer::createStatic(indices, sizeof(indices));
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

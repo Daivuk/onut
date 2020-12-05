@@ -70,6 +70,10 @@ void init()
     callbackAnim.play(OLoop);
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

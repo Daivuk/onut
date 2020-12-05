@@ -33,6 +33,10 @@ void init()
 {
 }
 
+void shutdown()
+{
+}
+
 ItemRef getItemAt(const Vector2& pos)
 {
     // We loop backward to get the top most

@@ -29,6 +29,10 @@ void init()
     pVignette = OTexture::createRenderTarget({256, 256});
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

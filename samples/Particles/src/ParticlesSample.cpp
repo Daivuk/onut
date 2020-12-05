@@ -22,6 +22,10 @@ void init()
 {
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     emitter.setTransform(position);

@@ -19,6 +19,10 @@ void init()
     spriteAnim = OSpriteAnimInstance("baltAnims.spriteanim");
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     if (OInputJustPressed(OKey1))

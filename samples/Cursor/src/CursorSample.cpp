@@ -14,6 +14,10 @@ void init()
 {
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     const auto& mousePos = oInput->mousePosf;

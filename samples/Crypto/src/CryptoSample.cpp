@@ -67,6 +67,10 @@ void init()
     }
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

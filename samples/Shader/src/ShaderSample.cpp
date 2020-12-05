@@ -25,6 +25,10 @@ void init()
     pMTR[3] = OTexture::createRenderTarget({ 128, 128 }, false, OFormatRGBA8);
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     vertexAnim += OGetDeltaTime();

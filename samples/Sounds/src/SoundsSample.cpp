@@ -64,6 +64,10 @@ void init()
     delete[] pSampleBuffer;
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
     float volume = 1.f;

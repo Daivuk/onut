@@ -27,6 +27,10 @@ void init()
     angleAnim.play(0.0f, -360.0f, 8.0f, OTweenLinear, OLoop);
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

@@ -65,6 +65,10 @@ void init()
     dynamicAnim.play(0, 255, 3.f, OTweenLinear, OLoop);
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }

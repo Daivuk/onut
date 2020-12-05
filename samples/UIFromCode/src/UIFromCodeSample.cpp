@@ -51,6 +51,10 @@ void init()
     pFrame->add(pQuitButton);
 }
 
+void shutdown()
+{
+}
+
 void update()
 {
 }
