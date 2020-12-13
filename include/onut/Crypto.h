@@ -13,6 +13,7 @@ namespace onut
         uint32_t hash(const std::string& s, unsigned int seed = 0);
 
         std::string sha1(const std::string& str);
+        std::string md5(const std::string& str);
 
         bool validateEmail(const std::string& email);
 
@@ -23,6 +24,7 @@ namespace onut
 
 #define OHash onut::crypto::hash
 #define OSha1 onut::crypto::sha1
+#define OMD5 onut::crypto::md5
 #define OValidateEmail onut::crypto::validateEmail
 #define OEncodeBase64 onut::crypto::base64_encode
 #define ODecodeBase64 onut::crypto::base64_decode

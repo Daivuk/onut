@@ -266,6 +266,49 @@ struct Vector4
             y <= rect.y + rect.w;
     }
 
+    // New rect containing both rects
+    Vector4 Merge(const Vector4& rect) const
+    {
+        Rect ret;
+
+        ret.x = std::min(rect.x, x);
+        ret.y = std::min(rect.y, y);
+        auto right = std::max(rect.x + rect.z, x + z);
+        auto bottom = std::max(rect.y + rect.w, y + w);
+        ret.z = right - ret.x;
+        ret.w = bottom - ret.y;
+
+        return ret;
+    }
+
+    // New rect containing only overlapping part. Otherwise, 0,0,0,0 if not overlapping
+    Vector4 Difference(const Vector4& rect) const
+    {
+        Rect ret;
+
+        auto left = std::max(rect.x, x);
+        auto top = std::max(rect.y, y);
+        auto right = std::min(rect.x + rect.z, x + z);
+        auto bottom = std::min(rect.y + rect.w, y + w);
+
+        if (left > right)
+            return ret;
+
+        if (top > bottom)
+            return ret;
+
+        ret.x = left;
+        ret.y = top;
+        ret.z = right - left;
+        ret.w = bottom - top;
+
+        return ret;
+    }
+
+    float Area() const
+    {
+        return z * w;
+    }
 
     // Static functions
     static float Distance(const Vector4& v1, const Vector4& v2)

@@ -233,6 +233,22 @@ struct Vector2
         result = v1 + (v2 - v1) * t;
     }
 
+    static inline Vector2 MoveToward(const Vector2& v1, const Vector2& v2, float speed /* (DesiredSpeed * ODT) */, float tension = 1.f)
+    {
+        if (v1 == v2)
+        {
+            return v1;
+        }
+
+        auto dir = v2 - v1;
+        auto len = dir.Length();
+        dir /= len;
+
+        len = std::max(0.0f, len - speed * std::max(1.0f, (len * tension)));
+
+        return v2 - dir * len;
+    }
+
     static inline Vector2 Lerp(const Vector2& v1, const Vector2& v2, float t)
     {
         return v1 + (v2 - v1) * t;

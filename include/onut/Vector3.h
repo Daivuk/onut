@@ -188,6 +188,22 @@ struct Vector3
         result.z = std::max(v1.z, v2.z);
         return result;
     }
+    
+    static inline Vector3 MoveToward(const Vector3& v1, const Vector3& v2, float speed /* (DesiredSpeed * ODT) */, float tension = 1.f)
+    {
+        if (v1 == v2)
+        {
+            return v1;
+        }
+
+        auto dir = v2 - v1;
+        auto len = dir.Length();
+        dir /= len;
+
+        len = std::max(0.0f, len - speed * std::max(1.0f, (len * tension)));
+
+        return v2 - dir * len;
+    }
 
     static void Lerp(const Vector3& v1, const Vector3& v2, float t, Vector3& result)
     {

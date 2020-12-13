@@ -60,7 +60,15 @@ namespace onut
     template<typename T>
     void shuffle(std::vector<T>& vec)
     {
-        std::shuffle(std::begin(vec), std::end(vec));
+        std::vector<T> dst;
+        dst.reserve(vec.size());
+        while (!vec.empty())
+        {
+            auto rnd = randi((int)vec.size() - 1);
+            dst.push_back(vec[rnd]);
+            vec.erase(vec.begin() + rnd);
+        }
+        vec = dst;
     }
 
     Vector2 randCircle(const Vector2& center, float radius);
