@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-# Some compiler flags
-set(CMAKE_CXX_STANDARD 11)
-if (MSVC) # Multi core in VS
-    SET(PUBLIC CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP /FS")
-endif()
-
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
@@ -29,12 +23,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 # project name
 project(libonut)
 
+# Some compiler flags
+set(CMAKE_CXX_STANDARD 11)
+if (MSVC) # Multi core in VS
+    SET(PUBLIC CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP /FS")
+endif()
+
 # Pre processors
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-D_DEBUG)
 endif()
 if (ONUT_USE_OPENGL)
     add_definitions(-DONUT_USE_OPENGL)
+endif()
+if (ONUT_USE_SDL)
+    add_definitions(-DONUT_USE_SDL)
 endif()
 if (WIN32)
     add_definitions(-DNOMINMAX)

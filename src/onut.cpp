@@ -515,7 +515,7 @@ namespace onut
 
     void quit()
     {
-#if defined(WIN32)
+#if defined(WIN32) && !defined(ONUT_USE_SDL)
         PostQuitMessage(0);
 #else
 		g_bIsRunning = false;
