@@ -28,6 +28,9 @@ namespace onut
         Settings();
         virtual ~Settings();
 
+        void initUserSettings();
+        void shutdownUserSettings();
+
         const Resolution& getResolution() const { return m_resolution; }
         void setResolution(const Resolution& resolution);
 

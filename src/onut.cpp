@@ -105,6 +105,9 @@ namespace onut
 
     void createServices()
     {
+        // Settings (Already allocated on stack)
+        oSettings->initUserSettings();
+
         // Random
         randomizeSeed();
 
@@ -199,6 +202,8 @@ namespace onut
 
         ImGui::Shutdown();
         onut::js::shutdown();
+
+        oSettings->shutdownUserSettings();
 
         g_pImguiVB = nullptr;
         g_pImguiIB = nullptr;

@@ -1,4 +1,5 @@
 // Onut
+#include <onut/Files.h>
 #include <onut/Settings.h>
 #include <onut/Window.h>
 
@@ -12,10 +13,29 @@ namespace onut
     Settings::Settings()
     {
         m_isDirty = false;
+        m_isRunning = false;
+    }
+
+    Settings::~Settings()
+    {
+    }
+
+    void Settings::shutdownUserSettings()
+    {
+        if (m_isRunning)
+        {
+            m_isRunning = false;
+            m_conditionVariable.notify_all();
+            m_savingThread.join();
+        }
+    }
+
+    void Settings::initUserSettings()
+    {
         m_isRunning = true;
         
         // Load settings
-        std::ifstream in("../../usersettings.cfg");
+        std::ifstream in(onut::getSavePath() + "usersettings.cfg");
         if (!in.fail())
         {
             std::string line;
@@ -55,7 +75,7 @@ namespace onut
                 // Copy the map so there is not conflics
                 auto userSettings = m_userSettings;
                 locker.unlock();
-                std::ofstream fic("../../usersettings.cfg");
+                std::ofstream fic(onut::getSavePath() + "usersettings.cfg");
                 if (!fic.fail())
                 {
                     for (auto &kv : userSettings)
@@ -68,13 +88,6 @@ namespace onut
                 locker.lock();
             }
         });
-    }
-
-    Settings::~Settings()
-    {
-        m_isRunning = false;
-        m_conditionVariable.notify_all();
-        m_savingThread.join();
     }
 
     void Settings::setResolution(const Resolution& resolution)
