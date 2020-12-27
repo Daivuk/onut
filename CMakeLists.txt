@@ -96,6 +96,7 @@ if (WIN32)
             src/AudioEngineWASAPI.cpp
             src/GamePadXInput.cpp
             src/InputDeviceDI8.cpp
+            src/JoystickDI8.cpp
             src/HttpXMLHTTPRequest.cpp
             src/WindowWIN32.cpp 
         )
