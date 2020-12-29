@@ -8,6 +8,14 @@ const Matrix Matrix::Identity(1, 0, 0, 0,
                               0, 0, 1, 0, 
                               0, 0, 0, 1);
 
+Matrix::Matrix(const Vector3& right, const Vector3& forward, const Vector3& up, const Vector3& position)
+    : _11(right.x), _12(right.y), _13(right.z), _14(0.0f)
+    , _21(forward.x), _22(forward.y), _23(forward.z), _24(0.0f)
+    , _31(up.x), _32(up.y), _33(up.z), _34(0.0f)
+    , _41(position.z), _42(position.y), _43(position.z), _44(1.0f)
+{
+}
+
 Matrix::Matrix(const Vector3& r0, const Vector3& r1, const Vector3& r2)
     : _11(r0.x), _12(r0.y), _13(r0.z), _14(0.0f)
     , _21(r1.x), _22(r1.y), _23(r1.z), _24(0.0f)
@@ -24,35 +32,54 @@ Matrix::Matrix(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Ve
 {
 }
 
-Vector3 Matrix::Up() const { return Vector3(_21, _22, _23); }
-void Matrix::Up(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
-
-Vector3 Matrix::Down() const { return Vector3(-_21, -_22, -_23); }
-void Matrix::Down(const Vector3& v) { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
+Vector3 Matrix::Left() const { return Vector3(-_11, -_12, -_13); }
+void Matrix::Left(const Vector3& v) { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
 
 Vector3 Matrix::Right() const { return Vector3(_11, _12, _13); }
 void Matrix::Right(const Vector3& v) { _11 = v.x; _12 = v.y; _13 = v.z; }
 
-Vector3 Matrix::Left() const { return Vector3(-_11, -_12, -_13); }
-void Matrix::Left(const Vector3& v) { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
+Vector3 Matrix::Backward() const { return Vector3(-_21, -_22, -_23); }
+void Matrix::Backward(const Vector3& v) { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
 
-Vector3 Matrix::Forward() const { return Vector3(-_31, -_32, -_33); }
-void Matrix::Forward(const Vector3& v) { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
+Vector3 Matrix::Forward() const { return Vector3(_21, _22, _23); }
+void Matrix::Forward(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
 
-Vector3 Matrix::Backward() const { return Vector3(_31, _32, _33); }
-void Matrix::Backward(const Vector3& v) { _31 = v.x; _32 = v.y; _33 = v.z; }
+Vector3 Matrix::Down() const { return Vector3(-_31, -_32, -_33); }
+void Matrix::Down(const Vector3& v) { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
 
-Vector3 Matrix::AxisY() const { return Vector3(_21, _22, _23); }
-void Matrix::AxisY(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
+Vector3 Matrix::Up() const { return Vector3(_31, _32, _33); }
+void Matrix::Up(const Vector3& v) { _31 = v.x; _32 = v.y; _33 = v.z; }
 
 Vector3 Matrix::AxisX() const { return Vector3(_11, _12, _13); }
 void Matrix::AxisX(const Vector3& v) { _11 = v.x; _12 = v.y; _13 = v.z; }
+
+Vector3 Matrix::AxisY() const { return Vector3(_21, _22, _23); }
+void Matrix::AxisY(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
 
 Vector3 Matrix::AxisZ() const { return Vector3(_31, _32, _33); }
 void Matrix::AxisZ(const Vector3& v) { _31 = v.x; _32 = v.y; _33 = v.z; }
 
 Vector3 Matrix::Translation() const { return Vector3(_41, _42, _43); }
 void Matrix::Translation(const Vector3& v) { _41 = v.x; _42 = v.y; _43 = v.z; }
+
+void Matrix::Normalize()
+{
+    auto forward = AxisY();
+    forward.Normalize();
+
+    auto up = AxisZ();
+
+    auto right = forward.Cross(up);
+    right.Normalize();
+
+    up = right.Cross(forward);
+    up.Normalize();
+
+    _11 = right.x; _12 = right.y; _13 = right.z; _14 = 0.f;
+    _21 = forward.x; _22 = forward.y; _23 = forward.z; _24 = 0.f;
+    _31 = up.x; _32 = up.y; _33 = up.z; _34 = 0.f;
+    _44 = 1.f;
+}
 
 Matrix Matrix::CreateBillboard(const Vector3& object, const Vector3& cameraPosition, const Vector3& cameraUp, const Vector3* cameraForward)
 {
@@ -223,7 +250,7 @@ Matrix Matrix::CreateWorld(const Vector3& position, const Vector3& forward, cons
     auto zaxis = up;
     auto xaxis = yaxis.Cross(zaxis);
     xaxis.Normalize();
-    yaxis = zaxis.Cross(xaxis);
+    zaxis = xaxis.Cross(yaxis);
 
     return Matrix(
         xaxis.x, xaxis.y, xaxis.z, 0,

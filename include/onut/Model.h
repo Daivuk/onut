@@ -82,6 +82,7 @@ namespace onut
 
         static OModelRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
         static OModelRef createFromBatch(const std::vector<Batch>& batch);
+        //static OModelRef createFromData(uint16_t vertexCount, const float* vertices, uint32_t indiceCount, const uint16_t* indices, const OTextureRef& texture, int vertexFlags = ONUT_MODEL_VERTEX_HAS_POSITION | ONUT_MODEL_VERTEX_HAS_NORMAL | ONUT_MODEL_VERTEX_HAS_COLOR | ONUT_MODEL_VERTEX_HAS_UV);
 
         ~Model();
         int getMeshCount() const;

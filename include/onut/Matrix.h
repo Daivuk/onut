@@ -43,6 +43,7 @@ struct Matrix
         , _41(m30), _42(m31), _43(m32), _44(m33)
     {
     }
+    explicit Matrix(const Vector3& right, const Vector3& forward, const Vector3& up, const Vector3& position);
     explicit Matrix(const Vector3& r0, const Vector3& r1, const Vector3& r2);
     explicit Matrix(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3);
     explicit Matrix(const float *pArray)
@@ -737,6 +738,8 @@ struct Matrix
             M1._43 + (M2._43 - M1._43) * t,
             M1._44 + (M2._44 - M1._44) * t);
     }
+
+    void Normalize();
 
     // Constants
     static const Matrix Identity;
