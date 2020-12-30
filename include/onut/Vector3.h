@@ -114,6 +114,14 @@ struct Vector3
         y *= len;
         z *= len;
     }
+
+    Vector3 Normalized()
+    {
+        Vector3 copy = *this;
+        copy.Normalize();
+        return copy;
+    }
+
     void Normalize(Vector3& result) const
     {
         auto len = std::sqrt(x * x + y * y + z * z);

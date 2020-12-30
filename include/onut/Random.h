@@ -73,6 +73,7 @@ namespace onut
 
     Vector2 randCircle(const Vector2& center, float radius);
     Vector2 randCircleEdge(const Vector2& center, float radius);
+    Vector3 randDirection();
 }
 
 #define ORandColor onut::randc

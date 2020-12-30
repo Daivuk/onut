@@ -87,6 +87,23 @@ namespace onut
         return{center.x + cosf(angle) * radius, center.y + sinf(angle) * radius};
     }
 
+    Vector3 randDirection()
+    {
+        auto theta = onut::randf(O2PI);
+        auto phi = acosf(onut::randf(-1.f, 1.f));
+
+        auto cos_theta = cosf(theta);
+        auto sin_theta = sinf(theta);
+        auto cos_phi = cosf(phi);
+        auto sin_phi = sinf(phi);
+
+        return Vector3(
+            cos_theta * sin_phi,
+            sin_theta * sin_phi,
+            cos_phi
+        );
+    }
+
     Vector3 rand3f(const Vector3& max)
     {
         return{randf(max.x), randf(max.y), randf(max.z)};
