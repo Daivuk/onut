@@ -1049,6 +1049,7 @@ declare class UI {
     getName(): string;
     setName(name: string);
     getRect(): Rect;
+    getWorldRect(): Rect;
     setRect(rect: Rect);
     isVisible(): boolean;
     setVisible(visible: boolean);

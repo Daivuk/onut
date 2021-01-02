@@ -7809,6 +7809,22 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "getRect");
 
+            // getWorldRect()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    newRect(ctx, pUIControl->getWorldRect(oUIContext));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getWorldRect");
+
             // setRect(rect)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
