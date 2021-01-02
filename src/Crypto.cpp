@@ -1288,7 +1288,7 @@ namespace onut
                 for (j = 0; (j < i - 1); j++) ret.push_back(char_array_3[j]);
             }
 
-            return ret;
+            return std::move(ret);
         }
     }
 }
