@@ -235,19 +235,22 @@ namespace onut
         virtual void load(const rapidjson::Value& jsonNode);
         virtual void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const;
 
-        void updateInternal(const OUIContextRef& context, const Rect& parentRect);
+        void updateInternal(const OUIContextRef& context, const Rect& parentRect, Rect clipRect);
         void renderInternal(const OUIContextRef& context, const Rect& parentRect);
-        virtual void renderControl(const OUIContextRef& context, const Rect& rect) {}
+        virtual void renderControl(const OUIContextRef& context, Rect& rect) {}
 
         virtual void onClickInternal(const UIMouseEvent& evt) {}
         virtual void onMouseDownInternal(const UIMouseEvent& evt) {}
         virtual void onMouseMoveInternal(const UIMouseEvent& evt) {}
-        virtual void onMouseScrollInternal(const UIMouseEvent& evt) {}
+        virtual bool onMouseScrollInternal(const UIMouseEvent& evt) { return false; }
         virtual void onMouseUpInternal(const UIMouseEvent& evt) {}
         virtual void onGainFocusInternal(const UIFocusEvent& evt) {}
         virtual void onLoseFocusInternal(const UIFocusEvent& evt) {}
         virtual void onWriteInternal(char c, const OUIContextRef& context) {}
         virtual void onKeyDownInternal(const UIKeyEvent& evt) {}
+
+        virtual void onChildrenChanged() {}
+        virtual void adjustRect(Rect& rect) {}
 
     private:
         using PropertyMap = std::unordered_map<std::string, Property>;

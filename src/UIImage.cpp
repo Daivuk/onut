@@ -34,7 +34,7 @@ namespace onut
         setJsonScale9Component(jsonNode, scale9Component, allocator);
     }
 
-    void UIImage::renderControl(const OUIContextRef& context, const Rect& rect)
+    void UIImage::renderControl(const OUIContextRef& context, Rect& rect)
     {
         const auto& callback = context->getStyle<UIImage>(getStyle());
         if (callback)

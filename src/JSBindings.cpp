@@ -7809,6 +7809,22 @@ namespace onut
             }, 0);
             duk_put_prop_string(ctx, -2, "getRect");
 
+            // getWorldRect()
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppUIControl = (OUIControlRef*)duk_to_pointer(ctx, -1);
+                if (ppUIControl)
+                {
+                    auto pUIControl = ppUIControl->get();
+                    newRect(ctx, pUIControl->getWorldRect(oUIContext));
+                    return 1;
+                }
+                return 0;
+            }, 0);
+            duk_put_prop_string(ctx, -2, "getWorldRect");
+
             // setRect(rect)
             duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
             {
@@ -8692,6 +8708,12 @@ namespace onut
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "createCheckBox");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUIScrollView::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createScrollView");
 
             duk_put_global_string(ctx, "UI");
         }
@@ -10986,32 +11008,6 @@ namespace onut
             createFileBindings();
 
             createImguiBindings();
-        }
-
-        static void logJSStack(duk_context* ctx, std::string log)
-        {
-            // .stack, .fileName, and .lineNumber
-            if (duk_is_error(ctx, -1))
-            {
-                /* Accessing .stack might cause an error to be thrown, so wrap this
-                * access in a duk_safe_call() if it matters.
-                */
-                duk_get_prop_string(ctx, -1, "stack");
-                std::string msg = duk_safe_to_string(ctx, -1);
-                auto lines = onut::splitString(msg, '\n');
-                for (size_t i = 0; i < lines.size() && i < 8; ++i)
-                {
-                    log += lines[i] + "\n";
-                }
-                duk_pop(ctx);
-            }
-            else
-            {
-                /* Non-Error value, coerce safely to string. */
-                log += duk_safe_to_string(ctx, -1);
-            }
-
-            OLog(log);
         }
 
         static bool evalScripts()

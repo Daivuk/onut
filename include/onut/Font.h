@@ -28,6 +28,7 @@ namespace onut
         ~Font();
 
         Vector2 measure(const std::string& text);
+        Vector2 measureWordWrap(const std::string& text, float wrapWidth);
         size_t caretPos(const std::string& text, float at);
 
         Rect draw(const std::string& text, 
@@ -36,6 +37,13 @@ namespace onut
                   const Color& color = Color::White, 
                   bool snapPixels = true,
                   const OSpriteBatchRef& pSpriteBatch = nullptr);
+        Rect drawWordWrap(const std::string& text, 
+                  const Vector2& pos, 
+                  const Vector2& align = Vector2(0.f, 0.f), 
+                  const Color& color = Color::White, 
+                  bool snapPixels = true,
+                  const OSpriteBatchRef& pSpriteBatch = nullptr,
+                  float wrapWidth = 200.f);
         Rect drawOutlined(const std::string& text,
                           const Vector2& pos,
                           const Vector2& align = Vector2(0.f, 0.f),

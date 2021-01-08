@@ -115,7 +115,7 @@ namespace onut
         setJsonString(jsonNode, "behavior", enumToString(checkBehaviorMap, behavior), allocator, "NORMAL");
     }
 
-    void UICheckBox::renderControl(const OUIContextRef& context, const Rect& rect)
+    void UICheckBox::renderControl(const OUIContextRef& context, Rect& rect)
     {
         const auto& callback = context->getStyle<UICheckBox>(getStyle());
         if (callback)

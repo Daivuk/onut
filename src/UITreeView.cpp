@@ -242,7 +242,7 @@ namespace onut
         setJsonFloat(jsonNode, "itemHeight", itemHeight, allocator, 18.f);
     }
 
-    void UITreeView::renderControl(const OUIContextRef& context, const Rect& rect)
+    void UITreeView::renderControl(const OUIContextRef& context, Rect& rect)
     {
         const auto& callback = context->getStyle<UITreeView>(getStyle());
         if (callback)
@@ -458,7 +458,7 @@ namespace onut
         }
     }
 
-    void UITreeView::onMouseScrollInternal(const UIMouseEvent& evt)
+    bool UITreeView::onMouseScrollInternal(const UIMouseEvent& evt)
     {
         m_scroll -= evt.scroll;
         auto contentSize = getTotalHeight();
@@ -466,6 +466,8 @@ namespace onut
         auto scrollMaxSize = contentSize - worldRect.w;
         if (m_scroll > scrollMaxSize) m_scroll = scrollMaxSize;
         if (m_scroll < 0) m_scroll = 0.f;
+
+        return true;
     }
 
     void UITreeView::sortItemsByName()

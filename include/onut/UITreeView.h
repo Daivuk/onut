@@ -55,11 +55,11 @@ namespace onut
     protected:
         void load(const rapidjson::Value& jsonNode) override;
         void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const override;
-        void renderControl(const OUIContextRef& context, const Rect& rect) override;
+        void renderControl(const OUIContextRef& context, Rect& rect) override;
         void onMouseDownInternal(const UIMouseEvent& evt) override;
         void onMouseMoveInternal(const UIMouseEvent& evt) override;
         void onMouseUpInternal(const UIMouseEvent& evt) override;
-        void onMouseScrollInternal(const UIMouseEvent& evt) override;
+        bool onMouseScrollInternal(const UIMouseEvent& evt) override;
 
     private:
         UITreeView() {}
