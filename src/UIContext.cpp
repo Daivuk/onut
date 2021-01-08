@@ -509,7 +509,14 @@ namespace onut
             }
             else
             {
-                pFont->draw(textComponent.text, ORectAlign(oRect, align), Vector2(align), oColor);
+                if (textComponent.font.flags & UIFontComponent::WordWrap)
+                {
+                    pFont->drawWordWrap(textComponent.text, ORectAlign(oRect, align), Vector2(align), oColor, true, nullptr, oRect.z);
+                }
+                else
+                {
+                    pFont->draw(textComponent.text, ORectAlign(oRect, align), Vector2(align), oColor);
+                }
             }
         }
     };

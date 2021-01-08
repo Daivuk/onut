@@ -202,6 +202,74 @@ namespace onut
         return result;
     }
 
+    Vector2 Font::measureWordWrap(const std::string& in_text, float wrapWidth)
+    {
+        Vector2 result;
+
+        result.y += (float)m_common.lineHeight;
+        float curX = 0;
+        unsigned int len = (unsigned int)in_text.length();
+        uint32_t charId;
+        unsigned int lastSpaceI = -1;
+        float curXLastSpace = 0;
+        for (unsigned int i = 0; i < len;)
+        {
+            if (curX >= wrapWidth && lastSpaceI != -1)
+            {
+                curX = curXLastSpace;
+                i = lastSpaceI;
+                lastSpaceI = -1;
+                result.y += (float)m_common.lineHeight;
+                if (curX > result.x) result.x = curX;
+                curX = 0;
+                continue;
+            }
+
+            charId = getNextUTF8(in_text.c_str(), i, len);
+            if (charId == ' ')
+            {
+                lastSpaceI = i;
+                curXLastSpace = curX;
+            }
+            if (charId == '\n')
+            {
+                lastSpaceI = -1;
+                result.y += (float)m_common.lineHeight;
+                if (curX > result.x) result.x = curX;
+                curX = 0;
+                continue;
+            }
+            if (charId == '^')
+            {
+                getNextUTF8(in_text.c_str(), i, len);
+                getNextUTF8(in_text.c_str(), i, len);
+                getNextUTF8(in_text.c_str(), i, len);
+                continue;
+            }
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
+            {
+                continue;
+            }
+            auto pDatChar = it->second;
+            if (i == len)
+            {
+                curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
+            }
+            else if (in_text[i + 1] == '\n')
+            {
+                curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
+            }
+            else
+            {
+                curX += static_cast<float>(pDatChar->xadvance);
+            }
+        }
+        if (curX > result.x) result.x = curX;
+
+        return result;
+    }
+
     decltype(std::string().size()) Font::caretPos(const std::string& in_text, float at)
     {
         unsigned int pos = 0;
@@ -346,6 +414,151 @@ namespace onut
 
             curPos.x += static_cast<float>(pDatChar->xadvance);
         }
+        if (bHandleBatch) pSpriteBatch->end();
+
+        return std::move(ret);
+    }
+
+    Rect Font::drawWordWrap(const std::string& text, const Vector2& in_pos, const Vector2& align, const Color& color, bool snapPixels, const OSpriteBatchRef& in_pSpriteBatch, float wrapWidth)
+    {
+        OSpriteBatchRef pSpriteBatch = in_pSpriteBatch;
+        if (!pSpriteBatch) pSpriteBatch = oSpriteBatch;
+        Vector2 pos = in_pos;
+        Rect ret;
+        Vector2 dim = measureWordWrap(text, wrapWidth);
+        ret.z = dim.x;
+        ret.w = dim.y;
+
+        Vector2 posFrom = {pos.x, pos.y - (m_common.lineHeight - m_common.base)};
+        Vector2 posTo = {pos.x - dim.x, pos.y - dim.y + (m_common.lineHeight - m_common.base)};
+
+        pos.x = posFrom.x + (posTo.x - posFrom.x) * align.x;
+        pos.y = posFrom.y + (posTo.y - posFrom.y) * align.y;
+
+        if (snapPixels)
+        {
+            pos = {std::round(pos.x), std::round(pos.y)};
+        }
+        Vector2 curPos = pos;
+        ret.x = curPos.x;
+        ret.y = curPos.y;
+        unsigned int len = (unsigned int)text.size();
+        int page = -1;
+        float r, g, b;
+        Color curColor = color;
+        bool bHandleBatch = !pSpriteBatch->isInBatch();
+        if (bHandleBatch) pSpriteBatch->begin();
+
+        static std::vector<unsigned int> new_lines;
+        new_lines.clear();
+
+        unsigned int lastSpaceI = -1;
+        float curXLastSpace = 0;
+        for (unsigned int i = 0; i < len; )
+        {
+            if (curPos.x >= pos.x + wrapWidth && lastSpaceI != -1)
+            {
+                new_lines.push_back(lastSpaceI);
+                curPos.x = curXLastSpace;
+                i = lastSpaceI;
+                lastSpaceI = -1;
+                curPos.x = pos.x;
+                curPos.y += static_cast<float>(m_common.lineHeight);
+                continue;
+            }
+
+            // Transform from char to utf8
+            uint32_t charId = getNextUTF8(text.c_str(), i, len);
+
+            if (charId == ' ')
+            {
+                lastSpaceI = i;
+                curXLastSpace = curPos.x;
+            }
+            if (charId == '\n')
+            {
+                new_lines.push_back(i);
+                lastSpaceI = -1;
+                curPos.x = pos.x;
+                curPos.y += static_cast<float>(m_common.lineHeight);
+                continue;
+            }
+            if (charId == '^' && i + 3 < len)
+            {
+                // Colored text!
+                r = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                g = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                b = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                curColor = {r, g, b, color.a};
+                curColor.Premultiply();
+                continue;
+            }
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
+            {
+                continue;
+            }
+            auto pDatChar = it->second;
+
+            curPos.x += static_cast<float>(pDatChar->xadvance);
+        }
+
+        // Now we have return indices, we draw
+        //new_lines
+        curPos = pos;
+        ret.x = curPos.x;
+        ret.y = curPos.y;
+        len = (unsigned int)text.size();
+        page = -1;
+        curColor = color;
+
+        size_t next_new_line = 0;
+        for (unsigned int i = 0; i < len; )
+        {
+            if (next_new_line < new_lines.size() && new_lines[next_new_line] == i)
+            {
+                next_new_line++;
+                curPos.x = pos.x;
+                curPos.y += static_cast<float>(m_common.lineHeight);
+                continue;
+            }
+
+            // Transform from char to utf8
+            uint32_t charId = getNextUTF8(text.c_str(), i, len);
+
+            if (charId == '^' && i + 3 < len)
+            {
+                // Colored text!
+                r = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                g = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                b = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
+                curColor = {r, g, b, color.a};
+                curColor.Premultiply();
+                continue;
+            }
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
+            {
+                continue;
+            }
+            auto pDatChar = it->second;
+            auto& pTexture = m_pages[pDatChar->page]->pTexture;
+
+            // Draw it here
+            pSpriteBatch->drawRectWithUVs(
+                pTexture, {
+                    curPos.x + static_cast<float>(pDatChar->xoffset), curPos.y + static_cast<float>(pDatChar->yoffset),
+                    static_cast<float>(pDatChar->width), static_cast<float>(pDatChar->height)
+                }, {
+                    static_cast<float>(pDatChar->x) / static_cast<float>(m_common.scaleW),
+                    static_cast<float>(pDatChar->y) / static_cast<float>(m_common.scaleH),
+                    static_cast<float>(pDatChar->x + pDatChar->width) / static_cast<float>(m_common.scaleW),
+                    static_cast<float>(pDatChar->y + pDatChar->height) / static_cast<float>(m_common.scaleH)
+                }, curColor);
+
+            curPos.x += static_cast<float>(pDatChar->xadvance);
+        }
+
         if (bHandleBatch) pSpriteBatch->end();
 
         return std::move(ret);
