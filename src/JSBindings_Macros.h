@@ -26,6 +26,7 @@
 #include <onut/Sound.h>
 #include <onut/SpriteAnim.h>
 #include <onut/SpriteBatch.h>
+#include <onut/Strings.h>
 #include <onut/Texture.h>
 #include <onut/TiledMap.h>
 #include <onut/Timing.h>
@@ -43,6 +44,32 @@
 
 // Third party
 #include <duktape/duktape.h>
+
+static void logJSStack(duk_context* ctx, std::string log)
+{
+    // .stack, .fileName, and .lineNumber
+    if (duk_is_error(ctx, -1))
+    {
+        /* Accessing .stack might cause an error to be thrown, so wrap this
+        * access in a duk_safe_call() if it matters.
+        */
+        duk_get_prop_string(ctx, -1, "stack");
+        std::string msg = duk_safe_to_string(ctx, -1);
+        auto lines = onut::splitString(msg, '\n');
+        for (size_t i = 0; i < lines.size() && i < 8; ++i)
+        {
+            log += lines[i] + "\n";
+        }
+        duk_pop(ctx);
+    }
+    else
+    {
+        /* Non-Error value, coerce safely to string. */
+        log += duk_safe_to_string(ctx, -1);
+    }
+
+    OLog(log);
+}
 
 namespace onut
 {
@@ -121,7 +148,10 @@ namespace onut
 
             void call(duk_context* ctx, duk_idx_t argCount)
             {
-                duk_call(ctx, argCount);
+                if (duk_pcall(ctx, argCount) != 0)
+                {
+                    logJSStack(pContext, "function call failed: ");
+                }
                 duk_pop(ctx); // Pop result
                 duk_pop(ctx); // Pop global stash
             }
