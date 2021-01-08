@@ -48,7 +48,7 @@ namespace onut
 
         void load(const rapidjson::Value& jsonNode) override;
         void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const override;
-        void renderControl(const OUIContextRef& context, const Rect& rect) override;
+        void renderControl(const OUIContextRef& context, Rect& rect) override;
         void onClickInternal(const UIMouseEvent& evt) override;
 
     private:

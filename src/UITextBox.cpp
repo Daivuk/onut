@@ -133,7 +133,7 @@ namespace onut
         setJsonInt(jsonNode, "precision", m_decimalPrecision, allocator);
     }
 
-    void UITextBox::renderControl(const OUIContextRef& context, const Rect& rect)
+    void UITextBox::renderControl(const OUIContextRef& context, Rect& rect)
     {
         const auto& callback = context->getStyle<UITextBox>(getStyle());
         if (callback)

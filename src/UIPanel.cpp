@@ -34,7 +34,7 @@ namespace onut
         setJsonColor(jsonNode, "color", color, allocator);
     }
 
-    void UIPanel::renderControl(const OUIContextRef& context, const Rect& rect)
+    void UIPanel::renderControl(const OUIContextRef& context, Rect& rect)
     {
         const auto& callback = context->getStyle<UIPanel>(getStyle());
         if (callback)

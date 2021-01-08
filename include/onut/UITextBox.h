@@ -56,7 +56,7 @@ namespace onut
     protected:
         void load(const rapidjson::Value& jsonNode) override;
         void save(rapidjson::Value& jsonNode, rapidjson::Allocator& allocator) const override;
-        void renderControl(const OUIContextRef& context, const Rect& rect) override;
+        void renderControl(const OUIContextRef& context, Rect& rect) override;
 
         void onGainFocusInternal(const UIFocusEvent& evt) override;
         void onLoseFocusInternal(const UIFocusEvent& evt) override;

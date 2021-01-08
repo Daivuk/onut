@@ -172,7 +172,11 @@ namespace onut
             {
                 if (m_mouseEvents[0].scroll != 0)
                 {
-                    m_pHoverControl->onMouseScrollInternal(m_mouseEvents[0]);
+                    auto scrollable = m_pHoverControl;
+                    while (scrollable && !scrollable->onMouseScrollInternal(m_mouseEvents[0]))
+                    {
+                        scrollable = scrollable->getParent();
+                    }
                     if (m_pHoverControl->onMouseScroll)
                     {
                         m_pHoverControl->onMouseScroll(m_pHoverControl, m_mouseEvents[0]);

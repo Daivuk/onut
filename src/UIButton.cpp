@@ -42,7 +42,7 @@ namespace onut
         setJsonScale9Component(jsonNode, scale9Component, allocator);
     }
 
-    void UIButton::renderControl(const OUIContextRef& context, const Rect& rect)
+    void UIButton::renderControl(const OUIContextRef& context, Rect& rect)
     {
         const auto& callback = context->getStyle<UIButton>(getStyle());
         if (callback)

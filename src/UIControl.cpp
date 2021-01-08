@@ -617,6 +617,7 @@ namespace onut
 
         pChild->m_pParent = OThis;
         m_children.push_back(pChild);
+        onChildrenChanged();
     }
 
     void UIControl::insert(OUIControlRef pChild, const OUIControlRef& pBefore)
@@ -636,6 +637,7 @@ namespace onut
 
         pChild->m_pParent = OThis;
         m_children.insert(m_children.begin() + i, pChild);
+        onChildrenChanged();
     }
 
     void UIControl::insertAfter(OUIControlRef pChild, const OUIControlRef& pAfter)
@@ -654,6 +656,7 @@ namespace onut
 
         pChild->m_pParent = OThis;
         m_children.insert(m_children.begin() + i, pChild);
+        onChildrenChanged();
     }
 
     bool UIControl::insertAt(OUIControlRef pChild, size_t index)
@@ -667,6 +670,7 @@ namespace onut
 
         pChild->m_pParent = OThis;
         m_children.insert(m_children.begin() + index, pChild);
+        onChildrenChanged();
         return true;
     }
 
@@ -689,6 +693,7 @@ namespace onut
             if (pChild == in_pChild)
             {
                 m_children.erase(m_children.begin() + i);
+                onChildrenChanged();
                 break;
             }
         }
@@ -705,6 +710,7 @@ namespace onut
             pChild->m_pParent.reset();
         }
         m_children.clear();
+        onChildrenChanged();
     }
 
     OUIControlRef UIControl::getChild(const std::string& in_name, bool bSearchSubChildren)
@@ -888,7 +894,7 @@ namespace onut
         }
         else
         {
-            updateInternal(context, parentRect);
+            updateInternal(context, parentRect, parentRect);
         }
         if (context->useNavigation)
         {
@@ -1141,17 +1147,25 @@ namespace onut
         return std::move(worldRect);
     }
 
-    void UIControl::updateInternal(const OUIContextRef& context, const Rect& parentRect)
+    void UIControl::updateInternal(const OUIContextRef& context, const Rect& parentRect, Rect clipRect)
     {
         if (!isEnabled || !isVisible) return;
         Rect worldRect = getWorldRect(parentRect);
+
+        Rect adjustedWorldRect = worldRect;
+        adjustRect(adjustedWorldRect);
+
+        if (clipChildren)
+        {
+            clipRect = worldRect;
+        }
 
         // Do children first, inverted
         if (context->useNavigation)
         {
             for (auto pChild : m_children)
             {
-                pChild->updateInternal(context, worldRect);
+                pChild->updateInternal(context, adjustedWorldRect, clipRect);
             }
         }
         else
@@ -1160,7 +1174,7 @@ namespace onut
             for (auto it = m_children.rbegin(); it != itend; ++it)
             {
                 auto pChild = *it;
-                pChild->updateInternal(context, worldRect);
+                pChild->updateInternal(context, adjustedWorldRect, clipRect);
             }
         }
 
@@ -1170,7 +1184,11 @@ namespace onut
             if (mouseEvt.mousePos.x >= worldRect.x &&
                 mouseEvt.mousePos.y >= worldRect.y &&
                 mouseEvt.mousePos.x <= worldRect.x + worldRect.z &&
-                mouseEvt.mousePos.y <= worldRect.y + worldRect.w)
+                mouseEvt.mousePos.y <= worldRect.y + worldRect.w &&
+                mouseEvt.mousePos.x >= clipRect.x &&
+                mouseEvt.mousePos.y >= clipRect.y &&
+                mouseEvt.mousePos.x <= clipRect.x + clipRect.z &&
+                mouseEvt.mousePos.y <= clipRect.y + clipRect.w)
             {
                 context->m_mouseEvents[0].localMousePos.x = mouseEvt.mousePos.x - worldRect.x;
                 context->m_mouseEvents[0].localMousePos.y = mouseEvt.mousePos.y - worldRect.y;
@@ -1190,10 +1208,12 @@ namespace onut
         {
             context->pushClip(worldRect);
         }
+        Rect adjustedWorldRect = worldRect;
+        adjustRect(adjustedWorldRect);
         renderControl(context, worldRect);
         for (auto pChild : m_children)
         {
-            pChild->renderInternal(context, worldRect);
+            pChild->renderInternal(context, adjustedWorldRect);
         }
         if (clipChildren)
         {
