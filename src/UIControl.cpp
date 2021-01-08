@@ -440,6 +440,10 @@ namespace onut
                 {
                     pChild = UITextBox::create();
                 }
+                else if (!strcmp(jsonChildType, "UIScrollView"))
+                {
+                    pChild = UIScrollView::create();
+                }
                 if (!pChild) continue;
                 add(pChild);
                 pChild->load(jsonChild);

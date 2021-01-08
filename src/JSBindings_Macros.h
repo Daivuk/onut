@@ -36,6 +36,7 @@
 #include <onut/UIPanel.h>
 #include <onut/UIImage.h>
 #include <onut/UILabel.h>
+#include <onut/UIScrollView.h>
 #include <onut/UITextBox.h>
 #include <onut/VertexBuffer.h>
 #include <onut/Window.h>

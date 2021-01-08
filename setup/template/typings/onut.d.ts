@@ -1045,6 +1045,7 @@ declare class UI {
     static createButton(): UI;
     static createTextField(): UI;
     static createCheckBox(): UI;
+    static createScrollView(): UI;
 
     getName(): string;
     setName(name: string);

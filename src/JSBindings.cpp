@@ -8708,6 +8708,12 @@ namespace onut
                 return 1;
             }, 1);
             duk_put_prop_string(ctx, -2, "createCheckBox");
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                newUI(ctx, OUIScrollView::create());
+                return 1;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "createScrollView");
 
             duk_put_global_string(ctx, "UI");
         }
