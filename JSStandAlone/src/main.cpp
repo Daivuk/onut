@@ -9,6 +9,9 @@
 
 void initSettings()
 {
+    extern bool g_enableDuktapeDebugger;
+    g_enableDuktapeDebugger = true;
+
     std::string path = ".";
     if (!OArguments.empty()) path = OArguments.back();
 

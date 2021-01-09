@@ -7,6 +7,7 @@ option(ONUT_BUILD_SETUP "Build the Setup app" OFF)
 option(ONUT_USE_SDL "Use SDL+OpenGL on Windows instead of Win32/D3D11/DI8" ON)
 option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" ON)
 option(ONUT_BUILD_JSONCPP "If using another API that requires json disable this" ON)
+option(ONUT_DUKTAPE_DEBUGGER "Allows processes to attach to the duktape debugger" OFF)
 
 if (ONUT_USE_SDL)
     set(ONUT_USE_OPENGL ON)
@@ -43,6 +44,9 @@ if (WIN32)
     add_definitions(-DNOMINMAX)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
+if (ONUT_DUKTAPE_DEBUGGER)
+    add_definitions(-DDUK_USE_DEBUGGER_SUPPORT -DDUK_USE_INTERRUPT_COUNTER -DDUK_USE_DEBUGGER_INSPECT -DDUK_USE_DEBUGGER_THROW_NOTIFY -DDUK_USE_DEBUGGER_PAUSE_UNCAUGHT -DDUK_USE_DEBUGGER_DUMPHEAP)
+endif()
 
 # Add OSX specific source files
 if (APPLE)
@@ -78,6 +82,20 @@ if (LINUX)
         thirdparty/gl3w/src/gl3w.c
     )
     list(APPEND includes PUBLIC ./thirdparty/gl3w/include/)
+endif()
+
+if (ONUT_DUKTAPE_DEBUGGER)
+    if (UNIX)
+        list(APPEND src_files
+            src/duktape/duk_trans_socket.h
+            src/duktape/duk_trans_socket_unix.c
+        )
+    elseif (WIN32)
+        list(APPEND src_files
+            src/duktape/duk_trans_socket.h
+            src/duktape/duk_trans_socket_windows.c
+        )
+    endif()
 endif()
 
 # Add Win32 specific source files

@@ -7,12 +7,19 @@
 // Private includes
 #include "JSBindings.h"
 #include "JSBindings_Macros.h"
+#if defined(DUK_USE_DEBUGGER_SUPPORT)
+#include "duktape/duk_trans_socket.h"
+#endif
 
 // Third party
 #include <json/json.h>
 
 // STL
 #include <set>
+
+#if defined(DUK_USE_DEBUGGER_SUPPORT)
+bool g_enableDuktapeDebugger = false;
+#endif
 
 namespace onut
 {
@@ -470,6 +477,23 @@ namespace onut
         {
             pContext = duk_create_heap_default();
 
+#if defined(DUK_USE_DEBUGGER_SUPPORT)
+            if (g_enableDuktapeDebugger)
+            {
+                duk_trans_socket_init();
+                duk_trans_socket_waitconn();
+                duk_debugger_attach(pContext,
+                                    duk_trans_socket_read_cb,
+                                    duk_trans_socket_write_cb,
+                                    duk_trans_socket_peek_cb,
+                                    duk_trans_socket_read_flush_cb,
+                                    duk_trans_socket_write_flush_cb,
+                                    NULL,
+                                    NULL,
+                                    NULL);
+            }
+#endif
+
             createBindings();
             if (!evalScripts())
             {
@@ -496,6 +520,13 @@ namespace onut
 
         void shutdown()
         {
+#if defined(DUK_USE_DEBUGGER_SUPPORT)
+            if (g_enableDuktapeDebugger)
+            {
+                duk_debugger_detach(pContext);
+            }
+#endif
+
             duk_destroy_heap(pContext);
             pContext = nullptr;
         }
@@ -11010,6 +11041,46 @@ namespace onut
             createImguiBindings();
         }
 
+        static bool executeJSFile(const std::string& filename)
+        {
+            if (!filename.empty())
+            {
+                FILE* pFile = fopen(filename.c_str(), "rb");
+                fseek(pFile, 0, SEEK_END);
+                auto len = ftell(pFile);
+                fseek(pFile, 0, SEEK_SET);
+                char* str = new char[len + 1];
+                fread(str, 1, len, pFile);
+                str[len] = '\0';
+                fclose(pFile);
+
+                auto filename_without_path = onut::getFilename(filename);
+                duk_push_string(pContext, filename_without_path.c_str());
+                if (duk_pcompile_lstring_filename(pContext, 0, str, len) != 0)
+                {
+                    logJSStack(pContext, onut::getFilename(filename) + " failed");
+                    duk_pop(pContext);
+                    delete[] str;
+                    return false;
+                }
+                
+                if (duk_pcall(pContext, 0) != 0)
+                {
+                    logJSStack(pContext, onut::getFilename(filename) + " failed");
+                    duk_pop(pContext);
+                    delete[] str;
+                    return false;
+                }
+
+                delete[] str;
+                duk_pop(pContext);
+
+                return true;
+            }
+
+            return true;
+        }
+
         static bool evalScripts()
         {
             // Search for all scripts
@@ -11033,47 +11104,13 @@ namespace onut
             // Execute them
             for (auto& filename : scriptFilenames)
             {
-                FILE* pFile = fopen(filename.c_str(), "rb");
-                fseek(pFile, 0, SEEK_END);
-                auto len = ftell(pFile);
-                fseek(pFile, 0, SEEK_SET);
-                char* str = new char[len + 1];
-                fread(str, 1, len, pFile);
-                str[len] = '\0';
-                fclose(pFile);
-                if (duk_peval_string(pContext, str) != 0)
+                if (!executeJSFile(filename))
                 {
-                    logJSStack(pContext, onut::getFilename(filename) + std::string(", eval failed: "));
-                    duk_pop(pContext);
-                    delete[] str;
                     return false;
                 }
-                delete[] str;
-                duk_pop(pContext);
             }
 
-            if (!mainJS.empty())
-            {
-                FILE* pFile = fopen(mainJS.c_str(), "rb");
-                fseek(pFile, 0, SEEK_END);
-                auto len = ftell(pFile);
-                fseek(pFile, 0, SEEK_SET);
-                char* str = new char[len + 1];
-                fread(str, 1, len, pFile);
-                str[len] = '\0';
-                fclose(pFile);
-                if (duk_peval_string(pContext, str) != 0)
-                {
-                    logJSStack(pContext, onut::getFilename(mainJS) + std::string(", eval failed: "));
-                    duk_pop(pContext);
-                    delete[] str;
-                    return false;
-                }
-                delete[] str;
-                duk_pop(pContext);
-            }
-
-            return true;
+            return executeJSFile(mainJS);
         }
 
         void update(float dt)
@@ -11092,6 +11129,14 @@ namespace onut
 
             // Garbage collect
             duk_gc(pContext, 0);
+
+            // Cooperate debugger
+#if defined(DUK_USE_DEBUGGER_SUPPORT)
+            if (g_enableDuktapeDebugger)
+            {
+                duk_debugger_cooperate(pContext);
+            }
+#endif
         }
 
         void render()
