@@ -10,7 +10,15 @@
 void initSettings()
 {
     extern bool g_enableDuktapeDebugger;
-    g_enableDuktapeDebugger = true;
+    for (auto it = OArguments.begin(); it != OArguments.end(); ++it)
+    {
+        if (*it == "--debugger")
+        {
+            g_enableDuktapeDebugger = true;
+            OArguments.erase(it);
+            break;
+        }
+    }
 
     std::string path = ".";
     if (!OArguments.empty()) path = OArguments.back();

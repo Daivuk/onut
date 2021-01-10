@@ -5,7 +5,7 @@
     "version": "0.0.1",
     "publisher": "daivuk",
     "categories": [
-        "Languages"
+        "Programming Languages"
     ],
     "engines": {
 		"vscode": "^0.10.1"

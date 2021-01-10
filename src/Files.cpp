@@ -165,6 +165,8 @@ namespace onut
     std::string makeRelativePath(const std::string& in_path, const std::string& in_relativeTo)
     {
         auto path = in_path;
+        if (path.size() >= 2 && path[0] == '.' && (path[1] == '\\' || path[1] == '/'))
+            path = path.substr(2);
         std::replace(path.begin(), path.end(), '\\', '/');
         auto pathSplit = splitString(path, '/');
 

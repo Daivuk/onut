@@ -11055,6 +11055,10 @@ namespace onut
                 fclose(pFile);
 
                 auto filename_without_path = onut::getFilename(filename);
+                //auto filename_without_path = onut::makeRelativePath(filename, "assets/scripts/");
+//#if defined(WIN32)
+//                std::replace(filename_without_path.begin(), filename_without_path.end(), '/', '\\');
+//#endif
                 duk_push_string(pContext, filename_without_path.c_str());
                 if (duk_pcompile_lstring_filename(pContext, 0, str, len) != 0)
                 {
