@@ -172,7 +172,7 @@ namespace onut
         else
         {
             auto posX = (screenW - m_resSetting.x) / 2;
-            auto posY = (screenH - m_resSetting.y) / 2;
+            auto posY = (screenH - m_resSetting.y) / 2 - 20;
 
             // Create the window
             if (!oSettings->getIsResizableWindow())
@@ -199,7 +199,7 @@ namespace onut
             auto newW = m_resSetting.x + wDiff;
             auto newH = m_resSetting.y + hDiff;
             posX = (screenW - newW) / 2;
-            posY = (screenH - newH) / 2;
+            posY = (screenH - newH) / 2 - 20;
             SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
 
             DragAcceptFiles(m_handle, TRUE);
