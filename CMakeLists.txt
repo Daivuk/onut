@@ -25,7 +25,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 project(libonut)
 
 # Some compiler flags
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 if (MSVC) # Multi core in VS
     SET(PUBLIC CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "/MP /FS")
 endif()
