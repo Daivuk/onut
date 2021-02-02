@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.6" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" infinite="0" nextobjectid="92">
+ <tileset firstgid="1" name="sheet" tilewidth="16" tileheight="16" tilecount="361" columns="19">
+  <image source="../textures/sheet.png" width="304" height="304"/>
+ </tileset>
+ <tileset firstgid="362" name="info" tilewidth="16" tileheight="16" tilecount="16" columns="4">
+  <image source="../textures/info.png" width="64" height="64"/>
+ </tileset>
+ <layer name="tiles" width="64" height="64">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2ZTW+NQRTHz5RqaIXELaWIDdq6SmLjpfUSLwtV2qQLXagH2+5YiMQHIuzt2NvxGfgMJCTOiZk8x+mZ584VfXpnnMUv93bmPC//mXNn/j0zDgDjhmEYhmEYhmEYxl+zHbmETDEuIsMipql9StxjuI/nbzWLyBnBYeQRi9nP+jri2l2+/bT/3CliBh3SNquMQUfE9Grn3B0AXak8jWj4hnxHRh3AmOvdHhu7QYfm8GzC/N9Q2mnsRgrQH977kP+cFRqqhnEh/ZOs/2Zm+g8gQ8iS/ySWkQnfP4OcYvrmkcvs2mV2XbjPRB/PzwGa55AbOc3tv9Sf49qeAvc2modpyn/ufwJzkJf/0fY/8j8p+3/M/+SUIyn+ZzHSXinX5bZGxDzc/+5/nokYzf+E/T9n/RV775j/oTXiPvz+jZfqfzj34E8PQzELmOt33Mb2JR8ffNMQlOd/iDXU/tBt/Xu0yQ72/ThqP+H0vhIhb3MQal9zHrVfcHWth/py8jn9EDwf+SBa025Bvb5dg9rncC9YEjT306Dv7ZyTUGYOaJ7oNrKgtOfkdfvRH3x94AGypujPaa9PpVJ0vkJei7aRQvWTr9kGG3OAQ54Pt4MivU5Y/8nLXo9ol7WA0qAc6ALzxDjZS66u8XULnXvOFfb9MWp/4vS+3OhV89KYRu0zDf6f18LCfT8m3Jdo20un1LxkbW8Otc+7+HhpnuElxH0Sv3/w2fJ8dbNIPfM7guxW4oirSjy1H1X0a2Ognbu25SdiNS/a0ByyD+lQfSsSF/iB/ET2YOxeV+8No0L/OUVbBXVNqe3aSWrNS+p/Lv7mZ+TvkBXBCx+36rW9Qd4in5DPyvPJT7Wxp1bsmbGal8wRqX2sR7xkHXmPfEC+IF8jcW3Mf0rNK6aHxov+96X1Usv/Jv0yv6S3OtaS/tQcWRfvN+lZ9cTOyDWkV+bnrtxnDYqn0nKE3pWf92q1UB7fhbSaaM5eqolSdRmGYRiGYRiGYWwmvwDZYkzzAEAAAA==
+  </data>
+ </layer>
+ <layer name="obj" width="64" height="64">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3YwQ3CMAwF0E6ABBsgwSzACsAObIEQG3Rb0isXIuFgEr0n+Wb9+tLUzTQBAADAd24VPcdSpw89c2VWjy6lrhV9j9aDQLB1qU1Azq7UPiAH4Fcid5ZR9x8YVdTeErVHAZDnkD1AsnNFz6r5FGRxjwkwtuUbHvX/e3/LXTwDcrPM2QM05J7yf2wTnx35/jOWns9uAAAA6NELC226PgBAAAA=
+  </data>
+ </layer>
+ <objectgroup name="entities">
+  <object id="16" type="chest" x="592" y="544" width="16" height="16">
+   <properties>
+    <property name="Chest:Gold" value="3"/>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="18" type="chest" x="704" y="672" width="16" height="16">
+   <properties>
+    <property name="Chest:Bomb" value="1"/>
+    <property name="Chest:Gold" value="0"/>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="19" type="chest" x="352" y="672" width="16" height="16">
+   <properties>
+    <property name="Chest:Gold" value="6"/>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="20" type="chest" x="352" y="736" width="16" height="16">
+   <properties>
+    <property name="Chest:Gold" value="2"/>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="21" type="vase" x="464" y="688" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
+   </properties>
+  </object>
+  <object id="22" type="vase" x="464" y="768" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="0"/>
+   </properties>
+  </object>
+  <object id="23" type="vase" x="656" y="672" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
+   </properties>
+  </object>
+  <object id="24" type="vase" x="736" y="672" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="0"/>
+   </properties>
+  </object>
+  <object id="25" type="vase" x="448" y="576" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="1"/>
+   </properties>
+  </object>
+  <object id="26" type="vase" x="656" y="224" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="0"/>
+   </properties>
+  </object>
+  <object id="27" type="vase" x="672" y="240" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Static" value="true"/>
+    <property name="Vase:Gold" value="0"/>
+   </properties>
+  </object>
+  <object id="28" type="stairs" x="880" y="720" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="4,4"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Exit" value=""/>
+   </properties>
+  </object>
+  <object id="29" type="door" x="640" y="704" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="30"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="30" type="door" x="592" y="704" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="29"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="31" type="door" x="592" y="752" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="32"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="32" type="door" x="640" y="752" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="31"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="33" type="door" x="592" y="400" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="34"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="34" type="door" x="544" y="400" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="33"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="35" type="door" x="496" y="400" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="36"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="36" type="door" x="448" y="400" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="35"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="37" type="door" x="496" y="256" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="40"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="38" type="door" x="592" y="256" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="39"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="39" type="door" x="544" y="256" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="38"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="40" type="door" x="448" y="256" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="37"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="41" type="door" x="512" y="448" width="32" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="32,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="42"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="42" type="door" x="512" y="496" width="32" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="32,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:CloseSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:OpenSound" value="prisonDoorOpen.wav"/>
+    <property name="Door:Target" value="41"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="43" type="door" x="512" y="624" width="32" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="32,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="44"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="44" type="door" x="512" y="672" width="32" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="32,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="43"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="45" type="crumble" x="448" y="704" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:NeedBomb" value="true"/>
+    <property name="Door:Target" value="61"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="47" type="door" x="784" y="720" width="16" height="32">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,32"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="48"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="48" type="door" x="832" y="720" width="16" height="32">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,32"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="false"/>
+    <property name="Door:Target" value="47"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="49" name="player" type="start_location" x="384" y="416" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="6,6"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="DoorTraverser" value=""/>
+    <property name="Inventory" value=""/>
+    <property name="Life:Amount" value="4"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="Player:Speed" value="64"/>
+    <property name="Player:StepSound" value="step.wav"/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_s"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="baltAnims.spriteanim"/>
+    <property name="TreasureHunter" value=""/>
+   </properties>
+  </object>
+  <object id="50" type="guard" x="528" y="352" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="n"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_n"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
+   </properties>
+  </object>
+  <object id="51" type="bat" x="400" y="256" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+  <object id="53" type="guard" x="480" y="528" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="e"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_e"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
+   </properties>
+  </object>
+  <object id="54" type="guard" x="544" y="768" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="n"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_n"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
+   </properties>
+  </object>
+  <object id="55" type="guard" x="464" y="752" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="e"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_e"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
+   </properties>
+  </object>
+  <object id="56" type="guard" x="720" y="768" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="w"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="guard2.spriteanim"/>
+   </properties>
+  </object>
+  <object id="57" type="guard" x="752" y="720" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Guard" value=""/>
+    <property name="Guard:Dir" value="w"/>
+    <property name="Life:Amount" value="3"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="idle_w"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="guard1.spriteanim"/>
+   </properties>
+  </object>
+  <object id="59" type="bat" x="336" y="688" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+  <object id="60" name="camera" x="416" y="480" width="16" height="16">
+   <properties>
+    <property name="Camera2DComponent:Zoom" value="4"/>
+    <property name="SmartRoomCamera" value=""/>
+   </properties>
+  </object>
+  <object id="61" type="door" x="400" y="704" width="16" height="16">
+   <properties>
+    <property name="Collider2DComponent:Size" value="16,16"/>
+    <property name="Collider2DComponent:Trigger" value="true"/>
+    <property name="Door:Open" value="true"/>
+    <property name="Door:Target" value="45"/>
+    <property name="Static" value="true"/>
+   </properties>
+  </object>
+  <object id="88" type="bat" x="528" y="592" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+  <object id="89" type="bat" x="560" y="704" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+  <object id="90" type="bat" x="320" y="736" width="16" height="16">
+   <properties>
+    <property name="Bat" value=""/>
+    <property name="Collider2DComponent:Size" value="8,8"/>
+    <property name="DamageFlasher" value=""/>
+    <property name="Life:Amount" value="2"/>
+    <property name="Life:DamageSound" value="flesh.wav"/>
+    <property name="OnRoomResetter" value=""/>
+    <property name="PushBack:Strength" value="16"/>
+    <property name="SpriteAnimComponent:DefaultAnim" value="fly"/>
+    <property name="SpriteAnimComponent:SpriteAnim" value="bat.spriteanim"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="fow" width="64" height="64">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAIC3AYbSVKsAQAAA
+  </data>
+ </layer>
+ <layer name="collisions" width="64" height="64" visible="0" opacity="0.41">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3UWxaCIBRAUZuu8x9A/2Xx5ops1to/Rskh5XwdxwkAAACNPkfN96IberXX9q+6Bzn9qesr78Hu/VctNf3R65+xN9Hr0K9f/7i+1vM/uqNHe0v/inugf+/+q5aa/uj1A/SSGtHr0z+v/9+1J/r1X+/0DOj3/u/cD0816h1e5WzIPc9Kzr+rz0t/+057kBol/TnzZ/aP6End5479JWsv3a+a+TOf/5pnZKf+VFPLXAAAAODbGx7fr0IAQAAA
+  </data>
+ </layer>
+ <layer name="room" width="64" height="64" visible="0" opacity="0.65">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3TQQ6AIAwAQf2u/3+A4S5aogZtZxJumLBQlwUAAIA7trW/entGvv06/fr169dfsz8ic1tE5v7q869fv379+mv2w5Gz2a4w55X7o+1Z70C/fv11+5vK7U31/szeeM8/zUnknKPzP/qvzLyrWf3R/fr169c/k/7n+wEAAODKDiaMHSAAQAAA
+  </data>
+ </layer>
+</map>

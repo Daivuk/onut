@@ -175,6 +175,19 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
+        void newIRect(duk_context* ctx, const iRect& val)
+        {
+            duk_push_object(ctx);
+            duk_push_int(ctx, val.left);
+            duk_put_prop_string(ctx, -2, "x");
+            duk_push_int(ctx, val.top);
+            duk_put_prop_string(ctx, -2, "y");
+            duk_push_int(ctx, val.right - val.left);
+            duk_put_prop_string(ctx, -2, "w");
+            duk_push_int(ctx, val.bottom - val.top);
+            duk_put_prop_string(ctx, -2, "h");
+        }
+
         void newColor(duk_context* ctx, const Color& val)
         {
             duk_push_object(ctx);
@@ -495,26 +508,30 @@ namespace onut
 #endif
 
             createBindings();
-            if (!evalScripts())
-            {
-                return;
-            }
 
-            // Grab global Update and Render pointers if present
-            if (duk_get_global_string(pContext, "update"))
+            if (oSettings->getAutoLoadScripts())
             {
-                pUpdatePtr = duk_get_heapptr(pContext, -1);
-                duk_pop(pContext);
-            }
-            if (duk_get_global_string(pContext, "render"))
-            {
-                pRenderPtr = duk_get_heapptr(pContext, -1);
-                duk_pop(pContext);
-            }
-            if (duk_get_global_string(pContext, "renderUI"))
-            {
-                pRenderUIPtr = duk_get_heapptr(pContext, -1);
-                duk_pop(pContext);
+                if (!evalScripts())
+                {
+                    return;
+                }
+
+                // Grab global Update and Render pointers if present
+                if (duk_get_global_string(pContext, "update"))
+                {
+                    pUpdatePtr = duk_get_heapptr(pContext, -1);
+                    duk_pop(pContext);
+                }
+                if (duk_get_global_string(pContext, "render"))
+                {
+                    pRenderPtr = duk_get_heapptr(pContext, -1);
+                    duk_pop(pContext);
+                }
+                if (duk_get_global_string(pContext, "renderUI"))
+                {
+                    pRenderUIPtr = duk_get_heapptr(pContext, -1);
+                    duk_pop(pContext);
+                }
             }
         }
 
@@ -2646,7 +2663,7 @@ namespace onut
             duk_put_global_string(ctx, "Matrix");
         }
         
-        static void newUI(duk_context* ctx, const OUIControlRef& pUIControl)
+        void newUI(duk_context* ctx, const OUIControlRef& pUIControl)
         {
             duk_push_object(ctx);
             auto ppUIControl = new OUIControlRef(pUIControl);
@@ -2656,7 +2673,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newUpdater(duk_context* ctx, const OUpdaterRef& pUpdater)
+        void newUpdater(duk_context* ctx, const OUpdaterRef& pUpdater)
         {
             duk_push_object(ctx);
             auto ppUpdater = new OUpdaterRef(pUpdater);
@@ -2666,7 +2683,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newTexture(duk_context* ctx, const OTextureRef& pTexture)
+        void newTexture(duk_context* ctx, const OTextureRef& pTexture)
         {
             duk_push_object(ctx);
             auto ppTexture = new OTextureRef(pTexture);
@@ -2676,7 +2693,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newModel(duk_context* ctx, const OModelRef& pModel)
+        void newModel(duk_context* ctx, const OModelRef& pModel)
         {
             duk_push_object(ctx);
             auto ppModel = new OModelRef(pModel);
@@ -2686,7 +2703,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newFont(duk_context* ctx, const OFontRef& pFont)
+        void newFont(duk_context* ctx, const OFontRef& pFont)
         {
             duk_push_object(ctx);
             auto ppFont = new OFontRef(pFont);
@@ -2696,7 +2713,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newShader(duk_context* ctx, const OShaderRef& pShader)
+        void newShader(duk_context* ctx, const OShaderRef& pShader)
         {
             duk_push_object(ctx);
             auto ppShader = new OShaderRef(pShader);
@@ -2706,7 +2723,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newMusic(duk_context* ctx, const OMusicRef& pMusic)
+        void newMusic(duk_context* ctx, const OMusicRef& pMusic)
         {
             duk_push_object(ctx);
             auto ppMusic = new OMusicRef(pMusic);
@@ -2716,7 +2733,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newSound(duk_context* ctx, const OSoundRef& pSound)
+        void newSound(duk_context* ctx, const OSoundRef& pSound)
         {
             duk_push_object(ctx);
             auto ppSound = new OSoundRef(pSound);
@@ -2726,7 +2743,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newSoundInstance(duk_context* ctx, const OSoundInstanceRef& pSoundInstance)
+        void newSoundInstance(duk_context* ctx, const OSoundInstanceRef& pSoundInstance)
         {
             duk_push_object(ctx);
             auto ppSoundInstance = new OSoundInstanceRef(pSoundInstance);
@@ -2736,7 +2753,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
         
-        static void newTiledMap(duk_context* ctx, const OTiledMapRef& pTiledMap)
+        void newTiledMap(duk_context* ctx, const OTiledMapRef& pTiledMap)
         {
             duk_push_object(ctx);
             auto ppTiledMap = new OTiledMapRef(pTiledMap);
@@ -2747,7 +2764,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newSpriteAnim(duk_context* ctx, const OSpriteAnimRef& pSpriteAnim)
+        void newSpriteAnim(duk_context* ctx, const OSpriteAnimRef& pSpriteAnim)
         {
             duk_push_object(ctx);
             auto ppSpriteAnim = new OSpriteAnimRef(pSpriteAnim);
@@ -2757,7 +2774,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newSpriteAnimInstance(duk_context* ctx, const OSpriteAnimInstanceRef& pSpriteAnimInstance)
+        void newSpriteAnimInstance(duk_context* ctx, const OSpriteAnimInstanceRef& pSpriteAnimInstance)
         {
             duk_push_object(ctx);
             auto ppSpriteAnimInstance = new OSpriteAnimInstanceRef(pSpriteAnimInstance);
@@ -2767,7 +2784,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newParticleSystem(duk_context* ctx, const OParticleSystemRef& pParticleSystem)
+        void newParticleSystem(duk_context* ctx, const OParticleSystemRef& pParticleSystem)
         {
             duk_push_object(ctx);
             auto ppParticleSystem = new OParticleSystemRef(pParticleSystem);
@@ -2777,7 +2794,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newParticleEmitter(duk_context* ctx, const OEmitterInstance& particleEmitter)
+        void newParticleEmitter(duk_context* ctx, const OEmitterInstance& particleEmitter)
         {
             duk_push_object(ctx);
             auto pParticleEmitter = new OEmitterInstance(particleEmitter);
@@ -2787,7 +2804,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newVertexBuffer(duk_context* ctx, const OVertexBufferRef& pVertexBuffer)
+        void newVertexBuffer(duk_context* ctx, const OVertexBufferRef& pVertexBuffer)
         {
             duk_push_object(ctx);
             auto ppVertexBuffer = new OVertexBufferRef(pVertexBuffer);
@@ -2797,7 +2814,7 @@ namespace onut
             duk_set_prototype(ctx, -2);
         }
 
-        static void newIndexBuffer(duk_context* ctx, const OIndexBufferRef& pIndexBuffer)
+        void newIndexBuffer(duk_context* ctx, const OIndexBufferRef& pIndexBuffer)
         {
             duk_push_object(ctx);
             auto ppIndexBuffer = new OIndexBufferRef(pIndexBuffer);

@@ -77,6 +77,9 @@ namespace onut
         bool getShowFPS() const { return m_showFPS; }
         void setShowFPS(bool showFPS);
 
+        bool getAutoLoadScripts() const { return m_autoLoadScripts; }
+        void setAutoLoadScripts(bool autoLoadScripts);
+
     private:
         using UserSettings = std::unordered_map<SettingKey, SettingValue>;
 
@@ -95,6 +98,7 @@ namespace onut
         std::string m_matchMakingAddress = "192.168.1.112";
         int m_matchMakingPort = 4444;
         bool m_showFPS = true;
+        bool m_autoLoadScripts = true;
 
         std::atomic<bool> m_isDirty;
         std::atomic<bool> m_isRunning;

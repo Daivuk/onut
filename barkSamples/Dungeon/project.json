@@ -1,0 +1,14 @@
+{
+    "startScene": "game.scene",
+    "settings": {
+        "resolution": {"x": 800, "y": 600},
+        "retroResolution": {"x": 256, "y": 160},
+        "retroMode": false,
+        "gameName": "Dungeon",
+        "resizableWindow": false,
+        "fullscreen": false,
+        "fixedStep": false,
+        "onScreenLog": true
+    },
+    "globalScripts": []
+}

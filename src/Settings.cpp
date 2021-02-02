@@ -165,6 +165,11 @@ namespace onut
         m_showFPS = showFPS;
     }
 
+    void Settings::setAutoLoadScripts(bool autoLoadScripts)
+    {
+        m_autoLoadScripts = autoLoadScripts;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);

@@ -1,0 +1,83 @@
+<sheet texture="balt.png" spriteWidth="16" spriteHeight="24" originX="8" originY="20">
+  <anim name="idle_s" fps="6" loop="true">
+    <frame id="0" repeat="8"/>
+    <frame id="1"/>
+    <frame id="0" repeat="3"/>
+    <frame id="1"/>
+    <frame id="0" repeat="6"/>
+    <frame id="1"/>
+  </anim>
+  <anim name="idle_n" fps="6" loop="true">
+    <frame id="8"/>
+  </anim>
+  <anim name="idle_w" fps="6" loop="true">
+    <frame id="16" repeat="8"/>
+    <frame id="17"/>
+    <frame id="16" repeat="3"/>
+    <frame id="17"/>
+    <frame id="16" repeat="6"/>
+    <frame id="17"/>
+  </anim>
+  <anim name="idle_e" fps="6" loop="true">
+    <frame id="16" repeat="8" flipH="true"/>
+    <frame id="17" flipH="true"/>
+    <frame id="16" repeat="3" flipH="true"/>
+    <frame id="17" flipH="true"/>
+    <frame id="16" repeat="6" flipH="true"/>
+    <frame id="17" flipH="true"/>
+  </anim>
+  <anim name="die" fps="12" loop="true">
+    <frame id="0"/>
+    <frame id="16"/>
+    <frame id="8"/>
+    <frame id="16" flipH="true"/>
+  </anim>
+  <anim name="run_s" fps="12" loop="true">
+    <frame id="5"/>
+    <frame id="2"/>
+    <frame id="4"/>
+    <frame id="3"/>
+  </anim>
+  <anim name="run_n" fps="12" loop="true">
+    <frame id="13"/>
+    <frame id="10"/>
+    <frame id="12"/>
+    <frame id="11"/>
+  </anim>
+  <anim name="run_w" fps="12" loop="true">
+    <frame id="18"/>
+    <frame id="16"/>
+    <frame id="19"/>
+    <frame id="16"/>
+  </anim>
+  <anim name="run_e" fps="12" loop="true">
+    <frame id="18" flipH="true"/>
+    <frame id="16" flipH="true"/>
+    <frame id="19" flipH="true"/>
+    <frame id="16" flipH="true"/>
+  </anim>
+  <anim name="attack_s" fps="24" loop="false" next="idle_s">
+    <frame id="6"/>
+    <frame id="2"/>
+    <frame id="7" repeat="4"/>
+    <frame id="0"/>
+  </anim>
+  <anim name="attack_n" fps="24" loop="false" next="idle_n">
+    <frame id="14"/>
+    <frame id="10"/>
+    <frame id="15" repeat="4"/>
+    <frame id="8"/>
+  </anim>
+  <anim name="attack_w" fps="24" loop="false" next="idle_w">
+    <frame id="20"/>
+    <frame id="19"/>
+    <frame id="21" repeat="4"/>
+    <frame id="16"/>
+  </anim>
+  <anim name="attack_e" fps="24" loop="false" next="idle_e">
+    <frame id="20" flipH="true"/>
+    <frame id="19" flipH="true"/>
+    <frame id="21" repeat="4" flipH="true"/>
+    <frame id="16" flipH="true"/>
+  </anim>
+</sheet>

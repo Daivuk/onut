@@ -203,6 +203,14 @@ namespace onut
         std::vector<uint8_t> data = { std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
         return std::move(data);
     }
+
+    std::string getFileString(const std::string& filename)
+    {
+        auto data = getFileData(filename);
+        std::string str((const char* const)data.data(), data.size());
+        return std::move(str);
+    }
+
     /*
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename)
     {

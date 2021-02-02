@@ -34,6 +34,7 @@ namespace onut
     std::string getSavePath();
     std::string makeRelativePath(const std::string& path, const std::string& relativeTo);
     std::vector<uint8_t> getFileData(const std::string& filename);
+    std::string getFileString(const std::string& filename);
     bool fileExists(const std::string& filename);
     std::string showOpenDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename = "");
     std::string showSaveAsDialog(const std::string& caption, const FileTypes& extensions, const std::string& defaultFilename = "");

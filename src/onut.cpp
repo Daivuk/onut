@@ -194,6 +194,9 @@ namespace onut
         io.KeyMap[ImGuiKey_X] = (int)OKeyX;
         io.KeyMap[ImGuiKey_Y] = (int)OKeyY;
         io.KeyMap[ImGuiKey_Z] = (int)OKeyZ;
+
+        // Initialize Javascript
+        onut::js::init();
     }
 
     void cleanup()
@@ -328,9 +331,6 @@ namespace onut
         {
             initCallback();
         }
-
-        // Initialize Javascript
-        onut::js::init();
 
         // Main loop
         g_bIsRunning = true;

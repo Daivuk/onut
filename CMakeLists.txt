@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+option(ONUT_BUILD_BARK "Build the bark game engine" OFF)
+option(ONUT_BUILD_BARK_EDITOR "Build the bark game editor" OFF)
 option(ONUT_BUILD_SAMPLES "Build the samples" OFF)
 option(ONUT_BUILD_STANDALONE "Build the Javascript Stand Alone" OFF)
 option(ONUT_BUILD_UI_EDITOR "Build the UI Editor" OFF)
@@ -325,6 +327,14 @@ endif()
 
 if (ONUT_BUILD_SETUP)
     add_subdirectory(setup) # setup
+endif()
+
+if (ONUT_BUILD_BARK)
+    add_subdirectory(bark) # Bark game engine
+endif()
+
+if (ONUT_BUILD_BARK_EDITOR)
+    add_subdirectory(bark_editor) # Bark game editor
 endif()
 
 if (ONUT_BUILD_SAMPLES)

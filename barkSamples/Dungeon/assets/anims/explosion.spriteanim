@@ -1,0 +1,14 @@
+<sheet texture="explosion.png" spriteWidth="40" spriteHeight="40" originX="20" originY="20">
+  <anim name="explosion" fps="24">
+    <frame id="0"/>
+    <frame id="1"/>
+    <frame id="2"/>
+    <frame id="3"/>
+    <frame id="4"/>
+    <frame id="5"/>
+    <frame id="6"/>
+    <frame id="7"/>
+    <frame id="8"/>
+    <frame id="9"/>
+  </anim>
+</sheet>

@@ -1,0 +1,9 @@
+<sheet texture="swordAttack.png" spriteWidth="40" spriteHeight="40" originX="14" originY="23">
+  <anim name="attack" fps="30" loop="false">
+    <frame id="0"/>
+    <frame id="1"/>
+    <frame id="2"/>
+    <frame id="3"/>
+    <frame id="4"/>
+  </anim>
+</sheet>

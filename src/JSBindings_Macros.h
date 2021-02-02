@@ -177,8 +177,25 @@ namespace onut
         void newVector3(duk_context* ctx, const Vector3& val);
         void newVector4(duk_context* ctx, const Vector4& val);
         void newRect(duk_context* ctx, const Rect& val);
+        void newIRect(duk_context* ctx, const iRect& val);
         void newColor(duk_context* ctx, const Color& val);
         void newMatrix(duk_context* ctx, const Matrix& val);
+
+        void newTexture(duk_context* ctx, const OTextureRef& pTexture);
+        void newModel(duk_context* ctx, const OModelRef& pModel);
+        void newFont(duk_context* ctx, const OFontRef& pFont);
+        void newShader(duk_context* ctx, const OShaderRef& pShader);
+        void newMusic(duk_context* ctx, const OMusicRef& pMusic);
+        void newSound(duk_context* ctx, const OSoundRef& pSound);
+        void newSoundInstance(duk_context* ctx, const OSoundInstanceRef& pSoundInstance);
+        void newTiledMap(duk_context* ctx, const OTiledMapRef& pTiledMap);
+        void newSpriteAnim(duk_context* ctx, const OSpriteAnimRef& pSpriteAnim);
+        void newSpriteAnimInstance(duk_context* ctx, const OSpriteAnimInstanceRef& pSpriteAnimInstance);
+        void newParticleSystem(duk_context* ctx, const OParticleSystemRef& pParticleSystem);
+        void newParticleEmitter(duk_context* ctx, const OEmitterInstance& particleEmitter);
+        void newVertexBuffer(duk_context* ctx, const OVertexBufferRef& pVertexBuffer);
+        void newIndexBuffer(duk_context* ctx, const OIndexBufferRef& pIndexBuffer);
+
         Vector2 getVector2(duk_context *ctx, duk_idx_t index, const Vector2& in_default = Vector2::Zero);
         Point getPoint(duk_context *ctx, duk_idx_t index, const Point& in_default = Point(0, 0));
         Vector3 getVector3(duk_context *ctx, duk_idx_t index, const Vector3& in_default = Vector3::Zero);

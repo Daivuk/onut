@@ -1,0 +1,21 @@
+<sheet texture="Bat.png" spriteWidth="16" spriteHeight="24" originX="8" originY="10">
+  <anim name="fly" fps="18" loop="true">
+    <frame id="0"/>
+    <frame id="1"/>
+    <frame id="0"/>
+    <frame id="2"/>
+  </anim>
+  <anim name="attack" fps="24" next="fly">
+    <frame id="3"/>
+    <frame id="4"/>
+    <frame id="5"/>
+    <frame id="6"/>
+    <frame id="7"/>
+  </anim>
+  <anim name="die" fps="12">
+    <frame id="8"/>
+    <frame id="9"/>
+    <frame id="10"/>
+    <frame id="11"/>
+  </anim>
+</sheet>
