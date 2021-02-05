@@ -1,14 +1,43 @@
 {
+    "pixelsIn1Meter": 16,
     "children": [
         {
+            "id": 1,
             "name": "Main Camera",
             "components": {
                 "Camera2D": {
-                    "clearColor": {"r": 1, "g": 0, "b": 0, "a": 1}
+                    "zoom": 4,
+                    "origin": {"x": 0.5, "y": 0.5}
                 },
-                "Script": {
-                    "script": "test.js"
-                }
+                "camera.js": {}
+            }
+        },
+        {
+            "id": 2,
+            "name": "Map",
+            "components": {
+                "TiledMapRenderer": {
+                    "tiledMap": "dungeon.tmx",
+                    "smooth": false
+                },
+                "map.js": {}
+            }
+        },
+        {
+            "id": 3,
+            "name": "Player",
+            "transform": [1,0,0,0,0,1,0,0,0,0,1,0,392,424,0,1],
+            "components": {
+                "SpriteAnimRenderer": {
+                    "spriteAnim": "baltAnims.spriteanim",
+                    "smooth": false,
+                    "anim": "idle_s"
+                },
+                "player.js": {
+                    "speed": 64,
+                    "stepSound": "step.wav"
+                },
+                "damageFlasher.js": {}
             }
         }
     ]

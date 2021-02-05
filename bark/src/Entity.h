@@ -23,7 +23,8 @@ public:
 
     EntityRef getParent();
     void add(const EntityRef& child);
-
+    
+    uint64_t id;
     std::string name;
     std::map<std::string, ComponentRef> components;
     std::vector<EntityRef> children;

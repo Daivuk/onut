@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 project(bark_editor)
-    
-add_executable(${PROJECT_NAME} WIN32
-    src/main.cpp
-)
+
+file(GLOB src_files ./src/*.*)
+add_executable(${PROJECT_NAME} WIN32 ${src_files})
 
 if (MSVC)
     SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /bigobj")

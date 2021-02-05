@@ -27,10 +27,7 @@ namespace onut
 
     void ContentManager::addDefaultSearchPaths()
     {
-        addSearchPath("../../../assets"); // ./bin/win/Debug/game.exe
-        addSearchPath("../../assets");    // ./bin/win/game.exe
-        addSearchPath("../assets");       // ./Debug/game.exe
-        addSearchPath("assets");          // ./game.exe
+        addSearchPath("assets");
     }
 
     void ContentManager::clearSearchPaths()

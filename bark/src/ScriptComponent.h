@@ -10,6 +10,8 @@ class ScriptComponent final : public Component, public std::enable_shared_from_t
 public:
     ScriptRef script;
 
+    void addScriptPropertiesToJSObject();
+
     void onCreate() override;
     void onEnable() override;
     void onUpdate(float dt) override;
@@ -21,9 +23,6 @@ public:
     Json::Value serialize() override
     {
         auto json = Component::serialize();
-
-        setJsonScript(json, "script", script);
-
         return std::move(json);
     }
 #endif
@@ -31,8 +30,6 @@ public:
     void deserialize(const Json::Value& json) override
     {
         Component::deserialize(json);
-
-        script = getJson_ScriptRef(json, "script", nullptr);
     }
 
     void* getJSPrototype() override { return nullptr; }; // Unused

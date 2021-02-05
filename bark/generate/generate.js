@@ -27,17 +27,48 @@ let components = dir.reduce((components, file) =>
 // Find components' properties
 components.forEach(component =>
 {
-    let regex = /COMPONENT_PROPERTY\(\s*(\w+)\s*,\s*(\w+)\s*,\s*(.+)\s*\)/g;
-    let output = [];
-    let matches;
-    while (matches = regex.exec(component.source))
+    // Find those with flags
     {
-        let property = {
-            type: matches[1].replace('::', '_'),
-            name: matches[2],
-            default_value: matches[3]
-        };
-        component.properties.push(property);
+        let regex = /COMPONENT_PROPERTY\(\s*([\w\:]+)\s*,\s*(\w+)\s*,\s*(.+)\s*,\s*([\w|\s]+)\s*\)/g;
+        let output = [];
+        let matches;
+        while (matches = regex.exec(component.source))
+        {
+            let flags = [];
+            if (matches[4]) flags = matches[4].split('|');
+            flags = flags.map(flag => flag.trim());
+
+            let property = {
+                type: matches[1].replace('::', '_'),
+                name: matches[2],
+                default_value: matches[3],
+                flags: flags
+            };
+
+            component.properties.push(property);
+        }
+    }
+
+    // Find those without flags
+    {
+        let regex = /COMPONENT_PROPERTY\(\s*([\w\:]+)\s*,\s*(\w+)\s*,\s*(.+)\s*\)/g;
+        let output = [];
+        let matches;
+        while (matches = regex.exec(component.source))
+        {
+            let name = matches[2];
+            if (!component.properties.find(property => property.name == name))
+            {
+                let property = {
+                    type: matches[1].replace('::', '_'),
+                    name: name,
+                    default_value: matches[3],
+                    flags: []
+                };
+
+                component.properties.push(property);
+            }
+        }
     }
 });
 
@@ -84,7 +115,7 @@ public:
 
     component.properties.forEach(property =>
     {
-        insert_block += `        getJson_${property.type}(json, "${property.name}", ${property.default_value});\n`;
+        insert_block += `        ${property.name} = getJson_${property.type}(json, "${property.name}", ${property.default_value});\n`;
     });
     
     insert_block += `    }
@@ -97,6 +128,7 @@ public:
     delete component.start_code
     delete component.end_code
 
+    component.source = component.source.replace(/\r?\n/g, "\r\n");
     fs.writeFileSync(component.filename, component.source);
     console.log(`=> ${component.filename}`);
 });
@@ -149,9 +181,12 @@ void create${component.className}Bindings()
     }, 1);
     duk_set_finalizer(ctx, -2);
 `
-    // zoom property
     component.properties.forEach(property =>
     {
+        let is_read_only = property.flags.indexOf("PROP_READ_ONLY") != -1;
+        let has_cpp_getter = property.flags.indexOf("PROP_CPP_GETTER") != -1;
+        let has_cpp_setter = property.flags.indexOf("PROP_CPP_SETTER") != -1;
+
         code += `
     // ${property.type} ${property.name}
     duk_push_string(ctx, "${property.name}");
@@ -162,25 +197,28 @@ void create${component.className}Bindings()
         auto pComponent = (${component.className}*)duk_to_pointer(ctx, -1);
         if (pComponent)
         {
-            pushJs_${property.type}(ctx, pComponent->${property.name});
+            pushJs_${property.type}(ctx, ${has_cpp_getter ? `pComponent->get_${property.name}()` : `pComponent->${property.name}`});
             return 1;
         }
         return 0;
     }, 0);
-    duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+`
+    if (!is_read_only) code +=
+`    duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
     {
         duk_push_this(ctx);
         duk_get_prop_string(ctx, -1, "\\xff""\\xff""data");
         auto pComponent = (${component.className}*)duk_to_pointer(ctx, -1);
         if (pComponent)
         {
-            pComponent->${property.name} = getJs_${property.type}(ctx, ${property.default_value});
+            ${has_cpp_setter ? `pComponent->set_${property.name}(getJs_${property.type}(ctx, ${property.default_value}))` : `pComponent->${property.name} = getJs_${property.type}(ctx, ${property.default_value})`};
         }
         return 0;
     }, 1);
-    duk_def_prop(ctx, -4, 
-                    DUK_DEFPROP_HAVE_GETTER |
-                    DUK_DEFPROP_HAVE_SETTER);
+    duk_def_prop(ctx, -4, DUK_DEFPROP_HAVE_GETTER | DUK_DEFPROP_HAVE_SETTER);
+`
+        else code +=
+`    duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_GETTER);
 `
     });
 
@@ -201,9 +239,205 @@ ComponentBindings_cpp += `
 // Main function
 void createComponentBindings()
 {
-    createCamera2DComponentBindings();
-}
+`
+components.forEach(component =>
+{
+    ComponentBindings_cpp += `    create${component.className}Bindings();
+`
+});
+    ComponentBindings_cpp += `}
 `;
 
-fs.writeFileSync('../src/ComponentBindings.cpp', ComponentBindings_cpp);
+fs.writeFileSync('../src/ComponentBindings.cpp', ComponentBindings_cpp.replace(/\r?\n/g, "\r\n"));
 console.log(`=> ../src/ComponentBindings.cpp`);
+
+
+
+let ComponentFactory_cpp = `// DO NOT EDIT - THIS FILE IS GENERATED
+
+#include "ComponentFactory.h"
+#include "Component.h"
+#include <map>
+#include <functional>
+#include <onut/Log.h>
+
+${
+    components.reduce((code, component)=>
+    {
+        code += `#include "${component.className}.h"
+`
+        return code;
+    }, "")
+}
+#include "ScriptComponent.h"
+
+static std::map<std::string, std::function<ComponentRef()>> factories;
+
+void initComponentFactory()
+{
+${
+    components.reduce((code, component)=>
+    {
+        code += `    factories["${component.name}"] = []()->ComponentRef {return OMake<${component.className}>();};
+`
+        return code;
+    }, "")
+}
+    factories["Script"] = []()->ComponentRef {return OMake<ScriptComponent>();};
+}
+
+void shutdownComponentFactory()
+{
+    factories.clear();
+}
+
+ComponentRef createComponentByName(const std::string& name)
+{
+    auto it = factories.find(name);
+    if (it == factories.end())
+    {
+        OLogE("No Component found: " + name);
+        return nullptr;
+    }
+    auto component = it->second();
+    component->initJSObject(component->getJSPrototype());
+    return component;
+}
+`
+
+fs.writeFileSync('../src/ComponentFactory.cpp', ComponentFactory_cpp.replace(/\r?\n/g, "\r\n"));
+console.log(`=> ../src/ComponentFactory.cpp`);
+
+
+let ComponentGetterBindings_cpp = `#include "Component.h"
+#include "Entity.h"
+#include <JSBindings_Macros.h>
+
+using namespace onut::js;
+
+void createComponentGetterBindings(duk_context* ctx)
+{
+#define IMPL_COMPONENT_GETTER(__prop_name__, __comp_name__) \\
+    duk_push_string(ctx, #__prop_name__); \\
+    duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \\
+    { \\
+        duk_push_this(ctx); \\
+        duk_get_prop_string(ctx, -1, "\\xff""\\xff""data"); \\
+        auto pEntity = (Entity*)duk_to_pointer(ctx, -1); \\
+        if (pEntity) \\
+        { \\
+            auto it = pEntity->components.find(#__comp_name__); \\
+            if (it == pEntity->components.end()) \\
+            { \\
+                OLogE("Entity has no component named: " #__comp_name__); \\
+                return 0; \\
+            } \\
+            auto pComponent = it->second.get(); \\
+            duk_push_heapptr(ctx, pComponent->js_object); \\
+            return 1; \\
+        } \\
+        return 0; \\
+    }, 0); \\
+    duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_GETTER);
+
+${
+        components.reduce((output, component) =>
+        {
+            let nameLowerCase = component.name.charAt(0).toLowerCase() + component.name.slice(1);
+            output += `    IMPL_COMPONENT_GETTER(${nameLowerCase}, ${component.name});
+`
+            return output;
+        }, "")
+    }}
+`;
+
+fs.writeFileSync('../src/ComponentGetterBindings.cpp', ComponentGetterBindings_cpp.replace(/\r?\n/g, "\r\n"));
+console.log(`=> ../src/ComponentGetterBindings.cpp`);
+
+
+let bark_d_ts = `// DO NOT EDIT - THIS FILE IS GENERATED
+
+// Entity
+declare class Entity {
+    name: string;
+
+    getPosition(): Vector3;
+    getWorldPosition(): Vector3;
+    setPosition(position: Vector3);
+
+    getTransform(): Matrix;
+    getWorldTransform(): Matrix;
+    setTransform(transform: Matrix);
+
+    getComponent(name: string): object;
+    addComponent(name: string): object;
+    removeComponent(name: string);
+    disableComponent(name: string);
+    enableComponent(name: string);
+
+    add(child: Entity);
+    insert(before: Entity, child: Entity);
+    remove(child: Entity);
+    removeAll();
+    getChildCount(): number;
+    getChild(index: number): Entity;
+    getChild(name: string, deepSearch: boolean = true): UEntityI;
+    getParent(): Entity;
+
+    copy(): Entity;
+
+    // Quick access to default components
+`
+components.forEach(component =>
+{
+    let nameLowerCase = component.name.charAt(0).toLowerCase() + component.name.slice(1);
+    bark_d_ts += `    ${nameLowerCase}: ${component.name};
+`
+});
+
+bark_d_ts += `}
+declare function findEntity(name: string): Entity;
+declare function destroyEntity(entity: Entity);
+
+// Scene
+declare function loadScene(name: string);
+
+// Components
+`
+
+function typeToJS(type)
+{
+    switch (type)
+    {
+        case "bool": return "boolean";
+        case "int": return "int";
+        case "float": return "number";
+        case "std_string": return "string";
+        case "OTextureRef": return "Texture";
+        case "OTiledMapRef": return "TiledMap";
+        case "OSoundRef": return "Sound";
+        case "OSpriteAnimRef": return "SpriteAnim";
+        case "OModelRef": return "Model";
+        case "OShaderRef": return "Shader";
+        default: return type;
+    }
+}
+
+components.forEach(component =>
+{
+    bark_d_ts += `declare class ${component.name}
+{
+`
+    component.properties.forEach(property =>
+    {
+        bark_d_ts += `    ${property.name}: ${typeToJS(property.type)};
+`
+    });
+
+    bark_d_ts += `}
+
+`
+})
+
+fs.writeFileSync('../typings/bark.d.ts', bark_d_ts.replace(/\r?\n/g, "\r\n"));
+console.log(`=> ../typings/bark.d.ts`);

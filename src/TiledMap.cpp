@@ -59,14 +59,14 @@ namespace onut
         return pRet;
     }
 
-    static OTextureRef loadPaddedTexture(std::string filename, int tileSize, int padding)
+    static OTextureRef loadPaddedTexture(std::string filename, int tileSize, int padding, const OContentManagerRef& pContentManager)
     {
         filename = onut::getFilename(filename);
         if (padding == 0) return OGetTexture(filename);
 
         Point size;
         int bpp;
-        auto data = stbi_load(oContentManager->findResourceFile(filename).c_str(), &size.x, &size.y, &bpp, 4);
+        auto data = stbi_load(pContentManager->findResourceFile(filename).c_str(), &size.x, &size.y, &bpp, 4);
         assert(data);
 
         // Pre multiplied
@@ -108,7 +108,7 @@ namespace onut
         }
 
         auto pTileset = OTexture::createFromData(newData.data(), newSize, false);
-        oContentManager->addResource(filename + "_pad_" + std::to_string(padding), pTileset);
+        pContentManager->addResource(filename + "_pad_" + std::to_string(padding), pTileset);
         stbi_image_free(data);
 
         return pTileset;
@@ -122,7 +122,7 @@ namespace onut
         auto pRet = std::make_shared<OTiledMap>();
 
         auto mapFilename = filename;
-        int padding = 0;
+        int padding = 2;
 
         if (onut::getExtension(filename) == "JSON")
         {
@@ -181,7 +181,7 @@ namespace onut
                 assert(pXMLImage);
                 auto szImageFilename = pXMLImage->Attribute("source");
                 assert(szImageFilename);
-                pTileSet.pTexture = loadPaddedTexture(szImageFilename, pTileSet.tileWidth, padding);// pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+                pTileSet.pTexture = loadPaddedTexture(szImageFilename, pTileSet.tileWidth, padding, pContentManager);// pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
 
                 pRet->m_tilesetCount++;
             }
@@ -199,7 +199,7 @@ namespace onut
                 assert(pXMLImage);
                 auto szImageFilename = pXMLImage->Attribute("source");
                 assert(szImageFilename);
-                pTileSet.pTexture = loadPaddedTexture(szImageFilename, pTileSet.tileWidth, padding); //pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
+                pTileSet.pTexture = loadPaddedTexture(szImageFilename, pTileSet.tileWidth, padding, pContentManager); //pContentManager->getResourceAs<OTexture>(onut::getFilename(szImageFilename));
 
                 pRet->m_tilesetCount++;
             }
@@ -562,7 +562,7 @@ namespace onut
 
     TiledMap::TileSet* TiledMap::addTileSet(const std::string& filename, const std::string& name, int padding)
     {
-        return addTileSet(loadPaddedTexture(filename, m_tileSize, padding), name, padding);
+        return addTileSet(loadPaddedTexture(filename, m_tileSize, padding, oContentManager), name, padding);
     }
 
     TiledMap::TileSet* TiledMap::addTileSet(const OTextureRef& pTexture, const std::string& name, int padding)

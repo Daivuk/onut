@@ -135,6 +135,11 @@ namespace onut
         m_isEditorMode = isEditorMode;
     }
 
+    void Settings::setStartMaximized(bool startMaximized)
+    {
+        m_startMaximized = startMaximized;
+    }
+
     void Settings::setAppId(const std::string& appId)
     {
         m_appId = appId;

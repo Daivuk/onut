@@ -6,12 +6,13 @@
 
 ForwardDeclare(Camera2DComponent);
 
-class Camera2DComponent final : public Component, public std::enable_shared_from_this<Camera2DComponent>
+class Camera2DComponent final : public Component
 {
 public:
     COMPONENT_PROPERTY(float, zoom, 1.0f);
     COMPONENT_PROPERTY(bool, clearScreen, true);
     COMPONENT_PROPERTY(Color, clearColor, Color::Black);
+    COMPONENT_PROPERTY(Vector2, origin, OCenter);
 
     void onCreate() override {};
     void onEnable() override;
@@ -30,6 +31,7 @@ public:
         setJson_float(json, "zoom", zoom);
         setJson_bool(json, "clearScreen", clearScreen);
         setJson_Color(json, "clearColor", clearColor);
+        setJson_Vector2(json, "origin", origin);
 
         return std::move(json);
     }
@@ -39,9 +41,10 @@ public:
     {
         Component::deserialize(json);
 
-        getJson_float(json, "zoom", 1.0f);
-        getJson_bool(json, "clearScreen", true);
-        getJson_Color(json, "clearColor", Color::Black);
+        zoom = getJson_float(json, "zoom", 1.0f);
+        clearScreen = getJson_bool(json, "clearScreen", true);
+        clearColor = getJson_Color(json, "clearColor", Color::Black);
+        origin = getJson_Vector2(json, "origin", OCenter);
     }
 
     static void* js_prototype;

@@ -6,9 +6,12 @@
 #include "JSObject.h"
 
 #define COMPONENT_DECLARATION(__class__, __name__)
+#define COMPONENT_PROPERTY(__type__, __name__, __default__, ...) __type__ __name__ = __default__;
 
-// Component PROPerty
-#define COMPONENT_PROPERTY(__type__, __name__, __default__) __type__ __name__ = __default__;
+// Flags
+#define PROP_READ_ONLY
+#define PROP_CPP_GETTER
+#define PROP_CPP_SETTER
 
 ForwardDeclare(Entity);
 ForwardDeclare(Component);
@@ -18,7 +21,7 @@ class Component : public JSObject
 public:
     bool enabled = true;
 
-    EntityWeak entity;
+    Entity* entity = nullptr;
 
     virtual ~Component() {}
 
@@ -39,9 +42,9 @@ public:
     }
 
     virtual void onCreate() = 0;
-    virtual void onEnable() = 0;
+    virtual void onEnable();
     virtual void onUpdate(float dt) = 0;
-    virtual void onDisable() = 0;
+    virtual void onDisable();
     virtual void onDestroy() = 0;
 
     virtual void* getJSPrototype() = 0;

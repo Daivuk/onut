@@ -20,6 +20,12 @@ int getJson_int(const Json::Value& json, const char* key, int default_value)
     return json[key].asInt();
 }
 
+uint64_t getJson_uint64_t(const Json::Value& json, const char* key, uint64_t default_value)
+{
+    if (!json.isMember(key)) return default_value;
+    return json[key].asUInt64();
+}
+
 float getJson_float(const Json::Value& json, const char* key, float default_value)
 {
     if (!json.isMember(key)) return default_value;
@@ -62,6 +68,18 @@ Vector4 getJson_Vector4(const Json::Value& json, const char* key, const Vector4&
     ret.y = json_val["y"].asFloat();
     ret.z = json_val["z"].asFloat();
     ret.w = json_val["w"].asFloat();
+    return ret;
+}
+
+Matrix getJson_Matrix(const Json::Value& json, const char* key, const Matrix& default_value)
+{
+    if (!json.isMember(key)) return default_value;
+    const auto& json_val = json[key];
+    Matrix ret;
+    for (int i = 0; i < 16; ++i)
+    {
+        (&ret._11)[i] = json_val[i].asFloat();
+    }
     return ret;
 }
 
@@ -143,42 +161,47 @@ ScriptRef getJson_ScriptRef(const Json::Value& json, const char* key, const Scri
     return oContentManager->getResourceAs<Script>(json[key].asString());
 }
 
-#if BARK_EDITOR
 
-void setJson_bool(const Json::Value& json, const char* key, bool value)
+
+void setJson_bool(Json::Value& json, const char* key, bool value)
 {
     json[key] = value;
 }
 
-void setJson_int(const Json::Value& json, const char* key, int value)
+void setJson_int(Json::Value& json, const char* key, int value)
 {
     json[key] = value;
 }
 
-void setJson_float(const Json::Value& json, const char* key, float value)
+void setJson_uint64_t(Json::Value& json, const char* key, uint64_t value)
 {
     json[key] = value;
 }
 
-void setJson_std_string(const Json::Value& json, const char* key, const std::string& value)
+void setJson_float(Json::Value& json, const char* key, float value)
 {
     json[key] = value;
 }
 
-void setJson_Vector2(const Json::Value& json, const char* key, const Vector2& value)
+void setJson_std_string(Json::Value& json, const char* key, const std::string& value)
+{
+    json[key] = value;
+}
+
+void setJson_Vector2(Json::Value& json, const char* key, const Vector2& value)
 {
     json[key]["x"] = value.x;
     json[key]["y"] = value.y;
 }
 
-void setJson_Vector3(const Json::Value& json, const char* key, const Vector3& value)
+void setJson_Vector3(Json::Value& json, const char* key, const Vector3& value)
 {
     json[key]["x"] = value.x;
     json[key]["y"] = value.y;
     json[key]["z"] = value.z;
 }
 
-void setJson_Vector4(const Json::Value& json, const char* key, const Vector4& value)
+void setJson_Vector4(Json::Value& json, const char* key, const Vector4& value)
 {
     json[key]["x"] = value.x;
     json[key]["y"] = value.y;
@@ -186,7 +209,15 @@ void setJson_Vector4(const Json::Value& json, const char* key, const Vector4& va
     json[key]["w"] = value.w;
 }
 
-void setJson_Rect(const Json::Value& json, const char* key, const Rect& value)
+void setJson_Matrix(Json::Value& json, const char* key, const Matrix& value)
+{
+    Json::Value arr(Json::arrayValue);
+    for (int i = 0; i < 16; ++i)
+        arr.append((&value._11)[i]);
+    json[key] = arr;
+}
+
+void setJson_Rect(Json::Value& json, const char* key, const Rect& value)
 {
     json[key]["x"] = value.x;
     json[key]["y"] = value.y;
@@ -194,7 +225,7 @@ void setJson_Rect(const Json::Value& json, const char* key, const Rect& value)
     json[key]["h"] = value.w;
 }
 
-void setJson_iRect(const Json::Value& json, const char* key, const iRect& value)
+void setJson_iRect(Json::Value& json, const char* key, const iRect& value)
 {
     json[key]["left"] = value.left;
     json[key]["top"] = value.top;
@@ -202,7 +233,7 @@ void setJson_iRect(const Json::Value& json, const char* key, const iRect& value)
     json[key]["bottom"] = value.bottom;
 }
 
-void setJson_Color(const Json::Value& json, const char* key, const Color& value)
+void setJson_Color(Json::Value& json, const char* key, const Color& value)
 {
     json[key]["r"] = value.r;
     json[key]["g"] = value.g;
@@ -210,39 +241,37 @@ void setJson_Color(const Json::Value& json, const char* key, const Color& value)
     json[key]["a"] = value.a;
 }
 
-void setJson_OTextureRef(const Json::Value& json, const char* key, const OTextureRef& value)
+void setJson_OTextureRef(Json::Value& json, const char* key, const OTextureRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
 
-void setJson_OTiledMapRef(const Json::Value& json, const char* key, const OTiledMapRef& value)
+void setJson_OTiledMapRef(Json::Value& json, const char* key, const OTiledMapRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
 
-void setJson_OSoundRef(const Json::Value& json, const char* key, const OSoundRef& value)
+void setJson_OSoundRef(Json::Value& json, const char* key, const OSoundRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
 
-void setJsonSpriteAnim(const Json::Value& json, const char* key, const OSpriteAnimRef& value)
+void setJson_OSpriteAnimRef(Json::Value& json, const char* key, const OSpriteAnimRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
 
-void setJson_OModelRef(const Json::Value& json, const char* key, const OModelRef& value)
+void setJson_OModelRef(Json::Value& json, const char* key, const OModelRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
 
-void setJson_OShaderRef(const Json::Value& json, const char* key, const OShaderRef& value)
+void setJson_OShaderRef(Json::Value& json, const char* key, const OShaderRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
 
-void setJson_ScriptRef(const Json::Value& json, const char* key, const ScriptRef& value)
+void setJson_ScriptRef(Json::Value& json, const char* key, const ScriptRef& value)
 {
-    json[key] = value->getName();
+    json[key] = value ? value->getName() : "";
 }
-
-#endif

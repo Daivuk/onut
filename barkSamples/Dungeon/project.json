@@ -10,5 +10,6 @@
         "fixedStep": false,
         "onScreenLog": true
     },
-    "globalScripts": []
+    "globalScripts": [],
+    "prefabs": []
 }

@@ -46,6 +46,9 @@ namespace onut
         bool getIsResizableWindow() const { return m_isResizableWindow; }
         void setIsResizableWindow(bool isResizableWindow);
 
+        bool getStartMaximized() const { return m_startMaximized; }
+        void setStartMaximized(bool startMaximized);
+
         bool getBorderlessFullscreen() const { return m_isBorderLessFullscreen; }
         void setBorderlessFullscreen(bool m_isBorderLessFullscreen);
 
@@ -86,6 +89,7 @@ namespace onut
         Resolution m_resolution = Resolution{800, 600};
         std::string m_gameName = "Game Name";
         bool m_isResizableWindow = false;
+        bool m_startMaximized = false;
         bool m_isFixedStep = true;
         bool m_isBorderLessFullscreen = false;
         bool m_isEditorMode = false;

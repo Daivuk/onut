@@ -31,6 +31,9 @@ declare class Entity {
 
     // Quick access to default components
     camera2D: Camera2D;
+    spriteAnimRenderer: SpriteAnimRenderer;
+    spriteRenderer: SpriteRenderer;
+    tiledMapRenderer: TiledMapRenderer;
 }
 declare function findEntity(name: string): Entity;
 declare function destroyEntity(entity: Entity);
@@ -39,11 +42,36 @@ declare function destroyEntity(entity: Entity);
 declare function loadScene(name: string);
 
 // Components
-
-declare class Camera2D {
-    enabled: boolean;
+declare class Camera2D
+{
     zoom: number;
     clearScreen: boolean;
     clearColor: Color;
-    entity: Entity;
+    origin: Vector2;
 }
+
+declare class SpriteAnimRenderer
+{
+    spriteAnim: SpriteAnim;
+    anim: string;
+    color: Color;
+    smooth: boolean;
+    blendMode: int;
+}
+
+declare class SpriteRenderer
+{
+    texture: Texture;
+    color: Color;
+    origin: Vector2;
+    smooth: boolean;
+    blendMode: int;
+}
+
+declare class TiledMapRenderer
+{
+    tiledMap: TiledMap;
+    smooth: boolean;
+    blendMode: int;
+}
+

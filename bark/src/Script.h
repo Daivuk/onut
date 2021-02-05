@@ -3,6 +3,7 @@
 #include <onut/ForwardDeclaration.h>
 #include <onut/Resource.h>
 #include <string>
+#include <json/json.h>
 
 OForwardDeclare(ContentManager);
 ForwardDeclare(Script);
@@ -17,15 +18,17 @@ public:
 
     static ScriptRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager);
 
-    void call_onCreate(const EntityRef& entity, const ComponentRef& component);
-    void call_onEnable(const EntityRef& entity, const ComponentRef& component);
-    void call_onUpdate(const EntityRef& entity, const ComponentRef& component, float dt);
-    void call_onDisable(const EntityRef& entity, const ComponentRef& component);
-    void call_onDestroy(const EntityRef& entity, const ComponentRef& component);
+    void call_onCreate(Entity* entity, Component* component);
+    void call_onEnable(Entity* entity, Component* component);
+    void call_onUpdate(Entity* entity, Component* component, float dt);
+    void call_onDisable(Entity* entity, Component* component);
+    void call_onDestroy(Entity* entity, Component* component);
 
     void* onCreatePtr = nullptr;
     void* onEnablePtr = nullptr;
     void* onUpdatePtr = nullptr;
     void* onDisablePtr = nullptr;
     void* onDestroyPtr = nullptr;
+
+    Json::Value props;
 };

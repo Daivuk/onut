@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentBindings.h"
+#include "SceneManager.h"
 
 #include <JSBindings_Macros.h>
 namespace onut
@@ -17,6 +18,8 @@ namespace onut
 using namespace onut::js;
 
 void* pEntityPrototype = nullptr;
+
+void createComponentGetterBindings(duk_context* ctx);
 
 static void createEntityBindings()
 {
@@ -134,7 +137,7 @@ static void createEntityBindings()
         }
         return 0;
     }, 0);
-    duk_put_prop_string(ctx, -2, "getPosition");
+    duk_put_prop_string(ctx, -2, "getTransform");
 
     // getWorldTransform()
     duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -193,31 +196,7 @@ static void createEntityBindings()
     duk_put_prop_string(ctx, -2, "getComponent");
     
     // common components getters
-#define IMPL_COMPONENT_GETTER(__prop_name__, __comp_name__) \
-    duk_push_string(ctx, #__prop_name__); \
-    duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t \
-    { \
-        duk_push_this(ctx); \
-        duk_get_prop_string(ctx, -1, "\xff""\xff""data"); \
-        auto pEntity = (Entity*)duk_to_pointer(ctx, -1); \
-        if (pEntity) \
-        { \
-            auto it = pEntity->components.find(#__comp_name__); \
-            if (it == pEntity->components.end()) \
-            { \
-                OLogE("Entity has no component named: " #__comp_name__); \
-                return 0; \
-            } \
-            auto pComponent = it->second.get(); \
-            duk_push_heapptr(ctx, pComponent->js_object); \
-            return 1; \
-        } \
-        return 0; \
-    }, 0); \
-    duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_GETTER);
-
-    IMPL_COMPONENT_GETTER(camera2D, Camera2D);
-
+    createComponentGetterBindings(ctx);
 
     // add(child)
     //duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
@@ -369,6 +348,19 @@ static void createEntityBindings()
     duk_put_global_string(ctx, "Entity");
 }
 
+EntityRef findEntityRecur(const EntityRef& entity, const std::string& name)
+{
+    if (entity->name == name) return entity;
+
+    for (const auto& child : entity->children)
+    {
+        auto ret = findEntityRecur(child, name);
+        if (ret) return ret;
+    }
+
+    return nullptr;
+}
+
 void createSceneBindings()
 {
     auto ctx = pContext;
@@ -381,6 +373,19 @@ void createSceneBindings()
         return 0;
     }
     JS_GLOBAL_FUNCTION_END("loadScene", 1);
+
+    JS_GLOBAL_FUNCTION_BEGIN
+    {
+        auto name = JS_STRING(0);
+        auto ret = findEntityRecur(root, name);
+        if (ret)
+        {
+            duk_push_heapptr(ctx, ret->js_object);
+            return 1;
+        }
+        return 0;
+    }
+    JS_GLOBAL_FUNCTION_END("findEntity", 1);
 }
 
 void createBindings()

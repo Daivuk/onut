@@ -185,22 +185,36 @@ namespace onut
             }
             else
             {
-                m_handle = CreateWindowA("OakNutWindow",
-                                        oSettings->getGameName().c_str(),
-                                        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                        posX, posY, m_resSetting.x, m_resSetting.y,
-                                        nullptr, nullptr, nullptr, nullptr);
+                if (oSettings->getStartMaximized())
+                {
+                    m_handle = CreateWindowA("OakNutWindow",
+                                            oSettings->getGameName().c_str(),
+                                            WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_MAXIMIZE,
+                                            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                                            nullptr, nullptr, nullptr, nullptr);
+                }
+                else
+                {
+                    m_handle = CreateWindowA("OakNutWindow",
+                                            oSettings->getGameName().c_str(),
+                                            WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                            posX, posY, m_resSetting.x, m_resSetting.y,
+                                            nullptr, nullptr, nullptr, nullptr);
+                }
             }
 
-            RECT clientRect;
-            GetClientRect(m_handle, &clientRect);
-            auto wDiff = m_resSetting.x - (clientRect.right - clientRect.left);
-            auto hDiff = m_resSetting.y - (clientRect.bottom - clientRect.top);
-            auto newW = m_resSetting.x + wDiff;
-            auto newH = m_resSetting.y + hDiff;
-            posX = (screenW - newW) / 2;
-            posY = (screenH - newH) / 2 - 20;
-            SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
+            if (!oSettings->getStartMaximized())
+            {
+                RECT clientRect;
+                GetClientRect(m_handle, &clientRect);
+                auto wDiff = m_resSetting.x - (clientRect.right - clientRect.left);
+                auto hDiff = m_resSetting.y - (clientRect.bottom - clientRect.top);
+                auto newW = m_resSetting.x + wDiff;
+                auto newH = m_resSetting.y + hDiff;
+                posX = (screenW - newW) / 2;
+                posY = (screenH - newH) / 2 - 20;
+                SetWindowPos(m_handle, NULL, posX, posY, newW, newH, 0);
+            }
 
             DragAcceptFiles(m_handle, TRUE);
         }

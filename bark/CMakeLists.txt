@@ -11,5 +11,10 @@ endif()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-target_link_libraries(${PROJECT_NAME} libonut)
-target_include_directories(${PROJECT_NAME} PUBLIC ../src/)
+# box2D
+option(BOX2D_BUILD_UNIT_TESTS "Build the Box2D unit tests" OFF)
+option(BOX2D_BUILD_TESTBED "Build the Box2D testbed" OFF)
+add_subdirectory(./box2d/)
+
+target_link_libraries(${PROJECT_NAME} libonut box2d)
+target_include_directories(${PROJECT_NAME} PUBLIC ../src/ box2d/include/)

@@ -4,3 +4,6 @@
 [submodule "thirdparty/SDL"]
 	path = thirdparty/SDL
 	url = https://github.com/SDL-mirror/SDL.git
+[submodule "bark/box2d"]
+	path = bark/box2d
+	url = https://github.com/erincatto/box2d.git

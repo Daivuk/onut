@@ -1,3 +1,5 @@
+#pragma once
+
 // Onut
 #include <onut/Anim.h>
 #include <onut/ContentManager.h>

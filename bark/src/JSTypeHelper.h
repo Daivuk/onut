@@ -53,4 +53,3 @@ void pushJs_OSoundRef(duk_context *ctx, const OSoundRef& value);
 void pushJs_OSpriteAnimRef(duk_context *ctx, const OSpriteAnimRef& value);
 void pushJs_OModelRef(duk_context *ctx, const OModelRef& value);
 void pushJs_OShaderRef(duk_context *ctx, const OShaderRef& value);
-void pushJs_ScriptRef(duk_context *ctx, const ScriptRef& value);
