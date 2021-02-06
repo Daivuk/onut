@@ -1,10 +1,14 @@
 #include "Entity.h"
 
+#if !BARK_EDITOR
 extern void* pEntityPrototype;
+#endif
 
 Entity::Entity()
 {
+#if !BARK_EDITOR
     initJSObject(pEntityPrototype);
+#endif
 }
 
 Entity::~Entity()

@@ -1,6 +1,8 @@
 #include "ScriptComponent.h"
 #include "Script.h"
 #include "JsonHelper.h"
+
+#if !BARK_EDITOR
 #include "JSTypeHelper.h"
 
 #include <JSBindings_Macros.h>
@@ -59,32 +61,43 @@ void ScriptComponent::addScriptPropertiesToJSObject()
 
     duk_pop(ctx); // c
 }
+#endif
 
 void ScriptComponent::onCreate()
 {
+#if !BARK_EDITOR
     if (script) script->call_onCreate(entity, this);
+#endif
 }
 
 void ScriptComponent::onEnable()
 {
     Component::onEnable();
 
+#if !BARK_EDITOR
     if (script) script->call_onEnable(entity, this);
+#endif
 }
 
+#if !BARK_EDITOR
 void ScriptComponent::onUpdate(float dt)
 {
     if (script) script->call_onUpdate(entity, this, dt);
 }
+#endif
 
 void ScriptComponent::onDisable()
 {
     Component::onDisable();
 
+#if !BARK_EDITOR
     if (script) script->call_onDisable(entity, this);
+#endif
 }
 
 void ScriptComponent::onDestroy()
 {
+#if !BARK_EDITOR
     if (script) script->call_onDestroy(entity, this);
+#endif
 }

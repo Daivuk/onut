@@ -17,16 +17,22 @@ public:
     COMPONENT_PROPERTY(bool, smooth, true);
     COMPONENT_PROPERTY(int, blendMode, (int)OBlendPreMultiplied);
 
+#if !BARK_EDITOR
+    OSpriteAnimInstanceRef spriteAnimInstance;
+#endif
+
     void onCreate() override;
+#if !BARK_EDITOR
     void onUpdate(float dt) override {};
+#endif
     void onDestroy() override {};
     
     void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
 
+#if !BARK_EDITOR
     void set_spriteAnim(const OSpriteAnimRef& value);
     void set_anim(const std::string& value);
-
-    OSpriteAnimInstanceRef spriteAnimInstance;
+#endif
     
     COMPONENT_DECLARATION(SpriteAnimRendererComponent, SpriteAnimRenderer)
     // [GENERATED COMPONENT DECLARATION BEGIN]
@@ -57,7 +63,9 @@ public:
         blendMode = getJson_int(json, "blendMode", (int)OBlendPreMultiplied);
     }
 
+#if !BARK_EDITOR
     static void* js_prototype;
     void* getJSPrototype() override { return js_prototype; };
+#endif
     // [GENERATED COMPONENT DECLARATION END]
 };

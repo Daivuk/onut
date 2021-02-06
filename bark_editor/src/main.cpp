@@ -5,6 +5,9 @@
 #include "Theme.h"
 #include "GUIContext.h"
 #include "PanelsManager.h"
+#include "SceneManager.h"
+#include "Project.h"
+#include "ComponentFactory.h"
 
 void initSettings()
 {
@@ -18,22 +21,30 @@ void initSettings()
 
 void init()
 {
+    // Custom content manager for game assets
+    g_content_mgr = OContentManager::create();
+    g_content_mgr->clearSearchPaths();
+
+    initComponentFactory();
+
     g_theme       = new Theme();
     g_gui_ctx     = new GUIContext();
     g_panels_mgr  = new PanelsManager();
 
-    // Custom content manager for game assets
-    g_content_mgr = OContentManager::create();
-    g_content_mgr->clearSearchPaths();
-    g_content_mgr->addSearchPath("C:/github/onut/barkSamples/Dungeon/assets"); // Hardcoded for now
+    g_project     = new Project();
+    g_project->openFolder("C:/github/onut/barkSamples/Dungeon"); // Hardcode it to this for now
 }
 
 void shutdown()
 {
-    g_content_mgr = nullptr;
+    delete g_project;
     delete g_panels_mgr;
     delete g_gui_ctx;
     delete g_theme;
+
+    g_content_mgr = nullptr;
+
+    shutdownComponentFactory();
 }
 
 void update()

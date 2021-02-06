@@ -26,7 +26,8 @@ enum class eUIState
     Down,
     Drag,
     Drop,
-    Clicked
+    Clicked,
+    Close
 };
 
 enum class eUIDrawCall
@@ -34,7 +35,8 @@ enum class eUIDrawCall
     Outline,
     Rect,
     Text,
-    Sprite
+    Sprite,
+    Slice9
 };
 
 struct UIDrawCall
@@ -43,6 +45,7 @@ struct UIDrawCall
     Rect rect;
     Vector2 pos;
     Vector2 origin;
+    Vector4 padding;
     float thickness;
     Color color;
     OFontRef font;
@@ -50,10 +53,20 @@ struct UIDrawCall
     OTextureRef texture;
 };
 
+enum class eUICursorType
+{
+    Arrow,
+    SizeEW,
+    SizeNS,
+    SizeAll
+};
+
 enum class eUIDrag
 {
     None,
-    Tab
+    Tab,
+    HSplit,
+    VSplit
 };
 
 struct UIDrag
@@ -73,6 +86,7 @@ public:
     onut::RenderStates* rs;
     size_t              saved_draw_point;
     UIDrag              drag;
+    eUICursorType       cursor_type;
 
     // Mouse/Input states
     Vector2             mouse;
@@ -92,6 +106,7 @@ public:
     void drawRect(const OTextureRef& texture, const Rect& rect, const Color& color);
     void drawText(const OFontRef& font, const std::string& text, const Vector2& pos, const Vector2& origin, const Color& color);
     void drawSprite(const OTextureRef& texture, const Vector2& pos, const Color& color, const Vector2& origin);
+    void drawSlice9(const OTextureRef& texture, const Rect& rect, const Vector4& padding, const Color& color);
 
     eUIState getState(const Rect& rect);
     const Color& colorForState(eUIState state, Color** colors);
@@ -101,19 +116,19 @@ public:
     void begin();
     void end();
 
-    void beginDraw();
-    void endDraw();
-
     void pushRect();
     Rect popRect();
 
     void drawPanel();
     eUIState drawTab(const std::string& name, float& offset,
                  const Color& color, const Color& border_color,
-                 Color** text_colors);
-    eUIState drawActiveTab(const std::string& name, float& offset);
-    eUIState drawInactiveTab(const std::string& name, float& offset);
+                 const Color& text_colors, bool close_btn = false);
+    eUIState drawActiveTab(const std::string& name, float& offset, bool close_btn = false);
+    eUIState drawInactiveTab(const std::string& name, float& offset, bool close_btn = false);
 
     void drawArea();
     bool drawToolButton(const OTextureRef& icon, const Vector2& pos);
+
+    eUIState drawHSplitHandle();
+    eUIState drawVSplitHandle();
 };

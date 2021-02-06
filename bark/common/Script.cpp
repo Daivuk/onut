@@ -8,6 +8,7 @@
 #include <sstream>
 #include "JsonHelper.h"
 
+#if !BARK_EDITOR
 #include <JSBindings_Macros.h>
 namespace onut
 {
@@ -18,15 +19,25 @@ namespace onut
 }
 
 using namespace onut::js;
+#endif
 
 Script::Script() {}
 
 Script::~Script() {}
 
+#if BARK_EDITOR
 ScriptRef Script::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
 {
-    auto ctx = onut::js::pContext;
+    return OMake<Script>();
+}
+#endif
+
+#if !BARK_EDITOR
+ScriptRef Script::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
+{
     auto ret = OMake<Script>();
+
+    auto ctx = onut::js::pContext;
 
     // Lets do some regex! Replace _init, _update, with filename without extension
     auto name = onut::getFilenameWithoutExtension(filename);
@@ -265,3 +276,4 @@ void Script::call_onDestroy(Entity* entity, Component* component)
         dukCall("onDestroy", &onDestroyPtr, 2);
     }
 }
+#endif

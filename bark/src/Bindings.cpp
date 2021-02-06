@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "ComponentBindings.h"
 #include "SceneManager.h"
+#include "globals.h"
 
 #include <JSBindings_Macros.h>
 namespace onut
@@ -368,8 +369,7 @@ void createSceneBindings()
     JS_GLOBAL_FUNCTION_BEGIN
     {
         auto name = JS_STRING(0);
-        extern std::string scene_to_load;
-        scene_to_load = name;
+        g_scene_mgr->scene_to_load = name;
         return 0;
     }
     JS_GLOBAL_FUNCTION_END("loadScene", 1);
@@ -377,7 +377,7 @@ void createSceneBindings()
     JS_GLOBAL_FUNCTION_BEGIN
     {
         auto name = JS_STRING(0);
-        auto ret = findEntityRecur(root, name);
+        auto ret = findEntityRecur(g_scene_mgr->root, name);
         if (ret)
         {
             duk_push_heapptr(ctx, ret->js_object);

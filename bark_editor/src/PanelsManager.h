@@ -8,6 +8,7 @@
 ForwardDeclare(DockNode);
 ForwardDeclare(DockZone);
 ForwardDeclare(Panel);
+ForwardDeclare(ProjectPanel);
 ForwardDeclare(PropertiesPanel);
 ForwardDeclare(ScenePanel);
 ForwardDeclare(TimelinePanel);
@@ -38,7 +39,6 @@ enum class eDockPosition
 class DockNode
 {
 public:
-    virtual void renderGameContent(GUIContext* ctx) = 0;
     virtual void render(GUIContext* ctx) = 0;
     virtual void dock(GUIContext* ctx, DockContext* dock_ctx) = 0;
     virtual void undockPanel(const PanelRef& panel) = 0;
@@ -49,7 +49,6 @@ public:
 class DockNull final : public DockNode
 {
 public:
-    void renderGameContent(GUIContext* ctx) override {};
     void render(GUIContext* ctx) override {};
     void dock(GUIContext* ctx, DockContext* dock_ctx) override {};
     void undockPanel(const PanelRef& panel) override {};
@@ -58,7 +57,7 @@ public:
 };
 
 // Dock zone is a leaf node. Containing one or many panels with tabs
-class DockZone final : public DockNode, public std::enable_shared_from_this<DockZone>
+class DockZone : public DockNode, public std::enable_shared_from_this<DockZone>
 {
 public:
     std::vector<PanelRef>   panels;
@@ -66,12 +65,22 @@ public:
 
     DockZone(const std::vector<PanelRef>& panels, int active_panel);
 
-    void renderGameContent(GUIContext* ctx) override;
     void render(GUIContext* ctx) override;
     void dock(GUIContext* ctx, DockContext* dock_ctx) override;
     void undockPanel(const PanelRef& panel) override;
     DockNodeRef clean() override;
     DockNodeRef dockPanel(const PanelRef& panel, const DockContext& dock_ctx) override;
+};
+
+class DockKeepAround final : public DockZone
+{
+public:
+    std::string text;
+
+    DockKeepAround(const std::string& text, const std::vector<PanelRef>& panels, int active_panel);
+
+    void render(GUIContext* ctx) override;
+    DockNodeRef clean() override;
 };
 
 class DockHSplit final : public DockNode, public std::enable_shared_from_this<DockHSplit>
@@ -84,7 +93,6 @@ public:
 
     DockHSplit(DockNodeRef left, DockNodeRef right, float amount, eDockMagnet magnet);
 
-    void renderGameContent(GUIContext* ctx) override;
     void render(GUIContext* ctx) override;
     void dock(GUIContext* ctx, DockContext* dock_ctx) override;
     void undockPanel(const PanelRef& panel) override;
@@ -102,7 +110,6 @@ public:
 
     DockVSplit(DockNodeRef top, DockNodeRef bottom, float amount, eDockMagnet magnet);
 
-    void renderGameContent(GUIContext* ctx) override;
     void render(GUIContext* ctx) override;
     void dock(GUIContext* ctx, DockContext* result) override;
     void undockPanel(const PanelRef& panel) override;
@@ -126,13 +133,19 @@ struct DockContext
 class PanelsManager final
 {
 public:
+    ProjectPanelRef         project_panel;
     PropertiesPanelRef      properties_panel;
     ScenePanelRef           scene_panel;
     TimelinePanelRef        timeline_panel;
     AssetsPanelRef          assets_panel;
     DockNodeRef             dock_root;
     PanelRef                dragging_panel;
-    bool                    dropped_panel = false;
+    DockNodeRef             dragging_split;
+    DockZoneRef             document_zone;
+    Rect                    dragging_split_rect;
+    bool                    dropped_panel   = false;
+    bool                    dropped_split   = false;
+    bool                    closed_panel    = false;
 
     PanelsManager();
     ~PanelsManager();

@@ -15,50 +15,48 @@
 #include "ScriptComponent.h"
 #include "Camera2DComponent.h"
 #include "SpriteRendererComponent.h"
+#include "globals.h"
 
+#if !BARK_EDITOR
 #include <box2d/b2_world.h>
-
-// Component lists
-std::vector<Component*> active_components;
-std::vector<Camera2DComponent*> active_camera2Ds;
-std::vector<_2DRendererComponent*> _2D_renderers;
-
-std::vector<ComponentRef> created_components;
-std::vector<ComponentRef> enabled_components;
-std::vector<ComponentRef> disabled_components;
-
-float pixelsIn1Meter = 1.0f / 16.0f;
-b2World* world = nullptr;
-
-std::string scene_to_load;
-
-EntityRef root;
+#endif
 
 void loadNode(const EntityRef& entity, const Json::Value& json_node);
 void loadComponent(const EntityRef& entity, const std::string& type, const Json::Value& json_properties);
 
-void initSceneManager()
+SceneManager::SceneManager()
 {
+#if !BARK_EDITOR
     world = new b2World(b2Vec2(0, 0));
+#endif
     root = OMake<Entity>();
+    root->scene_mgr = this;
 }
 
-void shutdownSceneManager()
+SceneManager::~SceneManager()
 {
-    created_components.clear();
-    enabled_components.clear();
-    disabled_components.clear();
-    active_camera2Ds.clear();
-    _2D_renderers.clear();
-    root = nullptr;
+#if !BARK_EDITOR
     delete world;
+#endif
 }
 
-void loadScene(const std::string& name)
+#if BARK_EDITOR
+Json::Value SceneManager::serialize()
+{
+    Json::Value json;;
+    return std::move(json);
+}
+#endif
+
+void SceneManager::deserialize(const Json::Value& json)
+{
+}
+
+void SceneManager::loadScene(const std::string& name)
 {
     Json::Value json_scene;
 
-    auto full_path = oContentManager->findResourceFile(name);
+    auto full_path = g_content_mgr->findResourceFile(name);
     if (full_path.empty())
     {
         OLogE("Cannot find scene: " + name);
@@ -104,9 +102,21 @@ void loadScene(const std::string& name)
         }
         copy.clear();
     }
+
+    // Call onEnabled
+    {
+        static decltype(enabled_components) copy;
+        copy = enabled_components;
+        enabled_components.clear();
+        for (const auto& component : copy)
+        {
+            component->onEnable();
+        }
+        copy.clear();
+    }
 }
 
-void loadNode(const EntityRef& entity, const Json::Value& json_node)
+void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json_node)
 {
     entity->name = getJson_std_string(json_node, "name", "Entity");
     entity->id = getJson_uint64_t(json_node, "id", 0);
@@ -124,12 +134,13 @@ void loadNode(const EntityRef& entity, const Json::Value& json_node)
     for (const auto& json_child : json_children)
     {
         auto child = OMake<Entity>();
+        child->scene_mgr = this;
         loadNode(child, json_child);
         entity->add(child);
     }
 }
 
-void loadComponent(const EntityRef& entity, const std::string& type, const Json::Value& json_properties)
+void SceneManager::loadComponent(const EntityRef& entity, const std::string& type, const Json::Value& json_properties)
 {
     ComponentRef component;
 
@@ -137,9 +148,13 @@ void loadComponent(const EntityRef& entity, const std::string& type, const Json:
     {
         // Special case for scripts, can have multiple of same type bound to the entity
         auto script_component = std::dynamic_pointer_cast<ScriptComponent>(createComponentByName("Script"));
+#if !BARK_EDITOR
         script_component->initJSObject(script_component->getJSPrototype());
-        script_component->script = oContentManager->getResourceAs<Script>(type);
+#endif
+        script_component->script = g_content_mgr->getResourceAs<Script>(type);
+#if !BARK_EDITOR
         script_component->addScriptPropertiesToJSObject();
+#endif
         component = script_component;
     }
     else
@@ -156,7 +171,8 @@ void loadComponent(const EntityRef& entity, const std::string& type, const Json:
     }
 }
 
-void updateSceneManager(float dt)
+#if !BARK_EDITOR
+void SceneManager::update(float dt)
 {
     // Call onEnabled
     {
@@ -183,12 +199,14 @@ void updateSceneManager(float dt)
     }
 
     // Update active components
+#if !BARK_EDITOR
     {
         for (const auto& component : active_components)
         {
             component->onUpdate(dt);
         }
     }
+#endif
 
     // Load scene if requested
     if (!scene_to_load.empty())
@@ -198,8 +216,9 @@ void updateSceneManager(float dt)
         loadScene(name);
     }
 }
+#endif
 
-void renderSceneManager()
+void SceneManager::render(Matrix* transform)
 {
     auto r = oRenderer.get();
     auto& rs = r->renderStates;
@@ -207,7 +226,12 @@ void renderSceneManager()
 
     // Setup 2D camera
     Matrix camera_transform;
-    if (!active_camera2Ds.empty())
+    if (transform)
+    {
+        camera_transform = *transform;
+    }
+#if !BARK_EDITOR
+    else if (!active_camera2Ds.empty())
     {
         auto active_camera2D = active_camera2Ds.back();
         if (active_camera2D->clearScreen)
@@ -226,6 +250,7 @@ void renderSceneManager()
             0, 0, zoom, 0,
             -pos.x * zoom + res.x * origin.x, -pos.y * zoom + res.y * origin.y, 0, 1);
     }
+#endif
 
     //TODO: Cull 2D objects
 

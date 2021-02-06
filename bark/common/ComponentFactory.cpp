@@ -39,6 +39,8 @@ ComponentRef createComponentByName(const std::string& name)
         return nullptr;
     }
     auto component = it->second();
+#if !BARK_EDITOR
     component->initJSObject(component->getJSPrototype());
+#endif
     return component;
 }

@@ -5,9 +5,10 @@
 #include "Theme.h"
 #include "globals.h"
 
+#include "ProjectPanel.h"
 #include "PropertiesPanel.h"
 #include "ScenePanel.h"
-#include "DocumentPanel.h"
+#include "SceneViewPanel.h"
 #include "TimelinePanel.h"
 #include "AssetsPanel.h"
 
@@ -33,14 +34,34 @@ DockVSplit::DockVSplit(DockNodeRef in_top, DockNodeRef in_bottom, float in_amoun
 {
 }
 
+DockKeepAround::DockKeepAround(const std::string& in_text, const std::vector<PanelRef>& panels, int active_panel)
+    : DockZone(panels, active_panel)
+    , text(in_text)
+{
+}
+
+void DockKeepAround::render(GUIContext* ctx)
+{
+    if (panels.empty())
+    {
+        ctx->drawText(ctx->theme->font, text, ctx->rect.Center(), OCenter, ctx->theme->disabled_text_color);
+    }
+    else
+    {
+        DockZone::render(ctx);
+    }
+}
+
 void DockZone::render(GUIContext* ctx)
 {
-    if (panels.empty()) return;
-
     bool active_changed = true;
     while (active_changed)
     {
         active_changed = false;
+
+        if (panels.empty()) return;
+
+        ctx->saveDrawPoint();
 
         // Draw active panel
         {
@@ -55,22 +76,22 @@ void DockZone::render(GUIContext* ctx)
 
         // Draw tabs
         {
-            ctx->saveDrawPoint();
             ctx->pushRect();
             ctx->rect.w = ctx->theme->control_height;
             float tab_offset = 0.0f;
             for (int i = 0, len = (int)panels.size(); i < len && tab_offset < ctx->rect.z; ++i)
             {
+                const auto& panel = panels[i];
                 eUIState ui_state;
                 if (i == active_panel)
                 {
-                    ui_state = ctx->drawActiveTab(panels[i]->name, tab_offset);
+                    ui_state = ctx->drawActiveTab(panels[i]->name, tab_offset, panel->closable);
                 }
                 else
                 {
                     auto offset_before = tab_offset;
-                    ui_state = ctx->drawInactiveTab(panels[i]->name, tab_offset);
-                    if (ui_state == eUIState::Clicked)
+                    ui_state = ctx->drawInactiveTab(panels[i]->name, tab_offset, panel->closable);
+                    if (ui_state == eUIState::Down)
                     {
                         active_changed = true;
                         active_panel = i;
@@ -78,9 +99,17 @@ void DockZone::render(GUIContext* ctx)
                         break;
                     }
                 }
-                if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
+                if (ui_state == eUIState::Close)
                 {
-                    g_panels_mgr->dragging_panel = panels[i];
+                    panels.erase(panels.begin() + i);
+                    active_changed = true;
+                    g_panels_mgr->closed_panel = true;
+                    active_panel = std::min(i, (int)panels.size() - 1);
+                    break;
+                }
+                else if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
+                {
+                    g_panels_mgr->dragging_panel = panel;
                     g_panels_mgr->dropped_panel = ui_state == eUIState::Drop;
                 }
             }
@@ -115,8 +144,9 @@ void DockZone::dock(GUIContext* ctx, DockContext* dock_ctx)
         dock_ctx->position = eDockPosition::Tab;
         for (dock_ctx->tab_index = 0; dock_ctx->tab_index < (int)panels.size() && tab_offset < ctx->rect.z; ++dock_ctx->tab_index)
         {
-            auto text_size = ctx->theme->font->measure(panels[dock_ctx->tab_index]->name);
-            tab_width = text_size.x + ctx->theme->tab_padding * 2.0f;
+            const auto& panel = panels[dock_ctx->tab_index];
+            auto text_size = ctx->theme->font->measure(panel->name);
+            tab_width = text_size.x + ctx->theme->tab_padding * 2.0f + (panel->closable ? (16.0f + ctx->theme->tab_padding) : 0.0f);
 
             if (ctx->mouse.x <= rect.x + tab_offset + tab_width)
             {
@@ -269,49 +299,19 @@ void DockVSplit::dock(GUIContext* ctx, DockContext* dock_ctx)
     }
 }
 
-void DockZone::renderGameContent(GUIContext* ctx)
-{
-    if (panels.empty()) return;
-
-    ctx->pushRect();
-    ctx->rect.y += ctx->theme->control_height;
-    ctx->rect.w -= ctx->theme->control_height;
-    ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding);
-
-    panels[active_panel]->renderGameContent(ctx);
-
-    ctx->popRect();
-}
-
-void DockHSplit::renderGameContent(GUIContext* ctx)
-{
-    float splitPos = (float)(int)amount;
-    if (magnet == eDockMagnet::Right) splitPos = (float)(int)(ctx->rect.z - amount);
-    else if (magnet == eDockMagnet::Middle) splitPos = (float)(int)(ctx->rect.z * amount);
-
-    if (left)
-    {
-        ctx->pushRect();
-        ctx->rect.z = splitPos - ctx->theme->panel_margin * 0.5f;
-        left->renderGameContent(ctx);
-        ctx->popRect();
-    }
-
-    if (right)
-    {
-        ctx->pushRect();
-        ctx->rect.x += splitPos + ctx->theme->panel_margin * 0.5f;
-        ctx->rect.z -= splitPos + ctx->theme->panel_margin * 0.5f;
-        right->renderGameContent(ctx);
-        ctx->popRect();
-    }
-}
-
 void DockHSplit::render(GUIContext* ctx)
 {
     float splitPos = (float)(int)amount;
     if (magnet == eDockMagnet::Right) splitPos = (float)(int)(ctx->rect.z - amount);
     else if (magnet == eDockMagnet::Middle) splitPos = (float)(int)(ctx->rect.z * amount);
+
+    ctx->pushRect();
+    ctx->rect = Rect(ctx->rect.x + splitPos - ctx->theme->panel_margin * 0.5f, 
+                     ctx->rect.y,
+                     ctx->theme->panel_margin,
+                     ctx->rect.w);
+    auto ui_state = ctx->drawHSplitHandle();
+    ctx->popRect();
 
     if (left)
     {
@@ -329,29 +329,12 @@ void DockHSplit::render(GUIContext* ctx)
         right->render(ctx);
         ctx->popRect();
     }
-}
-
-void DockVSplit::renderGameContent(GUIContext* ctx)
-{
-    float splitPos = (float)(int)amount;
-    if (magnet == eDockMagnet::Bottom) splitPos = (float)(int)(ctx->rect.w - amount);
-    else if (magnet == eDockMagnet::Middle) splitPos = (float)(int)(ctx->rect.w * amount);
-
-    if (top)
+    
+    if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
     {
-        ctx->pushRect();
-        ctx->rect.w = splitPos - ctx->theme->panel_margin * 0.5f;
-        top->renderGameContent(ctx);
-        ctx->popRect();
-    }
-
-    if (bottom)
-    {
-        ctx->pushRect();
-        ctx->rect.y += splitPos + ctx->theme->panel_margin * 0.5f;
-        ctx->rect.w -= splitPos + ctx->theme->panel_margin * 0.5f;
-        bottom->renderGameContent(ctx);
-        ctx->popRect();
+        g_panels_mgr->dragging_split = OThis;
+        g_panels_mgr->dropped_split = ui_state == eUIState::Drop;
+        g_panels_mgr->dragging_split_rect = ctx->rect;
     }
 }
 
@@ -360,6 +343,14 @@ void DockVSplit::render(GUIContext* ctx)
     float splitPos = (float)(int)amount;
     if (magnet == eDockMagnet::Bottom) splitPos = (float)(int)(ctx->rect.w - amount);
     else if (magnet == eDockMagnet::Middle) splitPos = (float)(int)(ctx->rect.w * amount);
+        
+    ctx->pushRect();
+    ctx->rect = Rect(ctx->rect.x, 
+                     ctx->rect.y + splitPos - ctx->theme->panel_margin * 0.5f,
+                     ctx->rect.z,
+                     ctx->theme->panel_margin);
+    auto ui_state = ctx->drawVSplitHandle();
+    ctx->popRect();
 
     if (top)
     {
@@ -377,15 +368,24 @@ void DockVSplit::render(GUIContext* ctx)
         bottom->render(ctx);
         ctx->popRect();
     }
+    
+    if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
+    {
+        g_panels_mgr->dragging_split = OThis;
+        g_panels_mgr->dragging_split_rect = ctx->rect;
+        g_panels_mgr->dropped_split = ui_state == eUIState::Drop;
+    }
 }
 
 PanelsManager::PanelsManager()
 {
     // Allocate all panels
+    project_panel       = OMake<ProjectPanel>();
     properties_panel    = OMake<PropertiesPanel>();
     scene_panel         = OMake<ScenePanel>();
     timeline_panel      = OMake<TimelinePanel>();
     assets_panel        = OMake<AssetsPanel>();
+    document_zone       = OMake<DockKeepAround>("Documents View", std::vector<PanelRef>{}, 0);
 
     // Create default dock layout
     dock_root = OMake<DockHSplit>(
@@ -396,15 +396,13 @@ PanelsManager::PanelsManager()
                 0.6f, eDockMagnet::Middle
             ),
             OMake<DockVSplit>(
-                OMake<DockZone>(std::vector<PanelRef>{OMake<DocumentPanel>("game.scene"), 
-                                                      OMake<DocumentPanel>("player.prefab"), 
-                                                      OMake<DocumentPanel>("menu.scene")}, 0),
+                document_zone,
                 OMake<DockZone>(std::vector<PanelRef>{timeline_panel}, 0),
                 200.0f, eDockMagnet::Bottom
             ),
             300.0f, eDockMagnet::Left
         ),
-        OMake<DockZone>(std::vector<PanelRef>{properties_panel}, 0),
+        OMake<DockZone>(std::vector<PanelRef>{properties_panel, project_panel}, 0),
         300.0f, eDockMagnet::Right
     );
 }
@@ -516,6 +514,12 @@ void PanelsManager::cleanDock()
     }
 }
 
+DockNodeRef DockKeepAround::clean()
+{
+    DockZone::clean();
+    return nullptr;
+}
+
 DockNodeRef DockZone::clean()
 {
     for (auto it = panels.begin(); it != panels.end();)
@@ -581,16 +585,13 @@ DockNodeRef DockVSplit::clean()
 
 void PanelsManager::render(GUIContext* ctx)
 {
-    // Draw all render targets first, so we don't do this at the same time as normal UI
-    ctx->begin();
-    dock_root->renderGameContent(ctx);
-    ctx->end();
-
     // Draw UIs
-    dragging_panel = nullptr;
-    dropped_panel = false;
+    dragging_panel  = nullptr;
+    dragging_split  = nullptr;
+    dropped_panel   = false;
+    closed_panel    = false;
 
-    ctx->beginDraw();
+    ctx->begin();
     auto rewind_at = ctx->draw_calls.size();
     dock_root->render(ctx);
 
@@ -613,18 +614,96 @@ void PanelsManager::render(GUIContext* ctx)
             cleanDock();
 
             ctx->draw_calls.resize(rewind_at);
-            ctx->endDraw(); // Nothing will be drawn
+            ctx->end(); // Nothing will be drawn
 
             // Let's redraw everything again
             ctx->begin();
-            dock_root->renderGameContent(ctx);
-            ctx->end();
-
-            ctx->beginDraw();
             dock_root->render(ctx);
         }
     }
 
+    // Draw/Do split dragging
+    if (dragging_split)
+    {
+        auto hsplit = ODynamicCast<DockHSplit>(dragging_split);
+        auto vsplit = ODynamicCast<DockVSplit>(dragging_split);
+
+        if (hsplit)
+        {
+            float splitPos = (float)(int)hsplit->amount;
+            if (hsplit->magnet == eDockMagnet::Right) splitPos = (float)(int)(ctx->rect.z - hsplit->amount);
+            else if (hsplit->magnet == eDockMagnet::Middle) splitPos = (float)(int)(ctx->rect.z * hsplit->amount);
+
+            splitPos = (ctx->mouse.x - dragging_split_rect.x);
+            splitPos = std::max(splitPos, ctx->theme->min_h_size);
+            splitPos = std::min(splitPos, dragging_split_rect.z - ctx->theme->min_h_size);
+
+            ctx->drawRect(nullptr, Rect(
+                dragging_split_rect.x + splitPos - ctx->theme->panel_padding * 0.5f,
+                dragging_split_rect.y,
+                ctx->theme->panel_padding,
+                dragging_split_rect.w),
+                ctx->theme->dock_color);
+
+            if (dropped_split)
+            {
+                if (hsplit->magnet == eDockMagnet::Left) hsplit->amount = splitPos;
+                else if (hsplit->magnet == eDockMagnet::Right) hsplit->amount = dragging_split_rect.z - splitPos;
+                else if (hsplit->magnet == eDockMagnet::Middle) hsplit->amount = splitPos / dragging_split_rect.z;
+
+                ctx->draw_calls.resize(rewind_at);
+                ctx->end(); // Nothing will be drawn
+
+                // Let's redraw everything again
+                ctx->begin();
+                dock_root->render(ctx);
+            }
+        }
+        else if (vsplit) // Implied
+        {
+            float splitPos = (float)(int)vsplit->amount;
+            if (vsplit->magnet == eDockMagnet::Bottom) splitPos = (float)(int)(ctx->rect.w - vsplit->amount);
+            else if (vsplit->magnet == eDockMagnet::Middle) splitPos = (float)(int)(ctx->rect.w * vsplit->amount);
+
+            splitPos = (ctx->mouse.y - dragging_split_rect.y);
+            splitPos = std::max(splitPos, ctx->theme->min_v_size);
+            splitPos = std::min(splitPos, dragging_split_rect.w - ctx->theme->min_v_size);
+
+            ctx->drawRect(nullptr, Rect(
+                dragging_split_rect.x,
+                dragging_split_rect.y + splitPos - ctx->theme->panel_padding * 0.5f,
+                dragging_split_rect.z,
+                ctx->theme->panel_padding),
+                ctx->theme->dock_color);
+
+            if (dropped_split)
+            {
+                if (vsplit->magnet == eDockMagnet::Top) vsplit->amount = splitPos;
+                else if (vsplit->magnet == eDockMagnet::Bottom) vsplit->amount = dragging_split_rect.w - splitPos;
+                else if (vsplit->magnet == eDockMagnet::Middle) vsplit->amount = splitPos / dragging_split_rect.w;
+
+                ctx->draw_calls.resize(rewind_at);
+                ctx->end(); // Nothing will be drawn
+
+                // Let's redraw everything again
+                ctx->begin();
+                dock_root->render(ctx);
+            }
+        }
+    }
+
+    if (closed_panel)
+    {
+        cleanDock();
+
+        ctx->draw_calls.resize(rewind_at);
+        ctx->end(); // Nothing will be drawn
+
+        // Let's redraw everything again
+        ctx->begin();
+        dock_root->render(ctx);
+    }
+
     // Submit draw
-    ctx->endDraw();
+    ctx->end();
 }

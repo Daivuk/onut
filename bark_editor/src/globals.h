@@ -5,12 +5,14 @@
 OForwardDeclare(ContentManager);
 
 class Theme;
-extern Theme* g_theme;
-
 class GUIContext;
-extern GUIContext* g_gui_ctx;
-
 class PanelsManager;
-extern PanelsManager* g_panels_mgr;
+class Project;
+class Assets;
 
-extern OContentManagerRef g_content_mgr;
+extern Theme*               g_theme;
+extern GUIContext*          g_gui_ctx;
+extern PanelsManager*       g_panels_mgr;
+extern OContentManagerRef   g_content_mgr;
+extern Project*             g_project;
+extern Assets*              g_assets;

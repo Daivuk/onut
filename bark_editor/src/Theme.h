@@ -20,6 +20,9 @@ public:
     float tool_button_size  = 16.0f;
     float tool_bar_height   = 20.0f;
 
+    float min_h_size        = 200.0f;
+    float min_v_size        = 100.0f;
+
     Color window_color                  = OColorHex(202531);
     Color panel_color                   = OColorHex(333b4f);
     Color panel_border_color            = OColorHex(191d27);
@@ -41,10 +44,11 @@ public:
     Color dock_color                    = active_color * 0.5f;
 
     Color* tool_button_colors[3]        = {&tool_button_color, &tool_button_hover, &tool_button_down};
-    Color* tab_text_colors[3]           = {&text_color, &text_over_color, &text_color};
-    Color* inactive_tab_text_colors[3]  = {&disabled_text_color, &text_color, &disabled_text_color};
 
     OTextureRef menu_icon;
+    OTextureRef x_icon;
+
+    OTextureRef scrollbar;
 
     Theme();
 };

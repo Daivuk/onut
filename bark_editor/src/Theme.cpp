@@ -4,7 +4,10 @@
 
 Theme::Theme()
 {
-    font = OGetFont("font.fnt");
+    font        = OGetFont("font.fnt");
 
-    menu_icon = OGetTexture("menu_icon.png");
+    menu_icon   = OGetTexture("menu_icon.png");
+    x_icon      = OGetTexture("x_icon.png");
+
+    scrollbar   = OGetTexture("scrollbar.png");
 }

@@ -1,25 +1,30 @@
 #pragma once
 
+#include <onut/BlendMode.h>
 #include <onut/ForwardDeclaration.h>
 #include "_2DRendererComponent.h"
 
-OForwardDeclare(TiledMap);
-ForwardDeclare(TiledMapRendererComponent);
+OForwardDeclare(Texture);
+ForwardDeclare(SpriteRendererComponent);
 
-class TiledMapRendererComponent final : public _2DRendererComponent
+class SpriteRendererComponent final : public _2DRendererComponent
 {
 public:
-    COMPONENT_PROPERTY(OTiledMapRef, tiledMap, nullptr);
+    COMPONENT_PROPERTY(OTextureRef, texture, nullptr);
+    COMPONENT_PROPERTY(Color, color, Color::White);
+    COMPONENT_PROPERTY(Vector2, origin, OCenter);
     COMPONENT_PROPERTY(bool, smooth, true);
     COMPONENT_PROPERTY(int, blendMode, (int)OBlendPreMultiplied);
 
     void onCreate() override {};
+#if !BARK_EDITOR
     void onUpdate(float dt) override {};
+#endif
     void onDestroy() override {};
-
+    
     void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
     
-    COMPONENT_DECLARATION(TiledMapRendererComponent, TiledMapRenderer)
+    COMPONENT_DECLARATION(SpriteRendererComponent, SpriteRenderer)
     // [GENERATED COMPONENT DECLARATION BEGIN]
 public:
 #if BARK_EDITOR
@@ -27,7 +32,9 @@ public:
     {
         auto json = Component::serialize();
 
-        setJson_OTiledMapRef(json, "tiledMap", tiledMap);
+        setJson_OTextureRef(json, "texture", texture);
+        setJson_Color(json, "color", color);
+        setJson_Vector2(json, "origin", origin);
         setJson_bool(json, "smooth", smooth);
         setJson_int(json, "blendMode", blendMode);
 
@@ -39,12 +46,16 @@ public:
     {
         Component::deserialize(json);
 
-        tiledMap = getJson_OTiledMapRef(json, "tiledMap", nullptr);
+        texture = getJson_OTextureRef(json, "texture", nullptr);
+        color = getJson_Color(json, "color", Color::White);
+        origin = getJson_Vector2(json, "origin", OCenter);
         smooth = getJson_bool(json, "smooth", true);
         blendMode = getJson_int(json, "blendMode", (int)OBlendPreMultiplied);
     }
 
+#if !BARK_EDITOR
     static void* js_prototype;
     void* getJSPrototype() override { return js_prototype; };
+#endif
     // [GENERATED COMPONENT DECLARATION END]
 };

@@ -3,6 +3,7 @@
 #include <onut/Settings.h>
 #include <onut/Strings.h>
 #include <onut/Timing.h>
+#include <onut/ContentManager.h>
 #include <json/json.h>
 #include <fstream>
 #include <string>
@@ -16,6 +17,7 @@
 #include "SceneManager.h"
 #include "ScriptComponent.h"
 #include "JSObject.h"
+#include "globals.h"
 
 static Json::Value project_json;
 static std::string starting_scene;
@@ -113,27 +115,30 @@ void initSettings()
 
 void init()
 {
+    g_content_mgr = oContentManager;
+
     JSObject::initJSObjects();
     initComponentFactory();
     createBindings();
-    initSceneManager();
-    loadScene(starting_scene);
+
+    g_scene_mgr = new SceneManager();
+    g_scene_mgr->loadScene(starting_scene);
 }
 
 void shutdown()
 {
-    shutdownSceneManager();
+    delete g_scene_mgr;
     shutdownComponentFactory();
 }
 
 void update()
 {
-    updateSceneManager(ODT);
+    g_scene_mgr->update(ODT);
 }
 
 void render()
 {
-    renderSceneManager();
+    g_scene_mgr->render();
 }
 
 void postRender()

@@ -3,7 +3,9 @@
 #include <onut/ForwardDeclaration.h>
 #include <vector>
 #include "JsonHelper.h"
+#if !BARK_EDITOR
 #include "JSObject.h"
+#endif
 
 #define COMPONENT_DECLARATION(__class__, __name__)
 #define COMPONENT_PROPERTY(__type__, __name__, __default__, ...) __type__ __name__ = __default__;
@@ -16,12 +18,14 @@
 ForwardDeclare(Entity);
 ForwardDeclare(Component);
 
-class Component : public JSObject
+class Component 
+#if !BARK_EDITOR
+    : public JSObject
+#endif
 {
 public:
-    bool enabled = true;
-
-    Entity* entity = nullptr;
+    bool            enabled     = true;
+    Entity*         entity      = nullptr;
 
     virtual ~Component() {}
 
@@ -30,7 +34,7 @@ public:
     {
         Json::Value json;
 
-        setJsonBool(json, "enabled", enabled);
+        setJson_bool(json, "enabled", enabled);
 
         return std::move(json);
     }
@@ -43,9 +47,13 @@ public:
 
     virtual void onCreate() = 0;
     virtual void onEnable();
+#if !BARK_EDITOR
     virtual void onUpdate(float dt) = 0;
+#endif
     virtual void onDisable();
     virtual void onDestroy() = 0;
 
+#if !BARK_EDITOR
     virtual void* getJSPrototype() = 0;
+#endif
 };

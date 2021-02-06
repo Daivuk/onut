@@ -1,12 +1,12 @@
 let fs = require('fs');
 
 // Find components
-let dir = fs.readdirSync('../src');
+let dir = fs.readdirSync('../common');
 let components = dir.reduce((components, file) =>
 {
     if (file.endsWith('.h') && file != "Component.h")
     {
-        let filename = `../src/${file}`;
+        let filename = `../common/${file}`;
         let file_content = fs.readFileSync(filename).toString();
         let found = file_content.match(/COMPONENT_DECLARATION\(\s*(\w+)\s*,\s*(\w+)\s*\)/);
         if (found)
@@ -120,8 +120,10 @@ public:
     
     insert_block += `    }
 
+#if !BARK_EDITOR
     static void* js_prototype;
     void* getJSPrototype() override { return js_prototype; };
+#endif
     // [GENERATED COMPONENT DECLARATION END]\n`;
 
     component.source = `${component.start_code}${insert_block}${component.end_code}`;
@@ -300,13 +302,15 @@ ComponentRef createComponentByName(const std::string& name)
         return nullptr;
     }
     auto component = it->second();
+#if !BARK_EDITOR
     component->initJSObject(component->getJSPrototype());
+#endif
     return component;
 }
 `
 
-fs.writeFileSync('../src/ComponentFactory.cpp', ComponentFactory_cpp.replace(/\r?\n/g, "\r\n"));
-console.log(`=> ../src/ComponentFactory.cpp`);
+fs.writeFileSync('../common/ComponentFactory.cpp', ComponentFactory_cpp.replace(/\r?\n/g, "\r\n"));
+console.log(`=> ../common/ComponentFactory.cpp`);
 
 
 let ComponentGetterBindings_cpp = `#include "Component.h"

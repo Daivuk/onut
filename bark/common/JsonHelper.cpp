@@ -7,6 +7,7 @@
 #include <onut/Model.h>
 #include <onut/Shader.h>
 #include "Script.h"
+#include "globals.h"
 
 bool getJson_bool(const Json::Value& json, const char* key, bool default_value)
 {
@@ -122,43 +123,43 @@ Color getJson_Color(const Json::Value& json, const char* key, const Color& defau
 OTextureRef getJson_OTextureRef(const Json::Value& json, const char* key, const OTextureRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return OGetTexture(json[key].asString());
+    return g_content_mgr->getResourceAs<OTexture>(json[key].asString());
 }
 
 OTiledMapRef getJson_OTiledMapRef(const Json::Value& json, const char* key, const OTiledMapRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return OGetTiledMap(json[key].asString());
+    return g_content_mgr->getResourceAs<OTiledMap>(json[key].asString());
 }
 
 OSoundRef getJson_OSoundRef(const Json::Value& json, const char* key, const OSoundRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return OGetSound(json[key].asString());
+    return g_content_mgr->getResourceAs<OSound>(json[key].asString());
 }
 
 OSpriteAnimRef getJson_OSpriteAnimRef(const Json::Value& json, const char* key, const OSpriteAnimRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return OGetSpriteAnim(json[key].asString());
+    return g_content_mgr->getResourceAs<OSpriteAnim>(json[key].asString());
 }
 
 OModelRef getJson_OModelRef(const Json::Value& json, const char* key, const OModelRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return OGetModel(json[key].asString());
+    return g_content_mgr->getResourceAs<OModel>(json[key].asString());
 }
 
 OShaderRef getJson_OShaderRef(const Json::Value& json, const char* key, const OShaderRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return OGetShader(json[key].asString());
+    return g_content_mgr->getResourceAs<OShader>(json[key].asString());
 }
 
 ScriptRef getJson_ScriptRef(const Json::Value& json, const char* key, const ScriptRef& default_value)
 {
     if (!json.isMember(key)) return default_value;
-    return oContentManager->getResourceAs<Script>(json[key].asString());
+    return g_content_mgr->getResourceAs<Script>(json[key].asString());
 }
 
 
