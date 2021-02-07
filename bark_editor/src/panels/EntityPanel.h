@@ -2,10 +2,10 @@
 
 #include "Panel.h"
 
-class ProjectPanel final : public Panel
+class EntityPanel final : public Panel
 {
 public:
-    ProjectPanel();
+    EntityPanel();
 
     void render(GUIContext* ctx) override;
 };

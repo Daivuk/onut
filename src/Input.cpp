@@ -132,6 +132,8 @@ namespace onut
         else mouseDelta = {0, 0};
 
         ++m_frameId;
+        m_lastDoubleClicked = m_doubleClicked;
+        m_doubleClicked = false;
     }
 
     OGamePadRef Input::getGamePad(int index) const
@@ -149,6 +151,16 @@ namespace onut
     int Input::getJoystickCount() const
     {
         return (int)m_joysticks.size();
+    }
+
+    bool Input::getDoubleClicked() const
+    {
+        return m_lastDoubleClicked;
+    }
+
+    void Input::onDoubleClicked()
+    {
+        m_doubleClicked = true;
     }
 
     void Input::activateJoystick(int index)

@@ -12,6 +12,26 @@ OForwardDeclare(Font);
 OForwardDeclare(Texture);
 OForwardDeclare(Renderer);
 
+#define GUI_START_V_SCROLLABLE(ctx, scroll) \
+{ \
+    auto scroll_save_point = ctx->draw_calls.size(); \
+    do \
+    { \
+        ctx->draw_calls.resize(scroll_save_point); \
+        ctx->v_scroll_view_size = ctx->rect.w; \
+        ctx->pushRect(); \
+        ctx->pushScissor(); \
+        ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding); \
+        ctx->rect.y -= scroll; \
+        ctx->v_scroll_content_start = ctx->rect.y;
+
+#define GUI_END_V_SCROLLABLE(ctx, scroll) \
+        ctx->v_scroll_content_size = (ctx->rect.y + ctx->rect.w) - ctx->v_scroll_content_start; \
+        ctx->popScissor(); \
+        ctx->popRect(); \
+    } while (ctx->vScroll(&scroll)); \
+}
+
 namespace onut
 {
     class RenderStates;
@@ -27,6 +47,7 @@ enum class eUIState
     Drag,
     Drop,
     Clicked,
+    DoubleClicked,
     Close
 };
 
@@ -36,7 +57,9 @@ enum class eUIDrawCall
     Rect,
     Text,
     Sprite,
-    Slice9
+    Slice9,
+    SetScissor,
+    UnsetScissor,
 };
 
 struct UIDrawCall
@@ -80,6 +103,7 @@ class GUIContext final
 public:
     Rect                rect;
     std::vector<Rect>   rect_stack;
+    std::vector<Rect>   scissor_stack;
     OSpriteBatch*       sb;
     Theme*              theme;
     ORenderer*          r;
@@ -91,9 +115,14 @@ public:
     // Mouse/Input states
     Vector2             mouse;
     Vector2             down_pos;
-    bool                ctrl, shift, alt;
-    bool                down;
-    bool                clicked;
+    bool                ctrl = false, shift = false, alt = false;
+    bool                down = false;
+    bool                clicked = false;
+    bool                double_clicked = false;
+    float               v_scroll_content_start = 0.0f;
+    float               v_scroll_content_size = 0.0f;
+    float               v_scroll_view_size = 0.0f;
+    float               scroll_value = 0.0f;
 
     std::vector<UIDrawCall> draw_calls;
 
@@ -119,6 +148,9 @@ public:
     void pushRect();
     Rect popRect();
 
+    void pushScissor();
+    Rect popScissor();
+
     void drawPanel();
     eUIState drawTab(const std::string& name, float& offset,
                  const Color& color, const Color& border_color,
@@ -128,6 +160,8 @@ public:
 
     void drawArea();
     bool drawToolButton(const OTextureRef& icon, const Vector2& pos);
+    eUIState drawListItem(const std::string& text, const OTextureRef& icon = nullptr, int indent = 0, bool enabled = true, bool selected = false);
+    bool vScroll(float* amount);
 
     eUIState drawHSplitHandle();
     eUIState drawVSplitHandle();

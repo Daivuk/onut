@@ -522,6 +522,8 @@ namespace onut
         OGamePadRef getGamePad(int index) const;
         OJoystickRef getJoystick(int index) const;
         int getJoystickCount() const;
+        bool getDoubleClicked() const;
+        void onDoubleClicked();
 
         void activateJoystick(int index);
         void deactivateJoystick(int index);
@@ -554,6 +556,8 @@ namespace onut
         std::vector<OJoystickRef> m_joysticks;
         bool m_isCursorVisible = true;
         bool m_fpsMouse = false;
+        bool m_doubleClicked = false;
+        bool m_lastDoubleClicked = false;
     };
 }
 

@@ -44,6 +44,8 @@ namespace onut
         float getPitch() const;
         void setPitch(float pitch);
 
+        void onStopped() override;
+
         ~SoundInstance();
 
     private:

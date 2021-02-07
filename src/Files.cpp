@@ -444,6 +444,13 @@ namespace onut
 #endif
     }
 
+    void openFile(const std::string& path)
+    {
+#if defined(WIN32)
+        ShellExecuteA(0, 0, path.c_str(), 0, 0 , SW_SHOW);
+#endif
+    }
+
     MessageBoxReturn showMessageBox(const std::string& title, const std::string& message, MessageBoxType type, MessageBoxLevel level)
     {
         const char* typeStr;

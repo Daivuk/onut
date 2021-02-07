@@ -122,6 +122,7 @@ namespace onut
 
                 if (!pInstancePtr->progress(frameCount, sampleRate, channelCount, pOut, volume, balance, pitch))
                 {
+                    pInstancePtr->onStopped();
                     it = m_instances.erase(it);
                     continue;
                 }

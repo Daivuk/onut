@@ -2,10 +2,10 @@
 
 #include "Panel.h"
 
-class PropertiesPanel final : public Panel
+class AssetPanel final : public Panel
 {
 public:
-    PropertiesPanel();
+    AssetPanel();
 
     void render(GUIContext* ctx) override;
 };

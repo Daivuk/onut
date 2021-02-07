@@ -10,13 +10,14 @@
 #include <onut/ContentManager.h>
 #include "globals.h"
 
-SceneViewPanel::SceneViewPanel(const std::string& filename)
+SceneViewPanel::SceneViewPanel(const std::string& in_filename)
 {
-    name            = onut::getFilenameWithoutExtension(filename);
+    filename        = in_filename;
+    name            = onut::getFilenameWithoutExtension(in_filename);
     game_content_rt = OTexture::createRenderTarget({128, 128}, false);
     closable        = true;
 
-    scene_mgr.loadScene(filename);
+    scene_mgr.loadScene(in_filename);
 }
 
 void SceneViewPanel::render(GUIContext* ctx)

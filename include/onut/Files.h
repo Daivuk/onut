@@ -43,6 +43,7 @@ namespace onut
     bool copyFile(const std::string& from, const std::string& to);
     bool createTextFile(const std::string& path, const std::string& content);
     void showInExplorer(const std::string& path);
+    void openFile(const std::string& file);
 
     enum class MessageBoxLevel
     {

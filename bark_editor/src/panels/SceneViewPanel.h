@@ -10,6 +10,7 @@ OForwardDeclare(Texture);
 class SceneViewPanel final : public Panel
 {
 public:
+    std::string     filename; // Asset's filename
     SceneManager    scene_mgr;
     OTextureRef     game_content_rt;
     Vector2         camera_2d_pos   = Vector2::Zero;

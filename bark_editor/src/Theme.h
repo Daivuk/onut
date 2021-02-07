@@ -2,6 +2,7 @@
 
 #include <onut/Color.h>
 #include <onut/ForwardDeclaration.h>
+#include "Assets.h"
 
 OForwardDeclare(Font);
 OForwardDeclare(Texture);
@@ -14,12 +15,13 @@ public:
     float panel_margin      = 8.0f;
     float panel_padding     = 5.0f;
     float control_height    = 26.0f;
+    float list_item_height  = 20.0f;
     float border_size       = 1.0f;
     float tab_spacing       = 0.0f;
     float tab_padding       = 8.0f;
     float tool_button_size  = 16.0f;
     float tool_bar_height   = 20.0f;
-
+    float tree_indent       = 16.0f;
     float min_h_size        = 200.0f;
     float min_v_size        = 100.0f;
 
@@ -42,11 +44,13 @@ public:
     Color tool_button_down              = OColorHex(699ce8);
     Color inactive_tab_color            = OColorHex(262c3b);
     Color dock_color                    = active_color * 0.5f;
+    Color disabled_tint                 = Color(0.5f, 0.5f, 0.5f, 1.0f);
 
     Color* tool_button_colors[3]        = {&tool_button_color, &tool_button_hover, &tool_button_down};
 
     OTextureRef menu_icon;
     OTextureRef x_icon;
+    OTextureRef asset_icons[(int)eAssetType::COUNT];
 
     OTextureRef scrollbar;
 

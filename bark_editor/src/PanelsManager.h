@@ -8,11 +8,12 @@
 ForwardDeclare(DockNode);
 ForwardDeclare(DockZone);
 ForwardDeclare(Panel);
-ForwardDeclare(ProjectPanel);
-ForwardDeclare(PropertiesPanel);
+ForwardDeclare(AssetPanel);
+ForwardDeclare(EntityPanel);
 ForwardDeclare(ScenePanel);
 ForwardDeclare(TimelinePanel);
 ForwardDeclare(AssetsPanel);
+ForwardDeclare(SceneViewPanel);
 
 class GUIContext;
 struct DockContext;
@@ -133,8 +134,8 @@ struct DockContext
 class PanelsManager final
 {
 public:
-    ProjectPanelRef         project_panel;
-    PropertiesPanelRef      properties_panel;
+    AssetPanelRef           project_panel;
+    EntityPanelRef          properties_panel;
     ScenePanelRef           scene_panel;
     TimelinePanelRef        timeline_panel;
     AssetsPanelRef          assets_panel;
@@ -146,6 +147,7 @@ public:
     bool                    dropped_panel   = false;
     bool                    dropped_split   = false;
     bool                    closed_panel    = false;
+    SceneViewPanelRef       focussed_scene_view;
 
     PanelsManager();
     ~PanelsManager();

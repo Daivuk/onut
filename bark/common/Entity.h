@@ -15,8 +15,7 @@ ForwardDeclare(Component);
 
 class SceneManager;
 
-class Entity final 
-    : 
+class Entity final : 
 #if !BARK_EDITOR
     public JSObject, 
 #endif
@@ -38,6 +37,10 @@ public:
     std::string             name;
     std::vector<EntityRef>  children;
     std::map<std::string, ComponentRef> components;
+#if BARK_EDITOR
+    bool                    expanded    = false;
+    bool                    selected    = false;
+#endif
 
 private:
     Matrix m_world_transform;

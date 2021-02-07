@@ -28,6 +28,8 @@ namespace onut
         // Returns false when completed
         virtual bool progress(int frameCount, int sampleRate, int channelCount, float* pOut, float volume = 1.0f, float balance = 0.0f, float pitch = 1.0f) = 0;
 
+        virtual void onStopped() {};
+
         struct Positioning
         {
             bool enabled = false;

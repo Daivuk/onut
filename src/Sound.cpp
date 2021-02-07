@@ -400,6 +400,12 @@ namespace onut
         m_pitch = pitch;
     }
 
+    void SoundInstance::onStopped()
+    {
+        m_isPaused = true;
+        m_offset = 0;
+    }
+
     void SoundInstance::play()
     {
         if (isPlaying()) return;

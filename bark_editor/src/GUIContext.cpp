@@ -9,12 +9,14 @@
 
 void GUIContext::update()
 {
-    mouse = oInput->mousePosf;
-    ctrl    = OInputPressed(OKeyLeftControl);
-    shift   = OInputPressed(OKeyLeftShift);
-    alt     = OInputPressed(OKeyLeftAlt);
-    down    = OInputPressed(OMouse1);
-    clicked = OInputJustReleased(OMouse1);
+    mouse           = oInput->mousePosf;
+    ctrl            = OInputPressed(OKeyLeftControl);
+    shift           = OInputPressed(OKeyLeftShift);
+    alt             = OInputPressed(OKeyLeftAlt);
+    down            = OInputPressed(OMouse1);
+    clicked         = OInputJustReleased(OMouse1);
+    double_clicked  = oInput->getDoubleClicked();
+    scroll_value    = oInput->getStateValue(OMouseZ) * 0.5f;
 
     if (OInputJustPressed(OMouse1)) down_pos = mouse;
 }
@@ -32,6 +34,7 @@ void GUIContext::begin()
 
     draw_calls.clear();
     rect_stack.clear();
+    scissor_stack.clear();
 }
 
 void GUIContext::end()
@@ -88,6 +91,19 @@ void GUIContext::drawDrawCall(const UIDrawCall& draw_call)
         case eUIDrawCall::Slice9:
             sb->drawRectScaled9(draw_call.texture, draw_call.rect, draw_call.padding, draw_call.color);
             break;
+        case eUIDrawCall::SetScissor:
+            sb->flush();
+            rs->scissorEnabled = true;
+            rs->scissor = iRect{
+                (int)draw_call.rect.x, 
+                (int)draw_call.rect.y, 
+                (int)(draw_call.rect.x + draw_call.rect.z),
+                (int)(draw_call.rect.y + draw_call.rect.w)};
+            break;
+        case eUIDrawCall::UnsetScissor:
+            sb->flush();
+            rs->scissorEnabled = false;
+            break;
     }
 }
 
@@ -102,6 +118,36 @@ Rect GUIContext::popRect()
 
     rect = rect_stack.back();
     rect_stack.pop_back();
+
+    return rect;
+}
+
+void GUIContext::pushScissor()
+{
+    scissor_stack.push_back(rect);
+
+    auto draw_call = getNextDrawCall();
+    draw_call->type = eUIDrawCall::SetScissor;
+    draw_call->rect = rect;
+}
+
+Rect GUIContext::popScissor()
+{
+    if (scissor_stack.empty()) return rect;
+
+    rect = scissor_stack.back();
+    scissor_stack.pop_back();
+
+    auto draw_call = getNextDrawCall();
+    if (scissor_stack.empty())
+    {
+        draw_call->type = eUIDrawCall::UnsetScissor;
+    }
+    else
+    {
+        draw_call->type = eUIDrawCall::SetScissor;
+        draw_call->rect = rect;
+    }
 
     return rect;
 }
@@ -279,7 +325,14 @@ eUIState GUIContext::getState(const Rect& rect)
     eUIState ret = eUIState::None;
     bool is_mouse_hover = rect.Contains(mouse);
 
-    if (clicked && rect.Contains(down_pos))
+    if (double_clicked && rect.Contains(down_pos))
+    {
+        if (is_mouse_hover)
+        {
+            ret = eUIState::DoubleClicked;
+        }
+    }
+    else if (clicked && rect.Contains(down_pos))
     {
         if (is_mouse_hover)
         {
@@ -334,4 +387,48 @@ bool GUIContext::drawToolButton(const OTextureRef& icon, const Vector2& pos)
     drawSprite(icon, pos, colorForState(state, theme->tool_button_colors), OTopLeft);
 
     return state == eUIState::Clicked;
+}
+
+eUIState GUIContext::drawListItem(const std::string& text, const OTextureRef& icon, int indent, bool enabled, bool selected)
+{
+    auto state = getState(rect);
+
+    Vector2 left(rect.x + theme->tree_indent * (float)indent, rect.y + rect.w * 0.5f);
+
+    if (selected)
+    {
+        drawRect(nullptr, rect, theme->dock_color);
+    }
+    else if (state == eUIState::Hover || state == eUIState::Down)
+    {
+        drawRect(nullptr, rect, theme->disabled_control_border_color);
+    }
+
+    if (icon)
+    {
+        drawSprite(icon, left, enabled ? Color::White : theme->disabled_tint, OLeft);
+        drawText(theme->font, text, left + Vector2(18.0f, -1.0f), OLeft, enabled ? theme->text_color : theme->disabled_text_color);
+    }
+    else
+    {
+        drawText(theme->font, text, left + Vector2(0.0f, -1.0f), OLeft, enabled ? theme->text_color : theme->disabled_text_color);
+    }
+
+    return state;
+}
+
+bool GUIContext::vScroll(float* amount)
+{
+    auto prev_value = *amount;
+    auto new_value  = prev_value;
+    auto max_scroll = std::max(0.0f, v_scroll_content_size - v_scroll_view_size);
+
+    new_value -= scroll_value;
+    scroll_value = 0.0f;
+
+    new_value = std::min(max_scroll, new_value);
+    new_value = std::max(0.0f, new_value);
+
+    *amount = new_value;
+    return prev_value != new_value;
 }

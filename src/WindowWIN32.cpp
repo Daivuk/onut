@@ -1,4 +1,5 @@
 // Onut
+#include <onut/Input.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
 #include <onut/Strings.h>
@@ -62,6 +63,10 @@ namespace onut
                     }
                 }
             }
+        }
+        else if (msg == WM_LBUTTONDBLCLK)
+        {
+            oInput->onDoubleClicked();
         }
         else if (msg == WM_SYSCOMMAND)
         {
@@ -148,7 +153,7 @@ namespace onut
 
         // Define window style
         WNDCLASSA wc = {0};
-        wc.style = CS_OWNDC;
+        wc.style = CS_OWNDC | CS_DBLCLKS;
         wc.lpfnWndProc = WinProc;
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wc.lpszClassName = "OakNutWindow";

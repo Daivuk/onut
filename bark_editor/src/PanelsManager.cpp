@@ -5,8 +5,8 @@
 #include "Theme.h"
 #include "globals.h"
 
-#include "ProjectPanel.h"
-#include "PropertiesPanel.h"
+#include "AssetPanel.h"
+#include "EntityPanel.h"
 #include "ScenePanel.h"
 #include "SceneViewPanel.h"
 #include "TimelinePanel.h"
@@ -86,6 +86,11 @@ void DockZone::render(GUIContext* ctx)
                 if (i == active_panel)
                 {
                     ui_state = ctx->drawActiveTab(panels[i]->name, tab_offset, panel->closable);
+                    if (ui_state == eUIState::Down)
+                    {
+                        auto scene_view = ODynamicCast<SceneViewPanel>(panel);
+                        if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
+                    }
                 }
                 else
                 {
@@ -96,6 +101,8 @@ void DockZone::render(GUIContext* ctx)
                         active_changed = true;
                         active_panel = i;
                         ctx->rewindDrawCalls();
+                        auto scene_view = ODynamicCast<SceneViewPanel>(panel);
+                        if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
                         break;
                     }
                 }
@@ -105,6 +112,14 @@ void DockZone::render(GUIContext* ctx)
                     active_changed = true;
                     g_panels_mgr->closed_panel = true;
                     active_panel = std::min(i, (int)panels.size() - 1);
+
+                    if (g_panels_mgr->focussed_scene_view == panel) g_panels_mgr->focussed_scene_view = nullptr;
+                    if (!panels.empty())
+                    {
+                        auto new_active_panel = panels[active_panel];
+                        auto scene_view = ODynamicCast<SceneViewPanel>(new_active_panel);
+                        if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
+                    }
                     break;
                 }
                 else if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
@@ -380,8 +395,8 @@ void DockVSplit::render(GUIContext* ctx)
 PanelsManager::PanelsManager()
 {
     // Allocate all panels
-    project_panel       = OMake<ProjectPanel>();
-    properties_panel    = OMake<PropertiesPanel>();
+    project_panel       = OMake<AssetPanel>();
+    properties_panel    = OMake<EntityPanel>();
     scene_panel         = OMake<ScenePanel>();
     timeline_panel      = OMake<TimelinePanel>();
     assets_panel        = OMake<AssetsPanel>();

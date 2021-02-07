@@ -8,7 +8,6 @@ class Panel
 {
 public:
     std::string name;
-    float       scroll      = 0.0f;
     float       min_width   = 200.0f;
     float       min_height  = 200.0f;
     bool        closable    = false;
