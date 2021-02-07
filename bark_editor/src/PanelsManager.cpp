@@ -54,82 +54,70 @@ void DockKeepAround::render(GUIContext* ctx)
 
 void DockZone::render(GUIContext* ctx)
 {
-    bool active_changed = true;
-    while (active_changed)
+    if (panels.empty()) return;
+
+    // Draw active panel
     {
-        active_changed = false;
+        ctx->pushRect();
+        ctx->rect.y += ctx->theme->control_height;
+        ctx->rect.w -= ctx->theme->control_height;
+        ctx->drawPanel();
+        ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding);
+        panels[active_panel]->render(ctx);
+        ctx->popRect();
+    }
 
-        if (panels.empty()) return;
-
-        ctx->saveDrawPoint();
-
-        // Draw active panel
+    // Draw tabs
+    {
+        ctx->pushRect();
+        ctx->rect.w = ctx->theme->control_height;
+        float tab_offset = 0.0f;
+        for (int i = 0; i < (int)panels.size() && tab_offset < ctx->rect.z; ++i)
         {
-            ctx->pushRect();
-            ctx->rect.y += ctx->theme->control_height;
-            ctx->rect.w -= ctx->theme->control_height;
-            ctx->drawPanel();
-            ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding);
-            panels[active_panel]->render(ctx);
-            ctx->popRect();
-        }
-
-        // Draw tabs
-        {
-            ctx->pushRect();
-            ctx->rect.w = ctx->theme->control_height;
-            float tab_offset = 0.0f;
-            for (int i = 0, len = (int)panels.size(); i < len && tab_offset < ctx->rect.z; ++i)
+            const auto& panel = panels[i];
+            eUIState ui_state;
+            if (i == active_panel)
             {
-                const auto& panel = panels[i];
-                eUIState ui_state;
-                if (i == active_panel)
+                ui_state = ctx->drawActiveTab(panels[i]->name, tab_offset, panel->closable);
+                if (ui_state == eUIState::Down)
                 {
-                    ui_state = ctx->drawActiveTab(panels[i]->name, tab_offset, panel->closable);
-                    if (ui_state == eUIState::Down)
-                    {
-                        auto scene_view = ODynamicCast<SceneViewPanel>(panel);
-                        if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
-                    }
-                }
-                else
-                {
-                    auto offset_before = tab_offset;
-                    ui_state = ctx->drawInactiveTab(panels[i]->name, tab_offset, panel->closable);
-                    if (ui_state == eUIState::Down)
-                    {
-                        active_changed = true;
-                        active_panel = i;
-                        ctx->rewindDrawCalls();
-                        auto scene_view = ODynamicCast<SceneViewPanel>(panel);
-                        if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
-                        break;
-                    }
-                }
-                if (ui_state == eUIState::Close)
-                {
-                    panels.erase(panels.begin() + i);
-                    active_changed = true;
-                    g_panels_mgr->closed_panel = true;
-                    active_panel = std::min(i, (int)panels.size() - 1);
-
-                    if (g_panels_mgr->focussed_scene_view == panel) g_panels_mgr->focussed_scene_view = nullptr;
-                    if (!panels.empty())
-                    {
-                        auto new_active_panel = panels[active_panel];
-                        auto scene_view = ODynamicCast<SceneViewPanel>(new_active_panel);
-                        if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
-                    }
-                    break;
-                }
-                else if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
-                {
-                    g_panels_mgr->dragging_panel = panel;
-                    g_panels_mgr->dropped_panel = ui_state == eUIState::Drop;
+                    auto scene_view = ODynamicCast<SceneViewPanel>(panel);
+                    if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
                 }
             }
-            ctx->popRect();
+            else
+            {
+                auto offset_before = tab_offset;
+                ui_state = ctx->drawInactiveTab(panels[i]->name, tab_offset, panel->closable);
+                if (ui_state == eUIState::Down)
+                {
+                    active_panel = i;
+                    auto scene_view = ODynamicCast<SceneViewPanel>(panel);
+                    if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
+                }
+            }
+            if (ui_state == eUIState::Close)
+            {
+                panels.erase(panels.begin() + i);
+                g_panels_mgr->closed_panel = true;
+                active_panel = std::min(i, (int)panels.size() - 1);
+                --i;
+
+                if (g_panels_mgr->focussed_scene_view == panel) g_panels_mgr->focussed_scene_view = nullptr;
+                if (!panels.empty())
+                {
+                    auto new_active_panel = panels[active_panel];
+                    auto scene_view = ODynamicCast<SceneViewPanel>(new_active_panel);
+                    if (scene_view) g_panels_mgr->focussed_scene_view = scene_view;
+                }
+            }
+            else if (ui_state == eUIState::Drag || ui_state == eUIState::Drop)
+            {
+                g_panels_mgr->dragging_panel = panel;
+                g_panels_mgr->dropped_panel = ui_state == eUIState::Drop;
+            }
         }
+        ctx->popRect();
     }
 
     // Zone options
@@ -607,7 +595,6 @@ void PanelsManager::render(GUIContext* ctx)
     closed_panel    = false;
 
     ctx->begin();
-    auto rewind_at = ctx->draw_calls.size();
     dock_root->render(ctx);
 
     // Draw/Do docking
@@ -627,13 +614,6 @@ void PanelsManager::render(GUIContext* ctx)
             undockPanel(dragging_panel);
             dockPanel(dragging_panel, dock_context);
             cleanDock();
-
-            ctx->draw_calls.resize(rewind_at);
-            ctx->end(); // Nothing will be drawn
-
-            // Let's redraw everything again
-            ctx->begin();
-            dock_root->render(ctx);
         }
     }
 
@@ -665,13 +645,6 @@ void PanelsManager::render(GUIContext* ctx)
                 if (hsplit->magnet == eDockMagnet::Left) hsplit->amount = splitPos;
                 else if (hsplit->magnet == eDockMagnet::Right) hsplit->amount = dragging_split_rect.z - splitPos;
                 else if (hsplit->magnet == eDockMagnet::Middle) hsplit->amount = splitPos / dragging_split_rect.z;
-
-                ctx->draw_calls.resize(rewind_at);
-                ctx->end(); // Nothing will be drawn
-
-                // Let's redraw everything again
-                ctx->begin();
-                dock_root->render(ctx);
             }
         }
         else if (vsplit) // Implied
@@ -696,13 +669,6 @@ void PanelsManager::render(GUIContext* ctx)
                 if (vsplit->magnet == eDockMagnet::Top) vsplit->amount = splitPos;
                 else if (vsplit->magnet == eDockMagnet::Bottom) vsplit->amount = dragging_split_rect.w - splitPos;
                 else if (vsplit->magnet == eDockMagnet::Middle) vsplit->amount = splitPos / dragging_split_rect.w;
-
-                ctx->draw_calls.resize(rewind_at);
-                ctx->end(); // Nothing will be drawn
-
-                // Let's redraw everything again
-                ctx->begin();
-                dock_root->render(ctx);
             }
         }
     }
@@ -710,13 +676,6 @@ void PanelsManager::render(GUIContext* ctx)
     if (closed_panel)
     {
         cleanDock();
-
-        ctx->draw_calls.resize(rewind_at);
-        ctx->end(); // Nothing will be drawn
-
-        // Let's redraw everything again
-        ctx->begin();
-        dock_root->render(ctx);
     }
 
     // Submit draw

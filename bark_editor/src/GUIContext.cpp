@@ -19,6 +19,8 @@ void GUIContext::update()
     scroll_value    = oInput->getStateValue(OMouseZ) * 0.5f;
 
     if (OInputJustPressed(OMouse1)) down_pos = mouse;
+
+    if (down || clicked || double_clicked || scroll_value) invalidate(); // Make sure we'll render the frame after
 }
 
 void GUIContext::begin()
@@ -320,9 +322,18 @@ void GUIContext::drawArea()
     drawRect(nullptr, rect.Grow(-theme->border_size), theme->area_color);
 }
 
-eUIState GUIContext::getState(const Rect& rect)
+eUIState GUIContext::getState(const Rect& in_rect)
 {
     eUIState ret = eUIState::None;
+    auto rect = in_rect;
+
+    if (!scissor_stack.empty())
+    {
+        const auto& scissor_rect = scissor_stack.back();
+        if (!scissor_rect.Overlaps(rect)) return ret; // No need to check further
+        rect = scissor_rect.Difference(rect);
+    }
+
     bool is_mouse_hover = rect.Contains(mouse);
 
     if (double_clicked && rect.Contains(down_pos))
@@ -419,6 +430,8 @@ eUIState GUIContext::drawListItem(const std::string& text, const OTextureRef& ic
 
 bool GUIContext::vScroll(float* amount)
 {
+    if (!rect.Contains(mouse)) return false;
+
     auto prev_value = *amount;
     auto new_value  = prev_value;
     auto max_scroll = std::max(0.0f, v_scroll_content_size - v_scroll_view_size);

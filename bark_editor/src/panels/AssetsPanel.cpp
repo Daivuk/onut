@@ -16,25 +16,12 @@ void AssetsPanel::render(GUIContext* ctx)
     ctx->drawArea();
     ctx->rect = ctx->rect.Grow(-ctx->theme->border_size);
 
-    bool redraw = true;
-    auto draw_point = ctx->draw_calls.size();
-    while (redraw)
+    GUI_START_V_SCROLLABLE(ctx, scroll);
     {
-        ctx->draw_calls.resize(draw_point);
-        redraw = false;
-
-        GUI_START_V_SCROLLABLE(ctx, scroll);
-        {
-            ctx->rect.w = ctx->theme->list_item_height - 1;
-
-            if (renderSubDir(ctx, &g_assets->root, 0))
-            {
-                ctx->clicked = false; // Otherwise infinite loop
-                redraw = true;
-            }
-        }
-        GUI_END_V_SCROLLABLE(ctx, scroll);
+        ctx->rect.w = ctx->theme->list_item_height - 1;
+        renderSubDir(ctx, &g_assets->root, 0);
     }
+    GUI_END_V_SCROLLABLE(ctx, scroll);
 
     if (asset_to_open)
     {
@@ -42,10 +29,8 @@ void AssetsPanel::render(GUIContext* ctx)
     }
 }
 
-bool AssetsPanel::renderSubDir(GUIContext* ctx, AssetDir* parent_dir, int indent)
+void AssetsPanel::renderSubDir(GUIContext* ctx, AssetDir* parent_dir, int indent)
 {
-    bool ret = false;
-
     // Directories first
     for (auto& dir : parent_dir->sub_dirs)
     {
@@ -57,14 +42,13 @@ bool AssetsPanel::renderSubDir(GUIContext* ctx, AssetDir* parent_dir, int indent
         {
             if (!ctx->ctrl && !ctx->shift) dir.expanded = !dir.expanded;
             g_assets->addSelection(ctx, &dir);
-            ret = true;
         }
 
         ctx->rect.y += ctx->theme->list_item_height;
 
         if (dir.expanded)
         {
-            if (renderSubDir(ctx, &dir, indent + 1)) ret = true;
+            renderSubDir(ctx, &dir, indent + 1);
         }
     }
 
@@ -79,7 +63,6 @@ bool AssetsPanel::renderSubDir(GUIContext* ctx, AssetDir* parent_dir, int indent
         if (ui_state == eUIState::Clicked)
         {
             g_assets->addSelection(ctx, &asset);
-            ret = true;
         }
         else if (ui_state == eUIState::DoubleClicked)
         {
@@ -88,6 +71,4 @@ bool AssetsPanel::renderSubDir(GUIContext* ctx, AssetDir* parent_dir, int indent
 
         ctx->rect.y += ctx->theme->list_item_height;
     }
-
-    return ret;
 }

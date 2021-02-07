@@ -12,6 +12,5 @@ public:
     ScenePanel();
 
     void render(GUIContext* ctx) override;
-
-    bool renderEntity(GUIContext* ctx, Entity* parent, int indent);
+    void renderEntity(GUIContext* ctx, Entity* parent, int indent);
 };

@@ -10,5 +10,6 @@
         "fixedStep": false,
         "onScreenLog": true
     },
+    "pixelsIn1Meter": 16,
     "globalScripts": []
 }

@@ -16,5 +16,5 @@ public:
 
     void render(GUIContext* ctx) override;
 
-    bool renderSubDir(GUIContext* ctx, AssetDir* dir, int indent);
+    void renderSubDir(GUIContext* ctx, AssetDir* dir, int indent);
 };

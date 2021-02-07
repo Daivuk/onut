@@ -4,6 +4,8 @@
 
 OForwardDeclare(ContentManager);
 
+void invalidate(int frame_count = 1);
+
 class Theme;
 class GUIContext;
 class PanelsManager;

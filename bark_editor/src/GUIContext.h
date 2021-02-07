@@ -14,22 +14,17 @@ OForwardDeclare(Renderer);
 
 #define GUI_START_V_SCROLLABLE(ctx, scroll) \
 { \
-    auto scroll_save_point = ctx->draw_calls.size(); \
-    do \
-    { \
-        ctx->draw_calls.resize(scroll_save_point); \
-        ctx->v_scroll_view_size = ctx->rect.w; \
-        ctx->pushRect(); \
-        ctx->pushScissor(); \
-        ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding); \
-        ctx->rect.y -= scroll; \
-        ctx->v_scroll_content_start = ctx->rect.y;
+    ctx->v_scroll_view_size = ctx->rect.w; \
+    ctx->pushRect(); \
+    ctx->pushScissor(); \
+    ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding); \
+    ctx->rect.y -= scroll; \
+    ctx->v_scroll_content_start = ctx->rect.y;
 
 #define GUI_END_V_SCROLLABLE(ctx, scroll) \
-        ctx->v_scroll_content_size = (ctx->rect.y + ctx->rect.w) - ctx->v_scroll_content_start; \
-        ctx->popScissor(); \
-        ctx->popRect(); \
-    } while (ctx->vScroll(&scroll)); \
+    ctx->v_scroll_content_size = (ctx->rect.y + ctx->rect.w) - ctx->v_scroll_content_start; \
+    ctx->popScissor(); \
+    ctx->popRect(); \
 }
 
 namespace onut

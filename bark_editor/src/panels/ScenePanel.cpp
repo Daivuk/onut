@@ -14,45 +14,30 @@ ScenePanel::ScenePanel()
 
 void ScenePanel::render(GUIContext* ctx)
 {
+    ctx->drawArea();
+
     // Get focussed scene view panel
     if (!g_panels_mgr->focussed_scene_view) return;
     auto scene_view = ODynamicCast<SceneViewPanel>(g_panels_mgr->focussed_scene_view);
     if (!scene_view) return;
     auto root = scene_view->scene_mgr.root.get();
 
-    ctx->drawArea();
     ctx->rect = ctx->rect.Grow(-ctx->theme->border_size);
 
-    bool redraw = true;
-    auto draw_point = ctx->draw_calls.size();
-    while (redraw)
+    GUI_START_V_SCROLLABLE(ctx, scroll);
     {
-        ctx->draw_calls.resize(draw_point);
-        redraw = false;
-
-        GUI_START_V_SCROLLABLE(ctx, scroll);
-        {
-            ctx->rect.w = ctx->theme->list_item_height - 1;
-
-            if (renderEntity(ctx, root, 0))
-            {
-                ctx->clicked = false; // Otherwise infinite loop
-                redraw = true;
-            }
-        }
-        GUI_END_V_SCROLLABLE(ctx, scroll);
+        ctx->rect.w = ctx->theme->list_item_height - 1;
+        renderEntity(ctx, root, 0);
     }
+    GUI_END_V_SCROLLABLE(ctx, scroll);
 }
 
-bool ScenePanel::renderEntity(GUIContext* ctx, Entity* parent, int indent)
+void ScenePanel::renderEntity(GUIContext* ctx, Entity* parent, int indent)
 {
-    bool ret = false;
-
     if (ctx->drawListItem(parent->name, nullptr, indent, true, parent->selected) == eUIState::Clicked)
     {
         if (!ctx->ctrl && !ctx->shift) parent->expanded = !parent->expanded;
         //g_assets->addSelection(ctx, &dir);
-        ret = true;
     }
 
     ctx->rect.y += ctx->theme->list_item_height;
@@ -61,6 +46,4 @@ bool ScenePanel::renderEntity(GUIContext* ctx, Entity* parent, int indent)
     {
         renderEntity(ctx, child.get(), indent + 1);
     }
-
-    return ret;
 }

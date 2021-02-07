@@ -9,6 +9,15 @@
 #include "Project.h"
 #include "ComponentFactory.h"
 
+static int invalidate_frames = 0;
+
+void invalidate(int frame_count)
+{
+    if (frame_count < 0) return;
+    invalidate_frames = std::max(invalidate_frames, frame_count);
+    if (invalidate_frames) oSettings->setIsEditorMode(false);
+}
+
 void initSettings()
 {
     oSettings->setGameName("Bark Editor");
@@ -59,6 +68,15 @@ void render()
     // Draw UIs
     oRenderer->clear(g_theme->window_color);
     g_panels_mgr->render(g_gui_ctx);
+
+    if (invalidate_frames)
+    {
+        --invalidate_frames;
+        if (invalidate_frames == -1)
+        {
+            oSettings->setIsEditorMode(true);
+        }
+    }
 }
 
 void postRender()
