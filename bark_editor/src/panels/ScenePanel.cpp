@@ -24,12 +24,12 @@ void ScenePanel::render(GUIContext* ctx)
 
     ctx->rect = ctx->rect.Grow(-ctx->theme->border_size);
 
-    GUI_START_V_SCROLLABLE(ctx, scroll);
+    ctx->beginVScrollArea(scroll);
     {
         ctx->rect.w = ctx->theme->list_item_height - 1;
         renderEntity(ctx, root, 0);
     }
-    GUI_END_V_SCROLLABLE(ctx, scroll);
+    ctx->endVScrollArea(&scroll);
 }
 
 void ScenePanel::renderEntity(GUIContext* ctx, Entity* parent, int indent)

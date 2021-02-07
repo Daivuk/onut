@@ -1,6 +1,7 @@
 #include <onut/ContentManager.h>
 #include <onut/Settings.h>
 #include <onut/Renderer.h>
+#include <onut/Log.h>
 #include "globals.h"
 #include "Theme.h"
 #include "GUIContext.h"
@@ -11,11 +12,10 @@
 
 static int invalidate_frames = 0;
 
-void invalidate(int frame_count)
+void invalidate()
 {
-    if (frame_count < 0) return;
-    invalidate_frames = std::max(invalidate_frames, frame_count);
-    if (invalidate_frames) oSettings->setIsEditorMode(false);
+    invalidate_frames = 1; // Invalidate for 1sec
+    //oSettings->setIsEditorMode(false);
 }
 
 void initSettings()
@@ -59,6 +59,12 @@ void shutdown()
 void update()
 {
     g_gui_ctx->update();
+
+    //if (invalidate_frames)
+    //{
+    //    --invalidate_frames;
+    //    if (!invalidate_frames) oSettings->setIsEditorMode(true);
+    //}
 }
 
 void render()
@@ -66,16 +72,14 @@ void render()
     // Draw game view to a render target
 
     // Draw UIs
-    oRenderer->clear(g_theme->window_color);
-    g_panels_mgr->render(g_gui_ctx);
-
-    if (invalidate_frames)
+    invalidate_frames++;
+    while (invalidate_frames)
     {
-        --invalidate_frames;
-        if (invalidate_frames == -1)
-        {
-            oSettings->setIsEditorMode(true);
-        }
+        invalidate_frames--;
+
+        oRenderer->clear(g_theme->window_color);
+        g_panels_mgr->render(g_gui_ctx);
+        g_gui_ctx->reset();
     }
 }
 

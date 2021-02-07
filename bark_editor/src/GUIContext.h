@@ -12,21 +12,6 @@ OForwardDeclare(Font);
 OForwardDeclare(Texture);
 OForwardDeclare(Renderer);
 
-#define GUI_START_V_SCROLLABLE(ctx, scroll) \
-{ \
-    ctx->v_scroll_view_size = ctx->rect.w; \
-    ctx->pushRect(); \
-    ctx->pushScissor(); \
-    ctx->rect = ctx->rect.Grow(-ctx->theme->panel_padding); \
-    ctx->rect.y -= scroll; \
-    ctx->v_scroll_content_start = ctx->rect.y;
-
-#define GUI_END_V_SCROLLABLE(ctx, scroll) \
-    ctx->v_scroll_content_size = (ctx->rect.y + ctx->rect.w) - ctx->v_scroll_content_start; \
-    ctx->popScissor(); \
-    ctx->popRect(); \
-}
-
 namespace onut
 {
     class RenderStates;
@@ -136,6 +121,7 @@ public:
     const Color& colorForState(eUIState state, Color** colors);
 
     void update();
+    void reset();
 
     void begin();
     void end();
@@ -156,8 +142,11 @@ public:
     void drawArea();
     bool drawToolButton(const OTextureRef& icon, const Vector2& pos);
     eUIState drawListItem(const std::string& text, const OTextureRef& icon = nullptr, int indent = 0, bool enabled = true, bool selected = false);
-    bool vScroll(float* amount);
-
     eUIState drawHSplitHandle();
     eUIState drawVSplitHandle();
+
+    void beginVScrollArea(float scroll_amount);
+    void endVScrollArea(float* scroll_amount);
+    bool vScroll(float* amount);
+
 };

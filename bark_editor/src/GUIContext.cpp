@@ -1,4 +1,5 @@
 #include <onut/Input.h>
+#include <onut/Log.h>
 #include <onut/Font.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
@@ -21,6 +22,13 @@ void GUIContext::update()
     if (OInputJustPressed(OMouse1)) down_pos = mouse;
 
     if (down || clicked || double_clicked || scroll_value) invalidate(); // Make sure we'll render the frame after
+}
+
+void GUIContext::reset()
+{
+    clicked = false;
+    double_clicked = false;
+    scroll_value = 0.0f;
 }
 
 void GUIContext::begin()
@@ -426,6 +434,24 @@ eUIState GUIContext::drawListItem(const std::string& text, const OTextureRef& ic
     }
 
     return state;
+}
+
+void GUIContext::beginVScrollArea(float scroll_amount)
+{
+    v_scroll_view_size = rect.w;
+    pushRect();
+    pushScissor();
+    rect = rect.Grow(-theme->panel_padding);
+    rect.y -= scroll_amount;
+    v_scroll_content_start = rect.y;
+}
+
+void GUIContext::endVScrollArea(float* scroll_amount)
+{
+    v_scroll_content_size = (rect.y + rect.w) - v_scroll_content_start;
+    popScissor();
+    popRect();
+    vScroll(scroll_amount);
 }
 
 bool GUIContext::vScroll(float* amount)

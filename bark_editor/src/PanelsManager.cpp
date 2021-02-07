@@ -120,12 +120,12 @@ void DockZone::render(GUIContext* ctx)
         ctx->popRect();
     }
 
-    // Zone options
-    {
-        ctx->drawToolButton(ctx->theme->menu_icon, Vector2(
-            ctx->rect.x + ctx->rect.z - ctx->theme->tool_button_size, 
-            ctx->rect.y + (ctx->theme->control_height - ctx->theme->tool_button_size) * 0.5f));
-    }
+    // Zone options (none for now)
+    //{
+    //    ctx->drawToolButton(ctx->theme->menu_icon, Vector2(
+    //        ctx->rect.x + ctx->rect.z - ctx->theme->tool_button_size, 
+    //        ctx->rect.y + (ctx->theme->control_height - ctx->theme->tool_button_size) * 0.5f));
+    //}
 }
 
 void DockZone::dock(GUIContext* ctx, DockContext* dock_ctx)

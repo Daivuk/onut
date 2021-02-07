@@ -4,7 +4,7 @@
 
 OForwardDeclare(ContentManager);
 
-void invalidate(int frame_count = 1);
+void invalidate();
 
 class Theme;
 class GUIContext;
