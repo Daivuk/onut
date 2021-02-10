@@ -1,5 +1,23 @@
 let fs = require('fs');
 
+const trim_chars = (str, chars) => str.split(chars).filter(Boolean).join(chars);
+
+function friendlyName(name)
+{
+    let friendly_name;
+
+    let splits = name.split(/(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])/g);
+    splits = splits.reduce((ret, word) => 
+    {
+        if (!word) return ret;
+        return [...ret, trim_chars(word.toLowerCase(), '_')]
+    }, []);
+
+    splits[0] = splits[0].substring(0, 1).toUpperCase() + splits[0].substring(1);
+
+    return splits.join(' ');
+}
+
 // Find components
 let dir = fs.readdirSync('../common');
 let components = dir.reduce((components, file) =>
@@ -123,6 +141,18 @@ public:
 #if !BARK_EDITOR
     static void* js_prototype;
     void* getJSPrototype() override { return js_prototype; };
+#endif
+
+#if BARK_EDITOR
+    void drawProperties(GUIContext* ctx) override
+    {
+`
+    component.properties.forEach(property =>
+    {
+        insert_block += `        ctx->${property.type}_prop(&${property.name}, "${friendlyName(property.name)}");\n`;
+    });
+
+    insert_block += `    }
 #endif
     // [GENERATED COMPONENT DECLARATION END]\n`;
 

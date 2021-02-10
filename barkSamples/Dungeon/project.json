@@ -1,15 +1,15 @@
 {
+    "gameName": "Dungeon Sample",
     "startScene": "game.scene",
-    "settings": {
-        "resolution": {"x": 800, "y": 600},
-        "retroResolution": {"x": 256, "y": 160},
-        "retroMode": false,
-        "gameName": "Dungeon",
-        "resizableWindow": false,
-        "fullscreen": false,
-        "fixedStep": false,
-        "onScreenLog": true
-    },
+    "resolution": {"x": 800, "y": 600},
+    "retroMode": false,
+    "retroResolution": {"x": 256, "y": 160},
+    "resizableWindow": false,
+    "fullscreen": false,
+    "fixedStep": false,
+    "onScreenLog": true,
     "pixelsIn1Meter": 16,
-    "globalScripts": []
+    "globalScripts": [],
+    "editor": {
+    }
 }

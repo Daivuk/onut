@@ -18,6 +18,9 @@ namespace onut
     std::string toLower(const std::string& str);
     std::string trim(const std::string& str);
 
+    size_t utf8Length(const std::string& str);
+    size_t utf8Pos(const std::string& str, size_t pos);
+
     // Regex stuff
     void stripOutComments(std::string& source);
     std::string stripOutComments(const std::string& source);

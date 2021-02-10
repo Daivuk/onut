@@ -89,6 +89,8 @@ void SceneManager::loadScene(const std::string& name)
     root->children.clear();
     root->components.clear();
     loadNode(root, json_scene);
+    if (root->name == "Entity") root->name = "root";
+    root->is_scene_root = true;
 
     // Call onCreate
     {

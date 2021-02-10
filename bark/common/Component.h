@@ -6,6 +6,9 @@
 #if !BARK_EDITOR
 #include "JSObject.h"
 #endif
+#if BARK_EDITOR
+#include "GUIContext.h"
+#endif
 
 #define COMPONENT_DECLARATION(__class__, __name__)
 #define COMPONENT_PROPERTY(__type__, __name__, __default__, ...) __type__ __name__ = __default__;
@@ -26,6 +29,9 @@ class Component
 public:
     bool            enabled     = true;
     Entity*         entity      = nullptr;
+#if BARK_EDITOR
+    bool            expanded    = true;
+#endif
 
     virtual ~Component() {}
 
@@ -55,5 +61,9 @@ public:
 
 #if !BARK_EDITOR
     virtual void* getJSPrototype() = 0;
+#endif
+
+#if BARK_EDITOR
+    virtual void drawProperties(GUIContext* ctx) = 0;
 #endif
 };

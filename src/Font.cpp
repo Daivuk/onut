@@ -156,7 +156,6 @@ namespace onut
     Vector2 Font::measure(const std::string& in_text)
     {
         Vector2 result;
-
         result.y += (float)m_common.lineHeight;
         float curX = 0;
         unsigned int len = (unsigned int)in_text.length();
@@ -279,6 +278,7 @@ namespace onut
         uint32_t charId;
         for (; pos < (unsigned int )len;)
         {
+            auto ret_pos = pos;
             charId = getNextUTF8(in_text.c_str(), pos, len);
             if (charId == '\n')
             {
@@ -297,7 +297,7 @@ namespace onut
             auto advance = static_cast<float>(pDatChar->xadvance);
             if (curX + advance * .75f >= at)
             {
-                return pos;
+                return ret_pos;
             }
             curX += advance;
         }

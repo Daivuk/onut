@@ -107,6 +107,41 @@ namespace onut
         return ret.substr(0, s + 1);
     }
 
+    size_t utf8Length(const std::string& str)
+    {
+        int len = 0;
+        auto s = str.data();
+        while (*s) len += (*s++ & 0xc0) != 0x80;
+        return len;
+    }
+
+    size_t utf8Pos(const std::string& str, size_t pos)
+    {
+        auto s = str.data();
+        while (*s && pos)
+        {
+            if (*s & 0x80)
+            {
+                if ((*s & 0xE0) == 0xC0)
+                {
+                    ++s;
+                }
+                else if ((*s & 0xF0) == 0xE0)
+                {
+                    s += 2;
+                }
+                else
+                {
+                    s += 3;
+                }
+            }
+            --pos;
+            ++s;
+        }
+
+        return s - str.data();
+    }
+
     std::string removeChars(const std::string& str, const std::string& charsToRemove)
     {
         auto ret = str;

@@ -67,5 +67,16 @@ public:
     static void* js_prototype;
     void* getJSPrototype() override { return js_prototype; };
 #endif
+
+#if BARK_EDITOR
+    void drawProperties(GUIContext* ctx) override
+    {
+        ctx->OSpriteAnimRef_prop(&spriteAnim, "Sprite anim");
+        ctx->std_string_prop(&anim, "Anim");
+        ctx->Color_prop(&color, "Color");
+        ctx->bool_prop(&smooth, "Smooth");
+        ctx->int_prop(&blendMode, "Blend mode");
+    }
+#endif
     // [GENERATED COMPONENT DECLARATION END]
 };

@@ -39,4 +39,12 @@ public:
 #if !BARK_EDITOR
     void* getJSPrototype() override { return nullptr; }; // Unused
 #endif
+
+#if BARK_EDITOR
+    void drawProperties(GUIContext* ctx) override
+    {
+        auto str = script->getName();
+        ctx->std_string_prop(&str, "Script");
+    }
+#endif
 };

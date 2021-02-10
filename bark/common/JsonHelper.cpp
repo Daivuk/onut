@@ -39,6 +39,16 @@ std::string getJson_std_string(const Json::Value& json, const char* key, const s
     return json[key].asString();
 }
 
+Point getJson_Point(const Json::Value& json, const char* key, const Point& default_value)
+{
+    if (!json.isMember(key)) return default_value;
+    const auto& json_val = json[key];
+    Point ret;
+    ret.x = json_val["x"].asInt();
+    ret.y = json_val["y"].asInt();
+    return ret;
+}
+
 Vector2 getJson_Vector2(const Json::Value& json, const char* key, const Vector2& default_value)
 {
     if (!json.isMember(key)) return default_value;
@@ -187,6 +197,12 @@ void setJson_float(Json::Value& json, const char* key, float value)
 void setJson_std_string(Json::Value& json, const char* key, const std::string& value)
 {
     json[key] = value;
+}
+
+void setJson_Point(Json::Value& json, const char* key, const Point& value)
+{
+    json[key]["x"] = value.x;
+    json[key]["y"] = value.y;
 }
 
 void setJson_Vector2(Json::Value& json, const char* key, const Vector2& value)

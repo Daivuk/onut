@@ -45,13 +45,23 @@ public:
 
         zoom = getJson_float(json, "zoom", 1.0f);
         clearScreen = getJson_bool(json, "clearScreen", true);
-        clearColor = getJson_Color(json, "clearColor", Color::Black);
+        clearColor = getJson_Color(json, "clearColor", OColorHex(262c3b));
         origin = getJson_Vector2(json, "origin", OCenter);
     }
 
 #if !BARK_EDITOR
     static void* js_prototype;
     void* getJSPrototype() override { return js_prototype; };
+#endif
+
+#if BARK_EDITOR
+    void drawProperties(GUIContext* ctx) override
+    {
+        ctx->float_prop(&zoom, "Zoom");
+        ctx->bool_prop(&clearScreen, "Clear screen");
+        ctx->Color_prop(&clearColor, "Clear color");
+        ctx->Vector2_prop(&origin, "Origin");
+    }
 #endif
     // [GENERATED COMPONENT DECLARATION END]
 };

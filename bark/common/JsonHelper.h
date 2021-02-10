@@ -2,6 +2,7 @@
 
 #include <onut/ForwardDeclaration.h>
 #include <onut/Matrix.h>
+#include <onut/Point.h>
 #include <onut/Vector2.h>
 #include <onut/Vector3.h>
 #include <onut/Vector4.h>
@@ -24,6 +25,7 @@ int getJson_int(const Json::Value& json, const char* key, int default_value = 0)
 uint64_t getJson_uint64_t(const Json::Value& json, const char* key, uint64_t default_value = 0);
 float getJson_float(const Json::Value& json, const char* key, float default_value = 0.0f);
 std::string getJson_std_string(const Json::Value& json, const char* key, const std::string& default_value = "");
+Point getJson_Point(const Json::Value& json, const char* key, const Point& default_value = {0, 0});
 Vector2 getJson_Vector2(const Json::Value& json, const char* key, const Vector2& default_value = Vector2::Zero);
 Vector3 getJson_Vector3(const Json::Value& json, const char* key, const Vector3& default_value = Vector3::Zero);
 Vector4 getJson_Vector4(const Json::Value& json, const char* key, const Vector4& default_value = Vector4::Zero);
@@ -44,6 +46,7 @@ void setJson_int(Json::Value& json, const char* key, int value);
 void setJson_uint64_t(Json::Value& json, const char* key, uint64_t value);
 void setJson_float(Json::Value& json, const char* key, float value);
 void setJson_std_string(Json::Value& json, const char* key, const std::string& value);
+void setJson_Point(Json::Value& json, const char* key, const Point& value);
 void setJson_Vector2(Json::Value& json, const char* key, const Vector2& value);
 void setJson_Vector3(Json::Value& json, const char* key, const Vector3& value);
 void setJson_Vector4(Json::Value& json, const char* key, const Vector4& value);

@@ -42,6 +42,13 @@ void Entity::setLocalTransform(const Matrix& local_transform)
     is_world_dirty = true;
 }
 
+EntityRef Entity::getRoot()
+{
+    auto parent = getParent();
+    if (!parent) return OThis;
+    return parent->getRoot();
+}
+
 EntityRef Entity::getParent()
 {
     return m_parent.lock();

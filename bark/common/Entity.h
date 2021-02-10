@@ -29,23 +29,25 @@ public:
     const Matrix& getLocalTransform() const;
     void setLocalTransform(const Matrix& local_transform);
 
+    EntityRef getRoot();
     EntityRef getParent();
     void add(const EntityRef& child);
     
-    SceneManager*           scene_mgr   = nullptr;
-    uint64_t                id;
-    std::string             name;
-    std::vector<EntityRef>  children;
+    SceneManager*                       scene_mgr   = nullptr;
+    uint64_t                            id;
+    std::string                         name;
+    std::vector<EntityRef>              children;
     std::map<std::string, ComponentRef> components;
+    bool                                is_scene_root   = false;
 #if BARK_EDITOR
-    bool                    expanded    = false;
-    bool                    selected    = false;
+    bool                                expanded        = false;
+    bool                                selected        = false;
+    float                               scroll          = 0.0f; // We remember the scroll location for each entity's property page :)
 #endif
 
 private:
-    Matrix m_world_transform;
-    Matrix m_local_transform;
-    EntityWeak m_parent;
-
-    bool is_world_dirty = true;
+    Matrix      m_world_transform;
+    Matrix      m_local_transform;
+    EntityWeak  m_parent;
+    bool        is_world_dirty = true;
 };

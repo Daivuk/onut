@@ -6,6 +6,7 @@
 #include "globals.h"
 
 #include "AssetPanel.h"
+#include "ProjectPanel.h"
 #include "EntityPanel.h"
 #include "ScenePanel.h"
 #include "SceneViewPanel.h"
@@ -383,7 +384,8 @@ void DockVSplit::render(GUIContext* ctx)
 PanelsManager::PanelsManager()
 {
     // Allocate all panels
-    project_panel       = OMake<AssetPanel>();
+    asset_panel         = OMake<AssetPanel>();
+    project_panel       = OMake<ProjectPanel>();
     properties_panel    = OMake<EntityPanel>();
     scene_panel         = OMake<ScenePanel>();
     timeline_panel      = OMake<TimelinePanel>();
@@ -405,7 +407,7 @@ PanelsManager::PanelsManager()
             ),
             300.0f, eDockMagnet::Left
         ),
-        OMake<DockZone>(std::vector<PanelRef>{properties_panel, project_panel}, 0),
+        OMake<DockZone>(std::vector<PanelRef>{properties_panel, asset_panel, project_panel}, 0),
         300.0f, eDockMagnet::Right
     );
 }

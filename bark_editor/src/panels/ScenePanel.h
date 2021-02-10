@@ -1,8 +1,9 @@
 #pragma once
 
+#include <onut/ForwardDeclaration.h>
 #include "Panel.h"
 
-class Entity;
+ForwardDeclare(Entity);
 
 class ScenePanel final : public Panel
 {
@@ -12,5 +13,8 @@ public:
     ScenePanel();
 
     void render(GUIContext* ctx) override;
-    void renderEntity(GUIContext* ctx, Entity* parent, int indent);
+    void renderEntity(GUIContext* ctx, const EntityRef& parent, int indent);
+
+    void addSelection(GUIContext* ctx, const EntityRef& parent);
+    void deselectAll(const EntityRef& entity);
 };

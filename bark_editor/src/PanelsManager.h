@@ -9,6 +9,7 @@ ForwardDeclare(DockNode);
 ForwardDeclare(DockZone);
 ForwardDeclare(Panel);
 ForwardDeclare(AssetPanel);
+ForwardDeclare(ProjectPanel);
 ForwardDeclare(EntityPanel);
 ForwardDeclare(ScenePanel);
 ForwardDeclare(TimelinePanel);
@@ -134,7 +135,8 @@ struct DockContext
 class PanelsManager final
 {
 public:
-    AssetPanelRef           project_panel;
+    AssetPanelRef           asset_panel;
+    ProjectPanelRef         project_panel;
     EntityPanelRef          properties_panel;
     ScenePanelRef           scene_panel;
     TimelinePanelRef        timeline_panel;

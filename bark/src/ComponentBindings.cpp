@@ -115,7 +115,7 @@ void createCamera2DComponentBindings()
         auto pComponent = (Camera2DComponent*)duk_to_pointer(ctx, -1);
         if (pComponent)
         {
-            pComponent->clearColor = getJs_Color(ctx, Color::Black);
+            pComponent->clearColor = getJs_Color(ctx, OColorHex(262c3b));
         }
         return 0;
     }, 1);

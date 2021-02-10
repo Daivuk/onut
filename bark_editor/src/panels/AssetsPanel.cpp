@@ -40,7 +40,7 @@ void AssetsPanel::renderSubDir(GUIContext* ctx, AssetDir* parent_dir, int indent
                               ctx->theme->asset_icons[dir.expanded ? (int)eAssetType::ExpandedFolder : (int)eAssetType::Folder],
                               indent, true, dir.selected) == eUIState::Clicked)
         {
-            if (!ctx->ctrl && !ctx->shift) dir.expanded = !dir.expanded;
+            if (!ctx->keys.ctrl && !ctx->keys.shift) dir.expanded = !dir.expanded;
             g_assets->addSelection(ctx, &dir);
         }
 

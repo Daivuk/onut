@@ -6,6 +6,7 @@
 #include "PanelsManager.h"
 #include "SceneViewPanel.h"
 #include "Entity.h"
+#include <algorithm>
 
 ScenePanel::ScenePanel()
 {
@@ -20,7 +21,7 @@ void ScenePanel::render(GUIContext* ctx)
     if (!g_panels_mgr->focussed_scene_view) return;
     auto scene_view = ODynamicCast<SceneViewPanel>(g_panels_mgr->focussed_scene_view);
     if (!scene_view) return;
-    auto root = scene_view->scene_mgr.root.get();
+    auto root = scene_view->scene_mgr.root;
 
     ctx->rect = ctx->rect.Grow(-ctx->theme->border_size);
 
@@ -32,18 +33,69 @@ void ScenePanel::render(GUIContext* ctx)
     ctx->endVScrollArea(&scroll);
 }
 
-void ScenePanel::renderEntity(GUIContext* ctx, Entity* parent, int indent)
+void ScenePanel::renderEntity(GUIContext* ctx, const EntityRef& entity, int indent)
 {
-    if (ctx->drawListItem(parent->name, nullptr, indent, true, parent->selected) == eUIState::Clicked)
+    if (entity->is_scene_root)
     {
-        if (!ctx->ctrl && !ctx->shift) parent->expanded = !parent->expanded;
-        //g_assets->addSelection(ctx, &dir);
+        for (auto child : entity->children)
+        {
+            renderEntity(ctx, child, indent);
+        }
     }
-
-    ctx->rect.y += ctx->theme->list_item_height;
-
-    for (auto child : parent->children)
+    else
     {
-        renderEntity(ctx, child.get(), indent + 1);
+        if (ctx->drawListItem(entity->name, nullptr, indent, true, entity->selected) == eUIState::Clicked)
+        {
+            if (!ctx->keys.ctrl && !ctx->keys.shift) entity->expanded = !entity->expanded;
+            addSelection(ctx, entity);
+        }
+
+        ctx->rect.y += ctx->theme->list_item_height;
+
+        for (auto child : entity->children)
+        {
+            renderEntity(ctx, child, indent + 1);
+        }
+    }
+}
+
+void ScenePanel::deselectAll(const EntityRef& entity)
+{
+    entity->selected = false;
+    for (auto child : entity->children)
+    {
+        deselectAll(child);
+    }
+}
+
+void ScenePanel::addSelection(GUIContext* ctx, const EntityRef& entity)
+{
+    auto scene_view = ODynamicCast<SceneViewPanel>(g_panels_mgr->focussed_scene_view);
+    if (!scene_view) return; // Hum ya that shouldn't be the case
+    auto root = scene_view->scene_mgr.root;
+
+    if (ctx->keys.ctrl)
+    {
+        if (ctx->keys.shift)
+        {
+        }
+        else
+        {
+            entity->selected = !entity->selected;
+            if (entity->selected) scene_view->selected_entities.push_back(entity);
+            else scene_view->selected_entities.erase(std::remove(scene_view->selected_entities.begin(), scene_view->selected_entities.end(), entity));
+        }
+    }
+    else
+    {
+        if (ctx->keys.shift)
+        {
+        }
+        else
+        {
+            deselectAll(root);
+            entity->selected = true;
+            scene_view->selected_entities = { entity };
+        }
     }
 }

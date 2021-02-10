@@ -192,9 +192,9 @@ void Assets::deselectAll(AssetDir* parent_dir)
 
 void Assets::addSelection(GUIContext* ctx, AssetDir* dir)
 {
-    if (ctx->ctrl)
+    if (ctx->keys.ctrl)
     {
-        if (ctx->shift)
+        if (ctx->keys.shift)
         {
         }
         else
@@ -204,7 +204,7 @@ void Assets::addSelection(GUIContext* ctx, AssetDir* dir)
     }
     else
     {
-        if (ctx->shift)
+        if (ctx->keys.shift)
         {
         }
         else
@@ -217,9 +217,9 @@ void Assets::addSelection(GUIContext* ctx, AssetDir* dir)
 
 void Assets::addSelection(GUIContext* ctx, Asset* asset)
 {
-    if (ctx->ctrl)
+    if (ctx->keys.ctrl)
     {
-        if (ctx->shift)
+        if (ctx->keys.shift)
         {
         }
         else
@@ -229,7 +229,7 @@ void Assets::addSelection(GUIContext* ctx, Asset* asset)
     }
     else
     {
-        if (ctx->shift)
+        if (ctx->keys.shift)
         {
         }
         else

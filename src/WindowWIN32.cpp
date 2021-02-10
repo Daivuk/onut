@@ -77,15 +77,45 @@ namespace onut
         }
         else if (msg == WM_CHAR)
         {
-            auto c = (char)wparam;
-            if (oWindow)
+            // Dumb implementation first
             {
-                if (oWindow->onWrite)
+                auto c = (char)wparam;
+                if (oWindow)
                 {
-                    oWindow->onWrite(c);
-                    return 0;
+                    if (oWindow->onWrite)
+                    {
+                        oWindow->onWrite(c);
+                    }
                 }
             }
+
+            // Proper, UTF8 version with proper function keys
+            {
+                switch (wparam) 
+                { 
+                    case 0x08: 
+                    case 0x0A: 
+                    case 0x1B: 
+                    case 0x09: 
+                    case 0x0D: 
+                        if (oWindow->onWriteFunc)
+                        {
+                            oWindow->onWriteFunc((WriteFunc)wparam);
+                        }
+                        break;
+                    default:
+                        if (oWindow->onWriteUTF8)
+                        {
+                            std::wstring wstr;
+                            wstr += (wchar_t)wparam;
+                            auto strUTF8 = onut::utf16ToUtf8(wstr);
+                            oWindow->onWriteUTF8(strUTF8);
+                        }
+                        break;
+                }
+            }
+
+            return 0;
         }
         else if (msg == WM_KEYDOWN)
         {
