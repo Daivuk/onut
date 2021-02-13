@@ -2,11 +2,18 @@
 
 #include <onut/ForwardDeclaration.h>
 #include "_2DRendererComponent.h"
+#if BARK_EDITOR
+#include "Gizmo2DRenderer.h"
+#endif
 
 OForwardDeclare(TiledMap);
 ForwardDeclare(TiledMapRendererComponent);
 
-class TiledMapRendererComponent final : public _2DRendererComponent
+class TiledMapRendererComponent final 
+    : public _2DRendererComponent
+#if BARK_EDITOR
+    , public Gizmo2DRenderer
+#endif
 {
 public:
     COMPONENT_PROPERTY(OTiledMapRef, tiledMap, nullptr);
@@ -14,13 +21,22 @@ public:
     COMPONENT_PROPERTY(int, blendMode, (int)OBlendPreMultiplied);
 
     void onCreate() override {};
+#if BARK_EDITOR
+    void onEnable() override;
+#endif
 #if !BARK_EDITOR
     void onUpdate(float dt) override {};
+#endif
+#if BARK_EDITOR
+    void onDisable() override;
 #endif
     void onDestroy() override {};
 
     void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
-    
+#if BARK_EDITOR
+    void renderGizmo(onut::RenderStates& rs, OPrimitiveBatch* pb) override;
+#endif
+
     COMPONENT_DECLARATION(TiledMapRendererComponent, TiledMapRenderer)
     // [GENERATED COMPONENT DECLARATION BEGIN]
 public:

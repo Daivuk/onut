@@ -5,11 +5,15 @@
 
 void _2DRendererComponent::onEnable()
 {
+    Component::onEnable();
+
     entity->scene_mgr->_2D_renderers.push_back(this);
 }
 
 void _2DRendererComponent::onDisable()
 {
+    Component::onDisable();
+
     auto it = std::find(entity->scene_mgr->_2D_renderers.begin(), entity->scene_mgr->_2D_renderers.end(), this);
     if (it != entity->scene_mgr->_2D_renderers.end())
         entity->scene_mgr->_2D_renderers.erase(it);

@@ -11,6 +11,8 @@ class _2DRendererComponent;
 
 #if !BARK_EDITOR
 class b2World;
+#else
+class Gizmo2DRenderer;
 #endif
 
 ForwardDeclare(Entity);
@@ -31,6 +33,9 @@ public:
     std::vector<Component*> active_components;
     std::vector<Camera2DComponent*> active_camera2Ds;
     std::vector<_2DRendererComponent*> _2D_renderers;
+#if BARK_EDITOR
+    std::vector<Gizmo2DRenderer*> gizmo_2D_renderers;
+#endif
 
     std::vector<ComponentRef> created_components;
     std::vector<ComponentRef> enabled_components;
@@ -52,4 +57,12 @@ public:
     void loadScene(const std::string& name);
     void loadNode(const EntityRef& entity, const Json::Value& json_node);
     void loadComponent(const EntityRef& entity, const std::string& type, const Json::Value& json_properties);
+
+    Matrix getCamera2DTransform(Matrix* override_with) const;
+    void clearScreen();
+    void sort2DRenderers();
+    void draw2DRenderers(const Matrix& transform);
+#if BARK_EDITOR
+    void draw2DGizmos(const Matrix& transform);
+#endif
 };

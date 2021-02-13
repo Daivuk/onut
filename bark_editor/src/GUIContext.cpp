@@ -1409,41 +1409,58 @@ bool GUIContext::header(const std::string& text, bool* expanded)
 }
 
 #define RESOURCE_PROP(__type__) \
-    auto name = value->get()->getName(); \
+    std::string name = *value ? value->get()->getName() : "-- NULL --"; \
     if (std_string_prop(&name, label)) \
-        *value = g_content_mgr->getResourceAs<__type__>(name);
+    { \
+        *value = g_content_mgr->getResourceAs<__type__>(name); \
+        changed |= true; \
+    }
 
 bool GUIContext::OTextureRef_prop(OTextureRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(OTexture);
+    return changed;
 }
 
 bool GUIContext::OTiledMapRef_prop(OTiledMapRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(OTiledMap);
+    return changed;
 }
 
 bool GUIContext::OSoundRef_prop(OSoundRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(OSound);
+    return changed;
 }
 
 bool GUIContext::OSpriteAnimRef_prop(OSpriteAnimRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(OSpriteAnim);
+    return changed;
 }
 
 bool GUIContext::OModelRef_prop(OModelRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(OModel);
+    return changed;
 }
 
 bool GUIContext::OShaderRef_prop(OShaderRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(OShader);
+    return changed;
 }
 
 bool GUIContext::ScriptRef_prop(ScriptRef* value, const std::string& label, const std::string& tooltip)
 {
+    bool changed = false;
     RESOURCE_PROP(Script);
+    return changed;
 }

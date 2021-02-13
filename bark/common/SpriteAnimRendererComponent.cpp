@@ -27,20 +27,23 @@ void SpriteAnimRendererComponent::render(onut::RenderStates& rs, OSpriteBatch* s
 #if BARK_EDITOR
     // In editor mode, we draw the first frame of the selected anim.
     // Or first frame of the first anim if no anim is selected
-    auto oanim = spriteAnim->getAnim(anim);
-    if (!oanim)
+    if (spriteAnim)
     {
-        const auto& anims = spriteAnim->getAnimNames();
-        if (!anims.empty()) oanim = spriteAnim->getAnim(anims.front());
-    }
-    if (oanim && !oanim->frames.empty())
-    {
-        const auto& first_frame = oanim->frames.front();
-        sb->drawSpriteWithUVs(first_frame.pTexture, 
-                              entity->getWorldTransform(), 
-                              first_frame.UVs, 
-                              color,
-                              first_frame.origin);
+        auto oanim = spriteAnim->getAnim(anim);
+        if (!oanim)
+        {
+            const auto& anims = spriteAnim->getAnimNames();
+            if (!anims.empty()) oanim = spriteAnim->getAnim(anims.front());
+        }
+        if (oanim && !oanim->frames.empty())
+        {
+            const auto& first_frame = oanim->frames.front();
+            sb->drawSpriteWithUVs(first_frame.pTexture, 
+                                  entity->getWorldTransform(), 
+                                  first_frame.UVs, 
+                                  color,
+                                  first_frame.origin);
+        }
     }
 #else // !BARK_EDITOR
     auto s = spriteAnimInstance.get();

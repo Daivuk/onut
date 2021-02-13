@@ -27,4 +27,5 @@ Theme::Theme()
     asset_icons[(int)eAssetType::UI]                = OGetTexture("UI_icon.png");
 
     scrollbar   = OGetTexture("scrollbar.png");
+    dotted      = OGetTexture("dotted.png");
 }

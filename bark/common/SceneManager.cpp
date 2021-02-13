@@ -4,6 +4,7 @@
 #include <onut/Log.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
+#include <onut/PrimitiveBatch.h>
 #include <fstream>
 #include <vector>
 #include "SceneManager.h"
@@ -19,6 +20,8 @@
 
 #if !BARK_EDITOR
 #include <box2d/b2_world.h>
+#else
+#include "Gizmo2DRenderer.h"
 #endif
 
 void loadNode(const EntityRef& entity, const Json::Value& json_node);
@@ -123,6 +126,7 @@ void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json_nod
     entity->name = getJson_std_string(json_node, "name", "Entity");
     entity->id = getJson_uint64_t(json_node, "id", 0);
     entity->setLocalTransform(getJson_Matrix(json_node, "transform"));
+    entity->scene_mgr = this;
 
     const auto& json_components = json_node["components"];
     auto component_names = json_components.getMemberNames();
@@ -136,7 +140,6 @@ void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json_nod
     for (const auto& json_child : json_children)
     {
         auto child = OMake<Entity>();
-        child->scene_mgr = this;
         loadNode(child, json_child);
         entity->add(child);
     }
@@ -220,27 +223,16 @@ void SceneManager::update(float dt)
 }
 #endif
 
-void SceneManager::render(Matrix* transform)
+Matrix SceneManager::getCamera2DTransform(Matrix* override_with) const
 {
-    auto r = oRenderer.get();
-    auto& rs = r->renderStates;
-    auto sb = oSpriteBatch.get();
-
-    // Setup 2D camera
     Matrix camera_transform;
-    if (transform)
+    if (override_with)
     {
-        camera_transform = *transform;
+        camera_transform = *override_with;
     }
 #if !BARK_EDITOR
     else if (!active_camera2Ds.empty())
     {
-        auto active_camera2D = active_camera2Ds.back();
-        if (active_camera2D->clearScreen)
-        {
-            r->clear(active_camera2D->clearColor);
-        }
-
         auto pos = active_camera2D->entity->getWorldTransform().Translation();
         auto zoom = active_camera2D->zoom;
         const auto& origin = active_camera2D->origin;
@@ -253,24 +245,83 @@ void SceneManager::render(Matrix* transform)
             -pos.x * zoom + res.x * origin.x, -pos.y * zoom + res.y * origin.y, 0, 1);
     }
 #endif
+    return camera_transform;
+}
 
-    //TODO: Cull 2D objects
+void SceneManager::clearScreen()
+{
+    bool should_clear_screen = false;
+    Color clear_color = OColorHex(262c3b);
+    if (!active_camera2Ds.empty())
+    {
+        auto active_camera2D = active_camera2Ds.back();
+        should_clear_screen = active_camera2D->clearScreen;
+        if (active_camera2D->clearScreen)
+        {
+            should_clear_screen = true;
+            clear_color         = active_camera2D->clearColor;
+        }
+    }
+#if !BARK_EDITOR
+    if (should_clear_screen)
+#endif
+    {
+        oRenderer->clear(clear_color);
+    }
+}
 
-    // Sort 2D renderers by z and y. Y is direct comparison, z is the "layer".
+void SceneManager::sort2DRenderers()
+{
     std::sort(_2D_renderers.begin(), _2D_renderers.end(), 
               [](const _2DRendererComponent* a, const _2DRendererComponent* b) -> bool
     {
         const auto& a_t = a->entity->getWorldTransform();
         const auto& b_t = b->entity->getWorldTransform();
-        if (a_t._43 < b_t._43) return true; // Smaller layer # always go before
-        return a_t._42 < b_t._42; // y Sort
-    });
 
-    // Draw 2D elements
-    sb->begin(camera_transform);
+        //TODO: Make this configurable for the scene
+        if (a_t._43 < b_t._43) return true; // z Sort (layers)
+        return (a_t._42 < b_t._42);         // y Sort
+    });
+}
+
+void SceneManager::draw2DRenderers(const Matrix& transform)
+{
+    auto  r     = oRenderer.get();
+    auto& rs    = r->renderStates;
+    auto  sb    = oSpriteBatch.get();
+
+    sb->begin(transform);
     for (auto _2d_renderer : _2D_renderers)
     {
         _2d_renderer->render(rs, sb);
     }
     sb->end();
+}
+
+#if BARK_EDITOR
+void SceneManager::draw2DGizmos(const Matrix& transform)
+{
+    auto  r     = oRenderer.get();
+    auto& rs    = r->renderStates;
+    auto  pb    = oPrimitiveBatch.get();
+
+    pb->begin(OPrimitiveLineList, nullptr, transform);
+    for (auto gizmo_renderer : gizmo_2D_renderers)
+    {
+        gizmo_renderer->renderGizmo(rs, pb);
+    }
+    pb->end();
+}
+#endif
+
+void SceneManager::render(Matrix* transform)
+{
+    auto camera2D_transform = getCamera2DTransform(transform);
+    clearScreen();
+    //TODO: Cull 2D objects
+    sort2DRenderers();
+    draw2DRenderers(camera2D_transform);
+#if BARK_EDITOR
+    draw2DGizmos(camera2D_transform);
+#endif
 }

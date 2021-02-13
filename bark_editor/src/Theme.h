@@ -65,6 +65,7 @@ public:
     OTextureRef asset_icons[(int)eAssetType::COUNT];
 
     OTextureRef scrollbar;
+    OTextureRef dotted;
 
     Theme();
 };
