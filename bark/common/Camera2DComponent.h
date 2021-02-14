@@ -3,10 +3,17 @@
 #include <onut/ForwardDeclaration.h>
 #include <onut/Color.h>
 #include "Component.h"
+#if BARK_EDITOR
+#include "Gizmo2DRenderer.h"
+#endif
 
 ForwardDeclare(Camera2DComponent);
 
-class Camera2DComponent final : public Component
+class Camera2DComponent final 
+    : public Component
+#if BARK_EDITOR
+    , public Gizmo2DRenderer
+#endif
 {
 public:
     COMPONENT_PROPERTY(float, zoom, 1.0f);
@@ -16,11 +23,13 @@ public:
 
     void onCreate() override {};
     void onEnable() override;
-#if !BARK_EDITOR
-    void onUpdate(float dt) override {};
-#endif
     void onDisable() override;
     void onDestroy() override {};
+#if !BARK_EDITOR
+    void onUpdate(float dt) override {};
+#else
+    void renderGizmo(Gizmo2DContext* ctx) override;
+#endif
     
     COMPONENT_DECLARATION(Camera2DComponent, Camera2D)
     // [GENERATED COMPONENT DECLARATION BEGIN]

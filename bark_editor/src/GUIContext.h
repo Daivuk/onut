@@ -70,7 +70,17 @@ enum class eUICursorType
     Arrow,
     SizeEW,
     SizeNS,
-    SizeAll
+    SizeNESW,
+    SizeNWSE,
+    SizeAll,
+    RotN,
+    RotNE,
+    RotE,
+    RotSE,
+    RotS,
+    RotSW,
+    RotW,
+    RotNW
 };
 
 enum class eUIDrag
@@ -229,7 +239,7 @@ public:
     void drawControl();
     bool drawBoolControl(bool* value);
     bool drawIntControl(int* value);
-    bool drawFloatControl(float* value, float step = 1.0f);
+    bool drawFloatControl(float* value, float step = 0.1f);
     bool drawTextControl(std::string* value);
 
     bool header(const std::string& text, bool* expanded = nullptr);

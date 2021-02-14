@@ -1,4 +1,6 @@
 #include "Entity.h"
+#include "GUIContext.h"
+#include "SceneManager.h"
 
 #if !BARK_EDITOR
 extern void* pEntityPrototype;
@@ -61,4 +63,45 @@ void Entity::add(const EntityRef& child)
 
     children.push_back(child);
     child->m_parent = OThis;
+}
+
+#if BARK_EDITOR
+void Entity::drawProperties(GUIContext* ctx)
+{
+    ctx->pushEnableState(false);
+    int id_int = (int)id; //TODO: Don't truncate Uint64
+    ctx->int_prop(&id_int, "ID");
+    ctx->popEnableState();
+
+    ctx->std_string_prop(&name, "Name");
+
+    auto pos = m_local_transform.Translation();
+    if (ctx->Vector3_prop(&pos, "Position"))
+    {
+        m_local_transform.Translation(pos);
+        is_world_dirty = true;
+    }
+}
+#endif
+
+#if BARK_EDITOR
+Json::Value Entity::serialize()
+{
+    Json::Value json;
+    
+    setJson_uint64_t(json, "id", id);
+    setJson_std_string(json, "name", name);
+    setJson_Matrix(json, "transform", getLocalTransform());
+
+    return std::move(json);
+}
+#endif
+
+void Entity::deserialize(const Json::Value& in_json)
+{
+    json = in_json;
+
+    id   = getJson_uint64_t(json, "id", 0);
+    name = getJson_std_string(json, "name", "Entity");
+    setLocalTransform(getJson_Matrix(json, "transform"));
 }

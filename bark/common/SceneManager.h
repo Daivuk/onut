@@ -13,6 +13,7 @@ class _2DRendererComponent;
 class b2World;
 #else
 class Gizmo2DRenderer;
+class Gizmo2DContext;
 #endif
 
 ForwardDeclare(Entity);
@@ -25,9 +26,9 @@ public:
     std::string scene_to_load;
     float       pixelsIn1Meter = 1.0f / 16.0f;
 
-    #if !BARK_EDITOR
+#if !BARK_EDITOR
     b2World*    world = nullptr;
-    #endif
+#endif
 
     // Component lists
     std::vector<Component*> active_components;
@@ -63,6 +64,6 @@ public:
     void sort2DRenderers();
     void draw2DRenderers(const Matrix& transform);
 #if BARK_EDITOR
-    void draw2DGizmos(const Matrix& transform);
+    void draw2DGizmos(Matrix* override_with, Gizmo2DContext* ctx);
 #endif
 };

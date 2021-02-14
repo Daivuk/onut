@@ -26,7 +26,7 @@ void initSettings()
     oSettings->setIsResizableWindow(true);
     oSettings->setResolution({1280, 720});
     oSettings->setIsEditorMode(true);
-    oSettings->setStartMaximized(false);
+    oSettings->setStartMaximized(true);
     oSettings->setIsFixedStep(false);
 }
 

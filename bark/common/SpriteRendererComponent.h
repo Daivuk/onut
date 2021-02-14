@@ -3,11 +3,18 @@
 #include <onut/BlendMode.h>
 #include <onut/ForwardDeclaration.h>
 #include "_2DRendererComponent.h"
+#if BARK_EDITOR
+#include "Gizmo2DRenderer.h"
+#endif
 
 OForwardDeclare(Texture);
 ForwardDeclare(SpriteRendererComponent);
 
-class SpriteRendererComponent final : public _2DRendererComponent
+class SpriteRendererComponent final 
+    : public _2DRendererComponent
+#if BARK_EDITOR
+    , public Gizmo2DRenderer
+#endif
 {
 public:
     COMPONENT_PROPERTY(OTextureRef, texture, nullptr);
@@ -17,10 +24,14 @@ public:
     COMPONENT_PROPERTY(int, blendMode, (int)OBlendPreMultiplied);
 
     void onCreate() override {};
+    void onDestroy() override {};
 #if !BARK_EDITOR
     void onUpdate(float dt) override {};
+#else
+    void onEnable() override;
+    void onDisable() override;
+    void renderGizmo(Gizmo2DContext* ctx) override;
 #endif
-    void onDestroy() override {};
     
     void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
     

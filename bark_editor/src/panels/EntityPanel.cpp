@@ -29,12 +29,7 @@ void EntityPanel::render(GUIContext* ctx)
 
     ctx->beginVScrollArea(entity->scroll);
     {
-        ctx->pushEnableState(false);
-        int id_int = (int)entity->id; //TODO: Don't truncate Uint64
-        ctx->int_prop(&id_int, "ID");
-        ctx->popEnableState();
-
-        ctx->std_string_prop(&entity->name, "Name");
+        entity->drawProperties(ctx);
 
         for (const auto& kv : entity->components)
         {

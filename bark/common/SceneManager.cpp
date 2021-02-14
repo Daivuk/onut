@@ -17,11 +17,13 @@
 #include "Camera2DComponent.h"
 #include "SpriteRendererComponent.h"
 #include "globals.h"
+#include "Theme.h"
 
 #if !BARK_EDITOR
 #include <box2d/b2_world.h>
 #else
 #include "Gizmo2DRenderer.h"
+#include "Gizmo2DContext.h"
 #endif
 
 void loadNode(const EntityRef& entity, const Json::Value& json_node);
@@ -121,14 +123,12 @@ void SceneManager::loadScene(const std::string& name)
     }
 }
 
-void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json_node)
+void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json)
 {
-    entity->name = getJson_std_string(json_node, "name", "Entity");
-    entity->id = getJson_uint64_t(json_node, "id", 0);
-    entity->setLocalTransform(getJson_Matrix(json_node, "transform"));
     entity->scene_mgr = this;
+    entity->deserialize(json);
 
-    const auto& json_components = json_node["components"];
+    const auto& json_components = json["components"];
     auto component_names = json_components.getMemberNames();
     for (const auto& key : component_names)
     {
@@ -136,7 +136,7 @@ void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json_nod
         loadComponent(entity, key, json_properties);
     }
 
-    const auto& json_children = json_node["children"];
+    const auto& json_children = json["children"];
     for (const auto& json_child : json_children)
     {
         auto child = OMake<Entity>();
@@ -233,6 +233,7 @@ Matrix SceneManager::getCamera2DTransform(Matrix* override_with) const
 #if !BARK_EDITOR
     else if (!active_camera2Ds.empty())
     {
+        auto active_camera2D = active_camera2Ds.back();
         auto pos = active_camera2D->entity->getWorldTransform().Translation();
         auto zoom = active_camera2D->zoom;
         const auto& origin = active_camera2D->origin;
@@ -299,18 +300,34 @@ void SceneManager::draw2DRenderers(const Matrix& transform)
 }
 
 #if BARK_EDITOR
-void SceneManager::draw2DGizmos(const Matrix& transform)
+void SceneManager::draw2DGizmos(Matrix* override_with, Gizmo2DContext* ctx)
 {
+    auto transform = getCamera2DTransform(override_with);
+
     auto  r     = oRenderer.get();
     auto& rs    = r->renderStates;
     auto  pb    = oPrimitiveBatch.get();
 
-    pb->begin(OPrimitiveLineList, nullptr, transform);
+    rs.sampleFiltering  = OFilterNearest;
+    rs.blendMode        = OBlendPreMultiplied;
+
+    // Grid
+    {
+        auto inv_transform = transform.Invert();
+
+        Vector2 top_left        = Vector2::Transform(Vector2::Zero, inv_transform);
+        Vector2 bottom_right    = Vector2::Transform(OScreenf, inv_transform);
+
+        pb->draw(Vector2(top_left.x, 0), Color(0.35f));
+        pb->draw(Vector2(bottom_right.x, 0), Color(0.35f));
+        pb->draw(Vector2(0, top_left.y), Color(0.35f));
+        pb->draw(Vector2(0, bottom_right.y), Color(0.35f));
+    }
+
     for (auto gizmo_renderer : gizmo_2D_renderers)
     {
-        gizmo_renderer->renderGizmo(rs, pb);
+        gizmo_renderer->renderGizmo(ctx);
     }
-    pb->end();
 }
 #endif
 
@@ -321,7 +338,4 @@ void SceneManager::render(Matrix* transform)
     //TODO: Cull 2D objects
     sort2DRenderers();
     draw2DRenderers(camera2D_transform);
-#if BARK_EDITOR
-    draw2DGizmos(camera2D_transform);
-#endif
 }

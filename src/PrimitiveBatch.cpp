@@ -40,6 +40,7 @@ namespace onut
         m_primitiveType = primitiveType;
 		oRenderer->setupFor2D(transform);
         m_isDrawing = true;
+        m_pRenderStates = &oRenderer->renderStates;
 
         m_pMappedVertexBuffer = reinterpret_cast<SVertexP2T2C4*>(m_pVertexBuffer->map());
     }

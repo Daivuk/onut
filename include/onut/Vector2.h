@@ -151,10 +151,10 @@ struct Vector2
 
     inline void Normalize()
     {
-        auto len = std::sqrt(x * x + y * y);
+        auto len = x * x + y * y;
         if (len > 0.0f)
         {
-            len = 1.0f / len;
+            len = 1.0f / std::sqrt(len);
         }
         x *= len;
         y *= len;

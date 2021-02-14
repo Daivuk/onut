@@ -21,21 +21,16 @@ public:
     COMPONENT_PROPERTY(int, blendMode, (int)OBlendPreMultiplied);
 
     void onCreate() override {};
-#if BARK_EDITOR
-    void onEnable() override;
-#endif
+    void onDestroy() override {};
 #if !BARK_EDITOR
     void onUpdate(float dt) override {};
-#endif
-#if BARK_EDITOR
+#else
+    void onEnable() override;
     void onDisable() override;
+    void renderGizmo(Gizmo2DContext* ctx) override;
 #endif
-    void onDestroy() override {};
 
     void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
-#if BARK_EDITOR
-    void renderGizmo(onut::RenderStates& rs, OPrimitiveBatch* pb) override;
-#endif
 
     COMPONENT_DECLARATION(TiledMapRendererComponent, TiledMapRenderer)
     // [GENERATED COMPONENT DECLARATION BEGIN]

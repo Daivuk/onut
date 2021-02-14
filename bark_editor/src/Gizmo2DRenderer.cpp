@@ -1,3 +1,4 @@
+#include <onut/PrimitiveBatch.h>
 #include "Gizmo2DRenderer.h"
 #include "SceneManager.h"
 #include "globals.h"

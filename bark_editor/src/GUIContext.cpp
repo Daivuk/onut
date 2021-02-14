@@ -185,7 +185,17 @@ void GUIContext::end()
         case eUICursorType::Arrow:      oInput->unsetMouseIcon();                           break;
         case eUICursorType::SizeEW:     oInput->setMouseIcon("cur_size_ew.png", {9, 9});    break;
         case eUICursorType::SizeNS:     oInput->setMouseIcon("cur_size_ns.png", {9, 9});    break;
+        case eUICursorType::SizeNESW:   oInput->setMouseIcon("cur_size_ne_sw.png", {9, 9}); break;
+        case eUICursorType::SizeNWSE:   oInput->setMouseIcon("cur_size_nw_se.png", {9, 9}); break;
         case eUICursorType::SizeAll:    oInput->setMouseIcon("cur_size_all.png", {9, 9});   break;
+        case eUICursorType::RotN:       oInput->setMouseIcon("cur_rot_n.png", {9, 9});      break;
+        case eUICursorType::RotNE:      oInput->setMouseIcon("cur_rot_ne.png", {9, 9});     break;
+        case eUICursorType::RotE:       oInput->setMouseIcon("cur_rot_e.png", {9, 9});      break;
+        case eUICursorType::RotSE:      oInput->setMouseIcon("cur_rot_se.png", {9, 9});     break;
+        case eUICursorType::RotS:       oInput->setMouseIcon("cur_rot_s.png", {9, 9});      break;
+        case eUICursorType::RotSW:      oInput->setMouseIcon("cur_rot_sw.png", {9, 9});     break;
+        case eUICursorType::RotW:       oInput->setMouseIcon("cur_rot_w.png", {9, 9});      break;
+        case eUICursorType::RotNW:      oInput->setMouseIcon("cur_rot_nw.png", {9, 9});     break;
     }
 }
 

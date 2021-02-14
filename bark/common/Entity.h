@@ -9,11 +9,15 @@
 #if !BARK_EDITOR
 #include "JSObject.h"
 #endif
+#include "JsonHelper.h"
 
 ForwardDeclare(Entity);
 ForwardDeclare(Component);
 
 class SceneManager;
+#if BARK_EDITOR
+class GUIContext;
+#endif
 
 class Entity final : 
 #if !BARK_EDITOR
@@ -43,7 +47,17 @@ public:
     bool                                expanded        = false;
     bool                                selected        = false;
     float                               scroll          = 0.0f; // We remember the scroll location for each entity's property page :)
+    Json::Value                         json;
 #endif
+
+#if BARK_EDITOR
+    void drawProperties(GUIContext* ctx);
+#endif
+
+#if BARK_EDITOR
+    Json::Value serialize();
+#endif
+    void deserialize(const Json::Value& json);
 
 private:
     Matrix      m_world_transform;

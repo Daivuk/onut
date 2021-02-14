@@ -3,12 +3,19 @@
 #include <onut/BlendMode.h>
 #include <onut/ForwardDeclaration.h>
 #include "_2DRendererComponent.h"
+#if BARK_EDITOR
+#include "Gizmo2DRenderer.h"
+#endif
 
 OForwardDeclare(SpriteAnim);
 OForwardDeclare(SpriteAnimInstance);
 ForwardDeclare(SpriteAnimRendererComponent);
 
-class SpriteAnimRendererComponent final : public _2DRendererComponent
+class SpriteAnimRendererComponent final 
+    : public _2DRendererComponent
+#if BARK_EDITOR
+    , public Gizmo2DRenderer
+#endif
 {
 public:
     COMPONENT_PROPERTY(OSpriteAnimRef, spriteAnim, nullptr, PROP_CPP_SETTER);
@@ -22,16 +29,16 @@ public:
 #endif
 
     void onCreate() override;
+    void onDestroy() override {};
+    void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
 #if !BARK_EDITOR
     void onUpdate(float dt) override {};
-#endif
-    void onDestroy() override {};
-    
-    void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
-
-#if !BARK_EDITOR
     void set_spriteAnim(const OSpriteAnimRef& value);
     void set_anim(const std::string& value);
+#else
+    void onEnable() override;
+    void onDisable() override;
+    void renderGizmo(Gizmo2DContext* ctx) override;
 #endif
     
     COMPONENT_DECLARATION(SpriteAnimRendererComponent, SpriteAnimRenderer)

@@ -39,6 +39,17 @@
                 },
                 "damageFlasher.js": {}
             }
+        },
+        {
+            "id": 3,
+            "name": "Heart",
+            "transform": [1,0,0,0,0,1,0,0,0,0,1,0,-10,-10,0,1],
+            "components": {
+                "SpriteRenderer": {
+                    "texture": "heart.PNG",
+                    "smooth": false
+                }
+            }
         }
     ]
 }

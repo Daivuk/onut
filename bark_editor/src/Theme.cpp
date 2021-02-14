@@ -26,6 +26,13 @@ Theme::Theme()
     asset_icons[(int)eAssetType::Music]             = OGetTexture("Music_icon.png");
     asset_icons[(int)eAssetType::UI]                = OGetTexture("UI_icon.png");
 
-    scrollbar   = OGetTexture("scrollbar.png");
-    dotted      = OGetTexture("dotted.png");
+    {
+        auto prev = oGenerateMipmaps;
+        oGenerateMipmaps = false;
+
+        scrollbar   = OGetTexture("scrollbar.png");
+        dotted      = OGetTexture("dotted.png");
+
+        oGenerateMipmaps = prev;
+    }
 }

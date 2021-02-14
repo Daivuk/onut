@@ -13,6 +13,8 @@ OForwardDeclare(VertexBuffer);
 
 namespace onut
 {
+    class RenderStates;
+
     class PrimitiveBatch
     {
     public:
@@ -48,6 +50,7 @@ namespace onut
         OTextureRef m_pTexture;
 
         PrimitiveMode m_primitiveType;
+        RenderStates *m_pRenderStates = nullptr;
     };
 }
 
