@@ -55,7 +55,7 @@ public:
 #endif
     void deserialize(const Json::Value& json);
 
-    void loadScene(const std::string& name);
+    bool loadScene(const std::string& name);
     void loadNode(const EntityRef& entity, const Json::Value& json_node);
     void loadComponent(const EntityRef& entity, const std::string& type, const Json::Value& json_properties);
 

@@ -10,7 +10,7 @@
 OForwardDeclare(Texture);
 ForwardDeclare(Entity);
 
-class SceneViewPanel final : public Panel
+class SceneViewPanel final : public Panel, OEnableOThis(SceneViewPanel)
 {
 public:
     std::string     filename; // Asset's filename
@@ -23,10 +23,13 @@ public:
     Vector2         camera_2d_pos_on_down;
     Vector2         pan_mouse_start;
     Vector2         mouse_pos;
+    bool            valid           = true;
 
     std::vector<EntityRef> selected_entities;
 
     SceneViewPanel(const std::string& filename);
 
     void render(GUIContext* ctx) override;
+
+    void addSelectAction(std::vector<EntityRef> selection_before, std::vector<EntityRef> selection_after);
 };

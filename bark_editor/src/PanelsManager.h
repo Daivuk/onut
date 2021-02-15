@@ -16,6 +16,7 @@ ForwardDeclare(TimelinePanel);
 ForwardDeclare(AssetsPanel);
 ForwardDeclare(SceneViewPanel);
 
+class PanelsManager;
 class GUIContext;
 struct DockContext;
 
@@ -46,6 +47,7 @@ public:
     virtual void undockPanel(const PanelRef& panel) = 0;
     virtual DockNodeRef clean() = 0;
     virtual DockNodeRef dockPanel(const PanelRef& panel, const DockContext& dock_ctx) = 0;
+    virtual DockZoneRef find(const PanelRef& panel, int* index) = 0;
 };
 
 class DockNull final : public DockNode
@@ -56,6 +58,7 @@ public:
     void undockPanel(const PanelRef& panel) override {};
     DockNodeRef clean() override { return nullptr; };
     DockNodeRef dockPanel(const PanelRef& panel, const DockContext& dock_ctx) override { return nullptr; };
+    DockZoneRef find(const PanelRef& panel, int* index) override { return nullptr; }
 };
 
 // Dock zone is a leaf node. Containing one or many panels with tabs
@@ -72,6 +75,7 @@ public:
     void undockPanel(const PanelRef& panel) override;
     DockNodeRef clean() override;
     DockNodeRef dockPanel(const PanelRef& panel, const DockContext& dock_ctx) override;
+    DockZoneRef find(const PanelRef& panel, int* index) override;
 };
 
 class DockKeepAround final : public DockZone
@@ -100,6 +104,7 @@ public:
     void undockPanel(const PanelRef& panel) override;
     DockNodeRef clean() override;
     DockNodeRef dockPanel(const PanelRef& panel, const DockContext& dock_ctx) override;
+    DockZoneRef find(const PanelRef& panel, int* index) override;
 };
 
 class DockVSplit final : public DockNode, public std::enable_shared_from_this<DockVSplit>
@@ -117,6 +122,7 @@ public:
     void undockPanel(const PanelRef& panel) override;
     DockNodeRef clean() override;
     DockNodeRef dockPanel(const PanelRef& panel, const DockContext& dock_ctx) override;
+    DockZoneRef find(const PanelRef& panel, int* index) override;
 };
 
 struct DockContext
@@ -157,6 +163,7 @@ public:
     void undockPanel(const PanelRef& panel);
     void dockPanel(const PanelRef& panel, const DockContext& dock_ctx); 
     void cleanDock();
+    DockZoneRef find(const PanelRef& panel, int* index);
 
     void render(GUIContext* ctx);
 };

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "ScenePanel.h"
 #include "GUIContext.h"
 #include "Theme.h"
@@ -6,7 +7,6 @@
 #include "PanelsManager.h"
 #include "SceneViewPanel.h"
 #include "Entity.h"
-#include <algorithm>
 
 ScenePanel::ScenePanel()
 {
@@ -71,8 +71,10 @@ void ScenePanel::deselectAll(const EntityRef& entity)
 void ScenePanel::addSelection(GUIContext* ctx, const EntityRef& entity)
 {
     auto scene_view = ODynamicCast<SceneViewPanel>(g_panels_mgr->focussed_scene_view);
-    if (!scene_view) return; // Hum ya that shouldn't be the case
+    if (!scene_view) return;
     auto root = scene_view->scene_mgr.root;
+
+    auto selection_before = scene_view->selected_entities;
 
     if (ctx->keys.ctrl)
     {
@@ -98,4 +100,6 @@ void ScenePanel::addSelection(GUIContext* ctx, const EntityRef& entity)
             scene_view->selected_entities = { entity };
         }
     }
+
+    scene_view->addSelectAction(selection_before, scene_view->selected_entities);
 }

@@ -38,7 +38,7 @@ void Project::openFolder(const std::string& in_path)
         catch (...)
         {
             project_file.close();
-            OLogE("Failed to parse project.json");
+            OLogE("Failed to parse project.json"); // It will initialize a default one
             return;
         }
         project_file.close();
@@ -51,24 +51,51 @@ void Project::openFolder(const std::string& in_path)
     }
 }
 
-void Project::openScene(const std::string& filename)
+std::string Project::getSceneViewFilename()
 {
-    int i = 0;
-    for (const auto& panel : g_panels_mgr->document_zone->panels)
+    if (!g_panels_mgr->focussed_scene_view) return "";
+    return g_panels_mgr->focussed_scene_view->filename;
+}
+
+bool Project::openScene(const std::string& filename)
+{
+    SceneViewPanelRef found_scene_view;
+    for (const auto& scene_view_panel : loaded_scene_views)
     {
-        auto scene_view_panel = ODynamicCast<SceneViewPanel>(panel);
-        if (scene_view_panel && 
-            onut::getFilename(scene_view_panel->filename) == onut::getFilename(filename))
+        if (onut::getFilename(scene_view_panel->filename) == onut::getFilename(filename))
         {
-            // Already open, just focus
-            g_panels_mgr->document_zone->active_panel = i;
-            return;
+            found_scene_view = scene_view_panel;
+            break;
         }
-        ++i;
     }
 
+    if (found_scene_view)
+    {
+        // Find it, focus it. If not in the UI, add it
+        int index = -1;
+        auto dock_zone = g_panels_mgr->find(found_scene_view, &index);
+        if (dock_zone)
+        {
+            g_panels_mgr->document_zone->active_panel = index;
+        }
+        else 
+        {
+            g_panels_mgr->document_zone->panels.push_back(found_scene_view);
+            g_panels_mgr->document_zone->active_panel = (int)g_panels_mgr->document_zone->panels.size() - 1;
+        }
+        g_panels_mgr->focussed_scene_view = found_scene_view;
+
+        return true;
+    }
+
+    // Not found, load the scene
     auto scene_view = OMake<SceneViewPanel>(filename);
+    if (!scene_view->valid) return false;
+
+    loaded_scene_views.push_back(scene_view);
     g_panels_mgr->document_zone->panels.push_back(scene_view);
     g_panels_mgr->document_zone->active_panel = (int)g_panels_mgr->document_zone->panels.size() - 1;
     g_panels_mgr->focussed_scene_view = scene_view;
+
+    return true;
 }

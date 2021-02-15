@@ -8,6 +8,7 @@
 #define ODynamicCast std::dynamic_pointer_cast
 #define OStaticCast std::static_pointer_cast
 #define OThis shared_from_this()
+#define OEnableOThis(__class__) public std::enable_shared_from_this<__class__>
 
 #define OForwardDeclare(__class__) \
 namespace onut \

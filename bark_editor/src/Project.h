@@ -1,17 +1,23 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <onut/ForwardDeclaration.h>
 #include "JsonHelper.h"
+
+ForwardDeclare(SceneViewPanel);
 
 class Project final
 {
 public:
-    std::string path;
-    Json::Value json;
+    std::string                     path;
+    Json::Value                     json;
+    std::vector<SceneViewPanelRef>  loaded_scene_views;
 
     Project();
     ~Project();
 
     void openFolder(const std::string& path);
-    void openScene(const std::string& filename);
+    bool openScene(const std::string& filename);
+    std::string getSceneViewFilename();
 };

@@ -1,10 +1,9 @@
+#include <onut/ActionManager.h>
 #include <onut/Font.h>
-
 #include "PanelsManager.h"
 #include "GUIContext.h"
 #include "Theme.h"
 #include "globals.h"
-
 #include "AssetPanel.h"
 #include "ProjectPanel.h"
 #include "EntityPanel.h"
@@ -99,6 +98,8 @@ void DockZone::render(GUIContext* ctx)
             }
             if (ui_state == eUIState::Close)
             {
+                auto panel_to_close = panel;
+
                 panels.erase(panels.begin() + i);
                 g_panels_mgr->closed_panel = true;
                 active_panel = std::min(i, (int)panels.size() - 1);
@@ -517,6 +518,39 @@ void PanelsManager::cleanDock()
     {
         dock_root = OMake<DockZone>(std::vector<PanelRef>{}, 0); // Empty screen
     }
+}
+
+DockZoneRef PanelsManager::find(const PanelRef& panel, int* index)
+{
+    return dock_root->find(panel, index);
+}
+
+DockZoneRef DockZone::find(const PanelRef& panel, int* index)
+{
+    for (int i = 0; i < (int)panels.size(); ++i)
+    {
+        if (panels[i] == panel)
+        {
+            *index = i;
+            return OThis;
+        }
+    }
+
+    return nullptr;
+}
+
+DockZoneRef DockHSplit::find(const PanelRef& panel, int* index)
+{
+    if (left)  if (auto ret = left->find(panel, index))  return ret;
+    if (right) if (auto ret = right->find(panel, index)) return ret;
+    return nullptr;
+}
+
+DockZoneRef DockVSplit::find(const PanelRef& panel, int* index)
+{
+    if (top)    if (auto ret = top->find(panel, index))    return ret;
+    if (bottom) if (auto ret = bottom->find(panel, index)) return ret;
+    return nullptr;
 }
 
 DockNodeRef DockKeepAround::clean()

@@ -57,7 +57,7 @@ void SceneManager::deserialize(const Json::Value& json)
 {
 }
 
-void SceneManager::loadScene(const std::string& name)
+bool SceneManager::loadScene(const std::string& name)
 {
     Json::Value json_scene;
 
@@ -65,14 +65,14 @@ void SceneManager::loadScene(const std::string& name)
     if (full_path.empty())
     {
         OLogE("Cannot find scene: " + name);
-        return;
+        return false;
     }
 
     std::fstream file(full_path);
     if (!file.is_open())
     {
         OLogE("Failed to load scene: " + name);
-        return;
+        return false;
     }
     else
     {
@@ -84,7 +84,7 @@ void SceneManager::loadScene(const std::string& name)
         {
             OLogE("Failed to parse scene: " + name);
             file.close();
-            return;
+            return false;
         }
         file.close();
     }
@@ -121,6 +121,8 @@ void SceneManager::loadScene(const std::string& name)
         }
         copy.clear();
     }
+
+    return true;
 }
 
 void SceneManager::loadNode(const EntityRef& entity, const Json::Value& json)

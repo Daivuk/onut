@@ -4,6 +4,8 @@
 #include "Gizmo2DContext.h"
 #include "Entity.h"
 #include "GUIContext.h"
+#include "Project.h"
+#include "globals.h"
 
 void Gizmo2DContext::reset()
 {
@@ -139,9 +141,11 @@ void Gizmo2DContext::doMoveLogic(const std::vector<EntityRef>& entities, GUICont
         // Add undo action
         auto entities_copy      = entities;
         auto transforms_before  = move_ctx.entity_transforms_on_down;
+        auto scene              = g_project->getSceneViewFilename();
 
         oActionManager->addAction("Move", [=]()
         {
+            if (!g_project->openScene(scene)) return; // This shouldn't happen
             for (int i = 0, len = (int)entities_copy.size(); i < len; ++i)
             {
                 const auto& entity      = entities[i];
@@ -150,6 +154,7 @@ void Gizmo2DContext::doMoveLogic(const std::vector<EntityRef>& entities, GUICont
             }
         }, [=]()
         {
+            if (!g_project->openScene(scene)) return; // This shouldn't happen
             for (int i = 0, len = (int)entities_copy.size(); i < len; ++i)
             {
                 const auto& entity      = entities[i];

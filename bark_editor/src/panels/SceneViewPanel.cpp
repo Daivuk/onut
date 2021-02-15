@@ -1,15 +1,18 @@
+#include <onut/ActionManager.h>
 #include <onut/Input.h>
 #include <onut/Files.h>
 #include <onut/Texture.h>
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/PrimitiveBatch.h>
+#include <onut/TiledMap.h>
+#include <onut/ContentManager.h>
 #include "SceneViewPanel.h"
 #include "GUIContext.h"
 #include "Theme.h"
-
-#include <onut/TiledMap.h>
-#include <onut/ContentManager.h>
+#include "globals.h"
+#include "Entity.h"
+#include "Project.h"
 #include "globals.h"
 
 static const float  ZOOM_LEVELS[]       = { 0.03125f, 0.0625f, 0.125f, 0.25f, 0.5f, 1.0f, 2.0f, 3.0f, 4.0f, 6.0f, 8.0f, 12.0f, 16.0f, 18.0f, 24.0f};
@@ -17,12 +20,16 @@ static const int    ZOOM_LEVEL_COUNT    = (int)(sizeof(ZOOM_LEVELS) / sizeof(flo
 
 SceneViewPanel::SceneViewPanel(const std::string& in_filename)
 {
+    if (!scene_mgr.loadScene(in_filename))
+    {
+        valid = false;
+        return;
+    }
+
     filename        = in_filename;
     name            = onut::getFilenameWithoutExtension(in_filename);
     game_content_rt = OTexture::createRenderTarget({128, 128}, false);
     closable        = true;
-
-    scene_mgr.loadScene(in_filename);
 }
 
 void SceneViewPanel::render(GUIContext* ctx)
@@ -123,4 +130,41 @@ void SceneViewPanel::render(GUIContext* ctx)
     ctx->drawOutline(ctx->rect.Grow(ctx->theme->border_size), ctx->theme->border_size, ctx->theme->area_border_color);
     ctx->drawRect(game_content_rt, ctx->rect, Color::White);
     ctx->popRect();
+}
+
+
+void SceneViewPanel::addSelectAction(std::vector<EntityRef> selection_before, std::vector<EntityRef> selection_after)
+{
+    bool changed = selection_before.size() != selection_after.size();
+    if (!changed)
+    {
+        for (int i = 0, len = (int)selection_before.size(); i < len; ++i)
+        {
+            if (selection_before[i] != selection_after[i])
+            {
+                changed = true;
+                break;
+            }
+        }
+    }
+
+    if (changed)
+    {
+        auto pThis = OThis;
+        auto scene = g_project->getSceneViewFilename();
+
+        oActionManager->addAction("Select", [=]()
+        {
+            if (!g_project->openScene(scene)) return; // This shouldn't happen
+            for (const auto& entity : selection_before) entity->selected = false;
+            for (const auto& entity : selection_after) entity->selected = true;
+            pThis->selected_entities = selection_after;
+        }, [=]()
+        {
+            if (!g_project->openScene(scene)) return; // This shouldn't happen
+            for (const auto& entity : selection_after) entity->selected = false;
+            for (const auto& entity : selection_before) entity->selected = true;
+            pThis->selected_entities = selection_before;
+        });
+    }
 }
