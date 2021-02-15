@@ -132,7 +132,7 @@ void Gizmo2DContext::applyTransforms(std::vector<EntityRef> entities,
     // Add undo action
     auto scene = g_project->getSceneViewFilename();
 
-    oActionManager->addAction("Rotate", [=]()
+    oActionManager->addAction("Transform", [=]()
     {
         if (!g_project->openScene(scene)) return; // This shouldn't happen
         for (int i = 0, len = (int)entities.size(); i < len; ++i)
@@ -141,6 +141,7 @@ void Gizmo2DContext::applyTransforms(std::vector<EntityRef> entities,
             auto&       transform   = transforms_after[i];
             entity->setWorldTransform(transform);
         }
+        focusOn(entities);
     }, [=]()
     {
         if (!g_project->openScene(scene)) return; // This shouldn't happen
@@ -150,6 +151,7 @@ void Gizmo2DContext::applyTransforms(std::vector<EntityRef> entities,
             auto&       transform   = transforms_before[i];
             entity->setWorldTransform(transform);
         }
+        focusOn(entities);
     });
 }
 

@@ -44,10 +44,15 @@ void ScenePanel::renderEntity(GUIContext* ctx, const EntityRef& entity, int inde
     }
     else
     {
-        if (ctx->drawListItem(entity->name, nullptr, indent, true, entity->selected) == eUIState::Clicked)
+        auto state = ctx->drawListItem(entity->name, nullptr, indent, true, entity->selected);
+        if (state == eUIState::Clicked)
         {
             if (!ctx->keys.ctrl && !ctx->keys.shift) entity->expanded = !entity->expanded;
             addSelection(ctx, entity);
+        }
+        else if (state == eUIState::DoubleClicked)
+        {
+            if (!ctx->keys.ctrl && !ctx->keys.shift) focusOn(entity);
         }
 
         ctx->rect.y += ctx->theme->list_item_height;
@@ -70,7 +75,7 @@ void ScenePanel::deselectAll(const EntityRef& entity)
 
 void ScenePanel::addSelection(GUIContext* ctx, const EntityRef& entity)
 {
-    auto scene_view = ODynamicCast<SceneViewPanel>(g_panels_mgr->focussed_scene_view);
+    auto scene_view = g_panels_mgr->focussed_scene_view;
     if (!scene_view) return;
     auto root = scene_view->scene_mgr.root;
 

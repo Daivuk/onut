@@ -2,6 +2,7 @@
 #include <onut/SpriteBatch.h>
 #include "SpriteRendererComponent.h"
 #include "Entity.h"
+#include "TransformHelper.h"
 #if BARK_EDITOR
 #include <onut/Texture.h>
 #include "Gizmo2DContext.h"
@@ -37,6 +38,14 @@ void SpriteRendererComponent::renderGizmo(Gizmo2DContext* ctx)
     ctx->drawOrigin(transform);
 }
 #endif
+
+Rect SpriteRendererComponent::getWorldRect()
+{
+    const auto& transform = entity->getWorldTransform();
+    Vector2 sizef = texture ? texture->getSizef() : Vector2::One;
+
+    return TransformHelper::getWorldRect(transform, sizef, origin);
+}
 
 void SpriteRendererComponent::render(onut::RenderStates& rs, OSpriteBatch* sb)
 {

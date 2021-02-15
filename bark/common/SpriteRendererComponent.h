@@ -32,6 +32,7 @@ public:
     void onDisable() override;
     void renderGizmo(Gizmo2DContext* ctx) override;
 #endif
+    Rect getWorldRect() override;
     
     void render(onut::RenderStates& rs, OSpriteBatch* sb) override;
     

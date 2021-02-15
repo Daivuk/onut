@@ -14,3 +14,8 @@ void Component::onDisable()
     if (it != entity->scene_mgr->active_components.end())
         entity->scene_mgr->active_components.erase(it);
 }
+
+Rect Component::getWorldRect()
+{
+    return Rect(Vector2(entity->getWorldTransform().Translation()), Vector2::Zero);
+}

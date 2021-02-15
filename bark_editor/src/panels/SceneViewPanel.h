@@ -24,6 +24,7 @@ public:
     Vector2         pan_mouse_start;
     Vector2         mouse_pos;
     bool            valid           = true;
+    Rect            rect;
 
     std::vector<EntityRef> selected_entities;
 
@@ -32,4 +33,5 @@ public:
     void render(GUIContext* ctx) override;
 
     void addSelectAction(std::vector<EntityRef> selection_before, std::vector<EntityRef> selection_after);
+    void focusOn(const std::vector<EntityRef>& entities);
 };

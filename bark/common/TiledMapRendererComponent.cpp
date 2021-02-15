@@ -5,6 +5,7 @@
 #include "TiledMapRendererComponent.h"
 #include "SceneManager.h"
 #include "Entity.h"
+#include "TransformHelper.h"
 #if BARK_EDITOR
 #include "Gizmo2DContext.h"
 #endif
@@ -39,6 +40,15 @@ void TiledMapRendererComponent::renderGizmo(Gizmo2DContext* ctx)
     ctx->drawDottedRect(transform, size, Vector2::Zero);
 }
 #endif
+
+Rect TiledMapRendererComponent::getWorldRect()
+{
+    const auto& transform = entity->getWorldTransform();
+    Vector2 size((float)tiledMap->getWidth() * (float)tiledMap->getTileSize(),
+                 (float)tiledMap->getHeight() * (float)tiledMap->getTileSize());
+
+    return TransformHelper::getWorldRect(transform, size, Vector2::Zero);
+}
 
 void TiledMapRendererComponent::render(onut::RenderStates& rs, OSpriteBatch* sb)
 {

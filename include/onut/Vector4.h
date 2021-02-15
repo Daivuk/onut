@@ -225,16 +225,20 @@ struct Vector4
     Vector2 BottomLeft(const Vector2& offset) const;
     Vector2 BottomRight(const Vector2& offset) const;
 
+    // Fills the target size. Resulting rect might go offscreen
     Vector4 Fill(const Vector2& size) const;
 
+    // Fills the target rect. Resulting rect might go offscreen
     inline Vector4 Fill(const Vector4& rect) const
     {
         float maxScale = std::max<float>(z / rect.z, w / rect.w);
         return std::move(Center({0, 0, rect.z * maxScale, rect.w * maxScale}));
     }
 
+    // Fit the target size, with "letter box".
     Vector4 Fit(const Vector2& size) const;
 
+    // Fit the target rect, with "letter box".
     inline Vector4 Fit(const Vector4& rect) const
     {
         Rect ret;

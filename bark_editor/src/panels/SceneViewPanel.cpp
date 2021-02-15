@@ -36,6 +36,7 @@ void SceneViewPanel::render(GUIContext* ctx)
 {
     ctx->pushRect();
     ctx->rect = ctx->rect.Grow(-ctx->theme->border_size);
+    rect = ctx->rect;
 
     Point res((int)ctx->rect.z, (int)ctx->rect.w);
     if (res.x <= 0 || res.y <= 0) return;
@@ -159,12 +160,49 @@ void SceneViewPanel::addSelectAction(std::vector<EntityRef> selection_before, st
             for (const auto& entity : selection_before) entity->selected = false;
             for (const auto& entity : selection_after) entity->selected = true;
             pThis->selected_entities = selection_after;
+            focusOnSelectedEntities();
         }, [=]()
         {
             if (!g_project->openScene(scene)) return; // This shouldn't happen
             for (const auto& entity : selection_after) entity->selected = false;
             for (const auto& entity : selection_before) entity->selected = true;
             pThis->selected_entities = selection_before;
+            focusOnSelectedEntities();
         });
+    }
+}
+
+void SceneViewPanel::focusOn(const std::vector<EntityRef>& entities)
+{
+    if (entities.empty()) return;
+
+    auto focus_rect = entities.front()->getWorldRect();
+    for (int i = 1; i < (int)entities.size(); ++i)
+    {
+        focus_rect = focus_rect.Merge(entities[i]->getWorldRect());
+    }
+
+    focus_rect = focus_rect.Grow(Vector2(focus_rect.z, focus_rect.w) * 0.8f);
+
+    auto fit_rect = rect.Fit(Vector2(focus_rect.z, focus_rect.w));
+    if (fit_rect.z > 0.0f)
+    {
+        auto desired_zoom = fit_rect.z / focus_rect.z;
+
+        camera_2d_zoom = ZOOM_LEVEL_COUNT - 1;
+        for (int i = 0; i < ZOOM_LEVEL_COUNT; ++i)
+        {
+            if (ZOOM_LEVELS[i] > desired_zoom)
+            {
+                camera_2d_zoom = i;
+                break;
+            }
+        }
+    }
+
+    // Only focus the position if the center is not in view.
+    if (!focus_rect.Contains(camera_2d_pos))
+    {
+        camera_2d_pos = focus_rect.Center();
     }
 }

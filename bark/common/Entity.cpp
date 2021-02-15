@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "GUIContext.h"
 #include "SceneManager.h"
+#include "Component.h"
 
 #if !BARK_EDITOR
 extern void* pEntityPrototype;
@@ -92,6 +93,31 @@ void Entity::drawProperties(GUIContext* ctx)
         m_local_transform.Translation(pos);
         is_world_dirty = true;
     }
+}
+#endif
+
+#if BARK_EDITOR
+Rect Entity::getWorldRect()
+{
+    if (components.empty()) return Rect(Vector2(getWorldTransform().Translation()), Vector2::Zero).Grow(16.0f);
+
+    Rect rect;
+    bool first = true;
+    for (const auto& kv : components)
+    {
+        auto component_rect = kv.second->getWorldRect();
+        if (first)
+        {
+            rect  = component_rect;
+            first = false;
+        }
+        else 
+        {
+            rect = rect.Merge(component_rect);
+        }
+    }
+
+    return rect;
 }
 #endif
 

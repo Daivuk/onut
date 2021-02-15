@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include "globals.h"
 #include "Entity.h"
+#include "TransformHelper.h"
 #if BARK_EDITOR
 #include <onut/Renderer.h>
 #include "Project.h"
@@ -50,3 +51,22 @@ void Camera2DComponent::renderGizmo(Gizmo2DContext* ctx)
     ctx->drawOrigin(transform);
 }
 #endif
+
+Rect Camera2DComponent::getWorldRect()
+{
+#if BARK_EDITOR
+    // Get resolution from the project's settings
+    Point res = getJson_Point(g_project->json, "resolution", oRenderer->getResolution());
+    if (getJson_bool(g_project->json, "retroMode", false))
+    {
+        res = getJson_Point(g_project->json, "retroResolution", {256, 240});
+    }
+#else
+    Point res = OScreen;
+#endif
+
+    const auto& transform = entity->getWorldTransform();
+    auto sizef = Vector2((float)res.x, (float)res.y) * (1.0f / zoom);
+
+    return TransformHelper::getWorldRect(transform, sizef, origin);
+}

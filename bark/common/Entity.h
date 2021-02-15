@@ -53,6 +53,7 @@ public:
 
 #if BARK_EDITOR
     void drawProperties(GUIContext* ctx);
+    Rect getWorldRect();
 #endif
 
 #if BARK_EDITOR

@@ -30,6 +30,7 @@ public:
 #else
     void renderGizmo(Gizmo2DContext* ctx) override;
 #endif
+    Rect getWorldRect() override;
     
     COMPONENT_DECLARATION(Camera2DComponent, Camera2D)
     // [GENERATED COMPONENT DECLARATION BEGIN]

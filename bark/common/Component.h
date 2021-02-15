@@ -66,4 +66,6 @@ public:
 #if BARK_EDITOR
     virtual void drawProperties(GUIContext* ctx) = 0;
 #endif
+
+    virtual Rect getWorldRect();
 };

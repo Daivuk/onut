@@ -4,6 +4,7 @@
 #include <onut/SpriteAnim.h>
 #include "SpriteAnimRendererComponent.h"
 #include "Entity.h"
+#include "TransformHelper.h"
 #if BARK_EDITOR
 #include <onut/Texture.h>
 #include "Gizmo2DContext.h"
@@ -135,3 +136,43 @@ void SpriteAnimRendererComponent::set_anim(const std::string& value)
     spriteAnimInstance->play(anim);
 }
 #endif
+
+Rect SpriteAnimRendererComponent::getWorldRect()
+{
+#if !BARK_EDITOR
+    if (!spriteAnimInstance) return Rect(Vector2(entity->getWorldTransform().Translation()), Vector2::Zero);
+    // TODO
+    asdad asd sad sadsa
+    return TransformHelper::getWorldRect(entity->getWorldTransform(), sizef, origin);
+#else
+    // In editor mode, we draw the first frame of the selected anim.
+    // Or first frame of the first anim if no anim is selected
+    OTextureRef texture;
+    Vector2 origin;
+    Vector2 sizef = Vector2::One;
+
+    if (spriteAnim)
+    {
+        auto oanim = spriteAnim->getAnim(anim);
+        if (!oanim)
+        {
+            const auto& anims = spriteAnim->getAnimNames();
+            if (!anims.empty()) oanim = spriteAnim->getAnim(anims.front());
+        }
+        if (oanim && !oanim->frames.empty())
+        {
+            const auto& first_frame = oanim->frames.front();
+            texture = first_frame.pTexture;
+            origin = first_frame.origin;
+
+            if (texture) sizef = texture->getSizef();
+            sizef.x *= first_frame.UVs.z - first_frame.UVs.x;
+            sizef.y *= first_frame.UVs.w - first_frame.UVs.y;
+        }
+    }
+
+    const auto& transform = entity->getWorldTransform();
+
+    return TransformHelper::getWorldRect(transform, sizef, origin);
+#endif
+}

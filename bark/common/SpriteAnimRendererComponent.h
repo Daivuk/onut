@@ -40,6 +40,7 @@ public:
     void onDisable() override;
     void renderGizmo(Gizmo2DContext* ctx) override;
 #endif
+    Rect getWorldRect() override;
     
     COMPONENT_DECLARATION(SpriteAnimRendererComponent, SpriteAnimRenderer)
     // [GENERATED COMPONENT DECLARATION BEGIN]

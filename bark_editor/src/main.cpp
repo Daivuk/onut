@@ -12,6 +12,7 @@
 #include "SceneManager.h"
 #include "Project.h"
 #include "ComponentFactory.h"
+#include "SceneViewPanel.h"
 
 static int invalidate_frames = 0;
 
@@ -59,25 +60,38 @@ void shutdown()
     shutdownComponentFactory();
 }
 
-void update()
+void updateShortcuts()
 {
-    if (OInputPressed(OKeyLeftControl) && 
-        OInputReleased(OKeyLeftShift) && 
-        OInputReleased(OKeyLeftAlt) &&
-        OInputJustPressed(OKeyZ))
+    auto ctrl   = OInputPressed(OKeyLeftControl);
+    auto shift  = OInputPressed(OKeyLeftShift);
+    auto alt    = OInputPressed(OKeyLeftAlt);
+
+    // Undo
+    if (ctrl && !shift && !alt && OInputJustPressed(OKeyZ))
     {
         oActionManager->undo();
     }
-    if ((OInputPressed(OKeyLeftControl) && 
-        OInputPressed(OKeyLeftShift) && 
-        OInputReleased(OKeyLeftAlt) &&
-        OInputJustPressed(OKeyZ)) ||
-        OInputPressed(OKeyLeftControl) && 
-        OInputReleased(OKeyLeftShift) && 
-        OInputReleased(OKeyLeftAlt) &&
-        OInputJustPressed(OKeyY))
+
+    // Redo
+    else if ((ctrl &&  shift && !alt && OInputJustPressed(OKeyZ)) ||
+             (ctrl && !shift && !alt && OInputJustPressed(OKeyY)))
     {
         oActionManager->redo();
+    }
+
+    // Focus on selection
+    else if (!ctrl && !shift && !alt && OInputJustPressed(OKeyF))
+    {
+        focusOnSelectedEntities();
+    }
+}
+
+void update()
+{
+    // Check for application shortcuts, if we are not in any GUI state
+    if (g_gui_ctx->edit_state == GUIContext::State::None)
+    {
+        updateShortcuts();
     }
 
     g_gui_ctx->update();
