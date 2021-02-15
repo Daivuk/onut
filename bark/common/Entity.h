@@ -32,6 +32,7 @@ public:
     const Matrix& getWorldTransform();
     const Matrix& getLocalTransform() const;
     void setLocalTransform(const Matrix& local_transform);
+    void setWorldTransform(const Matrix& world_transform);
 
     EntityRef getRoot();
     EntityRef getParent();

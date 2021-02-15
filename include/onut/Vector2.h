@@ -427,6 +427,8 @@ struct Vector2
         return result;
     }
 
+    static float Angle(const Vector2& from, const Vector2& to);
+
     static void Transform(const Vector2& v, const Matrix& m, Vector2& result);
     static Vector2 Transform(const Vector2& v, const Matrix& m);
     static void TransformNormal(const Vector2& v, const Matrix& m, Vector2& result);

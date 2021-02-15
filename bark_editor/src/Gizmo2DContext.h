@@ -46,13 +46,24 @@ public:
 
     struct MoveContext
     {
-        Vector2                 mouse_pos_on_down; // In world
+        Vector2                 world_mouse_pos_on_down;
         std::vector<Matrix>     entity_transforms_on_down;
     } move_ctx;
+
+    struct RotateContext
+    {
+        Vector2             world_mouse_pos_on_down;
+        Vector2             world_center;
+        Vector2             local_center;
+        std::vector<Matrix> entity_transforms_on_down;
+    } rotate_ctx;
 
     void reset();
 
     void doMoveLogic(const std::vector<EntityRef>& entities, GUIContext* ctx);
+    void doRotateLogic(const std::vector<EntityRef>& entities, GUIContext* ctx);
+
+    void applyTransforms(std::vector<EntityRef> entities, std::vector<Matrix> transforms_before, std::vector<Matrix> transforms_after);
 
     void drawDottedRect(const Matrix& transform, const Vector2& size, const Vector2& origin);
     void drawOrigin(const Matrix& transform);

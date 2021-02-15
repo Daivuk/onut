@@ -44,6 +44,17 @@ void Entity::setLocalTransform(const Matrix& local_transform)
     is_world_dirty = true;
 }
 
+void Entity::setWorldTransform(const Matrix& world_transform)
+{
+    Matrix parent_world;
+    auto parent = getParent();
+    if (parent) parent_world = parent->getWorldTransform();
+    auto inv_parent_world = parent_world.Invert();
+
+    m_local_transform = inv_parent_world * world_transform;
+    is_world_dirty = true;
+}
+
 EntityRef Entity::getRoot()
 {
     auto parent = getParent();

@@ -1,4 +1,5 @@
 #include <onut/ActionManager.h>
+#include <onut/Log.h>
 #include <onut/PrimitiveBatch.h>
 #include <onut/SpriteBatch.h>
 #include "Gizmo2DContext.h"
@@ -36,13 +37,19 @@ void Gizmo2DContext::drawDottedRect(const Matrix& transform, const Vector2& size
     single_select_corners[2] = Vector2::Transform(br, transform);
     single_select_corners[3] = Vector2::Transform(tr, transform);
 
+    pb->draw(single_select_corners[0], Color::White, tl * inv_scale);
+    pb->draw(single_select_corners[1], Color::White, bl * inv_scale);
+    pb->draw(single_select_corners[1], Color::White, bl * inv_scale);
+    pb->draw(single_select_corners[2], Color::White, br * inv_scale);
+    pb->draw(single_select_corners[2], Color::White, br * inv_scale);
+    pb->draw(single_select_corners[3], Color::White, tr * inv_scale);
+    pb->draw(single_select_corners[3], Color::White, tr * inv_scale);
+    pb->draw(single_select_corners[0], Color::White, tl * inv_scale);
+
     for (int i = 0; i < 4; ++i)
     {
         const auto& p1 = single_select_corners[i];
         const auto& p2 = single_select_corners[(i + 1) % 4];
-
-        pb->draw(p1, Color::White, p1 * inv_scale);
-        pb->draw(p2, Color::White, p2 * inv_scale);
 
         multi_select_mins.x = std::min(p1.x, multi_select_mins.x);
         multi_select_mins.y = std::min(p1.y, multi_select_mins.y);
@@ -118,52 +125,82 @@ bool Gizmo2DContext::drawHandle(const Vector2& pos, const Vector2& dir, eUICurso
     return false;
 }
 
+void Gizmo2DContext::applyTransforms(std::vector<EntityRef> entities, 
+                                     std::vector<Matrix> transforms_before,
+                                     std::vector<Matrix> transforms_after)
+{
+    // Add undo action
+    auto scene = g_project->getSceneViewFilename();
+
+    oActionManager->addAction("Rotate", [=]()
+    {
+        if (!g_project->openScene(scene)) return; // This shouldn't happen
+        for (int i = 0, len = (int)entities.size(); i < len; ++i)
+        {
+            const auto& entity      = entities[i];
+            auto&       transform   = transforms_after[i];
+            entity->setWorldTransform(transform);
+        }
+    }, [=]()
+    {
+        if (!g_project->openScene(scene)) return; // This shouldn't happen
+        for (int i = 0, len = (int)entities.size(); i < len; ++i)
+        {
+            const auto& entity      = entities[i];
+            auto&       transform   = transforms_before[i];
+            entity->setWorldTransform(transform);
+        }
+    });
+}
+
 void Gizmo2DContext::doMoveLogic(const std::vector<EntityRef>& entities, GUIContext* ctx)
 {
     ctx->cursor_type = eUICursorType::SizeAll;
 
     auto transforms_after = move_ctx.entity_transforms_on_down;
-    auto diff             = mouse_pos - move_ctx.mouse_pos_on_down;
+    auto diff             = mouse_pos - move_ctx.world_mouse_pos_on_down;
     for (int i = 0, len = (int)entities.size(); i < len; ++i)
     {
         const auto& entity      = entities[i];
         auto&       transform   = transforms_after[i];
 
         transform.Translation(transform.Translation() + Vector3(diff));
-        entity->setLocalTransform(transform);
+        entity->setWorldTransform(transform);
     }
 
     if (ctx->left_button.clicked)
     {
         state               = eGizmo2DState::None;
         ctx->cursor_type    = eUICursorType::Arrow;
+        applyTransforms(entities, move_ctx.entity_transforms_on_down, transforms_after);
+    }
+}
 
-        // Add undo action
-        auto entities_copy      = entities;
-        auto transforms_before  = move_ctx.entity_transforms_on_down;
-        auto scene              = g_project->getSceneViewFilename();
+void Gizmo2DContext::doRotateLogic(const std::vector<EntityRef>& entities, GUIContext* ctx)
+{
+    ctx->cursor_type = getRotCursorForDir(mouse_pos - rotate_ctx.world_center);
 
-        oActionManager->addAction("Move", [=]()
-        {
-            if (!g_project->openScene(scene)) return; // This shouldn't happen
-            for (int i = 0, len = (int)entities_copy.size(); i < len; ++i)
-            {
-                const auto& entity      = entities[i];
-                auto&       transform   = transforms_after[i];
-                entity->setLocalTransform(transform);
-            }
-        }, [=]()
-        {
-            if (!g_project->openScene(scene)) return; // This shouldn't happen
-            for (int i = 0, len = (int)entities_copy.size(); i < len; ++i)
-            {
-                const auto& entity      = entities[i];
-                auto&       transform   = transforms_before[i];
-                entity->setLocalTransform(transform);
-            }
-        });
+    auto angle_before = Vector2::Angle(rotate_ctx.world_center, rotate_ctx.world_mouse_pos_on_down);
+    auto angle_after  = Vector2::Angle(rotate_ctx.world_center, mouse_pos);
+    auto angle_diff   = angle_after - angle_before;
 
-        return;
+    auto transforms_after = rotate_ctx.entity_transforms_on_down;
+    for (int i = 0, len = (int)entities.size(); i < len; ++i)
+    {
+        const auto& entity      = entities[i];
+        auto&       transform   = transforms_after[i];
+
+        transform *= Matrix::CreateTranslation(-rotate_ctx.world_center);
+        transform *= Matrix::CreateRotationZ(angle_diff);
+        transform *= Matrix::CreateTranslation(rotate_ctx.world_center);
+        entity->setWorldTransform(transform);
+    }
+
+    if (ctx->left_button.clicked)
+    {
+        state               = eGizmo2DState::None;
+        ctx->cursor_type    = eUICursorType::Arrow;
+        applyTransforms(entities, rotate_ctx.entity_transforms_on_down, transforms_after);
     }
 }
 
@@ -174,6 +211,10 @@ void Gizmo2DContext::drawSelected(const std::vector<EntityRef>& entities, GUICon
     if (state == eGizmo2DState::Move)
     {
         doMoveLogic(entities, ctx);
+    }
+    else if (state == eGizmo2DState::Rotate)
+    {
+        doRotateLogic(entities, ctx);
     }
 
     // We handle things differently if there is only 1 entity selected vs many
@@ -213,7 +254,7 @@ void Gizmo2DContext::drawSelected(const std::vector<EntityRef>& entities, GUICon
                     if (ctx->left_button.just_down)
                     {
                         state = eGizmo2DState::Move;
-                        move_ctx.mouse_pos_on_down = mouse_pos;
+                        move_ctx.world_mouse_pos_on_down = mouse_pos;
                         move_ctx.entity_transforms_on_down.clear();
                         for (const auto& entity : entities)
                         {
@@ -223,10 +264,28 @@ void Gizmo2DContext::drawSelected(const std::vector<EntityRef>& entities, GUICon
                 }
                 else if (desired_cursor == eUICursorType::Arrow)
                 {
-                    if (single_select_rect.Grow(100.0f * scale).Contains(local_mouse_pos))
+                    auto rotate_rect = single_select_rect.Grow(100.0f * scale);
+                    if (rotate_rect.Contains(local_mouse_pos))
                     {
-                        auto dir = local_mouse_pos - single_select_rect.Center();
+                        auto world_center = (single_select_corners[0] + 
+                                             single_select_corners[1] + 
+                                             single_select_corners[2] + 
+                                             single_select_corners[3]) * 0.25f;
+                        auto dir = mouse_pos - world_center;
                         ctx->cursor_type = getRotCursorForDir(dir);
+
+                        if (ctx->left_button.just_down)
+                        {
+                            state = eGizmo2DState::Rotate;
+                            rotate_ctx.world_mouse_pos_on_down = mouse_pos;
+                            rotate_ctx.world_center = world_center;
+                            rotate_ctx.local_center = Vector2::Transform(rotate_ctx.world_center, inv_select_transform);
+                            rotate_ctx.entity_transforms_on_down.clear();
+                            for (const auto& entity : entities)
+                            {
+                                rotate_ctx.entity_transforms_on_down.push_back(entity->getWorldTransform());
+                            }
+                        }
                     }
                 }
             }

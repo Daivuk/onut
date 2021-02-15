@@ -28,6 +28,7 @@ void initSettings()
     oSettings->setIsEditorMode(true);
     oSettings->setStartMaximized(true);
     oSettings->setIsFixedStep(false);
+    oSettings->setShowOnScreenLog(true);
 }
 
 void init()

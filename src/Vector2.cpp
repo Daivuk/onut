@@ -22,6 +22,14 @@ Vector3 Vector2::Cross(const Vector2& V) const
     return Vector3(0, 0, (x * V.y) - (y * V.x));
 }
 
+float Vector2::Angle(const Vector2& from, const Vector2& to)
+{
+    if (from == to) return 0.0f;
+    auto dir = to - from;
+    auto rad = std::atan2f(dir.y, dir.x);
+    return rad;
+}
+
 void Vector2::Transform(const Vector2& v, const Matrix& m, Vector2& result)
 {
     float w = 0.0f;
