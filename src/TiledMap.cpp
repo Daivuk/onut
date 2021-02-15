@@ -759,7 +759,7 @@ namespace onut
             oSpriteBatch->end();
             // Preserve previously set pixel shader
             pPreviousPS = oRenderer->renderStates.pixelShader;
-            oRenderer->setupFor2D(oSpriteBatch->getTransform() * getTransform());
+            oRenderer->setupFor2D(getTransform() * oSpriteBatch->getTransform());
             oRenderer->renderStates.pixelShader = pPreviousPS;
         }
         else

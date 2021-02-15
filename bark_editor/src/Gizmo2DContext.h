@@ -54,7 +54,6 @@ public:
     {
         Vector2             world_mouse_pos_on_down;
         Vector2             world_center;
-        Vector2             local_center;
         std::vector<Matrix> entity_transforms_on_down;
     } rotate_ctx;
 

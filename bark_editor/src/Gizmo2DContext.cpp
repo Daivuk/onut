@@ -226,10 +226,10 @@ void Gizmo2DContext::drawSelected(const std::vector<EntityRef>& entities, GUICon
         right.Normalize();
         down.Normalize();
 
-        // Draw grab handles
         eUICursorType desired_cursor = eUICursorType::Arrow;
         if (state != eGizmo2DState::Move && state != eGizmo2DState::Rotate)
         {
+            // Draw grab handles
             oSpriteBatch->begin(transform);
             drawHandle(single_select_corners[0], -right - down, &desired_cursor);
             drawHandle((single_select_corners[0] + single_select_corners[1]) * 0.5f, -right, &desired_cursor);
@@ -279,7 +279,6 @@ void Gizmo2DContext::drawSelected(const std::vector<EntityRef>& entities, GUICon
                             state = eGizmo2DState::Rotate;
                             rotate_ctx.world_mouse_pos_on_down = mouse_pos;
                             rotate_ctx.world_center = world_center;
-                            rotate_ctx.local_center = Vector2::Transform(rotate_ctx.world_center, inv_select_transform);
                             rotate_ctx.entity_transforms_on_down.clear();
                             for (const auto& entity : entities)
                             {
@@ -300,21 +299,62 @@ void Gizmo2DContext::drawSelected(const std::vector<EntityRef>& entities, GUICon
             Vector2(multi_select_maxs.x, multi_select_mins.y)
         };
 
-        for (int i = 0; i < 4; ++i)
+        if (state != eGizmo2DState::Rotate)
         {
-            const auto& p1 = corners[i];
-            const auto& p2 = corners[(i + 1) % 4];
+            for (int i = 0; i < 4; ++i)
+            {
+                const auto& p1 = corners[i];
+                const auto& p2 = corners[(i + 1) % 4];
 
-            pb->draw(p1, Color(1, 1, 0, 1), p1 * inv_scale);
-            pb->draw(p2, Color(1, 1, 0, 1), p2 * inv_scale);
+                pb->draw(p1, Color(1, 1, 0, 1), p1 * inv_scale);
+                pb->draw(p2, Color(1, 1, 0, 1), p2 * inv_scale);
+            }
         }
 
-        if (ctx->rect.Contains(ctx->mouse))
+        eUICursorType desired_cursor = eUICursorType::Arrow;
+        if (state != eGizmo2DState::Move && state != eGizmo2DState::Rotate)
         {
-            ctx->cursor_type = eUICursorType::Arrow;
-            if (Rect(multi_select_mins, multi_select_maxs - multi_select_mins).Contains(mouse_pos))
+            if (ctx->rect.Contains(ctx->mouse))
             {
-                ctx->cursor_type = eUICursorType::SizeAll;
+                auto multi_rect = Rect(multi_select_mins, multi_select_maxs - multi_select_mins);
+                ctx->cursor_type = eUICursorType::Arrow;
+                if (multi_rect.Contains(mouse_pos))
+                {
+                    ctx->cursor_type = eUICursorType::SizeAll;
+
+                    if (ctx->left_button.just_down)
+                    {
+                        state = eGizmo2DState::Move;
+                        move_ctx.world_mouse_pos_on_down = mouse_pos;
+                        move_ctx.entity_transforms_on_down.clear();
+                        for (const auto& entity : entities)
+                        {
+                            move_ctx.entity_transforms_on_down.push_back(entity->getWorldTransform());
+                        }
+                    }
+                }
+                else if (desired_cursor == eUICursorType::Arrow)
+                {
+                    auto rotate_rect = multi_rect.Grow(100.0f * scale);
+                    if (rotate_rect.Contains(mouse_pos))
+                    {
+                        auto world_center = rotate_rect.Center();
+                        auto dir = mouse_pos - world_center;
+                        ctx->cursor_type = getRotCursorForDir(dir);
+
+                        if (ctx->left_button.just_down)
+                        {
+                            state = eGizmo2DState::Rotate;
+                            rotate_ctx.world_mouse_pos_on_down = mouse_pos;
+                            rotate_ctx.world_center = world_center;
+                            rotate_ctx.entity_transforms_on_down.clear();
+                            for (const auto& entity : entities)
+                            {
+                                rotate_ctx.entity_transforms_on_down.push_back(entity->getWorldTransform());
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -44,6 +44,8 @@ void TiledMapRendererComponent::render(onut::RenderStates& rs, OSpriteBatch* sb)
 {
     if (!tiledMap) return;
 
+    sb->flush();
+
     rs.sampleFiltering = smooth ? OFilterLinear : OFilterNearest;
     rs.blendMode = (onut::BlendMode)blendMode;
 
