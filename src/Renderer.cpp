@@ -31,6 +31,7 @@ namespace onut
         projection = Matrix::Identity;
         view = Matrix::Identity;
         world = Matrix::Identity;
+        wireframe = false;
         depthEnabled = false;
         depthWrite = false;
         backFaceCull = false;
@@ -61,6 +62,7 @@ namespace onut
         projection = other.projection;
         view = other.view;
         world = other.world;
+        wireframe = other.wireframe;
         depthEnabled = other.depthEnabled;
         depthWrite = other.depthWrite;
         backFaceCull = other.backFaceCull;
@@ -87,6 +89,7 @@ namespace onut
         projection = other.projection;
         view = other.view;
         world = other.world;
+        wireframe = other.wireframe;
         depthEnabled = other.depthEnabled;
         depthWrite = other.depthWrite;
         backFaceCull = other.backFaceCull;
@@ -115,6 +118,7 @@ namespace onut
         projection.reset();
         view.reset();
         world.reset();
+        wireframe.reset();
         depthEnabled.reset();
         depthWrite.reset();
         backFaceCull.reset();

@@ -366,6 +366,62 @@ namespace onut
             };
             ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[3]); // Scissor, backface cull
             assert(ret == S_OK);
+            rasterizerDesc = D3D11_RASTERIZER_DESC{
+                D3D11_FILL_WIREFRAME,
+                D3D11_CULL_NONE,
+                false,
+                0,
+                0.f,
+                0.f,
+                false,
+                false,
+                false,
+                false
+            };
+            ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[4]); // No Scissor, wired
+            assert(ret == S_OK);
+            rasterizerDesc = D3D11_RASTERIZER_DESC{
+                D3D11_FILL_WIREFRAME,
+                D3D11_CULL_NONE,
+                false,
+                0,
+                0.f,
+                0.f,
+                false,
+                true,
+                false,
+                false
+            };
+            ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[5]); // Scissor, wired
+            assert(ret == S_OK);
+            rasterizerDesc = D3D11_RASTERIZER_DESC{
+                D3D11_FILL_WIREFRAME,
+                D3D11_CULL_BACK,
+                true,
+                0,
+                0.f,
+                0.f,
+                false,
+                false,
+                false,
+                false
+            };
+            ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[6]); // No Scissor, backface cull, wired
+            assert(ret == S_OK);
+            rasterizerDesc = D3D11_RASTERIZER_DESC{
+                D3D11_FILL_WIREFRAME,
+                D3D11_CULL_BACK,
+                true,
+                0,
+                0.f,
+                0.f,
+                false,
+                true,
+                false,
+                false
+            };
+            ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[7]); // Scissor, backface cull, wired
+            assert(ret == S_OK);
         }
 
         // Depth stencil state
@@ -627,32 +683,19 @@ namespace onut
         }
 
         // Scissor enabled
-        if (renderStates.scissorEnabled.isDirty() || renderStates.backFaceCull.isDirty())
+        if (renderStates.scissorEnabled.isDirty() || 
+            renderStates.backFaceCull.isDirty() || 
+            renderStates.wireframe.isDirty())
         {
-            if (renderStates.backFaceCull.get())
-            {
-                if (renderStates.scissorEnabled.get())
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[3]);
-                }
-                else
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[2]);
-                }
-            }
-            else
-            {
-                if (renderStates.scissorEnabled.get())
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[1]);
-                }
-                else
-                {
-                    m_pDeviceContext->RSSetState(m_pRasterizerStates[0]);
-                }
-            }
+            int index = renderStates.scissorEnabled.get() ? 1 : 0;
+            index += renderStates.backFaceCull.get() ? 2 : 0;
+            index += renderStates.wireframe.get() ? 4 : 0;
+
+            m_pDeviceContext->RSSetState(m_pRasterizerStates[index]);
+
             renderStates.scissorEnabled.resetDirty();
             renderStates.backFaceCull.resetDirty();
+            renderStates.wireframe.resetDirty();
         }
 
         // Scissor

@@ -131,6 +131,7 @@ namespace onut
         RenderState<Matrix> projection;
         RenderState<Matrix> view;
         RenderState<Matrix> world;
+        RenderState<bool> wireframe;
         RenderState<bool> depthEnabled;
         RenderState<bool> depthWrite;
         RenderState<bool> backFaceCull;

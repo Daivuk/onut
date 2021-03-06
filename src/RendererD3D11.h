@@ -66,7 +66,7 @@ namespace onut
         // Render states
         ID3D11BlendState* m_pBlendStates[static_cast<int>(BlendMode::COUNT)];
         ID3D11SamplerState* m_pSamplerStates[static_cast<int>(sample::Filtering::COUNT) * static_cast<int>(sample::AddressMode::COUNT)];
-        ID3D11RasterizerState* m_pRasterizerStates[4];
+        ID3D11RasterizerState* m_pRasterizerStates[8];
         ID3D11DepthStencilState* m_pDepthStencilStates[4];
 
         // Constant buffers
