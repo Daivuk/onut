@@ -73,6 +73,11 @@ struct Vector2
         }
     }
 
+    inline operator bool() const
+    {
+        return x != 0 || y != 0;
+    }
+
     // Comparison operators
     inline bool operator==(const Vector2& V) const
     {
