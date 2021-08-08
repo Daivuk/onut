@@ -18,6 +18,9 @@
 #include <fstream>
 #include <vector>
 
+#define MS_COUNT 4
+#define MS_QUALITY 0
+
 namespace onut
 {
     ORendererRef Renderer::create(const OWindowRef& pWindow)
@@ -81,7 +84,16 @@ namespace onut
         swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         swapChainDesc.OutputWindow = pWindow->getHandle();
-        swapChainDesc.SampleDesc.Count = 1;
+        if (oSettings->getAntiAliasing())
+        {
+            swapChainDesc.SampleDesc.Count = MS_COUNT;
+            swapChainDesc.SampleDesc.Quality = MS_QUALITY;
+        }
+        else
+        {
+            swapChainDesc.SampleDesc.Count = 1;
+            swapChainDesc.SampleDesc.Quality = 0;
+        }
         swapChainDesc.Windowed = true;
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -89,7 +101,7 @@ namespace onut
         auto result = D3D11CreateDeviceAndSwapChain(
             nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 
 #if _DEBUG
-            0,
+            D3D11_CREATE_DEVICE_DEBUG,
 #else
             0,
 #endif
@@ -135,8 +147,16 @@ namespace onut
         depthBufferDesc.MipLevels = 1;
         depthBufferDesc.ArraySize = 1;
         depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        depthBufferDesc.SampleDesc.Count = 1;
-        depthBufferDesc.SampleDesc.Quality = 0;
+        if (oSettings->getAntiAliasing())
+        {
+            depthBufferDesc.SampleDesc.Count = MS_COUNT;
+            depthBufferDesc.SampleDesc.Quality = MS_QUALITY;
+        }
+        else
+        {
+            depthBufferDesc.SampleDesc.Count = 1;
+            depthBufferDesc.SampleDesc.Quality = 0;
+        }
         depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
         depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
         depthBufferDesc.CPUAccessFlags = 0;
@@ -154,7 +174,14 @@ namespace onut
         D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
         memset(&depthStencilViewDesc, 0, sizeof(depthStencilViewDesc));
         depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        if (oSettings->getAntiAliasing())
+        {
+            depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+        }
+        else
+        {
+            depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        }
         depthStencilViewDesc.Texture2D.MipSlice = 0;
         result = m_pDevice->CreateDepthStencilView(pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView);
         if (result != S_OK)
@@ -319,7 +346,7 @@ namespace onut
                 0.f,
                 false,
                 false,
-                false,
+                oSettings->getAntiAliasing(),
                 false
             };
             ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[0]); // No Scissor
@@ -333,7 +360,7 @@ namespace onut
                 0.f,
                 false,
                 true,
-                false,
+                oSettings->getAntiAliasing(),
                 false
             };
             ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[1]); // Scissor
@@ -347,7 +374,7 @@ namespace onut
                 0.f,
                 false,
                 false,
-                false,
+                oSettings->getAntiAliasing(),
                 false
             };
             ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[2]); // No Scissor, backface cull
@@ -361,7 +388,7 @@ namespace onut
                 0.f,
                 false,
                 true,
-                false,
+                oSettings->getAntiAliasing(),
                 false
             };
             ret = m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerStates[3]); // Scissor, backface cull
@@ -591,17 +618,19 @@ namespace onut
             {
                 hasDirtyRT = true;
                 auto& pRenderTarget = renderStates.renderTargets[i].get();
-                ID3D11RenderTargetView* pRenderTargetView = m_pRenderTargetView;
                 if (pRenderTarget)
                 {
                     auto pRenderTargetD3D11 = ODynamicCast<OTextureD3D11>(pRenderTarget);
-                    pRenderTargetView = pRenderTargetD3D11->getD3DRenderTargetView();
+                    pRenderTargetD3D11->needResolve = true;
+
+                    // Making sure it's not also bound as a texture
                     for (int i = 0; i < RenderStates::MAX_TEXTURES; ++i)
                     {
                         if (m_boundTextures[i] == pRenderTarget)
                         {
                             ID3D11ShaderResourceView* pResourceView = nullptr;
                             m_pDeviceContext->PSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
+                            m_pDeviceContext->VSSetShaderResources(static_cast<UINT>(i), 1, &pResourceView);
                         }
                     }
                 }

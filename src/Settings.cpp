@@ -175,6 +175,11 @@ namespace onut
         m_autoLoadScripts = autoLoadScripts;
     }
 
+    void Settings::setAntiAliasing(bool antiAliasing)
+    {
+        m_antiAliasing = antiAliasing;
+    }
+
     void Settings::setUserSettingDefault(const std::string& key, const std::string& value)
     {
         std::lock_guard<std::mutex> locker(m_mutex);

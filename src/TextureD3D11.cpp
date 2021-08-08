@@ -16,6 +16,9 @@
 #include <cassert>
 #include <vector>
 
+#define MS_COUNT 4
+#define MS_QUALITY 0
+
 namespace onut
 {
     OTextureRef Texture::createRenderTarget(const Point& size, bool willUseFX, RenderTargetFormat format)
@@ -23,15 +26,62 @@ namespace onut
         auto pRet = std::shared_ptr<TextureD3D11>(new TextureD3D11());
         pRet->m_size = size;
         pRet->m_format = format;
-#if defined(WIN32)
+
+        // If anti-aliasing is enabled, create an extra texture to store resolved data
+        pRet->multiSampled = oSettings->getAntiAliasing();
+        if (pRet->multiSampled)
+        {
+            auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+            auto pDevice = pRendererD3D11->getDevice();
+
+            D3D11_TEXTURE2D_DESC textureDesc = {0};
+            HRESULT result;
+            D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+            D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+            memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
+            memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
+
+            textureDesc.Width = pRet->m_size.x;
+            textureDesc.Height = pRet->m_size.y;
+            textureDesc.MipLevels = 1;
+            textureDesc.ArraySize = 1;
+            textureDesc.Format = pRet->getDXGIFormat();
+            textureDesc.SampleDesc.Count = 1;
+            textureDesc.SampleDesc.Quality = 0;
+            textureDesc.Usage = D3D11_USAGE_DEFAULT;
+            textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+            textureDesc.CPUAccessFlags = 0;
+            textureDesc.MiscFlags = 0;
+
+            // Create the render target texture.
+            result = pDevice->CreateTexture2D(&textureDesc, NULL, &pRet->m_pResolvedTexture);
+            if (result != S_OK)
+            {
+                assert(false && "Failed CreateTexture2D");
+                return nullptr;
+            }
+
+            // Setup the description of the shader resource view.
+            shaderResourceViewDesc.Format = textureDesc.Format;
+            shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+            shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+            // Create the shader resource view.
+            result = pDevice->CreateShaderResourceView(pRet->m_pResolvedTexture, &shaderResourceViewDesc, &pRet->m_pResolvedTextureView);
+            if (result != S_OK)
+            {
+                assert(false && "Failed CreateShaderResourceView");
+                return nullptr;
+            }
+        }
+
         pRet->createRenderTargetViews(pRet->m_pTexture, pRet->m_pTextureView, pRet->m_pRenderTargetView);
         if (willUseFX)
         {
             pRet->createRenderTargetViews(pRet->m_pTextureFX, pRet->m_pTextureViewFX, pRet->m_pRenderTargetViewFX);
         }
-#else
-#error
-#endif
+
         pRet->m_type = Type::RenderTarget;
         return pRet;
     }
@@ -57,7 +107,6 @@ namespace onut
     {
         auto pRet = std::shared_ptr<TextureD3D11>(new TextureD3D11());
 
-#if defined(WIN32)
         ID3D11Texture2D* pTexture = NULL;
         ID3D11ShaderResourceView* pTextureView = NULL;
 
@@ -83,9 +132,6 @@ namespace onut
         pRet->m_size = size;
         pRet->m_pTextureView = pTextureView;
         pRet->m_pTexture = pTexture;
-#else
-#error
-#endif
         pRet->m_type = Type::Dynamic;
         return pRet;
     }
@@ -358,6 +404,7 @@ namespace onut
                 }
             }
         }
+
         return m_pRenderTargetView;
     }
 
@@ -365,6 +412,7 @@ namespace onut
     {
         auto pRendererD3D11 = ODynamicCast<ORendererD3D11>(oRenderer);
         pRendererD3D11->getDeviceContext()->ClearRenderTargetView(m_pRenderTargetView, &color.r);
+        needResolve = true;
     }
 
     void TextureD3D11::blur(float amount)
@@ -387,20 +435,28 @@ namespace onut
                 1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
             });
             amount -= 6.f;
+            
+            needResolve = true;
+            resolve();
 
             oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
             std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
             clearRenderTarget(Color::Transparent);
             oRenderer->drawBlurH();
-            std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+            std::swap(m_pTextureView, m_pTextureViewFX);
+            std::swap(m_pTexture, m_pTextureFX);
+
+            needResolve = true;
+            resolve();
 
             oRenderer->renderStates.renderTargets[0].forceDirty();
             oRenderer->renderStates.textures[0].forceDirty();
-            std::swap(m_pTextureView, m_pTextureViewFX);
+            std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
             clearRenderTarget(Color::Transparent);
             oRenderer->drawBlurV();
             std::swap(m_pTextureView, m_pTextureViewFX);
+            std::swap(m_pTexture, m_pTextureFX);
 
             i += 1;
         }
@@ -424,6 +480,7 @@ namespace onut
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        needResolve = true;
         clearRenderTarget(Color::Transparent);
 
         oRenderer->setSepia(tone, saturation, sepiaAmount);
@@ -446,12 +503,16 @@ namespace onut
             createRenderTargetViews(m_pTextureFX, m_pTextureViewFX, m_pRenderTargetViewFX);
         }
 
+        //needResolve = true;
+        //resolve();
+
         oRenderer->renderStates.viewport.push({0, 0, m_size.x, m_size.y});
         oRenderer->renderStates.renderTargets[0].push(shared_from_this());
         oRenderer->renderStates.renderTargets[0].forceDirty();
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        needResolve = true;
         clearRenderTarget(Color::Transparent);
 
         oRenderer->setCRT(getSizef());
@@ -480,6 +541,7 @@ namespace onut
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        needResolve = true;
         clearRenderTarget(Color::Transparent);
 
         oRenderer->setCartoon(tone);
@@ -508,6 +570,7 @@ namespace onut
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         std::swap(m_pRenderTargetView, m_pRenderTargetViewFX);
+        needResolve = true;
         clearRenderTarget(Color::Transparent);
 
         oRenderer->setVignette({
@@ -525,6 +588,24 @@ namespace onut
         oRenderer->renderStates.textures[0].pop();
     }
 
+    DXGI_FORMAT TextureD3D11::getDXGIFormat()
+    {
+        switch (m_format)
+        {
+            case RenderTargetFormat::R8: return DXGI_FORMAT_R8_UNORM;
+            case RenderTargetFormat::RG8: return DXGI_FORMAT_R8G8_UNORM;
+            case RenderTargetFormat::RGBA8: return DXGI_FORMAT_R8G8B8A8_UNORM;
+            case RenderTargetFormat::R16: return DXGI_FORMAT_R16_UNORM;
+            case RenderTargetFormat::RG16: return DXGI_FORMAT_R16G16_UNORM;
+            case RenderTargetFormat::RGBA16: return DXGI_FORMAT_R16G16B16A16_UNORM;
+            case RenderTargetFormat::R32: return DXGI_FORMAT_R32_FLOAT;
+            case RenderTargetFormat::RG32: return DXGI_FORMAT_R32G32_FLOAT;
+            case RenderTargetFormat::RGBA32: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+            case RenderTargetFormat::RGB10A2: return DXGI_FORMAT_R10G10B10A2_UNORM;
+            default: return DXGI_FORMAT_R8G8B8A8_UNORM;
+        };
+    }
+
     void TextureD3D11::createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView)
     {
         auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
@@ -537,26 +618,22 @@ namespace onut
         memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
         memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
 
-        // Setup the render target texture description.
+        // Create Multisampled texture.
         textureDesc.Width = m_size.x;
         textureDesc.Height = m_size.y;
         textureDesc.MipLevels = 1;
         textureDesc.ArraySize = 1;
-        switch (m_format)
+        textureDesc.Format = getDXGIFormat();
+        if (multiSampled)
         {
-            case RenderTargetFormat::R8: textureDesc.Format = DXGI_FORMAT_R8_UNORM; break;
-            case RenderTargetFormat::RG8: textureDesc.Format = DXGI_FORMAT_R8G8_UNORM; break;
-            case RenderTargetFormat::RGBA8: textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
-            case RenderTargetFormat::R16: textureDesc.Format = DXGI_FORMAT_R16_UNORM; break;
-            case RenderTargetFormat::RG16: textureDesc.Format = DXGI_FORMAT_R16G16_UNORM; break;
-            case RenderTargetFormat::RGBA16: textureDesc.Format = DXGI_FORMAT_R16G16B16A16_UNORM; break;
-            case RenderTargetFormat::R32: textureDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
-            case RenderTargetFormat::RG32: textureDesc.Format = DXGI_FORMAT_R32G32_FLOAT; break;
-            case RenderTargetFormat::RGBA32: textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
-            case RenderTargetFormat::RGB10A2: textureDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; break;
-            default: textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
-        };
-        textureDesc.SampleDesc.Count = 1;
+            textureDesc.SampleDesc.Count = MS_COUNT;
+            textureDesc.SampleDesc.Quality = MS_QUALITY;
+        }
+        else
+        {
+            textureDesc.SampleDesc.Count = 1;
+            textureDesc.SampleDesc.Quality = 0;
+        }
         textureDesc.Usage = D3D11_USAGE_DEFAULT;
         textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
         textureDesc.CPUAccessFlags = 0;
@@ -572,7 +649,14 @@ namespace onut
 
         // Setup the description of the render target view.
         renderTargetViewDesc.Format = textureDesc.Format;
-        renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        if (multiSampled)
+        {
+            renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+        }
+        else
+        {
+            renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        }
         renderTargetViewDesc.Texture2D.MipSlice = 0;
 
         // Create the render target view.
@@ -583,18 +667,48 @@ namespace onut
             return;
         }
 
-        // Setup the description of the shader resource view.
-        shaderResourceViewDesc.Format = textureDesc.Format;
-        shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-        shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-        // Create the shader resource view.
-        result = pDevice->CreateShaderResourceView(pTexture, &shaderResourceViewDesc, &pTextureView);
-        if (result != S_OK)
+        // Only create a shader view if non-antialiasing, otherwise we will use resolved view.
+        if (!multiSampled)
         {
-            assert(false && "Failed CreateShaderResourceView");
-            return;
+            shaderResourceViewDesc.Format = textureDesc.Format;
+            shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+            shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+            // Create the shader resource view.
+            result = pDevice->CreateShaderResourceView(pTexture, &shaderResourceViewDesc, &pTextureView);
+            if (result != S_OK)
+            {
+                assert(false && "Failed CreateShaderResourceView");
+                return;
+            }
+        }
+    }
+
+    void TextureD3D11::resolve()
+    {
+        if (needResolve)
+        {
+            needResolve = false;
+            if (multiSampled)
+            {
+                auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+                auto pDeviceContext = pRendererD3D11->getDeviceContext();
+                pDeviceContext->ResolveSubresource(m_pResolvedTexture, 0, m_pTexture, 0, getDXGIFormat());
+            }
+        }
+    }
+
+    ID3D11ShaderResourceView* TextureD3D11::getD3DResourceView()
+    {
+        if (multiSampled)
+        {
+            resolve();
+            return m_pResolvedTextureView;
+        }
+        else
+        {
+            return m_pTextureView;
         }
     }
 }

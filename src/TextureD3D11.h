@@ -22,7 +22,7 @@ namespace onut
         ~TextureD3D11();
 
         ID3D11Texture2D* getD3DTexture() const { return m_pTexture; }
-        ID3D11ShaderResourceView* getD3DResourceView() const { return m_pTextureView; }
+        ID3D11ShaderResourceView* getD3DResourceView();
         ID3D11RenderTargetView* getD3DRenderTargetView();
 
         void clearRenderTarget(const Color& color) override;
@@ -44,15 +44,25 @@ namespace onut
 
     private:
         friend Texture;
+        friend RendererD3D11;
 
         void createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView);
+        DXGI_FORMAT getDXGIFormat();
+        void resolve();
+
+        ID3D11Texture2D* m_pResolvedTexture = nullptr; // Used for Multisample only
+        ID3D11ShaderResourceView* m_pResolvedTextureView = nullptr;
 
         ID3D11Texture2D* m_pTexture = nullptr;
         ID3D11ShaderResourceView* m_pTextureView = nullptr;
         ID3D11RenderTargetView* m_pRenderTargetView = nullptr;
+
         ID3D11Texture2D* m_pTextureFX = nullptr;
         ID3D11ShaderResourceView* m_pTextureViewFX = nullptr;
         ID3D11RenderTargetView* m_pRenderTargetViewFX = nullptr;
+
+        bool needResolve = false;
+        bool multiSampled = false;
     };
 }
 

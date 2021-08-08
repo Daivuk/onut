@@ -397,6 +397,7 @@ namespace onut
     {
         renderStates.depthEnabled = false;
         renderStates.scissorEnabled = false;
+        renderStates.backFaceCull = false;
         renderStates.blendMode = BlendMode::Opaque;
         renderStates.sampleFiltering = OFilterLinear;
         renderStates.sampleAddressMode = OTextureClamp;

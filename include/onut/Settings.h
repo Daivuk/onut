@@ -83,6 +83,9 @@ namespace onut
         bool getAutoLoadScripts() const { return m_autoLoadScripts; }
         void setAutoLoadScripts(bool autoLoadScripts);
 
+        bool getAntiAliasing() const { return m_antiAliasing; }
+        void setAntiAliasing(bool antiAliasing);
+
     private:
         using UserSettings = std::unordered_map<SettingKey, SettingValue>;
 
@@ -103,6 +106,7 @@ namespace onut
         int m_matchMakingPort = 4444;
         bool m_showFPS = true;
         bool m_autoLoadScripts = true;
+        bool m_antiAliasing = false;
 
         std::atomic<bool> m_isDirty;
         std::atomic<bool> m_isRunning;
