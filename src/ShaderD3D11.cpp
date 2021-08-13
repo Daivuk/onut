@@ -380,12 +380,13 @@ namespace onut
 
                 UINT uniformSize = 4;
                 if (parsedUniform.type == VarType::Matrix) uniformSize = 16;
+                uniformSize *= parsedUniform.count;
 
                 D3D11_BUFFER_DESC cbDesc = CD3D11_BUFFER_DESC(uniformSize * 4, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 auto ret = pDevice->CreateBuffer(&cbDesc, NULL, &(uniform.pBuffer));
                 assert(ret == S_OK);
 
-                source += "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + getTypeName(parsedUniform.type) + " " + uniform.name + ";\n}\n\n";
+                source += "cbuffer cb_" + uniform.name + " : register(b" + std::to_string(uniformId) + ")\n{\n    " + getTypeName(parsedUniform.type) + " " + uniform.name + (parsedUniform.count > 1 ? ("[" + std::to_string(parsedUniform.count) + "]") : "") + ";\n}\n\n";
 
                 uniforms.push_back(uniform);
                 ++uniformId;

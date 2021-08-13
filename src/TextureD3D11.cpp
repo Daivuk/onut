@@ -415,7 +415,7 @@ namespace onut
         needResolve = true;
     }
 
-    void TextureD3D11::blur(float amount)
+    void TextureD3D11::blur(float amountX, float amountY)
     {
         if (!m_pRenderTargetView) return; // Not a render target
         if (!m_pRenderTargetViewFX)
@@ -428,12 +428,18 @@ namespace onut
         oRenderer->renderStates.textures[0].push(shared_from_this());
 
         int i = 0;
+        if (amountY == -1.0f) amountY = amountX;
+        float amount = std::max(amountX, amountY);
+        float ratioX = amountX / amount;
+        float ratioY = amountY / amount;
         while (amount > 0.f)
         {
             oRenderer->setKernelSize({
-                1.f / static_cast<float>(m_size.x) * ((float)i + amount) / 6,
-                1.f / static_cast<float>(m_size.y) * ((float)i + amount) / 6
+                1.f / static_cast<float>(m_size.x) * ((float)i + amountX) / 6,
+                1.f / static_cast<float>(m_size.y) * ((float)i + amountY) / 6
             });
+            amountX -= 6.f * ratioX;
+            amountY -= 6.f * ratioY;
             amount -= 6.f;
             
             needResolve = true;

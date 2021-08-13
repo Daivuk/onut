@@ -50,7 +50,7 @@ namespace onut
         virtual void clearRenderTarget(const Color& color) = 0;
 
         // Apply effects. It will only work if the texture is a render target
-        virtual void blur(float amount = 16.f) = 0; // Blur radius
+        virtual void blur(float amountX = 16.f, float amountY = -1.0f) = 0; // Blur radius
         virtual void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
                            float saturation = 0, // 0 - 1
                            float sepiaAmount = .75f) = 0; // 0 - 1

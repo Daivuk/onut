@@ -473,12 +473,6 @@ namespace onut
             oRenderer->renderStates.blendMode.push(OBlendOpaque);
             oRenderer->renderStates.sampleFiltering.push(OFilterNearest);
             oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
-
-            // Show the log
-            if (oSettings->getShowOnScreenLog())
-            {
-                onut::drawLog();
-            }
             oSpriteBatch->end();
             oRenderer->renderStates.blendMode.pop();
             oRenderer->renderStates.sampleFiltering.pop();
@@ -487,6 +481,19 @@ namespace onut
             {
                 postRenderCallback();
             }
+
+            // Show the log
+            if (oSettings->getShowOnScreenLog())
+            {
+                oRenderer->renderStates.blendMode.push(OBlendOpaque);
+                oRenderer->renderStates.sampleFiltering.push(OFilterNearest);
+                oSpriteBatch->begin();
+                onut::drawLog();
+                oSpriteBatch->end();
+                oRenderer->renderStates.blendMode.pop();
+                oRenderer->renderStates.sampleFiltering.pop();
+            }
+
             
             if (oSettings->getShowFPS())
             {

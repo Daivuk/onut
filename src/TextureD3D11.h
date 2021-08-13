@@ -28,7 +28,7 @@ namespace onut
         void clearRenderTarget(const Color& color) override;
 
         // Apply effects. It will only work if the texture is a render target
-        void blur(float amount = 16.f) override; // Blur radius
+        void blur(float amountX = 16.f, float amountY = -1.0f) override; // Blur radius
         void sepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55
                            float saturation = 0, // 0 - 1
                            float sepiaAmount = .75f) override; // 0 - 1
