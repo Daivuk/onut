@@ -83,6 +83,10 @@ namespace onut
 
     AudioEngineWASAPI::~AudioEngineWASAPI()
     {
+        {
+            std::lock_guard<std::mutex> locker(m_instancesMutex);
+            m_instances.clear();
+        }
         m_isRunning = false;
         if (m_thread.joinable()) m_thread.join();
 

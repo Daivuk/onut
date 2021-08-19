@@ -54,6 +54,9 @@ namespace onut
                           bool snapPixels = true,
                           const OSpriteBatchRef& pSpriteBatch = nullptr);
 
+        bool hatColoringEnabled = true;
+        char coloringChar = '^';
+
     private:
         struct fntCommon
         {

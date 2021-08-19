@@ -170,7 +170,7 @@ namespace onut
                 curX = 0;
                 continue;
             }
-            if (charId == '^')
+            if (hatColoringEnabled && charId == coloringChar)
             {
                 getNextUTF8(in_text.c_str(), i, len);
                 getNextUTF8(in_text.c_str(), i, len);
@@ -238,7 +238,7 @@ namespace onut
                 curX = 0;
                 continue;
             }
-            if (charId == '^')
+            if (hatColoringEnabled && charId == coloringChar)
             {
                 getNextUTF8(in_text.c_str(), i, len);
                 getNextUTF8(in_text.c_str(), i, len);
@@ -284,7 +284,7 @@ namespace onut
             {
                 return pos;
             }
-            if (charId == '^')
+            if (hatColoringEnabled && charId == coloringChar)
             {
                 charId = getNextUTF8(in_text.c_str(), pos, len);
                 charId = getNextUTF8(in_text.c_str(), pos, len);
@@ -382,7 +382,7 @@ namespace onut
                 curPos.y += static_cast<float>(m_common.lineHeight);
                 continue;
             }
-            if (charId == '^' && i + 3 < len)
+            if (hatColoringEnabled && charId == coloringChar && i + 3 < len)
             {
                 // Colored text!
                 r = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
@@ -483,7 +483,7 @@ namespace onut
                 curPos.y += static_cast<float>(m_common.lineHeight);
                 continue;
             }
-            if (charId == '^' && i + 3 < len)
+            if (hatColoringEnabled && charId == coloringChar && i + 3 < len)
             {
                 // Colored text!
                 r = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;
@@ -526,7 +526,7 @@ namespace onut
             // Transform from char to utf8
             uint32_t charId = getNextUTF8(text.c_str(), i, len);
 
-            if (charId == '^' && i + 3 < len)
+            if (hatColoringEnabled && charId == coloringChar && i + 3 < len)
             {
                 // Colored text!
                 r = (static_cast<float>(getNextUTF8(text.c_str(), i, len)) - static_cast<float>('0')) / 9.0f;

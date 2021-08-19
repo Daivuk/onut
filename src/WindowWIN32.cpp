@@ -335,7 +335,7 @@ namespace onut
         }
         else
         {
-            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+            while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
             {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);

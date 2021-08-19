@@ -21,6 +21,7 @@ namespace onut
 {
     enum class WriteFunc : uintptr_t
     {
+        None = 0x00,
         Backspace = 0x08,
         Linefeed = 0x0A,
         Escape = 0x1B,
