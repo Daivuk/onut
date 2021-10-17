@@ -807,6 +807,7 @@ declare class Font {
     static createFromFile(filename: string): Font;
 
     measure(text: string): Vector2;
+    setTextColoring(enabled: boolean);
 }
 /** Same as Font.createFromFile */
 declare function getFont(filename: string): Font;
@@ -1642,7 +1643,10 @@ declare enum SSAOQuality {
 }
 
 declare enum WriteFunc {
-    NONE, BACKSPACE, LINEFEED, ESCAPE, TAB, CARIAGE_RETURN
+    NONE, BACKSPACE, LINEFEED, ESCAPE, TAB, CARIAGE_RETURN, 
+    END, HOME, 
+    LEFT, UP, RIGHT, DOWN,
+    DELETE
 }
 
 declare namespace System {

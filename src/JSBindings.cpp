@@ -3380,6 +3380,21 @@ namespace onut
             }, 1);
             duk_put_prop_string(ctx, -2, "measure");
 
+            // Set weather we use ^ for font coloring or not
+            duk_push_c_function(ctx, [](duk_context *ctx)->duk_ret_t
+            {
+                auto enabled = JS_BOOL(0);
+                duk_push_this(ctx);
+                duk_get_prop_string(ctx, -1, "\xff""\xff""data");
+                auto ppFont = (OFontRef*)duk_to_pointer(ctx, -1);
+                if (ppFont)
+                {
+                    (*ppFont)->hatColoringEnabled = enabled;
+                }
+                return 0;
+            }, 1);
+            duk_put_prop_string(ctx, -2, "setTextColoring");
+
             // Done with the object
             pFontPrototype = duk_get_heapptr(ctx, -1);
             duk_put_prop_string(ctx, -2, "prototype");
@@ -11009,6 +11024,13 @@ namespace onut
                 JS_ENUM("ESCAPE", WriteFunc::Escape);
                 JS_ENUM("TAB", WriteFunc::Tab);
                 JS_ENUM("CARIAGE_RETURN", WriteFunc::CariageReturn);
+                JS_ENUM("END", WriteFunc::End);
+                JS_ENUM("HOME", WriteFunc::Home);
+                JS_ENUM("LEFT", WriteFunc::Left);
+                JS_ENUM("UP", WriteFunc::Up);
+                JS_ENUM("RIGHT", WriteFunc::Right);
+                JS_ENUM("DOWN", WriteFunc::Down);
+                JS_ENUM("DELETE", WriteFunc::Delete);
             }
             JS_INTERFACE_END("WriteFunc");
 

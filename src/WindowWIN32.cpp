@@ -127,6 +127,16 @@ namespace onut
                 if (oWindow->onKey)
                 {
                     oWindow->onKey(static_cast<uintptr_t>(wparam));
+                    if (wparam == VK_END || wparam == VK_HOME || 
+                        wparam == VK_LEFT || wparam == VK_UP || wparam == VK_RIGHT || wparam == VK_DOWN ||
+                        wparam == VK_DELETE)
+                    {
+                        if (oWindow->onWriteFunc)
+                        {
+                            oWindow->onWriteFunc((WriteFunc)wparam);
+                        }
+                        onut::js::onWriteFunc((int)wparam);
+                    }
                     return 0;
                 }
             }
