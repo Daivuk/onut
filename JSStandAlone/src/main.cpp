@@ -9,6 +9,7 @@
 
 void initSettings()
 {
+#if defined(DUK_USE_DEBUGGER_SUPPORT)
     extern bool g_enableDuktapeDebugger;
     for (auto it = OArguments.begin(); it != OArguments.end(); ++it)
     {
@@ -19,6 +20,7 @@ void initSettings()
             break;
         }
     }
+#endif
 
     std::string path = ".";
     if (!OArguments.empty()) path = OArguments.back();
@@ -126,6 +128,16 @@ void initSettings()
             {
                 value = onut::toUpper(value);
                 oSettings->setIsEditorMode(value == "TRUE" || value == "1" || value == "ON");
+            }
+            else if (what == "ANTIALIASING")
+            {
+                value = onut::toUpper(value);
+                oSettings->setAntiAliasing(value == "TRUE" || value == "1" || value == "ON");
+            }
+            else if (what == "STARTMAXIMIZED")
+            {
+                value = onut::toUpper(value);
+                oSettings->setStartMaximized(value == "TRUE" || value == "1" || value == "ON");
             }
         }
         fic.close();
