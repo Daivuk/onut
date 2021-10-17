@@ -1641,6 +1641,10 @@ declare enum SSAOQuality {
     LOW, MEDIUM, HIGH
 }
 
+declare enum WriteFunc {
+    NONE, BACKSPACE, LINEFEED, ESCAPE, TAB, CARIAGE_RETURN
+}
+
 declare namespace System {
     function getPlatform(): Platform;
     function setFullscreen(fullscreen: boolean);

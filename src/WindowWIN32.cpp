@@ -8,6 +8,7 @@
 // Internal
 #include "InputDeviceDI8.h"
 #include "WindowWIN32.h"
+#include "JSBindings.h"
 
 // Third party
 #include <windowsx.h>
@@ -102,15 +103,17 @@ namespace onut
                         {
                             oWindow->onWriteFunc((WriteFunc)wparam);
                         }
+                        onut::js::onWriteFunc((int)wparam);
                         break;
                     default:
+                        std::wstring wstr;
+                        wstr += (wchar_t)wparam;
+                        auto strUTF8 = onut::utf16ToUtf8(wstr);
                         if (oWindow->onWriteUTF8)
                         {
-                            std::wstring wstr;
-                            wstr += (wchar_t)wparam;
-                            auto strUTF8 = onut::utf16ToUtf8(wstr);
                             oWindow->onWriteUTF8(strUTF8);
                         }
+                        onut::js::onWriteString(strUTF8);
                         break;
                 }
             }

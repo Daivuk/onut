@@ -38,6 +38,7 @@ namespace onut
         void* pUpdatePtr = nullptr;
         void* pRenderPtr = nullptr;
         void* pRenderUIPtr = nullptr;
+        void* pWriteTextPtr = nullptr;
 
         // Prototypes heap pointers
         void* pVector2Prototype = nullptr;
@@ -530,6 +531,11 @@ namespace onut
                 if (duk_get_global_string(pContext, "renderUI"))
                 {
                     pRenderUIPtr = duk_get_heapptr(pContext, -1);
+                    duk_pop(pContext);
+                }
+                if (duk_get_global_string(pContext, "writeText"))
+                {
+                    pWriteTextPtr = duk_get_heapptr(pContext, -1);
                     duk_pop(pContext);
                 }
             }
@@ -10995,6 +11001,16 @@ namespace onut
                 JS_ENUM("HIGH", Deferred::SSAOQuality::HIGH);
             }
             JS_INTERFACE_END("SSAOQuality");
+            JS_INTERFACE_BEGIN();
+            {
+                JS_ENUM("NONE", WriteFunc::None);
+                JS_ENUM("BACKSPACE", WriteFunc::Backspace);
+                JS_ENUM("LINEFEED", WriteFunc::Linefeed);
+                JS_ENUM("ESCAPE", WriteFunc::Escape);
+                JS_ENUM("TAB", WriteFunc::Tab);
+                JS_ENUM("CARIAGE_RETURN", WriteFunc::CariageReturn);
+            }
+            JS_INTERFACE_END("WriteFunc");
 
             // System
             JS_INTERFACE_BEGIN();
@@ -11184,6 +11200,56 @@ namespace onut
                 {
                     logJSStack(pContext, "renderUI, call failed: ");
                     pRenderUIPtr = nullptr;
+                }
+                duk_pop(pContext);
+            }
+        }
+
+        void onWriteChar(char c)
+        {
+            if (pWriteTextPtr)
+            {
+                std::string text;
+                text += c;
+                duk_push_heapptr(pContext, pWriteTextPtr);
+                duk_push_string(pContext, text.c_str());
+                duk_push_int(pContext, (duk_int_t)0);
+                if (duk_pcall(pContext, 2) != 0)
+                {
+                    logJSStack(pContext, "writeText, call failed: ");
+                    pWriteTextPtr = nullptr;
+                }
+                duk_pop(pContext);
+            }
+        }
+
+        void onWriteFunc(int f)
+        {
+            if (pWriteTextPtr)
+            {
+                duk_push_heapptr(pContext, pWriteTextPtr);
+                duk_push_string(pContext, "");
+                duk_push_int(pContext, (duk_int_t)f);
+                if (duk_pcall(pContext, 2) != 0)
+                {
+                    logJSStack(pContext, "writeText, call failed: ");
+                    pWriteTextPtr = nullptr;
+                }
+                duk_pop(pContext);
+            }
+        }
+
+        void onWriteString(const std::string &s)
+        {
+            if (pWriteTextPtr)
+            {
+                duk_push_heapptr(pContext, pWriteTextPtr);
+                duk_push_string(pContext, s.c_str());
+                duk_push_int(pContext, (duk_int_t)0);
+                if (duk_pcall(pContext, 2) != 0)
+                {
+                    logJSStack(pContext, "writeText, call failed: ");
+                    pWriteTextPtr = nullptr;
                 }
                 duk_pop(pContext);
             }

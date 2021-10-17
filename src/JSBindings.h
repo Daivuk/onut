@@ -11,6 +11,9 @@ namespace onut
         void update(float dt);
         void render();
         void renderUI();
+        void onWriteChar(char c);
+        void onWriteFunc(int f);
+        void onWriteString(const std::string &s);
     }
 }
 
