@@ -17,11 +17,11 @@
 #include "Camera2DComponent.h"
 #include "SpriteRendererComponent.h"
 #include "globals.h"
-#include "Theme.h"
 
 #if !BARK_EDITOR
 #include <box2d/b2_world.h>
 #else
+#include "Theme.h"
 #include "Gizmo2DRenderer.h"
 #include "Gizmo2DContext.h"
 #endif

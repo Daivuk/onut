@@ -1,10 +1,10 @@
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
+#include <onut/Texture.h>
 #include "SpriteRendererComponent.h"
 #include "Entity.h"
 #include "TransformHelper.h"
 #if BARK_EDITOR
-#include <onut/Texture.h>
 #include "Gizmo2DContext.h"
 #endif
 

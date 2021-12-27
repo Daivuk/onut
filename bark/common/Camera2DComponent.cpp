@@ -8,6 +8,8 @@
 #include "Project.h"
 #include "JsonHelper.h"
 #include "Gizmo2DContext.h"
+#else
+#include <onut/Renderer.h>
 #endif
 
 void Camera2DComponent::onEnable()

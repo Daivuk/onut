@@ -1,5 +1,7 @@
 #include "Entity.h"
+#if BARK_EDITOR
 #include "GUIContext.h"
+#endif
 #include "SceneManager.h"
 #include "Component.h"
 
@@ -136,9 +138,11 @@ Json::Value Entity::serialize()
 
 void Entity::deserialize(const Json::Value& in_json)
 {
+#if BARK_EDITOR
     json = in_json;
+#endif
 
-    id   = getJson_uint64_t(json, "id", 0);
-    name = getJson_std_string(json, "name", "Entity");
-    setLocalTransform(getJson_Matrix(json, "transform"));
+    id   = getJson_uint64_t(in_json, "id", 0);
+    name = getJson_std_string(in_json, "name", "Entity");
+    setLocalTransform(getJson_Matrix(in_json, "transform"));
 }

@@ -2,11 +2,11 @@
 #include <onut/Renderer.h>
 #include <onut/SpriteBatch.h>
 #include <onut/SpriteAnim.h>
+#include <onut/Texture.h>
 #include "SpriteAnimRendererComponent.h"
 #include "Entity.h"
 #include "TransformHelper.h"
 #if BARK_EDITOR
-#include <onut/Texture.h>
 #include "Gizmo2DContext.h"
 #endif
 
@@ -142,7 +142,15 @@ Rect SpriteAnimRendererComponent::getWorldRect()
 #if !BARK_EDITOR
     if (!spriteAnimInstance) return Rect(Vector2(entity->getWorldTransform().Translation()), Vector2::Zero);
     // TODO
-    asdad asd sad sadsa
+    const auto &origin = spriteAnimInstance->getOrigin();
+    auto texture = spriteAnimInstance->getTexture();
+    const auto &uvs = spriteAnimInstance->getUVs();
+
+    Vector2 sizef = Vector2::One;
+    if (texture) sizef = texture->getSizef();
+    sizef.x *= uvs.z - uvs.x;
+    sizef.y *= uvs.w - uvs.y;
+
     return TransformHelper::getWorldRect(entity->getWorldTransform(), sizef, origin);
 #else
     // In editor mode, we draw the first frame of the selected anim.
