@@ -1,10 +1,14 @@
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Files.h>
 #include <onut/Font.h>
 #include <onut/Log.h>
 #include <onut/SpriteBatch.h>
 #include <onut/Strings.h>
 #include <onut/Texture.h>
+
+// Thirdparty
+#include <json/json.h>
 
 // STL
 #include <cassert>
@@ -71,9 +75,40 @@ namespace onut
 
     OFontRef Font::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager)
     {
-        std::ifstream in(filename);
+        int extraSpacing = 0;
+        
+        std::string assetFilename = pContentManager->findResourceFile(filename);
+        if (assetFilename.empty())
+        {
+            assetFilename = filename;
+        }
+
+        // Load config json.font (optional)
+        if (onut::getExtension(assetFilename) == "FONT")
+        {
+            std::ifstream fic(assetFilename);
+            Json::Value json;
+            fic >> json;
+            fic.close();
+
+            if (json["name"].isString())
+            {
+                assetFilename = pContentManager->findResourceFile(json["name"].asString());
+            }
+            else
+            {
+                // Assume fnt
+                assetFilename = pContentManager->findResourceFile(onut::getFilenameWithoutExtension(assetFilename) + ".fnt");
+            }
+            if (json["extraSpacing"].isInt())
+            {
+                extraSpacing = json["extraSpacing"].asInt();
+            }
+        }
+
+        std::ifstream in(assetFilename);
         if (in.fail()) 
-            OLogE("Failed to open " + filename);
+            OLogE("Failed to open " + assetFilename);
         assert(!in.fail());
 
         auto pFont = std::make_shared<OFont>();
@@ -125,6 +160,7 @@ namespace onut
                 pNewChar->xoffset = parseInt("xoffset", split);
                 pNewChar->yoffset = parseInt("yoffset", split);
                 pNewChar->xadvance = parseInt("xadvance", split);
+                pNewChar->xadvance += extraSpacing;
                 pNewChar->page = parseInt("page", split);
                 pNewChar->chnl = parseInt("chnl", split);
 
