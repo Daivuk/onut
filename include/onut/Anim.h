@@ -21,8 +21,14 @@ namespace onut
         PingPongLoop
     };
 
+    class IAnim : public UpdateTarget
+    {
+    public:
+        virtual void stop(bool goToEnd = false) = 0;
+    };
+
     template<typename Ttype>
-    class Anim final : public UpdateTarget
+    class Anim final : public IAnim
     {
     public:
         using KeyFrameCallback = std::function<void()>;

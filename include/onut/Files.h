@@ -44,6 +44,7 @@ namespace onut
     bool createTextFile(const std::string& path, const std::string& content);
     void showInExplorer(const std::string& path);
     void openFile(const std::string& file);
+    bool deleteFile(const std::string& file);
 
     enum class MessageBoxLevel
     {

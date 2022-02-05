@@ -451,6 +451,11 @@ namespace onut
 #endif
     }
 
+    bool deleteFile(const std::string& file)
+    {
+        return std::remove(file.c_str()) == 0;
+    }
+
     MessageBoxReturn showMessageBox(const std::string& title, const std::string& message, MessageBoxType type, MessageBoxLevel level)
     {
         const char* typeStr;

@@ -35,6 +35,8 @@ namespace onut
     class Updater final : public std::enable_shared_from_this<Updater>
     {
     public:
+        using Targets = std::vector<OUpdateTarget*>;
+        
         static OUpdaterRef create();
 
         void update();
@@ -44,11 +46,11 @@ namespace onut
 
         int size() const;
 
+        Targets getTargets();
+
     private:
         Updater() {}
 
-        using Targets = std::vector<OUpdateTarget*>;
-        
         Targets m_toAdd;
         Targets m_targets;
     };

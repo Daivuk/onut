@@ -107,4 +107,19 @@ namespace onut
     {
         return (int)m_targets.size();
     }
+
+    Updater::Targets Updater::getTargets()
+    {
+        Targets ret;
+        ret.reserve(m_toAdd.size() + m_targets.size());
+        for (size_t i = 0; i < m_toAdd.size(); ++i)
+        {
+            ret.push_back(m_toAdd[i]);
+        }
+        for (size_t i = 0; i < m_targets.size(); ++i)
+        {
+            ret.push_back(m_targets[i]);
+        }
+        return std::move(ret);
+    }
 }
