@@ -461,7 +461,7 @@ namespace onut
 
     bool SoundInstance::progress(int frameCount, int sampleRate, int channelCount, float* pOut, float in_volume, float in_balance, float in_pitch)
     {
-        if (!oAudioEngine) return;
+        if (!oAudioEngine) return false;
 
         auto pSoundPtr = m_pSound;
         auto pSoundBuffer = pSoundPtr->m_pBuffer;
