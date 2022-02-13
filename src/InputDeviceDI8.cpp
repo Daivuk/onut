@@ -197,10 +197,27 @@ namespace onut
         cur.y = mousePos.y;
         ClientToScreen(oWindow->getHandle(), &cur);
         SetCursorPos(cur.x, cur.y);
-        oInput->mousePos.x = mousePos.x;
-        oInput->mousePos.y = mousePos.y;
-        oInput->mousePosf.x = static_cast<float>(mousePos.x);
-        oInput->mousePosf.y = static_cast<float>(mousePos.y);
+
+        extern Point *g_fakeHigherRes;
+        if (g_fakeHigherRes)
+        {
+            RECT clientRect;
+            GetClientRect(oWindow->getHandle(), &clientRect);
+            auto w = clientRect.right - clientRect.left;
+            auto h = clientRect.bottom - clientRect.top;
+
+            oInput->mousePos.x = mousePos.x * g_fakeHigherRes->x / w;
+            oInput->mousePos.y = mousePos.y * g_fakeHigherRes->y / h;
+            oInput->mousePosf.x = static_cast<float>(mousePos.x);
+            oInput->mousePosf.y = static_cast<float>(mousePos.y);
+        }
+        else
+        {
+            oInput->mousePos.x = mousePos.x;
+            oInput->mousePos.y = mousePos.y;
+            oInput->mousePosf.x = static_cast<float>(mousePos.x);
+            oInput->mousePosf.y = static_cast<float>(mousePos.y);
+        }
     }
 
     void InputDeviceDI8::unsetMouseIcon()

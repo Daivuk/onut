@@ -55,6 +55,8 @@ static OTextureRef g_pImguiFontTexture;
 static OIndexBufferRef g_pImguiIB;
 static OVertexBufferRef g_pImguiVB;
 
+Point *g_fakeHigherRes = nullptr;
+
 struct ImguiVertex
 {
     Vector2 pos;
@@ -164,7 +166,7 @@ namespace onut
         // Undo/Redo for editors
         if (!oActionManager) oActionManager = ActionManager::create();
 
-        g_pMainRenderTarget = OTexture::createScreenRenderTarget();
+        g_pMainRenderTarget = g_fakeHigherRes ? OTexture::createRenderTarget(*g_fakeHigherRes) : OTexture::createScreenRenderTarget();
 
         // imgui
         auto& io = ImGui::GetIO();
@@ -353,10 +355,33 @@ namespace onut
                 POINT cur;
                 GetCursorPos(&cur);
                 ScreenToClient(oWindow->getHandle(), &cur);
-                oInput->mousePos.x = cur.x;
-                oInput->mousePos.y = cur.y;
-                oInput->mousePosf.x = static_cast<float>(cur.x);
-                oInput->mousePosf.y = static_cast<float>(cur.y);
+                
+                if (g_fakeHigherRes)
+                {
+                    //RECT clientRect;
+                    //GetClientRect(oWindow->getHandle(), &clientRect);
+                    //auto w = clientRect.right - clientRect.left;
+                    //auto h = clientRect.bottom - clientRect.top;
+
+                    oRenderer->renderStates.renderTargets[0].push(nullptr);
+                    auto screenRect = ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef());
+                    oRenderer->renderStates.renderTargets[0].pop();
+
+                    cur.x -= (int)screenRect.x;
+                    cur.y -= (int)screenRect.y;
+
+                    oInput->mousePos.x = cur.x * g_fakeHigherRes->x / (int)screenRect.z;
+                    oInput->mousePos.y = cur.y * g_fakeHigherRes->y / (int)screenRect.w;
+                    oInput->mousePosf.x = static_cast<float>(oInput->mousePos.x);
+                    oInput->mousePosf.y = static_cast<float>(oInput->mousePos.y);
+                }
+                else
+                {
+                    oInput->mousePos.x = cur.x;
+                    oInput->mousePos.y = cur.y;
+                    oInput->mousePosf.x = static_cast<float>(oInput->mousePos.x);
+                    oInput->mousePosf.y = static_cast<float>(oInput->mousePos.y);
+                }
 #endif // WIN32
                 oInput->update();
 #if defined(__rpi__)
@@ -472,7 +497,14 @@ namespace onut
             oSpriteBatch->begin();
             oRenderer->renderStates.blendMode.push(OBlendOpaque);
             oRenderer->renderStates.sampleFiltering.push(OFilterNearest);
-            oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
+            if (g_fakeHigherRes)
+            {
+                oSpriteBatch->drawRect(g_pMainRenderTarget, ORectFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
+            }
+            else
+            {
+                oSpriteBatch->drawRect(g_pMainRenderTarget, ORectSmartFit(Rect{0, 0, OScreenf}, g_pMainRenderTarget->getSizef()));
+            }
             oSpriteBatch->end();
             oRenderer->renderStates.blendMode.pop();
             oRenderer->renderStates.sampleFiltering.pop();
@@ -520,6 +552,9 @@ namespace onut
             }
 
             oRenderer->endFrame();
+
+            // This will ensure the resolution in update calls will match the main render target size
+            oRenderer->renderStates.renderTargets[0] = g_pMainRenderTarget;
         }
 
         cleanup();
