@@ -28,6 +28,7 @@ namespace onut
         ~Font();
 
         Vector2 measure(const std::string& text);
+        Vector2 measureDontCheckEndLine(const std::string& text);
         Vector2 measureWordWrap(const std::string& text, float wrapWidth);
         size_t caretPos(const std::string& text, float at);
 

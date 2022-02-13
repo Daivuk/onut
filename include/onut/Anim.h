@@ -25,6 +25,7 @@ namespace onut
     {
     public:
         virtual void stop(bool goToEnd = false) = 0;
+        virtual void setUpdater(const OUpdaterRef& pUpdater) = 0;
     };
 
     template<typename Ttype>
@@ -253,7 +254,7 @@ namespace onut
             return isUpdateTargetRegistered();
         }
 
-        void setUpdater(const OUpdaterRef& pUpdater)
+        void setUpdater(const OUpdaterRef& pUpdater) override
         {
             m_pMyUpdater = pUpdater;
         }

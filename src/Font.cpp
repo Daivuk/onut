@@ -237,6 +237,43 @@ namespace onut
         return result;
     }
 
+    Vector2 Font::measureDontCheckEndLine(const std::string& in_text)
+    {
+        Vector2 result;
+        result.y += (float)m_common.lineHeight;
+        float curX = 0;
+        unsigned int len = (unsigned int)in_text.length();
+        uint32_t charId;
+        for (unsigned int i = 0; i < len;)
+        {
+            charId = getNextUTF8(in_text.c_str(), i, len);
+            if (charId == '\n')
+            {
+                result.y += (float)m_common.lineHeight;
+                if (curX > result.x) result.x = curX;
+                curX = 0;
+                continue;
+            }
+            if (hatColoringEnabled && charId == coloringChar)
+            {
+                getNextUTF8(in_text.c_str(), i, len);
+                getNextUTF8(in_text.c_str(), i, len);
+                getNextUTF8(in_text.c_str(), i, len);
+                continue;
+            }
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
+            {
+                continue;
+            }
+            auto pDatChar = it->second;
+            curX += static_cast<float>(pDatChar->xadvance);
+        }
+        if (curX > result.x) result.x = curX;
+
+        return result;
+    }
+
     Vector2 Font::measureWordWrap(const std::string& in_text, float wrapWidth)
     {
         Vector2 result;
