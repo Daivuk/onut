@@ -34,10 +34,10 @@ struct Color
     uint32_t pack() const
     {
         uint32_t packed = 0;
-        packed |= ((uint32_t)(r * 255.f) << 24) & 0xff000000;
-        packed |= ((uint32_t)(g * 255.f) << 16) & 0x00ff0000;
-        packed |= ((uint32_t)(b * 255.f) << 8) & 0x0000ff00;
-        packed |= (uint32_t)(a * 255.f) & 0x000000ff;
+        packed |= ((uint32_t)(a * 255.f) << 24) & 0xff000000;
+        packed |= ((uint32_t)(b * 255.f) << 16) & 0x00ff0000;
+        packed |= ((uint32_t)(g * 255.f) << 8) & 0x0000ff00;
+        packed |= (uint32_t)(r * 255.f) & 0x000000ff;
         return packed;
     }
 

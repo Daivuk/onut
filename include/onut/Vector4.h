@@ -253,6 +253,20 @@ struct Vector4
         return std::move(ret);
     }
 
+    inline Vector4 FitPixelPerfect(const Vector4& rect) const
+    {
+        Rect ret;
+
+        float scale = (float)std::max<>(1, (int)std::min<>(z / rect.z, w / rect.w));
+
+        ret.x = x + z * .5f - rect.z * scale * .5f;
+        ret.y = y + w * .5f - rect.w * scale * .5f;
+        ret.z = rect.z * scale;
+        ret.w = rect.w * scale;
+
+        return std::move(ret);
+    }
+
     inline Vector4 Grow(float by) const
     {
         return std::move(Vector4{x - by, y - by, z + by * 2, w + by * 2});
