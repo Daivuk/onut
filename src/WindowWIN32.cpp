@@ -344,6 +344,18 @@ namespace onut
                 {
                     return false;
                 }
+
+                // Empty remaining queued messages in case. Because Vsync will slow down the flow of messages
+                while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+
+                    if (msg.message == WM_QUIT)
+                    {
+                        return false;
+                    }
+                }
             }
         }
         else
