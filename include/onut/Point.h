@@ -8,6 +8,11 @@ struct Point
     Point(int in_x) : x(in_x), y(in_x) {}
     Point(int in_x, int in_y) : x(in_x), y(in_y) {}
 
+    inline int operator[](int idx) const
+    {
+        return *(&x + idx);
+    }
+
     inline Point operator+(const Point& other) const
     {
         return Point(x + other.x, y + other.y);
