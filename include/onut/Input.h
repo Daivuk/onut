@@ -758,6 +758,8 @@ namespace onut
 #define OMouseZ onut::Input::State::MouseZ
 #define OMouseW onut::Input::State::MouseW
 
+using OKey = onut::Input::State;
+
 extern OInputRef oInput;
 
 const Vector2& OGetMousePos();
