@@ -526,6 +526,13 @@ namespace onut
                 }
 #endif
                 OLogE("VS compile failed: " + std::string(infoLog));
+                auto lines = splitString(source, '\n', false);
+                int i = 1;
+                for (const auto &line : lines)
+                {
+                    OLog(std::to_string(i) + ": " +line);
+                    ++i;
+                }
                 assert(false);
                 return nullptr;
             }
@@ -561,6 +568,13 @@ namespace onut
                 }
 #endif
                 OLogE("PS compile failed: " + std::string(infoLog));
+                auto lines = splitString(source, '\n', false);
+                int i = 1;
+                for (const auto &line : lines)
+                {
+                    OLog(std::to_string(i) + ": " +line);
+                    ++i;
+                }
                 assert(false);
                 return nullptr;
             }

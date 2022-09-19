@@ -110,6 +110,9 @@ namespace onut
     OShaderRef Shader::createFromSourceFile(const std::string& filename, Type in_type, const VertexElements& vertexElements)
     {
         auto content = readShaderFileContent(filename);
+#if defined(_DEBUG)
+        OLog("Loading: " + filename);
+#endif
         return createFromSource(content, in_type, vertexElements);
     }
 

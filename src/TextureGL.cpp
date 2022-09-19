@@ -260,7 +260,7 @@ namespace onut
         otherHandle = handle;
     }
 
-    void TextureGL::blur(float amount)
+    void TextureGL::blur(float amount, float amountY)
     {
         if (!m_frameBuffer) return; // Not a render target
         if (!m_frameBufferFx)
