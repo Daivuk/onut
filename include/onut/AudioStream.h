@@ -15,6 +15,8 @@ namespace onut
     class AudioStream
     {
     public:
+        virtual ~AudioStream() {}
+
         void set3D(bool enabled = false, const Vector3& position = {0, 0, 0}, float radius = 1.0f)
         {
             m_positioning.enabled = enabled;
