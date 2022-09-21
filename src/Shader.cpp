@@ -111,7 +111,7 @@ namespace onut
     {
         auto content = readShaderFileContent(filename);
 #if defined(_DEBUG)
-        OLog("Loading: " + filename);
+        //OLog("Loading: " + filename);
 #endif
         return createFromSource(content, in_type, vertexElements);
     }
