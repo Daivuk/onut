@@ -162,6 +162,9 @@ namespace onut
                     frame.duration = (float)jsonFrame["duration"].asInt() / 1000.0f;
                     anim.duration += frame.duration;
                     anim.frames.push_back(frame);
+
+                    pRet->m_size.x = spriteW;
+                    pRet->m_size.y = spriteH;
                 }
 
                 if (isFlipH)
