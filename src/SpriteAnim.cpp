@@ -1,5 +1,6 @@
 // Onut
 #include <onut/ContentManager.h>
+#include <onut/Crypto.h>
 #include <onut/Files.h>
 #include <onut/Log.h>
 #include <onut/Sound.h>
@@ -18,6 +19,22 @@
 
 namespace onut
 {
+    uint64_t SpriteAnim::getFrameTagId(const char* tagName)
+    {
+        uint64_t hash = 5381;
+        int c;
+
+        while (c = *tagName++)
+            hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+        return hash;
+    }
+
+    uint64_t SpriteAnim::getFrameTagId(const std::string& tagName)
+    {
+        return getFrameTagId(tagName.c_str());
+    }
+
     OSpriteAnimRef SpriteAnim::createFromFile(const std::string& filename, const OContentManagerRef& in_pContentManager)
     {
         auto pContentManager = in_pContentManager;
@@ -106,6 +123,14 @@ namespace onut
                                         originY = std::stoi(data.substr(pos + 1));
                                     }
                                     catch (...) {}
+                                }
+                            }
+                            else if (data.find("tags=") == 0 && data.size() > 5)
+                            {
+                                auto splits = splitString(data.substr(5), ',');
+                                for (const auto& split : splits)
+                                {
+                                    frame.tags.insert(getFrameTagId(split));
                                 }
                             }
                             else if (data.find("sound=") == 0 && data.size() > 6)
@@ -333,6 +358,7 @@ namespace onut
             if (pUpdater)
             {
                 pUpdater->registerTarget(this);
+                m_pUpdater = pUpdater;
             }
             else if (m_pUpdater)
             {
@@ -499,6 +525,16 @@ namespace onut
         }
         static Vector2 ret(.5f, .5f);
         return ret;
+    }
+            
+    bool SpriteAnimInstance::hasTag(uint64_t tagId) const
+    {
+        auto frameId = getFrameId();
+        if (m_pCurrentAnim && frameId >= 0 && frameId < (int)m_pCurrentAnim->frames.size())
+        {
+            return m_pCurrentAnim->frames[frameId].tags.find(tagId) != m_pCurrentAnim->frames[frameId].tags.end();
+        }
+        return false;
     }
 
     const SpriteAnim::Frame& SpriteAnimInstance::getFrame() const

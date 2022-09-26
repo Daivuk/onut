@@ -7,6 +7,7 @@
 #include <onut/Updater.h>
 
 // STL
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -36,6 +37,7 @@ namespace onut
             float pan = 0.0f;
             float pitch = 1.0f;
             OSoundCueRef pSoundCue;
+            std::set<uint64_t> tags;
         };
         using Frames = std::vector<Frame>;
 
@@ -49,6 +51,9 @@ namespace onut
         };
 
         static OSpriteAnimRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr);
+
+        static uint64_t getFrameTagId(const char* tagName);
+        static uint64_t getFrameTagId(const std::string& tagName);
 
         void addAnim(const Anim& anim);
         Anim* getAnim(const std::string& name);
@@ -87,6 +92,7 @@ namespace onut
         OTextureRef getTexture() const;
         const Vector4& getUVs() const;
         const Vector2& getOrigin() const;
+        bool hasTag(uint64_t tagId) const;
 
         void update() override;
         void setUpdater(const OUpdaterRef& pUpdater);

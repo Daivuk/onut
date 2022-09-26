@@ -183,6 +183,7 @@ Frame properties and their meaning:
 |vol|`vol=0.5`|frame|set volume for sound [0, 1].|
 |pan|`pan=0.0`|frame|set panning for sound [-1, 1].|
 |pitch|`pitch=2.0`|frame|set pitch for sound.|
+|tags|`tags=tag1,tag2`|frame|Custom tags on this frame|
 
 When exporting the sprite sheet in json format, make sure to change "Hash" to "Array".
 
