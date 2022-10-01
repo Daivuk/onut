@@ -26,7 +26,8 @@ namespace onut
         R32, // float
         RG32, // float
         RGBA32, // float
-        RGB10A2 // normalized in range [0, 1]
+        RGB10A2, // normalized in range [0, 1]
+        I8 // bytes
     };
 
     class Texture : public Resource, public std::enable_shared_from_this<Texture>
@@ -35,6 +36,7 @@ namespace onut
         static OTextureRef createFromFile(const std::string& filename, const OContentManagerRef& pContentManager = nullptr, bool generateMipmaps = oGenerateMipmaps);
         static OTextureRef createFromFileData(const uint8_t* pData, uint32_t size, bool generateMipmaps = oGenerateMipmaps);
         static OTextureRef createFromData(const uint8_t* pData, const Point& size, bool generateMipmaps = oGenerateMipmaps);
+        static OTextureRef createFromDataWithFormat(const uint8_t* pData, const Point& size, RenderTargetFormat format, bool generateMipmaps = oGenerateMipmaps);
         static OTextureRef createRenderTarget(const Point& size, bool willBeUsedInEffects = false, RenderTargetFormat format = onut::RenderTargetFormat::RGBA8);
         static OTextureRef createScreenRenderTarget(bool willBeUsedInEffects = false, RenderTargetFormat format = onut::RenderTargetFormat::RGBA8);
         static OTextureRef createDynamic(const Point& size);

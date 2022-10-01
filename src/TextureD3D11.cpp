@@ -344,6 +344,49 @@ namespace onut
         return pRet;
     }
 
+    OTextureRef Texture::createFromDataWithFormat(const uint8_t* pData, const Point& size, RenderTargetFormat format, bool generateMipmaps)
+    {
+        auto pRet = std::shared_ptr<TextureD3D11>(new TextureD3D11());
+
+        ID3D11Texture2D* pTexture = NULL;
+        ID3D11ShaderResourceView* pTextureView = NULL;
+
+        pRet->m_format = format;
+
+        D3D11_TEXTURE2D_DESC desc;
+        desc.Width = static_cast<UINT>(size.x);
+        desc.Height = static_cast<UINT>(size.y);
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.Format = pRet->getDXGIFormat();
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.Usage = D3D11_USAGE_IMMUTABLE;
+        desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        desc.CPUAccessFlags = 0;
+        desc.MiscFlags = 0;
+
+        D3D11_SUBRESOURCE_DATA data;
+        data.pSysMem = pData;
+        data.SysMemPitch = size.x * pRet->getPitch();
+        data.SysMemSlicePitch = 0;
+
+        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
+        auto pDevice = pRendererD3D11->getDevice();
+        auto ret = pDevice->CreateTexture2D(&desc, &data, &pTexture);
+        assert(ret == S_OK);
+        ret = pDevice->CreateShaderResourceView(pTexture, NULL, &pTextureView);
+        assert(ret == S_OK);
+
+        pTexture->Release();
+
+        pRet->m_size = size;
+        pRet->m_pTextureView = pTextureView;
+
+        pRet->m_type = Type::Static;
+        return pRet;
+    }
+
     void TextureD3D11::setData(const uint8_t* pData)
     {
         assert(isDynamic()); // Only dynamic texture can be set data
@@ -630,6 +673,25 @@ namespace onut
         oRenderer->renderStates.textures[0].pop();
     }
 
+    UINT TextureD3D11::getPitch()
+    {
+        switch (m_format)
+        {
+            case RenderTargetFormat::R8: return 1;
+            case RenderTargetFormat::RG8: return 2;
+            case RenderTargetFormat::RGBA8: return 4;
+            case RenderTargetFormat::R16: return 2;
+            case RenderTargetFormat::RG16: return 4;
+            case RenderTargetFormat::RGBA16: return 8;
+            case RenderTargetFormat::R32: return 4;
+            case RenderTargetFormat::RG32: return 8;
+            case RenderTargetFormat::RGBA32: return 16;
+            case RenderTargetFormat::RGB10A2: return 4;
+            case RenderTargetFormat::I8: return 1;
+            default: return 4;
+        };
+    }
+
     DXGI_FORMAT TextureD3D11::getDXGIFormat()
     {
         switch (m_format)
@@ -644,6 +706,7 @@ namespace onut
             case RenderTargetFormat::RG32: return DXGI_FORMAT_R32G32_FLOAT;
             case RenderTargetFormat::RGBA32: return DXGI_FORMAT_R32G32B32A32_FLOAT;
             case RenderTargetFormat::RGB10A2: return DXGI_FORMAT_R10G10B10A2_UNORM;
+            case RenderTargetFormat::I8: return DXGI_FORMAT_R8_UINT;
             default: return DXGI_FORMAT_R8G8B8A8_UNORM;
         };
     }

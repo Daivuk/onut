@@ -145,7 +145,9 @@ namespace onut
             {
                 const auto& texture = *rit;
                 source += "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
-                source += "Texture2D texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                source += "Texture2D";
+                if (texture.type == VarType::UInt) source += "<uint>";
+                source += " texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
                 source += "float4 " + texture.name + "(float2 uv)\n";
                 source += "{\n";
                 source += "    return texture_" + texture.name + ".SampleLevel(sampler_" + texture.name + ", uv, 0);\n";
@@ -348,11 +350,24 @@ namespace onut
             {
                 const auto& texture = *rit;
                 source += "SamplerState sampler_" + texture.name + " : register(s" + std::to_string(texture.index) + ");\n";
-                source += "Texture2D texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
-                source += "float4 " + texture.name + "(float2 uv)\n";
-                source += "{\n";
-                source += "    return texture_" + texture.name + ".Sample(sampler_" + texture.name + ", uv);\n";
-                source += "}\n\n";
+                source += "Texture2D";
+                if (texture.type == VarType::UInt)
+                {
+                    source += "<uint>";
+                    source += " texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                    source += "uint " + texture.name + "(int2 uv)\n";
+                    source += "{\n";
+                    source += "    return texture_" + texture.name + ".Load(int3(uv, 0));\n";
+                    source += "}\n\n";
+                }
+                else if (texture.type == VarType::Float4)
+                {
+                    source += " texture_" + texture.name + " : register(t" + std::to_string(texture.index) + ");\n";
+                    source += "float4 " + texture.name + "(float2 uv)\n";
+                    source += "{\n";
+                    source += "    return texture_" + texture.name + ".Sample(sampler_" + texture.name + ", uv);\n";
+                    source += "}\n\n";
+                }
             }
 
             // Put inputs

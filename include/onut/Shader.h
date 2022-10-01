@@ -32,6 +32,7 @@ namespace onut
             Float2 = 2,
             Float3 = 3,
             Float4 = 4,
+            UInt = 5,
             Matrix = 16
         };
 
@@ -89,12 +90,19 @@ namespace onut
         };
         using ParsedUniforms = std::vector<ParsedUniform>;
 
+        enum class ParsedTextureType
+        {
+            Float4,
+            UInt
+        };
+
         struct ParsedTexture
         {
             int index;
             sample::Filtering filter = sample::Filtering::Trilinear;
             sample::AddressMode repeatX = sample::AddressMode::Wrap;
             sample::AddressMode repeatY = sample::AddressMode::Wrap;
+            VarType type = VarType::Float4; 
             std::string name;
         };
         using ParsedTextures = std::vector<ParsedTexture>;

@@ -539,6 +539,17 @@ namespace onut
                     return false;
                 }
             }
+            else if (propName == "type")
+            {
+                if (propValue == "float4")
+                {
+                    texture.type = Shader::VarType::Float4;
+                }
+                else if (propValue == "uint")
+                {
+                    texture.type = Shader::VarType::UInt;
+                }
+            }
             else
             {
                 shaderError(lexer, "Invalid texture sampler property");

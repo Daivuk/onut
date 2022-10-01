@@ -48,6 +48,7 @@ namespace onut
 
         void createRenderTargetViews(ID3D11Texture2D*& pTexture, ID3D11ShaderResourceView*& pTextureView, ID3D11RenderTargetView*& pRenderTargetView);
         DXGI_FORMAT getDXGIFormat();
+        UINT getPitch();
         void resolve();
 
         ID3D11Texture2D* m_pResolvedTexture = nullptr; // Used for Multisample only
