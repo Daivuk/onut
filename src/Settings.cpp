@@ -18,6 +18,7 @@ namespace onut
 
     Settings::~Settings()
     {
+        shutdownUserSettings();
     }
 
     void Settings::shutdownUserSettings()
