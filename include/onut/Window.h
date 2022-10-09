@@ -54,6 +54,7 @@ namespace onut
         std::function<void(WriteFunc)>              onWriteFunc;
         std::function<void(const std::string&)>     onWriteUTF8;
         std::function<void(uintptr_t)>              onKey;
+        std::function<void(uintptr_t)>              onKeyUp;
         std::function<void(uint32_t)>               onMenu;
         std::function<void(const std::string&)>     onDrop;
         std::function<void(const Point& newSize)>   onResize;

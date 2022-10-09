@@ -141,6 +141,17 @@ namespace onut
                 }
             }
         }
+        else if (msg == WM_KEYUP)
+        {
+            if (oWindow)
+            {
+                if (oWindow->onKeyUp)
+                {
+                    oWindow->onKeyUp(static_cast<uintptr_t>(wparam));
+                    return 0;
+                }
+            }
+        }
         else if (msg == WM_COMMAND)
         {
             if (oWindow)
