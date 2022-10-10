@@ -120,10 +120,38 @@ namespace onut
 
             return 0;
         }
+        else if (msg == WM_LBUTTONDOWN)
+        {
+            if (oWindow && oWindow->onButtonDown) oWindow->onButtonDown(0);
+        }
+        else if (msg == WM_LBUTTONUP)
+        {
+            if (oWindow && oWindow->onButtonUp) oWindow->onButtonUp(0);
+        }
+        else if (msg == WM_RBUTTONDOWN)
+        {
+            if (oWindow && oWindow->onButtonDown) oWindow->onButtonDown(1);
+        }
+        else if (msg == WM_RBUTTONUP)
+        {
+            if (oWindow && oWindow->onButtonUp) oWindow->onButtonUp(1);
+        }
+        else if (msg == WM_MBUTTONDOWN)
+        {
+            if (oWindow && oWindow->onButtonDown) oWindow->onButtonDown(2);
+        }
+        else if (msg == WM_MBUTTONUP)
+        {
+            if (oWindow && oWindow->onButtonUp) oWindow->onButtonUp(2);
+        }
         else if (msg == WM_KEYDOWN)
         {
             if (oWindow)
             {
+                if (oWindow->onKeyNoRepeat && (lparam & 0xFF) == 1)
+                {
+                    oWindow->onKeyNoRepeat(static_cast<uintptr_t>(wparam));
+                }
                 if (oWindow->onKey)
                 {
                     oWindow->onKey(static_cast<uintptr_t>(wparam));
