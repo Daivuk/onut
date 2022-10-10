@@ -533,6 +533,7 @@ namespace onut
         void unsetMouseIcon();
         void setMousePos(const Point& mousePos);
         void setFpsMouse(bool fpsMouse);
+        bool getFpsMouse() const { return m_fpsMouse; }
 
         Point mousePos;
         Vector2 mousePosf;
