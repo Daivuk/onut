@@ -32,6 +32,8 @@ namespace onut
         Vector2 measureWordWrap(const std::string& text, float wrapWidth);
         size_t caretPos(const std::string& text, float at);
 
+        void addIcon(const OTextureRef& icon, uint32_t charCode, const Point& offset, int padding);
+
         Rect draw(const std::string& text, 
                   const Vector2& pos, 
                   const Vector2& align = Vector2(0.f, 0.f), 
@@ -98,6 +100,7 @@ namespace onut
 
         fntCommon m_common;
         fntPage** m_pages = nullptr;
+        std::vector<OTextureRef> m_icons;
         int m_charsCount = 0;
         std::unordered_map<uint32_t, fntChar*> m_chars;
     };

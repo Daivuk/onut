@@ -189,6 +189,32 @@ namespace onut
         }
     }
 
+    void Font::addIcon(const OTextureRef& icon, uint32_t charCode, const Point& offset, int padding)
+    {
+        if (!icon) return;
+        auto size = icon->getSize();
+        m_icons.push_back(icon);
+        
+        auto h = (float)m_common.lineHeight;
+        auto ratio = h / (float)size.y;
+        auto w = (float)size.x * ratio;
+
+        fntChar* pNewChar = new fntChar();
+
+        pNewChar->id = (int)charCode;
+        pNewChar->x = 0;
+        pNewChar->y = 0;
+        pNewChar->width = size.x;
+        pNewChar->height = size.y;
+        pNewChar->xoffset = offset.x;
+        pNewChar->yoffset = offset.y;
+        pNewChar->xadvance = (int)w + padding;
+        pNewChar->page = -(int)m_icons.size();
+        pNewChar->chnl = 0;
+
+        m_chars[charCode] = pNewChar;
+    }
+
     Vector2 Font::measure(const std::string& in_text)
     {
         Vector2 result;
@@ -471,7 +497,16 @@ namespace onut
                 continue;
             }
             auto pDatChar = it->second;
-            auto& pTexture = m_pages[pDatChar->page]->pTexture;
+            OTextureRef pTexture = nullptr;
+            if (pDatChar->page < 0)
+            {
+                pTexture = m_icons[(-pDatChar->page) - 1];
+            }
+            else
+            {
+                pTexture = m_pages[pDatChar->page]->pTexture;
+            }
+            auto size = pTexture->getSizef();
 
             // Draw it here
             pSpriteBatch->drawRectWithUVs(
@@ -479,10 +514,10 @@ namespace onut
                     curPos.x + static_cast<float>(pDatChar->xoffset), curPos.y + static_cast<float>(pDatChar->yoffset),
                     static_cast<float>(pDatChar->width), static_cast<float>(pDatChar->height)
                 }, {
-                    static_cast<float>(pDatChar->x) / static_cast<float>(m_common.scaleW),
-                    static_cast<float>(pDatChar->y) / static_cast<float>(m_common.scaleH),
-                    static_cast<float>(pDatChar->x + pDatChar->width) / static_cast<float>(m_common.scaleW),
-                    static_cast<float>(pDatChar->y + pDatChar->height) / static_cast<float>(m_common.scaleH)
+                    static_cast<float>(pDatChar->x) / size.x/*static_cast<float>(m_common.scaleW)*/,
+                    static_cast<float>(pDatChar->y) / size.y/*static_cast<float>(m_common.scaleH)*/,
+                    static_cast<float>(pDatChar->x + pDatChar->width) / size.x/*static_cast<float>(m_common.scaleW)*/,
+                    static_cast<float>(pDatChar->y + pDatChar->height) / size.y/*static_cast<float>(m_common.scaleH)*/
                 }, curColor);
 
             curPos.x += static_cast<float>(pDatChar->xadvance);
@@ -615,7 +650,17 @@ namespace onut
                 continue;
             }
             auto pDatChar = it->second;
-            auto& pTexture = m_pages[pDatChar->page]->pTexture;
+
+            OTextureRef pTexture = nullptr;
+            if (pDatChar->page < 0)
+            {
+                pTexture = m_icons[(-pDatChar->page) - 1];
+            }
+            else
+            {
+                pTexture = m_pages[pDatChar->page]->pTexture;
+            }
+            auto size = pTexture->getSizef();
 
             // Draw it here
             pSpriteBatch->drawRectWithUVs(
@@ -623,10 +668,10 @@ namespace onut
                     curPos.x + static_cast<float>(pDatChar->xoffset), curPos.y + static_cast<float>(pDatChar->yoffset),
                     static_cast<float>(pDatChar->width), static_cast<float>(pDatChar->height)
                 }, {
-                    static_cast<float>(pDatChar->x) / static_cast<float>(m_common.scaleW),
-                    static_cast<float>(pDatChar->y) / static_cast<float>(m_common.scaleH),
-                    static_cast<float>(pDatChar->x + pDatChar->width) / static_cast<float>(m_common.scaleW),
-                    static_cast<float>(pDatChar->y + pDatChar->height) / static_cast<float>(m_common.scaleH)
+                    static_cast<float>(pDatChar->x) / size.x/*static_cast<float>(m_common.scaleW)*/,
+                    static_cast<float>(pDatChar->y) / size.y/*static_cast<float>(m_common.scaleH)*/,
+                    static_cast<float>(pDatChar->x + pDatChar->width) / size.x/*static_cast<float>(m_common.scaleW)*/,
+                    static_cast<float>(pDatChar->y + pDatChar->height) / size.y/*static_cast<float>(m_common.scaleH)*/
                 }, curColor);
 
             curPos.x += static_cast<float>(pDatChar->xadvance);
