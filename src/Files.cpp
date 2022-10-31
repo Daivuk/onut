@@ -19,6 +19,7 @@
 #include <objbase.h>
 #elif defined(__linux__) || defined(__APPLE__)
 #include <dirent.h>
+#include <unistd.h>
 #endif
 #include "tinyfiledialogs/tinyfiledialogs.h"
 
@@ -381,6 +382,15 @@ namespace onut
         delete[] szFilters;
 
         return ofn.lpstrFile;
+    }
+#else
+    bool fileExists(const std::string& filename)
+    {
+        int res = access(filename.c_str(), R_OK);
+        if (res < 0) {
+            return false;
+        }
+        return true;
     }
 #endif
 

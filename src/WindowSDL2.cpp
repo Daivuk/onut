@@ -40,6 +40,7 @@ namespace onut
         const auto& resolution = oSettings->getResolution();
         bool borderLessFullscreen = oSettings->getBorderlessFullscreen();
         bool resizable = oSettings->getIsResizableWindow();
+        bool startMaximized = oSettings->getStartMaximized();
 
         Uint32 flags = SDL_WINDOW_OPENGL |
                        SDL_WINDOW_SHOWN;
@@ -49,10 +50,18 @@ namespace onut
             flags |= SDL_WINDOW_FULLSCREEN_DESKTOP |
                      SDL_WINDOW_BORDERLESS;
         }
-        else if (resizable)
+        else
         {
-            flags |= SDL_WINDOW_RESIZABLE;
+            if (resizable)
+            {
+                flags |= SDL_WINDOW_RESIZABLE;
+            }
+            if (startMaximized)
+            {
+                flags |= SDL_WINDOW_MAXIMIZED;
+            }
         }
+        
         m_pWindow = SDL_CreateWindow(oSettings->getGameName().c_str(),
                                      SDL_WINDOWPOS_CENTERED, 
                                      SDL_WINDOWPOS_CENTERED,

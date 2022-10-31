@@ -10,9 +10,11 @@
 // Third party
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+#include <json/json.h>
 
 // STL
 #include <cassert>
+#include <fstream>
 #include <vector>
 
 static GLint convertFormat(onut::RenderTargetFormat format)
@@ -124,19 +126,53 @@ namespace onut
 
     OTextureRef Texture::createFromFile(const std::string& filename, const OContentManagerRef& pContentManager, bool generateMipmaps)
     {
+        bool premultiplied = true;
+                
+        std::string assetFilename = pContentManager->findResourceFile(filename);
+        if (assetFilename.empty())
+        {
+            assetFilename = filename;
+        }
+
+        // Load config json.font (optional)
+        if (onut::getExtension(assetFilename) == "TEXTURE")
+        {
+            std::ifstream fic(assetFilename);
+            Json::Value json;
+            fic >> json;
+            fic.close();
+
+            if (json["name"].isString())
+            {
+                assetFilename = pContentManager->findResourceFile(json["name"].asString());
+            }
+            else
+            {
+                // Assume fnt
+                assetFilename = pContentManager->findResourceFile(onut::getFilenameWithoutExtension(assetFilename) + ".fnt");
+            }
+            if (json["premultiplied"].isBool())
+            {
+                premultiplied = json["premultiplied"].asBool();
+            }
+        }
+
         int w, h, n;
-        auto image = stbi_load(filename.c_str(), &w, &h, &n, 4);
+        auto image = stbi_load(assetFilename.c_str(), &w, &h, &n, 4);
         if (!image) return nullptr;
-        Point size{ w, h };
+        Point size{w, h};
 
         // Pre multiplied
-        uint8_t* pImageData = &(image[0]);
-        auto len = size.x * size.y;
-        for (decltype(len) i = 0; i < len; ++i, pImageData += 4)
+        if (premultiplied)
         {
-            pImageData[0] = pImageData[0] * pImageData[3] / 255;
-            pImageData[1] = pImageData[1] * pImageData[3] / 255;
-            pImageData[2] = pImageData[2] * pImageData[3] / 255;
+            uint8_t* pImageData = image;
+            auto len = size.x * size.y;
+            for (decltype(len) i = 0; i < len; ++i, pImageData += 4)
+            {
+                pImageData[0] = pImageData[0] * pImageData[3] / 255;
+                pImageData[1] = pImageData[1] * pImageData[3] / 255;
+                pImageData[2] = pImageData[2] * pImageData[3] / 255;
+            }
         }
 
         auto pRet = createFromData(image, size, generateMipmaps);
