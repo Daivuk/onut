@@ -177,6 +177,7 @@ list(APPEND src_files
     src/IndexBuffer.cpp 
     src/Input.cpp
     src/InputDevice.cpp
+    src/Json.cpp
     src/Joystick.cpp
     src/JSBindings.cpp
     src/JSBindings_Imgui.cpp
