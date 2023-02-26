@@ -531,7 +531,7 @@ namespace onut
                 JS_INTERFACE_FUNCTION_END("valueChanged", 0);
                 JS_INTERFACE_FUNCTION_BEGIN
                 {
-                    duk_push_boolean(ctx, ImGui::ValueFinished() ? 1 : 0);
+                    duk_push_boolean(ctx, ImGui::IsItemDeactivatedAfterEdit() ? 1 : 0);
                     return 1;
                 }
                 JS_INTERFACE_FUNCTION_END("valueFinished", 0);

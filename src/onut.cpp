@@ -169,6 +169,7 @@ namespace onut
         g_pMainRenderTarget = g_fakeHigherRes ? OTexture::createRenderTarget(*g_fakeHigherRes) : OTexture::createScreenRenderTarget();
 
         // imgui
+        ImGui::CreateContext();
         auto& io = ImGui::GetIO();
         uint8_t *pPixelData;
         int w, h;
@@ -205,7 +206,7 @@ namespace onut
     {
         shutdown();
 
-        ImGui::Shutdown();
+        //ImGui::Shutdown(); // What did this do before? O_o
         onut::js::shutdown();
 
         oSettings->shutdownUserSettings();

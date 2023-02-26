@@ -174,6 +174,8 @@ list(APPEND src_files
     src/imgui/imgui.cpp
     src/imgui/imgui_demo.cpp
     src/imgui/imgui_draw.cpp
+    src/imgui/imgui_tables.cpp
+    src/imgui/imgui_widgets.cpp
     src/IndexBuffer.cpp 
     src/Input.cpp
     src/InputDevice.cpp

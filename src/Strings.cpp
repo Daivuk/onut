@@ -200,6 +200,51 @@ namespace onut
         return std::move(ret);
     }
 
+    void stripOutAllButComments(std::string& source)
+    {
+        source = stripOutAllButComments((const std::string&)source);
+    }
+
+    std::string stripOutAllButComments(const std::string& source)
+    {
+        std::string ret;
+
+        int state = 0;
+
+        for (auto c : source)
+        {
+            switch (state)
+            {
+                case 0:
+                    if (c == '/') state = 1;
+                    break;
+                case 1:
+                    if (c == '/') state = 2;
+                    else if (c == '*') state = 3;
+                    else state = 0;
+                    break;
+                case 2:
+                    if (c == '\n') state = 0;
+                    else ret += c;
+                    break;
+                case 3:
+                    if (c == '*') state = 4;
+                    else ret += c;
+                    break;
+                case 4:
+                    if (c == '/') state = 0;
+                    else
+                    {
+                        ret += c;
+                        state = 3;
+                    }
+                    break;
+            }
+        }
+
+        return std::move(ret);
+    }
+
     void replace(std::string& source, const std::string& reg, const std::string& substitution)
     {
         source = std::regex_replace(source, std::regex(reg), substitution);
