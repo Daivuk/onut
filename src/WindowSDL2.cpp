@@ -286,4 +286,18 @@ namespace onut
 
         return true;
     }
+
+    void WindowSDL2::setClipboard(const std::string& text)
+    {
+        SDL_SetClipboardText(text.c_str());
+    }
+
+    std::string WindowSDL2::getClipboard()
+    {
+        auto clipboard = SDL_GetClipboardText();
+        if (!clipboard) return "";
+        std::string ret = clipboard;
+        SDL_free(clipboard);
+        return ret;
+    }
 }

@@ -14,6 +14,8 @@
 #include "onut/UIPanel.h"
 #include "onut/Window.h"
 
+#include <imgui/imgui.h>
+
 DocumentView*       g_pDocument = nullptr;
 OUIContextRef g_pUIContext = nullptr;
 OUIControlRef g_pUIScreen = nullptr;
@@ -26,7 +28,7 @@ void initSettings()
     oSettings->setUserSettingDefault("width", std::to_string(screenW));
     oSettings->setUserSettingDefault("height", std::to_string(screenH));
     oSettings->setResolution({std::stoi(oSettings->getUserSetting("width")),
-                             std::stoi(oSettings->getUserSetting("height"))});
+                              std::stoi(oSettings->getUserSetting("height"))});
     oSettings->setGameName("Oak Nut UI Editor");
     oSettings->setIsResizableWindow(true);
     oSettings->setIsEditorMode(true);

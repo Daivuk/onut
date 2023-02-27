@@ -412,4 +412,46 @@ namespace onut
         }
         return true;
     }
+
+    void WindowWIN32::setClipboard(const std::string& text)
+    {
+        if (OpenClipboard(m_handle))
+        {
+            EmptyClipboard();
+            HGLOBAL hClipboardData;
+            hClipboardData = GlobalAlloc(GMEM_DDESHARE, text.size() + 1);
+            if (hClipboardData)
+            {
+                char* pchData;
+                pchData = (char*)GlobalLock(hClipboardData);
+                if (pchData)
+                {
+                    strcpy(pchData, text.data());
+                    GlobalUnlock(hClipboardData);
+                    SetClipboardData(CF_TEXT, hClipboardData);
+                }
+            }
+            CloseClipboard();
+        }
+    }
+
+    std::string WindowWIN32::getClipboard()
+    {
+        std::string ret;
+        if (OpenClipboard(m_handle))
+        {
+            HANDLE hClipboardData = GetClipboardData(CF_TEXT);
+            if (hClipboardData)
+            {
+                char* pchData = (char*)GlobalLock(hClipboardData);
+                if (pchData)
+                {
+                    ret = pchData;
+                    GlobalUnlock(hClipboardData);
+                }
+            }
+            CloseClipboard();
+        }
+        return ret;
+    }
 }

@@ -61,6 +61,22 @@ namespace onut
     {
         return std::min<Tsize>(a, min(b, args...));
     }
+
+    inline Vector2 min(const Vector2& a, const Vector2& b)
+    {
+        return {
+            min(a.x, b.x),
+            min(a.y, b.y)
+        };
+    }
+
+    inline Vector2 max(const Vector2& a, const Vector2& b)
+    {
+        return {
+            max(a.x, b.x),
+            max(a.y, b.y)
+        };
+    }
 }
 
 inline Vector4 ORectLocalToWorld(const Vector4& local, const Vector4& parent)

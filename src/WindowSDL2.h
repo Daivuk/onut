@@ -21,6 +21,8 @@ namespace onut
 
         void setCaption(const std::string& newName) override;
         bool pollEvents() override;
+        void setClipboard(const std::string& text) override;
+        std::string getClipboard() override;
 
         SDL_Window* getSDLWindow() const;
         

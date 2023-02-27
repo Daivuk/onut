@@ -90,6 +90,11 @@ namespace onut
             *this = value;
         }
 
+        void push()
+        {
+            m_stack.push_back(m_value);
+        }
+
         void pop()
         {
             if (!m_stack.empty())
@@ -121,6 +126,9 @@ namespace onut
         RenderStates& operator=(const RenderStates& other);
 
         void reset();
+
+        void pushAll();
+        void popAll();
 
         RenderState<OTextureRef> textures[MAX_TEXTURES];
         RenderState<BlendMode> blendMode;

@@ -134,6 +134,56 @@ namespace onut
         }
         clearColor.reset();
     }
+    
+    void RenderStates::pushAll()
+    {
+        for (int i = 0; i < MAX_TEXTURES; ++i) textures[i].push();
+        blendMode.push();
+        sampleFiltering.push();
+        sampleAddressMode.push();
+        viewport.push();
+        scissor.push();
+        projection.push();
+        view.push();
+        world.push();
+        wireframe.push();
+        depthEnabled.push();
+        depthWrite.push();
+        backFaceCull.push();
+        scissorEnabled.push();
+        primitiveMode.push();
+        vertexShader.push();
+        pixelShader.push();
+        vertexBuffer.push();
+        indexBuffer.push();
+        for (int i = 0; i < MAX_RENDER_TARGETS; ++i) renderTargets[i].push();
+        clearColor.push();
+    }
+
+    void RenderStates::popAll()
+    {
+        for (int i = 0; i < MAX_TEXTURES; ++i) textures[i].pop();
+        blendMode.pop();
+        sampleFiltering.pop();
+        sampleAddressMode.pop();
+        viewport.pop();
+        scissor.pop();
+        projection.pop();
+        view.pop();
+        world.pop();
+        wireframe.pop();
+        depthEnabled.pop();
+        depthWrite.pop();
+        backFaceCull.pop();
+        scissorEnabled.pop();
+        primitiveMode.pop();
+        vertexShader.pop();
+        pixelShader.pop();
+        vertexBuffer.pop();
+        indexBuffer.pop();
+        for (int i = 0; i < MAX_RENDER_TARGETS; ++i) renderTargets[i].pop();
+        clearColor.pop();
+    }
 
     Renderer::Renderer()
     {

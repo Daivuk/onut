@@ -20,6 +20,8 @@ namespace onut
         void setCaption(const std::string& newName) override;
         void setFullscreen(bool isFullscreen) override;
         bool pollEvents() override;
+        void setClipboard(const std::string& text) override;
+        std::string getClipboard() override;
 
     private:
         HWND m_handle;
