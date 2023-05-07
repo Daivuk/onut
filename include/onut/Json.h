@@ -16,7 +16,7 @@
 namespace onut
 {
     bool loadJson(Json::Value &out, const std::string& filename);
-    bool saveJson(const Json::Value &json, const std::string& filename);
+    bool saveJson(const Json::Value &json, const std::string& filename, bool styled = true);
 
     Json::Value serializeInt8(int8_t val);
     Json::Value serializeUInt8(uint8_t val);

@@ -27,7 +27,7 @@ namespace onut
         return true;
     }
 
-    bool saveJson(const Json::Value &json, const std::string& filename)
+    bool saveJson(const Json::Value &json, const std::string& filename, bool styled)
     {
         std::ofstream file(filename);
         if (!file.is_open())
@@ -36,10 +36,21 @@ namespace onut
             return false;
         }
 
-        Json::StyledWriter styledWriter;
+        if (styled)
+        {
+            Json::StyledWriter styledWriter;
 
-        auto str = styledWriter.write(json);
-        file << str;
+            auto str = styledWriter.write(json);
+            file << str;
+        }
+        else
+        {
+            Json::FastWriter fastWriter;
+
+            auto str = fastWriter.write(json);
+            file << str;
+        }
+
         file.close();
 
         return true;
