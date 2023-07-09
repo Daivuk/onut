@@ -107,6 +107,17 @@ namespace onut
         return ret.substr(0, s + 1);
     }
 
+    std::string join(const std::vector<std::string>& strings, const std::string& separator)
+    {
+        if (strings.empty()) return "";
+        std::string ret = strings[0];
+        for (size_t i = 1, len = strings.size(); i < len; ++i)
+        {
+            ret += separator + strings[i];
+        }
+        return ret;
+    }
+
     size_t utf8Length(const std::string& str)
     {
         int len = 0;

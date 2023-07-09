@@ -17,6 +17,7 @@ namespace onut
     std::string toUpper(const std::string& str);
     std::string toLower(const std::string& str);
     std::string trim(const std::string& str);
+    std::string join(const std::vector<std::string>& strings, const std::string& separator);
 
     size_t utf8Length(const std::string& str);
     size_t utf8Pos(const std::string& str, size_t pos);
