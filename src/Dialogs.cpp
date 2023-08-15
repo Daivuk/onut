@@ -1,5 +1,6 @@
 // Onut
 #include <onut/Dialogs.h>
+#include <onut/Log.h>
 
 // Third party
 #if defined(WIN32)
@@ -26,6 +27,17 @@ namespace onut
     void showMessageBox(const std::string& caption, const std::string& message)
     {
         MessageBoxA(nullptr, message.c_str(), caption.c_str(), MB_OK);
+    }
+#else
+    QuestionBoxAnswer showQuestionBox(const std::string& caption, const std::string& message)
+    {
+        OLog(caption + " - " + message);
+        return QuestionBoxAnswer::Cancel;
+    }
+
+    void showMessageBox(const std::string& caption, const std::string& message)
+    {
+        OLog(caption + " - " + message);
     }
 #endif
 }
