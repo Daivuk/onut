@@ -19,9 +19,16 @@ namespace onut
 
     void Timing::setUpdateFps(uint32_t updateFps)
     {
-        m_updateFps = updateFps;
+        m_updateFps = static_cast<double>(updateFps);
         m_deltaTime = 1.0 / static_cast<double>(updateFps);
         m_timePerFrame = std::chrono::microseconds(1000000) / updateFps;
+    }
+
+    void Timing::setUpdateFps(double updateFpsf)
+    {
+        m_updateFps = updateFpsf;
+        m_deltaTime = 1.0 / updateFpsf;
+        m_timePerFrame = std::chrono::nanoseconds(static_cast<int64_t>(1000000000.0 / updateFpsf));
     }
 
     int Timing::update(bool fixedStep)

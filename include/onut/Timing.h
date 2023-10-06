@@ -22,6 +22,7 @@ namespace onut
         Timing(uint32_t updateFps = 120);
 
         void setUpdateFps(uint32_t updateFps);
+        void setUpdateFps(double updateFpsf);
 
         int update(bool fixedStep = true);
         void render();
@@ -60,7 +61,7 @@ namespace onut
         decltype(std::chrono::high_resolution_clock::now()) m_lastFPSSnapShotTime = std::chrono::high_resolution_clock::now();
         decltype(std::chrono::high_resolution_clock::now()) m_lastRenderTime = std::chrono::high_resolution_clock::now();
         decltype(std::chrono::high_resolution_clock::now()) m_thisRenderTime = std::chrono::high_resolution_clock::now();
-        uint32_t m_updateFps = 120;
+        double m_updateFps = 120.0;
     };
 
     template<typename T>
