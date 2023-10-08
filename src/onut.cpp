@@ -457,6 +457,10 @@ namespace onut
                 }
             }
 
+            io.DeltaTime = oTiming->getRenderDeltaTime();
+            io.DisplaySize = { OScreenWf, OScreenHf };
+            ImGui::NewFrame();
+
             oTiming->render();
 
             // Render
@@ -477,9 +481,6 @@ namespace onut
             oSpriteBatch->end();
 
             // Imgui
-            io.DeltaTime = oTiming->getRenderDeltaTime();
-            io.DisplaySize = { OScreenWf, OScreenHf };
-            ImGui::NewFrame();
             onut::js::renderUI();
             if (renderUICallback)
             {
