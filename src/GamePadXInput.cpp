@@ -1,6 +1,11 @@
 // Internal
 #include "GamePadXInput.h"
 
+
+#define GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE  (7849 * 3)
+#define GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE (8689 * 3)
+
+
 namespace onut
 {
     OGamePadRef GamePad::create(int index)
@@ -125,21 +130,21 @@ namespace onut
             case Back:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) ? true : false;
             case LeftThumbStickLeft:
-                return (state.Gamepad.sThumbLX <= -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLX <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
             case LeftThumbStickRight:
-                return (state.Gamepad.sThumbLX >= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLX >= GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
             case LeftThumbStickUp:
-                return (state.Gamepad.sThumbLY >= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLY >= GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
             case LeftThumbStickDown:
-                return (state.Gamepad.sThumbLY <= -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLY <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickLeft:
-                return (state.Gamepad.sThumbLX <= -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLX <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickRight:
-                return (state.Gamepad.sThumbLX >= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLX >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickUp:
-                return (state.Gamepad.sThumbLY >= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLY >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickDown:
-                return (state.Gamepad.sThumbLY <= -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+                return (state.Gamepad.sThumbLY <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
         }
         return false;
     }
