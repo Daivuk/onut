@@ -138,13 +138,13 @@ namespace onut
             case LeftThumbStickDown:
                 return (state.Gamepad.sThumbLY <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickLeft:
-                return (state.Gamepad.sThumbLX <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return (state.Gamepad.sThumbRX <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickRight:
-                return (state.Gamepad.sThumbLX >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return (state.Gamepad.sThumbRX >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickUp:
-                return (state.Gamepad.sThumbLY >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return (state.Gamepad.sThumbRY >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
             case RightThumbStickDown:
-                return (state.Gamepad.sThumbLY <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return (state.Gamepad.sThumbRY <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
         }
         return false;
     }
