@@ -148,4 +148,36 @@ namespace onut
         }
         return false;
     }
+
+    const char* GamePad::getButtonName(Button button)
+    {
+        switch (button)
+        {
+            case Button::A: return "A";
+            case Button::B: return "B";
+            case Button::X: return "X";
+            case Button::Y: return "Y";
+            case Button::DPadUp: return "DPad Up";
+            case Button::DPadDown: return "DPad Down";
+            case Button::DPadLeft: return "DPad Left";
+            case Button::DPadRight: return "DPad Right";
+            case Button::LeftTrigger: return "Left Trigger";
+            case Button::LeftBumper: return "Left Bumper";
+            case Button::RightTrigger: return "Right Trigger";
+            case Button::RightBumper: return "Right Bumper";
+            case Button::LeftThumbStick: return "Left Stick";
+            case Button::RightThumbStick: return "Right Stick";
+            case Button::Start: return "Start";
+            case Button::Back: return "Back";
+            case Button::LeftThumbStickLeft: return "Left Stick Left";
+            case Button::LeftThumbStickRight: return "Left Stick Right";
+            case Button::LeftThumbStickUp: return "Left Stick Up";
+            case Button::LeftThumbStickDown: return "Left Stick Down";
+            case Button::RightThumbStickLeft: return "Right Stick Left";
+            case Button::RightThumbStickRight: return "Right Stick Right";
+            case Button::RightThumbStickUp: return "Right Stick Up";
+            case Button::RightThumbStickDown: return "Right Stick Down";
+        }
+        return "UNKNOWN";
+    }
 }

@@ -535,6 +535,10 @@ namespace onut
         void setFpsMouse(bool fpsMouse);
         bool getFpsMouse() const { return m_fpsMouse; }
 
+        // Hardware state name in EN-US
+        static const char* getStateName(State state);
+        static State getStateFromName(const std::string& name);
+
         Point mousePos;
         Vector2 mousePosf;
         Point mouseDelta = {0, 0};

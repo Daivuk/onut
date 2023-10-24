@@ -15,6 +15,7 @@ namespace onut
     public:
         enum Button
         {
+            None,
             A,
             B,
             X,
@@ -38,7 +39,8 @@ namespace onut
             RightThumbStickLeft,
             RightThumbStickRight,
             RightThumbStickUp,
-            RightThumbStickDown
+            RightThumbStickDown,
+            COUNT
         };
 
         static OGamePadRef create(int index);
@@ -53,6 +55,8 @@ namespace onut
 
         const Vector2& getLeftThumb() const { return m_cachedLeftThumb; }
         const Vector2& getRightThumb() const { return m_cachedRightThumb; }
+
+        static const char* getButtonName(Button button);
 
     protected:
         GamePad(int index);
