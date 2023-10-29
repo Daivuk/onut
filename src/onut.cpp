@@ -594,7 +594,8 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
     onut::run(init, update, render, renderUI, postRender);
     return 0;
 }
-#else
+#endif
+
 int main(int argc, char** argv)
 {
     for (int i = 0; i < argc; ++i)
@@ -606,4 +607,3 @@ int main(int argc, char** argv)
     onut::run(init, update, render, renderUI, postRender);
     return 0;
 }
-#endif
