@@ -95,6 +95,34 @@ namespace onut
 
     bool GamePadXInput::isPressed(Button button, const XINPUT_STATE& state) const
     {
+        // Thumb directional presses
+        bool leftThumbDirs[4] = { false };
+        bool rightThumbDirs[4] = { false };
+
+        const float leftLen = m_cachedLeftThumb.LengthSquared();
+        const float rightLen = m_cachedRightThumb.LengthSquared();
+
+        const float leftDeadZone = (float)GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE / (float)std::numeric_limits<short>::max();
+        const float rightDeadZone = (float)GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE / (float)std::numeric_limits<short>::max();
+
+        if (leftLen >= leftDeadZone * leftDeadZone)
+        {
+            auto angle = OConvertToDegrees(Vector2::Angle(Vector2::Zero, m_cachedLeftThumb));
+            leftThumbDirs[0] = angle < -22.5f && angle > -157.5f;
+            leftThumbDirs[1] = angle > -67.5f && angle < 67.5f;
+            leftThumbDirs[2] = angle > 22.5f && angle < 157.5f;
+            leftThumbDirs[3] = angle > 112.5 || angle < -112.5f;
+        }
+
+        if (rightLen >= rightDeadZone * rightDeadZone)
+        {
+            auto angle = OConvertToDegrees(Vector2::Angle(Vector2::Zero, m_cachedRightThumb));
+            rightThumbDirs[0] = angle < -22.5f && angle > -157.5f;
+            rightThumbDirs[1] = angle > -67.5f && angle < 67.5f;
+            rightThumbDirs[2] = angle > 22.5f && angle < 157.5f;
+            rightThumbDirs[3] = angle > 112.5 || angle < -112.5f;
+        }
+
         switch (button)
         {
             case A:
@@ -129,22 +157,41 @@ namespace onut
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) ? true : false;
             case Back:
                 return (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) ? true : false;
+
             case LeftThumbStickLeft:
-                return (state.Gamepad.sThumbLX <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+                return leftThumbDirs[3];
             case LeftThumbStickRight:
-                return (state.Gamepad.sThumbLX >= GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+                return leftThumbDirs[1];
             case LeftThumbStickUp:
-                return (state.Gamepad.sThumbLY >= GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+                return leftThumbDirs[0];
             case LeftThumbStickDown:
-                return (state.Gamepad.sThumbLY <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+                return leftThumbDirs[2];
             case RightThumbStickLeft:
-                return (state.Gamepad.sThumbRX <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return rightThumbDirs[3];
             case RightThumbStickRight:
-                return (state.Gamepad.sThumbRX >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return rightThumbDirs[1];
             case RightThumbStickUp:
-                return (state.Gamepad.sThumbRY >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return rightThumbDirs[0];
             case RightThumbStickDown:
-                return (state.Gamepad.sThumbRY <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+                return rightThumbDirs[2];
+
+            // Old way, can't do diagonal
+            //case LeftThumbStickLeft:
+            //    return (state.Gamepad.sThumbLX <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+            //case LeftThumbStickRight:
+            //    return (state.Gamepad.sThumbLX >= GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+            //case LeftThumbStickUp:
+            //    return (state.Gamepad.sThumbLY >= GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+            //case LeftThumbStickDown:
+            //    return (state.Gamepad.sThumbLY <= -GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE);
+            //case RightThumbStickLeft:
+            //    return (state.Gamepad.sThumbRX <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+            //case RightThumbStickRight:
+            //    return (state.Gamepad.sThumbRX >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+            //case RightThumbStickUp:
+            //    return (state.Gamepad.sThumbRY >= GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
+            //case RightThumbStickDown:
+            //    return (state.Gamepad.sThumbRY <= -GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE);
         }
         return false;
     }
