@@ -22,11 +22,15 @@ namespace onut
         bool pollEvents() override;
         void setClipboard(const std::string& text) override;
         std::string getClipboard() override;
+        bool hasFocus() const override { return m_hasFocus; };
 
     private:
+        friend LRESULT CALLBACK WinProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
+
         HWND m_handle;
         bool m_isFullScreen = false;
         Point m_resSetting;
+        bool m_hasFocus = true;
     };
 }
 

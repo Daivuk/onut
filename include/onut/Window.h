@@ -51,6 +51,7 @@ namespace onut
         virtual bool pollEvents() = 0;
         virtual void setClipboard(const std::string& text) = 0;
         virtual std::string getClipboard() = 0;
+        virtual bool hasFocus() const { return true; }
 
         std::function<void(char)>                   onWrite;
         std::function<void(WriteFunc)>              onWriteFunc;

@@ -7,8 +7,8 @@
 
 // Internal
 #include "InputDeviceDI8.h"
-#include "WindowWIN32.h"
 #include "JSBindings.h"
+#include "WindowWIN32.h"
 
 // Third party
 #include <windowsx.h>
@@ -217,6 +217,20 @@ namespace onut
                     DragFinish(hDrop);
                     return 0;
                 }
+            }
+        }
+        else if (msg == WM_SETFOCUS)
+        {
+            if (oWindow)
+            {
+                static_cast<WindowWIN32*>(oWindow.get())->m_hasFocus = true;
+            }
+        }
+        else if (msg == WM_KILLFOCUS)
+        {
+            if (oWindow)
+            {
+                static_cast<WindowWIN32*>(oWindow.get())->m_hasFocus = false;
             }
         }
 

@@ -4,6 +4,7 @@
 #include <onut/Joystick.h>
 #include <onut/Renderer.h>
 #include <onut/Strings.h>
+#include <onut/Window.h>
 
 // Private
 #include "InputDevice.h"
@@ -126,9 +127,12 @@ namespace onut
         memcpy(m_curStates, m_states, sizeof(InputState) * STATE_COUNT);
         memcpy(m_states, m_statesRestore, sizeof(InputState) * STATE_COUNT);
 
-        if (m_fpsMouse)
+        if (m_fpsMouse && oWindow->hasFocus())
         {
-            mouseDelta = mousePos - (OScreen / 2);
+            mouseDelta.x = getStateValue(OMouseX);
+            mouseDelta.y = getStateValue(OMouseY);
+            //mouseDelta = mousePos - (OScreen / 2);
+
             setMousePos(OScreen / 2);
         }
         else mouseDelta = {0, 0};

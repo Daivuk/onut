@@ -374,6 +374,71 @@ struct Vector3
     static void TransformNormal(const Vector3& v, const Matrix& m, Vector3& result);
     static Vector3 TransformNormal(const Vector3& v, const Matrix& m);
 
+    static Vector3 CreateForward(float yaw)
+    {
+        return {
+            std::sinf(yaw),
+            std::cosf(yaw),
+            0.0f
+        };
+    }
+
+    static Vector3 CreateForward(float yaw, float pitch)
+    {
+        auto cos_pitch = std::cosf(pitch);
+        return {
+            std::sinf(yaw) * cos_pitch,
+            std::cosf(yaw) * cos_pitch,
+            std::sinf(pitch)
+        };
+    }
+
+    static Vector3 CreateRight(float yaw)
+    {
+        return {
+            std::cosf(yaw),
+            -std::sinf(yaw),
+            0.0f
+        };
+    }
+
+    static void CreateForwardRight(float yaw, Vector3& out_front, Vector3& out_right)
+    {
+        auto sin_yaw = std::sinf(yaw);
+        auto cos_yaw = std::cosf(yaw);
+
+        out_front = {
+            sin_yaw,
+            cos_yaw,
+            0.0f
+        };
+
+        out_right = {
+            cos_yaw,
+            -sin_yaw,
+            0.0f
+        };
+    }
+
+    static void CreateForwardRight(float yaw, float pitch, Vector3& out_front, Vector3& out_right)
+    {
+        auto sin_yaw = std::sinf(yaw);
+        auto cos_yaw = std::cosf(yaw);
+        auto cos_pitch = std::cosf(pitch);
+
+        out_front = {
+            sin_yaw * cos_pitch,
+            cos_yaw * cos_pitch,
+            std::sinf(pitch)
+        };
+
+        out_right = {
+            cos_yaw,
+            -sin_yaw,
+            0.0f
+        };
+    }
+
     // Constants
     static const Vector3 Zero;
     static const Vector3 One;
