@@ -25,6 +25,8 @@ namespace onut
 {
     namespace js
     {
+        std::function<void(duk_context*)> createUserBindings;
+
         void createImguiBindings();
 
         std::unordered_map<std::string, OUIControlRef> UImap;
@@ -11094,6 +11096,11 @@ namespace onut
             createFileBindings();
 
             createImguiBindings();
+
+            if (createUserBindings)
+            {
+                createUserBindings(pContext);
+            }
         }
 
         static bool executeJSFile(const std::string& filename)
