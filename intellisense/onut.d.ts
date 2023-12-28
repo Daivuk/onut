@@ -856,7 +856,7 @@ declare function getSound(filename: string): Sound;
 declare function getFreshSound(filename: string): Sound;
 declare function playSound(filename: string, volume: number, balance: number, pitch: number);
 declare function playSoundCue(filename: string, volume: number, balance: number, pitch: number);
-declare function play3DSound(filename: stringr, position: Vector3, radius: number, volume: number, balance: number, pitch: number);
+declare function play3DSound(filename: string, position: Vector3, radius: number, volume: number, balance: number, pitch: number);
 
 // SoundInstance
 declare class SoundInstance {
