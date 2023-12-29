@@ -486,6 +486,14 @@ inline Vector3 operator*(const Vector3& V, float S)
         V.z * S);
 }
 
+inline Vector3 operator/(const Vector3& V, float S)
+{
+    return Vector3(
+        V.x / S,
+        V.y / S,
+        V.z / S);
+}
+
 inline Vector3 operator/(const Vector3& V1, const Vector3& V2)
 {
     return Vector3(
