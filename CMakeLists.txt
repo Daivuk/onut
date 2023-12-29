@@ -199,6 +199,7 @@ list(APPEND src_files
     src/Point.cpp
     src/Pool.cpp
     src/PrimitiveBatch.cpp 
+    src/PrimitiveBatch3D.cpp 
     src/Random.cpp 
     src/Ray.cpp
     src/Renderer.cpp 
@@ -251,7 +252,9 @@ list(APPEND src_files
     src/zlib/zutil.c
 )
 
-add_library(libonut STATIC ${src_files})
+file(GLOB inc_files ./include/onut/*.h)
+
+add_library(libonut STATIC ${src_files} ${inc_files})
 
 # Libraries
 list(APPEND includes

@@ -826,6 +826,44 @@ static const char* SHADER_DEFERRED_OMNI_PS = ""
 "    oColor = float4(0.0, 0.0, 0.0, ao * tdiffuse.a);\n" \
 "}\n"
 
+static const char* SHADER_SRC_PRIMITIVE_BATCH_3D_VS = ""
+"    input float3 inPosition;\n"
+"    input float3 inNormal;\n"
+"    input float2 inUV;\n"
+"    input float4 inColor;\n"
+"\n"
+"    output float3 outNormal;\n"
+"    output float2 outUV;\n"
+"    output float4 outColor;\n"
+"\n"
+"    void main()\n"
+"    {\n"
+"        oPosition = mul(float4(inPosition, 1), oViewProjection);\n"
+"        outNormal = normalize(mul(oModel, float4(inNormal, 0.0)).xyz);\n"
+"        outUV = inUV;\n"
+"        outColor = inColor;\n"
+"    }\n"
+"";
+
+static const char* SHADER_SRC_PRIMITIVE_BATCH_3D_PS = ""
+"    input float3 inNormal;\n"
+"    input float2 inUV;\n"
+"    input float4 inColor;\n"
+"\n"
+"    Texture0 diffuse_texture\n"
+"    {\n"
+"        filter = trilinear;\n"
+"        repeat = wrap;\n"
+"    }\n"
+"\n"
+"    void main()\n"
+"    {\n"
+"        float4 diffuse = diffuse_texture(inUV);\n"
+"        oColor = saturate(diffuse * inColor);\n"
+"    }\n"
+"";
+
+
 static const char* SHADER_SSAO_LOW_PS = SSAO_PS(8);
 static const char* SHADER_SSAO_MEDIUM_PS = SSAO_PS(16);
 static const char* SHADER_SSAO_HIGH_PS = SSAO_PS(32);

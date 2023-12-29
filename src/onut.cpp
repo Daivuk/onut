@@ -14,6 +14,7 @@
 #include <onut/onut.h>
 #include <onut/ParticleSystemManager.h>
 #include <onut/PrimitiveBatch.h>
+#include <onut/PrimitiveBatch3D.h>
 #include <onut/Random.h>
 #include <onut/Renderer.h>
 #include <onut/Settings.h>
@@ -141,6 +142,7 @@ namespace onut
         // SpriteBatch
         if (!oSpriteBatch) oSpriteBatch = SpriteBatch::create();
         if (!oPrimitiveBatch) oPrimitiveBatch = PrimitiveBatch::create();
+        if (!oPrimitiveBatch3D) oPrimitiveBatch3D = PrimitiveBatch3D::create();
         
         // Content
         if (!oContentManager) oContentManager = ContentManager::create();
@@ -227,6 +229,7 @@ namespace onut
         //oCloud = nullptr;
         oContentManager = nullptr;
         oPrimitiveBatch = nullptr;
+        oPrimitiveBatch3D = nullptr;
         oSpriteBatch = nullptr;
         oDeferred = nullptr;
         oRenderer = nullptr;
