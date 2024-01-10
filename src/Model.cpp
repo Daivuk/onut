@@ -610,15 +610,15 @@ namespace onut
             }
         }
 
-#if defined(_DEBUG)
-        OLog(filename + " v cnt: " + std::to_string(vertCount) + ", dims: " 
-            + std::to_string(maxs[0] - mins[0]) + " x "
-            + std::to_string(maxs[1] - mins[1]) + " x "
-            + std::to_string(maxs[2] - mins[2]) + ", center: "
-            + std::to_string((maxs[0] + mins[0]) / 2) + ", "
-            + std::to_string((maxs[1] + mins[1]) / 2) + ", "
-            + std::to_string((maxs[2] + mins[2]) / 2));
-#endif
+//#if defined(_DEBUG)
+//        OLog(filename + " v cnt: " + std::to_string(vertCount) + ", dims: " 
+//            + std::to_string(maxs[0] - mins[0]) + " x "
+//            + std::to_string(maxs[1] - mins[1]) + " x "
+//            + std::to_string(maxs[2] - mins[2]) + ", center: "
+//            + std::to_string((maxs[0] + mins[0]) / 2) + ", "
+//            + std::to_string((maxs[1] + mins[1]) / 2) + ", "
+//            + std::to_string((maxs[2] + mins[2]) / 2));
+//#endif
 
         pRet->m_boundingBox[0] = { mins[0], mins[1], mins[2] };
         pRet->m_boundingBox[1] = { maxs[0], maxs[1], maxs[2] };
