@@ -25,10 +25,10 @@ struct Color
 
     void unpack(uint32_t packed)
     {
-        r = (float)((packed >> 24) & 0xff) / 255.f;
-        g = (float)((packed >> 16) & 0xff) / 255.f;
-        b = (float)((packed >> 8) & 0xff) / 255.f;
-        a = (float)(packed & 0xff) / 255.f;
+        a = (float)((packed >> 24) & 0xff) / 255.f;
+        b = (float)((packed >> 16) & 0xff) / 255.f;
+        g = (float)((packed >> 8) & 0xff) / 255.f;
+        r = (float)(packed & 0xff) / 255.f;
     }
 
     uint32_t pack() const
