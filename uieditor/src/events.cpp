@@ -1006,7 +1006,7 @@ void BIND_COLOR_PROPERTY(const std::string& name, Tgetter getter, Tsetter setter
             {
                 Color color;
                 rgbCurrent = colorChooser.rgbResult;
-                color.unpack(((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | alphaVal);
+                color.unpack(0xFF000000 | rgbCurrent);//((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | alphaVal);
                 pButton->color = color;
                 pBinding->updateControl(g_pDocument->pSelected);
             }
@@ -1178,7 +1178,7 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
             {
                 Color color;
                 rgbCurrent = colorChooser.rgbResult;
-                color.unpack(((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff);
+                color.unpack(0xFF000000 | rgbCurrent);//((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff);
                 pBtnColor->color = color;
                 pBinding->updateControl(g_pDocument->pSelected);
             }
@@ -1625,7 +1625,7 @@ void BIND_TEXT_COMPONENT(const std::string& name)
             {
                 Color color;
                 rgbCurrent = colorChooser.rgbResult;
-                color.unpack(((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff);
+                color.unpack(0xFF000000 | rgbCurrent);//((rgbCurrent << 24) & 0xff000000) | ((rgbCurrent << 8) & 0x00ff0000) | ((rgbCurrent >> 8) & 0x0000ff00) | 0x000000ff);
                 pBtnColor->color = color;
                 pBinding->updateControl(g_pDocument->pSelected);
             }
