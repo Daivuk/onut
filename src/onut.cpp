@@ -421,7 +421,7 @@ namespace onut
                     io.KeysDown[(int)OKeyEnd] = OInputPressed(OKeyEnd);
                     io.KeysDown[(int)OKeyDelete] = OInputPressed(OKeyDelete);
                     io.KeysDown[(int)OKeyBackspace] = OInputPressed(OKeyBackspace);
-                    io.KeysDown[(int)OKeyEnter] = OInputPressed(OKeyEnter);
+                    io.KeysDown[(int)OKeyEnter] = OInputPressed(OKeyEnter) || OInputPressed(OKeyNumPadEnter);
                     io.KeysDown[(int)OKeyEscape] = OInputPressed(OKeyEscape);
                     io.KeysDown[(int)OKeyA] = OInputPressed(OKeyA);
                     io.KeysDown[(int)OKeyC] = OInputPressed(OKeyC);
