@@ -59,6 +59,7 @@ namespace onut
             OTextureRef pTexture;
             uint32_t elementCount;
             std::vector<Matrix> bones;
+            std::vector<int> bone_parents;
             std::unordered_map<std::string, int> boneMapping;
             int vertexFlags = 0;
             int vertexSize = 6;

@@ -157,6 +157,26 @@ namespace onut
         out = start + (end - start) * (float)factor;
     }
 
+    static const aiNode* findParent(const aiNode* node, const aiString& childName)
+    {
+        for (unsigned int i = 0; i < node->mNumChildren; ++i)
+        {
+            const aiNode* child = node->mChildren[i];
+            if (child->mName == childName)
+            {
+                return node;
+            }
+
+            const aiNode* foundParent = findParent(child, childName);
+            if (foundParent)
+            {
+                return foundParent;
+            }
+        }
+
+        return nullptr;
+    }
+
     // Reference: http://ogldev.atspace.co.uk/www/tutorial38/tutorial38.html
     static void bakeAnimBones(double t,
                               aiAnimation* pAssAnim, 
@@ -523,6 +543,23 @@ namespace onut
                         auto pVertex = vertices + idx * vertexSize;
                         pVertex[weightOff + 0] = (float)i;
                         pVertex[weightOff + 1] = weight;
+                    }
+                }
+
+                // Find bone's parents using the root node for the entire scene... not great assimp, not great.
+                pMesh->bone_parents.resize(pMesh->bones.size());
+                for (int i = 0; i < (int)pAssMesh->mNumBones; ++i)
+                {
+                    pMesh->bone_parents[i] = -1;
+                    auto pAssBone = pAssMesh->mBones[i];
+                    const aiNode* pParentNode = findParent(pScene->mRootNode, pAssBone->mName);
+                    if (pParentNode)
+                    {
+                        auto it = pMesh->boneMapping.find(pParentNode->mName.C_Str());
+                        if (it != pMesh->boneMapping.end())
+                        {
+                            pMesh->bone_parents[i] = it->second;
+                        }
                     }
                 }
             }
