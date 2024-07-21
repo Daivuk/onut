@@ -28,6 +28,10 @@ namespace onut
         case Shader::VarType::Float2: return "float2";
         case Shader::VarType::Float3: return "float3";
         case Shader::VarType::Float4: return "float4";
+        case Shader::VarType::UInt: return "uint";
+        case Shader::VarType::UInt4: return "uint4";
+        case Shader::VarType::Int: return "int";
+        case Shader::VarType::Int4: return "int4";
         case Shader::VarType::Matrix: return "matrix";
         default: assert(false);
         }
@@ -606,6 +610,18 @@ namespace onut
                         case VarType::Float4:
                             format = DXGI_FORMAT_R32G32B32A32_FLOAT;
                             break;
+                        case VarType::UInt:
+                            format = DXGI_FORMAT_R32_UINT;
+                            break;
+                        case VarType::UInt4:
+                            format = DXGI_FORMAT_R32G32B32A32_UINT;
+                            break;
+                        case VarType::Int:
+                            format = DXGI_FORMAT_R32_SINT;
+                            break;
+                        case VarType::Int4:
+                            format = DXGI_FORMAT_R32G32B32A32_SINT;
+                            break;
                         default:
                             assert(false);
                     }
@@ -767,130 +783,188 @@ namespace onut
         return -1;
     }
 
-    void ShaderD3D11::setFloat(int varId, float value)
-    {
-        auto& uniform = m_uniforms[varId];
-        uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+#define MAP_UNIFORM() \
+    auto& uniform = m_uniforms[varId]; \
+    uniform.dirty = true; \
+    auto pBuffer = uniform.pBuffer; \
+    auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer); \
+    auto pDeviceContext = pRendererD3D11->getDeviceContext(); \
+    D3D11_MAPPED_SUBRESOURCE map; \
+    pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
 
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+#define UNMAP_UNIFORM() \
+    pDeviceContext->Unmap(pBuffer, 0);
+
+    void ShaderD3D11::setUInt(int varId, const uint32_t& value)
+    {
+        MAP_UNIFORM();
+        UInt4 values = {value, 0, 0, 0};
+        memcpy(map.pData, &values, 16);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setUIntArray(int varId, const uint32_t* values, int count)
+    {
+        MAP_UNIFORM();
+        static std::vector<UInt4> padded_values;
+        padded_values.resize(count);
+        for (int i = 0; i < count; ++i)
+        {
+            padded_values[i].x = values[i];
+        }
+        memcpy(map.pData, padded_values.data(), 16 * count);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setUInt4(int varId, const UInt4& value)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, &value, 16);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setUInt4Array(int varId, const UInt4* values, int count)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, values, 16 * count);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setInt(int varId, const int32_t& value)
+    {
+        MAP_UNIFORM();
+        Int4 values = {value, 0, 0, 0};
+        memcpy(map.pData, &values, 16);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setIntArray(int varId, const int32_t* values, int count)
+    {
+        MAP_UNIFORM();
+        static std::vector<Int4> padded_values;
+        padded_values.resize(count);
+        for (int i = 0; i < count; ++i)
+        {
+            padded_values[i].x = values[i];
+        }
+        memcpy(map.pData, padded_values.data(), 16 * count);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setInt4(int varId, const Int4& value)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, &value, 16);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setInt4Array(int varId, const Int4* values, int count)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, values, 16 * count);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setFloat(int varId, const float& value)
+    {
+        MAP_UNIFORM();
         float values[4] = {value, 0, 0, 0};
         memcpy(map.pData, values, 16);
-        pDeviceContext->Unmap(pBuffer, 0);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setFloatArray(int varId, const float* values, int count)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, values, 4 * count);
+        UNMAP_UNIFORM();
     }
 
     void ShaderD3D11::setVector2(int varId, const Vector2& value)
     {
-        auto& uniform = m_uniforms[varId];
-        uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        MAP_UNIFORM();
         float values[4] = {value.x, value.y, 0, 0};
         memcpy(map.pData, values, 16);
-        pDeviceContext->Unmap(pBuffer, 0);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setVector2Array(int varId, const Vector2* values, int count)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, values, sizeof(Vector2) * count);
+        UNMAP_UNIFORM();
     }
 
     void ShaderD3D11::setVector3(int varId, const Vector3& value)
     {
-        auto& uniform = m_uniforms[varId];
-        uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        MAP_UNIFORM();
         float values[4] = {value.x, value.y, value.z, 0};
         memcpy(map.pData, values, 16);
-        pDeviceContext->Unmap(pBuffer, 0);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setVector3Array(int varId, const Vector3* values, int count)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, values, sizeof(Vector3) * count);
+        UNMAP_UNIFORM();
     }
 
     void ShaderD3D11::setVector4(int varId, const Vector4& value)
     {
-        auto& uniform = m_uniforms[varId];
-        uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+        MAP_UNIFORM();
         memcpy(map.pData, &value.x, 16);
-        pDeviceContext->Unmap(pBuffer, 0);
+        UNMAP_UNIFORM();
+    }
+
+    void ShaderD3D11::setVector4Array(int varId, const Vector4* values, int count)
+    {
+        MAP_UNIFORM();
+        memcpy(map.pData, values, sizeof(Vector4) * count);
+        UNMAP_UNIFORM();
     }
 
     void ShaderD3D11::setMatrix(int varId, const Matrix& value)
     {
-        auto& uniform = m_uniforms[varId];
-        uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
+        MAP_UNIFORM();
         auto finalValue = value.Transpose();
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
         memcpy(map.pData, &finalValue._11, 64);
-        pDeviceContext->Unmap(pBuffer, 0);
+        UNMAP_UNIFORM();
     }
 
     void ShaderD3D11::setMatrixArray(int varId, const Matrix* values, int count)
     {
-        auto& uniform = m_uniforms[varId];
-        uniform.dirty = true;
-        auto pBuffer = uniform.pBuffer;
-        auto pRendererD3D11 = std::dynamic_pointer_cast<ORendererD3D11>(oRenderer);
-        auto pDeviceContext = pRendererD3D11->getDeviceContext();
-
+        MAP_UNIFORM();
         static std::vector<Matrix> transposed;
         if ((int)transposed.size() < count) transposed.resize(count);
         for (int i = 0; i < count; ++i)
         {
             transposed[i] = values[i].Transpose();
         }
-
-        D3D11_MAPPED_SUBRESOURCE map;
-        pDeviceContext->Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
         memcpy(map.pData, transposed.data(), 64 * count);
-        pDeviceContext->Unmap(pBuffer, 0);
+        UNMAP_UNIFORM();
     }
 
-    void ShaderD3D11::setFloat(const std::string& varName, float value)
-    {
-        setFloat(getUniformId(varName), value);
+
+#define DEF_UNIFORM_SETTER_BY_NAME(_type, _typename) \
+    void ShaderD3D11::set ## _typename(const std::string& varName, const _type& value) \
+    { \
+        set ## _typename(getUniformId(varName), value); \
+    } \
+    void ShaderD3D11::set ## _typename ## Array(const std::string& varName, const _type* values, int count) \
+    { \
+        set ## _typename ## Array(getUniformId(varName), values, count); \
     }
 
-    void ShaderD3D11::setVector2(const std::string& varName, const Vector2& value)
-    {
-        setVector2(getUniformId(varName), value);
-    }
-
-    void ShaderD3D11::setVector3(const std::string& varName, const Vector3& value)
-    {
-        setVector3(getUniformId(varName), value);
-    }
-
-    void ShaderD3D11::setVector4(const std::string& varName, const Vector4& value)
-    {
-        setVector4(getUniformId(varName), value);
-    }
-
-    void ShaderD3D11::setMatrix(const std::string& varName, const Matrix& value)
-    {
-        setMatrix(getUniformId(varName), value);
-    }
-
-    void ShaderD3D11::setMatrixArray(const std::string& varName, const Matrix* values, int count)
-    {
-        setMatrixArray(getUniformId(varName), values, count);
-    }
+    DEF_UNIFORM_SETTER_BY_NAME(float, Float);
+    DEF_UNIFORM_SETTER_BY_NAME(Vector2, Vector2);
+    DEF_UNIFORM_SETTER_BY_NAME(Vector3, Vector3);
+    DEF_UNIFORM_SETTER_BY_NAME(Vector4, Vector4);
+    DEF_UNIFORM_SETTER_BY_NAME(uint32_t, UInt);
+    DEF_UNIFORM_SETTER_BY_NAME(UInt4, UInt4);
+    DEF_UNIFORM_SETTER_BY_NAME(int32_t, Int);
+    DEF_UNIFORM_SETTER_BY_NAME(Int4, Int4);
+    DEF_UNIFORM_SETTER_BY_NAME(Matrix, Matrix);
 
     ShaderD3D11::Uniforms& ShaderD3D11::getUniforms()
     {

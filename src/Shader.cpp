@@ -268,6 +268,10 @@ namespace onut
         else if (strcmp(lexer.string, "float2") == 0) element.type = Shader::VarType::Float2;
         else if (strcmp(lexer.string, "float3") == 0) element.type = Shader::VarType::Float3;
         else if (strcmp(lexer.string, "float4") == 0) element.type = Shader::VarType::Float4;
+        else if (strcmp(lexer.string, "uint") == 0) element.type = Shader::VarType::UInt;
+        else if (strcmp(lexer.string, "uint4") == 0) element.type = Shader::VarType::UInt4;
+        else if (strcmp(lexer.string, "int") == 0) element.type = Shader::VarType::Int;
+        else if (strcmp(lexer.string, "int4") == 0) element.type = Shader::VarType::Int4;
         else
         {
             shaderError(lexer, "Expected type of float, float2, float3 or float4");
@@ -314,6 +318,10 @@ namespace onut
         else if (strcmp(lexer.string, "float3") == 0) uniform.type = Shader::VarType::Float3;
         else if (strcmp(lexer.string, "float4") == 0) uniform.type = Shader::VarType::Float4;
         else if (strcmp(lexer.string, "matrix") == 0) uniform.type = Shader::VarType::Matrix;
+        else if (strcmp(lexer.string, "uint") == 0) uniform.type = Shader::VarType::UInt;
+        else if (strcmp(lexer.string, "uint4") == 0) uniform.type = Shader::VarType::UInt4;
+        else if (strcmp(lexer.string, "int") == 0) uniform.type = Shader::VarType::Int;
+        else if (strcmp(lexer.string, "int4") == 0) uniform.type = Shader::VarType::Int4;
         else
         {
             shaderError(lexer, "Expected type of float, float2, float3, float4 or matrix");
@@ -611,6 +619,10 @@ namespace onut
             else if (strcmp(lexer.string, "float3") == 0) member.type = Shader::VarType::Float3;
             else if (strcmp(lexer.string, "float4") == 0) member.type = Shader::VarType::Float4;
             else if (strcmp(lexer.string, "matrix") == 0) member.type = Shader::VarType::Matrix;
+            else if (strcmp(lexer.string, "uint") == 0) member.type = Shader::VarType::UInt;
+            else if (strcmp(lexer.string, "uint4") == 0) member.type = Shader::VarType::UInt4;
+            else if (strcmp(lexer.string, "int") == 0) member.type = Shader::VarType::Int;
+            else if (strcmp(lexer.string, "int4") == 0) member.type = Shader::VarType::Int4;
             else
             {
                 member.type = Shader::VarType::Unknown;
@@ -730,6 +742,10 @@ namespace onut
             else if (strcmp(lexer.string, "float3") == 0) token.type = Shader::VarType::Float3;
             else if (strcmp(lexer.string, "float4") == 0) token.type = Shader::VarType::Float4;
             else if (strcmp(lexer.string, "matrix") == 0) token.type = Shader::VarType::Matrix;
+            else if (strcmp(lexer.string, "uint") == 0) token.type = Shader::VarType::UInt;
+            else if (strcmp(lexer.string, "uint4") == 0) token.type = Shader::VarType::UInt4;
+            else if (strcmp(lexer.string, "int") == 0) token.type = Shader::VarType::Int;
+            else if (strcmp(lexer.string, "int4") == 0) token.type = Shader::VarType::Int4;
         }
         else if (lexer.token == CLEX_intlit)
         {
@@ -859,6 +875,10 @@ namespace onut
         else if (strcmp(lexer.string, "float3") == 0) _const.type = Shader::VarType::Float3;
         else if (strcmp(lexer.string, "float4") == 0) _const.type = Shader::VarType::Float4;
         else if (strcmp(lexer.string, "matrix") == 0) _const.type = Shader::VarType::Matrix;
+        else if (strcmp(lexer.string, "uint") == 0) _const.type = Shader::VarType::UInt;
+        else if (strcmp(lexer.string, "uint4") == 0) _const.type = Shader::VarType::UInt4;
+        else if (strcmp(lexer.string, "int") == 0) _const.type = Shader::VarType::Int;
+        else if (strcmp(lexer.string, "int4") == 0) _const.type = Shader::VarType::Int4;
         else
         {
             _const.type = Shader::VarType::Unknown;
@@ -998,6 +1018,10 @@ namespace onut
         else if (strcmp(lexer.string, "float3") == 0) _function.type = Shader::VarType::Float3;
         else if (strcmp(lexer.string, "float4") == 0) _function.type = Shader::VarType::Float4;
         else if (strcmp(lexer.string, "matrix") == 0) _function.type = Shader::VarType::Matrix;
+        else if (strcmp(lexer.string, "uint") == 0) _function.type = Shader::VarType::UInt;
+        else if (strcmp(lexer.string, "uint4") == 0) _function.type = Shader::VarType::UInt4;
+        else if (strcmp(lexer.string, "int") == 0) _function.type = Shader::VarType::Int;
+        else if (strcmp(lexer.string, "int4") == 0) _function.type = Shader::VarType::Int4;
         else
         {
             _function.type = Shader::VarType::Unknown;

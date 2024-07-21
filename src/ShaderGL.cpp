@@ -623,7 +623,7 @@ namespace onut
         return -1;
     }
 
-    void ShaderGL::setFloat(int varId, float value)
+    void ShaderGL::setFloat(int varId, const float& value)
     {
         auto& uniform = m_uniforms[varId];
         uniform.dirty = true;

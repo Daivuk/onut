@@ -40,18 +40,22 @@ namespace onut
         Uniforms& getUniforms();
 
         int getUniformId(const std::string& varName) const override;
-        void setFloat(int varId, float value) override;
-        void setVector2(int varId, const Vector2& value) override;
-        void setVector3(int varId, const Vector3& value) override;
-        void setVector4(int varId, const Vector4& value) override;
-        void setMatrix(int varId, const Matrix& value) override;
-        void setMatrixArray(int varId, const Matrix* values, int count) override;
-        void setFloat(const std::string& varName, float value) override;
-        void setVector2(const std::string& varName, const Vector2& value) override;
-        void setVector3(const std::string& varName, const Vector3& value) override;
-        void setVector4(const std::string& varName, const Vector4& value) override;
-        void setMatrix(const std::string& varName, const Matrix& value) override;
-        void setMatrixArray(const std::string& varName, const Matrix* values, int count) override;
+
+#define OVERRIDE_UNIFORM_SETTER(_type, _typename) \
+        void set ## _typename(int varId, const _type& value) override; \
+        void set ## _typename(const std::string& varName, const _type& value) override; \
+        void set ## _typename ## Array(int varId, const _type* values, int count) override; \
+        void set ## _typename ## Array(const std::string& varName, const _type* values, int count) override;
+
+        OVERRIDE_UNIFORM_SETTER(float, Float);
+        OVERRIDE_UNIFORM_SETTER(Vector2, Vector2);
+        OVERRIDE_UNIFORM_SETTER(Vector3, Vector3);
+        OVERRIDE_UNIFORM_SETTER(Vector4, Vector4);
+        OVERRIDE_UNIFORM_SETTER(uint32_t, UInt);
+        OVERRIDE_UNIFORM_SETTER(UInt4, UInt4);
+        OVERRIDE_UNIFORM_SETTER(int32_t, Int);
+        OVERRIDE_UNIFORM_SETTER(Int4, Int4);
+        OVERRIDE_UNIFORM_SETTER(Matrix, Matrix);
 
     private:
         friend class Shader;

@@ -33,18 +33,21 @@ namespace onut
         Uniforms& getUniforms();
 
         int getUniformId(const std::string& varName) const override;
+
         void setFloat(int varId, float value) override;
-        void setVector2(int varId, const Vector2& value) override;
-        void setVector3(int varId, const Vector3& value) override;
-        void setVector4(int varId, const Vector4& value) override;
-        void setMatrix(int varId, const Matrix& value) override;
-        void setMatrixArray(int varId, const Matrix* values, int count) override {}; // TODO
         void setFloat(const std::string& varName, float value) override;
+
+        void setVector2(int varId, const Vector2& value) override;
         void setVector2(const std::string& varName, const Vector2& value) override;
+
+        void setVector3(int varId, const Vector3& value) override;
         void setVector3(const std::string& varName, const Vector3& value) override;
+
+        void setVector4(int varId, const Vector4& value) override;
         void setVector4(const std::string& varName, const Vector4& value) override;
+
+        void setMatrix(int varId, const Matrix& value) override;
         void setMatrix(const std::string& varName, const Matrix& value) override;
-        void setMatrixArray(const std::string& varName, const Matrix* values, int count) override {}; // TODO
 
     private:
         friend class Shader;
