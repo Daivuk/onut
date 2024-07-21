@@ -62,8 +62,28 @@ namespace onut
 
         virtual int getUniformId(const std::string& varName) const = 0;
 
-        struct UInt4 { uint32_t x, y, z, w; };
-        struct Int4 { int32_t x, y, z, w; };
+        struct UInt4
+        {
+            union
+            {
+                struct
+                {
+                    uint32_t x, y, z, w;
+                };
+                uint32_t v[4];
+            };
+        };
+        struct Int4
+        {
+            union
+            {
+                struct
+                {
+                    int32_t x, y, z, w;
+                };
+                int32_t v[4];
+            };
+        };
 
 #define DECL_UNIFORM_SETTER(_type, _typename) \
         virtual void set ## _typename(int varId, const _type& value) {}; \

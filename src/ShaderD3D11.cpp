@@ -806,13 +806,8 @@ namespace onut
     void ShaderD3D11::setUIntArray(int varId, const uint32_t* values, int count)
     {
         MAP_UNIFORM();
-        static std::vector<UInt4> padded_values;
-        padded_values.resize(count);
-        for (int i = 0; i < count; ++i)
-        {
-            padded_values[i].x = values[i];
-        }
-        memcpy(map.pData, padded_values.data(), 16 * count);
+        assert((count % 4) == 0); // Count can only be a multiple of 4
+        memcpy(map.pData, values, 4 * count);
         UNMAP_UNIFORM();
     }
 
@@ -841,13 +836,8 @@ namespace onut
     void ShaderD3D11::setIntArray(int varId, const int32_t* values, int count)
     {
         MAP_UNIFORM();
-        static std::vector<Int4> padded_values;
-        padded_values.resize(count);
-        for (int i = 0; i < count; ++i)
-        {
-            padded_values[i].x = values[i];
-        }
-        memcpy(map.pData, padded_values.data(), 16 * count);
+        assert((count % 4) == 0); // Count can only be a multiple of 4
+        memcpy(map.pData, values, 4 * count);
         UNMAP_UNIFORM();
     }
 
@@ -876,6 +866,7 @@ namespace onut
     void ShaderD3D11::setFloatArray(int varId, const float* values, int count)
     {
         MAP_UNIFORM();
+        assert((count % 4) == 0); // Count can only be a multiple of 4
         memcpy(map.pData, values, 4 * count);
         UNMAP_UNIFORM();
     }
@@ -891,7 +882,8 @@ namespace onut
     void ShaderD3D11::setVector2Array(int varId, const Vector2* values, int count)
     {
         MAP_UNIFORM();
-        memcpy(map.pData, values, sizeof(Vector2) * count);
+        assert((count % 2) == 0); // Count can only be a multiple of 2
+        memcpy(map.pData, values, 8 * count);
         UNMAP_UNIFORM();
     }
 
@@ -906,7 +898,15 @@ namespace onut
     void ShaderD3D11::setVector3Array(int varId, const Vector3* values, int count)
     {
         MAP_UNIFORM();
-        memcpy(map.pData, values, sizeof(Vector3) * count);
+        static std::vector<Vector4> padded_values;
+        padded_values.resize(count);
+        for (int i = 0; i < count; ++i)
+        {
+            padded_values[i].x = values[i].x;
+            padded_values[i].y = values[i].y;
+            padded_values[i].z = values[i].z;
+        }
+        memcpy(map.pData, padded_values.data(), 16 * count);
         UNMAP_UNIFORM();
     }
 
