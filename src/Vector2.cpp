@@ -26,7 +26,7 @@ float Vector2::Angle(const Vector2& from, const Vector2& to)
 {
     if (from == to) return 0.0f;
     auto dir = to - from;
-    auto rad = std::atan2f(dir.y, dir.x);
+    auto rad = atan2f(dir.y, dir.x);
     return rad;
 }
 
