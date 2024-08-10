@@ -9,7 +9,7 @@ option(ONUT_STATIC_SDL "Statically link SDL instead of using system libraries" O
 option(ONUT_BUILD_JSONCPP "If using another API that requires json disable this" ON)
 option(ONUT_DUKTAPE_DEBUGGER "Allows processes to attach to the duktape debugger" OFF)
 
-if (NOT WINDOWS)
+if (NOT WIN32)
     set(ONUT_USE_SDL ON)
 endif()
 
