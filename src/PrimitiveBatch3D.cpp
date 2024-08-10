@@ -39,8 +39,8 @@ namespace onut
         for (int i = 0; i < SPHERE_SIDE_COUNT; ++i)
         {
             auto a = (float)i * inv_r_SPHERE_SIDE_COUNT;
-            m_sinTable[i] = std::sinf(a);
-            m_cosTable[i] = std::cosf(a);
+            m_sinTable[i] = std::sin(a);
+            m_cosTable[i] = std::cos(a);
         }
         m_sinTable[SPHERE_SIDE_COUNT] = m_sinTable[0];
         m_cosTable[SPHERE_SIDE_COUNT] = m_cosTable[0];
