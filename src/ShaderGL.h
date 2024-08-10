@@ -34,8 +34,8 @@ namespace onut
 
         int getUniformId(const std::string& varName) const override;
 
-        void setFloat(int varId, float value) override;
-        void setFloat(const std::string& varName, float value) override;
+        void setFloat(int varId, const float& value) override;
+        void setFloat(const std::string& varName, const float& value) override;
 
         void setVector2(int varId, const Vector2& value) override;
         void setVector2(const std::string& varName, const Vector2& value) override;
