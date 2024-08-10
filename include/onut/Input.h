@@ -125,7 +125,7 @@ namespace onut
             KeyNumPadEnter = 88, /* Enter on numeric keypad */
             KeyRightControl = 228,
             KeyMute = 262, /* Mute */
-            KeyCalculator = 226, /* Calculator */
+            KeyCalculator = 266, /* Calculator */
             KeyPlayPause = 261, /* Play / Pause */
             KeyMediaStop = 260, /* Media Stop */
             KeyVolumeDown = 129, /* Volume - */
