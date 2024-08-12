@@ -377,35 +377,35 @@ struct Vector3
     static Vector3 CreateForward(float yaw)
     {
         return {
-            std::sinf(yaw),
-            std::cosf(yaw),
+            std::sin(yaw),
+            std::cos(yaw),
             0.0f
         };
     }
 
     static Vector3 CreateForward(float yaw, float pitch)
     {
-        auto cos_pitch = std::cosf(pitch);
+        auto cos_pitch = std::cos(pitch);
         return {
-            std::sinf(yaw) * cos_pitch,
-            std::cosf(yaw) * cos_pitch,
-            std::sinf(pitch)
+            std::sin(yaw) * cos_pitch,
+            std::cos(yaw) * cos_pitch,
+            std::sin(pitch)
         };
     }
 
     static Vector3 CreateRight(float yaw)
     {
         return {
-            std::cosf(yaw),
-            -std::sinf(yaw),
+            std::cos(yaw),
+            -std::sin(yaw),
             0.0f
         };
     }
 
     static void CreateForwardRight(float yaw, Vector3& out_front, Vector3& out_right)
     {
-        auto sin_yaw = std::sinf(yaw);
-        auto cos_yaw = std::cosf(yaw);
+        auto sin_yaw = std::sin(yaw);
+        auto cos_yaw = std::cos(yaw);
 
         out_front = {
             sin_yaw,
@@ -422,14 +422,14 @@ struct Vector3
 
     static void CreateForwardRight(float yaw, float pitch, Vector3& out_front, Vector3& out_right)
     {
-        auto sin_yaw = std::sinf(yaw);
-        auto cos_yaw = std::cosf(yaw);
-        auto cos_pitch = std::cosf(pitch);
+        auto sin_yaw = std::sin(yaw);
+        auto cos_yaw = std::cos(yaw);
+        auto cos_pitch = std::cos(pitch);
 
         out_front = {
             sin_yaw * cos_pitch,
             cos_yaw * cos_pitch,
-            std::sinf(pitch)
+            std::sin(pitch)
         };
 
         out_right = {

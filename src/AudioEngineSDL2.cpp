@@ -6,6 +6,7 @@
 
 // STL
 #include <cassert>
+#include <cstring>
 
 static void my_audio_callback(void *userdata, Uint8 *stream, int len)
 {
