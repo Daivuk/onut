@@ -166,6 +166,23 @@ namespace onut
         ShowCursor(isCursorVisible ? TRUE : FALSE);
     }
 
+    void InputDeviceDI8::loadMouseIcon(const std::string& name, const Point& hotSpot)
+    {
+        auto it = m_cursors.find(name);
+        if (it == m_cursors.end())
+        {
+            auto fullPath = oContentManager->findResourceFile(name);
+            if (!fullPath.empty())
+            {
+                auto hCursor = onut::pngToCursor(fullPath, hotSpot);
+                if (hCursor)
+                {
+                    m_cursors[name] = hCursor;
+                }
+            }
+        }
+    }
+
     void InputDeviceDI8::setMouseIcon(const std::string& name, const Point& hotSpot)
     {
         auto it = m_cursors.find(name);

@@ -109,6 +109,12 @@ namespace onut
         return m_states[static_cast<int>(in_stateId)].value;
     }
 
+    void Input::consumeJust(State in_stateId)
+    {
+        assert(static_cast<int>(in_stateId) >= 0 && static_cast<int>(in_stateId) < STATE_COUNT && "Invalid Input State");
+        m_prevStates[static_cast<int>(in_stateId)].isDown = m_curStates[static_cast<int>(in_stateId)].isDown;
+    }
+
     void Input::update()
     {
         m_pInputDevice->update();
@@ -213,6 +219,11 @@ namespace onut
             else setMouseVisible(true);
             m_fpsMouse = fpsMouse;
         }
+    }
+
+    void Input::loadMouseIcon(const std::string& name, const Point& hotSpot)
+    {
+        m_pInputDevice->loadMouseIcon(name, hotSpot);
     }
 
     void Input::setMouseIcon(const std::string& name, const Point& hotSpot)

@@ -518,6 +518,7 @@ namespace onut
         bool isStateJustDown(State state) const;
         bool isStateJustUp(State state) const;
         float getStateValue(State state) const;
+        void consumeJust(State state); // JustDown becomes Down, JustUp becomes Up
 
         OGamePadRef getGamePad(int index) const;
         OJoystickRef getJoystick(int index) const;
@@ -529,6 +530,7 @@ namespace onut
         void deactivateJoystick(int index);
 
         void setMouseVisible(bool isCursorVisible);
+        void loadMouseIcon(const std::string& name, const Point& hotSpot);
         void setMouseIcon(const std::string& name, const Point& hotSpot);
         void unsetMouseIcon();
         void setMousePos(const Point& mousePos);

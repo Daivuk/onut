@@ -142,6 +142,41 @@ namespace onut
         SDL_ShowCursor(isCursorVisible ? SDL_ENABLE : SDL_DISABLE);
     }
 
+    void InputDeviceSDL2::loadMouseIcon(const std::string& name, const Point& hotSpot)
+    {
+        auto it = m_cursors.find(name);
+        if (it == m_cursors.end())
+        {
+            auto fullPath = oContentManager->findResourceFile(name);
+            if (!fullPath.empty())
+            {
+                Point size;
+                auto pngData = onut::loadPNG(fullPath, size);
+                if (!pngData.empty())
+                {
+                    auto pSurface = SDL_CreateRGBSurfaceFrom(pngData.data(),
+                                      size.x,
+                                      size.y,
+                                      32,
+                                      size.x * 4,
+                                      0x000000ff,
+                                      0x0000ff00,
+                                      0x00ff0000,
+                                      0xff000000);
+                    if (pSurface)
+                    {
+                        auto pCursor = SDL_CreateColorCursor(pSurface, hotSpot.x, hotSpot.y);
+                        if (pCursor)
+                        {
+                            m_cursors[name] = pCursor;
+                        }
+                        SDL_FreeSurface(pSurface);
+                    }
+                }
+            }
+        }
+    }
+
     void InputDeviceSDL2::setMouseIcon(const std::string& name, const Point& hotSpot)
     {
         auto it = m_cursors.find(name);
