@@ -75,6 +75,8 @@ namespace onut
         void play3D(const Vector3& position, float radius = 1.0f, float volume = 1.0f, float balance = 0.f, float pitch = 1.f);
         void stop();
 
+        size_t getSize() const { return m_frameCount * m_channelCount * sizeof(float); }
+
         OSoundInstanceRef createInstance();
 
     private:
