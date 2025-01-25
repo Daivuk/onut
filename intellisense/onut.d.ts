@@ -1287,7 +1287,7 @@ declare namespace SpriteBatch {
     function drawBeam(texture: Texture, from: Vector2, to: Vector2, size: Number, color: Color, uOffset: number, uScale: number);
     function drawCross(position: Vector2, size: number, color: Color);
 
-    function drawText(font: Font, text: string, position: Vector2, align: Vector2, color: Color);
+    function drawText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, wrapWidth: number);
     function drawOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
     function drawPrettyOutlinedText(font: Font, text: string, position: Vector2, align: Vector2, color: Color, outlineColor: Color, outlineSize: number);
 }
