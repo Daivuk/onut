@@ -16,14 +16,14 @@ namespace onut
     unsigned int randomizeSeed();
 
     int randi();
-    int randi(int max);
-    int randi(int min, int max);
+    int randi(int max); // Max included
+    int randi(int min, int max); // Max included
 
     bool randb();
     bool randb(float chances);
 
-    float randf(float max);
-    float randf(float min, float max);
+    float randf(float max); // Max included
+    float randf(float min, float max); // Max included
 
     Vector2 rand2f(const Vector2& max);
     Vector2 rand2f(const Vector2& min, const Vector2& max);
