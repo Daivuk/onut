@@ -468,7 +468,9 @@ namespace onut
             {
                 oRenderer->clear(Color::Black);
             }
+#if !LINUX
             oRenderer->renderStates.renderTargets[0] = g_pMainRenderTarget;
+#endif
             oRenderer->beginFrame();
             onut::js::render();
             if (renderCallback)
@@ -555,8 +557,10 @@ namespace onut
 
             oRenderer->endFrame();
 
+#if !LINUX
             // This will ensure the resolution in update calls will match the main render target size
             oRenderer->renderStates.renderTargets[0] = g_pMainRenderTarget;
+#endif
         }
 
         cleanup();
