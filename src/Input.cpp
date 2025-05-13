@@ -338,7 +338,9 @@ namespace onut
             case State::KeyNumPadEnter: return "Num Enter"; /* Enter on numeric keypad */
             case State::KeyRightControl: return "Right Control";
             case State::KeyMute: return "Mute"; /* Mute */
+#if defined(MSVC)
             case State::KeyCalculator: return "Calculator"; /* Calculator */
+#endif
             case State::KeyPlayPause: return "Play"; /* Play / Pause */
             case State::KeyMediaStop: return "Media Stop"; /* Media Stop */
             case State::KeyVolumeDown: return "Volume Down"; /* Volume - */

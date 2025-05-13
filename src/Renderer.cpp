@@ -338,6 +338,7 @@ namespace onut
         }
 
         // Create 3D shaders
+#if !LINUX
         {
             m_p3DVertexShaderPNCT = OShader::createFromSource(SHADER_SRC_3D_PNCT_VS, OVertexShader);
             m_p3DVertexShaderPNC = OShader::createFromSource(SHADER_SRC_3D_PNC_VS, OVertexShader);
@@ -362,6 +363,7 @@ namespace onut
             setLight(1, Vector3::Zero, 0.0f, Color::Black);
             setLight(2, Vector3::Zero, 0.0f, Color::Black);
         }
+#endif
 
         // Effects
         {

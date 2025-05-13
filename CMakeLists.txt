@@ -15,6 +15,7 @@ endif()
 # Easier defines
 if (UNIX AND NOT APPLE)
     set(LINUX 1)
+    add_definitions(-DLINUX)
 endif()
 
 # Setup modules path
