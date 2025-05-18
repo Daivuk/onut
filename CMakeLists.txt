@@ -8,6 +8,7 @@ option(ONUT_USE_OPENGL "Use OpenGL on Windows instead of DirectX11" OFF)
 option(ONUT_STATIC_SDL "Statically link SDL instead of using system libraries" ON)
 option(ONUT_BUILD_JSONCPP "If using another API that requires json disable this" ON)
 option(ONUT_DUKTAPE_DEBUGGER "Allows processes to attach to the duktape debugger" OFF)
+option(ONUT_BUILD_ZLIB "Build zlib as part of onut source" ON)
 
 if (NOT WIN32)
     set(ONUT_USE_SDL ON)
@@ -239,23 +240,28 @@ list(APPEND src_files
     src/Vector3.cpp 
     src/Vector4.cpp 
     src/VertexBuffer.cpp 
-    src/Window.cpp 
-    src/zlib/adler32.c
-    src/zlib/compress.c
-    src/zlib/crc32.c
-    src/zlib/deflate.c
-    src/zlib/gzclose.c
-    src/zlib/gzlib.c
-    src/zlib/gzread.c
-    src/zlib/gzwrite.c
-    src/zlib/infback.c
-    src/zlib/inffast.c
-    src/zlib/inflate.c
-    src/zlib/inftrees.c
-    src/zlib/trees.c
-    src/zlib/uncompr.c
-    src/zlib/zutil.c
+    src/Window.cpp
 )
+
+if (ONUT_BUILD_ZLIB)
+    list(APPEND src_files
+        src/zlib/adler32.c
+        src/zlib/compress.c
+        src/zlib/crc32.c
+        src/zlib/deflate.c
+        src/zlib/gzclose.c
+        src/zlib/gzlib.c
+        src/zlib/gzread.c
+        src/zlib/gzwrite.c
+        src/zlib/infback.c
+        src/zlib/inffast.c
+        src/zlib/inflate.c
+        src/zlib/inftrees.c
+        src/zlib/trees.c
+        src/zlib/uncompr.c
+        src/zlib/zutil.c
+    )
+endif()
 
 file(GLOB inc_files ./include/onut/*.h)
 
@@ -324,6 +330,7 @@ if (WIN32)
 endif()
 
 # assimp
+set(ZLIB_USE_STATIC_LIBS ON)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
 set(ASSIMP_BUILD_TESTS OFF)
 set(BUILD_SHARED_LIBS OFF)
