@@ -52,25 +52,25 @@ namespace onut
         }
 
         // Initialize the direct input interface for the mouse.
-        result = directInput->CreateDevice(GUID_SysMouse, &mouse, NULL);
-        if (FAILED(result))
-        {
-            FAIL_DI_WITH_ERROR("CreateDevice GUID_SysMouse");
-        }
+        //result = directInput->CreateDevice(GUID_SysMouse, &mouse, NULL);
+        //if (FAILED(result))
+        //{
+        //    FAIL_DI_WITH_ERROR("CreateDevice GUID_SysMouse");
+        //}
 
-        // Set the data format for the mouse using the pre-defined mouse data format.
-        result = mouse->SetDataFormat(&c_dfDIMouse);
-        if (FAILED(result))
-        {
-            FAIL_DI_WITH_ERROR("mouse SetDataFormat");
-        }
+        //// Set the data format for the mouse using the pre-defined mouse data format.
+        //result = mouse->SetDataFormat(&c_dfDIMouse);
+        //if (FAILED(result))
+        //{
+        //    FAIL_DI_WITH_ERROR("mouse SetDataFormat");
+        //}
 
-        // Set the cooperative level of the mouse to share with other programs.
-        result = mouse->SetCooperativeLevel(oWindow->getHandle(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (FAILED(result))
-        {
-            FAIL_DI_WITH_ERROR("mouse SetCooperativeLevel");
-        }
+        //// Set the cooperative level of the mouse to share with other programs.
+        //result = mouse->SetCooperativeLevel(oWindow->getHandle(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+        //if (FAILED(result))
+        //{
+        //    FAIL_DI_WITH_ERROR("mouse SetCooperativeLevel");
+        //}
 
         memset(&mouseState, 0, sizeof(DIMOUSESTATE));
         memset(keyboardState, 0, 256);
@@ -123,42 +123,42 @@ namespace onut
 
     void InputDeviceDI8::readMouse()
     {
-        HRESULT result;
+        //HRESULT result;
 
-        // Read the mouse device.
-        result = mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&mouseState);
-        if (FAILED(result))
-        {
-            // If the mouse lost focus or was not acquired then try to get control back.
-            if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
-            {
-                result = mouse->Acquire();
-                if (FAILED(result))
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
+        //// Read the mouse device.
+        //result = mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&mouseState);
+        //if (FAILED(result))
+        //{
+        //    // If the mouse lost focus or was not acquired then try to get control back.
+        //    if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
+        //    {
+        //        result = mouse->Acquire();
+        //        if (FAILED(result))
+        //        {
+        //            return;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return;
+        //    }
+        //}
 
-        for (int i = 0; i < 4; ++i)
-        {
-            if (!(previousMouseState.rgbButtons[i] & 0x80) && (mouseState.rgbButtons[i] & 0x80))
-            {
-                m_pInput->setStateDown(static_cast<onut::Input::State>(static_cast<int>(OMouse1)+i));
-            }
-            else if ((previousMouseState.rgbButtons[i] & 0x80) && !(mouseState.rgbButtons[i] & 0x80))
-            {
-                m_pInput->setStateUp(static_cast<onut::Input::State>(static_cast<int>(OMouse1)+i));
-            }
-        }
-        memcpy(&previousMouseState, &mouseState, sizeof(DIMOUSESTATE));
-        m_pInput->setStateValue(OMouseX, (float)mouseState.lX);
-        m_pInput->setStateValue(OMouseY, (float)mouseState.lY);
-        m_pInput->setStateValue(OMouseZ, (float)mouseState.lZ);
+        //for (int i = 0; i < 4; ++i)
+        //{
+        //    if (!(previousMouseState.rgbButtons[i] & 0x80) && (mouseState.rgbButtons[i] & 0x80))
+        //    {
+        //        m_pInput->setStateDown(static_cast<onut::Input::State>(static_cast<int>(OMouse1)+i));
+        //    }
+        //    else if ((previousMouseState.rgbButtons[i] & 0x80) && !(mouseState.rgbButtons[i] & 0x80))
+        //    {
+        //        m_pInput->setStateUp(static_cast<onut::Input::State>(static_cast<int>(OMouse1)+i));
+        //    }
+        //}
+        //memcpy(&previousMouseState, &mouseState, sizeof(DIMOUSESTATE));
+        //m_pInput->setStateValue(OMouseX, (float)mouseState.lX);
+        //m_pInput->setStateValue(OMouseY, (float)mouseState.lY);
+        //m_pInput->setStateValue(OMouseZ, (float)mouseState.lZ);
     }
 
     void InputDeviceDI8::setMouseVisible(bool isCursorVisible)

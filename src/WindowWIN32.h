@@ -31,6 +31,7 @@ namespace onut
         bool m_isFullScreen = false;
         Point m_resSetting;
         bool m_hasFocus = true;
+        int m_accumMouseDelta[2] = { 0, 0 };
     };
 }
 

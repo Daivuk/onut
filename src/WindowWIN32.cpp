@@ -123,26 +123,50 @@ namespace onut
         else if (msg == WM_LBUTTONDOWN)
         {
             if (oWindow && oWindow->onButtonDown) oWindow->onButtonDown(0);
+            if (oInput)
+            {
+                oInput->setStateDown(static_cast<onut::Input::State>(static_cast<int>(OMouse1)));
+            }
         }
         else if (msg == WM_LBUTTONUP)
         {
             if (oWindow && oWindow->onButtonUp) oWindow->onButtonUp(0);
+            if (oInput)
+            {
+                oInput->setStateUp(static_cast<onut::Input::State>(static_cast<int>(OMouse1)));
+            }
         }
         else if (msg == WM_RBUTTONDOWN)
         {
             if (oWindow && oWindow->onButtonDown) oWindow->onButtonDown(1);
+            if (oInput)
+            {
+                oInput->setStateDown(static_cast<onut::Input::State>(static_cast<int>(OMouse2)));
+            }
         }
         else if (msg == WM_RBUTTONUP)
         {
             if (oWindow && oWindow->onButtonUp) oWindow->onButtonUp(1);
+            if (oInput)
+            {
+                oInput->setStateUp(static_cast<onut::Input::State>(static_cast<int>(OMouse2)));
+            }
         }
         else if (msg == WM_MBUTTONDOWN)
         {
             if (oWindow && oWindow->onButtonDown) oWindow->onButtonDown(2);
+            if (oInput)
+            {
+                oInput->setStateDown(static_cast<onut::Input::State>(static_cast<int>(OMouse3)));
+            }
         }
         else if (msg == WM_MBUTTONUP)
         {
             if (oWindow && oWindow->onButtonUp) oWindow->onButtonUp(2);
+            if (oInput)
+            {
+                oInput->setStateUp(static_cast<onut::Input::State>(static_cast<int>(OMouse3)));
+            }
         }
         else if (msg == WM_KEYDOWN)
         {
@@ -233,6 +257,24 @@ namespace onut
                 static_cast<WindowWIN32*>(oWindow.get())->m_hasFocus = false;
             }
         }
+        else if (msg == WM_INPUT)
+        {
+            if (oWindow)
+            {
+                UINT dwSize = sizeof(RAWINPUT);
+                static BYTE lpb[sizeof(RAWINPUT)];
+
+                GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+
+                RAWINPUT* raw = (RAWINPUT*)lpb;
+
+                if (raw->header.dwType == RIM_TYPEMOUSE)
+                {
+                    static_cast<WindowWIN32*>(oWindow.get())->m_accumMouseDelta[0] += raw->data.mouse.lLastX;
+                    static_cast<WindowWIN32*>(oWindow.get())->m_accumMouseDelta[1] += raw->data.mouse.lLastY;
+                }
+            }
+        }
 
         return DefWindowProc(handle, msg, wparam, lparam);
     }
@@ -319,6 +361,23 @@ namespace onut
 
             DragAcceptFiles(m_handle, TRUE);
         }
+
+        ShowWindow(m_handle, SW_SHOW);
+        UpdateWindow(m_handle);
+
+#ifndef HID_USAGE_PAGE_GENERIC
+#define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
+#endif
+#ifndef HID_USAGE_GENERIC_MOUSE
+#define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
+#endif
+
+        RAWINPUTDEVICE rid;
+        rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+        rid.usUsage = HID_USAGE_GENERIC_MOUSE; // Mouse
+        rid.dwFlags = RIDEV_INPUTSINK; // or 0 if you only want input when focused
+        rid.hwndTarget = m_handle;
+        RegisterRawInputDevices(&rid, 1, sizeof(rid));
     }
 
     WindowWIN32::~WindowWIN32()
@@ -385,13 +444,22 @@ namespace onut
 
     bool WindowWIN32::pollEvents()
     {
-        MSG msg = {0};
+        MSG msg = { 0 };
+        m_accumMouseDelta[0] = 0;
+        m_accumMouseDelta[1] = 0;
         if (oSettings->getIsEditorMode())
         {
             if (GetMessage(&msg, 0, 0, 0) >= 0)
             {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
+                if (msg.message == WM_INPUT)
+                {
+                    DispatchMessage(&msg);
+                }
+                else
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
 
                 if (msg.message == WM_QUIT)
                 {
@@ -401,8 +469,15 @@ namespace onut
                 // Empty remaining queued messages in case. Because Vsync will slow down the flow of messages
                 while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
                 {
-                    TranslateMessage(&msg);
-                    DispatchMessage(&msg);
+                    if (msg.message == WM_INPUT)
+                    {
+                        DispatchMessage(&msg);
+                    }
+                    else
+                    {
+                        TranslateMessage(&msg);
+                        DispatchMessage(&msg);
+                    }
 
                     if (msg.message == WM_QUIT)
                     {
@@ -415,14 +490,26 @@ namespace onut
         {
             while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
             {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
+                if (msg.message == WM_INPUT)
+                {
+                    DispatchMessage(&msg);
+                }
+                else
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
 
                 if (msg.message == WM_QUIT)
                 {
                     return false;
                 }
             }
+        }
+        if (oInput)
+        {
+            oInput->setStateValue(OMouseX, (float)m_accumMouseDelta[0]);
+            oInput->setStateValue(OMouseY, (float)m_accumMouseDelta[1]);
         }
         return true;
     }
