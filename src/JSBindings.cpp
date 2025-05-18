@@ -4427,6 +4427,8 @@ namespace onut
                             duk_put_prop_string(ctx, -2, "size");
                             duk_push_uint(ctx, (duk_uint_t)object.id);
                             duk_put_prop_string(ctx, -2, "id");
+                            duk_push_uint(ctx, (duk_uint_t)object.gid);
+                            duk_put_prop_string(ctx, -2, "gid");
                             duk_push_string(ctx, object.name.c_str());
                             duk_put_prop_string(ctx, -2, "name");
                             duk_push_string(ctx, object.type.c_str());

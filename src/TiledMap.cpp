@@ -410,6 +410,7 @@ namespace onut
                     pLayer.objectCount++;
 
                     object.id = pXMLObject->IntAttribute("id");
+                    object.gid = pXMLObject->IntAttribute("gid");
                     if (pXMLObject->Attribute("name")) object.name = pXMLObject->Attribute("name");
                     if (pXMLObject->Attribute("type")) object.type = pXMLObject->Attribute("type");
                     object.position.x = pXMLObject->FloatAttribute("x");

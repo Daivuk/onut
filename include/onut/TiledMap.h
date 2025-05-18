@@ -48,6 +48,7 @@ namespace onut
             Vector2 position;
             Vector2 size;
             uint32_t id;
+            uint32_t gid;
             std::string name;
             std::string type;
             std::unordered_map<std::string, std::string> properties;

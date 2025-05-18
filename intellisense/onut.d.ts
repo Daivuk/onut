@@ -883,6 +883,7 @@ declare class TiledMapObject {
     position: Vector2;
     size: Vector2;
     id: number;
+    gid: number;
     name: string;
     type: string;
     properties: Object;
