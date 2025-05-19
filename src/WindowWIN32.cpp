@@ -362,6 +362,7 @@ namespace onut
             DragAcceptFiles(m_handle, TRUE);
         }
 
+#if USE_RAW_MOUSE_INPUTS
         ShowWindow(m_handle, SW_SHOW);
         UpdateWindow(m_handle);
 
@@ -378,6 +379,7 @@ namespace onut
         rid.dwFlags = RIDEV_INPUTSINK; // or 0 if you only want input when focused
         rid.hwndTarget = m_handle;
         RegisterRawInputDevices(&rid, 1, sizeof(rid));
+#endif
     }
 
     WindowWIN32::~WindowWIN32()
@@ -506,11 +508,13 @@ namespace onut
                 }
             }
         }
+#if USE_RAW_MOUSE_INPUTS
         if (oInput)
         {
             oInput->setStateValue(OMouseX, (float)m_accumMouseDelta[0]);
             oInput->setStateValue(OMouseY, (float)m_accumMouseDelta[1]);
         }
+#endif
         return true;
     }
 
