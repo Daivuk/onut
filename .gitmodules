@@ -3,7 +3,7 @@
 	url = https://github.com/assimp/assimp.git
 [submodule "thirdparty/SDL"]
 	path = thirdparty/SDL
-	url = https://github.com/SDL-mirror/SDL.git
+	url = https://github.com/libsdl-org/SDL.git
 [submodule "bark/box2d"]
 	path = bark/box2d
 	url = https://github.com/erincatto/box2d.git
