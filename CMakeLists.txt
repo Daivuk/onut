@@ -311,7 +311,7 @@ if (ONUT_USE_SDL)
 
     if (ONUT_STATIC_SDL)
         add_subdirectory(./thirdparty/SDL ./thirdparties/SDL)
-        list(APPEND libs SDL2-static)
+        list(APPEND libs SDL3-static)
     else()
         list(APPEND libs SDL2)
     endif()
