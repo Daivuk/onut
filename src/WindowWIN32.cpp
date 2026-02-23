@@ -12,6 +12,7 @@
 
 // Third party
 #include <windowsx.h>
+#include <ShellScalingApi.h>
 
 namespace onut
 {
@@ -286,6 +287,8 @@ namespace onut
 
     WindowWIN32::WindowWIN32()
     {
+        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
         m_isFullScreen = oSettings->getBorderlessFullscreen();
         m_resSetting = oSettings->getResolution();
 
