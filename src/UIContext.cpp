@@ -9,6 +9,7 @@
 #include <onut/UIContext.h>
 #include <onut/UIControl.h>
 #include <onut/UITextBox.h>
+#include <onut/UICheckBox.h>
 
 // Third parties
 #if defined(WIN32)
@@ -430,6 +431,14 @@ namespace onut
         stateFilename = filename;
         OTextureRef pTexture;
         auto pContentManagerRef = pContentManager.lock();
+        auto pCheckBox = ODynamicCast<UICheckBox>(pControl);
+        if (pCheckBox && pCheckBox->getIsChecked())
+        {
+            stateFilename.insert(filename.size() - 4, "_checked");
+            pTexture = pContentManagerRef->getResourceAs<OTexture>(stateFilename.c_str());
+            if (!pTexture) pTexture = pContentManagerRef->getResourceAs<OTexture>(filename.c_str());
+            return pTexture;
+        }
         switch (pControl->getState(OThis))
         {
             case UIControl::State::Normal:
