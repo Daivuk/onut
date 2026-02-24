@@ -103,6 +103,7 @@ namespace onut
     {
         UIControl::load(jsonNode);
         textComponent = getJsonTextComponent(jsonNode["textComponent"]);
+        iconComponent.background = getJsonScale9Component(jsonNode);
         m_isChecked = getJsonBool(jsonNode["checked"], false);
         behavior = getJsonEnum(checkBehaviorMap, jsonNode["behavior"], CheckBehavior::Normal);
     }
@@ -111,6 +112,7 @@ namespace onut
     {
         UIControl::save(jsonNode, allocator);
         setJsonTextComponent(jsonNode, textComponent, allocator);
+        setJsonScale9Component(jsonNode, iconComponent.background, allocator);
         setJsonBool(jsonNode, "checked", m_isChecked, allocator, false);
         setJsonString(jsonNode, "behavior", enumToString(checkBehaviorMap, behavior), allocator, "NORMAL");
     }
@@ -125,6 +127,7 @@ namespace onut
         else
         {
             context->renderTextComponent(OThis, rect, textComponent);
+            context->renderIconComponent(OThis, rect, iconComponent);
         }
     }
 

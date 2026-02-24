@@ -419,6 +419,11 @@ namespace onut
         drawText(pControl, textRect, textComponent);
     }
 
+    void UIContext::renderIconComponent(const OUIControlRef& pControl, const Rect& rect, const UIIconComponent& iconComponent)
+    {
+        renderScale9Component(pControl, rect, iconComponent.background);
+    }
+
     OTextureRef UIContext::getTextureForState(const OUIControlRef& pControl, const std::string &filename)
     {
         static std::string stateFilename;

@@ -26,6 +26,7 @@ namespace onut
     class UIImageComponent;
     class UIScale9Component;
     class UITextComponent;
+    class UIIconComponent;
 
     class UIContext final : public std::enable_shared_from_this<UIContext>
     {
@@ -93,6 +94,7 @@ namespace onut
 
         void renderScale9Component(const OUIControlRef& pControl, const Rect& rect, const UIScale9Component& scale9Component);
         void renderTextComponent(const OUIControlRef& pControl, const Rect& rect, const UITextComponent& textComponent);
+        void renderIconComponent(const OUIControlRef& pControl, const Rect& rect, const UIIconComponent& iconComponent);
 
         const OUIControlRef& getHoverControl() const { return m_pHoverControl; }
         const OUIControlRef& getDownControl(int mouseButton = 1) const { return m_pDownControls[mouseButton - 1]; }

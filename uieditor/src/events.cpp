@@ -1282,6 +1282,73 @@ void BIND_SCALE9_COMPONENT(const std::string& name)
 }
 
 template<typename TuiType>
+void BIND_ICON_COMPONENT(const std::string& name)
+{
+    auto pLabel = onut::UILabel::create();
+    auto pContainer = onut::UIPanel::create();
+    auto pTxtImage = onut::UITextBox::create();
+    auto pBrowseButton = onut::UIButton::create();
+
+    pLabel->textComponent.text = name;
+    pLabel->rect = {{4, yPos}, {58, 24 + 8}};
+
+    pContainer->setStyle("group");
+    pContainer->widthType = (OUIControl::DimType::Relative);
+    pContainer->rect = {{66, yPos}, {-70, 24 + 8}};
+
+    pTxtImage->widthType = (OUIControl::DimType::Relative);
+    pTxtImage->rect = {{4, 4}, {-8 - 32, 24}};
+
+    pBrowseButton->align = (OTopRight);
+    pBrowseButton->anchor = {1, 0};
+    pBrowseButton->rect = {{-4, 4}, {32, 24}};
+    pBrowseButton->textComponent.text = "...";
+
+    pPnl->add(pLabel);
+    pPnl->add(pContainer);
+    pContainer->add(pTxtImage);
+    pContainer->add(pBrowseButton);
+
+    yPos += 24 + 4 + 8;
+
+    auto mouseEnter = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curIBEAM); };
+    auto mouseLeave = [&](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent){SetCursor(curARROW); };
+    pTxtImage->onMouseEnter = mouseEnter;
+    pTxtImage->onMouseLeave = mouseLeave;
+
+    auto actionName = std::string("Edit ") + name;
+    { // image
+        auto pBinding = new ControlInspectorBind<std::string, TuiType>(
+            actionName, &(pTxtImage->textComponent.text),
+            [](const std::shared_ptr<TuiType>& pControl) {return pControl->iconComponent.background.image.filename; },
+            [](const std::shared_ptr<TuiType>& pControl, const std::string& filename){pControl->iconComponent.background.image.filename = filename; });
+        pBindings->push_back(pBinding);
+        pTxtImage->onTextChanged = [=](const OUITextBoxRef& pTextBox, const onut::UITextBoxEvent& evt)
+        {
+            pBinding->updateControl(g_pDocument->pSelected);
+        };
+        // Browse
+        pBrowseButton->onClick = [=](const OUIControlRef& pControl, const onut::UIMouseEvent& mouseEvent)
+        {
+            std::string file = fileOpen("Image Files (*.png)\0*.png\0All Files (*.*)\0*.*\0");
+            if (!file.empty())
+            {
+                // Make it relative to our filename
+                auto filename = onut::getPath(g_pDocument->getFilename());
+                file = onut::makeRelativePath(file, filename);
+                pTxtImage->textComponent.text = file;
+                if (pTxtImage->onTextChanged)
+                {
+                    onut::UITextBoxEvent evt;
+                    evt.pContext = g_pUIContext;
+                    pTxtImage->onTextChanged(pTxtImage, evt);
+                }
+            }
+        };
+    }
+}
+
+template<typename TuiType>
 void BIND_PADDING_COMPONENT(const std::string& name)
 {
     auto pLabel = onut::UILabel::create();
@@ -2139,6 +2206,7 @@ void hookUIEvents(const OUIControlRef& pUIScreen)
     BIND_BOOL_PROPERTY<onut::UICheckBox>("Checked",
                                          [](const OUICheckBoxRef& pControl) {return pControl->getIsChecked(); },
                                          [](const OUICheckBoxRef& pControl, const bool& isChecked){pControl->setIsChecked(isChecked); });
+    BIND_ICON_COMPONENT<onut::UICheckBox>("Icon");
 
     // UITextBox
     BEGIN_BINDINGS(pUIScreen, OUIControl::Type::TextBox, "pnlInspector_UITextBox");

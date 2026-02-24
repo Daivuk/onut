@@ -214,7 +214,7 @@ namespace onut
             {rect.x + padding.x, rect.y + rect.w - padding.w, rect.z - padding.x - padding.z, padding.w},
             {paddingUVs.x, 1.f - paddingUVs.w, 1.f - paddingUVs.z, 1.f}, color);
         drawRectWithUVs(pTexture,
-            {rect.x + rect.z - padding.z, rect.y + rect.w - padding.z, padding.w, padding.w},
+            {rect.x + rect.z - padding.z, rect.y + rect.w - padding.w, padding.z, padding.w},
             {1.f - paddingUVs.z, 1.f - paddingUVs.w, 1.f, 1.f}, color);
     }
 
