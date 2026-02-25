@@ -126,8 +126,8 @@ namespace onut
         }
         else
         {
-            context->renderTextComponent(OThis, rect, textComponent);
             context->renderIconComponent(OThis, rect, iconComponent);
+            context->renderTextComponent(OThis, rect, textComponent);
         }
     }
 

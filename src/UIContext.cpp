@@ -422,7 +422,15 @@ namespace onut
 
     void UIContext::renderIconComponent(const OUIControlRef& pControl, const Rect& rect, const UIIconComponent& iconComponent)
     {
-        renderScale9Component(pControl, rect, iconComponent.background);
+        if (!iconComponent.background.image.filename.empty())
+        {
+            auto pTexture = getTextureForState(pControl, iconComponent.background.image.filename);
+            if (pTexture)
+            {
+                auto imgSize = pTexture->getSizef();
+                renderScale9Component(pControl, { rect.x, rect.y, imgSize.x, imgSize.y }, iconComponent.background);
+            }
+        }
     }
 
     OTextureRef UIContext::getTextureForState(const OUIControlRef& pControl, const std::string &filename)
