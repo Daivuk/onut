@@ -5,6 +5,7 @@
 #include <onut/BlendMode.h>
 #include <onut/Maths.h>
 #include <onut/Point.h>
+#include <onut/iRect.h>
 #include <onut/PrimitiveMode.h>
 #include <onut/SampleMode.h>
 
@@ -260,5 +261,6 @@ extern ORendererRef oRenderer;
 #define OScreenCenterXf     static_cast<float>(oRenderer->getResolution().x / 2)
 #define OScreenCenterYf     static_cast<float>(oRenderer->getResolution().y / 2)
 #define OScreenRectf        Rect{0, 0, static_cast<float>(oRenderer->getResolution().x), static_cast<float>(oRenderer->getResolution().y)}
+#define OScreenRect         iRect{0, 0, oRenderer->getResolution().x, oRenderer->getResolution().y}
 
 #endif
