@@ -132,7 +132,7 @@ namespace onut
 
     void Settings::setIsEditorMode(bool isEditorMode)
     {
-        m_isFixedStep = isEditorMode ? true : m_isFixedStep;
+        m_isFixedStep = isEditorMode ? false : m_isFixedStep;
         m_isEditorMode = isEditorMode;
     }
 

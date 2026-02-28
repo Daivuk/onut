@@ -286,4 +286,13 @@ namespace onut
         }
         return std::move(ret);
     }
+
+    Rect alignedRectInsideAnotherRect(const Rect& outerRect, float innerRectWidth, float innerRectHeight, const Vector2& align)
+    {
+        return {
+            outerRect.x + outerRect.z * align.x - innerRectWidth * align.x,
+            outerRect.y + outerRect.w * align.y - innerRectHeight * align.y,
+            innerRectWidth, innerRectHeight
+        };
+    }
 }

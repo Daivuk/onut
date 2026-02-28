@@ -660,6 +660,8 @@ namespace onut
     {
         return alignedRect(0, 0, size, size, padding, align);
     }
+
+    Rect alignedRectInsideAnotherRect(const Rect& outerRect, float innerRectWidth, float innerRectHeight, const Vector2& align);
 }
 
 #endif
