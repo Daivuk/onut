@@ -298,6 +298,7 @@ namespace onut
         wc.lpfnWndProc = WinProc;
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wc.lpszClassName = "OakNutWindow";
+        wc.hIcon = LoadIconA(GetModuleHandle(NULL), MAKEINTRESOURCE(101));
         RegisterClassA(&wc);
 
         // Centered position
