@@ -69,6 +69,11 @@ Vector2 Vector4::BottomRight() const
     return std::move(Vector2{x + z, y + w});
 }
 
+Vector2 Vector4::Align(const Vector2& align) const
+{
+    return Vector2(x + z * align.x, y + w * align.y);
+}
+
 Vector2 Vector4::TopLeft(float offset) const
 {
     return std::move(Vector2{x + offset, y + offset});

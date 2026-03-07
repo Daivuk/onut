@@ -173,6 +173,7 @@ struct Vector4
     Vector2 BottomLeft() const;
     Vector2 Bottom() const;
     Vector2 BottomRight() const;
+    Vector2 Align(const Vector2& align) const;
 
     inline Vector4 TopLeft(const Vector4& rect) const
     {
