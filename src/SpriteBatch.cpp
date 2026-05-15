@@ -141,6 +141,297 @@ namespace onut
         drawRect(m_pTexWhite, {rect.x + rect.z, rect.y, thickness, rect.w}, color);
     }
 
+    void SpriteBatch::drawRectRounded(float radius, const Rect& rect, const Color& color)
+    {
+        drawRectRounded(Vector4(radius), rect, color);
+    }
+
+    static const float DEG90 = OPI / 2.0f;
+
+    static const Vector2 CORNERS2[] = {
+        { 1, 0 },
+        { std::cosf(DEG90 / 2.0f), std::sinf(DEG90 / 2.0f) },
+        { 0, 1 },
+    };
+
+    static const Vector2 CORNERS4[] = {
+        { 1, 0 },
+        { std::cosf(DEG90 / 4.0f * 1.0f), std::sinf(DEG90 / 4.0f * 1.0f) },
+        { std::cosf(DEG90 / 4.0f * 2.0f), std::sinf(DEG90 / 4.0f * 2.0f) },
+        { std::cosf(DEG90 / 4.0f * 3.0f), std::sinf(DEG90 / 4.0f * 3.0f) },
+        { 0, 1 },
+    };
+
+    static const Vector2 CORNERS8[] = {
+        { 1, 0 },
+        { std::cosf(DEG90 / 8.0f * 1.0f), std::sinf(DEG90 / 8.0f * 1.0f) },
+        { std::cosf(DEG90 / 8.0f * 2.0f), std::sinf(DEG90 / 8.0f * 2.0f) },
+        { std::cosf(DEG90 / 8.0f * 3.0f), std::sinf(DEG90 / 8.0f * 3.0f) },
+        { std::cosf(DEG90 / 8.0f * 4.0f), std::sinf(DEG90 / 8.0f * 4.0f) },
+        { std::cosf(DEG90 / 8.0f * 5.0f), std::sinf(DEG90 / 8.0f * 5.0f) },
+        { std::cosf(DEG90 / 8.0f * 6.0f), std::sinf(DEG90 / 8.0f * 6.0f) },
+        { std::cosf(DEG90 / 8.0f * 7.0f), std::sinf(DEG90 / 8.0f * 7.0f) },
+        { 0, 1 },
+    };
+
+    void SpriteBatch::drawRectRounded(Vector4 corners_radius, const Rect& rect, const Color& color)
+    {
+        assert(m_isDrawing); // Should call begin() before calling draw()
+
+        if (corners_radius.x < 0) corners_radius.x = 0;
+        if (corners_radius.y < 0) corners_radius.y = 0;
+        if (corners_radius.z < 0) corners_radius.z = 0;
+        if (corners_radius.w < 0) corners_radius.w = 0;
+
+        if (corners_radius.x + corners_radius.y > rect.z)
+        {
+            corners_radius.x = corners_radius.y = rect.z / 2.0f;
+        }
+        if (corners_radius.z + corners_radius.w > rect.z)
+        {
+            corners_radius.z = corners_radius.w = rect.z / 2.0f;
+        }
+        if (corners_radius.x + corners_radius.w > rect.w)
+        {
+            corners_radius.x = corners_radius.w = rect.w / 2.0f;
+        }
+        if (corners_radius.y + corners_radius.z > rect.w)
+        {
+            corners_radius.y = corners_radius.z = rect.w / 2.0f;
+        }
+
+        // Top left corner
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
+        changeTexture(nullptr);
+
+        float top_h = onut::max(corners_radius.x, corners_radius.y);
+        float bottom_h = onut::max(corners_radius.z, corners_radius.w);
+        float mid_h = onut::max(0.0f, rect.w - top_h - bottom_h);
+        float top_w = onut::max(0.0f, rect.z - corners_radius.x - corners_radius.y);
+        float bottom_w = onut::max(0.0f, rect.z - corners_radius.z - corners_radius.w);
+
+        // Top row
+        if (top_h > 0)
+        {
+            if (top_w > 0)
+                drawRect(nullptr, { rect.x + corners_radius.x, rect.y, top_w, top_h }, color);
+            if (corners_radius.y > corners_radius.x && corners_radius.x > 0)
+                drawRect(nullptr, { rect.x, rect.y + corners_radius.x, corners_radius.x, corners_radius.y - corners_radius.x }, color);
+            if (corners_radius.x > corners_radius.y && corners_radius.y > 0)
+                drawRect(nullptr, { rect.x + rect.z - corners_radius.y, rect.y + corners_radius.y, corners_radius.y, corners_radius.x - corners_radius.y }, color);
+        }
+
+        // Center
+        if (mid_h > 0)
+        {
+            drawRect(nullptr, { rect.x, rect.y + top_h, rect.z, mid_h }, color);
+        }
+
+        // Bottom row
+        if (bottom_h > 0)
+        {
+            if (bottom_w > 0)
+                drawRect(nullptr, { rect.x + corners_radius.w, rect.y + rect.w - bottom_h, bottom_w, bottom_h }, color);
+            if (corners_radius.z > corners_radius.w && corners_radius.w > 0)
+                drawRect(nullptr, { rect.x, rect.y + rect.w - corners_radius.z, corners_radius.w, corners_radius.z - corners_radius.w }, color);
+            if (corners_radius.w > corners_radius.z && corners_radius.z > 0)
+                drawRect(nullptr, { rect.x + rect.z - corners_radius.z, rect.y + rect.w - corners_radius.w, corners_radius.z, corners_radius.w - corners_radius.z }, color);
+        }
+
+        // Top Left
+        if (corners_radius.x > 0)
+        {
+            auto radius = corners_radius.x;
+            int quadCount = 1;
+            const Vector2* corners = CORNERS2;
+            if (radius > 4)
+            {
+                quadCount = 2;
+                corners = CORNERS4;
+            }
+            if (radius > 20)
+            {
+                quadCount = 4;
+                corners = CORNERS8;
+            }
+
+            Vector2 inner_corner(rect.x + radius, rect.y + radius);
+            for (int i = 0; i < quadCount; ++i)
+            {
+                SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
+                auto corner = corners + i * 2;
+
+                pVerts[0].position = { inner_corner.x - corner[0].x * radius, inner_corner.y - corner[0].y * radius };
+                pVerts[0].texCoord = { 0, 0 };
+                pVerts[0].color = color;
+
+                pVerts[1].position = inner_corner;
+                pVerts[1].texCoord = { 0, 1 };
+                pVerts[1].color = color;
+
+                pVerts[2].position = { inner_corner.x - corner[2].x * radius, inner_corner.y - corner[2].y * radius };
+                pVerts[2].texCoord = { 1, 1 };
+                pVerts[2].color = color;
+
+                pVerts[3].position = { inner_corner.x - corner[1].x * radius, inner_corner.y - corner[1].y * radius };
+                pVerts[3].texCoord = { 1, 0 };
+                pVerts[3].color = color;
+
+                ++m_spriteCount;
+
+                if (m_spriteCount == MAX_SPRITE_COUNT)
+                {
+                    flush();
+                }
+            }
+        }
+
+        // Top Right
+        if (corners_radius.y > 0)
+        {
+            auto radius = corners_radius.y;
+            int quadCount = 1;
+            const Vector2* corners = CORNERS2;
+            if (radius > 4)
+            {
+                quadCount = 2;
+                corners = CORNERS4;
+            }
+            if (radius > 20)
+            {
+                quadCount = 4;
+                corners = CORNERS8;
+            }
+
+            Vector2 inner_corner(rect.x + rect.z - radius, rect.y + radius);
+            for (int i = 0; i < quadCount; ++i)
+            {
+                SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
+                auto corner = corners + i * 2;
+
+                pVerts[0].position = { inner_corner.x + corner[0].y * radius, inner_corner.y - corner[0].x * radius };
+                pVerts[0].texCoord = { 0, 0 };
+                pVerts[0].color = color;
+
+                pVerts[1].position = inner_corner;
+                pVerts[1].texCoord = { 0, 1 };
+                pVerts[1].color = color;
+
+                pVerts[2].position = { inner_corner.x + corner[2].y * radius, inner_corner.y - corner[2].x * radius };
+                pVerts[2].texCoord = { 1, 1 };
+                pVerts[2].color = color;
+
+                pVerts[3].position = { inner_corner.x + corner[1].y * radius, inner_corner.y - corner[1].x * radius };
+                pVerts[3].texCoord = { 1, 0 };
+                pVerts[3].color = color;
+
+                ++m_spriteCount;
+
+                if (m_spriteCount == MAX_SPRITE_COUNT)
+                {
+                    flush();
+                }
+            }
+        }
+
+        // Bottom Right
+        if (corners_radius.z > 0)
+        {
+            auto radius = corners_radius.z;
+            int quadCount = 1;
+            const Vector2* corners = CORNERS2;
+            if (radius > 4)
+            {
+                quadCount = 2;
+                corners = CORNERS4;
+            }
+            if (radius > 20)
+            {
+                quadCount = 4;
+                corners = CORNERS8;
+            }
+
+            Vector2 inner_corner(rect.x + rect.z - radius, rect.y + rect.w - radius);
+            for (int i = 0; i < quadCount; ++i)
+            {
+                SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
+                auto corner = corners + i * 2;
+
+                pVerts[0].position = { inner_corner.x + corner[0].x * radius, inner_corner.y + corner[0].y * radius };
+                pVerts[0].texCoord = { 0, 0 };
+                pVerts[0].color = color;
+
+                pVerts[1].position = inner_corner;
+                pVerts[1].texCoord = { 0, 1 };
+                pVerts[1].color = color;
+
+                pVerts[2].position = { inner_corner.x + corner[2].x * radius, inner_corner.y + corner[2].y * radius };
+                pVerts[2].texCoord = { 1, 1 };
+                pVerts[2].color = color;
+
+                pVerts[3].position = { inner_corner.x + corner[1].x * radius, inner_corner.y + corner[1].y * radius };
+                pVerts[3].texCoord = { 1, 0 };
+                pVerts[3].color = color;
+
+                ++m_spriteCount;
+
+                if (m_spriteCount == MAX_SPRITE_COUNT)
+                {
+                    flush();
+                }
+            }
+        }
+
+        // Bottom Left
+        if (corners_radius.w > 0)
+        {
+            auto radius = corners_radius.w;
+            int quadCount = 1;
+            const Vector2* corners = CORNERS2;
+            if (radius > 4)
+            {
+                quadCount = 2;
+                corners = CORNERS4;
+            }
+            if (radius > 20)
+            {
+                quadCount = 4;
+                corners = CORNERS8;
+            }
+
+            Vector2 inner_corner(rect.x + radius, rect.y + rect.w - radius);
+            for (int i = 0; i < quadCount; ++i)
+            {
+                SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
+                auto corner = corners + i * 2;
+
+                pVerts[0].position = { inner_corner.x - corner[0].y * radius, inner_corner.y + corner[0].x * radius };
+                pVerts[0].texCoord = { 0, 0 };
+                pVerts[0].color = color;
+
+                pVerts[1].position = inner_corner;
+                pVerts[1].texCoord = { 0, 1 };
+                pVerts[1].color = color;
+
+                pVerts[2].position = { inner_corner.x - corner[2].y * radius, inner_corner.y + corner[2].x * radius };
+                pVerts[2].texCoord = { 1, 1 };
+                pVerts[2].color = color;
+
+                pVerts[3].position = { inner_corner.x - corner[1].y * radius, inner_corner.y + corner[1].x * radius };
+                pVerts[3].texCoord = { 1, 0 };
+                pVerts[3].color = color;
+
+                ++m_spriteCount;
+
+                if (m_spriteCount == MAX_SPRITE_COUNT)
+                {
+                    flush();
+                }
+            }
+        }
+    }
+
     void SpriteBatch::drawRect(const OTextureRef& pTexture, const Rect& rect, const Color& color)
     {
         assert(m_isDrawing); // Should call begin() before calling draw()

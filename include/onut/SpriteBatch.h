@@ -40,6 +40,8 @@ namespace onut
         void begin(const Matrix& transform);
         void drawAbsoluteRect(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
         void drawRect(const OTextureRef& pTexture, const Rect& rect, const Color& color = Color::White);
+        void drawRectRounded(float radius, const Rect& rect, const Color& color = Color::White);
+        void drawRectRounded(Vector4 corners_radius, const Rect& rect, const Color& color = Color::White);
         void drawInclinedRect(const OTextureRef& pTexture, const Rect& rect, float inclinedRatio = -1.f, const Color& color = Color::White);
         void drawRectWithColors(const OTextureRef& pTexture, const Rect& rect, const std::vector<Color>& colors);
         void drawRectWithUVs(const OTextureRef& pTexture, const Rect& rect, const Vector4& uvs, const Color& color = Color::White);
