@@ -30,6 +30,7 @@ namespace onut
         Vector2 measure(const std::string& text);
         Vector2 measureDontCheckEndLine(const std::string& text);
         Vector2 measureWordWrap(const std::string& text, float wrapWidth);
+        float measureLine(const char* text);
         size_t caretPos(const std::string& text, float at);
 
         void addIcon(const OTextureRef& icon, uint32_t charCode, const Point& offset, int padding);

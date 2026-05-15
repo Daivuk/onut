@@ -215,6 +215,59 @@ namespace onut
         m_chars[charCode] = pNewChar;
     }
 
+    float Font::measureLine(const char* text)
+    {
+        float result = 0.0f;
+        float curX = 0;
+        uint32_t charId;
+        unsigned int i = 0;
+        while (true)
+        {
+            if (!*text) break;
+            charId = getNextUTF8(text, i, 10);
+            text += i;
+            i = 0;
+            if (charId == '\n')
+            {
+                break;
+            }
+            if (hatColoringEnabled && charId == coloringChar)
+            {
+                getNextUTF8(text, i, 10);
+                text += i;
+                i = 0;
+                getNextUTF8(text, i, 10);
+                text += i;
+                i = 0;
+                getNextUTF8(text, i, 10);
+                text += i;
+                i = 0;
+                continue;
+            }
+            auto it = m_chars.find(charId);
+            if (it == m_chars.end())
+            {
+                continue;
+            }
+            auto pDatChar = it->second;
+            if (!*text)
+            {
+                curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
+            }
+            else if (text[1] == '\n')
+            {
+                curX += static_cast<float>(pDatChar->xoffset) + static_cast<float>(pDatChar->width);
+            }
+            else
+            {
+                curX += static_cast<float>(pDatChar->xadvance);
+            }
+        }
+        if (curX > result) result = curX;
+
+        return result;
+    }
+
     Vector2 Font::measure(const std::string& in_text)
     {
         Vector2 result;
@@ -448,12 +501,14 @@ namespace onut
         Vector2 pos = in_pos;
         Rect ret;
         Vector2 dim = measure(text);
+        float lineW = measureLine(text.c_str());
         ret.z = dim.x;
         ret.w = dim.y;
 
-        Vector2 posFrom = {pos.x, pos.y - (m_common.lineHeight - m_common.base)};
-        Vector2 posTo = {pos.x - dim.x, pos.y - dim.y + (m_common.lineHeight - m_common.base)};
+        Vector2 posFrom = { in_pos.x, in_pos.y - (m_common.lineHeight - m_common.base)};
+        Vector2 posTo = { in_pos.x - lineW, in_pos.y - dim.y + (m_common.lineHeight - m_common.base)};
 
+        unsigned int len = (unsigned int)text.size();
         pos.x = posFrom.x + (posTo.x - posFrom.x) * align.x;
         pos.y = posFrom.y + (posTo.y - posFrom.y) * align.y;
 
@@ -464,7 +519,6 @@ namespace onut
         Vector2 curPos = pos;
         ret.x = curPos.x;
         ret.y = curPos.y;
-        unsigned int len = (unsigned int)text.size();
         int page = -1;
         float r, g, b;
         Color curColor = color;
@@ -477,7 +531,9 @@ namespace onut
 
             if (charId == '\n')
             {
-                curPos.x = pos.x;
+                lineW = measureLine(text.c_str() + i);
+                posTo = { in_pos.x - lineW, pos.y - dim.y + (m_common.lineHeight - m_common.base)};
+                curPos.x = posFrom.x + (posTo.x - posFrom.x) * align.x;
                 curPos.y += static_cast<float>(m_common.lineHeight);
                 continue;
             }
