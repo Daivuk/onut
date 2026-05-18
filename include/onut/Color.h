@@ -185,6 +185,29 @@ struct Color
         return std::move(result);
     }
 
+    void AdjustBrightness(float brightness)
+    {
+        r *= brightness;
+        g *= brightness;
+        b *= brightness;
+    }
+    void AdjustBrightness(float brightness, Color& result) const
+    {
+        result.r = r * brightness;
+        result.g = g * brightness;
+        result.b = b * brightness;
+        result.a = a;
+    }
+    Color AdjustedBrightness(float brightness) const
+    {
+        Color result;
+        result.r = r * brightness;
+        result.g = g * brightness;
+        result.b = b * brightness;
+        result.a = a;
+        return std::move(result);
+    }
+
     // Static functions
     static void Modulate(const Color& c1, const Color& c2, Color& result)
     {
