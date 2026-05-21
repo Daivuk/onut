@@ -966,6 +966,57 @@ namespace onut
         }
     }
 
+    void SpriteBatch::drawConnection(const Vector2& from, const Vector2& to, float size, const Color& color)
+    {
+        if (m_pRenderStates->blendMode.isDirty() ||
+            m_pRenderStates->sampleFiltering.isDirty()) flush();
+        changeTexture(nullptr);
+
+        Vector2 p1 = OLerp(from, to, 0.5f);
+        p1.y = from.y;
+        Vector2 p2 = OLerp(from, to, 0.5f);
+        p2.y = to.y;
+        float hsize = size * 0.5f;
+
+#define CONNECTION_SEGMENTS 16
+        Vector2 a = from;
+        Vector2 a_up(0, hsize);
+        for (int i = 0; i < CONNECTION_SEGMENTS; ++i)
+        {
+            float t = (float)(i + 1) / CONNECTION_SEGMENTS;
+            Vector2 b = bezier(from, p1, p2, to, t);
+            Vector2 b_up(0, hsize);
+            if (i + 1 < CONNECTION_SEGMENTS)
+            {
+                auto dir = b - a;
+                dir.Normalize();
+                b_up = { -dir.y * hsize, dir.x * hsize };
+            }
+
+            SVertexP2T2C4* pVerts = m_pMappedVertexBuffer + (m_spriteCount * 4);
+            pVerts[0].position = Vector2(a.x - a_up.x, a.y - a_up.y);
+            pVerts[0].color = color;
+
+            pVerts[1].position = Vector2(a.x + a_up.x, a.y + a_up.y);
+            pVerts[1].color = color;
+
+            pVerts[2].position = Vector2(b.x + b_up.x, b.y + b_up.y);
+            pVerts[2].color = color;
+
+            pVerts[3].position = Vector2(b.x - b_up.x, b.y - b_up.y);
+            pVerts[3].color = color;
+
+            ++m_spriteCount;
+            if (m_spriteCount == MAX_SPRITE_COUNT)
+            {
+                flush();
+            }
+
+            a = b;
+            a_up = b_up;
+        }
+    }
+
     void SpriteBatch::drawCross(const Vector2& position, float size, const Color& color, float thickness)
     {
         if (m_pRenderStates->blendMode.isDirty() ||
