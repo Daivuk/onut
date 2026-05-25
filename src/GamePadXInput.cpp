@@ -99,28 +99,76 @@ namespace onut
         bool leftThumbDirs[4] = { false };
         bool rightThumbDirs[4] = { false };
 
-        const float leftLen = m_cachedLeftThumb.LengthSquared();
-        const float rightLen = m_cachedRightThumb.LengthSquared();
-
-        const float leftDeadZone = (float)GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE / (float)std::numeric_limits<short>::max();
-        const float rightDeadZone = (float)GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE / (float)std::numeric_limits<short>::max();
-
-        if (leftLen >= leftDeadZone * leftDeadZone)
+        switch (button)
         {
-            auto angle = OConvertToDegrees(Vector2::Angle(Vector2::Zero, m_cachedLeftThumb));
-            leftThumbDirs[0] = angle < -22.5f && angle > -157.5f;
-            leftThumbDirs[1] = angle > -67.5f && angle < 67.5f;
-            leftThumbDirs[2] = angle > 22.5f && angle < 157.5f;
-            leftThumbDirs[3] = angle > 112.5 || angle < -112.5f;
-        }
-
-        if (rightLen >= rightDeadZone * rightDeadZone)
-        {
-            auto angle = OConvertToDegrees(Vector2::Angle(Vector2::Zero, m_cachedRightThumb));
-            rightThumbDirs[0] = angle < -22.5f && angle > -157.5f;
-            rightThumbDirs[1] = angle > -67.5f && angle < 67.5f;
-            rightThumbDirs[2] = angle > 22.5f && angle < 157.5f;
-            rightThumbDirs[3] = angle > 112.5 || angle < -112.5f;
+            case LeftThumbStickLeft:
+            case LeftThumbStickRight:
+            case LeftThumbStickUp:
+            case LeftThumbStickDown:
+            {
+                Vector2 leftThumb = {
+                    static_cast<float>(static_cast<double>(state.Gamepad.sThumbLX) / 32768.0),
+                    -static_cast<float>(static_cast<double>(state.Gamepad.sThumbLY) / 32768.0)
+                };
+                static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / 32768.0);
+                float len = leftThumb.Length();
+                if (len <= deadZone)
+                {
+                    leftThumb = {};
+                }
+                else
+                {
+                    float percent = (len - deadZone) / (1 - deadZone);
+                    leftThumb.Normalize();
+                    leftThumb *= percent;
+                }
+                const float leftLen = leftThumb.LengthSquared();
+                const float leftDeadZone = (float)GAMEPAD_LEFT_THUMB_PRESSED_DEADZONE / (float)std::numeric_limits<short>::max();
+                if (leftLen >= leftDeadZone * leftDeadZone)
+                {
+                    auto angle = OConvertToDegrees(Vector2::Angle(Vector2::Zero, leftThumb));
+                    leftThumbDirs[0] = angle < -22.5f && angle > -157.5f;
+                    leftThumbDirs[1] = angle > -67.5f && angle < 67.5f;
+                    leftThumbDirs[2] = angle > 22.5f && angle < 157.5f;
+                    leftThumbDirs[3] = angle > 112.5 || angle < -112.5f;
+                }
+                break;
+            }
+            case RightThumbStickLeft:
+            case RightThumbStickRight:
+            case RightThumbStickUp:
+            case RightThumbStickDown:
+            {
+                Vector2 rightThumb = {
+                    static_cast<float>(static_cast<double>(state.Gamepad.sThumbRX) / 32768.0),
+                    -static_cast<float>(static_cast<double>(state.Gamepad.sThumbRY) / 32768.0)
+                };
+                static float deadZone = static_cast<float>(static_cast<double>(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / 32768.0);
+                float len = rightThumb.Length();
+                if (len <= deadZone)
+                {
+                    rightThumb = {};
+                }
+                else
+                {
+                    float percent = (len - deadZone) / (1 - deadZone);
+                    rightThumb.Normalize();
+                    rightThumb *= percent;
+                }
+                const float rightLen = rightThumb.LengthSquared();
+                const float rightDeadZone = (float)GAMEPAD_RIGHT_THUMB_PRESSED_DEADZONE / (float)std::numeric_limits<short>::max();
+                if (rightLen >= rightDeadZone * rightDeadZone)
+                {
+                    auto angle = OConvertToDegrees(Vector2::Angle(Vector2::Zero, rightThumb));
+                    rightThumbDirs[0] = angle < -22.5f && angle > -157.5f;
+                    rightThumbDirs[1] = angle > -67.5f && angle < 67.5f;
+                    rightThumbDirs[2] = angle > 22.5f && angle < 157.5f;
+                    rightThumbDirs[3] = angle > 112.5 || angle < -112.5f;
+                }
+                break;
+            }
+            default:
+                break;
         }
 
         switch (button)
