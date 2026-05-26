@@ -11,6 +11,7 @@
 
 // Onut
 #include <onut/Align.h>
+#include <onut/iRect.h>
 
 // STL
 #include <algorithm>
@@ -174,6 +175,11 @@ struct Vector4
     Vector2 Bottom() const;
     Vector2 BottomRight() const;
     Vector2 Align(const Vector2& align) const;
+
+    iRect ToIRect() const
+    {
+        return { (int)x, (int)y, (int)(x + z), (int)(y + w) };
+    };
 
     inline Vector4 TopLeft(const Vector4& rect) const
     {
