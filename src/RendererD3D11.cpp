@@ -607,6 +607,82 @@ namespace onut
         m_pDeviceContext->DrawIndexed(static_cast<UINT>(indexCount), static_cast<UINT>(startOffset), 0);
     }
 
+    std::vector<uint8_t> RendererD3D11::getPixels(int& w, int &h)
+    {
+        std::vector<uint8_t> data;
+
+        ID3D11Texture2D* backBuffer = nullptr;
+        HRESULT result = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+        if (result != S_OK)
+        {
+            MessageBoxA(nullptr, "m_pSwapChain->GetBuffer", "Error", MB_OK);
+            abort();
+        }
+
+        // Get the description (you already have this)
+        D3D11_TEXTURE2D_DESC desc;
+        backBuffer->GetDesc(&desc);
+
+        // Create the staging texture description
+        D3D11_TEXTURE2D_DESC stagingDesc = desc;
+        stagingDesc.SampleDesc.Count = 1;
+        stagingDesc.SampleDesc.Quality = 0;
+        stagingDesc.Usage = D3D11_USAGE_STAGING;
+        stagingDesc.BindFlags = 0;
+        stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        stagingDesc.MiscFlags = 0;
+
+        ID3D11Texture2D* stagingTexture = nullptr;
+        result = m_pDevice->CreateTexture2D(&stagingDesc, nullptr, &stagingTexture);
+        if (FAILED(result))
+        {
+            backBuffer->Release();
+            return data;
+        }
+
+        // Flush so we render what's pending.
+        m_pDeviceContext->Flush();
+
+        // Copy from Backbuffer to Staging
+        // If using MSAA, we need ResolveSubresource here instead of CopyResource
+        m_pDeviceContext->CopyResource(stagingTexture, backBuffer);
+
+        // Map and grab raw pixels
+        w = 0;
+        h = 0;
+        D3D11_MAPPED_SUBRESOURCE mappedResource;
+        if (m_pDeviceContext->Map(stagingTexture, 0, D3D11_MAP_READ, 0, &mappedResource) == S_OK)
+        {
+            D3D11_TEXTURE2D_DESC desc;
+            backBuffer->GetDesc(&desc);
+
+            uint8_t* rawPixels = reinterpret_cast<uint8_t*>(mappedResource.pData);
+            for (UINT y = 0; y < desc.Height; ++y)
+            {
+                uint8_t* rowStart = rawPixels + (y * mappedResource.RowPitch);
+                for (UINT x = 0; x < desc.Width; ++x)
+                {
+                    uint8_t* pixel = rowStart + (x * 4);
+                    // Forces the alpha channel (4th byte) to be completely opaque!
+                    pixel[3] = 255;
+                }
+            }
+
+            w = (int)desc.Width;
+            h = (int)desc.Height;
+            data.resize(w * h * 4);
+            memcpy(data.data(), rawPixels, w * h * 4);
+
+            m_pDeviceContext->Unmap(stagingTexture, 0);
+        }
+
+        // Clean up
+        stagingTexture->Release();
+        backBuffer->Release();
+
+        return data;
+    }
+
     void RendererD3D11::applyRenderStates()
     {
         // Render target

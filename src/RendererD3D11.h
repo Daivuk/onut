@@ -35,6 +35,8 @@ namespace onut
         ID3D11Device* getDevice() const;
         ID3D11DeviceContext* getDeviceContext() const;
 
+        std::vector<uint8_t> getPixels(int& w, int &h) override;
+
         // For effects
         void setKernelSize(const Vector2& kernelSize);
         void setSepia(const Vector3& tone = Vector3(1.40f, 1.10f, 0.90f), // 0 - 2.55

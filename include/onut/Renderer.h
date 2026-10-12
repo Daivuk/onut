@@ -183,6 +183,9 @@ namespace onut
         virtual void draw(uint32_t vertexCount) = 0;
         virtual void drawIndexed(uint32_t indexCount, uint32_t startOffset = 0) = 0;
 
+        // Screenshot tool
+        virtual std::vector<uint8_t> getPixels(int& w, int &h) { return {}; }
+
         Point getResolution() const;
         virtual Point getTrueResolution() const = 0;
         virtual void onResize(const Point& newSize) = 0;
