@@ -32,6 +32,9 @@ namespace onut
         void drawCube(const Vector3& position, float extends, const Color& color = Color::White);
         void drawSphere(const Vector3& position, float radius, const Color& color = Color::White);
         void drawArrow(const Vector3& start, const Vector3& end, float headSize, const Color& color = Color::White);
+        void drawCircleX(const Vector3& position, float radius, const Color& color = Color::White);
+        void drawCircleY(const Vector3& position, float radius, const Color& color = Color::White);
+        void drawCircleZ(const Vector3& position, float radius, const Color& color = Color::White);
 
         void end();
 

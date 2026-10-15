@@ -162,6 +162,33 @@ namespace onut
         }
     }
 
+    void PrimitiveBatch3D::drawCircleX(const Vector3& position, float radius, const Color& color)
+    {
+        for (int i = 0; i < SPHERE_SIDE_COUNT; ++i)
+        {
+            draw(Vector3(position.x, position.y + m_cosTable[i] * radius, position.z + m_sinTable[i] * radius), color);
+            draw(Vector3(position.x, position.y + m_cosTable[i + 1] * radius, position.z + m_sinTable[i + 1] * radius), color);
+        }
+    }
+
+    void PrimitiveBatch3D::drawCircleY(const Vector3& position, float radius, const Color& color)
+    {
+        for (int i = 0; i < SPHERE_SIDE_COUNT; ++i)
+        {
+            draw(Vector3(position.x + m_cosTable[i] * radius, position.y, position.z + m_sinTable[i] * radius), color);
+            draw(Vector3(position.x + m_cosTable[i + 1] * radius, position.y, position.z + m_sinTable[i + 1] * radius), color);
+        }
+    }
+
+    void PrimitiveBatch3D::drawCircleZ(const Vector3& position, float radius, const Color& color)
+    {
+        for (int i = 0; i < SPHERE_SIDE_COUNT; ++i)
+        {
+            draw(Vector3(position.x + m_cosTable[i] * radius, position.y + m_sinTable[i] * radius, position.z), color);
+            draw(Vector3(position.x + m_cosTable[i + 1] * radius, position.y + m_sinTable[i + 1] * radius, position.z), color);
+        }
+    }
+
     void PrimitiveBatch3D::drawArrow(const Vector3& start, const Vector3& end, float headSize, const Color& color)
     {
         if (m_primitiveType != OPrimitiveLineList) return;
