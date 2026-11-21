@@ -57,6 +57,7 @@ static OIndexBufferRef g_pImguiIB;
 static OVertexBufferRef g_pImguiVB;
 
 Point *g_fakeHigherRes = nullptr;
+std::string override_default_imgui_font;
 
 struct ImguiVertex
 {
@@ -173,11 +174,19 @@ namespace onut
         // imgui
         ImGui::CreateContext();
         auto& io = ImGui::GetIO();
+
+        if (!override_default_imgui_font.empty())
+        {
+            ImGuiIO& io = ImGui::GetIO();
+            ImFont* main_font = io.Fonts->AddFontFromFileTTF(override_default_imgui_font.c_str(), 20.0f);
+        }
+
         uint8_t *pPixelData;
         int w, h;
         io.Fonts->GetTexDataAsRGBA32(&pPixelData, &w, &h);
         g_pImguiFontTexture = OTexture::createFromData(pPixelData, { w, h }, false);
         io.Fonts->SetTexID(&g_pImguiFontTexture);
+
         g_pImguiIB = OIndexBuffer::createDynamic(sizeof(uint16_t) * 300 * 6);
         g_pImguiVB = OVertexBuffer::createDynamic(sizeof(ImguiVertex) * 300 * 4);
         io.KeyMap[ImGuiKey_Tab] = (int)OKeyTab; // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will update during the application lifetime.

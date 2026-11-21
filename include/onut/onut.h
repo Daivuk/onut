@@ -15,6 +15,7 @@ namespace onut
 }
 
 extern std::vector<std::string> OArguments;
+extern std::string override_default_imgui_font;
 
 #define ORun onut::run
 #define OQuit onut::quit
