@@ -121,6 +121,15 @@ struct Color
         result.b = (((b < 0.0f) ? 0.0f : b) > 1.0f) ? 1.0f : b;
         result.a = (((a < 0.0f) ? 0.0f : a) > 1.0f) ? 1.0f : a;
     }
+    Color Saturated() const
+    {
+        return {
+            (((r < 0.0f) ? 0.0f : r) > 1.0f) ? 1.0f : r,
+            (((g < 0.0f) ? 0.0f : g) > 1.0f) ? 1.0f : g,
+            (((b < 0.0f) ? 0.0f : b) > 1.0f) ? 1.0f : b,
+            (((a < 0.0f) ? 0.0f : a) > 1.0f) ? 1.0f : a
+        };
+    }
 
     void Premultiply()
     {
