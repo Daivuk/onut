@@ -972,10 +972,11 @@ namespace onut
             m_pRenderStates->sampleFiltering.isDirty()) flush();
         changeTexture(nullptr);
 
-        Vector2 p1 = OLerp(from, to, 0.5f);
-        p1.y = from.y;
-        Vector2 p2 = OLerp(from, to, 0.5f);
-        p2.y = to.y;
+        auto d = fabsf(to.x - from.x);
+        Vector2 p1 = from;
+        p1.x += d * 0.5f;
+        Vector2 p2 = to;
+        p2.x -= d * 0.5f;
         float hsize = size * 0.5f;
 
 #define CONNECTION_SEGMENTS 16
